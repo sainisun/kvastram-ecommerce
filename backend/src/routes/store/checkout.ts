@@ -12,6 +12,7 @@ import {
   addresses,
   money_amounts,
   campaigns,
+  regions,
 } from "../../db/schema";
 import { eq, and, gte, lte, sql } from "drizzle-orm";
 
@@ -165,6 +166,19 @@ checkoutRouter.post(
       const body = c.req.valid("json");
       const { region_id, currency_code } = body;
 
+      // Fetch region for tax rate
+      const [region] = await db
+        .select({ tax_rate: regions.tax_rate })
+        .from(regions)
+        .where(eq(regions.id, region_id))
+        .limit(1);
+
+      if (!region) {
+        return c.json({ error: "Region not found" }, 400);
+      }
+
+      const taxRate = parseFloat(region.tax_rate as string) || 0;
+
       // 1. Validate Items & Calculate Subtotal
       let subtotal = 0;
       interface ValidatedItem {
@@ -252,7 +266,7 @@ checkoutRouter.post(
 
       // 3. Calculate Totals
       const shippingTotal = 0;
-      const taxTotal = 0;
+      const taxTotal = Math.round(subtotal * (taxRate / 100));
       const total = subtotal + shippingTotal + taxTotal - discountTotal;
 
       // 4. Create Order Transaction
