@@ -1,0 +1,210 @@
+import nodemailer from "nodemailer";
+
+interface EmailOptions {
+  to: string;
+  subject: string;
+  text: string;
+  html?: string;
+}
+
+class EmailService {
+  private transporter: nodemailer.Transporter;
+
+  constructor() {
+    // Create reusable transporter object using the default SMTP transport
+    // For development, we'll use Ethereal Email which fakes email sending
+    if (process.env.NODE_ENV === "production") {
+      // Configure production SMTP here (e.g., SendGrid, AWS SES)
+      this.transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        secure: true,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+    } else {
+      // Development: Use Ethereal (or log to console if internal network fails)
+      this.transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        auth: {
+          user: "ethereal.user@ethereal.email", // Placeholder, will be replaced by auto-generated account if needed
+          pass: "ethereal.pass",
+        },
+      });
+
+      // Auto-generate test account if env vars not set (Standard Nodemailer practice)
+      nodemailer.createTestAccount((err, account) => {
+        if (err) {
+          console.error("Failed to create Ethereal account:", err);
+          return;
+        }
+        this.transporter = nodemailer.createTransport({
+          host: account.smtp.host,
+          port: account.smtp.port,
+          secure: account.smtp.secure,
+          auth: {
+            user: account.user,
+            pass: account.pass,
+          },
+        });
+        console.log("📧 Email Service ready (Ethereal Dev Mode)");
+        console.log(`📧 Preview URL: https://ethereal.email/messages`);
+      });
+    }
+  }
+
+  async sendEmail(options: EmailOptions) {
+    try {
+      const info = await this.transporter.sendMail({
+        from: '"Kvastram Support" <support@kvastram.com>', // sender address
+        to: options.to, // list of receivers
+        subject: options.subject, // Subject line
+        text: options.text, // plain text body
+        html: options.html, // html body
+      });
+
+      console.log(`Message sent: ${info.messageId}`);
+
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+      }
+
+      return info;
+    } catch (error) {
+      console.error("Error sending email:", error);
+      // In production, you might want to throw or log to a monitoring service
+      // For now, we log and return false to indicate failure without crashing
+      return false;
+    }
+  }
+
+  async sendOrderConfirmation(order: any, customerEmail: string) {
+    const subject = `Order Confirmation #${order.order_number}`;
+    const text = `Thank you for your order! Your order #${order.order_number} has been placed successfully. Total: ${order.total / 100} ${order.currency_code}.`;
+    const html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1>Thank you for your order!</h1>
+                <p>Hi there,</p>
+                <p>Your order <strong>#${order.order_number}</strong> has been placed successfully.</p>
+
+                <h2>Order Details</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">Order Number</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>${order.order_number}</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">Total</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>${(order.total / 100).toFixed(2)} ${order.currency_code.toUpperCase()}</strong></td>
+                    </tr>
+                     <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">Status</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">${order.status}</td>
+                    </tr>
+                </table>
+
+                <p style="margin-top: 20px;">
+                    We will notify you once your items have been shipped.
+                </p>
+
+                <p>Best regards,<br>Kvastram Team</p>
+            </div>
+        `;
+
+    return this.sendEmail({ to: customerEmail, subject, text, html });
+  }
+
+  async sendOrderStatusUpdate(order: any, customerEmail: string) {
+    const subject = `Order Update #${order.order_number}`;
+    const text = `Your order #${order.order_number} status has been updated to: ${order.status}.`;
+    const html = `
+             <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1>Order Update</h1>
+                <p>Your order <strong>#${order.order_number}</strong> has been updated.</p>
+                <p>New Status: <strong>${order.status.toUpperCase()}</strong></p>
+                <p>Best regards,<br>Kvastram Team</p>
+            </div>
+        `;
+
+    return this.sendEmail({ to: customerEmail, subject, text, html });
+  }
+
+  async sendInquiryReceived(data: { email: string; contact_name: string }) {
+    const subject = "Wholesale Inquiry Received";
+    const text = `Hi ${data.contact_name},\n\nThank you for your wholesale inquiry. We have received your request and will review it shortly.\n\nBest regards,\nKvastram Team`;
+    const html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1>Thank you for your inquiry!</h1>
+                <p>Hi ${data.contact_name},</p>
+                <p>We have received your wholesale inquiry and will review it shortly.</p>
+                <p>Best regards,<br>Kvastram Team</p>
+            </div>
+        `;
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
+
+  async sendNewInquiryAlert(inquiry: any) {
+    const subject = "New Wholesale Inquiry Received";
+    const text = `A new wholesale inquiry has been submitted by ${inquiry.contact_name} from ${inquiry.company_name}.\n\nPlease review it in the admin dashboard.`;
+    const html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1>New Wholesale Inquiry</h1>
+                <p>A new inquiry has been submitted:</p>
+                <ul>
+                    <li><strong>Company:</strong> ${inquiry.company_name}</li>
+                    <li><strong>Contact:</strong> ${inquiry.contact_name}</li>
+                    <li><strong>Email:</strong> ${inquiry.email}</li>
+                </ul>
+                <p>Please review it in the admin dashboard.</p>
+            </div>
+        `;
+    // Send to admin email
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@kvastram.com";
+    return this.sendEmail({ to: adminEmail, subject, text, html });
+  }
+
+  async sendInquiryApproved(data: {
+    email: string;
+    contact_name: string;
+    company_name: string;
+    discount_tier: string;
+  }) {
+    const subject = "Wholesale Inquiry Approved!";
+    const text = `Hi ${data.contact_name},\n\nGreat news! Your wholesale inquiry for ${data.company_name} has been approved.\n\nYou have been assigned discount tier: ${data.discount_tier}\n\nBest regards,\nKvastram Team`;
+    const html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1>Congratulations!</h1>
+                <p>Hi ${data.contact_name},</p>
+                <p>Your wholesale inquiry for <strong>${data.company_name}</strong> has been approved!</p>
+                <p>Your discount tier: <strong>${data.discount_tier}</strong></p>
+                <p>Best regards,<br>Kvastram Team</p>
+            </div>
+        `;
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
+
+  async sendInquiryRejected(data: {
+    email: string;
+    contact_name: string;
+    company_name: string;
+    admin_notes?: string;
+  }) {
+    const subject = "Wholesale Inquiry Update";
+    const text = `Hi ${data.contact_name},\n\nThank you for your interest in Kvastram wholesale program. After careful review, we are unable to approve your inquiry for ${data.company_name} at this time.\n\n${data.admin_notes ? `Notes: ${data.admin_notes}\n\n` : ""}Best regards,\nKvastram Team`;
+    const html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1>Inquiry Update</h1>
+                <p>Hi ${data.contact_name},</p>
+                <p>Thank you for your interest in our wholesale program. After careful review, we are unable to approve your inquiry for <strong>${data.company_name}</strong> at this time.</p>
+                ${data.admin_notes ? `<p><strong>Notes:</strong> ${data.admin_notes}</p>` : ""}
+                <p>Best regards,<br>Kvastram Team</p>
+            </div>
+        `;
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
+}
+
+export const emailService = new EmailService();
