@@ -581,16 +581,17 @@ Risk: High
 ```typescript
 // Backend - set cookie on login:
 c.json({
-  token: jwtToken
+  success: true
 }, {
   headers: {
     'Set-Cookie': `auth_token=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${60*60*24*7}`
   }
 })
 
-// Frontend - read from cookie, NOT localStorage:
-// Use document.cookie to read (HttpOnly means JS can't access it)
-// Backend middleware reads from cookie header
+// Frontend - NO NEED to read cookie!
+// Backend middleware reads token from Cookie header automatically
+// Frontend just needs to include credentials: 'include' in fetch
+// Remove all localStorage token storage
 ```
 
 ---
@@ -877,17 +878,118 @@ Risk: Low
 
 ---
 
+### FIX-Q9: Account Lockout Mechanism
+Severity: 🟠 High (Brute Force Protection)
+Complexity: Easy
+Risk: Low
+
+**Problem:** No account lockout - attackers can brute force passwords
+
+**Files to modify:**
+- `backend/src/services/auth-service.ts`
+- `backend/src/db/schema.ts` (add failed_login_attempts, locked_until)
+
+**New files:**
+- None
+
+**New packages:** None
+
+**Database changes:** YES (add columns to customers/admin_users)
+
+**Depends on:** Phase 1 complete
+
+**Test after:**
+```bash
+# Try wrong password 5 times
+# Account should be locked
+# Wait 15 minutes, try again - should work
+```
+
+**Could break:** Legitimate users forgetting passwords
+
+**Implementation notes:**
+```typescript
+// Add to schema:
+failedLoginAttempts: integer('failed_login_attempts').default(0),
+lockedUntil: timestamp('locked_until'),
+
+// In auth service, on failed login:
+if (failedAttempts >= 5) {
+  await db.update(customers)
+    .set({
+      lockedUntil: new Date(Date.now() + 15*60*1000),
+      failedLoginAttempts: failedAttempts + 1
+    })
+    .where(eq(customers.id, customerId))
+}
+
+// On successful login, reset counter:
+await db.update(customers)
+  .set({
+    failedLoginAttempts: 0,
+    lockedUntil: null
+  })
+```
+
+---
+
+### FIX-Q10: Password Policy Enforcement
+Severity: 🟠 High (Security Best Practice)
+Complexity: Easy
+Risk: Low
+
+**Problem:** No password complexity requirements
+
+**Files to modify:**
+- `backend/src/services/auth-service.ts`
+- `backend/src/services/customer-auth-service.ts`
+
+**New files:**
+- `backend/src/utils/password-validator.ts`
+
+**New packages:** None
+
+**Database changes:** No
+
+**Depends on:** None
+
+**Test after:**
+```bash
+# Try to register with 'password123' - should fail
+# Try with 'MyPass123!@#' - should succeed
+```
+
+**Could break:** Users with weak passwords
+
+**Implementation notes:**
+```typescript
+// password-validator.ts:
+export function validatePassword(password: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = []
+  
+  if (password.length < 12) errors.push('Minimum 12 characters')
+  if (!/[A-Z]/.test(password)) errors.push('At least 1 uppercase letter')
+  if (!/[a-z]/.test(password)) errors.push('At least 1 lowercase letter')
+  if (!/[0-9]/.test(password)) errors.push('At least 1 number')
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push('At least 1 special character')
+  
+  return { valid: errors.length === 0, errors }
+}
+```
+
+---
+
 ## PHASE 3: 🟡 ARCHITECTURE — Do When Stable
 
 | Fix | Description | Files |
 |-----|-------------|-------|
-| Q9 | Refactor god functions | product-service.ts |
-| Q10 | Split schema.ts | db/schema/*.ts |
-| Q11 | Repository pattern | routes/*.ts |
-| Q12 | Pagination utility | utils/pagination.ts |
-| Q13 | API documentation | docs/openapi.yaml |
-| Q14 | Custom error classes | errors/*.ts |
-| Q15 | Add transactions | service files |
+| Q11 | Refactor god functions | product-service.ts |
+| Q12 | Split schema.ts | db/schema/*.ts |
+| Q13 | Repository pattern | routes/*.ts |
+| Q14 | Pagination utility | utils/pagination.ts |
+| Q15 | API documentation | docs/openapi.yaml |
+| Q16 | Custom error classes | errors/*.ts |
+| Q17 | Add transactions | service files |
 
 ---
 
@@ -895,11 +997,13 @@ Risk: Low
 
 | Fix | Description |
 |-----|-------------|
-| Q16 | Factory pattern |
-| Q17 | Strategy pattern |
-| Q18 | Event system |
-| Q19 | Caching layer |
-| Q20 | Feature flags |
+| Q18 | Factory pattern |
+| Q19 | Strategy pattern |
+| Q20 | Event system |
+| Q21 | Caching layer |
+| Q22 | Feature flags |
+| Q23 | Performance benchmarks |
+| Q24 | E2E tests |
 
 ---
 
@@ -912,7 +1016,7 @@ Risk: Low
 | `backend/src/routes/auth.ts` | 004, 010, 012 | 3 |
 | `backend/src/services/auth-service.ts` | 009, 010, 012 | 3 |
 | `backend/src/services/customer-auth-service.ts` | 011 | 1 |
-| `backend/src/db/schema.ts` | 002, 003, 005, 006, 011 | 5 |
+| `backend/src/db/schema.ts` | 002, 003, 005, 006, 011, Q9 | 6 |
 | `backend/src/db/schema-discounts.ts` | 006 | 1 |
 | `backend/src/db/schema-events.ts` | 007 | 1 |
 | `backend/src/middleware/csrf.ts` | 004 | 1 |
@@ -926,9 +1030,10 @@ Risk: Low
 | `storefront/src/app/refund-policy/page.tsx` | 008 | 1 |
 | `storefront/src/app/shipping-policy/page.tsx` | 008 | 1 |
 | `storefront/src/components/CookieConsent.tsx` | 008 | 1 |
+| `backend/src/utils/password-validator.ts` | Q10 | 1 |
 
-**Total unique files modified:** 27
-**Total new files created:** 9
+**Total unique files modified:** 29
+**Total new files created:** 12
 
 ---
 
@@ -947,6 +1052,7 @@ Risk: Low
 | `storefront/src/app/refund-policy/page.tsx` | Legal page | 008 |
 | `storefront/src/app/shipping-policy/page.tsx` | Legal page | 008 |
 | `storefront/src/components/CookieConsent.tsx` | Cookie banner | 008 |
+| `backend/src/utils/password-validator.ts` | Password policy | Q10 |
 
 ---
 
@@ -970,6 +1076,7 @@ Risk: Low
 | Add discount_usage table | - | 006 | Yes |
 | Add webhook_events table | - | 007 | Yes |
 | Add email verification columns | customers | 011 | Yes |
+| Add failed_login_attempts, locked_until | customers, admin_users | Q9 | Yes |
 
 ---
 
@@ -1032,15 +1139,21 @@ git tag fix-[ID]
 - FIX-006: Drop discount_usage table
 - FIX-007: Drop webhook_events table
 - FIX-011: Drop verification columns
+- FIX-Q9: Drop lockout columns
 
 ---
 
 ## IMPLEMENTATION ORDER
 
 Just tell me:
-1. **"Start Phase 1 Day 1"** - Inventory fixes
-2. **"Start [Fix-ID]"** - Specific fix
-3. **"Do all Phase 1"** - All 12 fixes
-4. **"Do Phase 2"** - Code quality
+1. **"Start Phase 1 Day 1"** - Inventory fixes (FIX-001, 002, 003)
+2. **"Start [Fix-ID]"** - Any specific fix
+3. **"Do all Phase 1"** - All 12 critical fixes
+4. **"Do Phase 2"** - Code quality + security fixes (Q1-Q10)
+
+**Phase 1:** 12 fixes (Days 1-7)
+**Phase 2:** 10 fixes (Q1-Q10)
+**Phase 3:** 7 fixes (Q11-Q17)
+**Phase 4:** 6 fixes (Q18-Q24)
 
 I will NOT write code until you ask! 🚀

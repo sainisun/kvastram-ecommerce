@@ -11,6 +11,7 @@ import {
   index,
   primaryKey,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { relations } from "drizzle-orm";
 
 // --- UTILS ---
@@ -78,7 +79,7 @@ export const product_variants = pgTable(
     barcode: text("barcode"),
     ean: text("ean"),
     upc: text("upc"),
-    inventory_quantity: integer("inventory_quantity").default(0),
+    inventory_quantity: integer("inventory_quantity").default(0), // Note: Check constraint added via migration, not Drizzle schema
     allow_backorder: boolean("allow_backorder").default(false),
     manage_inventory: boolean("manage_inventory").default(true),
     hs_code: text("hs_code"),
@@ -94,6 +95,8 @@ export const product_variants = pgTable(
   },
   (table) => ({
     productIdx: index("idx_product_variants_product_id").on(table.product_id),
+    // 🔒 FIX-003: Prevent negative inventory at database level
+    inventoryCheck: sql`CONSTRAINT chk_inventory_non_negative CHECK (inventory_quantity >= 0)`,
   }),
 );
 

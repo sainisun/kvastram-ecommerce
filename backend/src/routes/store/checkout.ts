@@ -273,6 +273,25 @@ checkoutRouter.post(
       let newOrder: typeof orders.$inferSelect | undefined;
 
       await db.transaction(async (tx) => {
+        // 🔒 FIX-002: Lock variant rows to prevent race conditions
+        // This prevents two users from buying the same last item
+        const lockedVariants = await tx
+          .select({
+            id: product_variants.id,
+            inventory_quantity: product_variants.inventory_quantity,
+          })
+          .from(product_variants)
+          .where(sql`${product_variants.id} IN ${body.items.map(i => i.variant_id)}`)
+          .for('update'); // PESSIMISTIC LOCKING
+
+        // Verify stock again with locked rows
+        for (const item of body.items) {
+          const v = lockedVariants.find(v => v.id === item.variant_id);
+          if (!v || (v.inventory_quantity ?? 0) < item.quantity) {
+            throw new Error(`Insufficient stock for item. Please reduce quantity.`);
+          }
+        }
+
         // Find or Create Customer
         let customerId = null;
         const [existingCustomer] = await tx
@@ -342,6 +361,17 @@ checkoutRouter.post(
             unit_price: item.unitPrice,
             total_price: item.lineTotal,
           });
+        }
+
+        // 🔒 FIX-001: Deduct inventory for each item
+        // This happens inside the transaction with locked rows
+        for (const item of validatedItems) {
+          await tx
+            .update(product_variants)
+            .set({
+              inventory_quantity: sql`COALESCE(${product_variants.inventory_quantity}, 0) - ${item.quantity}`
+            })
+            .where(eq(product_variants.id, item.id));
         }
 
         // Increment Discount Usage & Update Campaign Stats
