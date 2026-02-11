@@ -3,6 +3,7 @@ import { serve } from "@hono/node-server";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
+import { csrf } from "hono/csrf";
 import {
   authLimiter,
   checkoutLimiter,
@@ -67,6 +68,15 @@ app.use(
     credentials: true,
   }),
 );
+
+// 🔒 FIX-004: CSRF Protection for state-changing operations
+// Only apply in production or when Origin header is present
+app.use("/store/checkout/*", csrf({
+  origin: allowedOrigins,
+}));
+app.use("/store/payments/*", csrf({
+  origin: allowedOrigins,
+}));
 
 // Health Check Endpoint
 app.get("/health", async (c) => {

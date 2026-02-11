@@ -20,9 +20,17 @@ if (!JWT_SECRET && process.env.NODE_ENV === "production") {
   throw new Error("FATAL: JWT_SECRET must be set in production environment");
 }
 
+// 🔒 FIX-009: Remove hardcoded fallback - fail if not set
+if (!JWT_SECRET) {
+  throw new Error(
+    "FATAL: JWT_SECRET environment variable is required. " +
+    "Set it in .env file or environment variables."
+  );
+}
+
 export const config = {
   jwt: {
-    secret: JWT_SECRET || "development-secret-do-not-use-in-production",
+    secret: JWT_SECRET, // 🔒 FIX-009: No fallback - JWT_SECRET validated above
     expiresIn: "7d",
     algorithm: "HS256" as const,
   },
