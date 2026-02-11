@@ -51,6 +51,10 @@ export const config = {
     max: Number(getEnvVarWithDefault("RATE_LIMIT_MAX", "100")),
     windowMs: Number(getEnvVarWithDefault("RATE_LIMIT_WINDOW_MS", "900000")), // 15 minutes
   },
+  // 🔒 FIX-005: Default GST tax rate
+  tax: {
+    defaultRate: Number(getEnvVarWithDefault("DEFAULT_TAX_RATE", "18")), // 18% GST default
+  },
   // Database
   database: {
     url: getEnvVar("DATABASE_URL", process.env.NODE_ENV === "production"),

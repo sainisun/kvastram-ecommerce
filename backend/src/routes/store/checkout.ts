@@ -15,6 +15,7 @@ import {
   regions,
 } from "../../db/schema";
 import { eq, and, gte, lte, sql } from "drizzle-orm";
+import { config } from "../../config";
 
 const checkoutRouter = new Hono();
 
@@ -177,7 +178,7 @@ checkoutRouter.post(
         return c.json({ error: "Region not found" }, 400);
       }
 
-      const taxRate = parseFloat(region.tax_rate as string) || 0;
+      const taxRate = parseFloat(region.tax_rate as string) || config.tax.defaultRate;
 
       // 1. Validate Items & Calculate Subtotal
       let subtotal = 0;
@@ -343,7 +344,16 @@ checkoutRouter.post(
             total,
             shipping_address_id: shAddr.id,
             discount_id: finalDiscountId,
-            metadata: {},
+            // 🔒 FIX-005: Store tax breakdown in metadata
+            metadata: {
+              tax_rate: taxRate,
+              tax_breakdown: {
+                subtotal,
+                tax_rate_percent: taxRate,
+                tax_amount: taxTotal,
+                calculated_at: new Date().toISOString(),
+              },
+            },
           })
           .returning();
 
