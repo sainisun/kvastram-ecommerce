@@ -544,6 +544,33 @@ export const discounts = pgTable("discounts", {
   ...createdUpdated,
 });
 
+// 🔒 FIX-006: Discount usage tracking table (per-customer limits)
+export const discount_usage = pgTable(
+  "discount_usage",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    discount_id: uuid("discount_id")
+      .references(() => discounts.id, { onDelete: "cascade" })
+      .notNull(),
+    customer_id: uuid("customer_id")
+      .references(() => customers.id, { onDelete: "cascade" })
+      .notNull(),
+    order_id: uuid("order_id")
+      .references(() => orders.id, { onDelete: "cascade" })
+      .notNull(),
+    used_at: timestamp("used_at").defaultNow(),
+  },
+  (table) => ({
+    // Unique constraint: one use per customer per discount
+    uniqueDiscountCustomer: primaryKey({
+      columns: [table.discount_id, table.customer_id],
+      name: "pk_discount_customer_usage",
+    }),
+    customerIdx: index("idx_discount_usage_customer_id").on(table.customer_id),
+    discountIdx: index("idx_discount_usage_discount_id").on(table.discount_id),
+  }),
+);
+
 // --- WHOLESALE INQUIRIES ---
 export const wholesale_inquiries = pgTable("wholesale_inquiries", {
   id: uuid("id").defaultRandom().primaryKey(),

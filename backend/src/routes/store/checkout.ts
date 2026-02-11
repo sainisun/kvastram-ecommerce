@@ -13,6 +13,7 @@ import {
   money_amounts,
   campaigns,
   regions,
+  discount_usage,
 } from "../../db/schema";
 import { eq, and, gte, lte, sql } from "drizzle-orm";
 import { config } from "../../config";
@@ -70,7 +71,7 @@ const PlaceOrderSchema = z.object({
 
 // --- HELPERS ---
 
-const validateDiscount = async (code: string, cartTotal: number) => {
+const validateDiscount = async (code: string, cartTotal: number, customerId: string | null) => {
   const now = new Date();
 
   // Find discount
@@ -96,12 +97,31 @@ const validateDiscount = async (code: string, cartTotal: number) => {
     throw new Error("Discount code has expired");
   }
 
-  // Check usage limits
+  // Check usage limits (total)
   if (
     discount.usage_limit !== null &&
     (discount.usage_count || 0) >= discount.usage_limit
   ) {
     throw new Error("Discount usage limit reached");
+  }
+
+  // 🔒 FIX-006: Check per-customer usage limit
+  // Only check if customer is logged in (has customerId)
+  if (customerId) {
+    const [existingUsage] = await db
+      .select({ id: discount_usage.id })
+      .from(discount_usage)
+      .where(
+        and(
+          eq(discount_usage.discount_id, discount.id),
+          eq(discount_usage.customer_id, customerId)
+        )
+      )
+      .limit(1);
+
+    if (existingUsage) {
+      throw new Error("You have already used this discount code");
+    }
   }
 
   // Check min purchase
@@ -110,7 +130,7 @@ const validateDiscount = async (code: string, cartTotal: number) => {
     cartTotal < discount.min_purchase_amount
   ) {
     throw new Error(
-      `Minimum purchase of $${(discount.min_purchase_amount / 100).toFixed(2)} required`,
+      `Minimum purchase of ${(discount.min_purchase_amount / 100).toFixed(2)} required`,
     );
   }
 
@@ -143,6 +163,7 @@ checkoutRouter.post(
       const { discount, discountAmount } = await validateDiscount(
         code,
         cart_total,
+        null, // validate-coupon doesn't require customer check
       );
 
       return c.json({
@@ -248,17 +269,20 @@ checkoutRouter.post(
         });
       }
 
-      // 2. Validate Discount
+      // 2. Validate Discount (basic validation - no customer check yet)
       let discountTotal = 0;
       let finalDiscountId = null;
+      let discount: typeof discounts.$inferSelect | null = null;
 
       if (body.discount_code) {
         try {
-          const { discount, discountAmount } = await validateDiscount(
+          const result = await validateDiscount(
             body.discount_code,
             subtotal,
+            null, // Will check per-customer inside transaction
           );
-          discountTotal = discountAmount;
+          discount = result.discount;
+          discountTotal = result.discountAmount;
           finalDiscountId = discount.id;
         } catch (e: any) {
           return c.json({ error: `Invalid discount: ${e.message}` }, 400);
@@ -315,6 +339,24 @@ checkoutRouter.post(
             })
             .returning();
           customerId = newCust.id;
+        }
+
+        // 🔒 FIX-006: Check per-customer discount usage (inside transaction)
+        if (discount && customerId) {
+          const [existingUsage] = await tx
+            .select({ id: discount_usage.id })
+            .from(discount_usage)
+            .where(
+              and(
+                eq(discount_usage.discount_id, discount.id),
+                eq(discount_usage.customer_id, customerId)
+              )
+            )
+            .limit(1);
+
+          if (existingUsage) {
+            throw new Error("You have already used this discount code");
+          }
         }
 
         // Create Addresses
@@ -385,8 +427,15 @@ checkoutRouter.post(
         }
 
         // Increment Discount Usage & Update Campaign Stats
-        if (finalDiscountId) {
-          // Update discount usage
+        if (finalDiscountId && customerId) {
+          // 🔒 FIX-006: Record per-customer discount usage
+          await tx.insert(discount_usage).values({
+            discount_id: finalDiscountId,
+            customer_id: customerId,
+            order_id: order.id,
+          });
+
+          // Update discount total usage count
           await tx.execute(sql`
                      UPDATE discounts
                      SET usage_count = COALESCE(usage_count, 0) + 1
