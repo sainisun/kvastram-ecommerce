@@ -5,7 +5,7 @@ import {
   LoginSchema,
   RegisterSchema,
 } from "../services/auth-service";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAuth, AuthContextVariables } from "../middleware/auth";
 import { db } from "../db";
 import { users } from "../db/schema";
 import { eq } from "drizzle-orm";
@@ -16,7 +16,7 @@ import {
 } from "../middleware/error-handler";
 import { successResponse, HttpStatus } from "../utils/api-response";
 
-const authRouter = new Hono<{ Variables: { user: any } }>();
+const authRouter = new Hono<{ Variables: AuthContextVariables }>();
 
 // POST /auth/login
 authRouter.post(

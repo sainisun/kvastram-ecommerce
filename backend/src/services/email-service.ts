@@ -205,6 +205,34 @@ class EmailService {
         `;
     return this.sendEmail({ to: data.email, subject, text, html });
   }
+
+  // 🔒 FIX-011: Email verification email
+  async sendVerificationEmail(data: {
+    email: string;
+    first_name: string;
+    token: string;
+  }) {
+    const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:3002"}/verify-email?token=${data.token}`;
+    const subject = "Verify Your Email Address";
+    const text = `Hi ${data.first_name},\n\nWelcome to Kvastram! Please verify your email address by clicking the link below:\n\n${verificationUrl}\n\nThis link will expire in 24 hours.\n\nBest regards,\nKvastram Team`;
+    const html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h1>Welcome to Kvastram!</h1>
+                <p>Hi ${data.first_name},</p>
+                <p>Thank you for creating an account with us. Please verify your email address to get started.</p>
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="${verificationUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                        Verify Email Address
+                    </a>
+                </p>
+                <p>Or copy this link to your browser:<br>
+                <small>${verificationUrl}</small></p>
+                <p style="color: #666; font-size: 12px;">This link will expire in 24 hours. If you didn't create an account with Kvastram, please ignore this email.</p>
+                <p>Best regards,<br>Kvastram Team</p>
+            </div>
+        `;
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
 }
 
 export const emailService = new EmailService();

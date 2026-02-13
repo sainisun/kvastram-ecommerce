@@ -70,38 +70,35 @@ export type UpdateProductInput = z.infer<typeof UpdateProductSchema>;
 // --- Service Logic ---
 
 export class ProductService {
-  /**
-   * List products with pagination.
-   */
-  /**
-   * List products with advanced filtering and stats (Replaces Route Logic)
-   */
-  async listDetailed(filters: any) {
-    const {
-      limit = 20,
-      offset = 0,
-      status,
-      sort = "created_at",
-      categoryId,
-      tagId,
-    } = filters;
+  // ========================================
+  // PRIVATE HELPER METHODS
+  // ========================================
 
-    const limitNum = Math.min(parseInt(limit.toString()) || 20, 100);
-    const offsetNum = Math.max(parseInt(offset.toString()) || 0, 0);
-
-    // Build where conditions
+  /**
+   * Build filter conditions for product queries
+   */
+  private async buildFilterConditions(filters: {
+    status?: string;
+    categoryId?: string;
+    tagId?: string;
+  }): Promise<any[]> {
     const conditions: any[] = [];
-    if (status) {
-      conditions.push(eq(products.status, status));
+
+    if (filters.status) {
+      conditions.push(eq(products.status, filters.status));
     }
 
     // Category Filter
-    if (categoryId) {
+    if (filters.categoryId) {
       const catMatches = await db
         .select({ product_id: product_categories.product_id })
         .from(product_categories)
-        .where(eq(product_categories.category_id, categoryId));
-      if (catMatches.length === 0) return { products: [], total: 0 };
+        .where(eq(product_categories.category_id, filters.categoryId));
+
+      if (catMatches.length === 0) {
+        return []; // No products in this category
+      }
+
       conditions.push(
         inArray(
           products.id,
@@ -111,12 +108,16 @@ export class ProductService {
     }
 
     // Tag Filter
-    if (tagId) {
+    if (filters.tagId) {
       const tagMatches = await db
         .select({ product_id: product_tags.product_id })
         .from(product_tags)
-        .where(eq(product_tags.tag_id, tagId));
-      if (tagMatches.length === 0) return { products: [], total: 0 };
+        .where(eq(product_tags.tag_id, filters.tagId));
+
+      if (tagMatches.length === 0) {
+        return []; // No products with this tag
+      }
+
       conditions.push(
         inArray(
           products.id,
@@ -125,9 +126,99 @@ export class ProductService {
       );
     }
 
+    return conditions;
+  }
+
+  /**
+   * Fetch variant statistics for products
+   */
+  private async fetchVariantStats(productIds: string[]): Promise<any[]> {
+    if (productIds.length === 0) return [];
+
+    return await db
+      .select({
+        product_id: product_variants.product_id,
+        variant_count: sql<number>`count(*)`,
+        total_inventory: sql<number>`sum(${product_variants.inventory_quantity})`,
+      })
+      .from(product_variants)
+      .where(inArray(product_variants.product_id, productIds))
+      .groupBy(product_variants.product_id);
+  }
+
+  /**
+   * Fetch images for products
+   */
+  private async fetchProductImages(productIds: string[]): Promise<any[]> {
+    if (productIds.length === 0) return [];
+
+    return await db
+      .select()
+      .from(product_images)
+      .where(inArray(product_images.product_id, productIds));
+  }
+
+  /**
+   * Merge product data with variant stats and images
+   */
+  private mergeProductData(
+    productsList: any[],
+    variantData: any[],
+    imagesData: any[],
+  ): any[] {
+    return productsList.map((product) => {
+      const stats = variantData.find((v) => v.product_id === product.id);
+      const pImages = imagesData.filter((img) => img.product_id === product.id);
+      return {
+        ...product,
+        variant_count: stats?.variant_count || 0,
+        total_inventory: stats?.total_inventory || 0,
+        images: pImages,
+      };
+    });
+  }
+
+  // ========================================
+  // PUBLIC METHODS
+  // ========================================
+
+  /**
+   * List products with advanced filtering and stats
+   */
+  async listDetailed(filters: {
+    limit?: number;
+    offset?: number;
+    status?: string;
+    categoryId?: string;
+    tagId?: string;
+    sort?: string;
+  }) {
+    const { limit = 20, offset = 0, sort = "created_at" } = filters;
+    const limitNum = Math.min(Math.max(parseInt(limit.toString()) || 20, 1), 100);
+    const offsetNum = Math.max(parseInt(offset.toString()) || 0, 0);
+
+    // Build filter conditions
+    const conditions = await this.buildFilterConditions({
+      status: filters.status,
+      categoryId: filters.categoryId,
+      tagId: filters.tagId,
+    });
+
+    // Early return if no products match filters
+    if (conditions.length > 0) {
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(products)
+        .where(and(...conditions));
+
+      if (Number(count) === 0) {
+        return { products: [], total: 0, limit: limitNum, offset: offsetNum };
+      }
+    }
+
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    // Get products
+    // Fetch products
     const productsList = await db
       .select({
         id: products.id,
@@ -145,40 +236,19 @@ export class ProductService {
       .limit(limitNum)
       .offset(offsetNum);
 
-    // Get variant counts and inventory
+    // Fetch related data
     const productIds = productsList.map((p) => p.id);
-
-    let variantData: any[] = [];
-    let imagesData: any[] = [];
-
-    if (productIds.length > 0) {
-      variantData = await db
-        .select({
-          product_id: product_variants.product_id,
-          variant_count: sql<number>`count(*)`,
-          total_inventory: sql<number>`sum(${product_variants.inventory_quantity})`,
-        })
-        .from(product_variants)
-        .where(inArray(product_variants.product_id, productIds))
-        .groupBy(product_variants.product_id);
-
-      imagesData = await db
-        .select()
-        .from(product_images)
-        .where(inArray(product_images.product_id, productIds));
-    }
+    const [variantData, imagesData] = await Promise.all([
+      this.fetchVariantStats(productIds),
+      this.fetchProductImages(productIds),
+    ]);
 
     // Merge data
-    const productsWithStats = productsList.map((product) => {
-      const stats = variantData.find((v) => v.product_id === product.id);
-      const pImages = imagesData.filter((img) => img.product_id === product.id);
-      return {
-        ...product,
-        variant_count: stats?.variant_count || 0,
-        total_inventory: stats?.total_inventory || 0,
-        images: pImages,
-      };
-    });
+    const productsWithStats = this.mergeProductData(
+      productsList,
+      variantData,
+      imagesData,
+    );
 
     // Get total count
     const [{ count }] = await db

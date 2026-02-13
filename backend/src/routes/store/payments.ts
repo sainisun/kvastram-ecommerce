@@ -1,10 +1,29 @@
+/**
+ * Payment Routes
+ * 
+ * These routes handle Stripe payment processing including:
+ * - PaymentIntent creation for orders
+ * - Payment status checking
+ * - Stripe webhook handling with idempotency
+ * - Payment success/failure/refund handling
+ * 
+ * Security Features:
+ * - Stripe signature verification on webhooks
+ * - Idempotent webhook processing (prevents double charges)
+ * - Log sanitization (PII not logged)
+ * 
+ * @module payments
+ */
+
 import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import Stripe from "stripe";
 import { db } from "../../db";
-import { orders, line_items } from "../../db/schema";
+import { orders, line_items, webhook_events } from "../../db/schema";
 import { eq, sql } from "drizzle-orm";
+import { logInfo, logError } from "../../utils/logger";
+import { asyncHandler } from "../../middleware/error-handler";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   // Cast to any because the types might not cover this specific version string yet
@@ -84,7 +103,7 @@ paymentRouter.post(
         payment_intent_id: paymentIntent.id,
       });
     } catch (error: any) {
-      console.error("Payment intent creation error:", error);
+      logError("Payment intent creation failed", error);
       return c.json({ error: error.message }, 500);
     }
   },
@@ -112,7 +131,7 @@ paymentRouter.get("/status/:order_id", async (c) => {
       status: order.status,
     });
   } catch (error: any) {
-    console.error("Payment status check error:", error);
+    logError("Payment status check failed", error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -136,8 +155,40 @@ paymentRouter.post("/webhook", async (c) => {
       process.env.STRIPE_WEBHOOK_SECRET || "",
     );
   } catch (err: any) {
-    console.error("Webhook signature verification failed:", err.message);
+    logError("Webhook signature verification failed", err);
     return c.json({ error: `Webhook Error: ${err.message}` }, 400);
+  }
+
+  // 🔒 FIX-007: Idempotency check - insert first to prevent race conditions
+  const eventId = event.id;
+  const eventType = event.type;
+
+  // Try to insert the event record first (idempotent insert)
+  try {
+    await db.insert(webhook_events).values({
+      event_id: eventId,
+      event_type: eventType,
+      status: "processing",
+    });
+  } catch (insertError: any) {
+    // If insert fails (event already exists), check if already processed
+    if (insertError.code === "23505") { // PostgreSQL unique violation
+      const [existingEvent] = await db
+        .select({ processed_at: webhook_events.processed_at, status: webhook_events.status })
+        .from(webhook_events)
+        .where(eq(webhook_events.event_id, eventId))
+        .limit(1);
+
+      if (existingEvent?.status === "processed") {
+        logInfo(`Duplicate webhook event ${eventId}, already processed`);
+        return c.json({ received: true, duplicate: true });
+      }
+
+      // If still processing, return error to avoid duplicate processing
+      logInfo(`Webhook event ${eventId} is currently being processed`);
+      return c.json({ error: "Event already being processed" }, 409);
+    }
+    throw insertError; // Re-throw other errors
   }
 
   // Handle the event
@@ -161,7 +212,7 @@ paymentRouter.post("/webhook", async (c) => {
             })
             .where(eq(orders.id, order_id));
 
-          console.log(`Payment succeeded for order ${order_id}`);
+          logInfo(`Payment succeeded for order ${order_id}`);
         }
         break;
       }
@@ -185,7 +236,7 @@ paymentRouter.post("/webhook", async (c) => {
             })
             .where(eq(orders.id, order_id));
 
-          console.log(`Payment failed for order ${order_id}`);
+          logInfo(`Payment failed for order ${order_id}`);
         }
         break;
       }
@@ -217,19 +268,33 @@ paymentRouter.post("/webhook", async (c) => {
               })
               .where(eq(orders.id, order[0].id));
 
-            console.log(`Order ${order[0].id} refunded`);
+            logInfo(`Order ${order[0].id} refunded`);
           }
         }
         break;
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        logInfo(`Unhandled event type: ${event.type}`);
     }
+
+    // 🔒 FIX-007: Mark webhook event as processed
+    await db
+      .update(webhook_events)
+      .set({
+        processed_at: new Date(),
+        status: "processed",
+      })
+      .where(eq(webhook_events.event_id, eventId));
 
     return c.json({ received: true });
   } catch (error: any) {
-    console.error("Webhook processing error:", error);
+    logError("Webhook processing error", error);
+    // 🔒 FIX-007: Mark as failed so Stripe can retry
+    await db
+      .update(webhook_events)
+      .set({ status: "failed" })
+      .where(eq(webhook_events.event_id, eventId));
     return c.json({ error: error.message }, 500);
   }
 });

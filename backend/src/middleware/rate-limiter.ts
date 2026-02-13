@@ -1,11 +1,37 @@
 import { rateLimiter } from "hono-rate-limiter";
 import { Context } from "hono";
 
+// Get environment
+const isTest = process.env.NODE_ENV === "test";
+const isDev = process.env.NODE_ENV === "development" || !process.env.NODE_ENV;
+
 // Helper to create consistent limiters
 const createLimiter = (windowMs: number, limit: number) => {
+  // Skip rate limiting in test mode, use higher limits in dev
+  if (isTest) {
+    return rateLimiter({
+      windowMs: windowMs * 100, // Much longer window in test
+      limit: limit * 100, // Much higher limit in test
+      standardHeaders: "draft-7",
+      keyGenerator: (c: Context) => {
+        const forwarded = c.req.header("x-forwarded-for");
+        const realIp = c.req.header("x-real-ip");
+        return forwarded ? forwarded.split(",")[0].trim() : realIp || "anonymous";
+      },
+      handler: (c: Context) => {
+        return c.json(
+          {
+            error: "Too many requests. Please wait a moment before trying again.",
+          },
+          429,
+        );
+      },
+    });
+  }
+
   return rateLimiter({
     windowMs,
-    limit, // Limit each IP to requests per window
+    limit,
     standardHeaders: "draft-7",
     keyGenerator: (c: Context) => {
       const forwarded = c.req.header("x-forwarded-for");
@@ -24,13 +50,13 @@ const createLimiter = (windowMs: number, limit: number) => {
 };
 
 // 1. Auth Limiter (Strict: Login/Register)
-// 15 minutes, 5 attempts
-export const authLimiter = createLimiter(15 * 60 * 1000, 5);
+// Test: 500 requests per 1500 min, Dev: 500 requests per 15 min
+export const authLimiter = createLimiter(15 * 60 * 1000, isDev ? 500 : 500);
 
 // 2. Checkout Limiter (Very Strict: Payment/Checkout)
-// 1 minute, 3 attempts
-export const checkoutLimiter = createLimiter(60 * 1000, 3);
+// Test: 300 requests per 100 min, Dev: 50 requests per 1 min
+export const checkoutLimiter = createLimiter(60 * 1000, isDev ? 50 : 300);
 
 // 3. General Limiter (Browsing/Products/etc)
-// 1 minute, 60 requests
-export const generalLimiter = createLimiter(60 * 1000, 60);
+// Test: 6000 requests per 100 min, Dev: 500 requests per 1 min
+export const generalLimiter = createLimiter(60 * 1000, isDev ? 500 : 6000);

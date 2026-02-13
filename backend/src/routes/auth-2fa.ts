@@ -5,19 +5,19 @@ import QRCode from "qrcode";
 import { db } from "../db";
 import { users } from "../db/schema";
 import { eq } from "drizzle-orm";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAuth, AuthContextVariables } from "../middleware/auth";
 
-const app = new Hono<{ Variables: { user: any } }>();
+const app = new Hono<{ Variables: AuthContextVariables }>();
 
 // Generate 2FA Secret & QR Code
 app.post("/generate", verifyAuth, async (c) => {
   try {
-    const userPayload = c.get("user") as any;
-    // Fetch full user to get email if needed, or rely on payload
+    const userPayload = c.get("user") as unknown as { sub: string; role: string };
+    // Fetch full user to get email if needed, or rely on the payload
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.id, userPayload.id));
+      .where(eq(users.id, userPayload.sub));
 
     if (!user) return c.json({ error: "User not found" }, 404);
 

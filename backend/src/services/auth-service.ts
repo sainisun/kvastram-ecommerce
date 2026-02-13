@@ -1,10 +1,11 @@
 import { db } from "../db/client";
 import { users } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, lt, sql } from "drizzle-orm";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
+import { validatePassword, isCommonPassword } from "../utils/password-validator";
 // @ts-ignore
 import { authenticator } from "otplib";
 
@@ -12,17 +13,21 @@ import { authenticator } from "otplib";
 const JWT_SECRET = config.jwt.secret;
 const JWT_EXPIRES_IN = config.jwt.expiresIn;
 
+// --- Q9: Account Lockout Configuration ---
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
 // --- Types & Schemas ---
 
 export const LoginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(1), // Will be validated separately
   twoFactorCode: z.string().optional(),
 });
 
 export const RegisterSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(12), // Minimum 12 characters
   first_name: z.string().optional(),
   last_name: z.string().optional(),
 });
@@ -30,9 +35,68 @@ export const RegisterSchema = z.object({
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 
+// --- Helper Functions ---
+
+/**
+ * Check if account is locked
+ */
+function isAccountLocked(lockedUntil: Date | null | undefined): boolean {
+  if (!lockedUntil) return false;
+  return new Date() < new Date(lockedUntil);
+}
+
+/**
+ * Get lockout error message with remaining time
+ */
+function getLockoutMessage(lockedUntil: Date): string {
+  const remainingMs = new Date(lockedUntil).getTime() - Date.now();
+  const minutesRemaining = Math.ceil(remainingMs / 60000);
+  return `Account locked. Try again in ${minutesRemaining} minutes.`;
+}
+
+/**
+ * Increment failed login attempts
+ */
+async function incrementFailedAttempts(userId: string): Promise<void> {
+  await db
+    .update(users)
+    .set({
+      failed_login_attempts: sql`${users.failed_login_attempts} + 1`,
+    })
+    .where(eq(users.id, userId));
+}
+
+/**
+ * Lock account after max failed attempts
+ */
+async function lockAccount(userId: string): Promise<void> {
+  const lockedUntil = new Date(Date.now() + LOCKOUT_DURATION_MS);
+  await db
+    .update(users)
+    .set({
+      failed_login_attempts: MAX_FAILED_ATTEMPTS,
+      locked_until: lockedUntil,
+    })
+    .where(eq(users.id, userId));
+}
+
+/**
+ * Reset failed login attempts on successful login
+ */
+async function resetFailedAttempts(userId: string): Promise<void> {
+  await db
+    .update(users)
+    .set({
+      failed_login_attempts: 0,
+      locked_until: null,
+    })
+    .where(eq(users.id, userId));
+}
+
 export class AuthService {
   /**
    * Authenticate a user and return a JWT token.
+   * Implements account lockout after 5 failed attempts.
    */
   async login(data: LoginInput) {
     // 1. Find user
@@ -47,10 +111,27 @@ export class AuthService {
       throw new Error("Invalid email or password");
     }
 
+    // 🔒 Q9: Check if account is locked
+    if (isAccountLocked(user.locked_until)) {
+      throw new Error(getLockoutMessage(user.locked_until!));
+    }
+
     // 2. Compare password
     const isMatch = await bcrypt.compare(data.password, user.password_hash);
+
     if (!isMatch) {
-      throw new Error("Invalid email or password");
+      // Increment failed attempts
+      await incrementFailedAttempts(user.id);
+
+      // Check if we should lock the account
+      const newFailedAttempts = (user.failed_login_attempts || 0) + 1;
+      if (newFailedAttempts >= MAX_FAILED_ATTEMPTS) {
+        await lockAccount(user.id);
+        throw new Error(getLockoutMessage(new Date(Date.now() + LOCKOUT_DURATION_MS)));
+      }
+
+      const attemptsRemaining = MAX_FAILED_ATTEMPTS - newFailedAttempts;
+      throw new Error(`Invalid credentials. ${attemptsRemaining} attempts remaining before lockout.`);
     }
 
     // 3. Check 2FA
@@ -60,7 +141,6 @@ export class AuthService {
       }
 
       if (!user.two_factor_secret) {
-        // Should not happen if enabled is true, but safety check
         throw new Error("2FA enabled but secret missing");
       }
 
@@ -70,9 +150,13 @@ export class AuthService {
       });
 
       if (!isValid) {
+        await incrementFailedAttempts(user.id);
         throw new Error("Invalid 2FA Code");
       }
     }
+
+    // 🔒 Q9: Reset failed attempts on successful login
+    await resetFailedAttempts(user.id);
 
     // 4. Generate Token
     const token = jwt.sign(
@@ -82,12 +166,12 @@ export class AuthService {
     );
 
     // Return user info (excluding password) and token
-    const { password_hash, ...userInfo } = user;
+    const { password_hash, failed_login_attempts, locked_until, ...userInfo } = user;
     return { user: userInfo, token };
   }
 
   /**
-   * Register a new admin user (Initial scaffolding).
+   * Register a new admin user.
    */
   async register(data: RegisterInput) {
     // 1. Check if user exists
@@ -100,6 +184,17 @@ export class AuthService {
 
     if (existing) {
       throw new Error("User already exists");
+    }
+
+    // 🔒 Q10: Validate password strength
+    const passwordValidation = validatePassword(data.password);
+    if (!passwordValidation.valid) {
+      throw new Error(`Password does not meet requirements: ${passwordValidation.errors.join(", ")}`);
+    }
+
+    // 🔒 Q10: Check for common passwords
+    if (isCommonPassword(data.password)) {
+      throw new Error("Password is too common. Please choose a more secure password.");
     }
 
     // 2. Hash password
@@ -115,6 +210,8 @@ export class AuthService {
         first_name: data.first_name,
         last_name: data.last_name,
         role: "admin",
+        failed_login_attempts: 0,
+        locked_until: null,
       })
       .returning();
     const newUser = newUserResult[0];
@@ -126,7 +223,7 @@ export class AuthService {
       { expiresIn: JWT_EXPIRES_IN } as any,
     );
 
-    const { password_hash, ...userInfo } = newUser;
+    const { password_hash, failed_login_attempts, locked_until, ...userInfo } = newUser;
     return { user: userInfo, token };
   }
 }

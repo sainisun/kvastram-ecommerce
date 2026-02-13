@@ -8,7 +8,7 @@ async function seed() {
   console.log("🌱 Starting Seed...");
 
   const email = "admin@kvastram.com";
-  const password = "admin123";
+  const password = process.env.ADMIN_PASSWORD || "admin123";
 
   // Check if admin already exists
   const existing = await db

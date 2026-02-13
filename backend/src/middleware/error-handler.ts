@@ -14,6 +14,14 @@ import {
 } from "../utils/api-response";
 import { formatZodErrors } from "../utils/validation";
 
+/**
+ * Validation error details structure
+ */
+export interface ValidationErrorDetails {
+  field?: string;
+  message: string;
+}
+
 // Custom API Error class
 // Note: We accept number to be backward compatible and generic,
 // but internally we treat it as StatusCode for Hono.
@@ -23,7 +31,7 @@ export class APIError extends Error {
   constructor(
     message: string,
     statusCode: number = 400,
-    public errors?: any,
+    public errors?: ValidationErrorDetails[],
   ) {
     super(message);
     this.name = "APIError";
@@ -41,7 +49,7 @@ export class NotFoundError extends APIError {
 
 // Validation Error
 export class ValidationError extends APIError {
-  constructor(message: string = ErrorMessages.VALIDATION_ERROR, errors?: any) {
+  constructor(message: string = ErrorMessages.VALIDATION_ERROR, errors?: ValidationErrorDetails[]) {
     super(message, HttpStatus.UNPROCESSABLE_ENTITY as number, errors);
     this.name = "ValidationError";
   }

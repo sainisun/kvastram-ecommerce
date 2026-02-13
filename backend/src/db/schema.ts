@@ -22,17 +22,27 @@ const createdUpdated = {
 };
 
 // --- AUTH & USERS (Admins) ---
-export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  email: text("email").notNull().unique(),
-  password_hash: text("password_hash").notNull(),
-  first_name: text("first_name"),
-  last_name: text("last_name"),
-  role: text("role").default("admin"),
-  two_factor_secret: text("two_factor_secret"),
-  two_factor_enabled: boolean("two_factor_enabled").default(false),
-  ...createdUpdated,
-});
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    email: text("email").notNull().unique(),
+    password_hash: text("password_hash").notNull(),
+    first_name: text("first_name"),
+    last_name: text("last_name"),
+    role: text("role").default("admin"),
+    two_factor_secret: text("two_factor_secret"),
+    two_factor_enabled: boolean("two_factor_enabled").default(false),
+    // 🔒 Q9: Account lockout fields
+    failed_login_attempts: integer("failed_login_attempts").default(0),
+    locked_until: timestamp("locked_until"),
+    ...createdUpdated,
+  },
+  (table) => ({
+    // Index for lockout lookup
+    lockedIdx: index("idx_users_locked_until").on(table.locked_until),
+  }),
+);
 
 // --- PRODUCTS ---
 export const products = pgTable(
@@ -79,7 +89,7 @@ export const product_variants = pgTable(
     barcode: text("barcode"),
     ean: text("ean"),
     upc: text("upc"),
-    inventory_quantity: integer("inventory_quantity").default(0), // Note: Check constraint added via migration, not Drizzle schema
+    inventory_quantity: integer("inventory_quantity").default(0), // 🔒 FIX-001: Database CHECK constraint in migration 20260211_inventory_check_constraint.sql
     allow_backorder: boolean("allow_backorder").default(false),
     manage_inventory: boolean("manage_inventory").default(true),
     hs_code: text("hs_code"),
@@ -95,8 +105,6 @@ export const product_variants = pgTable(
   },
   (table) => ({
     productIdx: index("idx_product_variants_product_id").on(table.product_id),
-    // 🔒 FIX-003: Prevent negative inventory at database level
-    inventoryCheck: sql`CONSTRAINT chk_inventory_non_negative CHECK (inventory_quantity >= 0)`,
   }),
 );
 
@@ -275,10 +283,18 @@ export const customers = pgTable(
     phone: text("phone"),
     has_account: boolean("has_account").default(false),
     password_hash: text("password_hash"), // Nullable for guest checkouts
+    // 🔒 FIX-011: Email verification fields
+    email_verified: boolean("email_verified").default(false),
+    verification_token: text("verification_token"),
+    verification_expires_at: timestamp("verification_expires_at"),
+    // 🔒 Q9: Account lockout fields
+    failed_login_attempts: integer("failed_login_attempts").default(0),
+    locked_until: timestamp("locked_until"),
     ...createdUpdated,
   },
   (table) => ({
     createdAtIndex: index("idx_customers_created_at").on(table.created_at),
+    lockedIdx: index("idx_customers_locked_until").on(table.locked_until),
   }),
 );
 
@@ -548,7 +564,6 @@ export const discounts = pgTable("discounts", {
 export const discount_usage = pgTable(
   "discount_usage",
   {
-    id: uuid("id").defaultRandom().primaryKey(),
     discount_id: uuid("discount_id")
       .references(() => discounts.id, { onDelete: "cascade" })
       .notNull(),
@@ -558,16 +573,35 @@ export const discount_usage = pgTable(
     order_id: uuid("order_id")
       .references(() => orders.id, { onDelete: "cascade" })
       .notNull(),
-    used_at: timestamp("used_at").defaultNow(),
+    used_at: timestamp("used_at").defaultNow().notNull(),
   },
   (table) => ({
-    // Unique constraint: one use per customer per discount
-    uniqueDiscountCustomer: primaryKey({
+    // Composite primary key: one use per customer per discount
+    pk: primaryKey({
       columns: [table.discount_id, table.customer_id],
       name: "pk_discount_customer_usage",
     }),
     customerIdx: index("idx_discount_usage_customer_id").on(table.customer_id),
     discountIdx: index("idx_discount_usage_discount_id").on(table.discount_id),
+    orderIdx: index("idx_discount_usage_order_id").on(table.order_id),
+  }),
+);
+
+// 🔒 FIX-007: Stripe webhook events table (idempotency)
+export const webhook_events = pgTable(
+  "webhook_events",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    event_id: text("event_id").notNull().unique(), // Stripe's event ID
+    event_type: text("event_type").notNull(),
+    processed_at: timestamp("processed_at"),
+    status: text("status").default("pending"), // pending, processed, failed
+    metadata: jsonb("metadata"),
+    ...createdUpdated,
+  },
+  (table) => ({
+    eventIdIdx: index("idx_webhook_events_event_id").on(table.event_id),
+    statusIdx: index("idx_webhook_events_status").on(table.status),
   }),
 );
 

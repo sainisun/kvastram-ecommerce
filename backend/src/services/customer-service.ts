@@ -103,14 +103,14 @@ class CustomerService {
     const orderCounts =
       customerIds.length > 0
         ? await db
-            .select({
-              customer_id: orders.customer_id,
-              order_count: sql<number>`count(*)`,
-              total_spent: sql<number>`sum(${orders.total})`,
-            })
-            .from(orders)
-            .where(inArray(orders.customer_id, customerIds))
-            .groupBy(orders.customer_id)
+          .select({
+            customer_id: orders.customer_id,
+            order_count: sql<number>`count(*)`,
+            total_spent: sql<number>`sum(${orders.total})`,
+          })
+          .from(orders)
+          .where(inArray(orders.customer_id, customerIds))
+          .groupBy(orders.customer_id)
         : [];
 
     // Merge order data with customers
@@ -243,7 +243,7 @@ class CustomerService {
     const [{ new_this_month }] = await db
       .select({ new_this_month: sql<number>`count(*)` })
       .from(customers)
-      .where(sql`${customers.created_at} >= ${firstDayOfMonth}`);
+      .where(sql`${customers.created_at} >= ${firstDayOfMonth.toISOString()}`);
     const [{ customers_with_orders }] = await db
       .select({
         customers_with_orders: sql<number>`count(distinct ${orders.customer_id})`,

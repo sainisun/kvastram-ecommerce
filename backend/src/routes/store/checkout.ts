@@ -17,6 +17,7 @@ import {
 } from "../../db/schema";
 import { eq, and, gte, lte, sql } from "drizzle-orm";
 import { config } from "../../config";
+import { calculateTax, type TaxBreakdown } from "../../utils/tax-calculator";
 
 const checkoutRouter = new Hono();
 
@@ -109,7 +110,7 @@ const validateDiscount = async (code: string, cartTotal: number, customerId: str
   // Only check if customer is logged in (has customerId)
   if (customerId) {
     const [existingUsage] = await db
-      .select({ id: discount_usage.id })
+      .select({ discount_id: discount_usage.discount_id })
       .from(discount_usage)
       .where(
         and(
@@ -291,29 +292,46 @@ checkoutRouter.post(
 
       // 3. Calculate Totals
       const shippingTotal = 0;
-      const taxTotal = Math.round(subtotal * (taxRate / 100));
+      // FIX-005: Use dedicated tax calculator for GST (CGST + SGST)
+      const taxBreakdown: TaxBreakdown = calculateTax(subtotal, taxRate);
+      const taxTotal = taxBreakdown.total;
       const total = subtotal + shippingTotal + taxTotal - discountTotal;
 
       // 4. Create Order Transaction
       let newOrder: typeof orders.$inferSelect | undefined;
 
       await db.transaction(async (tx) => {
-        // 🔒 FIX-002: Lock variant rows to prevent race conditions
-        // This prevents two users from buying the same last item
+        // AUDIT-FIX-002: SELECT FOR UPDATE with product name for error messages
         const lockedVariants = await tx
           .select({
             id: product_variants.id,
+            title: product_variants.title,
+            product_title: products.title,
             inventory_quantity: product_variants.inventory_quantity,
           })
           .from(product_variants)
+          .leftJoin(products, eq(product_variants.product_id, products.id))
           .where(sql`${product_variants.id} IN ${body.items.map(i => i.variant_id)}`)
-          .for('update'); // PESSIMISTIC LOCKING
+          .for('update');
 
-        // Verify stock again with locked rows
+        // Verify stock with locked rows
         for (const item of body.items) {
           const v = lockedVariants.find(v => v.id === item.variant_id);
-          if (!v || (v.inventory_quantity ?? 0) < item.quantity) {
-            throw new Error(`Insufficient stock for item. Please reduce quantity.`);
+          const requestedQty = item.quantity;
+          const availableQty = v?.inventory_quantity ?? 0;
+          // Build product name for error message
+          const productName = v?.product_title
+            ? `${v.product_title}${v.title ? ' - ' + v.title : ''}`
+            : `Variant ${item.variant_id}`;
+
+          if (!v) {
+            throw new Error(`Product not found: ${item.variant_id}`);
+          }
+
+          if (availableQty < requestedQty) {
+            throw new Error(
+              `Insufficient stock for ${productName}. Requested: ${requestedQty}, Available: ${availableQty}`
+            );
           }
         }
 
@@ -344,7 +362,7 @@ checkoutRouter.post(
         // 🔒 FIX-006: Check per-customer discount usage (inside transaction)
         if (discount && customerId) {
           const [existingUsage] = await tx
-            .select({ id: discount_usage.id })
+            .select({ discount_id: discount_usage.discount_id })
             .from(discount_usage)
             .where(
               and(
@@ -386,13 +404,14 @@ checkoutRouter.post(
             total,
             shipping_address_id: shAddr.id,
             discount_id: finalDiscountId,
-            // 🔒 FIX-005: Store tax breakdown in metadata
+            // FIX-005: Store GST breakdown (CGST + SGST) in metadata
             metadata: {
-              tax_rate: taxRate,
+              tax_rate: taxBreakdown.rate,
               tax_breakdown: {
-                subtotal,
-                tax_rate_percent: taxRate,
-                tax_amount: taxTotal,
+                subtotal: taxBreakdown.subtotal,
+                cgst: taxBreakdown.cgst,
+                sgst: taxBreakdown.sgst,
+                total: taxBreakdown.total,
                 calculated_at: new Date().toISOString(),
               },
             },
@@ -486,7 +505,13 @@ checkoutRouter.post(
       return c.json({ order: newOrder });
     } catch (error: any) {
       console.error("Checkout error:", error);
-      return c.json({ error: error.message }, 500);
+
+      // Return 400 for validation/inventory errors, 500 for server errors
+      const isValidationError = error.message.includes("Insufficient stock")
+        || error.message.includes("Product not found")
+        || error.message.includes("Invalid discount");
+
+      return c.json({ error: error.message }, isValidationError ? 400 : 500);
     }
   },
 );

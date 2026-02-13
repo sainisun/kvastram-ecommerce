@@ -4,7 +4,23 @@ import { config } from "../config";
 
 const JWT_SECRET = config.jwt.secret;
 
-export const verifyAuth = async (c: Context, next: Next) => {
+/**
+ * JWT Payload type for authenticated users (extends hono's default)
+ */
+export interface UserPayload {
+  sub: string;  // User ID
+  role: string; // User role (admin/customer)
+  exp?: number; // Expiration timestamp
+}
+
+/**
+ * Auth context variables type
+ */
+export interface AuthContextVariables {
+  user: UserPayload;
+}
+
+export const verifyAuth = async (c: Context<{ Variables: AuthContextVariables }>, next: Next) => {
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -15,7 +31,7 @@ export const verifyAuth = async (c: Context, next: Next) => {
 
   try {
     const payload = await verify(token, JWT_SECRET, "HS256");
-    c.set("user", payload);
+    c.set("user", payload as unknown as UserPayload);
     await next();
   } catch (error) {
     return c.json({ error: "Unauthorized: Invalid token" }, 401);
@@ -23,7 +39,7 @@ export const verifyAuth = async (c: Context, next: Next) => {
 };
 
 // Admin verification - checks both authentication AND admin role
-export const verifyAdmin = async (c: Context, next: Next) => {
+export const verifyAdmin = async (c: Context<{ Variables: AuthContextVariables }>, next: Next) => {
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -33,7 +49,7 @@ export const verifyAdmin = async (c: Context, next: Next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const payload = await verify(token, JWT_SECRET, "HS256");
+    const payload = await verify(token, JWT_SECRET, "HS256") as unknown as UserPayload;
 
     // Check if user has admin role
     if (payload.role !== "admin") {
