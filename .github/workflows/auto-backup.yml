@@ -1,0 +1,23 @@
+name: Auto Backup
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "backup@kvastram.local"
+          git config --local user.name "Kvastram Auto Backup"
+          git add -A
+          git commit -m "Auto backup: $(date)" || echo "No changes to backup"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
