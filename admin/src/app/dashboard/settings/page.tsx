@@ -1,0 +1,561 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+    Settings as SettingsIcon, Store, Globe, Bell, Lock,
+    Mail, CreditCard, Truck, Save, Shield, CheckCircle, X
+} from 'lucide-react';
+import { api } from '@/lib/api';
+
+import { useNotification } from '@/context/notification-context';
+
+export default function SettingsPage() {
+    const router = useRouter();
+    const { showNotification } = useNotification();
+    const [activeTab, setActiveTab] = useState('general');
+    const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [settings, setSettings] = useState<any>({});
+    const [user, setUser] = useState<any>(null);
+
+    // Stripe Modal State
+    const [showStripeModal, setShowStripeModal] = useState(false);
+    const [stripeKeys, setStripeKeys] = useState({ publishable: '', secret: '' });
+
+    // 2FA Modal State
+    const [showTwoFactorModal, setShowTwoFactorModal] = useState(false);
+    const [qrCode, setQrCode] = useState('');
+    const [otp, setOtp] = useState('');
+    const [verifying2FA, setVerifying2FA] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            router.push('/');
+            return;
+        }
+        fetchData(token);
+    }, [router]);
+
+    const fetchData = async (token: string) => {
+        try {
+            setLoading(true);
+            const [settingsData, profileData] = await Promise.all([
+                api.getSettings(token),
+                api.getMe(token).catch(() => null)
+            ]);
+
+            // Flatten settings
+            const flatSettings: any = {};
+            if (settingsData && settingsData.settings) {
+                Object.values(settingsData.settings).forEach((category: any) => {
+                    Object.entries(category).forEach(([key, value]) => {
+                        flatSettings[key] = value;
+                    });
+                });
+            }
+            setSettings(flatSettings);
+
+            // Set User Profile
+            if (profileData && profileData.user) {
+                setUser(profileData.user);
+            }
+
+            // Pre-fill stripe
+            if (flatSettings.stripe_publishable_key) {
+                setStripeKeys({
+                    publishable: flatSettings.stripe_publishable_key,
+                    secret: flatSettings.stripe_secret_key || ''
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            showNotification('error', 'Failed to load settings');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleChange = (key: string, value: any) => {
+        setSettings((prev: any) => ({ ...prev, [key]: value }));
+    };
+
+    const handleSave = async () => {
+        const token = localStorage.getItem('adminToken');
+        if (!token) return;
+
+        try {
+            setSaving(true);
+            await api.updateSettingsBulk(token, settings);
+            showNotification('success', 'Settings saved successfully!');
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            showNotification('error', 'Failed to save settings');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSaveStripe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const token = localStorage.getItem('adminToken');
+        if (!token) return;
+
+        try {
+            setSaving(true);
+            await api.updateSetting(token, 'stripe_publishable_key', stripeKeys.publishable, 'payment');
+            await api.updateSetting(token, 'stripe_secret_key', stripeKeys.secret, 'payment');
+
+            setSettings((prev: any) => ({
+                ...prev,
+                stripe_publishable_key: stripeKeys.publishable,
+                stripe_secret_key: stripeKeys.secret
+            }));
+
+            setShowStripeModal(false);
+            showNotification('success', 'Stripe configuration saved!');
+        } catch (error) {
+            console.error('Error saving Stripe settings:', error);
+            showNotification('error', 'Failed to save Stripe settings');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleEnable2FA = async () => {
+        const token = localStorage.getItem('adminToken');
+        if (!token) return;
+
+        try {
+            setLoading(true); // temporary spinner
+            const res = await api.generate2FA(token);
+            setQrCode(res.qrCode);
+            setShowTwoFactorModal(true);
+        } catch (error) {
+            console.error('Error generating 2FA:', error);
+            showNotification('error', 'Failed to generate 2FA');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerify2FA = async () => {
+        const token = localStorage.getItem('adminToken');
+        if (!token) return;
+
+        try {
+            setVerifying2FA(true);
+            await api.verify2FA(token, otp);
+
+            // Refresh User
+            const profile = await api.getMe(token);
+            setUser(profile.user);
+
+            setShowTwoFactorModal(false);
+            setOtp('');
+            showNotification('success', 'Two-Factor Authentication Enabled!');
+        } catch (error) {
+            console.error('Error verifying 2FA:', error);
+            showNotification('error', 'Invalid OTP. Please try again.');
+        } finally {
+            setVerifying2FA(false);
+        }
+    };
+
+    const handleDisable2FA = async () => {
+        if (!confirm('Are you sure you want to disable Two-Factor Authentication?')) return;
+
+        const token = localStorage.getItem('adminToken');
+        if (!token) return;
+
+        try {
+            await api.disable2FA(token);
+            const profile = await api.getMe(token);
+            setUser(profile.user);
+            showNotification('success', 'Two-Factor Authentication Disabled');
+        } catch (error) {
+            console.error('Error disabling 2FA:', error);
+            showNotification('error', 'Failed to disable 2FA');
+        }
+    };
+
+    const tabs = [
+        { id: 'general', label: 'General', icon: Store },
+        { id: 'notifications', label: 'Notifications', icon: Bell },
+        { id: 'security', label: 'Security', icon: Lock },
+        { id: 'payment', label: 'Payment', icon: CreditCard },
+        { id: 'email', label: 'Email', icon: Mail },
+        { id: 'shipping', label: 'Shipping', icon: Truck },
+    ];
+
+    if (loading) {
+        return (
+            <div className="p-8">
+                <div className="text-center py-12">
+                    <p className="text-gray-500">Loading settings...</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-8 relative">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+                <p className="text-gray-600">Manage your store settings and preferences</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="lg:col-span-1">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <nav className="space-y-1">
+                            {tabs.map((tab) => {
+                                const Icon = tab.icon;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === tab.id
+                                            ? 'bg-blue-50 text-blue-700'
+                                            : 'text-gray-700 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        <Icon size={18} />
+                                        {tab.label}
+                                    </button>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                </div>
+
+                <div className="lg:col-span-3">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        {activeTab === 'general' && (
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-gray-900">General Settings</h2>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Store Name</label>
+                                    <input
+                                        type="text"
+                                        value={settings.store_name || ''}
+                                        onChange={(e) => handleChange('store_name', e.target.value)}
+                                        placeholder="Kvastram Store"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Store Description</label>
+                                    <textarea
+                                        rows={4}
+                                        value={settings.store_description || ''}
+                                        onChange={(e) => handleChange('store_description', e.target.value)}
+                                        placeholder="Your premium e-commerce store"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
+                                    <input
+                                        type="email"
+                                        value={settings.contact_email || ''}
+                                        onChange={(e) => handleChange('contact_email', e.target.value)}
+                                        placeholder="admin@kvastram.com"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        value={settings.phone_number || ''}
+                                        onChange={(e) => handleChange('phone_number', e.target.value)}
+                                        placeholder="+1 (555) 123-4567"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'notifications' && (
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-gray-900">Notification Settings</h2>
+                                {/* Use settings state but simplified for brevity in this replace */}
+                                <div className="space-y-4">
+                                    {/* Keeping previous structure simplified */}
+                                    <div className="flex items-center justify-between">
+                                        <div><p className="font-medium text-gray-900">Order Notifications</p></div>
+                                        <input type="checkbox" checked={settings.notify_orders ?? true} onChange={(e) => handleChange('notify_orders', e.target.checked)} className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div><p className="font-medium text-gray-900">Low Stock Alerts</p></div>
+                                        <input type="checkbox" checked={settings.notify_low_stock ?? true} onChange={(e) => handleChange('notify_low_stock', e.target.checked)} className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'security' && (
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-gray-900">Security Settings</h2>
+                                <p className="text-gray-600">Password management is handled via profile settings.</p>
+
+                                <div className="pt-4 border-t border-gray-200">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-medium text-gray-900">Two-Factor Authentication</p>
+                                                {user?.two_factor_enabled && (
+                                                    <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                        <CheckCircle size={10} /> Active
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-gray-500">
+                                                {user?.two_factor_enabled
+                                                    ? 'Account is secured with 2FA'
+                                                    : 'Add an extra layer of security'
+                                                }
+                                            </p>
+                                        </div>
+                                        {user?.two_factor_enabled ? (
+                                            <button
+                                                onClick={handleDisable2FA}
+                                                className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium"
+                                            >
+                                                Disable
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={handleEnable2FA}
+                                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium"
+                                            >
+                                                Enable 2FA
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'payment' && (
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-gray-900">Payment Settings</h2>
+
+                                <div className="space-y-4">
+                                    <div className="border border-gray-200 rounded-lg p-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <p className="font-medium text-gray-900">Stripe</p>
+                                                    {settings.stripe_publishable_key && (
+                                                        <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                            <CheckCircle size={10} /> Configured
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-sm text-gray-500">Accept credit cards and digital wallets</p>
+                                            </div>
+                                            <button
+                                                onClick={() => setShowStripeModal(true)}
+                                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2"
+                                            >
+                                                Configure
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'email' && (
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-gray-900">Email Settings (SMTP)</h2>
+                                <p className="text-gray-600">Configure your email provider for sending order confirmations and notifications.</p>
+
+                                <div className="grid grid-cols-1 gap-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">From Name</label>
+                                            <input
+                                                type="text"
+                                                value={settings.from_name || ''}
+                                                onChange={(e) => handleChange('from_name', e.target.value)}
+                                                placeholder="Kvastram Support"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">From Email</label>
+                                            <input
+                                                type="email"
+                                                value={settings.from_email || ''}
+                                                onChange={(e) => handleChange('from_email', e.target.value)}
+                                                placeholder="support@kvastram.com"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="border-t border-gray-200 pt-6">
+                                        <h3 className="text-lg font-medium text-gray-900 mb-4">SMTP Configuration</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="col-span-2 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">SMTP Host</label>
+                                                <input
+                                                    type="text"
+                                                    value={settings.smtp_host || ''}
+                                                    onChange={(e) => handleChange('smtp_host', e.target.value)}
+                                                    placeholder="smtp.example.com"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                            <div className="col-span-2 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">SMTP Port</label>
+                                                <input
+                                                    type="number"
+                                                    value={settings.smtp_port || ''}
+                                                    onChange={(e) => handleChange('smtp_port', e.target.value)}
+                                                    placeholder="587"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                            <div className="col-span-2 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">SMTP User</label>
+                                                <input
+                                                    type="text"
+                                                    value={settings.smtp_user || ''}
+                                                    onChange={(e) => handleChange('smtp_user', e.target.value)}
+                                                    placeholder="apikey"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                            <div className="col-span-2 md:col-span-1">
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">SMTP Password</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="password"
+                                                        value={settings.smtp_pass || ''}
+                                                        onChange={(e) => handleChange('smtp_pass', e.target.value)}
+                                                        placeholder="••••••••••••"
+                                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                                                    />
+                                                    <Lock size={16} className="absolute right-3 top-3 text-gray-400" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'shipping' && (
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-gray-900">Shipping Settings</h2>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Default Shipping Rate</label>
+                                    <input type="number" value={settings.shipping_rate || 10.00} onChange={(e) => handleChange('shipping_rate', parseFloat(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Free Shipping Threshold</label>
+                                    <input type="number" value={settings.free_shipping_threshold || 100.00} onChange={(e) => handleChange('free_shipping_threshold', parseFloat(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="mt-8 pt-6 border-t border-gray-200">
+                            <button onClick={handleSave} disabled={saving} className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                                <Save size={20} />
+                                {saving ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Stripe Config Modal */}
+            {showStripeModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <CreditCard size={24} className="text-blue-600" />
+                                Configure Stripe
+                            </h2>
+                            <button onClick={() => setShowStripeModal(false)} className="text-gray-500 hover:text-gray-700"><X size={20} /></button>
+                        </div>
+                        <form onSubmit={handleSaveStripe} className="space-y-4">
+                            <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800 border border-blue-200">
+                                Enter your Stripe API keys. These are stored safely and used for payment processing.
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Publishable Key</label>
+                                <input type="text" required placeholder="pk_test_..." className="w-full border border-gray-300 rounded p-2 text-gray-900" value={stripeKeys.publishable} onChange={(e) => setStripeKeys({ ...stripeKeys, publishable: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Secret Key</label>
+                                <div className="relative">
+                                    <input type="password" required placeholder="sk_test_..." className="w-full border border-gray-300 rounded p-2 text-gray-900 pr-10" value={stripeKeys.secret} onChange={(e) => setStripeKeys({ ...stripeKeys, secret: e.target.value })} />
+                                    <Lock size={14} className="absolute right-3 top-3 text-gray-400" />
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-2 mt-6">
+                                <button type="button" onClick={() => setShowStripeModal(false)} className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded border border-gray-300">Cancel</button>
+                                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Configuration</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* 2FA Modal */}
+            {showTwoFactorModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <Shield size={24} className="text-blue-600" />
+                                Enable 2FA
+                            </h2>
+                            <button onClick={() => setShowTwoFactorModal(false)} className="text-gray-500 hover:text-gray-700"><X size={20} /></button>
+                        </div>
+
+                        <div className="space-y-6 text-center">
+                            <p className="text-sm text-gray-600">
+                                Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.), then enter the code below.
+                            </p>
+
+                            {qrCode && (
+                                <div className="flex justify-center bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">Authentication Code</label>
+                                <input
+                                    type="text"
+                                    maxLength={6}
+                                    placeholder="000 000"
+                                    className="w-full text-center text-2xl tracking-widest border border-gray-300 rounded-lg p-3 font-mono"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                                />
+                            </div>
+
+                            <button
+                                onClick={handleVerify2FA}
+                                disabled={otp.length !== 6 || verifying2FA}
+                                className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                {verifying2FA ? 'Verifying...' : 'Verify & Enable'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

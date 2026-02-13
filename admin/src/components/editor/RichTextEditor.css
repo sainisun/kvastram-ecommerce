@@ -1,0 +1,252 @@
+/* Rich Text Editor Styles */
+.rich-text-editor {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+/* Toolbar */
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 12px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 4px;
+}
+
+.toolbar-divider {
+    width: 1px;
+    background: #e5e7eb;
+    margin: 0 4px;
+}
+
+.editor-toolbar button {
+    padding: 6px 12px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.editor-toolbar button:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.editor-toolbar button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.editor-toolbar button.is-active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* Editor Content */
+.editor-content-wrapper {
+    min-height: 300px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.editor-content-wrapper .ProseMirror {
+    padding: 16px;
+    min-height: 300px;
+    outline: none;
+}
+
+.editor-content-wrapper .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: #9ca3af;
+    pointer-events: none;
+    height: 0;
+}
+
+/* Typography */
+.editor-content-wrapper .ProseMirror h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-top: 0.67em;
+    margin-bottom: 0.67em;
+}
+
+.editor-content-wrapper .ProseMirror h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 0.83em;
+    margin-bottom: 0.83em;
+}
+
+.editor-content-wrapper .ProseMirror h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.editor-content-wrapper .ProseMirror p {
+    margin: 1em 0;
+}
+
+.editor-content-wrapper .ProseMirror ul,
+.editor-content-wrapper .ProseMirror ol {
+    padding-left: 1.5em;
+    margin: 1em 0;
+}
+
+.editor-content-wrapper .ProseMirror li {
+    margin: 0.5em 0;
+}
+
+.editor-content-wrapper .ProseMirror blockquote {
+    border-left: 4px solid #e5e7eb;
+    padding-left: 1em;
+    margin: 1em 0;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.editor-content-wrapper .ProseMirror code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.editor-content-wrapper .ProseMirror pre {
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 1em;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1em 0;
+}
+
+.editor-content-wrapper .ProseMirror pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+}
+
+.editor-content-wrapper .ProseMirror hr {
+    border: none;
+    border-top: 2px solid #e5e7eb;
+    margin: 2em 0;
+}
+
+.editor-content-wrapper .ProseMirror .editor-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1em 0;
+}
+
+.editor-content-wrapper .ProseMirror .editor-link {
+    color: #3b82f6;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.editor-content-wrapper .ProseMirror .editor-link:hover {
+    color: #2563eb;
+}
+
+/* Footer */
+.editor-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 8px 12px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.character-count,
+.word-count {
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .editor-toolbar {
+        gap: 2px;
+        padding: 8px;
+    }
+
+    .toolbar-group {
+        gap: 2px;
+    }
+
+    .editor-toolbar button {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .editor-content-wrapper {
+        min-height: 200px;
+    }
+
+    .editor-content-wrapper .ProseMirror {
+        padding: 12px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .rich-text-editor {
+        border-color: #374151;
+        background: #1f2937;
+    }
+
+    .editor-toolbar {
+        background: #111827;
+        border-bottom-color: #374151;
+    }
+
+    .toolbar-divider {
+        background: #374151;
+    }
+
+    .editor-toolbar button {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f9fafb;
+    }
+
+    .editor-toolbar button:hover:not(:disabled) {
+        background: #374151;
+        border-color: #4b5563;
+    }
+
+    .editor-toolbar button.is-active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+
+    .editor-content-wrapper .ProseMirror {
+        color: #f9fafb;
+    }
+
+    .editor-footer {
+        background: #111827;
+        border-top-color: #374151;
+        color: #9ca3af;
+    }
+}
