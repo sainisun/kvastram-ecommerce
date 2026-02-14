@@ -9,38 +9,32 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-    const { token, loading } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [isClient, setIsClient] = useState(false);
-    const [localToken, setLocalToken] = useState<string | null>(null);
 
     // Set isClient to true after hydration
     useEffect(() => {
         setIsClient(true);
-        // Check localStorage only on client side
-        const storedToken = localStorage.getItem('adminToken');
-        setLocalToken(storedToken);
-        console.log('[ProtectedRoute DEBUG] Client mounted, localToken:', storedToken ? 'Present' : 'Missing');
     }, []);
 
     useEffect(() => {
         console.log('[ProtectedRoute DEBUG] Checking auth...');
         console.log('[ProtectedRoute DEBUG] Loading:', loading);
-        console.log('[ProtectedRoute DEBUG] Context Token:', token ? 'Present' : 'Missing');
-        console.log('[ProtectedRoute DEBUG] LocalStorage Token:', localToken ? 'Present' : 'Missing');
+        console.log('[ProtectedRoute DEBUG] User:', user ? 'Present' : 'Missing');
         console.log('[ProtectedRoute DEBUG] Pathname:', pathname);
 
         // Only check auth after loading is complete and we're on client
         if (!loading && isClient) {
-            if (!token && !localToken) {
-                console.log('[ProtectedRoute DEBUG] No token found, redirecting to login');
+            if (!user) {
+                console.log('[ProtectedRoute DEBUG] No user found, redirecting to login');
                 router.push('/');
             } else {
-                console.log('[ProtectedRoute DEBUG] Token found, allowing access');
+                console.log('[ProtectedRoute DEBUG] User found, allowing access');
             }
         }
-    }, [token, loading, router, pathname, isClient, localToken]);
+    }, [user, loading, router, pathname, isClient]);
 
     // Show loading during SSR and initial hydration
     if (!isClient || loading) {
@@ -58,8 +52,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
         );
     }
 
-    // After hydration, check both tokens
-    if (!token && !localToken) {
+    // After hydration, check if user exists
+    if (!user) {
         return null; // Will redirect
     }
 

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { exportToCSV, formatProductsForExport } from '@/lib/csv-export';
+import { api } from '@/lib/api';
 
 interface Product {
     id: string;
@@ -70,25 +71,11 @@ export default function ProductsPage() {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('adminToken');
-
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-
-            let url = `${API_URL}/products?limit=20&offset=${(page - 1) * 20}`;
-            if (debouncedSearch) url += `&search=${encodeURIComponent(debouncedSearch)}`;
-            if (statusFilter !== 'all') url += `&status=${statusFilter}`;
-
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                setProducts(result.data || []);
-                setTotalPages(result.pagination?.total_pages || 1);
-            }
+            const limit = 20;
+            const offset = (page - 1) * limit;
+            const result = await api.getProducts(limit, offset);
+            setProducts(result || []);
+            setTotalPages(result.pagination?.total_pages || 1);
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {
@@ -98,18 +85,8 @@ export default function ProductsPage() {
 
     const fetchStats = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            const response = await fetch(`${API_URL}/products/stats/overview`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setStats(data);
-            }
+            const data = await api.getProductStats();
+            setStats(data);
         } catch (error) {
             console.error('Error fetching stats:', error);
         }
@@ -125,29 +102,15 @@ export default function ProductsPage() {
 
         try {
             setIsDeleting(true);
-            const token = localStorage.getItem('adminToken');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            const response = await fetch(`${API_URL}/products/${productToDelete}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                setProducts(products.filter(p => p.id !== productToDelete));
-                fetchStats();
-                setShowDeleteModal(false);
-                setProductToDelete(null);
-                alert('Product deleted successfully!');
-            } else {
-                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                console.error('Delete failed:', errorData);
-                alert('Failed to delete product: ' + (errorData.error || errorData.message || 'Unknown error'));
-            }
-        } catch (error) {
+            await api.deleteProduct(productToDelete);
+            setProducts(products.filter(p => p.id !== productToDelete));
+            fetchStats();
+            setShowDeleteModal(false);
+            setProductToDelete(null);
+            alert('Product deleted successfully!');
+        } catch (error: any) {
             console.error('Delete error:', error);
-            alert('Failed to delete product: ' + (error as Error).message);
+            alert('Failed to delete product: ' + (error.message || 'Unknown error'));
         } finally {
             setIsDeleting(false);
         }
@@ -161,27 +124,13 @@ export default function ProductsPage() {
     const handleBulkDelete = async () => {
         try {
             setIsDeleting(true);
-            const token = localStorage.getItem('adminToken');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            const response = await fetch(`${API_URL}/products/bulk-delete`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    product_ids: Array.from(selectedProducts),
-                }),
-            });
-
-            if (response.ok) {
-                fetchProducts();
-                fetchStats();
-                setSelectedProducts(new Set());
-                setShowBulkDeleteModal(false);
-            }
-        } catch (error) {
-            alert('Failed to delete products');
+            await api.bulkDeleteProducts(Array.from(selectedProducts));
+            fetchProducts();
+            fetchStats();
+            setSelectedProducts(new Set());
+            setShowBulkDeleteModal(false);
+        } catch (error: any) {
+            alert(error.message || 'Failed to delete products');
         } finally {
             setIsDeleting(false);
         }
@@ -191,27 +140,12 @@ export default function ProductsPage() {
         if (selectedProducts.size === 0) return;
 
         try {
-            const token = localStorage.getItem('adminToken');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            const response = await fetch(`${API_URL}/products/bulk-update`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    product_ids: Array.from(selectedProducts),
-                    updates: { status },
-                }),
-            });
-
-            if (response.ok) {
-                fetchProducts();
-                fetchStats();
-                setSelectedProducts(new Set());
-            }
-        } catch (error) {
-            alert('Failed to update products');
+            await api.bulkUpdateProducts(Array.from(selectedProducts), { status });
+            fetchProducts();
+            fetchStats();
+            setSelectedProducts(new Set());
+        } catch (error: any) {
+            alert(error.message || 'Failed to update products');
         }
     };
 

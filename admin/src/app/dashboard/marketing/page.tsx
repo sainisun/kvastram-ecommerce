@@ -25,20 +25,15 @@ export default function MarketingPage() {
     const [editingDiscount, setEditingDiscount] = useState<any>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            router.push('/');
-            return;
-        }
-        fetchData(token);
+        fetchData();
     }, [router]);
 
-    const fetchData = async (token: string) => {
+    const fetchData = async () => {
         try {
             setLoading(true);
             const [campaignsData, discountsData] = await Promise.all([
-                api.getCampaigns(token),
-                api.getDiscounts(token)
+                api.getCampaigns(),
+                api.getDiscounts()
             ]);
             setCampaigns(campaignsData.campaigns);
             setDiscounts(discountsData.discounts);
@@ -51,18 +46,16 @@ export default function MarketingPage() {
 
     const handleCreateCampaign = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
 
         try {
-            await api.createCampaign(token, {
+            await api.createCampaign({
                 ...formData,
                 status: 'active', // Default status
                 start_date: new Date().toISOString(), // Default start now
             });
             setShowCampaignModal(false);
             setFormData({});
-            fetchData(token);
+            fetchData();
         } catch (error) {
             console.error('Error creating campaign:', error);
             alert('Failed to create campaign');
@@ -71,12 +64,10 @@ export default function MarketingPage() {
 
     const handleDeleteCampaign = async (id: string, name: string) => {
         if (!confirm(`Are you sure you want to delete campaign "${name}"?`)) return;
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
 
         try {
-            await api.deleteCampaign(token, id);
-            fetchData(token);
+            await api.deleteCampaign(id);
+            fetchData();
         } catch (error) {
             console.error('Error deleting campaign:', error);
             alert('Failed to delete campaign');
@@ -85,11 +76,10 @@ export default function MarketingPage() {
 
     const handleUpdateCampaign = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('adminToken');
-        if (!token || !editingCampaign) return;
+        if (!editingCampaign) return;
 
         try {
-            await api.updateCampaign(token, editingCampaign.id, {
+            await api.updateCampaign(editingCampaign.id, {
                 name: editingCampaign.name,
                 description: editingCampaign.description,
                 status: editingCampaign.status,
@@ -97,7 +87,7 @@ export default function MarketingPage() {
             });
             setShowEditCampaignModal(false);
             setEditingCampaign(null);
-            fetchData(token);
+            fetchData();
         } catch (error) {
             console.error('Error updating campaign:', error);
             alert('Failed to update campaign');
@@ -106,11 +96,10 @@ export default function MarketingPage() {
 
     const handleUpdateDiscount = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('adminToken');
-        if (!token || !editingDiscount) return;
+        if (!editingDiscount) return;
 
         try {
-            await api.updateDiscount(token, editingDiscount.id, {
+            await api.updateDiscount(editingDiscount.id, {
                 code: editingDiscount.code,
                 type: editingDiscount.type,
                 value: parseInt(editingDiscount.value),
@@ -121,7 +110,7 @@ export default function MarketingPage() {
             });
             setShowEditDiscountModal(false);
             setEditingDiscount(null);
-            fetchData(token);
+            fetchData();
         } catch (error: any) {
             console.error('Error updating discount:', error);
             const msg = error.response?.details?.[0]?.message || error.message || 'Failed to update discount';
@@ -131,11 +120,9 @@ export default function MarketingPage() {
 
     const handleCreateDiscount = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
 
         try {
-            await api.createDiscount(token, {
+            await api.createDiscount({
                 ...formData,
                 value: parseInt(formData.value),
                 usage_limit: formData.usage_limit ? parseInt(formData.usage_limit) : null,
@@ -145,7 +132,7 @@ export default function MarketingPage() {
             });
             setShowDiscountModal(false);
             setFormData({});
-            fetchData(token);
+            fetchData();
         } catch (error: any) {
             console.error('Error creating discount:', error);
             const msg = error.response?.details?.[0]?.message || error.message || 'Failed to create discount';
@@ -155,12 +142,10 @@ export default function MarketingPage() {
 
     const handleDeleteDiscount = async (id: string, code: string) => {
         if (!confirm(`Are you sure you want to delete discount code "${code}"?`)) return;
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
 
         try {
-            await api.deleteDiscount(token, id);
-            fetchData(token);
+            await api.deleteDiscount(id);
+            fetchData();
         } catch (error) {
             console.error('Error deleting discount:', error);
             alert('Failed to delete discount');

@@ -133,13 +133,30 @@ export async function errorHandler(err: Error, c: Context) {
   }
 
   // Default: Internal Server Error
-  // In production, don't expose error details
-  const isDev = process.env.NODE_ENV === "development";
+  // 🔒 FIX-006: Never expose stack traces - sanitize error messages
+  const isProduction = process.env.NODE_ENV === "production";
+  const isDevelopment = process.env.NODE_ENV === "development";
+
+  // Sanitize error message - remove internal paths and sensitive info
+  const sanitizeMessage = (msg: string): string => {
+    // Remove file paths that might leak internal structure
+    return msg
+      .replace(/C:\\(?:[^\\]+\\)+/g, "[internal]")
+      .replace(/\/(?:[^/]+\/)+/g, "[internal]/")
+      .replace(/line \d+/g, "line [hidden]")
+      .replace(/at .+/g, "");
+  };
+
+  // In production: generic message only, no details
+  // In development: sanitized message for debugging, but no stack
+  const errorDetails = isDevelopment
+    ? { message: sanitizeMessage(err.message) }
+    : null;
 
   return errorResponse(
     c,
     ErrorMessages.INTERNAL_ERROR,
-    isDev ? { message: err.message, stack: err.stack } : null,
+    errorDetails,
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }

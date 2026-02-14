@@ -21,7 +21,6 @@ export default function EditProductPage() {
     const params = useParams();
     const id = params.id as string;
 
-    const [token, setToken] = useState('');
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
 
@@ -58,22 +57,16 @@ export default function EditProductPage() {
     const [prices, setPrices] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        const storedToken = localStorage.getItem('adminToken');
-        if (!storedToken) {
-            router.push('/');
-            return;
-        }
-        setToken(storedToken);
-        init(storedToken);
+        init();
     }, [router, id]);
 
-    const init = async (authToken: string) => {
+    const init = async () => {
         try {
             const [regionData, productResult, catsData, tagsData] = await Promise.all([
-                api.getRegions(authToken),
-                api.getProduct(authToken, id),
-                api.getCategories(authToken),
-                api.getTags(authToken)
+                api.getRegions(),
+                api.getProduct(id),
+                api.getCategories(),
+                api.getTags()
             ]);
 
             setRegions(regionData.regions || []);
@@ -201,7 +194,7 @@ export default function EditProductPage() {
                 tag_ids: selectedTagIds
             };
 
-            await api.updateProduct(token, id, payload);
+            await api.updateProduct(id, payload);
             showNotification('success', 'Product updated successfully');
             router.push('/dashboard/products');
         } catch (error: any) {
@@ -523,7 +516,7 @@ export default function EditProductPage() {
                         <ImageUpload
                             images={images}
                             onChange={setImages}
-                            onUpload={(file) => api.uploadImage(token, file).then(res => res.url)}
+                            onUpload={(file) => api.uploadImage(file).then(res => res.url)}
                             uploading={false} // Edit page doesn't track generic uploading state perfectly yet, might need local state if needed
                             maxFiles={10}
                         />

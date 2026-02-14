@@ -13,6 +13,7 @@ import {
   paginatedResponse,
   HttpStatus,
 } from "../utils/api-response";
+import { serializeCustomer } from "../utils/safe-user";
 
 const customersRouter = new Hono();
 
@@ -53,6 +54,20 @@ customersRouter.get(
         total,
       },
       "Customers retrieved successfully",
+    );
+  }),
+);
+
+// BUG-008 FIX: Stats route MUST be before /:id to avoid being caught by the param route
+// Get customer statistics
+customersRouter.get(
+  "/stats/overview",
+  asyncHandler(async (c) => {
+    const stats = await customerService.getStats();
+    return successResponse(
+      c,
+      stats,
+      "Customer statistics retrieved successfully",
     );
   }),
 );
@@ -112,9 +127,8 @@ customersRouter.put(
     const updated = await customerService.update(id, body);
     if (!updated) throw new NotFoundError("Customer not found");
 
-    // Remove password hash if present (safe practice)
-    // Note: service.update returns standard object, assuming safe but double check
-    const { password_hash, ...safeCustomer } = updated as any;
+    // 🔒 FIX-007: Use serializeCustomer utility
+    const safeCustomer = serializeCustomer(updated as any);
 
     return successResponse(
       c,
@@ -138,19 +152,6 @@ customersRouter.delete(
       }
       throw error;
     }
-  }),
-);
-
-// Get customer statistics
-customersRouter.get(
-  "/stats/overview",
-  asyncHandler(async (c) => {
-    const stats = await customerService.getStats();
-    return successResponse(
-      c,
-      stats,
-      "Customer statistics retrieved successfully",
-    );
   }),
 );
 

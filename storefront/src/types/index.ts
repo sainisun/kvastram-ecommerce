@@ -25,13 +25,35 @@ export interface Product {
   variants: ProductVariant[];
   options?: ProductOption[];
   images?: ProductImage[];
+  videos?: ProductVideo[]; // PHASE 2.3: Video support
   material?: string;
   origin_country?: string;
+  size_guide?: SizeGuide; // Product-specific size guide
   created_at: string;
   collection?: {
     id: string;
     title: string;
   };
+}
+
+export interface SizeGuide {
+  type: 'clothing' | 'shoes' | 'accessories';
+  measurements: SizeMeasurement[];
+}
+
+export interface SizeMeasurement {
+  size: string;
+  chest?: string;
+  waist?: string;
+  hips?: string;
+  length?: string;
+}
+
+export interface ProductVideo {
+  id: string;
+  url: string;
+  thumbnail?: string;
+  position?: number;
 }
 
 export interface ProductVariant {

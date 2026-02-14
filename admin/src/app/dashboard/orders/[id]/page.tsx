@@ -17,10 +17,7 @@ export default function OrderDetailsPage() {
     const [updating, setUpdating] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
-
-        api.getOrder(token, id)
+        api.getOrder(id)
             .then(data => setOrder(data.order))
             .catch(err => console.error(err))
             .finally(() => setLoading(false));
@@ -31,11 +28,9 @@ export default function OrderDetailsPage() {
     const handleStatusChange = async (newStatus: string) => {
         if (!confirm(`Update order status to ${newStatus}?`)) return;
         setUpdating(true);
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
 
         try {
-            const res = await api.updateOrderStatus(token, id, newStatus);
+            await api.updateOrderStatus(id, newStatus);
             setOrder((prev: any) => ({ ...prev, status: newStatus }));
             showNotification('success', `Order status updated to ${newStatus}`);
         } catch (error: any) {
@@ -53,17 +48,10 @@ export default function OrderDetailsPage() {
     };
 
     const handleDownloadInvoice = async () => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
+        if (!order) return;
 
         try {
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            const res = await fetch(`${API_URL}/orders/${id}/invoice`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Failed to download');
-
-            const blob = await res.blob();
+            const blob = await api.downloadInvoice(id);
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;

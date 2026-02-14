@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { db } from "../db";
 import { banners } from "../db/schema";
 import { eq, asc, desc } from "drizzle-orm";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAdmin } from "../middleware/auth"; // BUG-013 FIX: was verifyAdmin
 import { z } from "zod";
 
 const app = new Hono();
@@ -32,7 +32,7 @@ app.get("/storefront", async (c) => {
 });
 
 // Admin: Get all banners
-app.get("/", verifyAuth, async (c) => {
+app.get("/", verifyAdmin, async (c) => {
   try {
     const allBanners = await db
       .select()
@@ -45,7 +45,7 @@ app.get("/", verifyAuth, async (c) => {
 });
 
 // Admin: Create banner
-app.post("/", verifyAuth, async (c) => {
+app.post("/", verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const validated = bannerSchema.parse(body);
@@ -60,7 +60,7 @@ app.post("/", verifyAuth, async (c) => {
 });
 
 // Admin: Update banner
-app.put("/:id", verifyAuth, async (c) => {
+app.put("/:id", verifyAdmin, async (c) => {
   try {
     const id = c.req.param("id");
     const body = await c.req.json();
@@ -81,7 +81,7 @@ app.put("/:id", verifyAuth, async (c) => {
 });
 
 // Admin: Delete banner
-app.delete("/:id", verifyAuth, async (c) => {
+app.delete("/:id", verifyAdmin, async (c) => {
   try {
     const id = c.req.param("id");
     await db.delete(banners).where(eq(banners.id, id));
@@ -92,14 +92,21 @@ app.delete("/:id", verifyAuth, async (c) => {
 });
 
 // Admin: Reorder banners
-app.post("/reorder", verifyAuth, async (c) => {
-  try {
-    const { items } = await c.req.json(); // Array of { id: string, position: number }
+// BUG-015 FIX: Added input validation for reorder items
+const reorderSchema = z.object({
+  items: z.array(z.object({
+    id: z.string().uuid(),
+    position: z.number().int().min(0),
+  })).min(1).max(100),
+});
 
-    // Use a transaction or Promise.all to update positions
-    // Drizzle doesn't have a bulk update in the same way, so Promise.all is fine for small lists
+app.post("/reorder", verifyAdmin, async (c) => {
+  try {
+    const body = await c.req.json();
+    const { items } = reorderSchema.parse(body);
+
     await Promise.all(
-      items.map((item: any) =>
+      items.map((item) =>
         db
           .update(banners)
           .set({ position: item.position })
@@ -109,6 +116,8 @@ app.post("/reorder", verifyAuth, async (c) => {
 
     return c.json({ message: "Banners reordered" });
   } catch (error: any) {
+    if (error instanceof z.ZodError)
+      return c.json({ error: "Validation failed", details: error.errors }, 400);
     return c.json({ error: error.message }, 500);
   }
 });

@@ -12,15 +12,10 @@ export default function EditPagePage() {
 
     useEffect(() => {
         const id = params.id as string;
-        const token = localStorage.getItem('adminToken');
-        if (token) {
-            api.getPage(token, id)
-                .then(data => setPage(data.page))
-                .catch(err => console.error(err))
-                .finally(() => setLoading(false));
-        } else {
-            setLoading(false);
-        }
+        api.getPage(id)
+            .then(data => setPage(data.page))
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
     }, [params.id]);
 
     if (loading) return <div className="p-6">Loading...</div>;

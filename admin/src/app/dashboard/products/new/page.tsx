@@ -18,7 +18,6 @@ import { useNotification } from '@/context/notification-context';
 export default function NewProductPage() {
     const router = useRouter();
     const { showNotification } = useNotification();
-    const [token, setToken] = useState('');
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
 
@@ -55,18 +54,12 @@ export default function NewProductPage() {
     const [prices, setPrices] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        const storedToken = localStorage.getItem('adminToken');
-        if (!storedToken) {
-            router.push('/');
-            return;
-        }
-        setToken(storedToken);
-        loadRegions(storedToken);
+        loadRegions();
     }, [router]);
 
-    const loadRegions = async (authToken: string) => {
+    const loadRegions = async () => {
         try {
-            const data = await api.getRegions(authToken);
+            const data = await api.getRegions();
             setRegions(data.regions || []);
         } catch (error) {
             console.error('Failed to load regions');
@@ -75,13 +68,10 @@ export default function NewProductPage() {
 
     useEffect(() => {
         const loadData = async () => {
-            const storedToken = localStorage.getItem('adminToken');
-            if (!storedToken) return;
-
             try {
                 const [catsData, tagsData] = await Promise.all([
-                    api.getCategories(storedToken),
-                    api.getTags(storedToken)
+                    api.getCategories(),
+                    api.getTags()
                 ]);
                 setCategories(catsData.categories || []);
                 setTags(tagsData.tags || []);
@@ -146,7 +136,7 @@ export default function NewProductPage() {
                 tag_ids: selectedTagIds
             };
 
-            await api.createProduct(token, payload);
+            await api.createProduct(payload);
             showNotification('success', 'Product created successfully');
             router.push('/dashboard/products');
         } catch (error: any) {
@@ -466,7 +456,7 @@ export default function NewProductPage() {
                         <ImageUpload
                             images={images}
                             onChange={setImages}
-                            onUpload={(file) => api.uploadImage(token, file).then(res => res.url)}
+                            onUpload={(file) => api.uploadImage(file).then(res => res.url)}
                             uploading={uploading}
                             maxFiles={10}
                         />

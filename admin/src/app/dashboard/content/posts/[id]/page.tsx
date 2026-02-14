@@ -12,15 +12,10 @@ export default function EditPostPage() {
 
     useEffect(() => {
         const id = params.id as string;
-        const token = localStorage.getItem('adminToken');
-        if (token) {
-            api.getPost(token, id)
-                .then(data => setPost(data.post))
-                .catch(err => console.error(err))
-                .finally(() => setLoading(false));
-        } else {
-            setLoading(false);
-        }
+        api.getPost(id)
+            .then(data => setPost(data.post))
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
     }, [params.id]);
 
     if (loading) return <div className="p-6">Loading...</div>;

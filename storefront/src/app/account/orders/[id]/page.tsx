@@ -6,7 +6,7 @@ import { Order } from '@/types/backend';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Package, Clock, Truck, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Package, Clock, Truck, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
 
 // Extended order interface for frontend display
@@ -209,7 +209,17 @@ export default function OrderDetailsPage() {
                                 </div>
                             </div>
 
-                            <div className="pt-8 border-t border-stone-200">
+                            <div className="pt-8 border-t border-stone-200 space-y-3">
+                                <button 
+                                    onClick={() => {
+                                        // In a real app, this would add items to cart
+                                        alert('Items added to cart! Redirecting to cart...');
+                                        router.push('/cart');
+                                    }}
+                                    className="w-full bg-white border border-stone-300 text-stone-900 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <RotateCcw size={14} /> Reorder
+                                </button>
                                 <button className="w-full bg-white border border-stone-300 text-stone-900 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors">
                                     Need Help?
                                 </button>

@@ -103,7 +103,11 @@ class RegionService {
   }
 
   async delete(id: string) {
-    await db.delete(regions).where(eq(regions.id, id));
+    // BUG-020 FIX: Delete associated countries before region
+    await db.transaction(async (tx) => {
+      await tx.delete(countries).where(eq(countries.region_id, id));
+      await tx.delete(regions).where(eq(regions.id, id));
+    });
     return true;
   }
 }

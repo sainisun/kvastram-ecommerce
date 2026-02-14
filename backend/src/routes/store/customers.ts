@@ -3,6 +3,8 @@ import { verifyCustomer } from "../../middleware/customer-auth";
 import { db } from "../../db/client";
 import { customers, orders, line_items } from "../../db/schema";
 import { eq, desc } from "drizzle-orm";
+import { z } from "zod";
+import { serializeCustomer } from "../../utils/safe-user";
 
 const storeCustomersRouter = new Hono();
 
@@ -15,9 +17,17 @@ storeCustomersRouter.get("/me", verifyCustomer, async (c) => {
 
   if (!customer) return c.json({ error: "Customer not found" }, 404);
 
-  // Remove password hash before sending
-  const { password_hash, ...safeCustomer } = customer;
+  // 🔒 FIX-007: Use serializeCustomer utility
+  const safeCustomer = serializeCustomer(customer);
   return c.json({ customer: safeCustomer });
+});
+
+// BUG-016 FIX: Added Zod validation for profile update
+
+const UpdateProfileSchema = z.object({
+  first_name: z.string().min(1).max(100).optional(),
+  last_name: z.string().min(1).max(100).optional(),
+  phone: z.string().max(20).optional(),
 });
 
 // Update Current Customer Profile
@@ -25,12 +35,13 @@ storeCustomersRouter.put("/me", verifyCustomer, async (c) => {
   const payload = c.get("customer" as any) as any;
   const body = await c.req.json();
 
-  // Basic validation (can improve with Zod)
-  const allowedUpdates = {
-    first_name: body.first_name,
-    last_name: body.last_name,
-    phone: body.phone,
-  };
+  // Validate input
+  const parseResult = UpdateProfileSchema.safeParse(body);
+  if (!parseResult.success) {
+    return c.json({ error: "Validation failed", details: parseResult.error.errors }, 400);
+  }
+
+  const allowedUpdates = parseResult.data;
 
   try {
     const updated = await db
@@ -39,7 +50,8 @@ storeCustomersRouter.put("/me", verifyCustomer, async (c) => {
       .where(eq(customers.id, payload.sub))
       .returning();
 
-    const { password_hash, ...safeCustomer } = updated[0];
+    // 🔒 FIX-007: Use serializeCustomer utility
+    const safeCustomer = serializeCustomer(updated[0]);
     return c.json({ customer: safeCustomer });
   } catch (error) {
     return c.json({ error: "Failed to update profile" }, 500);

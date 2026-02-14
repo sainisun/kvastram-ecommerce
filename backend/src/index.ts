@@ -9,6 +9,7 @@ import {
   checkoutLimiter,
   generalLimiter,
 } from "./middleware/rate-limiter";
+import { defaultTimeout, uploadTimeout, webhookTimeout } from "./middleware/timeout";
 import "dotenv/config";
 
 // Import db and test connection
@@ -52,6 +53,12 @@ const app = new Hono();
 app.use("*", secureHeaders());
 app.use("*", logger());
 
+// OPT-004: Request timeout for all routes (30s default)
+app.use("*", defaultTimeout);
+// Extended timeout for file uploads and webhooks
+app.use("/upload/*", uploadTimeout);
+app.use("/store/payments/webhook", webhookTimeout);
+
 // CORS Configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
   "http://localhost:3000",
@@ -67,20 +74,55 @@ app.use(
   "*",
   cors({
     origin: allowedOrigins,
-    credentials: true,
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true, // Required for httpOnly cookies
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+    exposeHeaders: ["Set-Cookie"], // Allow frontend to receive cookies
   }),
 );
 
-// 🔒 FIX-004: CSRF Protection for state-changing operations
-// Only apply in production or when Origin header is present
-app.use("/store/checkout/*", csrf({
+// 🔒 FIX-004 & FIX-002: CSRF Protection for state-changing operations
+// CSRF middleware validates Origin header against allowed origins
+// This prevents cross-site request forgery attacks
+const csrfProtection = csrf({
   origin: allowedOrigins,
-}));
-app.use("/store/payments/*", csrf({
-  origin: allowedOrigins,
-}));
+});
+
+// Helper to apply CSRF only to state-changing HTTP methods
+const csrfForStateChanging = (routes: string[]) => {
+  for (const route of routes) {
+    // Apply CSRF middleware to the route - it will check all methods
+    // but the browser only sends Origin header for cross-origin requests
+    app.use(route, csrfProtection);
+  }
+};
+
+// Store Routes - Customer checkout and payments (state-changing only)
+csrfForStateChanging([
+  "/store/checkout/*",
+  "/store/payments/create-intent",
+  "/store/payments/status/*",
+]);
+
+// 🔒 FIX-002: CSRF Protection for Admin Routes
+// Protect all admin state-changing operations
+// Note: Webhooks (/store/payments/webhook) are EXCLUDED - protected by Stripe signatures
+csrfForStateChanging([
+  "/products/*",
+  "/orders/*",
+  "/customers/*",
+  "/settings/*",
+  "/marketing/*",
+  "/banners/*",
+  "/posts/*",
+  "/pages/*",
+  "/categories/*",
+  "/tags/*",
+  "/wholesale/*",
+  "/reviews/*",
+  "/upload/*",
+  "/auth/2fa/*",
+]);
 
 // Health Check Endpoint
 app.get("/health", async (c) => {
@@ -95,6 +137,7 @@ app.get("/health", async (c) => {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       version: "1.0.0",
+      timestamp: new Date().toISOString(), // OPT-008: Add timestamp for monitoring
     },
     dbHealthy ? "Service is healthy" : "Service is experiencing issues",
     status,
@@ -132,10 +175,11 @@ app.use("/store/auth/*", authLimiter);
 app.use("/store/checkout/*", checkoutLimiter);
 app.use("/store/payments/*", checkoutLimiter);
 
+// OPT-006: Rate limit public form endpoints (spam prevention)
+app.use("/contact/*", authLimiter);       // Strict: same as auth
+app.use("/newsletter/*", authLimiter);    // Strict: same as auth
+
 // 3. General API Limits (For browsing/products/etc)
-// Exempting specific high-volume public endpoints or specific assets if needed
-// Applying to all other known API routes
-// Note: We mount middleware on specific path patterns to avoid blocking static assets or health checks
 const generalApiRoutes = [
   "/products/*",
   "/orders/*",
@@ -152,6 +196,7 @@ const generalApiRoutes = [
   "/analytics/*",
   "/wholesale/*",
   "/reviews/*",
+  "/store/customers/*",  // OPT-007: Added missing store customer route
 ];
 
 for (const route of generalApiRoutes) {
@@ -211,7 +256,35 @@ if (process.env.NODE_ENV !== "production") {
   console.log(`🔒 CORS enabled for: ${allowedOrigins.join(", ")}`);
 }
 
-serve({
+const server = serve({
   fetch: app.fetch,
   port,
+});
+
+// OPT-003: Graceful shutdown handler
+const gracefulShutdown = (signal: string) => {
+  console.log(`\n🛑 Received ${signal}. Shutting down gracefully...`);
+  server.close(() => {
+    console.log("✅ HTTP server closed");
+    process.exit(0);
+  });
+
+  // Force exit after 10 seconds if connections are hanging
+  setTimeout(() => {
+    console.error("⚠️ Forced shutdown after 10s timeout");
+    process.exit(1);
+  }, 10000);
+};
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
+// Handle uncaught errors
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+  gracefulShutdown("uncaughtException");
 });

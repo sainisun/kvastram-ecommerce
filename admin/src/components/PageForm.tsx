@@ -43,13 +43,10 @@ export default function PageForm({ initialData, isEdit }: PageFormProps) {
         e.preventDefault();
         setLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
             if (isEdit) {
-                await api.updatePage(token, initialData.id, formData);
+                await api.updatePage(initialData.id, formData);
             } else {
-                await api.createPage(token, formData);
+                await api.createPage(formData);
             }
             router.push('/dashboard/content/pages');
         } catch (error: any) {

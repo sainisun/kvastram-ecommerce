@@ -4,19 +4,24 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { storage } from '@/lib/storage';
 
 export interface CartItem {
-    id: string; // Helper ID (variantId)
+    id: string;
     variantId: string;
     quantity: number;
     title: string;
-    price: number; // Stored for display, but backend recalculates
+    price: number;
     currency: string;
     thumbnail?: string;
+    material?: string;
+    origin?: string;
+    sku?: string;
+    description?: string;
 }
 
 interface CartContextType {
     items: CartItem[];
     addItem: (item: CartItem) => void;
     removeItem: (id: string) => void;
+    updateQuantity: (id: string, quantity: number) => void;
     clearCart: () => void;
     totalItems: number;
     cartTotal: number;
@@ -66,13 +71,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems(prev => prev.filter(i => i.variantId !== id));
     };
 
+    const updateQuantity = (id: string, quantity: number) => {
+        if (quantity <= 0) {
+            removeItem(id);
+            return;
+        }
+        setItems(prev => prev.map(i => 
+            i.variantId === id ? { ...i, quantity } : i
+        ));
+    };
+
     const clearCart = () => setItems([]);
 
     const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
     const cartTotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
     return (
-        <CartContext.Provider value={{ items, addItem, removeItem, clearCart, totalItems, cartTotal }}>
+        <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, cartTotal }}>
             {children}
         </CartContext.Provider>
     );

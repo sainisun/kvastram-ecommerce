@@ -1,24 +1,13 @@
 'use client';
 
 import { Bell, Search, User } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/auth-context';
 
 export default function Topbar() {
-    const router = useRouter();
-    const [user, setUser] = useState<{ first_name: string, role: string } | null>(null);
+    const { user, logout } = useAuth();
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-    }, []);
-
-    const handleLogout = () => {
-        localStorage.removeItem('adminToken');
-        localStorage.removeItem('user');
-        router.push('/');
+    const handleLogout = async () => {
+        await logout();
     };
 
     return (

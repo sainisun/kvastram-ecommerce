@@ -5,9 +5,12 @@ import "./globals.css";
 import { ShopProvider } from "@/context/shop-context";
 import { AuthProvider } from "@/context/auth-context";
 import { CartProvider } from "@/context/cart-context";
+import { WishlistProvider } from "@/context/wishlist-context";
 import { NotificationProvider } from "@/context/notification-context";
+import { RecentlyViewedProvider } from "@/context/recently-viewed-context";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Analytics } from "@/components/Analytics";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -88,12 +91,17 @@ export default function RootLayout({
             <ShopProvider>
               <AuthProvider>
                 <CartProvider>
-                  <MainLayout>{children}</MainLayout>
+                  <WishlistProvider>
+                    <RecentlyViewedProvider>
+                      <MainLayout>{children}</MainLayout>
+                    </RecentlyViewedProvider>
+                  </WishlistProvider>
                 </CartProvider>
               </AuthProvider>
             </ShopProvider>
           </NotificationProvider>
         </ErrorBoundary>
+        <Analytics />
       </body>
     </html>
   );

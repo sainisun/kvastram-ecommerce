@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
+import { setCookie, deleteCookie } from "hono/cookie";
 import {
   authService,
   LoginSchema,
@@ -15,8 +16,19 @@ import {
   NotFoundError,
 } from "../middleware/error-handler";
 import { successResponse, HttpStatus } from "../utils/api-response";
+import { config } from "../config";
+import { serializeUser } from "../utils/safe-user";
 
 const authRouter = new Hono<{ Variables: AuthContextVariables }>();
+
+// Cookie configuration for httpOnly JWT storage
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: config.server.env === "production",
+  sameSite: "strict" as const,
+  maxAge: 60 * 60 * 24 * 7, // 7 days
+  path: "/",
+};
 
 // POST /auth/login
 authRouter.post(
@@ -28,7 +40,10 @@ authRouter.post(
 
     try {
       const result = await authService.login(data);
-      return successResponse(c, result, "Login successful");
+      // Set JWT in httpOnly cookie for XSS protection
+      setCookie(c, "admin_token", result.token, COOKIE_OPTIONS);
+      // Return user data only (token is in cookie)
+      return successResponse(c, { user: result.user }, "Login successful");
     } catch (error: any) {
       if (error.message === "Invalid email or password") {
         throw new AuthError("Invalid credentials");
@@ -59,12 +74,24 @@ authRouter.post(
   asyncHandler(async (c) => {
     const data = (c.req as any).valid("json");
     const result = await authService.register(data);
+    // Set JWT in httpOnly cookie for XSS protection
+    setCookie(c, "admin_token", result.token, COOKIE_OPTIONS);
+    // Return user data only (token is in cookie)
     return successResponse(
       c,
-      result,
+      { user: result.user },
       "Registration successful",
       HttpStatus.CREATED,
     );
+  }),
+);
+
+// POST /auth/logout - Clear the httpOnly cookie
+authRouter.post(
+  "/logout",
+  asyncHandler(async (c) => {
+    deleteCookie(c, "admin_token", { path: "/" });
+    return successResponse(c, null, "Logout successful");
   }),
 );
 
@@ -77,14 +104,14 @@ authRouter.get(
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.id, userPayload.id));
+      .where(eq(users.id, userPayload.sub));
 
     if (!user) {
       throw new NotFoundError("User not found");
     }
 
-    // Return safe user object (exclude password and 2fa secret)
-    const { password_hash, two_factor_secret, ...safeUser } = user;
+    // 🔒 FIX-007: Use serializeUser utility to ensure password_hash is never leaked
+    const safeUser = serializeUser(user);
 
     return successResponse(
       c,

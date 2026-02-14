@@ -4,7 +4,7 @@ import { zValidator } from "@hono/zod-validator";
 import { db } from "../db/client";
 import { product_reviews, products } from "../db/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAdmin } from "../middleware/auth"; // BUG-012 FIX: was verifyAdmin
 
 const reviewsRouter = new Hono();
 
@@ -77,7 +77,7 @@ reviewsRouter.post(
 // --- ADMIN ROUTES ---
 
 // GET /reviews - Get all reviews (Admin)
-reviewsRouter.get("/", verifyAuth, async (c) => {
+reviewsRouter.get("/", verifyAdmin, async (c) => {
   try {
     const { limit = "50", offset = "0", status } = c.req.query();
     const limitNum = parseInt(limit);
@@ -117,10 +117,14 @@ reviewsRouter.get("/", verifyAuth, async (c) => {
 
     const reviews = await query;
 
-    // Get total count for pagination
-    const countResult = await db
+    // BUG-018 FIX: Get total count with same filter applied
+    const countQuery = db
       .select({ count: sql<number>`count(*)` })
       .from(product_reviews);
+    
+    const countResult = status 
+      ? await countQuery.where(eq(product_reviews.status, status))
+      : await countQuery;
     const total = countResult[0]?.count || 0;
 
     return c.json({
@@ -141,7 +145,7 @@ reviewsRouter.get("/", verifyAuth, async (c) => {
 // PUT /reviews/:id/status - Update review status (Admin)
 reviewsRouter.put(
   "/:id/status",
-  verifyAuth,
+  verifyAdmin,
   zValidator("json", UpdateReviewStatusSchema),
   async (c) => {
     const id = c.req.param("id");
@@ -162,7 +166,7 @@ reviewsRouter.put(
 );
 
 // DELETE /reviews/:id
-reviewsRouter.delete("/:id", verifyAuth, async (c) => {
+reviewsRouter.delete("/:id", verifyAdmin, async (c) => {
   const id = c.req.param("id");
   try {
     await db.delete(product_reviews).where(eq(product_reviews.id, id));

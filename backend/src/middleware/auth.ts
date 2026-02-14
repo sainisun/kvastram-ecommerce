@@ -1,8 +1,22 @@
 import { Context, Next } from "hono";
 import { verify } from "hono/jwt";
+import { getCookie } from "hono/cookie";
 import { config } from "../config";
 
 const JWT_SECRET = config.jwt.secret;
+
+/**
+ * Extract token from Authorization header or httpOnly cookie
+ */
+function getToken(c: Context): string | null {
+  // First try Authorization header
+  const authHeader = c.req.header("Authorization");
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    return authHeader.split(" ")[1];
+  }
+  // Fall back to cookie
+  return getCookie(c, "admin_token") || null;
+}
 
 /**
  * JWT Payload type for authenticated users (extends hono's default)
@@ -21,13 +35,11 @@ export interface AuthContextVariables {
 }
 
 export const verifyAuth = async (c: Context<{ Variables: AuthContextVariables }>, next: Next) => {
-  const authHeader = c.req.header("Authorization");
+  const token = getToken(c);
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
     return c.json({ error: "Unauthorized: Missing or invalid token" }, 401);
   }
-
-  const token = authHeader.split(" ")[1];
 
   try {
     const payload = await verify(token, JWT_SECRET, "HS256");
@@ -40,13 +52,11 @@ export const verifyAuth = async (c: Context<{ Variables: AuthContextVariables }>
 
 // Admin verification - checks both authentication AND admin role
 export const verifyAdmin = async (c: Context<{ Variables: AuthContextVariables }>, next: Next) => {
-  const authHeader = c.req.header("Authorization");
+  const token = getToken(c);
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
     return c.json({ error: "Unauthorized: Missing or invalid token" }, 401);
   }
-
-  const token = authHeader.split(" ")[1];
 
   try {
     const payload = await verify(token, JWT_SECRET, "HS256") as unknown as UserPayload;

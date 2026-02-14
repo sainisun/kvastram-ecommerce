@@ -1,5 +1,14 @@
 import nodemailer from "nodemailer";
 
+// PHASE-2 FIX: HTML escape utility to prevent XSS in email templates
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 interface EmailOptions {
   to: string;
   subject: string;
@@ -8,13 +17,12 @@ interface EmailOptions {
 }
 
 class EmailService {
-  private transporter: nodemailer.Transporter;
+  private transporter!: nodemailer.Transporter;
+  private ready: Promise<void>;
 
   constructor() {
-    // Create reusable transporter object using the default SMTP transport
-    // For development, we'll use Ethereal Email which fakes email sending
+    // OPT-001 FIX: Use async-ready pattern to prevent race condition
     if (process.env.NODE_ENV === "production") {
-      // Configure production SMTP here (e.g., SendGrid, AWS SES)
       this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
@@ -24,40 +32,44 @@ class EmailService {
           pass: process.env.SMTP_PASS,
         },
       });
+      this.ready = Promise.resolve();
     } else {
-      // Development: Use Ethereal (or log to console if internal network fails)
-      this.transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        auth: {
-          user: "ethereal.user@ethereal.email", // Placeholder, will be replaced by auto-generated account if needed
-          pass: "ethereal.pass",
-        },
-      });
-
-      // Auto-generate test account if env vars not set (Standard Nodemailer practice)
-      nodemailer.createTestAccount((err, account) => {
-        if (err) {
-          console.error("Failed to create Ethereal account:", err);
-          return;
-        }
-        this.transporter = nodemailer.createTransport({
-          host: account.smtp.host,
-          port: account.smtp.port,
-          secure: account.smtp.secure,
-          auth: {
-            user: account.user,
-            pass: account.pass,
-          },
+      // Development: Create Ethereal account asynchronously
+      // Emails will wait for this to complete before sending
+      this.ready = new Promise<void>((resolve) => {
+        nodemailer.createTestAccount((err, account) => {
+          if (err) {
+            console.error("Failed to create Ethereal account:", err);
+            // Fallback: log-only transporter
+            this.transporter = nodemailer.createTransport({ jsonTransport: true });
+            resolve();
+            return;
+          }
+          this.transporter = nodemailer.createTransport({
+            host: account.smtp.host,
+            port: account.smtp.port,
+            secure: account.smtp.secure,
+            auth: {
+              user: account.user,
+              pass: account.pass,
+            },
+          });
+          console.log("📧 Email Service ready (Ethereal Dev Mode)");
+          console.log(`📧 Preview URL: https://ethereal.email/messages`);
+          resolve();
         });
-        console.log("📧 Email Service ready (Ethereal Dev Mode)");
-        console.log(`📧 Preview URL: https://ethereal.email/messages`);
       });
     }
   }
 
+  /** Ensure transporter is ready before any operation */
+  private async ensureReady(): Promise<void> {
+    await this.ready;
+  }
+
   async sendEmail(options: EmailOptions) {
     try {
+      await this.ensureReady(); // OPT-001: Wait for transporter initialization
       const info = await this.transporter.sendMail({
         from: '"Kvastram Support" <support@kvastram.com>', // sender address
         to: options.to, // list of receivers
@@ -138,7 +150,7 @@ class EmailService {
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Thank you for your inquiry!</h1>
-                <p>Hi ${data.contact_name},</p>
+                <p>Hi ${escapeHtml(data.contact_name)},</p>
                 <p>We have received your wholesale inquiry and will review it shortly.</p>
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
@@ -154,9 +166,9 @@ class EmailService {
                 <h1>New Wholesale Inquiry</h1>
                 <p>A new inquiry has been submitted:</p>
                 <ul>
-                    <li><strong>Company:</strong> ${inquiry.company_name}</li>
-                    <li><strong>Contact:</strong> ${inquiry.contact_name}</li>
-                    <li><strong>Email:</strong> ${inquiry.email}</li>
+                    <li><strong>Company:</strong> ${escapeHtml(inquiry.company_name)}</li>
+                    <li><strong>Contact:</strong> ${escapeHtml(inquiry.contact_name)}</li>
+                    <li><strong>Email:</strong> ${escapeHtml(inquiry.email)}</li>
                 </ul>
                 <p>Please review it in the admin dashboard.</p>
             </div>
@@ -177,9 +189,9 @@ class EmailService {
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Congratulations!</h1>
-                <p>Hi ${data.contact_name},</p>
-                <p>Your wholesale inquiry for <strong>${data.company_name}</strong> has been approved!</p>
-                <p>Your discount tier: <strong>${data.discount_tier}</strong></p>
+                <p>Hi ${escapeHtml(data.contact_name)},</p>
+                <p>Your wholesale inquiry for <strong>${escapeHtml(data.company_name)}</strong> has been approved!</p>
+                <p>Your discount tier: <strong>${escapeHtml(data.discount_tier)}</strong></p>
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
@@ -197,9 +209,9 @@ class EmailService {
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Inquiry Update</h1>
-                <p>Hi ${data.contact_name},</p>
-                <p>Thank you for your interest in our wholesale program. After careful review, we are unable to approve your inquiry for <strong>${data.company_name}</strong> at this time.</p>
-                ${data.admin_notes ? `<p><strong>Notes:</strong> ${data.admin_notes}</p>` : ""}
+                <p>Hi ${escapeHtml(data.contact_name)},</p>
+                <p>Thank you for your interest in our wholesale program. After careful review, we are unable to approve your inquiry for <strong>${escapeHtml(data.company_name)}</strong> at this time.</p>
+                ${data.admin_notes ? `<p><strong>Notes:</strong> ${escapeHtml(data.admin_notes)}</p>` : ""}
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
@@ -212,13 +224,13 @@ class EmailService {
     first_name: string;
     token: string;
   }) {
-    const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:3002"}/verify-email?token=${data.token}`;
+    const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:3001"}/verify-email?token=${encodeURIComponent(data.token)}`;
     const subject = "Verify Your Email Address";
     const text = `Hi ${data.first_name},\n\nWelcome to Kvastram! Please verify your email address by clicking the link below:\n\n${verificationUrl}\n\nThis link will expire in 24 hours.\n\nBest regards,\nKvastram Team`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Welcome to Kvastram!</h1>
-                <p>Hi ${data.first_name},</p>
+                <p>Hi ${escapeHtml(data.first_name)},</p>
                 <p>Thank you for creating an account with us. Please verify your email address to get started.</p>
                 <p style="text-align: center; margin: 30px 0;">
                     <a href="${verificationUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
@@ -231,6 +243,15 @@ class EmailService {
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
+    
+    // DEV MODE: Log verification URL directly for testing
+    if (process.env.NODE_ENV !== "production") {
+      console.log('\n📧 EMAIL VERIFICATION (DEV MODE)');
+      console.log('   To:', data.email);
+      console.log('   Verification URL:', verificationUrl);
+      console.log('');
+    }
+    
     return this.sendEmail({ to: data.email, subject, text, html });
   }
 }

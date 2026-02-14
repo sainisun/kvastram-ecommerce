@@ -60,3 +60,8 @@ export const checkoutLimiter = createLimiter(60 * 1000, isDev ? 50 : 300);
 // 3. General Limiter (Browsing/Products/etc)
 // Test: 6000 requests per 100 min, Dev: 500 requests per 1 min
 export const generalLimiter = createLimiter(60 * 1000, isDev ? 500 : 6000);
+
+// 4. 🔒 FIX-004: Email Rate Limiter (Strict: Email sending operations)
+// Test: 300 requests per 1000 min, Dev: 3 requests per 15 min
+// Prevents email bombing attacks on resend verification endpoint
+export const emailLimiter = createLimiter(15 * 60 * 1000, isDev ? 3 : 10);

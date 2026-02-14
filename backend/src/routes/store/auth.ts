@@ -26,6 +26,8 @@ import {
 } from "../../services/customer-auth-service";
 import { z } from "zod";
 import { config } from "../../config";
+import { setCookie, getCookie, deleteCookie } from "hono/cookie";
+import { emailLimiter } from "../../middleware/rate-limiter";
 
 const storeAuthRouter = new Hono();
 
@@ -40,12 +42,12 @@ const COOKIE_OPTIONS = {
 
 // Helper function to set auth cookie
 function setAuthCookie(c: Context, token: string) {
-  (c as any).cookies.set("auth_token", token, COOKIE_OPTIONS);
+  setCookie(c, "auth_token", token, COOKIE_OPTIONS);
 }
 
 // Helper function to clear auth cookie
 function clearAuthCookie(c: Context) {
-  (c as any).cookies.set("auth_token", "", { ...COOKIE_OPTIONS, maxAge: 0 });
+  deleteCookie(c, "auth_token", { path: "/" });
 }
 
 // Validation schemas for verification routes
@@ -103,8 +105,10 @@ storeAuthRouter.post(
 );
 
 // POST /store/auth/resend-verification - Resend verification email
+// 🔒 FIX-004: Rate limited to prevent email bombing attacks
 storeAuthRouter.post(
   "/resend-verification",
+  emailLimiter,
   zValidator("json", ResendVerificationSchema),
   async (c) => {
     const { email } = c.req.valid("json");
@@ -204,7 +208,7 @@ storeAuthRouter.post("/logout", async (c) => {
 
 // 🔒 FIX-010: Get current auth status (reads from cookie)
 storeAuthRouter.get("/me", async (c) => {
-  const token = (c as any).cookies?.get("auth_token") || c.req.header("Authorization")?.replace("Bearer ", "");
+  const token = getCookie(c, "auth_token") || c.req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
     return c.json({ error: "Not authenticated" }, 401);
@@ -215,6 +219,102 @@ storeAuthRouter.get("/me", async (c) => {
     return c.json(result);
   } catch (error: any) {
     return c.json({ error: error.message }, 401);
+  }
+});
+
+// DEBUG: Get verification token for testing
+storeAuthRouter.get("/debug-token", async (c) => {
+  const email = c.req.query("email");
+  if (!email) {
+    return c.json({ error: "Email is required" }, 400);
+  }
+
+  const { db } = await import("../../db/client");
+  const { customers } = await import("../../db/schema");
+  const { eq } = await import("drizzle-orm");
+
+  const [customer] = await db
+    .select({
+      id: customers.id,
+      email: customers.email,
+      email_verified: customers.email_verified,
+      verification_token: customers.verification_token,
+    })
+    .from(customers)
+    .where(eq(customers.email, email.toLowerCase()))
+    .limit(1);
+
+  if (!customer) {
+    return c.json({ error: "Customer not found" }, 404);
+  }
+
+  if (customer.email_verified) {
+    return c.json({ message: "Email already verified", verified: true });
+  }
+
+  const verifyUrl = `${process.env.FRONTEND_URL || "http://localhost:3001"}/verify-email?token=${customer.verification_token}`;
+  
+  return c.json({
+    email: customer.email,
+    verified: false,
+    verification_url: verifyUrl,
+    token: customer.verification_token
+  });
+});
+
+// Social Login - Google
+storeAuthRouter.post("/social/google", async (c) => {
+  const { id_token, email, name, avatar } = await c.req.json().catch(() => ({}));
+
+  if (!id_token && !email) {
+    return c.json({ error: "Invalid request" }, 400);
+  }
+
+  try {
+    const customer = await customerAuthService.socialLogin({
+      provider: "google",
+      providerId: id_token,
+      email: email,
+      name: name,
+      avatar: avatar,
+    });
+
+    setAuthCookie(c, customer.token);
+    return c.json({ 
+      success: true, 
+      customer: customer.customer,
+      isNewUser: customer.isNewUser 
+    });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 400);
+  }
+});
+
+// Social Login - Facebook
+storeAuthRouter.post("/social/facebook", async (c) => {
+  const { access_token, email, name, avatar } = await c.req.json().catch(() => ({}));
+
+  if (!access_token && !email) {
+    return c.json({ error: "Invalid request" }, 400);
+  }
+
+  try {
+    const customer = await customerAuthService.socialLogin({
+      provider: "facebook",
+      providerId: access_token,
+      email: email,
+      name: name,
+      avatar: avatar,
+    });
+
+    setAuthCookie(c, customer.token);
+    return c.json({ 
+      success: true, 
+      customer: customer.customer,
+      isNewUser: customer.isNewUser 
+    });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 400);
   }
 });
 

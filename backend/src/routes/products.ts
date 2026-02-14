@@ -4,7 +4,7 @@ import {
   CreateProductSchema,
   UpdateProductSchema,
 } from "../services/product-service";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAuth, verifyAdmin } from "../middleware/auth";
 import { z } from "zod";
 import {
   successResponse,
@@ -143,7 +143,7 @@ productsRouter.get(
 // POST /products - Create product (Protected)
 productsRouter.post(
   "/",
-  verifyAuth,
+  verifyAdmin,
   asyncHandler(async (c) => {
     const body = await c.req.json();
     const result = CreateProductSchema.safeParse(body);
@@ -166,7 +166,7 @@ productsRouter.post(
 // PUT /products/:id - Update product (Protected)
 productsRouter.put(
   "/:id",
-  verifyAuth,
+  verifyAdmin,
   asyncHandler(async (c) => {
     const id = c.req.param("id");
     const body = await c.req.json();
@@ -200,7 +200,7 @@ const BulkUpdateSchema = z.object({
 
 productsRouter.post(
   "/bulk-update",
-  verifyAuth,
+  verifyAdmin,
   asyncHandler(async (c) => {
     const body = await c.req.json();
     const result = BulkUpdateSchema.safeParse(body);
@@ -235,7 +235,7 @@ const BulkDeleteSchema = z.object({
 
 productsRouter.post(
   "/bulk-delete",
-  verifyAuth,
+  verifyAdmin,
   asyncHandler(async (c) => {
     const body = await c.req.json();
     const result = BulkDeleteSchema.safeParse(body);
@@ -264,26 +264,15 @@ productsRouter.post(
 // DELETE /products/:id - Delete product (Protected)
 productsRouter.delete(
   "/:id",
-  verifyAuth,
+  verifyAdmin,
   asyncHandler(async (c) => {
     const id = c.req.param("id");
-    try {
-      await productService.delete(id);
-      return successResponse(
-        c,
-        { id, deleted: true },
-        "Product deleted successfully",
-      );
-    } catch (e) {
-      // If delete fails, it might be due to dependencies or not found, but service handles cascade mostly.
-      // If not found, we can treating as success (idempotent) or error.
-      // Current service doesn't throw if not found for delete, so it returns success.
-      return successResponse(
-        c,
-        { id, deleted: true },
-        "Product deleted successfully",
-      );
-    }
+    await productService.delete(id);
+    return successResponse(
+      c,
+      { id, deleted: true },
+      "Product deleted successfully",
+    );
   }),
 );
 

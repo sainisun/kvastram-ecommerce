@@ -15,11 +15,8 @@ export default function PagesPage() {
 
     const loadPages = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                const data = await api.getPages(token);
-                setPages(data.pages);
-            }
+            const data = await api.getPages();
+            setPages(data.pages);
         } catch (error) {
             console.error('Failed to load pages');
         } finally {
@@ -30,11 +27,8 @@ export default function PagesPage() {
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this page?')) return;
         try {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                await api.deletePage(token, id);
-                loadPages();
-            }
+            await api.deletePage(id);
+            loadPages();
         } catch (error) {
             alert('Failed to delete page');
         }

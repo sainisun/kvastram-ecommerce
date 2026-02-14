@@ -32,7 +32,8 @@ app.post("/generate", verifyAuth, async (c) => {
 
     const qrCode = await QRCode.toDataURL(otpauth);
 
-    return c.json({ qrCode, secret });
+    // OPT-002 FIX: Don't expose secret in response - only show via QR code
+    return c.json({ qrCode });
   } catch (error: any) {
     console.error("2FA Generate Error:", error);
     return c.json({ error: "Failed to generate 2FA" }, 500);
@@ -42,13 +43,13 @@ app.post("/generate", verifyAuth, async (c) => {
 // Verify OTP and Enable 2FA
 app.post("/verify", verifyAuth, async (c) => {
   try {
-    const userPayload = c.get("user") as any;
+    const userPayload = c.get("user") as unknown as { sub: string; role: string };
     const { token } = await c.req.json();
 
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.id, userPayload.id));
+      .where(eq(users.id, userPayload.sub)); // BUG-003 FIX: was userPayload.id (undefined)
 
     if (!user || !user.two_factor_secret) {
       return c.json({ error: "2FA not initialized. Generate first." }, 400);
@@ -77,15 +78,36 @@ app.post("/verify", verifyAuth, async (c) => {
 // Disable 2FA
 app.post("/disable", verifyAuth, async (c) => {
   try {
-    const userPayload = c.get("user") as any;
+    const userPayload = c.get("user") as unknown as { sub: string; role: string };
+    const { token } = await c.req.json();
 
-    // In a real app, require OTP or Password to disable.
-    // For now, trusting the auth token (Phase 3 MVP).
+    // OPT-002 FIX: Require valid OTP code to disable 2FA
+    if (!token) {
+      return c.json({ error: "OTP code is required to disable 2FA" }, 400);
+    }
+
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userPayload.sub));
+
+    if (!user || !user.two_factor_secret) {
+      return c.json({ error: "2FA is not enabled" }, 400);
+    }
+
+    const isValid = authenticator.verify({
+      token,
+      secret: user.two_factor_secret,
+    });
+
+    if (!isValid) {
+      return c.json({ error: "Invalid OTP code" }, 400);
+    }
 
     await db
       .update(users)
       .set({ two_factor_enabled: false, two_factor_secret: null })
-      .where(eq(users.id, userPayload.id));
+      .where(eq(users.id, userPayload.sub));
 
     return c.json({ success: true, message: "2FA Disabled" });
   } catch (error: any) {

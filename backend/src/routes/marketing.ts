@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAdmin } from "../middleware/auth"; // BUG-010 FIX: was verifyAdmin
 import { z } from "zod";
 import {
   marketingService,
@@ -13,7 +13,7 @@ const app = new Hono();
 // --- CAMPAIGNS ---
 
 // Get all campaigns
-app.get("/campaigns", verifyAuth, async (c) => {
+app.get("/campaigns", verifyAdmin, async (c) => {
   try {
     const allCampaigns = await marketingService.getAllCampaigns();
     return c.json({ campaigns: allCampaigns });
@@ -23,7 +23,7 @@ app.get("/campaigns", verifyAuth, async (c) => {
 });
 
 // Create campaign
-app.post("/campaigns", verifyAuth, async (c) => {
+app.post("/campaigns", verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const validated = CampaignSchema.parse(body);
@@ -38,7 +38,7 @@ app.post("/campaigns", verifyAuth, async (c) => {
 });
 
 // Update campaign
-app.put("/campaigns/:id", verifyAuth, async (c) => {
+app.put("/campaigns/:id", verifyAdmin, async (c) => {
   try {
     const id = c.req.param("id");
     const body = await c.req.json();
@@ -54,7 +54,7 @@ app.put("/campaigns/:id", verifyAuth, async (c) => {
 });
 
 // Delete campaign
-app.delete("/campaigns/:id", verifyAuth, async (c) => {
+app.delete("/campaigns/:id", verifyAdmin, async (c) => {
   try {
     const id = c.req.param("id");
     await marketingService.deleteCampaign(id);
@@ -67,7 +67,7 @@ app.delete("/campaigns/:id", verifyAuth, async (c) => {
 // --- DISCOUNTS ---
 
 // Get all discounts
-app.get("/discounts", verifyAuth, async (c) => {
+app.get("/discounts", verifyAdmin, async (c) => {
   try {
     const allDiscounts = await marketingService.getAllDiscounts();
     return c.json({ discounts: allDiscounts });
@@ -77,7 +77,7 @@ app.get("/discounts", verifyAuth, async (c) => {
 });
 
 // Create discount
-app.post("/discounts", verifyAuth, async (c) => {
+app.post("/discounts", verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const validated = DiscountSchema.parse(body);
@@ -95,7 +95,7 @@ app.post("/discounts", verifyAuth, async (c) => {
 });
 
 // Update discount
-app.put("/discounts/:id", verifyAuth, async (c) => {
+app.put("/discounts/:id", verifyAdmin, async (c) => {
   try {
     const id = c.req.param("id");
     const body = await c.req.json();
@@ -111,7 +111,7 @@ app.put("/discounts/:id", verifyAuth, async (c) => {
 });
 
 // Delete discount
-app.delete("/discounts/:id", verifyAuth, async (c) => {
+app.delete("/discounts/:id", verifyAdmin, async (c) => {
   try {
     const id = c.req.param("id");
     await marketingService.deleteDiscount(id);

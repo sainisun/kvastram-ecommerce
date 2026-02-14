@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     DollarSign, ShoppingCart, Package, Users, TrendingUp, TrendingDown,
     Clock, CheckCircle, Truck, AlertCircle, XCircle, Eye
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { api } from '@/lib/api';
 
 interface DashboardStats {
     // Order stats
@@ -50,33 +50,26 @@ interface RecentOrder {
 }
 
 export default function DashboardPage() {
-    const router = useRouter();
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
     const [chartData, setChartData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            router.push('/');
-            return;
-        }
-        fetchDashboardData(token);
-    }, [router]);
+        fetchDashboardData();
+    }, []);
 
-    const fetchDashboardData = async (token: string) => {
+    const fetchDashboardData = async () => {
         try {
             setLoading(true);
-            const { api } = await import('@/lib/api');
 
             // Fetch all stats in parallel
             const [analyticsOverview, productStats, customerStats, ordersData, salesTrend] = await Promise.all([
-                api.getAnalyticsOverview(token),
-                api.getProductStats(token),
-                api.getCustomerStats(token),
-                api.getOrders(token, 5),
-                api.getSalesTrend(token, 30),
+                api.getAnalyticsOverview(),
+                api.getProductStats(),
+                api.getCustomerStats(),
+                api.getOrders(5, 0),
+                api.getSalesTrend(30),
             ]);
 
             setStats({
@@ -101,13 +94,13 @@ export default function DashboardPage() {
             });
 
             // Fetch status breakdown separately
-            api.getOrdersByStatus(token).then((statusData: any[]) => {
+            api.getOrdersByStatus().then((statusData: any[]) => {
                 const statusMap: any = {};
                 statusData.forEach((s: any) => statusMap[`${s.status}_orders`] = s.count);
                 setStats(prev => prev ? ({ ...prev, ...statusMap }) : null);
             });
 
-            setRecentOrders(ordersData.orders || []);
+            setRecentOrders(ordersData || []);
             setChartData(salesTrend.map((d: any) => ({ ...d, revenue: d.sales }))); // Map sales to revenue for chart
         } catch (error: any) {
             console.error('Error fetching dashboard data:', error);

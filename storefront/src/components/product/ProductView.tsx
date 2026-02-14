@@ -3,27 +3,52 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
+import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import { Plus, Minus, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import { SizeGuide } from '@/components/product/SizeGuide';
 import { Reviews } from '@/components/product/Reviews';
+import { BackInStock } from '@/components/product/BackInStock';
 import ProductGallery from './ProductGallery';
+import WishlistButton from '@/components/ui/WishlistButton';
+import ShareButtons from '@/components/ui/ShareButtons';
 import type { Product, ProductVariant, ProductOption, MoneyAmount, ProductImage } from '@/types';
 
 export default function ProductView({ product }: { product: Product }) {
     const { currentRegion } = useShop();
     const { addItem } = useCart();
+    const { addItem: addToRecentlyViewed } = useRecentlyViewed();
     const [quantity, setQuantity] = useState(1);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
 
     const [deliveryDate, setDeliveryDate] = useState<string>('');
 
-    // Calculate delivery date on mount
+    // Delivery estimate based on region (simplified - in production would use shipping calculator)
     useEffect(() => {
-        const estimatedDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setDeliveryDate(estimatedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }));
-    }, []);
+        if (currentRegion) {
+            const minDays = currentRegion.id.includes('us') ? 3 : 7;
+            const maxDays = currentRegion.id.includes('us') ? 5 : 14;
+            const minDate = new Date(Date.now() + minDays * 24 * 60 * 60 * 1000);
+            const maxDate = new Date(Date.now() + maxDays * 24 * 60 * 60 * 1000);
+            const formatOptions: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+            setDeliveryDate(`${minDate.toLocaleDateString('en-US', formatOptions)} - ${maxDate.toLocaleDateString('en-US', formatOptions)}`);
+        }
+    }, [currentRegion]);
+
+    // Track recently viewed products
+    useEffect(() => {
+        if (product?.id) {
+            const priceObj = product.variants?.[0]?.prices?.[0];
+            addToRecentlyViewed({
+                id: product.id,
+                handle: product.handle || product.id,
+                title: product.title,
+                thumbnail: product.thumbnail || undefined,
+                price: priceObj?.amount || 0,
+                currency: priceObj?.currency_code?.toUpperCase() || 'USD',
+            });
+        }
+    }, [product?.id]);
 
     // Check if product has structured options (Size, Color, etc.)
     const hasStructuredOptions = product.options && product.options.length > 0;
@@ -90,7 +115,11 @@ export default function ProductView({ product }: { product: Product }) {
             title: product.title + (selectedVariant.title !== 'Default Variant' ? ` - ${selectedVariant.title}` : ''),
             price: amount,
             currency: currency,
-            thumbnail: product.thumbnail || undefined
+            thumbnail: product.thumbnail || undefined,
+            material: product.material || undefined,
+            origin: product.origin_country || undefined,
+            sku: selectedVariant.sku || undefined,
+            description: product.description || undefined
         });
         // React state-based feedback
         setAddedToCart(true);
@@ -103,6 +132,9 @@ export default function ProductView({ product }: { product: Product }) {
             .map((img: ProductImage) => img.url)
         : (product.thumbnail ? [product.thumbnail] : []);
 
+    // PHASE 2.3: Get product videos
+    const videos = product.videos || [];
+
     return (
         <div className="bg-white min-h-screen pt-24 pb-24">
             <div className="max-w-7xl mx-auto px-6">
@@ -114,7 +146,7 @@ export default function ProductView({ product }: { product: Product }) {
                 <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
                     {/* Left: Image Gallery */}
                     <div className="sticky top-24 self-start">
-                        <ProductGallery images={images} title={product.title} />
+                        <ProductGallery images={images} title={product.title} videos={videos} />
                     </div>
 
                     {/* Right: Details */}
@@ -129,6 +161,24 @@ export default function ProductView({ product }: { product: Product }) {
                             <p className="text-2xl font-light text-stone-900">
                                 {formattedPrice}
                             </p>
+                            {/* Wishlist Button */}
+                            <div className="mt-3 flex items-center gap-4">
+                                <WishlistButton
+                                    productId={product.id}
+                                    title={product.title}
+                                    price={selectedVariant?.prices?.[0]?.amount || 0}
+                                    currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
+                                    thumbnail={product.thumbnail || undefined}
+                                    handle={product.handle || product.id}
+                                    variantId={selectedVariant?.id}
+                                    showLabel
+                                />
+                                <ShareButtons
+                                    title={product.title}
+                                    description={product.description?.slice(0, 100)}
+                                    image={product.thumbnail || undefined}
+                                />
+                            </div>
                         </div>
 
                         <div className="prose prose-stone prose-sm font-light text-stone-600 mb-10 max-w-none">
@@ -194,13 +244,16 @@ export default function ProductView({ product }: { product: Product }) {
 
                         {/* Quantity & Add */}
                         <div className="space-y-6 mb-10">
-                            <div className="flex items-center gap-2 text-red-700 text-xs font-medium animate-pulse">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                                </span>
-                                3 people are viewing this right now
-                            </div>
+                            {/* PHASE 2.4: Real stock indicator - removed fake "people viewing" */}
+                            {selectedVariant && selectedVariant.inventory_quantity > 0 && selectedVariant.inventory_quantity <= 10 && (
+                                <div className="flex items-center gap-2 text-red-700 text-xs font-medium">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                    Only {selectedVariant.inventory_quantity} left in stock
+                                </div>
+                            )}
 
                             <div className="flex items-center gap-6">
                                 <div className="flex items-center border border-stone-200 w-32 justify-between px-4 py-3">
@@ -235,7 +288,26 @@ export default function ProductView({ product }: { product: Product }) {
 
                             <div className="flex items-center justify-between text-xs text-stone-500 border-b border-stone-100 pb-6">
                                 <span className="flex items-center gap-1">
-                                    <div className="w-2 h-2 rounded-full bg-green-500"></div> In Stock, Ready to Ship
+                                    {/* PHASE 2.4: Real stock status based on inventory */}
+                                    {selectedVariant && selectedVariant.inventory_quantity > 0 ? (
+                                        <>
+                                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                            {selectedVariant.inventory_quantity <= 5 
+                                                ? `Only ${selectedVariant.inventory_quantity} left` 
+                                                : 'In Stock, Ready to Ship'
+                                            }
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                            Out of Stock
+                                            <BackInStock 
+                                                productId={product.id}
+                                                variantId={selectedVariant?.id}
+                                                productTitle={product.title}
+                                            />
+                                        </>
+                                    )}
                                 </span>
                                 <button
                                     onClick={() => setShowSizeGuide(true)}
@@ -248,10 +320,14 @@ export default function ProductView({ product }: { product: Product }) {
                             <div className="bg-stone-50 p-4 text-xs space-y-2">
                                 <p className="font-bold text-stone-900">Estimated Delivery</p>
                                 <p className="text-stone-600">
-                                    Order within <span className="font-medium text-stone-900">4 hrs 20 mins</span> to receive by{' '}
+                                    {/* PHASE 2.4: Real delivery estimate - removed fake countdown */}
+                                    Order now to receive by{' '}
                                     <span className="font-medium text-stone-900">
                                         {deliveryDate}
                                     </span>.
+                                </p>
+                                <p className="text-stone-400 text-[10px] mt-1">
+                                    Free express shipping on orders over $250
                                 </p>
                             </div>
                         </div>
@@ -282,7 +358,7 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             <Reviews productId={product.id} />
-            <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
+            <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} sizeGuide={product.size_guide} />
         </div>
     );
 }

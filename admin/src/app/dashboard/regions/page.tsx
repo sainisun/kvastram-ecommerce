@@ -24,18 +24,13 @@ export default function RegionsPage() {
     });
 
     useEffect(() => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            router.push('/');
-            return;
-        }
-        fetchRegions(token);
+        fetchRegions();
     }, [router]);
 
-    const fetchRegions = async (token: string) => {
+    const fetchRegions = async () => {
         try {
             setLoading(true);
-            const data = await api.getRegions(token);
+            const data = await api.getRegions();
             setRegions(data.regions || []);
         } catch (error) {
             console.error('Error fetching regions:', error);
@@ -46,8 +41,6 @@ export default function RegionsPage() {
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
 
         try {
             // Process countries string into array
@@ -56,7 +49,7 @@ export default function RegionsPage() {
                 .map(c => c.trim().toUpperCase())
                 .filter(c => c.length === 2); // Only valid ISO codes
 
-            await api.createRegion(token, {
+            await api.createRegion({
                 ...formData,
                 tax_rate: parseFloat(formData.tax_rate),
                 countries: countriesArray
@@ -64,7 +57,7 @@ export default function RegionsPage() {
 
             setShowModal(false);
             setFormData({ name: '', currency_code: '', tax_rate: '0', countries: '' });
-            fetchRegions(token);
+            fetchRegions();
         } catch (error) {
             console.error('Error creating region:', error);
             alert('Failed to create region');
@@ -74,12 +67,9 @@ export default function RegionsPage() {
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this region?')) return;
 
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
-
         try {
             setDeleting(id);
-            await api.deleteRegion(token, id);
+            await api.deleteRegion(id);
             setRegions(prev => prev.filter(r => r.id !== id));
         } catch (error) {
             console.error('Error deleting region:', error);

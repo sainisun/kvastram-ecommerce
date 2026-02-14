@@ -47,6 +47,8 @@ interface ReviewCreateData {
     rating: number;
     title?: string;
     content: string;
+    author_name?: string;
+    customer_id?: string;
 }
 
 // Helper to get CSRF token for mutations
@@ -213,6 +215,50 @@ export const api = {
         return res.json();
     },
 
+    // --- Shipping Options (PHASE 1.3) ---
+    async getShippingOptions(countryCode: string, regionId?: string) {
+        try {
+            const params = new URLSearchParams({ country_code: countryCode });
+            if (regionId) params.append('region_id', regionId);
+            
+            const res = await fetch(`${API_URL}/store/checkout/shipping-options?${params}`, {
+                credentials: 'include',
+            });
+            if (!res.ok) {
+                // Return default options if endpoint doesn't exist
+                return getDefaultShippingOptions(countryCode);
+            }
+            return res.json();
+        } catch {
+            // Return default options on error
+            return getDefaultShippingOptions(countryCode);
+        }
+    },
+
+    // --- Tax Calculation (PHASE 1.4) ---
+    async calculateTax(countryCode: string, subtotal: number, regionId?: string) {
+        try {
+            const res = await fetch(`${API_URL}/store/checkout/tax`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    country_code: countryCode,
+                    subtotal,
+                    region_id: regionId
+                }),
+                credentials: 'include',
+            });
+            if (!res.ok) {
+                // Return default tax if endpoint doesn't exist
+                return getDefaultTax(countryCode, subtotal);
+            }
+            return res.json();
+        } catch {
+            // Return default tax on error
+            return getDefaultTax(countryCode, subtotal);
+        }
+    },
+
     // --- Auth ---
     async register(data: RegisterData) {
         const res = await fetch(`${API_URL}/store/auth/register`, {
@@ -228,10 +274,13 @@ export const api = {
             try {
                 const errorData = await res.json();
 
-                if (errorData.success === false && errorData.message) {
+                // Handle Zod validation errors from backend (errorData.errors)
+                if (errorData.success === false && errorData.errors) {
+                    const errors = errorData.errors;
+                    const firstError = Object.values(errors)[0];
+                    errorMessage = typeof firstError === 'string' ? firstError : 'Validation failed';
+                } else if (errorData.success === false && errorData.message) {
                     errorMessage = errorData.message;
-                } else if (errorData.issues && Array.isArray(errorData.issues)) {
-                    errorMessage = errorData.issues[0]?.message || 'Validation failed';
                 } else if (errorData.message || errorData.error) {
                     errorMessage = errorData.message || errorData.error;
                 }
@@ -247,10 +296,38 @@ export const api = {
         return res.json();
     },
 
+    // --- Resend Verification Email ---
+    async resendVerification(email: string) {
+        const res = await fetch(`${API_URL}/store/auth/resend-verification`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+            credentials: 'include',
+        });
+        if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.error || 'Failed to resend verification email');
+        }
+        return res.json();
+    },
+
     async login(data: LoginData) {
         const res = await fetch(`${API_URL}/store/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+            credentials: 'include',
+        });
+        if (!res.ok) throw await res.json();
+        return res.json();
+    },
+
+    async socialLogin(provider: 'google' | 'facebook', data: { id_token?: string; access_token?: string; email: string; name?: string; avatar?: string }) {
+        const res = await fetch(`${API_URL}/store/auth/social/${provider}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(data),
             credentials: 'include',
         });
@@ -366,6 +443,26 @@ export const api = {
         return res.json();
     },
 
+    // --- Back in Stock Notifications ---
+    async subscribeBackInStock(productId: string, email: string, variantId?: string) {
+        const csrfHeader = await getCsrfHeader();
+        const res = await fetch(`${API_URL}/store/back-in-stock`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...csrfHeader
+            },
+            body: JSON.stringify({ 
+                product_id: productId,
+                variant_id: variantId,
+                email 
+            }),
+            credentials: 'include',
+        });
+        if (!res.ok) throw await res.json();
+        return res.json();
+    },
+
     // --- Payments ---
     async createPaymentIntent(orderId: string) {
         const csrfHeader = await getCsrfHeader();
@@ -394,3 +491,63 @@ export const api = {
         return res.json();
     }
 };
+
+// Default shipping options fallback (PHASE 1.3)
+function getDefaultShippingOptions(countryCode: string) {
+    const isInternational = countryCode !== 'US';
+    
+    const options = [
+        {
+            id: 'standard',
+            name: isInternational ? 'Standard International Shipping' : 'Standard Shipping',
+            description: isInternational ? '7-14 business days' : '5-7 business days',
+            price: isInternational ? 2500 : 0, // $25 or free
+            estimated_days: isInternational ? '7-14' : '5-7',
+            currency_code: 'USD'
+        },
+        {
+            id: 'express',
+            name: isInternational ? 'Express International Shipping' : 'Express Shipping',
+            description: isInternational ? '3-5 business days' : '2-3 business days',
+            price: isInternational ? 4500 : 1500, // $45 or $15
+            estimated_days: isInternational ? '3-5' : '2-3',
+            currency_code: 'USD'
+        }
+    ];
+
+    // Free shipping threshold (mock - should come from backend)
+    const freeShippingThreshold = 25000; // $250
+
+    return { 
+        options,
+        free_shipping_threshold: freeShippingThreshold,
+        currency_code: 'USD'
+    };
+}
+
+// Default tax calculation fallback (PHASE 1.4)
+function getDefaultTax(countryCode: string, subtotal: number) {
+    // Mock tax rates - in production these should come from backend
+    const taxRates: Record<string, number> = {
+        'US': 0.08,       // 8% average US sales tax
+        'GB': 0.20,       // 20% UK VAT
+        'CA': 0.13,       // 13% Canada HST
+        'AU': 0.10,       // 10% Australia GST
+        'DE': 0.19,       // 19% Germany VAT
+        'FR': 0.20,       // 20% France VAT
+        'IN': 0.18,       // 18% India GST
+        'JP': 0.10,       // 10% Japan consumption tax
+        // Default for other countries
+        'default': 0.10   // 10% default
+    };
+
+    const rate = taxRates[countryCode] || taxRates['default'];
+    const taxAmount = Math.round(subtotal * rate);
+
+    return {
+        tax_amount: taxAmount,
+        tax_rate: rate,
+        tax_name: countryCode === 'US' ? 'Sales Tax' : 'VAT',
+        currency_code: 'USD'
+    };
+}

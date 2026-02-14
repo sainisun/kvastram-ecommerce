@@ -385,4 +385,73 @@ export const customerAuthService = {
       throw new Error("Invalid or expired token");
     }
   },
+
+  // Social Login (Google/Facebook)
+  async socialLogin({ provider, providerId, email, name, avatar }: {
+    provider: "google" | "facebook";
+    providerId: string;
+    email: string;
+    name?: string;
+    avatar?: string;
+  }) {
+    // Find or create customer
+    let [customer] = await db
+      .select()
+      .from(customers)
+      .where(eq(customers.email, email.toLowerCase()))
+      .limit(1);
+
+    let isNewUser = false;
+
+    if (!customer) {
+      // Create new customer
+      const nameParts = (name || "").split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      [customer] = await db
+        .insert(customers)
+        .values({
+          email: email.toLowerCase(),
+          first_name: firstName,
+          last_name: lastName,
+          password_hash: `social_${provider}_${Date.now()}`,
+          email_verified: true, // Social login verifies email
+          has_account: true,
+          metadata: {
+            provider,
+            provider_id: providerId,
+            avatar,
+          },
+        })
+        .returning();
+
+      isNewUser = true;
+    } else {
+      // Update existing customer with social login info
+      await db
+        .update(customers)
+        .set({
+          metadata: {
+            ...(customer.metadata as Record<string, any> || {}),
+            provider,
+            provider_id: providerId,
+            avatar,
+          },
+        })
+        .where(eq(customers.id, customer.id));
+    }
+
+    // Generate JWT token
+    const token = await sign(
+      {
+        sub: customer.id,
+        role: "customer",
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+      },
+      JWT_SECRET,
+    );
+
+    return { token, customer, isNewUser };
+  },
 };

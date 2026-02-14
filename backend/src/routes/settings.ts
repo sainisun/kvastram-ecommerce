@@ -1,12 +1,12 @@
 import { Hono } from "hono";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAdmin } from "../middleware/auth"; // BUG-011 FIX: was verifyAdmin
 import { z } from "zod";
 import { settingService, SettingSchema } from "../services/setting-service";
 
 const settingsRouter = new Hono();
 
 // Get all settings
-settingsRouter.get("/", verifyAuth, async (c) => {
+settingsRouter.get("/", verifyAdmin, async (c) => {
   try {
     const allSettings = await settingService.getAll();
     return c.json({ settings: allSettings });
@@ -16,7 +16,7 @@ settingsRouter.get("/", verifyAuth, async (c) => {
 });
 
 // Get settings by category
-settingsRouter.get("/category/:category", verifyAuth, async (c) => {
+settingsRouter.get("/category/:category", verifyAdmin, async (c) => {
   try {
     const category = c.req.param("category");
     const settingsObj = await settingService.getByCategory(category);
@@ -27,7 +27,7 @@ settingsRouter.get("/category/:category", verifyAuth, async (c) => {
 });
 
 // Get single setting by key
-settingsRouter.get("/:key", verifyAuth, async (c) => {
+settingsRouter.get("/:key", verifyAdmin, async (c) => {
   try {
     const key = c.req.param("key");
     const setting = await settingService.getByKey(key);
@@ -40,7 +40,7 @@ settingsRouter.get("/:key", verifyAuth, async (c) => {
 });
 
 // Update or create setting
-settingsRouter.put("/:key", verifyAuth, async (c) => {
+settingsRouter.put("/:key", verifyAdmin, async (c) => {
   try {
     const key = c.req.param("key");
     const body = await c.req.json();
@@ -58,7 +58,7 @@ settingsRouter.put("/:key", verifyAuth, async (c) => {
 });
 
 // Bulk update settings
-settingsRouter.post("/bulk", verifyAuth, async (c) => {
+settingsRouter.post("/bulk", verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const { settings: settingsToUpdate } = body;
@@ -79,7 +79,7 @@ settingsRouter.post("/bulk", verifyAuth, async (c) => {
 });
 
 // Delete setting
-settingsRouter.delete("/:key", verifyAuth, async (c) => {
+settingsRouter.delete("/:key", verifyAdmin, async (c) => {
   try {
     const key = c.req.param("key");
     const deleted = await settingService.delete(key);

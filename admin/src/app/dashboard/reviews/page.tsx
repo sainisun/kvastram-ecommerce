@@ -2,22 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { useRouter } from 'next/navigation';
 import { Loader2, Star, Check, X, Trash2, Filter } from 'lucide-react';
-import { useAuth } from '@/context/auth-context';
 
 export default function ReviewsPage() {
     const [reviews, setReviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('');
-    const { token } = useAuth();
-    const router = useRouter();
 
     const fetchReviews = async () => {
-        if (!token) return;
         setLoading(true);
         try {
-            const data = await api.getReviews(token, 50, 0, statusFilter);
+            const data = await api.getReviews(50, 0, statusFilter);
             setReviews(data.reviews || []);
         } catch (error) {
             console.error('Failed to fetch reviews', error);
@@ -28,12 +23,11 @@ export default function ReviewsPage() {
 
     useEffect(() => {
         fetchReviews();
-    }, [token, statusFilter]);
+    }, [statusFilter]);
 
     const handleStatusUpdate = async (id: string, newStatus: string) => {
-        if (!token) return;
         try {
-            await api.updateReviewStatus(token, id, newStatus);
+            await api.updateReviewStatus(id, newStatus);
             setReviews(reviews.map(r => r.id === id ? { ...r, status: newStatus } : r));
         } catch (error) {
             alert('Failed to update status');
@@ -41,9 +35,9 @@ export default function ReviewsPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!token || !confirm('Are you sure you want to delete this review?')) return;
+        if (!confirm('Are you sure you want to delete this review?')) return;
         try {
-            await api.deleteReview(token, id);
+            await api.deleteReview(id);
             setReviews(reviews.filter(r => r.id !== id));
         } catch (error) {
             console.error(error);

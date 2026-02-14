@@ -769,11 +769,42 @@ export class ProductService {
   }
 
   async bulkDelete(ids: string[]) {
-    // Delete variants first
+    // 1. Get all variant IDs for these products
+    const variants = await db
+      .select({ id: product_variants.id })
+      .from(product_variants)
+      .where(inArray(product_variants.product_id, ids));
+
+    const variantIds = variants.map((v) => v.id);
+
+    // 2. Delete money_amounts (prices) for all variants
+    if (variantIds.length > 0) {
+      await db
+        .delete(money_amounts)
+        .where(inArray(money_amounts.variant_id, variantIds));
+    }
+
+    // 3. Delete variants
     await db
       .delete(product_variants)
       .where(inArray(product_variants.product_id, ids));
-    // Delete products
+
+    // 4. Delete images
+    await db
+      .delete(product_images)
+      .where(inArray(product_images.product_id, ids));
+
+    // 5. Delete category associations
+    await db
+      .delete(product_categories)
+      .where(inArray(product_categories.product_id, ids));
+
+    // 6. Delete tag associations
+    await db
+      .delete(product_tags)
+      .where(inArray(product_tags.product_id, ids));
+
+    // 7. Finally delete products
     await db.delete(products).where(inArray(products.id, ids));
     return ids.length;
   }

@@ -17,11 +17,8 @@ export default function PostsPage() {
 
     const loadPosts = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                const data = await api.getPosts(token);
-                setPosts(data.posts);
-            }
+            const data = await api.getPosts();
+            setPosts(data.posts);
         } catch (error) {
             console.error('Failed to load posts');
         } finally {
@@ -32,11 +29,8 @@ export default function PostsPage() {
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this post?')) return;
         try {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                await api.deletePost(token, id);
-                loadPosts(); // Reload list
-            }
+            await api.deletePost(id);
+            loadPosts(); // Reload list
         } catch (error) {
             alert('Failed to delete post');
         }

@@ -1,11 +1,11 @@
 import { Hono } from "hono";
 import { analyticsService } from "../services/analytics-service";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAdmin } from "../middleware/auth"; // BUG-014 FIX: was verifyAdmin
 
 const analyticsRouter = new Hono();
 
 // GET /analytics/overview
-analyticsRouter.get("/overview", verifyAuth, async (c) => {
+analyticsRouter.get("/overview", verifyAdmin, async (c) => {
   try {
     const overview = await analyticsService.getOverview();
     return c.json(overview);
@@ -16,8 +16,10 @@ analyticsRouter.get("/overview", verifyAuth, async (c) => {
 });
 
 // GET /analytics/sales-trend
-analyticsRouter.get("/sales-trend", verifyAuth, async (c) => {
-  const days = c.req.query("days") ? parseInt(c.req.query("days")!) : 30;
+analyticsRouter.get("/sales-trend", verifyAdmin, async (c) => {
+  // OPT-005: Validate and clamp days parameter
+  const rawDays = c.req.query("days") ? parseInt(c.req.query("days")!) : 30;
+  const days = Math.max(1, Math.min(365, isNaN(rawDays) ? 30 : rawDays));
   try {
     const trend = await analyticsService.getSalesTrend(days);
     return c.json(trend);
@@ -28,7 +30,7 @@ analyticsRouter.get("/sales-trend", verifyAuth, async (c) => {
 });
 
 // GET /analytics/orders-by-status
-analyticsRouter.get("/orders-by-status", verifyAuth, async (c) => {
+analyticsRouter.get("/orders-by-status", verifyAdmin, async (c) => {
   try {
     const statusData = await analyticsService.getOrdersByStatus();
     return c.json(statusData);

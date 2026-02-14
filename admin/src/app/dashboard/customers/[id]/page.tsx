@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, ShoppingBag, DollarSign, User, Edit } from 'lucide-react';
+import { api } from '@/lib/api';
 
 interface Customer {
     id: string;
@@ -61,21 +62,11 @@ export default function CustomerDetailPage() {
     const fetchCustomerDetails = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('adminToken');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            const response = await fetch(`${API_URL}/customers/${customerId}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setCustomer(data.customer);
-                setAddresses(data.addresses);
-                setOrders(data.orders);
-                setStats(data.stats);
-            }
+            const data = await api.getCustomer(customerId);
+            setCustomer(data.customer);
+            setAddresses(data.addresses);
+            setOrders(data.orders);
+            setStats(data.stats);
         } catch (error) {
             console.error('Error fetching customer details:', error);
         } finally {

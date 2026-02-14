@@ -58,16 +58,14 @@ export default function OrdersPage() {
     const fetchOrders = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
 
             // Using limit 20, offset derived from page
             const limit = 20;
             const offset = (page - 1) * limit;
 
-            const data = await api.getOrders(token, limit, offset, search, statusFilter);
-            setOrders(data.orders);
-            setTotalPages(data.pagination.total_pages);
+            const data = await api.getOrders(limit, offset, search, statusFilter);
+            setOrders(data || []);
+            setTotalPages(data.pagination?.total_pages || 1);
         } catch (error: any) {
             console.error('Error fetching orders:', error);
             alert(error.message || 'Failed to fetch orders');
@@ -78,9 +76,7 @@ export default function OrdersPage() {
 
     const fetchStats = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-            const data = await api.getOrderStats(token);
+            const data = await api.getOrderStats();
             setStats(data);
         } catch (error) {
             console.error('Error fetching stats:', error);
@@ -91,10 +87,7 @@ export default function OrdersPage() {
         if (selectedOrders.size === 0) return;
 
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
-            await api.updateOrdersBulk(token, Array.from(selectedOrders), status);
+            await api.updateOrdersBulk(Array.from(selectedOrders), status);
 
             fetchOrders();
             fetchStats();
@@ -124,9 +117,7 @@ export default function OrdersPage() {
 
     const handleExport = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-            const blob = await api.exportOrders(token, search, statusFilter);
+            const blob = await api.exportOrders(search, statusFilter);
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -144,10 +135,7 @@ export default function OrdersPage() {
         if (!confirm(`Are you sure you want to delete order #${orderNumber}? This action cannot be undone.`)) return;
         
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
-            await api.deleteOrder(token, id);
+            await api.deleteOrder(id);
             fetchOrders();
             fetchStats();
         } catch (error) {

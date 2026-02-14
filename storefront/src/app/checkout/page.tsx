@@ -7,10 +7,13 @@ import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, Lock, ShieldCheck, CreditCard } from 'lucide-react';
+import SecurityBadges, { PaymentIcons } from '@/components/ui/SecurityBadges';
 import Link from 'next/link';
 import Image from 'next/image';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import CountrySelect from '@/components/ui/CountrySelect';
+import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -98,6 +101,20 @@ export default function CheckoutPage() {
     const [promoLoading, setPromoLoading] = useState(false);
     const [promoMessage, setPromoMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
+    // PHASE 1.3: Shipping Options State
+    const [shippingOptions, setShippingOptions] = useState<any[]>([]);
+    const [selectedShipping, setSelectedShipping] = useState<any>(null);
+    const [shippingLoading, setShippingLoading] = useState(false);
+    const [freeShippingThreshold, setFreeShippingThreshold] = useState(25000);
+
+    // PHASE 1.4: Tax Calculation State
+    const [taxAmount, setTaxAmount] = useState(0);
+    const [taxLoading, setTaxLoading] = useState(false);
+    const [taxName, setTaxName] = useState('Tax');
+
+    // PHASE 1.5: Terms Acceptance State
+    const [acceptTerms, setAcceptTerms] = useState(false);
+
     // Form data hook moved BEFORE conditional return
     const [formData, setFormData] = useState({
         email: customer?.email || '',
@@ -124,6 +141,65 @@ export default function CheckoutPage() {
         }
     }, [customer]);
 
+    // PHASE 1.3: Fetch shipping options when country changes
+    useEffect(() => {
+        const fetchShippingOptions = async () => {
+            if (!formData.country_code) {
+                setShippingOptions([]);
+                setSelectedShipping(null);
+                return;
+            }
+
+            setShippingLoading(true);
+            try {
+                const data = await api.getShippingOptions(formData.country_code, currentRegion?.id);
+                if (data.options && data.options.length > 0) {
+                    setShippingOptions(data.options);
+                    setFreeShippingThreshold(data.free_shipping_threshold || 25000);
+                    // Auto-select first option
+                    setSelectedShipping(data.options[0]);
+                }
+            } catch (error) {
+                console.error('Failed to fetch shipping options:', error);
+            } finally {
+                setShippingLoading(false);
+            }
+        };
+
+        // Debounce the fetch
+        const timer = setTimeout(fetchShippingOptions, 300);
+        return () => clearTimeout(timer);
+    }, [formData.country_code, currentRegion?.id]);
+
+    // PHASE 1.4: Fetch tax when country or cart total changes
+    useEffect(() => {
+        const fetchTax = async () => {
+            if (!formData.country_code || cartTotal === 0) {
+                setTaxAmount(0);
+                return;
+            }
+
+            setTaxLoading(true);
+            try {
+                // Calculate subtotal after discount
+                const subtotal = cartTotal - (discount?.amount || 0);
+                const data = await api.calculateTax(formData.country_code, subtotal, currentRegion?.id);
+                if (data.tax_amount) {
+                    setTaxAmount(data.tax_amount);
+                    setTaxName(data.tax_name || 'Tax');
+                }
+            } catch (error) {
+                console.error('Failed to calculate tax:', error);
+                setTaxAmount(0);
+            } finally {
+                setTaxLoading(false);
+            }
+        };
+
+        const timer = setTimeout(fetchTax, 500);
+        return () => clearTimeout(timer);
+    }, [formData.country_code, cartTotal, discount?.amount, currentRegion?.id]);
+
     const handleApplyPromo = async () => {
         if (!promoCode.trim()) return;
         setPromoLoading(true);
@@ -140,31 +216,14 @@ export default function CheckoutPage() {
         }
     };
 
-    useEffect(() => {
-        if (!authLoading && !customer) {
-            router.push('/login?redirect=/checkout');
-        }
-    }, [authLoading, customer, router]);
-
-    // Show loading state instead of returning null
+    // PHASE 1.1: Allow guest checkout - removed login requirement
+    // Guests can now checkout without creating an account
+    
+    // Show loading state
     if (authLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-white">
                 <div className="animate-pulse text-stone-400">Loading...</div>
-            </div>
-        );
-    }
-
-    // Redirect state
-    if (!customer) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-white">
-                <div className="text-center">
-                    <p className="text-stone-500 mb-4">Please log in to continue</p>
-                    <Link href="/login?redirect=/checkout" className="text-stone-900 underline">
-                        Go to Login
-                    </Link>
-                </div>
             </div>
         );
     }
@@ -204,6 +263,16 @@ export default function CheckoutPage() {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
+    const handleAddressSelect = (address: { address_1: string; city: string; postal_code: string; country: string }) => {
+        setFormData(prev => ({
+            ...prev,
+            address_1: address.address_1 || prev.address_1,
+            city: address.city || prev.city,
+            postal_code: address.postal_code || prev.postal_code,
+            country_code: address.country || prev.country_code
+        }));
+    };
+
     const handleShippingSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -211,6 +280,19 @@ export default function CheckoutPage() {
 
         try {
             if (!currentRegion) throw new Error('No region selected');
+            
+            // PHASE 1.5: Validate terms acceptance
+            if (!acceptTerms) {
+                throw new Error('Please accept the Terms & Conditions and Privacy Policy to continue');
+            }
+
+            // PHASE 1.3: Validate shipping method selection
+            if (!selectedShipping) {
+                throw new Error('Please select a shipping method');
+            }
+
+            // Calculate final shipping cost
+            const shippingCost = cartTotal >= freeShippingThreshold ? 0 : (selectedShipping?.price || 0);
 
             const payload = {
                 region_id: currentRegion.id,
@@ -230,6 +312,7 @@ export default function CheckoutPage() {
                     postal_code: formData.postal_code,
                     phone: formData.phone || undefined
                 },
+                shipping_method: selectedShipping.id,
                 discount_code: discount?.code
             };
 
@@ -245,8 +328,10 @@ export default function CheckoutPage() {
             // Move to payment step
             setStep('payment');
 
-        } catch {
-            setError('Failed to create order. Please try again.');
+        } catch (err: any) {
+            console.error('Order creation error:', err);
+            const errorMsg = err?.message || 'Failed to create order. Please try again.';
+            setError(errorMsg);
         } finally {
             setLoading(false);
         }
@@ -261,17 +346,28 @@ export default function CheckoutPage() {
         setError(msg);
     };
 
-    const finalTotal = cartTotal - (discount?.amount || 0);
+    // PHASE 1.3: Calculate shipping cost
+    const shippingCost = selectedShipping 
+        ? (cartTotal >= freeShippingThreshold ? 0 : (selectedShipping.price || 0))
+        : 0;
+    
+    // PHASE 1.4: Final total includes subtotal - discount + shipping + tax
+    const finalTotal = cartTotal - (discount?.amount || 0) + shippingCost + taxAmount;
+
+    // Currency for display
+    const currency = currentRegion?.currency_code || items[0]?.currency?.toUpperCase() || 'USD';
 
     return (
         <div className="min-h-screen bg-white">
+            {/* PHASE 3.2: Mobile-first responsive layout */}
             <div className="grid lg:grid-cols-2 min-h-screen">
                 {/* Left: Form */}
-                <div className="p-8 lg:p-20 lg:border-r border-stone-100 order-2 lg:order-1">
+                <div className="p-4 md:p-8 lg:p-20 lg:border-r border-stone-100 order-2 lg:order-1">
                     <div className="max-w-lg mx-auto">
-                        <Link href="/" className="inline-flex items-center gap-2 text-stone-400 hover:text-black mb-12 text-sm transition-colors">
+                        <Link href="/" className="inline-flex items-center gap-2 text-stone-400 hover:text-black mb-6 md:mb-12 text-sm transition-colors">
                             <ArrowLeft size={16} />
-                            Back to Shop
+                            <span className="hidden sm:inline">Back to Shop</span>
+                            <span className="sm:hidden">Back</span>
                         </Link>
 
                         <div className="mb-12">
@@ -328,7 +424,8 @@ export default function CheckoutPage() {
 
                                 <div>
                                     <h3 className="text-lg font-serif text-stone-900 mb-6 border-b border-stone-100 pb-2">Shipping Address</h3>
-                                    <div className="grid grid-cols-2 gap-6 mb-4">
+                                    {/* PHASE 3.2: Mobile-first responsive grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
                                         <div>
                                             <label htmlFor="first_name" className={labelClasses}>First Name</label>
                                             <input id="first_name" type="text" name="first_name" required value={formData.first_name} onChange={handleChange} className={inputClasses} autoComplete="given-name" aria-required="true" />
@@ -340,9 +437,15 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="mb-4">
                                         <label htmlFor="address_1" className={labelClasses}>Address (Line 1)</label>
-                                        <input id="address_1" type="text" name="address_1" required value={formData.address_1} onChange={handleChange} className={inputClasses} autoComplete="street-address" aria-required="true" />
+                                        <AddressAutocomplete
+                                            value={formData.address_1}
+                                            onChange={(value) => setFormData(prev => ({ ...prev, address_1: value }))}
+                                            onAddressSelect={handleAddressSelect}
+                                            className={inputClasses}
+                                            required
+                                        />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-6 mb-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
                                         <div>
                                             <label htmlFor="city" className={labelClasses}>City</label>
                                             <input id="city" type="text" name="city" required value={formData.city} onChange={handleChange} className={inputClasses} autoComplete="address-level2" aria-required="true" />
@@ -353,16 +456,97 @@ export default function CheckoutPage() {
                                         </div>
                                     </div>
                                     <div>
-                                        <label htmlFor="country_code" className={labelClasses}>Country Code (ISO 2)</label>
-                                        <input id="country_code" type="text" name="country_code" required maxLength={2} placeholder="e.g. US" value={formData.country_code} onChange={handleChange} className={`${inputClasses} uppercase`} autoComplete="country" aria-required="true" aria-describedby="country-help" />
-                                        <span id="country-help" className="sr-only">Enter 2-letter country code (e.g., US, UK, IN)</span>
+                                        <label className={labelClasses}>Country</label>
+                                        <CountrySelect
+                                            name="country"
+                                            value={formData.country_code}
+                                            onChange={(code) => setFormData(prev => ({ ...prev, country_code: code }))}
+                                            required
+                                        />
                                     </div>
+                                </div>
+
+                                {/* PHASE 1.3: Shipping Method Selection */}
+                                <div className="mt-8">
+                                    <h3 className="text-lg font-serif text-stone-900 mb-6 border-b border-stone-100 pb-2">Shipping Method</h3>
+                                    
+                                    {shippingLoading ? (
+                                        <div className="py-4 text-center text-stone-400">Loading shipping options...</div>
+                                    ) : shippingOptions.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {shippingOptions.map((option) => {
+                                                const isFree = option.price === 0 || cartTotal >= freeShippingThreshold;
+                                                const displayPrice = isFree ? 0 : option.price;
+                                                
+                                                return (
+                                                    <label
+                                                        key={option.id}
+                                                        className={`flex items-center justify-between p-4 border cursor-pointer transition-colors ${
+                                                            selectedShipping?.id === option.id
+                                                                ? 'border-stone-900 bg-stone-50'
+                                                                : 'border-stone-200 hover:border-stone-400'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <input
+                                                                type="radio"
+                                                                name="shipping_method"
+                                                                value={option.id}
+                                                                checked={selectedShipping?.id === option.id}
+                                                                onChange={() => setSelectedShipping(option)}
+                                                                className="w-4 h-4 text-stone-900 focus:ring-stone-900"
+                                                            />
+                                                            <div>
+                                                                <p className="font-medium text-stone-900">{option.name}</p>
+                                                                <p className="text-sm text-stone-500">{option.description}</p>
+                                                            </div>
+                                                        </div>
+                                                        <span className={`font-medium ${isFree ? 'text-green-600' : 'text-stone-900'}`}>
+                                                            {isFree ? 'FREE' : `$${(displayPrice / 100).toFixed(2)}`}
+                                                        </span>
+                                                    </label>
+                                                );
+                                            })}
+                                            
+                                            {cartTotal >= freeShippingThreshold && selectedShipping && (
+                                                <p className="text-sm text-green-600 bg-green-50 p-3 border border-green-200">
+                                                    🎉 You've unlocked FREE shipping!
+                                                </p>
+                                            )}
+                                        </div>
+                                    ) : formData.country_code ? (
+                                        <div className="py-4 text-center text-stone-400">
+                                            No shipping options available for this country
+                                        </div>
+                                    ) : (
+                                        <div className="py-4 text-center text-stone-400">
+                                            Select your country to see available shipping methods
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* PHASE 1.5: Terms Acceptance */}
+                                <div className="mt-8 pt-6 border-t border-stone-100">
+                                    <label className="flex items-start gap-3 cursor-pointer group">
+                                        <input
+                                            type="checkbox"
+                                            checked={acceptTerms}
+                                            onChange={(e) => setAcceptTerms(e.target.checked)}
+                                            className="w-5 h-5 mt-0.5 rounded border-stone-300 text-stone-900 focus:ring-stone-900"
+                                        />
+                                        <span className="text-sm text-stone-600 group-hover:text-stone-900">
+                                            I agree to the{' '}
+                                            <Link href="/pages/terms-of-service" target="_blank" className="underline hover:text-stone-900">Terms of Service</Link>
+                                            {' '}and{' '}
+                                            <Link href="/pages/privacy-policy" target="_blank" className="underline hover:text-stone-900">Privacy Policy</Link>
+                                        </span>
+                                    </label>
                                 </div>
 
                                 <button
                                     type="submit"
-                                    disabled={loading}
-                                    className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50"
+                                    disabled={loading || !acceptTerms}
+                                    className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     aria-live="polite"
                                     aria-busy={loading}
                                 >
@@ -372,6 +556,44 @@ export default function CheckoutPage() {
                         ) : (
                             <div>
                                 <h3 className="text-lg font-serif text-stone-900 mb-6 border-b border-stone-100 pb-2">Payment</h3>
+                                
+                                {/* PHASE 7.3: Express Checkout Buttons */}
+                                <div className="mb-6 space-y-3">
+                                    <button
+                                        type="button"
+                                        className="w-full py-3 bg-black text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
+                                        onClick={() => {
+                                            alert('Express Checkout requires Stripe Apple Pay/Google Pay setup. Please use card payment for now.');
+                                        }}
+                                    >
+                                        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                                        </svg>
+                                        Pay with Apple Pay
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="w-full py-3 bg-[#4285F4] text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#3367D6] transition-colors"
+                                        onClick={() => {
+                                            alert('Express Checkout requires Stripe Google Pay setup. Please use card payment for now.');
+                                        }}
+                                    >
+                                        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                                            <path d="M12 11h8.533c.044.385.067.778.067 1.178 0 2.328-.778 4.4-2.022 6.022L19.6 21h-1.867l-1.222-1.489C14.855 17.2 13.333 15.667 12.667 14H12v-3.022h2.222c.456.667.911 1.333 1.222 2.022H12v-2h2.222c-.378-.756-.889-1.333-1.222-1.756V11H12V8.756c.667-.133 1.556-.133 2.222 0H12zM3 3v18h18V3H3z"/>
+                                        </svg>
+                                        Pay with Google Pay
+                                    </button>
+                                </div>
+                                
+                                <div className="relative mb-6">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-stone-200"></div>
+                                    </div>
+                                    <div className="relative flex justify-center text-sm">
+                                        <span className="px-2 bg-white text-stone-400">or pay with card</span>
+                                    </div>
+                                </div>
+
                                 {clientSecret && (
                                     <Elements stripe={stripePromise} options={{ clientSecret }}>
                                         <PaymentForm
@@ -393,8 +615,8 @@ export default function CheckoutPage() {
                     </div>
                 </div>
 
-                {/* Right: Summary */}
-                <div className="bg-stone-50 p-8 lg:p-20 order-1 lg:order-2">
+                {/* Right: Summary - Mobile on top, Desktop on right */}
+                <div className="bg-stone-50 p-4 md:p-8 lg:p-20 order-1 lg:order-2">
                     <div className="max-w-lg mx-auto sticky top-24">
                         <h2 className="text-xl font-serif text-stone-900 mb-8">Order Summary</h2>
 
@@ -421,6 +643,13 @@ export default function CheckoutPage() {
                                     <div className="flex-1">
                                         <p className="font-serif text-stone-900">{item.title}</p>
                                         <p className="text-xs text-stone-500 mt-1 uppercase tracking-wider">Qty: {item.quantity}</p>
+                                        {(item.material || item.origin || item.sku) && (
+                                            <div className="mt-1 text-[10px] text-stone-400">
+                                                {item.material && <span>{item.material}</span>}
+                                                {item.material && item.origin && <span> · </span>}
+                                                {item.origin && <span>{item.origin}</span>}
+                                            </div>
+                                        )}
                                     </div>
                                     <p className="font-medium text-stone-900">
                                         {new Intl.NumberFormat(undefined, { style: 'currency', currency: item.currency.toUpperCase() }).format((item.price * item.quantity) / 100)}
@@ -461,7 +690,7 @@ export default function CheckoutPage() {
                         <div className="border-t border-stone-200 pt-6 space-y-3 text-sm">
                             <div className="flex justify-between text-stone-600">
                                 <span>Subtotal</span>
-                                <span>{new Intl.NumberFormat(undefined, { style: 'currency', currency: items[0]?.currency.toUpperCase() || 'USD' }).format(cartTotal / 100)}</span>
+                                <span>{new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cartTotal / 100)}</span>
                             </div>
 
                             {discount && (
@@ -470,20 +699,48 @@ export default function CheckoutPage() {
                                         <span>Discount</span>
                                         <span className="text-xs bg-stone-100 px-1 py-0.5 rounded text-stone-500">{discount.code}</span>
                                     </div>
-                                    <span>-{new Intl.NumberFormat(undefined, { style: 'currency', currency: items[0]?.currency.toUpperCase() || 'USD' }).format(discount.amount / 100)}</span>
+                                    <span>-{new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(discount.amount / 100)}</span>
                                 </div>
                             )}
 
-                            <div className="flex justify-between text-stone-600">
-                                <span>Shipping</span>
-                                <span>Free</span>
-                            </div>
+                            {/* PHASE 1.3: Shipping Cost Display */}
+                            {step === 'payment' || selectedShipping ? (
+                                <div className="flex justify-between text-stone-600">
+                                    <span>Shipping{selectedShipping ? ` (${selectedShipping.name})` : ''}</span>
+                                    <span className={shippingCost === 0 ? 'text-green-600' : ''}>
+                                        {shippingCost === 0 
+                                            ? 'FREE' 
+                                            : new Intl.NumberFormat(undefined, { style: 'currency', currency: currency }).format(shippingCost / 100)
+                                        }
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="flex justify-between text-stone-400">
+                                    <span>Shipping</span>
+                                    <span>Calculated at next step</span>
+                                </div>
+                            )}
+
+                            {/* PHASE 1.4: Tax Display */}
+                            {taxAmount > 0 && (
+                                <div className="flex justify-between text-stone-600">
+                                    <span>{taxName}</span>
+                                    <span>
+                                        {taxLoading ? (
+                                            <span className="text-stone-400">Calculating...</span>
+                                        ) : (
+                                            new Intl.NumberFormat(undefined, { style: 'currency', currency: currency }).format(taxAmount / 100)
+                                        )}
+                                    </span>
+                                </div>
+                            )}
+
                             <div className="flex justify-between text-lg font-serif text-stone-900 pt-4 border-t border-stone-200">
                                 <span>Total</span>
                                 <span>
                                     {new Intl.NumberFormat(undefined, {
                                         style: 'currency',
-                                        currency: items[0]?.currency.toUpperCase() || 'USD'
+                                        currency,
                                     }).format(finalTotal / 100)}
                                 </span>
                             </div>
@@ -495,6 +752,17 @@ export default function CheckoutPage() {
                                 Every purchase is backed by our Authenticity Guarantee.
                                 We ensure the highest standards of craftsmanship.
                             </p>
+                        </div>
+
+                        {/* PHASE 7.3: Payment Icons */}
+                        <div className="mt-6">
+                            <p className="text-xs text-stone-400 text-center mb-3 uppercase tracking-wider">Accepted Payment Methods</p>
+                            <PaymentIcons />
+                        </div>
+
+                        {/* PHASE 7.3: Security Badges */}
+                        <div className="mt-6 pt-6 border-t border-stone-100">
+                            <SecurityBadges />
                         </div>
                     </div>
                 </div>

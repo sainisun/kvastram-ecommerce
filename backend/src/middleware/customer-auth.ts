@@ -1,12 +1,13 @@
 import { Context, Next } from "hono";
 import { verify } from "hono/jwt";
+import { getCookie } from "hono/cookie";
 import { config } from "../config";
 
 const JWT_SECRET = config.jwt.secret;
 
 export const verifyCustomer = async (c: Context, next: Next) => {
   // 🔒 FIX-010: Read token from httpOnly cookie, not Authorization header
-  const token = (c as any).cookies?.get("auth_token");
+  const token = getCookie(c, "auth_token");
 
   if (!token) {
     return c.json({ error: "Unauthorized: Missing auth cookie" }, 401);

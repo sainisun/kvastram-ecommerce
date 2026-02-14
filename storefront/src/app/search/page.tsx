@@ -101,7 +101,11 @@ function SearchContent() {
             title: product.title,
             price: priceObj.amount,
             currency: priceObj.currency_code,
-            thumbnail: product.thumbnail || undefined
+            thumbnail: product.thumbnail || undefined,
+            material: product.material || undefined,
+            origin: product.origin_country || undefined,
+            sku: variant.sku || undefined,
+            description: product.description || undefined
         });
 
         // Simple feedback

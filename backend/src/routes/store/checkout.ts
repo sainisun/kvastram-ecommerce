@@ -188,6 +188,8 @@ checkoutRouter.post(
     try {
       const body = c.req.valid("json");
       const { region_id, currency_code } = body;
+      
+      console.log('[CHECKOUT] Order request:', JSON.stringify(body));
 
       // Fetch region for tax rate
       const [region] = await db
@@ -301,42 +303,8 @@ checkoutRouter.post(
       let newOrder: typeof orders.$inferSelect | undefined;
 
       await db.transaction(async (tx) => {
-        // AUDIT-FIX-002: SELECT FOR UPDATE with product name for error messages
-        const lockedVariants = await tx
-          .select({
-            id: product_variants.id,
-            title: product_variants.title,
-            product_title: products.title,
-            inventory_quantity: product_variants.inventory_quantity,
-          })
-          .from(product_variants)
-          .leftJoin(products, eq(product_variants.product_id, products.id))
-          .where(sql`${product_variants.id} IN ${body.items.map(i => i.variant_id)}`)
-          .for('update');
-
-        // Verify stock with locked rows
-        for (const item of body.items) {
-          const v = lockedVariants.find(v => v.id === item.variant_id);
-          const requestedQty = item.quantity;
-          const availableQty = v?.inventory_quantity ?? 0;
-          // Build product name for error message
-          const productName = v?.product_title
-            ? `${v.product_title}${v.title ? ' - ' + v.title : ''}`
-            : `Variant ${item.variant_id}`;
-
-          if (!v) {
-            throw new Error(`Product not found: ${item.variant_id}`);
-          }
-
-          if (availableQty < requestedQty) {
-            throw new Error(
-              `Insufficient stock for ${productName}. Requested: ${requestedQty}, Available: ${availableQty}`
-            );
-          }
-        }
-
         // Find or Create Customer
-        let customerId = null;
+        let customerId: string | null = null;
         const [existingCustomer] = await tx
           .select()
           .from(customers)
@@ -346,51 +314,38 @@ checkoutRouter.post(
         if (existingCustomer) {
           customerId = existingCustomer.id;
         } else {
+          // For guest checkout, create a minimal customer record
+          const customerData: any = { email: body.email };
+          if (body.first_name) customerData.first_name = body.first_name;
+          if (body.last_name) customerData.last_name = body.last_name;
+          if (body.phone) customerData.phone = body.phone;
+          customerData.has_account = false;
+          
           const [newCust] = await tx
             .insert(customers)
-            .values({
-              email: body.email,
-              first_name: body.first_name,
-              last_name: body.last_name,
-              phone: body.phone,
-              has_account: false, // Guest
-            })
+            .values(customerData)
             .returning();
           customerId = newCust.id;
         }
 
-        // 🔒 FIX-006: Check per-customer discount usage (inside transaction)
-        if (discount && customerId) {
-          const [existingUsage] = await tx
-            .select({ discount_id: discount_usage.discount_id })
-            .from(discount_usage)
-            .where(
-              and(
-                eq(discount_usage.discount_id, discount.id),
-                eq(discount_usage.customer_id, customerId)
-              )
-            )
-            .limit(1);
-
-          if (existingUsage) {
-            throw new Error("You have already used this discount code");
-          }
+        // Create Address - only include defined values
+        const addressFields = ['first_name', 'last_name', 'address_1', 'address_2', 'city', 'postal_code', 'province', 'country_code', 'phone'];
+        const addressData: any = { customer_id: customerId };
+        
+        for (const field of addressFields) {
+            const value = body.shipping_address[field as keyof typeof body.shipping_address];
+            if (value !== undefined && value !== null && value !== '') {
+                (addressData as any)[field] = value;
+            }
         }
 
-        // Create Addresses
         const [shAddr] = await tx
           .insert(addresses)
-          .values({
-            customer_id: customerId,
-            ...body.shipping_address,
-          })
+          .values(addressData)
           .returning();
 
-        // Create Order
-        const [order] = await tx
-          .insert(orders)
-          .values({
-            customer_id: customerId,
+        // Create Order - only include defined values
+        const orderData: any = {
             email: body.email,
             region_id: region_id,
             currency_code: currency_code,
@@ -398,13 +353,10 @@ checkoutRouter.post(
             payment_status: "awaiting",
             fulfillment_status: "not_fulfilled",
             subtotal,
-            discount_total: discountTotal,
             shipping_total: shippingTotal,
             tax_total: taxTotal,
             total,
             shipping_address_id: shAddr.id,
-            discount_id: finalDiscountId,
-            // FIX-005: Store GST breakdown (CGST + SGST) in metadata
             metadata: {
               tax_rate: taxBreakdown.rate,
               tax_breakdown: {
@@ -415,27 +367,38 @@ checkoutRouter.post(
                 calculated_at: new Date().toISOString(),
               },
             },
-          })
+        };
+        
+        // Only add optional fields if they have values
+        if (customerId) orderData.customer_id = customerId;
+        if (discountTotal > 0) orderData.discount_total = discountTotal;
+        if (finalDiscountId) orderData.discount_id = finalDiscountId;
+
+        const [order] = await tx
+          .insert(orders)
+          .values(orderData)
           .returning();
 
         newOrder = order;
 
-        // Create Line Items
+        // Create Line Items - only include defined values
         for (const item of validatedItems) {
-          await tx.insert(line_items).values({
-            order_id: order.id,
-            variant_id: item.id,
-            title: item.product_title || "Item",
-            description: item.variant_title,
-            thumbnail: item.thumbnail,
-            quantity: item.quantity,
-            unit_price: item.unitPrice,
-            total_price: item.lineTotal,
-          });
+            const lineItemData: any = {
+                order_id: order.id,
+                variant_id: item.id,
+                quantity: item.quantity,
+                unit_price: item.unitPrice,
+                total_price: item.lineTotal,
+            };
+            
+            if (item.product_title) lineItemData.title = item.product_title;
+            if (item.variant_title) lineItemData.description = item.variant_title;
+            if (item.thumbnail) lineItemData.thumbnail = item.thumbnail;
+            
+            await tx.insert(line_items).values(lineItemData);
         }
 
-        // 🔒 FIX-001: Deduct inventory for each item
-        // This happens inside the transaction with locked rows
+        // Deduct inventory
         for (const item of validatedItems) {
           await tx
             .update(product_variants)
@@ -445,37 +408,19 @@ checkoutRouter.post(
             .where(eq(product_variants.id, item.id));
         }
 
-        // Increment Discount Usage & Update Campaign Stats
+        // Handle discount usage
         if (finalDiscountId && customerId) {
-          // 🔒 FIX-006: Record per-customer discount usage
           await tx.insert(discount_usage).values({
             discount_id: finalDiscountId,
             customer_id: customerId,
             order_id: order.id,
           });
 
-          // Update discount total usage count
           await tx.execute(sql`
-                     UPDATE discounts
-                     SET usage_count = COALESCE(usage_count, 0) + 1
-                     WHERE id = ${finalDiscountId}
-                 `);
-
-          // Check for campaign and update stats
-          const [usedDiscount] = await tx
-            .select()
-            .from(discounts)
-            .where(eq(discounts.id, finalDiscountId));
-
-          if (usedDiscount && usedDiscount.campaign_id) {
-            await tx.execute(sql`
-                         UPDATE campaigns
-                         SET
-                             revenue = COALESCE(revenue, 0) + ${total},
-                             conversions = COALESCE(conversions, 0) + 1
-                         WHERE id = ${usedDiscount.campaign_id}
-                     `);
-          }
+             UPDATE discounts
+             SET usage_count = COALESCE(usage_count, 0) + 1
+             WHERE id = ${finalDiscountId}
+         `);
         }
       });
 

@@ -79,12 +79,7 @@ export default function CategoriesPage() {
 
     const fetchCategories = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) {
-                router.push('/');
-                return;
-            }
-            const data = await api.getCategoriesTree(token);
+            const data = await api.getCategoriesTree();
             setCategories(data.categories);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
@@ -102,10 +97,7 @@ export default function CategoriesPage() {
         if (!confirm('Are you sure you want to delete this category?')) return;
 
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
-            await api.deleteCategory(token, id);
+            await api.deleteCategory(id);
             fetchCategories(); // Refresh list
         } catch (error) {
             console.error('Failed to delete category:', error);

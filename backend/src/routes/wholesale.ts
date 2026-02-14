@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "../db";
 import { wholesale_inquiries } from "../db/schema";
 import { eq, desc, and, or, like, sql } from "drizzle-orm";
-import { verifyAuth } from "../middleware/auth";
+import { verifyAdmin } from "../middleware/auth"; // BUG-009 FIX: was verifyAdmin
 import { emailService } from "../services/email-service";
 import { sanitizeSearchInput } from "../utils/validation";
 
@@ -77,18 +77,13 @@ app.post("/", zValidator("json", createInquirySchema), async (c) => {
 });
 
 // ADMIN: Get all wholesale inquiries
-app.get("/", verifyAuth, async (c) => {
+app.get("/", verifyAdmin, async (c) => {
   try {
     const { status, search, page = "1", limit = "20" } = c.req.query();
 
     const pageNum = parseInt(page);
     const limitNum = Math.min(parseInt(limit), 100);
     const offset = (pageNum - 1) * limitNum;
-
-    let query = db.select().from(wholesale_inquiries);
-    let countQuery = db
-      .select({ count: sql<number>`count(*)` })
-      .from(wholesale_inquiries);
 
     // Build conditions
     const conditions = [];
@@ -111,19 +106,21 @@ app.get("/", verifyAuth, async (c) => {
       }
     }
 
-    if (conditions.length > 0) {
-      // @ts-ignore - drizzle type complexity
-      query.where(and(...conditions));
-      // @ts-ignore
-      countQuery.where(and(...conditions));
-    }
+    // BUG-017 FIX: Build where clause first, then apply to both queries
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    const inquiries = await query
+    const inquiries = await db
+      .select()
+      .from(wholesale_inquiries)
+      .where(whereClause)
       .orderBy(desc(wholesale_inquiries.created_at))
       .limit(limitNum)
       .offset(offset);
 
-    const [countResult] = await countQuery;
+    const [countResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(wholesale_inquiries)
+      .where(whereClause);
     const count = Number(countResult?.count) || 0;
     const totalPages = Math.ceil(count / limitNum);
 
@@ -149,7 +146,7 @@ app.get("/", verifyAuth, async (c) => {
 });
 
 // ADMIN: Get wholesale stats
-app.get("/stats/overview", verifyAuth, async (c) => {
+app.get("/stats/overview", verifyAdmin, async (c) => {
   try {
     const [stats] = await db
       .select({
@@ -173,7 +170,7 @@ app.get("/stats/overview", verifyAuth, async (c) => {
 });
 
 // ADMIN: Get single wholesale inquiry
-app.get("/:id", verifyAuth, async (c) => {
+app.get("/:id", verifyAdmin, async (c) => {
   try {
     const { id } = c.req.param();
 
@@ -196,7 +193,7 @@ app.get("/:id", verifyAuth, async (c) => {
 // ADMIN: Update wholesale inquiry
 app.patch(
   "/:id",
-  verifyAuth,
+  verifyAdmin,
   zValidator("json", updateInquirySchema),
   async (c) => {
     try {
@@ -256,7 +253,7 @@ app.patch(
 );
 
 // ADMIN: Delete wholesale inquiry
-app.delete("/:id", verifyAuth, async (c) => {
+app.delete("/:id", verifyAdmin, async (c) => {
   try {
     const { id } = c.req.param();
 

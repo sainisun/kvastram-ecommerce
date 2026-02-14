@@ -25,25 +25,22 @@ export default function SettingsPage() {
 
     // 2FA Modal State
     const [showTwoFactorModal, setShowTwoFactorModal] = useState(false);
+    const [showDisable2FAModal, setShowDisable2FAModal] = useState(false);
     const [qrCode, setQrCode] = useState('');
     const [otp, setOtp] = useState('');
     const [verifying2FA, setVerifying2FA] = useState(false);
+    const [disabling2FA, setDisabling2FA] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            router.push('/');
-            return;
-        }
-        fetchData(token);
+        fetchData();
     }, [router]);
 
-    const fetchData = async (token: string) => {
+    const fetchData = async () => {
         try {
             setLoading(true);
             const [settingsData, profileData] = await Promise.all([
-                api.getSettings(token),
-                api.getMe(token).catch(() => null)
+                api.getSettings(),
+                api.getMe().catch(() => null)
             ]);
 
             // Flatten settings
@@ -82,12 +79,9 @@ export default function SettingsPage() {
     };
 
     const handleSave = async () => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
-
         try {
             setSaving(true);
-            await api.updateSettingsBulk(token, settings);
+            await api.updateSettingsBulk(settings);
             showNotification('success', 'Settings saved successfully!');
         } catch (error) {
             console.error('Error saving settings:', error);
@@ -99,13 +93,11 @@ export default function SettingsPage() {
 
     const handleSaveStripe = async (e: React.FormEvent) => {
         e.preventDefault();
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
 
         try {
             setSaving(true);
-            await api.updateSetting(token, 'stripe_publishable_key', stripeKeys.publishable, 'payment');
-            await api.updateSetting(token, 'stripe_secret_key', stripeKeys.secret, 'payment');
+            await api.updateSetting('stripe_publishable_key', stripeKeys.publishable, 'payment');
+            await api.updateSetting('stripe_secret_key', stripeKeys.secret, 'payment');
 
             setSettings((prev: any) => ({
                 ...prev,
@@ -124,12 +116,9 @@ export default function SettingsPage() {
     };
 
     const handleEnable2FA = async () => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
-
         try {
             setLoading(true); // temporary spinner
-            const res = await api.generate2FA(token);
+            const res = await api.generate2FA();
             setQrCode(res.qrCode);
             setShowTwoFactorModal(true);
         } catch (error) {
@@ -141,15 +130,12 @@ export default function SettingsPage() {
     };
 
     const handleVerify2FA = async () => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
-
         try {
             setVerifying2FA(true);
-            await api.verify2FA(token, otp);
+            await api.verify2FA(otp);
 
             // Refresh User
-            const profile = await api.getMe(token);
+            const profile = await api.getMe();
             setUser(profile.user);
 
             setShowTwoFactorModal(false);
@@ -163,20 +149,27 @@ export default function SettingsPage() {
         }
     };
 
-    const handleDisable2FA = async () => {
-        if (!confirm('Are you sure you want to disable Two-Factor Authentication?')) return;
+    const handleDisable2FA = () => {
+        setOtp('');
+        setShowDisable2FAModal(true);
+    };
 
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
+    const handleConfirmDisable2FA = async () => {
+        if (otp.length !== 6) return;
 
         try {
-            await api.disable2FA(token);
-            const profile = await api.getMe(token);
+            setDisabling2FA(true);
+            await api.disable2FA(otp);
+            const profile = await api.getMe();
             setUser(profile.user);
+            setShowDisable2FAModal(false);
+            setOtp('');
             showNotification('success', 'Two-Factor Authentication Disabled');
         } catch (error) {
             console.error('Error disabling 2FA:', error);
-            showNotification('error', 'Failed to disable 2FA');
+            showNotification('error', 'Invalid OTP. Please try again.');
+        } finally {
+            setDisabling2FA(false);
         }
     };
 
@@ -510,7 +503,7 @@ export default function SettingsPage() {
                 </div>
             )}
 
-            {/* 2FA Modal */}
+            {/* 2FA Modal - Enable */}
             {showTwoFactorModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
@@ -552,6 +545,61 @@ export default function SettingsPage() {
                             >
                                 {verifying2FA ? 'Verifying...' : 'Verify & Enable'}
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 2FA Modal - Disable */}
+            {showDisable2FAModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <Shield size={24} className="text-red-600" />
+                                Disable 2FA
+                            </h2>
+                            <button onClick={() => setShowDisable2FAModal(false)} className="text-gray-500 hover:text-gray-700"><X size={20} /></button>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                                <p className="text-sm text-red-800">
+                                    <strong>Warning:</strong> Disabling 2FA will remove the extra layer of security from your account. You will only need your password to log in.
+                                </p>
+                            </div>
+
+                            <p className="text-sm text-gray-600">
+                                To confirm, please enter the current 6-digit code from your authenticator app:
+                            </p>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Authentication Code</label>
+                                <input
+                                    type="text"
+                                    maxLength={6}
+                                    placeholder="000 000"
+                                    className="w-full text-center text-2xl tracking-widest border border-gray-300 rounded-lg p-3 font-mono"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                                />
+                            </div>
+
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowDisable2FAModal(false)}
+                                    className="flex-1 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleConfirmDisable2FA}
+                                    disabled={otp.length !== 6 || disabling2FA}
+                                    className="flex-1 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {disabling2FA ? 'Disabling...' : 'Disable 2FA'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

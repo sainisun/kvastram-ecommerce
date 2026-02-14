@@ -32,15 +32,10 @@ export default function AnalyticsPage() {
     const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
 
     useEffect(() => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            router.push('/');
-            return;
-        }
-        fetchAnalytics(token);
+        fetchAnalytics();
     }, [period]);
 
-    const fetchAnalytics = async (token: string) => {
+    const fetchAnalytics = async () => {
         try {
             setLoading(true);
             const days = getDaysForPeriod(period);
@@ -48,10 +43,10 @@ export default function AnalyticsPage() {
 
             // Use existing APIs that are available in backend
             const [overviewData, salesTrendData, ordersByStatus, previousSalesTrend] = await Promise.all([
-                api.getAnalyticsOverview(token),
-                api.getSalesTrend(token, days),
-                api.getOrdersByStatus(token),
-                api.getSalesTrend(token, previousDays)
+                api.getAnalyticsOverview(),
+                api.getSalesTrend(days),
+                api.getOrdersByStatus(),
+                api.getSalesTrend(previousDays)
             ]);
 
             // Calculate totals from orders by status

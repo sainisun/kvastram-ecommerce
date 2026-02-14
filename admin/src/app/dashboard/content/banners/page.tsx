@@ -40,11 +40,8 @@ export default function BannersPage() {
 
     const loadBanners = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                const data = await api.getBanners(token);
-                setBanners(data.banners);
-            }
+            const data = await api.getBanners();
+            setBanners(data.banners);
         } catch (error) {
             console.error('Failed to load banners');
         } finally {
@@ -55,10 +52,7 @@ export default function BannersPage() {
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
-            await api.createBanner(token, {
+            await api.createBanner({
                 ...newItem,
                 position: banners.length // Append to end
             });
@@ -83,10 +77,7 @@ export default function BannersPage() {
         if (!editingBanner) return;
 
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
-            await api.updateBanner(token, editingBanner.id, {
+            await api.updateBanner(editingBanner.id, {
                 title: editingBanner.title,
                 image_url: editingBanner.image_url,
                 link: editingBanner.link,
@@ -106,11 +97,8 @@ export default function BannersPage() {
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this banner?')) return;
         try {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                await api.deleteBanner(token, id);
-                loadBanners();
-            }
+            await api.deleteBanner(id);
+            loadBanners();
         } catch (error) {
             alert('Failed to delete banner');
         }
@@ -139,15 +127,12 @@ export default function BannersPage() {
 
         // Save to backend
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
             const items = updatedBanners.map(b => ({
                 id: b.id,
                 position: b.position
             }));
 
-            await api.reorderBanners(token, items);
+            await api.reorderBanners(items);
         } catch (error) {
             alert('Failed to save reorder');
             loadBanners(); // Reload original order
@@ -161,14 +146,11 @@ export default function BannersPage() {
         }
         setUploading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                const res = await api.uploadImage(token, file);
-                if (isEditing && editingBanner) {
-                    setEditingBanner({ ...editingBanner, image_url: res.url });
-                } else {
-                    setNewItem(prev => ({ ...prev, image_url: res.url }));
-                }
+            const res = await api.uploadImage(file);
+            if (isEditing && editingBanner) {
+                setEditingBanner({ ...editingBanner, image_url: res.url });
+            } else {
+                setNewItem(prev => ({ ...prev, image_url: res.url }));
             }
         } catch (error) {
             console.error(error);

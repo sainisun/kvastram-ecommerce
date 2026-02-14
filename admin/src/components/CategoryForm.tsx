@@ -39,15 +39,12 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
         // Fetch categories for parent dropdown
         const fetchCategories = async () => {
             try {
-                const token = localStorage.getItem('adminToken');
-                if (token) {
-                    const data = await api.getCategories(token); // Flat list
-                    // Filter out current category (can't be own parent)
-                    const filtered = initialData
-                        ? data.categories.filter((c: Category) => c.id !== initialData.id)
-                        : data.categories;
-                    setCategories(filtered);
-                }
+                const data = await api.getCategories(); // Flat list
+                // Filter out current category (can't be own parent)
+                const filtered = initialData
+                    ? data.categories.filter((c: Category) => c.id !== initialData.id)
+                    : data.categories;
+                setCategories(filtered);
             } catch (err) {
                 console.error("Failed to fetch categories for parent select", err);
             }
@@ -79,18 +76,15 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
         setError('');
 
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) throw new Error('Not authenticated');
-
             const payload = {
                 ...formData,
                 parent_id: formData.parent_id === '' ? null : formData.parent_id // Convert empty string to null
             };
 
             if (initialData) {
-                await api.updateCategory(token, initialData.id, payload);
+                await api.updateCategory(initialData.id, payload);
             } else {
-                await api.createCategory(token, payload);
+                await api.createCategory(payload);
             }
 
             router.push('/dashboard/categories');

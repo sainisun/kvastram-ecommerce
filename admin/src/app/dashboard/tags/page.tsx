@@ -21,12 +21,7 @@ export default function TagsPage() {
 
     const fetchTags = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) {
-                router.push('/');
-                return;
-            }
-            const data = await api.getTags(token);
+            const data = await api.getTags();
             setTags(data.tags);
         } catch (error) {
             console.error('Failed to fetch tags:', error);
@@ -46,12 +41,9 @@ export default function TagsPage() {
         if (!newTagName.trim()) return;
 
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
             const slug = newTagName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
-            await api.createTag(token, { name: newTagName, slug });
+            await api.createTag({ name: newTagName, slug });
             setNewTagName('');
             setIsCreating(false);
             fetchTags();
@@ -64,10 +56,7 @@ export default function TagsPage() {
         if (!confirm('Are you sure you want to delete this tag?')) return;
 
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
-            await api.deleteTag(token, id);
+            await api.deleteTag(id);
             fetchTags();
         } catch (err: any) {
             alert(err.message || 'Failed to delete tag');

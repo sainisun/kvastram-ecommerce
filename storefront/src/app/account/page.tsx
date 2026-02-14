@@ -6,7 +6,7 @@ import { OrderWithDetails } from '@/types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Package, User, LogOut } from 'lucide-react';
+import { Package, User, LogOut, MapPin } from 'lucide-react';
 
 export default function AccountPage() {
     const { customer, loading, logout } = useAuth();
@@ -58,6 +58,9 @@ export default function AccountPage() {
                                 </Link>
                                 <Link href="/account/profile" className="block px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-50 hover:text-stone-900 mb-1">
                                     Profile
+                                </Link>
+                                <Link href="/account/addresses" className="block px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-50 hover:text-stone-900 mb-1 flex items-center gap-2">
+                                    <MapPin size={14} /> Addresses
                                 </Link>
                                 <button
                                     onClick={logout}

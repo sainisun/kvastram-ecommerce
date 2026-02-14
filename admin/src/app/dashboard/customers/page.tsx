@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Users, UserCheck, UserX, TrendingUp, Search, Filter, Download, Eye, Edit, Trash2, Mail, Phone, X } from 'lucide-react';
 import { exportToCSV, formatCustomersForExport } from '@/lib/csv-export';
+import { api } from '@/lib/api';
 
 interface Customer {
     id: string;
@@ -57,26 +58,9 @@ export default function CustomersPage() {
     const fetchCustomers = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('adminToken');
-
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-
-            let url = `${API_URL}/customers?page=${page}&limit=20`;
-            if (search) url += `&search=${encodeURIComponent(search)}`;
-            if (filter === 'registered') url += `&has_account=true`;
-            if (filter === 'guest') url += `&has_account=false`;
-
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setCustomers(data.customers);
-                setTotalPages(data.pagination.total_pages);
-            }
+            const data = await api.getCustomers(page, search, filter);
+            setCustomers(data || []);
+            setTotalPages(data.pagination?.total_pages || 1);
         } catch (error) {
             console.error('Error fetching customers:', error);
         } finally {
@@ -86,18 +70,8 @@ export default function CustomersPage() {
 
     const fetchStats = async () => {
         try {
-            const token = localStorage.getItem('adminToken');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            const response = await fetch(`${API_URL}/customers/stats/overview`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setStats(data);
-            }
+            const data = await api.getCustomerStats();
+            setStats(data);
         } catch (error) {
             console.error('Error fetching stats:', error);
         }
@@ -153,28 +127,12 @@ export default function CustomersPage() {
 
         setEditLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            
-            const response = await fetch(`${API_URL}/customers/${editingCustomer.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(editFormData)
-            });
-
-            if (response.ok) {
-                closeEditModal();
-                fetchCustomers(); // Refresh the list
-            } else {
-                const error = await response.json();
-                alert(error.error || 'Failed to update customer');
-            }
-        } catch (error) {
+            await api.updateCustomer(editingCustomer.id, editFormData);
+            closeEditModal();
+            fetchCustomers(); // Refresh the list
+        } catch (error: any) {
             console.error('Error updating customer:', error);
-            alert('Failed to update customer');
+            alert(error.message || 'Failed to update customer');
         } finally {
             setEditLoading(false);
         }
@@ -196,27 +154,13 @@ export default function CustomersPage() {
 
         setDeleteLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
-            
-            const response = await fetch(`${API_URL}/customers/${deletingCustomer.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                closeDeleteModal();
-                fetchCustomers(); // Refresh the list
-                fetchStats(); // Refresh stats
-            } else {
-                const error = await response.json();
-                alert(error.error || 'Failed to delete customer');
-            }
-        } catch (error) {
+            await api.deleteCustomer(deletingCustomer.id);
+            closeDeleteModal();
+            fetchCustomers(); // Refresh the list
+            fetchStats(); // Refresh stats
+        } catch (error: any) {
             console.error('Error deleting customer:', error);
-            alert('Failed to delete customer');
+            alert(error.message || 'Failed to delete customer');
         } finally {
             setDeleteLoading(false);
         }

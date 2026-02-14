@@ -48,11 +48,8 @@ export default function PostForm({ initialData, isEdit }: PostFormProps) {
         }
         setUploading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                const res = await api.uploadImage(token, file);
-                setFormData((prev: any) => ({ ...prev, cover_image: res.url }));
-            }
+            const res = await api.uploadImage(file);
+            setFormData((prev: any) => ({ ...prev, cover_image: res.url }));
         } catch (error) {
             console.error(error);
             alert('Upload failed');
@@ -65,18 +62,15 @@ export default function PostForm({ initialData, isEdit }: PostFormProps) {
         e.preventDefault();
         setLoading(true);
         try {
-            const token = localStorage.getItem('adminToken');
-            if (!token) return;
-
             const payload = {
                 ...formData,
                 published_at: formData.status === 'published' ? (formData.published_at || new Date().toISOString()) : null
             };
 
             if (isEdit) {
-                await api.updatePost(token, initialData.id, payload);
+                await api.updatePost(initialData.id, payload);
             } else {
-                await api.createPost(token, payload);
+                await api.createPost(payload);
             }
             router.push('/dashboard/content/posts');
         } catch (error: any) {

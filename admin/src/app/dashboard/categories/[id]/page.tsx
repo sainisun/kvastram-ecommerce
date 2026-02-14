@@ -17,12 +17,7 @@ export default function EditCategoryPage() {
 
         const fetchCategory = async () => {
             try {
-                const token = localStorage.getItem('adminToken');
-                if (!token) {
-                    router.push('/');
-                    return;
-                }
-                const data = await api.getCategory(token, id as string);
+                const data = await api.getCategory(id as string);
                 setCategory(data.category);
             } catch (err) {
                 console.error(err);

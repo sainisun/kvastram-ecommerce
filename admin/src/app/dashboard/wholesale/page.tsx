@@ -33,22 +33,15 @@ export default function WholesalePage() {
     const [updating, setUpdating] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-            router.push('/login');
-            return;
-        }
         fetchInquiries();
     }, [filter]);
 
     const fetchInquiries = async () => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
         try {
             setLoading(true);
             const [inquiriesData, statsData] = await Promise.all([
-                api.getWholesaleInquiries(token!, filter === 'all' ? undefined : filter, search),
-                api.getWholesaleStats(token!)
+                api.getWholesaleInquiries(filter === 'all' ? undefined : filter, search),
+                api.getWholesaleStats()
             ]);
             setInquiries(inquiriesData.inquiries || []);
             setStats(statsData || { total: 0, pending: 0, approved: 0, rejected: 0 });
@@ -60,11 +53,9 @@ export default function WholesalePage() {
     };
 
     const handleUpdateStatus = async (id: string, status: string, tier?: string) => {
-        const token = localStorage.getItem('adminToken');
-        if (!token) return;
         try {
             setUpdating(true);
-            await api.updateWholesaleInquiry(token!, id, {
+            await api.updateWholesaleInquiry(id, {
                 status,
                 discount_tier: tier,
             });

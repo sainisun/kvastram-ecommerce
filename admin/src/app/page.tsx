@@ -23,7 +23,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      console.log('[PAGE] Attempting login...', { email });
       const result = await api.login(email, password, show2FA ? twoFactorCode : undefined);
+      console.log('[PAGE] Login successful, result:', result);
 
       // Use context login to update state globally
       login(result);
@@ -31,7 +33,12 @@ export default function LoginPage() {
       showNotification('success', 'Welcome back!');
       // router.push handled by context login
     } catch (err: any) {
-      console.log('Login failed:', err);
+      console.error('[PAGE] Login failed:', err);
+      console.error('[PAGE] Error details:', {
+        message: err.message,
+        response: err.response,
+        stack: err.stack
+      });
 
       // Check for 2FA requirement
       // err.response comes from our customized api wrapper

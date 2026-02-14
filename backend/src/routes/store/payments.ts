@@ -25,7 +25,13 @@ import { eq, sql } from "drizzle-orm";
 import { logInfo, logError } from "../../utils/logger";
 import { asyncHandler } from "../../middleware/error-handler";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+// BUG-005 FIX: Fail early if Stripe key is missing rather than creating invalid client
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+if (!STRIPE_SECRET_KEY) {
+  console.warn("⚠️  STRIPE_SECRET_KEY not set — payment routes will fail");
+}
+
+const stripe = new Stripe(STRIPE_SECRET_KEY || "sk_test_placeholder", {
   // Cast to any because the types might not cover this specific version string yet
   apiVersion: "2025-02-05.acacia" as any,
 });
@@ -73,7 +79,7 @@ paymentRouter.post(
 
       // Create Stripe PaymentIntent
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(Number(order.total) * 100), // Convert to integer cents
+        amount: Math.round(Number(order.total)), // BUG-001 FIX: total is already in cents
         currency: order.currency_code.toLowerCase(),
         automatic_payment_methods: {
           enabled: true,
@@ -149,10 +155,17 @@ paymentRouter.post("/webhook", async (c) => {
   let event: Stripe.Event;
 
   try {
+    // BUG-006 FIX: Reject webhooks if secret is not configured
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      logError("STRIPE_WEBHOOK_SECRET not configured");
+      return c.json({ error: "Webhook processing not configured" }, 500);
+    }
+
     event = stripe.webhooks.constructEvent(
       payload,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET || "",
+      webhookSecret,
     );
   } catch (err: any) {
     logError("Webhook signature verification failed", err);
@@ -199,12 +212,20 @@ paymentRouter.post("/webhook", async (c) => {
         const order_id = paymentIntent.metadata?.order_id;
 
         if (order_id) {
+          // BUG-002 FIX: Fetch existing order to merge metadata (preserve tax breakdown)
+          const [existingOrder] = await db
+            .select()
+            .from(orders)
+            .where(eq(orders.id, order_id))
+            .limit(1);
+
           await db
             .update(orders)
             .set({
               payment_status: "captured",
               status: "completed",
               metadata: {
+                ...(existingOrder?.metadata as Record<string, any> || {}),
                 stripe_payment_intent_id: paymentIntent.id,
                 stripe_payment_status: paymentIntent.status,
                 paid_at: new Date().toISOString(),
@@ -222,11 +243,19 @@ paymentRouter.post("/webhook", async (c) => {
         const order_id = paymentIntent.metadata?.order_id;
 
         if (order_id) {
+          // BUG-002 FIX: Merge metadata for failed payments too
+          const [existingOrder] = await db
+            .select()
+            .from(orders)
+            .where(eq(orders.id, order_id))
+            .limit(1);
+
           await db
             .update(orders)
             .set({
               payment_status: "failed",
               metadata: {
+                ...(existingOrder?.metadata as Record<string, any> || {}),
                 stripe_payment_intent_id: paymentIntent.id,
                 stripe_payment_status: paymentIntent.status,
                 payment_failed_at: new Date().toISOString(),

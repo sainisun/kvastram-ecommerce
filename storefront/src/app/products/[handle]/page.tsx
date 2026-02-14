@@ -1,8 +1,9 @@
 import { api } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import ProductView from '@/components/product/ProductView';
-import type { Metadata } from 'next';
+import { RecentlyViewedSection as RecentlyViewed } from '@/components/product/RecentlyViewed';
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import ProductGrid from '@/components/ProductGrid';
 import { Product } from '@/types/backend';
 
@@ -146,6 +147,9 @@ export default async function ProductPage({ params }: Props) {
                     <RelatedProducts categoryIds={product.categories?.map((c: { category_id: string }) => c.category_id) || []} currentId={product.id} />
                 </Suspense>
             </div>
+
+            {/* Recently Viewed */}
+            <RecentlyViewed />
         </>
     );
 }
