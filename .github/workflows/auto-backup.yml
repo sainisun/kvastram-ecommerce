@@ -11,13 +11,30 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for changes
+        id: check
+        run: |
+          git diff --quiet HEAD~1 HEAD || true
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commit and push changes
+        if: steps.check.outputs.has_changes == 'true'
         run: |
           git config --local user.email "backup@kvastram.local"
           git config --local user.name "Kvastram Auto Backup"
           git add -A
-          git commit -m "Auto backup: $(date)" || echo "No changes to backup"
-          git push
+          git commit -m "Auto backup: $(date)" || echo "No changes to commit"
+          git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: No changes message
+        if: steps.check.outputs.has_changes == 'false'
+        run: echo "No changes to backup"
