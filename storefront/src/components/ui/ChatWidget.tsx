@@ -1,23 +1,97 @@
 'use client';
 
-import { useState } from 'react';
-import { MessageCircle, X, Minimize2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MessageCircle, X, Minimize2, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+declare global {
+    interface Window {
+        Tawk_API?: any;
+        Tawk_LoadStart?: Date;
+    }
+}
 
 export function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
+    const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string }[]>([
+        { role: 'bot', text: 'Hello! Welcome to Kvastram. How can we help you today?' }
+    ]);
+    const [inputText, setInputText] = useState('');
 
-    // This is a placeholder - in production, integrate with:
-    // - Tawk.to: https://www.tawk.to
-    // - Intercom: https://www.intercom.com
-    // - Zendesk: https://www.zendesk.com
-    // - Custom chat solution
+    const TAWK_PROPERTY_ID = process.env.NEXT_PUBLIC_TAWK_PROPERTY_ID;
+
+    // If Tawk.to is configured, load the script
+    if (TAWK_PROPERTY_ID) {
+        return null;
+    }
+
+    const quickReplies = [
+        { label: 'Track my order', action: 'I want to track my order' },
+        { label: 'Return an item', action: 'How do I return an item?' },
+        { label: 'Shipping info', action: 'What are the shipping options?' },
+    ];
+
+    const handleSendMessage = () => {
+        if (!inputText.trim()) return;
+
+        const userMessage = inputText.trim();
+        setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+        setInputText('');
+
+        // Simple auto-response (replace with Tawk.to or AI for real responses)
+        setTimeout(() => {
+            const botResponses: Record<string, string> = {
+                'track': 'You can track your order at /track. Enter your order ID to see the status.',
+                'order': 'You can track your order at /track. Enter your order ID to see the status.',
+                'return': 'To return an item, go to your account > Orders > View Order > Request Return. Our return policy allows returns within 30 days.',
+                'shipping': 'We offer free shipping on orders over $100. Standard delivery takes 5-7 business days. Express shipping available at checkout.',
+                'exchange': 'For exchanges, please return the item and place a new order. We\'ll refund shipping costs for defective items.',
+                'refund': 'Refunds are processed within 5-10 business days after return is approved.',
+                'contact': 'You can reach us at support@kvastram.com or call +1 (555) 123-4567.',
+                'default': 'Thank you for your message! Our team typically replies within minutes. Is there anything specific you\'d like to know?'
+            };
+
+            const lowerMsg = userMessage.toLowerCase();
+            let response = botResponses['default'];
+            
+            for (const [key, value] of Object.entries(botResponses)) {
+                if (lowerMsg.includes(key)) {
+                    response = value;
+                    break;
+                }
+            }
+
+            setMessages(prev => [...prev, { role: 'bot', text: response }]);
+        }, 500);
+    };
+
+    const handleQuickReply = (action: string) => {
+        setMessages(prev => [...prev, { role: 'user', text: action }]);
+        
+        setTimeout(() => {
+            const botResponses: Record<string, string> = {
+                'track': 'You can track your order at /track. Enter your order ID to see the status.',
+                'return': 'To return an item, go to your account > Orders > View Order > Request Return. Our return policy allows returns within 30 days.',
+                'shipping': 'We offer free shipping on orders over $100. Standard delivery takes 5-7 business days. Express shipping available at checkout.',
+            };
+
+            const lowerMsg = action.toLowerCase();
+            let response = botResponses['default'] || 'Thank you for your message!';
+            
+            for (const [key, value] of Object.entries(botResponses)) {
+                if (lowerMsg.includes(key)) {
+                    response = value;
+                    break;
+                }
+            }
+
+            setMessages(prev => [...prev, { role: 'bot', text: response }]);
+        }, 500);
+    };
 
     const handleOpenChat = () => {
-        // For demo, show a message. In production, open actual chat widget
         setIsOpen(true);
-        setIsMinimized(false);
     };
 
     return (
