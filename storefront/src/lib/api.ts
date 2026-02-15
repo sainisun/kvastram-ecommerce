@@ -238,9 +238,13 @@ export const api = {
     // --- Tax Calculation (PHASE 1.4) ---
     async calculateTax(countryCode: string, subtotal: number, regionId?: string) {
         try {
+            const csrfHeader = await getCsrfHeader();
             const res = await fetch(`${API_URL}/store/checkout/tax`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...csrfHeader 
+                },
                 body: JSON.stringify({
                     country_code: countryCode,
                     subtotal,
@@ -298,15 +302,30 @@ export const api = {
 
     // --- Resend Verification Email ---
     async resendVerification(email: string) {
+        const csrfHeader = await getCsrfHeader();
         const res = await fetch(`${API_URL}/store/auth/resend-verification`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...csrfHeader
+            },
             body: JSON.stringify({ email }),
             credentials: 'include',
         });
         if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Failed to resend verification email');
+            let errorMessage = 'Failed to resend verification email';
+            try {
+                const error = await res.json();
+                errorMessage = error.error || error.message || errorMessage;
+            } catch {
+                try {
+                    const errorText = await res.text();
+                    if (errorText) errorMessage = errorText;
+                } catch {
+                    // Keep default error message
+                }
+            }
+            throw new Error(errorMessage);
         }
         return res.json();
     },

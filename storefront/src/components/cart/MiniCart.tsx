@@ -56,7 +56,6 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
             {/* Backdrop */}
             <div 
                 className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-                onClick={onClose}
             />
             
             {/* Cart Panel */}
@@ -134,7 +133,9 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
-                                                    className="p-1 text-stone-400 hover:text-stone-600"
+                                                    disabled={item.quantity <= 1}
+                                                    className="p-1 text-stone-400 hover:text-stone-600 disabled:opacity-30"
+                                                    aria-label={`Decrease quantity of ${item.title}`}
                                                 >
                                                     <Minus size={14} />
                                                 </button>
@@ -142,6 +143,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                                                 <button
                                                     onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
                                                     className="p-1 text-stone-400 hover:text-stone-600"
+                                                    aria-label={`Increase quantity of ${item.title}`}
                                                 >
                                                     <Plus size={14} />
                                                 </button>

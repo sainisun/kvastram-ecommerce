@@ -58,11 +58,13 @@ export default function CustomersPage() {
     const fetchCustomers = async () => {
         try {
             setLoading(true);
-            const data = await api.getCustomers(page, search, filter);
-            setCustomers(data || []);
-            setTotalPages(data.pagination?.total_pages || 1);
+            const res = await api.getCustomers(page, search, filter);
+            setCustomers(res.customers || res || []);
+            setTotalPages(res.pagination?.total_pages || 1);
         } catch (error) {
             console.error('Error fetching customers:', error);
+            setCustomers([]);
+            setTotalPages(1);
         } finally {
             setLoading(false);
         }

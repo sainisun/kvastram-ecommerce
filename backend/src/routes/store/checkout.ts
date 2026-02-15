@@ -189,7 +189,21 @@ checkoutRouter.post(
       const body = c.req.valid("json");
       const { region_id, currency_code } = body;
       
-      console.log('[CHECKOUT] Order request:', JSON.stringify(body));
+      // Sanitize checkout body to remove PII before logging
+      const sanitizeCheckoutBody = (data: any) => {
+        const safe = { ...data };
+        const piiFields = ['email', 'phone', 'first_name', 'last_name', 'address', 'payment_info', 'card'];
+        for (const field of piiFields) {
+          if (safe[field]) safe[field] = '[REDACTED]';
+        }
+        if (safe.shipping_address) safe.shipping_address = '[REDACTED]';
+        if (safe.billing_address) safe.billing_address = '[REDACTED]';
+        return safe;
+      };
+      
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[CHECKOUT] Order request:', JSON.stringify(sanitizeCheckoutBody(body)));
+      }
 
       // Fetch region for tax rate
       const [region] = await db

@@ -519,41 +519,54 @@ export class ProductService {
    * Delete a product and all its related data.
    */
   async delete(id: string) {
-    // Delete in order: child tables first, then parent
-    // 1. Delete money_amounts (prices) for all variants of this product
-    const variants = await db
-      .select({ id: product_variants.id })
-      .from(product_variants)
-      .where(eq(product_variants.product_id, id));
+    // Use a transaction for atomicity
+    return await db.transaction(async (tx) => {
+      // 1. Get variants for this product
+      const variants = await tx
+        .select({ id: product_variants.id })
+        .from(product_variants)
+        .where(eq(product_variants.product_id, id));
 
-    const variantIds = variants.map((v) => v.id);
+      const variantIds = variants.map((v) => v.id);
 
-    if (variantIds.length > 0) {
-      await db
-        .delete(money_amounts)
-        .where(inArray(money_amounts.variant_id, variantIds));
-    }
+      // 2. Delete product_options and product_option_values
+      if (variantIds.length > 0) {
+        await tx
+          .delete(product_option_values)
+          .where(inArray(product_option_values.variant_id, variantIds));
+        await tx
+          .delete(product_options)
+          .where(eq(product_options.product_id, id));
+      }
 
-    // 2. Delete variants
-    await db
-      .delete(product_variants)
-      .where(eq(product_variants.product_id, id));
+      // 3. Delete money_amounts (prices) for all variants
+      if (variantIds.length > 0) {
+        await tx
+          .delete(money_amounts)
+          .where(inArray(money_amounts.variant_id, variantIds));
+      }
 
-    // 3. Delete images
-    await db.delete(product_images).where(eq(product_images.product_id, id));
+      // 4. Delete variants
+      await tx
+        .delete(product_variants)
+        .where(eq(product_variants.product_id, id));
 
-    // 4. Delete category associations
-    await db
-      .delete(product_categories)
-      .where(eq(product_categories.product_id, id));
+      // 5. Delete images
+      await tx.delete(product_images).where(eq(product_images.product_id, id));
 
-    // 5. Delete tag associations
-    await db.delete(product_tags).where(eq(product_tags.product_id, id));
+      // 6. Delete category associations
+      await tx
+        .delete(product_categories)
+        .where(eq(product_categories.product_id, id));
 
-    // 6. Finally delete the product
-    await db.delete(products).where(eq(products.id, id));
+      // 7. Delete tag associations
+      await tx.delete(product_tags).where(eq(product_tags.product_id, id));
 
-    return { id, deleted: true };
+      // 8. Finally delete the product
+      await tx.delete(products).where(eq(products.id, id));
+
+      return { id, deleted: true };
+    });
   }
 
   /**
@@ -769,44 +782,57 @@ export class ProductService {
   }
 
   async bulkDelete(ids: string[]) {
-    // 1. Get all variant IDs for these products
-    const variants = await db
-      .select({ id: product_variants.id })
-      .from(product_variants)
-      .where(inArray(product_variants.product_id, ids));
+    // Use a transaction for atomicity
+    return await db.transaction(async (tx) => {
+      // 1. Get all variant IDs for these products
+      const variants = await tx
+        .select({ id: product_variants.id })
+        .from(product_variants)
+        .where(inArray(product_variants.product_id, ids));
 
-    const variantIds = variants.map((v) => v.id);
+      const variantIds = variants.map((v) => v.id);
 
-    // 2. Delete money_amounts (prices) for all variants
-    if (variantIds.length > 0) {
-      await db
-        .delete(money_amounts)
-        .where(inArray(money_amounts.variant_id, variantIds));
-    }
+      // 2. Delete product_options and product_option_values
+      if (variantIds.length > 0) {
+        await tx
+          .delete(product_option_values)
+          .where(inArray(product_option_values.variant_id, variantIds));
+        await tx
+          .delete(product_options)
+          .where(inArray(product_options.product_id, ids));
+      }
 
-    // 3. Delete variants
-    await db
-      .delete(product_variants)
-      .where(inArray(product_variants.product_id, ids));
+      // 3. Delete money_amounts (prices) for all variants
+      if (variantIds.length > 0) {
+        await tx
+          .delete(money_amounts)
+          .where(inArray(money_amounts.variant_id, variantIds));
+      }
 
-    // 4. Delete images
-    await db
-      .delete(product_images)
-      .where(inArray(product_images.product_id, ids));
+      // 4. Delete variants
+      await tx
+        .delete(product_variants)
+        .where(inArray(product_variants.product_id, ids));
 
-    // 5. Delete category associations
-    await db
-      .delete(product_categories)
-      .where(inArray(product_categories.product_id, ids));
+      // 5. Delete images
+      await tx
+        .delete(product_images)
+        .where(inArray(product_images.product_id, ids));
 
-    // 6. Delete tag associations
-    await db
-      .delete(product_tags)
-      .where(inArray(product_tags.product_id, ids));
+      // 6. Delete category associations
+      await tx
+        .delete(product_categories)
+        .where(inArray(product_categories.product_id, ids));
 
-    // 7. Finally delete products
-    await db.delete(products).where(inArray(products.id, ids));
-    return ids.length;
+      // 7. Delete tag associations
+      await tx
+        .delete(product_tags)
+        .where(inArray(product_tags.product_id, ids));
+
+      // 8. Finally delete products
+      await tx.delete(products).where(inArray(products.id, ids));
+      return ids.length;
+    });
   }
 }
 

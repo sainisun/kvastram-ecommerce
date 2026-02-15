@@ -18,9 +18,15 @@ export default function PostsPage() {
     const loadPosts = async () => {
         try {
             const data = await api.getPosts();
-            setPosts(data.posts);
+            if (data && Array.isArray(data.posts)) {
+                setPosts(data.posts);
+            } else {
+                console.error('Unexpected response shape from getPosts:', data);
+                setPosts([]);
+            }
         } catch (error) {
-            console.error('Failed to load posts');
+            console.error('Failed to load posts:', error);
+            setPosts([]);
         } finally {
             setLoading(false);
         }

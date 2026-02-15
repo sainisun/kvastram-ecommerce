@@ -26,7 +26,7 @@ export default function MarketingPage() {
 
     useEffect(() => {
         fetchData();
-    }, [router]);
+    }, []);
 
     const fetchData = async () => {
         try {

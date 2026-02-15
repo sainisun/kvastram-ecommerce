@@ -45,15 +45,42 @@ export function serializeCustomers(customers: InferSelectModel<typeof customers>
 
 /**
  * Generic safe serialization - removes common sensitive fields
+ * Performs recursive sanitization to handle nested objects
  * Use as fallback for any entity
  */
 export function sanitizeEntity<T extends Record<string, any>>(entity: T): Omit<T, "password_hash" | "two_factor_secret" | "refresh_token" | "access_token" | "secret" | "api_key"> {
-  const sensitiveFields = ["password_hash", "two_factor_secret", "refresh_token", "access_token", "secret", "api_key"];
-  const sanitized = { ...entity };
+  const sensitiveFields = new Set(["password_hash", "two_factor_secret", "refresh_token", "access_token", "secret", "api_key"]);
+  const visited = new WeakSet();
   
-  for (const field of sensitiveFields) {
-    delete sanitized[field];
+  function sanitize(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+    
+    if (typeof obj !== 'object') {
+      return obj;
+    }
+    
+    // Handle arrays
+    if (Array.isArray(obj)) {
+      return obj.map(item => sanitize(item));
+    }
+    
+    // Prevent infinite loops with circular references
+    if (visited.has(obj)) {
+      return obj;
+    }
+    visited.add(obj);
+    
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (sensitiveFields.has(key)) {
+        continue; // Skip sensitive fields
+      }
+      result[key] = sanitize(value);
+    }
+    return result;
   }
   
-  return sanitized;
+  return sanitize(entity);
 }

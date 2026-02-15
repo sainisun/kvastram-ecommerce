@@ -27,13 +27,18 @@ storeCustomersRouter.get("/me", verifyCustomer, async (c) => {
 const UpdateProfileSchema = z.object({
   first_name: z.string().min(1).max(100).optional(),
   last_name: z.string().min(1).max(100).optional(),
-  phone: z.string().max(20).optional(),
+  phone: z.string().min(1).max(20).optional(),
 });
 
 // Update Current Customer Profile
 storeCustomersRouter.put("/me", verifyCustomer, async (c) => {
   const payload = c.get("customer" as any) as any;
-  const body = await c.req.json();
+  let body;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "Invalid JSON" }, 400);
+  }
 
   // Validate input
   const parseResult = UpdateProfileSchema.safeParse(body);

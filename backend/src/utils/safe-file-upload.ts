@@ -228,6 +228,15 @@ export async function secureWriteFile(
         };
       }
     } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      // Only treat ENOENT (file doesn't exist) as safe to proceed
+      if (err.code !== 'ENOENT') {
+        // Rethrow or return error for other error codes (like EACCES)
+        return {
+          success: false,
+          error: `Cannot access file: ${err.code}`,
+        };
+      }
       // File doesn't exist - safe to proceed
     }
 

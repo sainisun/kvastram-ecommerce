@@ -270,10 +270,11 @@ const gracefulShutdown = (signal: string) => {
   });
 
   // Force exit after 10 seconds if connections are hanging
-  setTimeout(() => {
+  const shutdownTimer = setTimeout(() => {
     console.error("⚠️ Forced shutdown after 10s timeout");
     process.exit(1);
   }, 10000);
+  shutdownTimer.unref();
 };
 
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));

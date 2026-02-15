@@ -81,8 +81,6 @@ export const api = {
     login: async (email: string, password: string, twoFactorCode?: string): Promise<AuthResponse> => {
         try {
             debugLog(`Attempting login for ${email} to ${API_BASE_URL}/auth/login`);
-            console.log('[LOGIN DEBUG] API URL:', API_BASE_URL);
-            console.log('[LOGIN DEBUG] Request body:', { email, password: '***', twoFactorCode });
             
             const res = await fetchWithTimeout(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
@@ -90,41 +88,38 @@ export const api = {
                 body: JSON.stringify({ email, password, twoFactorCode }),
             });
 
-            console.log('[LOGIN DEBUG] Response status:', res.status, res.statusText);
-            console.log('[LOGIN DEBUG] Response headers:', Object.fromEntries(res.headers.entries()));
+            debugLog('Response status:', res.status);
 
             if (!res.ok) {
                 let data: any = {};
                 let errorText = '';
                 try {
                     errorText = await res.text();
-                    console.error('[LOGIN DEBUG] Raw error response:', errorText);
+                    debugLog('Raw error response:', errorText);
                     data = JSON.parse(errorText);
                 } catch (e) {
-                    console.error('[LOGIN DEBUG] Failed to parse error response:', errorText);
+                    debugLog('Failed to parse error response:', errorText);
                     data = { message: errorText || `HTTP ${res.status}: ${res.statusText}` };
                 }
-                console.error('Login failed response:', data);
                 const errorMessage = data.error || data.message || `Login failed (${res.status})`;
                 const error = new Error(errorMessage) as ApiError;
                 error.response = data;
                 throw error;
             }
             const responseText = await res.text();
-            console.log('[LOGIN DEBUG] Raw success response:', responseText);
+            debugLog('Raw success response received');
             let response;
             try {
                 response = JSON.parse(responseText);
             } catch (e) {
-                console.error('[LOGIN DEBUG] Failed to parse success response:', e);
+                debugLog('Failed to parse success response', e);
                 throw new Error('Invalid response from server');
             }
             debugLog('Login API response structure:', response);
-            console.log('[LOGIN DEBUG] Parsed response:', response);
             
             // Check if response has the expected structure
             if (!response.data || !response.data.user) {
-                console.error('[LOGIN DEBUG] Invalid response structure:', response);
+                debugLog('Invalid response structure:', response);
                 throw new Error('Invalid response structure from server');
             }
             

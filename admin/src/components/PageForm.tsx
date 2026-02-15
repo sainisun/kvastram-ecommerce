@@ -44,6 +44,9 @@ export default function PageForm({ initialData, isEdit }: PageFormProps) {
         setLoading(true);
         try {
             if (isEdit) {
+                if (!initialData?.id) {
+                    throw new Error('Missing page ID for update');
+                }
                 await api.updatePage(initialData.id, formData);
             } else {
                 await api.createPage(formData);

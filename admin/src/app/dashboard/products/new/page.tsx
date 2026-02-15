@@ -456,7 +456,15 @@ export default function NewProductPage() {
                         <ImageUpload
                             images={images}
                             onChange={setImages}
-                            onUpload={(file) => api.uploadImage(file).then(res => res.url)}
+                            onUpload={async (file) => {
+                                setUploading(true);
+                                try {
+                                    const res = await api.uploadImage(file);
+                                    return res.url;
+                                } finally {
+                                    setUploading(false);
+                                }
+                            }}
                             uploading={uploading}
                             maxFiles={10}
                         />

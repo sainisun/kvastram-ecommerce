@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { db } from "../db";
 import { banners } from "../db/schema";
 import { eq, asc, desc } from "drizzle-orm";
-import { verifyAdmin } from "../middleware/auth"; // BUG-013 FIX: was verifyAdmin
+import { verifyAdmin } from "../middleware/auth"; // BUG-013 FIX: was verifyAuth
 import { z } from "zod";
 
 const app = new Hono();

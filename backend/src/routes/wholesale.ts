@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "../db";
 import { wholesale_inquiries } from "../db/schema";
 import { eq, desc, and, or, like, sql } from "drizzle-orm";
-import { verifyAdmin } from "../middleware/auth"; // BUG-009 FIX: was verifyAdmin
+import { verifyAdmin } from "../middleware/auth"; // BUG-009 FIX: was verifyAuth
 import { emailService } from "../services/email-service";
 import { sanitizeSearchInput } from "../utils/validation";
 

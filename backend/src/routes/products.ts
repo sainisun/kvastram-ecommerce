@@ -267,6 +267,10 @@ productsRouter.delete(
   verifyAdmin,
   asyncHandler(async (c) => {
     const id = c.req.param("id");
+    const product = await productService.retrieve(id);
+    if (!product) {
+      throw new NotFoundError("Product not found");
+    }
     await productService.delete(id);
     return successResponse(
       c,

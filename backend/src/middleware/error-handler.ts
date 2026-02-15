@@ -135,21 +135,31 @@ export async function errorHandler(err: Error, c: Context) {
   // Default: Internal Server Error
   // 🔒 FIX-006: Never expose stack traces - sanitize error messages
   const isProduction = process.env.NODE_ENV === "production";
-  const isDevelopment = process.env.NODE_ENV === "development";
 
   // Sanitize error message - remove internal paths and sensitive info
   const sanitizeMessage = (msg: string): string => {
-    // Remove file paths that might leak internal structure
-    return msg
-      .replace(/C:\\(?:[^\\]+\\)+/g, "[internal]")
-      .replace(/\/(?:[^/]+\/)+/g, "[internal]/")
-      .replace(/line \d+/g, "line [hidden]")
-      .replace(/at .+/g, "");
+    const lines = msg.split('\n');
+    const sanitizedLines = lines.map(line => {
+      // Skip lines that look like URLs (http:// or https://)
+      if (line.includes('http://') || line.includes('https://')) {
+        return line;
+      }
+      // Only sanitize lines that look like stack frames (starting with "at ") 
+      // or contain absolute file paths (/, ~, or Windows paths with :\)
+      if (line.startsWith('at ') || /^[/~]|\w:\\/.test(line)) {
+        return line
+          .replace(/C:\\(?:[^\\]+\\)+/g, "[internal]")
+          .replace(/\/(?:[^/]+\/)+/g, "[internal]/")
+          .replace(/line \d+/g, "line [hidden]");
+      }
+      return line;
+    });
+    return sanitizedLines.join('\n');
   };
 
   // In production: generic message only, no details
   // In development: sanitized message for debugging, but no stack
-  const errorDetails = isDevelopment
+  const errorDetails = !isProduction
     ? { message: sanitizeMessage(err.message) }
     : null;
 

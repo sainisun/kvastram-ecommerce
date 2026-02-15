@@ -4,7 +4,7 @@ import { zValidator } from "@hono/zod-validator";
 import { db } from "../db/client";
 import { product_reviews, products } from "../db/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
-import { verifyAdmin } from "../middleware/auth"; // BUG-012 FIX: was verifyAdmin
+import { verifyAdmin } from "../middleware/auth"; // BUG-012 FIX: was verifyAuth
 
 const reviewsRouter = new Hono();
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
 import Link from 'next/link';
@@ -43,6 +43,13 @@ export default function AddressesPage() {
     // In a real app, this would fetch from API
     // For now, we'll show empty state
 
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!loading && !customer) {
+            router.push('/login');
+        }
+    }, [customer, loading, router]);
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -52,7 +59,6 @@ export default function AddressesPage() {
     }
 
     if (!customer) {
-        router.push('/login');
         return null;
     }
 
@@ -61,6 +67,7 @@ export default function AddressesPage() {
         // In a real app, this would save to API
         console.log('Saving address:', formData);
         setShowForm(false);
+        setEditingId(null);
         setFormData({
             first_name: '',
             last_name: '',
@@ -207,6 +214,16 @@ export default function AddressesPage() {
                                     onClick={() => {
                                         setShowForm(false);
                                         setEditingId(null);
+                                        setFormData({
+                                            first_name: '',
+                                            last_name: '',
+                                            address_1: '',
+                                            address_2: '',
+                                            city: '',
+                                            postal_code: '',
+                                            country_code: 'US',
+                                            phone: ''
+                                        });
                                     }}
                                     className="border border-stone-300 text-stone-600 px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-50 transition-colors"
                                 >

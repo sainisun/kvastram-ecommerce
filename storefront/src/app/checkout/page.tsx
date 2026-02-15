@@ -16,7 +16,11 @@ import CountrySelect from '@/components/ui/CountrySelect';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 
 // Initialize Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+if (!stripeKey) {
+  console.error('Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable');
+}
+const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 // Payment Form Component
 function PaymentForm({
@@ -161,6 +165,7 @@ export default function CheckoutPage() {
                 }
             } catch (error) {
                 console.error('Failed to fetch shipping options:', error);
+                setShippingOptions([]);
             } finally {
                 setShippingLoading(false);
             }
@@ -536,9 +541,9 @@ export default function CheckoutPage() {
                                         />
                                         <span className="text-sm text-stone-600 group-hover:text-stone-900">
                                             I agree to the{' '}
-                                            <Link href="/pages/terms-of-service" target="_blank" className="underline hover:text-stone-900">Terms of Service</Link>
+                                            <Link href="/pages/terms-of-service" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-900">Terms of Service</Link>
                                             {' '}and{' '}
-                                            <Link href="/pages/privacy-policy" target="_blank" className="underline hover:text-stone-900">Privacy Policy</Link>
+                                            <Link href="/pages/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-900">Privacy Policy</Link>
                                         </span>
                                     </label>
                                 </div>
@@ -646,8 +651,10 @@ export default function CheckoutPage() {
                                         {(item.material || item.origin || item.sku) && (
                                             <div className="mt-1 text-[10px] text-stone-400">
                                                 {item.material && <span>{item.material}</span>}
-                                                {item.material && item.origin && <span> · </span>}
+                                                {item.material && (item.origin || item.sku) && <span> · </span>}
                                                 {item.origin && <span>{item.origin}</span>}
+                                                {(item.origin && item.sku) && <span> · </span>}
+                                                {item.sku && <span>{item.sku}</span>}
                                             </div>
                                         )}
                                     </div>
@@ -722,7 +729,7 @@ export default function CheckoutPage() {
                             )}
 
                             {/* PHASE 1.4: Tax Display */}
-                            {taxAmount > 0 && (
+                            {(taxLoading || taxAmount > 0) && (
                                 <div className="flex justify-between text-stone-600">
                                     <span>{taxName}</span>
                                     <span>

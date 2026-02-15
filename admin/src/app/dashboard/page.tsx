@@ -94,11 +94,16 @@ export default function DashboardPage() {
             });
 
             // Fetch status breakdown separately
-            api.getOrdersByStatus().then((statusData: any[]) => {
-                const statusMap: any = {};
-                statusData.forEach((s: any) => statusMap[`${s.status}_orders`] = s.count);
-                setStats(prev => prev ? ({ ...prev, ...statusMap }) : null);
-            });
+            (async () => {
+                try {
+                    const statusData = await api.getOrdersByStatus();
+                    const statusMap: any = {};
+                    statusData.forEach((s: any) => statusMap[`${s.status}_orders`] = s.count);
+                    setStats(prev => prev ? ({ ...prev, ...statusMap }) : null);
+                } catch (error) {
+                    console.error('Error fetching order status data:', error);
+                }
+            })();
 
             setRecentOrders(ordersData || []);
             setChartData(salesTrend.map((d: any) => ({ ...d, revenue: d.sales }))); // Map sales to revenue for chart

@@ -90,7 +90,12 @@ authRouter.post(
 authRouter.post(
   "/logout",
   asyncHandler(async (c) => {
-    deleteCookie(c, "admin_token", { path: "/" });
+    deleteCookie(c, "admin_token", {
+      path: "/",
+      httpOnly: true,
+      secure: config.server.env === "production",
+      sameSite: "strict",
+    });
     return successResponse(c, null, "Logout successful");
   }),
 );

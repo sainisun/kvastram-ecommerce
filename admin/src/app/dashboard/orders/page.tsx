@@ -64,11 +64,13 @@ export default function OrdersPage() {
             const offset = (page - 1) * limit;
 
             const data = await api.getOrders(limit, offset, search, statusFilter);
-            setOrders(data || []);
-            setTotalPages(data.pagination?.total_pages || 1);
+            setOrders(data?.orders ?? data ?? []);
+            setTotalPages(data?.pagination?.total_pages ?? 1);
         } catch (error: any) {
             console.error('Error fetching orders:', error);
             alert(error.message || 'Failed to fetch orders');
+            setOrders([]);
+            setTotalPages(1);
         } finally {
             setLoading(false);
         }

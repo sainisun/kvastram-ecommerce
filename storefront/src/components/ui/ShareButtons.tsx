@@ -35,7 +35,12 @@ export default function ShareButtons({
     };
 
     const handleShare = (platform: string) => {
-        window.open(shareLinks[platform as keyof typeof shareLinks], '_blank', 'width=600,height=400');
+        const link = shareLinks[platform as keyof typeof shareLinks];
+        if (link.startsWith('mailto:')) {
+            window.location.href = link;
+        } else {
+            window.open(link, '_blank', 'width=600,height=400');
+        }
         setShowDropdown(false);
     };
 

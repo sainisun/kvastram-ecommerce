@@ -104,11 +104,23 @@ class RegionService {
 
   async delete(id: string) {
     // BUG-020 FIX: Delete associated countries before region
-    await db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
+      // First check if region exists
+      const existing = await tx
+        .select({ id: regions.id })
+        .from(regions)
+        .where(eq(regions.id, id))
+        .limit(1);
+      
+      if (existing.length === 0) {
+        return null;
+      }
+      
       await tx.delete(countries).where(eq(countries.region_id, id));
       await tx.delete(regions).where(eq(regions.id, id));
+      return true;
     });
-    return true;
+    return result;
   }
 }
 

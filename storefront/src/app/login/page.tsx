@@ -58,6 +58,11 @@ function LoginContent() {
     };
 
     const handleResendVerification = async () => {
+        if (!formData.email || !formData.email.includes('@')) {
+            setError('Please enter a valid email address');
+            return;
+        }
+        
         setResending(true);
         setError('');
         

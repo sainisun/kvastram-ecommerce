@@ -68,6 +68,9 @@ export default function PostForm({ initialData, isEdit }: PostFormProps) {
             };
 
             if (isEdit) {
+                if (!initialData?.id) {
+                    throw new Error('Missing post ID for update');
+                }
                 await api.updatePost(initialData.id, payload);
             } else {
                 await api.createPost(payload);

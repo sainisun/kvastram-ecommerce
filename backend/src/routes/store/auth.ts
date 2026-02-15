@@ -222,8 +222,12 @@ storeAuthRouter.get("/me", async (c) => {
   }
 });
 
-// DEBUG: Get verification token for testing
+// DEBUG: Get verification token for testing (only in non-production)
 storeAuthRouter.get("/debug-token", async (c) => {
+  if (process.env.NODE_ENV === "production") {
+    return c.json({ error: "Endpoint not available in production" }, 404);
+  }
+  
   const email = c.req.query("email");
   if (!email) {
     return c.json({ error: "Email is required" }, 400);

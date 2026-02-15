@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { verifyAdmin } from "../middleware/auth"; // BUG-010 FIX: was verifyAdmin
+import { verifyAdmin } from "../middleware/auth"; // BUG-010 FIX: was verifyAuth
 import { z } from "zod";
 import {
   marketingService,

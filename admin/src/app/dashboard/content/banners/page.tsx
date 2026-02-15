@@ -41,9 +41,15 @@ export default function BannersPage() {
     const loadBanners = async () => {
         try {
             const data = await api.getBanners();
-            setBanners(data.banners);
+            if (data && Array.isArray(data.banners)) {
+                setBanners(data.banners);
+            } else {
+                console.error('Unexpected response shape from getBanners:', data);
+                setBanners([]);
+            }
         } catch (error) {
-            console.error('Failed to load banners');
+            console.error('Failed to load banners:', error);
+            setBanners([]);
         } finally {
             setLoading(false);
         }
@@ -147,13 +153,18 @@ export default function BannersPage() {
         setUploading(true);
         try {
             const res = await api.uploadImage(file);
-            if (isEditing && editingBanner) {
-                setEditingBanner({ ...editingBanner, image_url: res.url });
+            if (res && typeof res.url === 'string' && res.url.length > 0) {
+                if (isEditing && editingBanner) {
+                    setEditingBanner({ ...editingBanner, image_url: res.url });
+                } else {
+                    setNewItem(prev => ({ ...prev, image_url: res.url }));
+                }
             } else {
-                setNewItem(prev => ({ ...prev, image_url: res.url }));
+                console.error('Upload response missing valid URL:', res);
+                alert('Upload failed: Invalid response from server');
             }
         } catch (error) {
-            console.error(error);
+            console.error('Upload failed:', error);
             alert('Upload failed');
         } finally {
             setUploading(false);

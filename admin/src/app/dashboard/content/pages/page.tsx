@@ -16,9 +16,15 @@ export default function PagesPage() {
     const loadPages = async () => {
         try {
             const data = await api.getPages();
-            setPages(data.pages);
+            if (data && Array.isArray(data.pages)) {
+                setPages(data.pages);
+            } else {
+                console.error('Unexpected response shape from getPages:', data);
+                setPages([]);
+            }
         } catch (error) {
-            console.error('Failed to load pages');
+            console.error('Failed to load pages:', error);
+            setPages([]);
         } finally {
             setLoading(false);
         }

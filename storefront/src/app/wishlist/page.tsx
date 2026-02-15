@@ -69,7 +69,7 @@ export default function WishlistPage() {
                 <div className="flex items-center justify-between mb-12">
                     <div>
                         <h1 className="text-3xl font-serif text-stone-900 mb-2">My Wishlist</h1>
-                        <p className="text-stone-500">{items.length} saved items</p>
+                        <p className="text-stone-500">{items.length} saved item{items.length === 1 ? '' : 's'}</p>
                     </div>
                     <button
                         onClick={clearWishlist}

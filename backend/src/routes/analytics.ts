@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { analyticsService } from "../services/analytics-service";
-import { verifyAdmin } from "../middleware/auth"; // BUG-014 FIX: was verifyAdmin
+import { verifyAdmin } from "../middleware/auth"; // BUG-014 FIX: was verifyAuth
 
 const analyticsRouter = new Hono();
 

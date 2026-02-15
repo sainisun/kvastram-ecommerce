@@ -91,7 +91,7 @@ app.post("/disable", verifyAuth, async (c) => {
       .from(users)
       .where(eq(users.id, userPayload.sub));
 
-    if (!user || !user.two_factor_secret) {
+    if (!user || !user.two_factor_secret || !user.two_factor_enabled) {
       return c.json({ error: "2FA is not enabled" }, 400);
     }
 

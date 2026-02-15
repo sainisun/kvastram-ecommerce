@@ -30,7 +30,7 @@ const ALLOWED_EXTENSIONS = [
 const FileUploadSchema = z.object({
   filename: z.string().min(1).max(255),
   mimeType: z.string().min(1).max(100),
-  size: z.number().int().positive().max(10 * 1024 * 1024), // Max 10MB for schema, actual limit 5MB
+  size: z.number().int().positive().max(5 * 1024 * 1024), // Max 5MB, matches MAX_FILE_SIZE
 });
 
 type FileUploadInput = z.infer<typeof FileUploadSchema>;
