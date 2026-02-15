@@ -138,21 +138,23 @@ export async function errorHandler(err: Error, c: Context) {
 
   // Sanitize error message - remove internal paths and sensitive info
   const sanitizeMessage = (msg: string): string => {
+    const urlPlaceholder = "___URL_PLACEHOLDER___";
+    const urlRegex = /https?:\/\/[^\s'")\]}]+/g;
     const lines = msg.split('\n');
     const sanitizedLines = lines.map(line => {
-      // Skip lines that look like URLs (http:// or https://)
-      if (line.includes('http://') || line.includes('https://')) {
-        return line;
-      }
-      // Only sanitize lines that look like stack frames (starting with "at ") 
-      // or contain absolute file paths (/, ~, or Windows paths with :\)
-      if (line.startsWith('at ') || /^[/~]|\w:\\/.test(line)) {
-        return line
-          .replace(/C:\\(?:[^\\]+\\)+/g, "[internal]")
-          .replace(/\/(?:[^/]+\/)+/g, "[internal]/")
-          .replace(/line \d+/g, "line [hidden]");
-      }
-      return line;
+      const urls: string[] = [];
+      const lineWithPlaceholders = line.replace(urlRegex, (match) => {
+        urls.push(match);
+        return urlPlaceholder;
+      });
+      let sanitized = lineWithPlaceholders
+        .replace(/[A-Za-z]:\\(?:[^\\]+\\)+/g, "[internal]")
+        .replace(/\/(?:[^/]+\/)+/g, "[internal]/")
+        .replace(/:\d+:\d+/g, ":line [hidden]:col [hidden]")
+        .replace(/:\d+\b/g, ":line [hidden]");
+      let index = 0;
+      sanitized = sanitized.replace(new RegExp(urlPlaceholder, 'g'), () => urls[index++] || "");
+      return sanitized;
     });
     return sanitizedLines.join('\n');
   };
