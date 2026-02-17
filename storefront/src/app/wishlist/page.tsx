@@ -36,7 +36,7 @@ export default function WishlistPage() {
     const formatPrice = (price: number, currency: string) => {
         return new Intl.NumberFormat(undefined, {
             style: 'currency',
-            currency: currency.toUpperCase()
+            currency: currency?.toUpperCase() || 'USD'
         }).format(price / 100);
     };
 

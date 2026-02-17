@@ -339,7 +339,7 @@ export default function CustomersPage() {
                                             <div className="flex items-center">
                                                 <div className="h-10 w-10 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center">
                                                     <span className="text-blue-600 font-medium">
-                                                        {customer.first_name?.[0] || customer.email[0].toUpperCase()}
+                                                        {customer.first_name?.[0] || customer.email?.[0]?.toUpperCase() || '?'}
                                                     </span>
                                                 </div>
                                                 <div className="ml-4">

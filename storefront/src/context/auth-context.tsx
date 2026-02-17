@@ -38,23 +38,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
+    const fetchCustomer = async (token: string) => {
+        try {
+            const data = await api.getCustomer();
+            setCustomer(data.customer);
+        } catch {
+            eraseCookie('auth_token');
+            localStorage.removeItem('auth_token');
+            setCustomer(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         // 🔒 FIX-010: Read token from cookie instead of localStorage
-        const token = getCookie('auth_token');
+        let token = getCookie('auth_token');
+        
+        // Also check localStorage for wholesale login (fallback)
+        if (!token && typeof window !== 'undefined') {
+            token = localStorage.getItem('auth_token');
+            if (token) {
+                // Sync to cookie for consistency
+                document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`;
+            }
+        }
+        
         if (token) {
-            api.getCustomer()
-                .then(data => setCustomer(data.customer))
-                .catch(() => {
-                    eraseCookie('auth_token');
-                    setCustomer(null);
-                })
-                .finally(() => setLoading(false));
+            fetchCustomer(token);
         } else {
             // Use setTimeout to avoid synchronous setState warning
             const timer = setTimeout(() => {
                 setLoading(false);
             }, 0);
             return () => clearTimeout(timer);
+        }
+
+        // Listen for auth changes (e.g., from wholesale login)
+        const handleAuthChange = () => {
+            const newToken = localStorage.getItem('auth_token');
+            if (newToken) {
+                fetchCustomer(newToken);
+            }
+        };
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('auth-change', handleAuthChange);
+            return () => window.removeEventListener('auth-change', handleAuthChange);
         }
     }, []);
 

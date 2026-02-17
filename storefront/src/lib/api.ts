@@ -93,6 +93,36 @@ export const api = {
         }
     },
 
+    async getCollections() {
+        try {
+            const res = await fetch(`${API_URL}/collections`, { next: { revalidate: 3600 } });
+            if (!res.ok) return { collections: [] };
+            return res.json();
+        } catch {
+            return { collections: [] };
+        }
+    },
+
+    async getHomepageSettings() {
+        try {
+            const res = await fetch(`${API_URL}/settings/homepage`, { next: { revalidate: 3600 } });
+            if (!res.ok) return { settings: {} };
+            return res.json();
+        } catch {
+            return { settings: {} };
+        }
+    },
+
+    async getPages() {
+        try {
+            const res = await fetch(`${API_URL}/pages/storefront`, { next: { revalidate: 3600 } });
+            if (!res.ok) return { pages: [] };
+            return res.json();
+        } catch {
+            return { pages: [] };
+        }
+    },
+
     async getTags() {
         try {
             const res = await fetch(`${API_URL}/tags`, { next: { revalidate: 3600 } });
@@ -100,6 +130,29 @@ export const api = {
             return res.json();
         } catch {
             return { tags: [] };
+        }
+    },
+
+    async getTestimonials() {
+        try {
+            const res = await fetch(`${API_URL}/testimonials/store`, { next: { revalidate: 3600 } });
+            if (!res.ok) return { testimonials: [] };
+            return res.json();
+        } catch {
+            return { testimonials: [] };
+        }
+    },
+
+    async getFeaturedProducts(ids: string[]) {
+        if (!ids || ids.length === 0) return { products: [] };
+        try {
+            const idsString = ids.join(',');
+            const res = await fetch(`${API_URL}/products/featured?ids=${encodeURIComponent(idsString)}`, { next: { revalidate: 3600 } });
+            if (!res.ok) return { products: [] };
+            const data = await res.json();
+            return { products: data.data || [] };
+        } catch {
+            return { products: [] };
         }
     },
 
@@ -113,6 +166,7 @@ export const api = {
         offset?: number;
         category_id?: string;
         tag_id?: string;
+        collection_id?: string;
     } = {}) {
         const url = new URL(`${API_URL}/products`);
         url.searchParams.set('status', 'published'); // Only show published products
@@ -124,6 +178,7 @@ export const api = {
         if (params.offset) url.searchParams.set('offset', params.offset.toString());
         if (params.category_id) url.searchParams.set('category_id', params.category_id);
         if (params.tag_id) url.searchParams.set('tag_id', params.tag_id);
+        if (params.collection_id) url.searchParams.set('collection_id', params.collection_id);
 
         try {
             // Cache for 60 seconds (ISR)
@@ -420,16 +475,6 @@ export const api = {
         return res.json();
     },
 
-    async getPages() {
-        try {
-            const res = await fetch(`${API_URL}/pages/storefront`, { next: { revalidate: 3600 } });
-            if (!res.ok) return { pages: [] };
-            return res.json();
-        } catch {
-            return { pages: [] };
-        }
-    },
-
     async getPage(slug: string) {
         // Cache for 60 mins
         const res = await fetch(`${API_URL}/pages/storefront/${slug}`, { next: { revalidate: 3600 } });
@@ -507,6 +552,87 @@ export const api = {
             const error = await res.json();
             throw new Error(error.error || 'Failed to check payment status');
         }
+        return res.json();
+    },
+
+    // --- Wholesale Pricing ---
+    async getWholesalePricing() {
+        try {
+            const res = await fetch(`${API_URL}/store/wholesale/prices`, {
+                credentials: 'include',
+            });
+            if (!res.ok) return { hasWholesaleAccess: false, tier: null };
+            return res.json();
+        } catch {
+            return { hasWholesaleAccess: false, tier: null };
+        }
+    },
+
+    async getWholesalePrices(variantIds: string[]) {
+        try {
+            const res = await fetch(`${API_URL}/store/wholesale/prices/bulk`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ variantIds }),
+                credentials: 'include',
+            });
+            if (!res.ok) return { prices: [] };
+            return res.json();
+        } catch {
+            return { prices: [] };
+        }
+    },
+
+    async getWholesaleMOQ(variantId: string) {
+        try {
+            const res = await fetch(`${API_URL}/store/wholesale/moq/${variantId}`, {
+                credentials: 'include',
+            });
+            if (!res.ok) return { moq: 1 };
+            return res.json();
+        } catch {
+            return { moq: 1 };
+        }
+    },
+
+    async getWholesaleBulkDiscounts(variantId: string) {
+        try {
+            const res = await fetch(`${API_URL}/store/wholesale/bulk-discounts/${variantId}`, {
+                credentials: 'include',
+            });
+            if (!res.ok) return { discounts: [] };
+            return res.json();
+        } catch {
+            return { discounts: [] };
+        }
+    },
+
+    async calculateWholesalePrice(variantId: string, quantity: number) {
+        try {
+            const res = await fetch(`${API_URL}/store/wholesale/calculate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ variantId, quantity }),
+                credentials: 'include',
+            });
+            if (!res.ok) return null;
+            return res.json();
+        } catch {
+            return null;
+        }
+    },
+
+    async createWholesaleOrder(data: any) {
+        const csrfHeader = await getCsrfHeader();
+        const res = await fetch(`${API_URL}/store/wholesale/orders`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...csrfHeader
+            },
+            body: JSON.stringify(data),
+            credentials: 'include',
+        });
         return res.json();
     }
 };

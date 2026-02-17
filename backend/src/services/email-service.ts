@@ -198,6 +198,48 @@ class EmailService {
     return this.sendEmail({ to: data.email, subject, text, html });
   }
 
+  async sendWholesaleWelcome(data: {
+    email: string;
+    contact_name: string;
+    company_name: string;
+    discount_tier: string;
+    token: string;
+  }) {
+    const setupUrl = `${process.env.FRONTEND_URL || "http://localhost:3001"}/wholesale/set-password?token=${encodeURIComponent(data.token)}`;
+    const tierDisplay = data.discount_tier.charAt(0).toUpperCase() + data.discount_tier.slice(1);
+    const subject = "Welcome to Kvastram Wholesale - Set Up Your Account";
+    const text = `Hi ${data.contact_name},\n\nWelcome to Kvastram Wholesale! Your application for ${data.company_name} has been approved.\n\nYour discount tier: ${tierDisplay}\n\nPlease set up your password by clicking the link below:\n\n${setupUrl}\n\nThis link will expire in 7 days.\n\nBest regards,\nKvastram Team`;
+    const html = `
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                <h1>Welcome to Kvastram Wholesale!</h1>
+                <p>Hi ${escapeHtml(data.contact_name)},</p>
+                <p>Congratulations! Your wholesale application for <strong>${escapeHtml(data.company_name)}</strong> has been approved.</p>
+                <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 0;"><strong>Your Discount Tier:</strong> ${tierDisplay}</p>
+                </div>
+                <p>Please set up your password to access your wholesale account:</p>
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="${setupUrl}" style="background-color: #007bff; color: white; padding: 14px 28px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
+                        Set Up Password
+                    </a>
+                </p>
+                <p>Or copy this link to your browser:<br>
+                <small>${setupUrl}</small></p>
+                <p style="color: #666; font-size: 12px; margin-top: 30px;">This link will expire in 7 days. If you didn't expect this email, please ignore it.</p>
+                <p>Best regards,<br>Kvastram Team</p>
+            </div>
+        `;
+    
+    if (process.env.NODE_ENV !== "production") {
+      console.log('\n📧 WHOLESALE WELCOME EMAIL (DEV MODE)');
+      console.log('   To:', data.email);
+      console.log('   Setup URL:', setupUrl);
+      console.log('');
+    }
+    
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
+
   async sendInquiryRejected(data: {
     email: string;
     contact_name: string;

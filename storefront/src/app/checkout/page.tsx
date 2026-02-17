@@ -659,7 +659,7 @@ export default function CheckoutPage() {
                                         )}
                                     </div>
                                     <p className="font-medium text-stone-900">
-                                        {new Intl.NumberFormat(undefined, { style: 'currency', currency: item.currency.toUpperCase() }).format((item.price * item.quantity) / 100)}
+                                        {new Intl.NumberFormat(undefined, { style: 'currency', currency: item.currency?.toUpperCase() || 'USD' }).format((item.price * item.quantity) / 100)}
                                     </p>
                                 </div>
                             ))}

@@ -2,8 +2,52 @@ import { Hono } from "hono";
 import { verifyAdmin } from "../middleware/auth"; // BUG-011 FIX: was verifyAuth
 import { z } from "zod";
 import { settingService, SettingSchema } from "../services/setting-service";
+import { db } from "../db/client";
+import { settings } from "../db/schema";
 
 const settingsRouter = new Hono();
+
+// Public: Get public settings for storefront (no auth required)
+settingsRouter.get("/public", async (c) => {
+  try {
+    const allSettings = await db.select().from(settings);
+    const publicSettings = allSettings.filter((s: any) => s.is_public === true);
+    return c.json({ settings: publicSettings });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// Public: Get homepage settings
+settingsRouter.get("/homepage", async (c) => {
+  try {
+    const allSettings = await db.select().from(settings);
+    const homepageKeys = [
+      'announcement_bar_text',
+      'announcement_bar_enabled',
+      'hero_title',
+      'hero_subtitle',
+      'hero_cta_text',
+      'hero_cta_link',
+      'hero_image',
+      'newsletter_title',
+      'newsletter_subtitle',
+      'newsletter_cta_text',
+      'brand_story_title',
+      'brand_story_content',
+      'brand_story_image',
+      'featured_product_ids',
+    ];
+    const homepageSettings = allSettings.filter((s: any) => homepageKeys.includes(s.key));
+    const settingsObj: Record<string, any> = {};
+    homepageSettings.forEach((s: any) => {
+      settingsObj[s.key] = s.value;
+    });
+    return c.json({ settings: settingsObj });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
 
 // Get all settings
 settingsRouter.get("/", verifyAdmin, async (c) => {

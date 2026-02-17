@@ -106,7 +106,7 @@ export default function DashboardPage() {
             })();
 
             setRecentOrders(ordersData || []);
-            setChartData(salesTrend.map((d: any) => ({ ...d, revenue: d.sales }))); // Map sales to revenue for chart
+            setChartData((salesTrend || []).map((d: any) => ({ ...d, revenue: d.sales }))); // Map sales to revenue for chart
         } catch (error: any) {
             console.error('Error fetching dashboard data:', error);
             // If it's a timeout or network error, it will now be caught here
@@ -168,15 +168,15 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="p-8">
+        <div className="p-4 md:p-6 lg:p-8">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+            <div className="mb-6 md:mb-8">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
                 <p className="text-gray-600">Welcome back! Here's what's happening with your store.</p>
             </div>
 
             {/* Revenue & Orders Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-lg shadow-lg text-white">
                     <div className="flex items-center justify-between mb-4">
                         <div className="p-3 bg-white/20 rounded-lg">
@@ -264,7 +264,7 @@ export default function DashboardPage() {
             </div>
 
             {/* This Month Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                     <div className="flex items-center justify-between">
                         <div>
@@ -301,7 +301,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Order Status Breakdown */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-6 mb-6 md:mb-8">
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                     <div className="flex items-center gap-3 mb-2">
                         <Clock className="text-yellow-500" size={20} />

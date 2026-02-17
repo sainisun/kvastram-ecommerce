@@ -11,6 +11,7 @@ interface Category {
     name: string;
     slug: string;
     description?: string;
+    image?: string;
     parent_id?: string;
     children?: Category[];
     is_active?: boolean;
@@ -35,9 +36,13 @@ function CategoryItem({ category, depth = 0, onDelete }: { category: Category, d
                         <div className="w-6 mr-2" /> // spacer
                     )}
 
-                    <span className="mr-2 text-gray-400">
-                        {hasChildren ? (isOpen ? <FolderOpen size={16} /> : <Folder size={16} />) : <div className="w-4" />}
-                    </span>
+                    {category.image ? (
+                        <img src={category.image} alt={category.name} className="w-10 h-10 object-cover rounded mr-3" />
+                    ) : (
+                        <span className="mr-2 text-gray-400">
+                            {hasChildren ? (isOpen ? <FolderOpen size={16} /> : <Folder size={16} />) : <div className="w-4" />}
+                        </span>
+                    )}
 
                     <span className="font-medium text-gray-900">{category.name}</span>
                     <span className="ml-2 text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{category.slug}</span>
@@ -80,7 +85,7 @@ export default function CategoriesPage() {
     const fetchCategories = async () => {
         try {
             const data = await api.getCategoriesTree();
-            setCategories(data.categories);
+            setCategories(data?.categories || []);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
             alert('Failed to load categories');

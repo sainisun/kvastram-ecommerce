@@ -34,13 +34,14 @@ productsRouter.get(
       max_price = "",
       category_id = "",
       tag_id = "",
+      collection_id = "",
     } = query;
 
     const limitNum = Math.min(parseInt(limit) || 20, 100);
     const offsetNum = Math.max(parseInt(offset) || 0, 0);
 
     // If search or advanced price/sort filters are active, use the search service
-    if (search || min_price || max_price || (sort && sort !== "created_at")) {
+    if (search || min_price || max_price || (sort && sort !== "created_at") || collection_id) {
       let sortBy: "relevance" | "price_asc" | "price_desc" | "newest" =
         "relevance";
       if (sort === "price_asc") sortBy = "price_asc";
@@ -54,6 +55,7 @@ productsRouter.get(
         sortBy,
         categoryId: category_id || undefined,
         tagId: tag_id || undefined,
+        collectionId: collection_id || undefined,
       });
 
       // Manual pagination for search results
@@ -78,6 +80,7 @@ productsRouter.get(
       status: status || undefined,
       categoryId: category_id || undefined,
       tagId: tag_id || undefined,
+      collectionId: collection_id || undefined,
     });
 
     return paginatedResponse(
@@ -276,6 +279,47 @@ productsRouter.delete(
       c,
       { id, deleted: true },
       "Product deleted successfully",
+    );
+  }),
+);
+
+// GET /products/featured - Get featured products by IDs (Public)
+productsRouter.get(
+  "/featured",
+  asyncHandler(async (c) => {
+    const query = c.req.query();
+    const { ids = "" } = query;
+
+    if (!ids) {
+      return successResponse(c, [], "No featured product IDs provided");
+    }
+
+    const productIds = ids.split(",").map((id) => id.trim()).filter(Boolean);
+
+    if (productIds.length === 0) {
+      return successResponse(c, [], "No valid product IDs provided");
+    }
+
+    // Fetch each product by ID
+    const products = await Promise.all(
+      productIds.map(async (id) => {
+        try {
+          return await productService.retrieve(id);
+        } catch {
+          return null;
+        }
+      }),
+    );
+
+    // Filter out nulls and inactive products
+    const validProducts = products.filter(
+      (p): p is NonNullable<typeof p> => p !== null && p.status === "published"
+    );
+
+    return successResponse(
+      c,
+      validProducts,
+      "Featured products retrieved successfully",
     );
   }),
 );

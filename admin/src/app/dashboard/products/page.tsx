@@ -75,7 +75,7 @@ export default function ProductsPage() {
             const offset = (page - 1) * limit;
             const result = await api.getProducts(limit, offset);
             setProducts(result || []);
-            setTotalPages(result.pagination?.total_pages || 1);
+            setTotalPages(result?.pagination?.total_pages || 1);
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {

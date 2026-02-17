@@ -199,10 +199,10 @@ export default function TrackOrderPage() {
                             <div className="flex items-start gap-3 text-stone-600">
                                 <MapPin size={20} className="flex-shrink-0 mt-0.5" />
                                 <div>
-                                    <p>{order.shipping_address.first_name} {order.shipping_address.last_name}</p>
-                                    <p>{order.shipping_address.address_1}</p>
-                                    <p>{order.shipping_address.city}, {order.shipping_address.postal_code}</p>
-                                    <p>{order.shipping_address.country}</p>
+                                    <p>{order.shipping_address?.first_name} {order.shipping_address?.last_name}</p>
+                                    <p>{order.shipping_address?.address_1}</p>
+                                    <p>{order.shipping_address?.city}, {order.shipping_address?.postal_code}</p>
+                                    <p>{order.shipping_address?.country}</p>
                                 </div>
                             </div>
                         </div>
@@ -211,7 +211,7 @@ export default function TrackOrderPage() {
                         <div>
                             <h3 className="text-lg font-serif text-stone-900 mb-4">Order Items</h3>
                             <div className="space-y-3">
-                                {order.items.map((item, index) => (
+                                {(order.items || []).map((item, index) => (
                                     <div key={index} className="flex justify-between items-center py-3 border-b border-stone-100">
                                         <div>
                                             <p className="font-medium text-stone-900">{item.title}</p>

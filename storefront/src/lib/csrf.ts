@@ -2,7 +2,7 @@
 // Note: In production, ensure your backend validates the Origin/Referer header
 // for cross-site request forgery protection.
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 let csrfToken: string | null = null;
 

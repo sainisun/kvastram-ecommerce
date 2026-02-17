@@ -3,38 +3,21 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Heart, User, ShoppingBag } from 'lucide-react';
+import { Home, LayoutGrid, Heart, User } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 
 export function BottomNav() {
     const pathname = usePathname();
     const { totalItems } = useCart();
     const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-
-    // Hide on scroll down, show on scroll up
+    // Hide on checkout and admin pages only
     useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            
-            // Don't show on pages where it's not useful
-            if (pathname?.startsWith('/checkout') || pathname?.startsWith('/admin')) {
-                setIsVisible(false);
-                return;
-            }
-
-            if (currentScrollY > lastScrollY && currentScrollY > 100) {
-                setIsVisible(false);
-            } else {
-                setIsVisible(true);
-            }
-            
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY, pathname]);
+        if (pathname?.startsWith('/checkout') || pathname?.startsWith('/admin')) {
+            setIsVisible(false);
+        } else {
+            setIsVisible(true);
+        }
+    }, [pathname]);
 
     // Don't render on desktop
     if (typeof window !== 'undefined' && window.innerWidth >= 768) {
@@ -49,10 +32,10 @@ export function BottomNav() {
             active: pathname === '/'
         },
         {
-            href: '/products',
-            icon: Search,
-            label: 'Search',
-            active: pathname?.startsWith('/products') || pathname === '/search'
+            href: '/collections',
+            icon: LayoutGrid,
+            label: 'Categories',
+            active: pathname?.startsWith('/collections')
         },
         {
             href: '/wishlist',
@@ -65,13 +48,6 @@ export function BottomNav() {
             icon: User,
             label: 'Account',
             active: pathname?.startsWith('/account')
-        },
-        {
-            href: '/cart',
-            icon: ShoppingBag,
-            label: 'Cart',
-            active: pathname === '/cart',
-            badge: totalItems
         }
     ];
 
@@ -103,11 +79,6 @@ export function BottomNav() {
                             >
                                 <div className="relative">
                                     <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
-                                    {item.badge && item.badge > 0 && (
-                                        <span className="absolute -top-1 -right-2 w-4 h-4 bg-black text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                                            {item.badge > 9 ? '9+' : item.badge}
-                                        </span>
-                                    )}
                                 </div>
                                 <span className={`text-[10px] mt-1 font-medium ${isActive ? 'text-black' : 'text-stone-500'}`}>
                                     {item.label}

@@ -2,13 +2,25 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { db } from "../db";
-import { wholesale_inquiries } from "../db/schema";
+import { wholesale_inquiries, customers } from "../db/schema";
 import { eq, desc, and, or, like, sql } from "drizzle-orm";
-import { verifyAdmin } from "../middleware/auth"; // BUG-009 FIX: was verifyAuth
+import { verifyAdmin } from "../middleware/auth";
 import { emailService } from "../services/email-service";
 import { sanitizeSearchInput } from "../utils/validation";
+import crypto from "crypto";
+import bcrypt from "bcryptjs";
 
 const app = new Hono();
+
+function generateVerificationToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+function getVerificationExpiry(): Date {
+  const expiry = new Date();
+  expiry.setHours(expiry.getHours() + 24);
+  return expiry;
+}
 
 // Validation schema for creating wholesale inquiry
 const createInquirySchema = z.object({
@@ -224,14 +236,94 @@ app.patch(
       // Handle Status Change Emails
       if (data.status) {
         if (data.status === "approved") {
+          // Check if customer already exists
+          const existingCustomer = await db
+            .select()
+            .from(customers)
+            .where(eq(customers.email, updated.email.toLowerCase()))
+            .limit(1);
+
+          let customerAccountCreated = false;
+
+          if (existingCustomer.length === 0) {
+            // Create new customer account for wholesale
+            const verificationToken = generateVerificationToken();
+            const verificationExpires = getVerificationExpiry();
+
+            await db.insert(customers).values({
+              email: updated.email.toLowerCase(),
+              first_name: updated.contact_name,
+              last_name: "", // Will be updated by customer
+              phone: updated.phone,
+              has_account: true,
+              password_hash: "", // Will be set by customer via token
+              verification_token: verificationToken,
+              verification_expires_at: verificationExpires,
+              email_verified: true, // Auto-verify since inquiry was approved
+              metadata: {
+                wholesale_customer: true,
+                company_name: updated.company_name,
+                discount_tier: updated.discount_tier,
+                wholesale_inquiry_id: updated.id,
+              },
+            });
+
+            customerAccountCreated = true;
+
+            // Send welcome email with password setup link
+            emailService
+              .sendWholesaleWelcome({
+                email: updated.email,
+                contact_name: updated.contact_name,
+                company_name: updated.company_name,
+                discount_tier: updated.discount_tier || "starter",
+                token: verificationToken,
+              })
+              .catch((e: Error) => console.error("Failed to send welcome email:", e));
+          } else {
+            // Update existing customer with wholesale info
+            await db
+              .update(customers)
+              .set({
+                has_account: true,
+                metadata: {
+                  ...(existingCustomer[0].metadata as Record<string, any> || {}),
+                  wholesale_customer: true,
+                  company_name: updated.company_name,
+                  discount_tier: updated.discount_tier,
+                  wholesale_inquiry_id: updated.id,
+                },
+              })
+              .where(eq(customers.id, existingCustomer[0].id));
+
+            // Send email about wholesale account activation
+            emailService
+              .sendInquiryApproved({
+                email: updated.email,
+                contact_name: updated.contact_name,
+                company_name: updated.company_name,
+                discount_tier: updated.discount_tier || "starter",
+              })
+              .catch((e: Error) => console.error(e));
+          }
+
+          // Send the approval email
           emailService
             .sendInquiryApproved({
               email: updated.email,
               contact_name: updated.contact_name,
               company_name: updated.company_name,
-              discount_tier: updated.discount_tier || "tier_1",
+              discount_tier: updated.discount_tier || "starter",
             })
             .catch((e: Error) => console.error(e));
+
+          return c.json({ 
+            inquiry: updated, 
+            customerAccountCreated,
+            message: customerAccountCreated 
+              ? "Customer account created and welcome email sent" 
+              : "Wholesale access granted to existing account"
+          });
         } else if (data.status === "rejected") {
           emailService
             .sendInquiryRejected({

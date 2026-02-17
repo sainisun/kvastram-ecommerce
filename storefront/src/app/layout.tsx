@@ -8,6 +8,8 @@ import { CartProvider } from "@/context/cart-context";
 import { WishlistProvider } from "@/context/wishlist-context";
 import { NotificationProvider } from "@/context/notification-context";
 import { RecentlyViewedProvider } from "@/context/recently-viewed-context";
+import { WholesaleProvider } from "@/context/wholesale-context";
+import { WholesaleCartProvider } from "@/context/wholesale-cart-context";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Analytics } from "@/components/Analytics";
@@ -110,11 +112,15 @@ export default function RootLayout({
             <ShopProvider>
               <AuthProvider>
                 <CartProvider>
-                  <WishlistProvider>
-                    <RecentlyViewedProvider>
-                      <MainLayout>{children}</MainLayout>
-                    </RecentlyViewedProvider>
-                  </WishlistProvider>
+                  <WholesaleCartProvider>
+                    <WishlistProvider>
+                      <RecentlyViewedProvider>
+                        <WholesaleProvider>
+                          <MainLayout>{children}</MainLayout>
+                        </WholesaleProvider>
+                      </RecentlyViewedProvider>
+                    </WishlistProvider>
+                  </WholesaleCartProvider>
                 </CartProvider>
               </AuthProvider>
             </ShopProvider>

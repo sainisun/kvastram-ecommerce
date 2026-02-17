@@ -15,7 +15,7 @@ export default function DashboardLayout({
                 <Sidebar />
                 <Topbar />
 
-                <main className="pl-64 pt-16 min-h-screen transition-all">
+                <main className="ml-64 pt-16 min-h-screen transition-all">
                     <div className="p-8">
                         {children}
                     </div>

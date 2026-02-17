@@ -169,6 +169,19 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
                     />
                 </div>
 
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700 block">Image URL (Optional)</label>
+                    <input
+                        type="text"
+                        name="image"
+                        value={formData.image}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+                        placeholder="https://example.com/image.jpg"
+                    />
+                    <p className="text-xs text-gray-500">Enter full URL to category image for homepage display</p>
+                </div>
+
                 <div className="flex items-center gap-2">
                     <input
                         type="checkbox"

@@ -68,7 +68,7 @@ function SearchContent() {
         if (!product.variants || product.variants.length === 0) return 'Unavailable';
 
         const prices = product.variants[0].prices || [];
-        const price = prices.find((p: MoneyAmount) => p.currency_code === currentRegion.currency_code.toLowerCase());
+        const price = prices.find((p: MoneyAmount) => p.currency_code === currentRegion.currency_code?.toLowerCase());
         const fallback = prices[0];
 
         const validPrice = price || fallback;
@@ -90,7 +90,7 @@ function SearchContent() {
         if (!product.variants || product.variants.length === 0) return;
         const variant = product.variants[0];
         const prices = variant.prices || [];
-        const priceObj = prices.find((p: MoneyAmount) => p.currency_code === currentRegion?.currency_code.toLowerCase()) || prices[0];
+        const priceObj = prices.find((p: MoneyAmount) => p.currency_code === currentRegion?.currency_code?.toLowerCase()) || prices[0];
 
         if (!priceObj) return;
 

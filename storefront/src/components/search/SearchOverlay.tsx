@@ -130,7 +130,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     const formatPrice = (amount: number, currency: string) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: currency.toUpperCase(),
+            currency: currency?.toUpperCase() || 'USD',
         }).format(amount / 100);
     };
 

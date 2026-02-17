@@ -200,6 +200,39 @@ storeAuthRouter.post(
   },
 );
 
+// POST /store/auth/setup-password - Set password using token (for wholesale welcome)
+storeAuthRouter.post("/setup-password", async (c) => {
+  const { token, password } = await c.req.json().catch(() => ({}));
+
+  if (!token || !password) {
+    return c.json({ error: "Token and password are required" }, 400);
+  }
+
+  try {
+    const customer = await customerAuthService.setupPassword(token, password);
+    
+    // Auto-login after password setup
+    const loginResult = await customerAuthService.login({
+      email: customer.email!,
+      password,
+    });
+
+    setAuthCookie(c, loginResult.token);
+
+    return c.json({
+      success: true,
+      message: "Password set successfully",
+      customer: {
+        id: customer.id,
+        email: customer.email,
+        first_name: customer.first_name,
+      },
+    });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 400);
+  }
+});
+
 // 🔒 FIX-010: Logout route - clears the cookie
 storeAuthRouter.post("/logout", async (c) => {
   clearAuthCookie(c);

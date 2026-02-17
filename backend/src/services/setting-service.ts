@@ -9,6 +9,7 @@ export const SettingSchema = z.object({
   category: z
     .enum([
       "general",
+      "homepage",
       "notifications",
       "security",
       "email",

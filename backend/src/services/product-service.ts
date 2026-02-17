@@ -48,6 +48,8 @@ export const CreateProductSchema = z.object({
   material: z.string().optional(),
   inventory_quantity: z.number().int().optional().default(0),
   thumbnail: z.string().url().optional(),
+  sku: z.string().optional(),
+  collection_id: z.string().uuid().optional(),
   metadata: z.record(z.any()).optional(),
   options: z
     .array(
@@ -81,11 +83,17 @@ export class ProductService {
     status?: string;
     categoryId?: string;
     tagId?: string;
+    collectionId?: string;
   }): Promise<any[]> {
     const conditions: any[] = [];
 
     if (filters.status) {
       conditions.push(eq(products.status, filters.status));
+    }
+
+    // Collection Filter
+    if (filters.collectionId) {
+      conditions.push(eq(products.collection_id, filters.collectionId));
     }
 
     // Category Filter
@@ -185,12 +193,13 @@ export class ProductService {
   /**
    * List products with advanced filtering and stats
    */
-  async listDetailed(filters: {
+   async listDetailed(filters: {
     limit?: number;
     offset?: number;
     status?: string;
     categoryId?: string;
     tagId?: string;
+    collectionId?: string;
     sort?: string;
   }) {
     const { limit = 20, offset = 0, sort = "created_at" } = filters;
@@ -202,6 +211,7 @@ export class ProductService {
       status: filters.status,
       categoryId: filters.categoryId,
       tagId: filters.tagId,
+      collectionId: filters.collectionId,
     });
 
     // Early return if no products match filters
@@ -343,7 +353,7 @@ export class ProductService {
         .values({
           product_id: newProduct.id,
           title: "Default Variant", // Standard default name
-          sku: `${data.handle}-default`,
+          sku: data.sku || `${data.handle}-default`,
           inventory_quantity: data.inventory_quantity || 0, // Default stock from input
           manage_inventory: true,
           hs_code: data.hs_code,
@@ -581,6 +591,7 @@ export class ProductService {
       sortBy?: "relevance" | "price_asc" | "price_desc" | "newest";
       categoryId?: string;
       tagId?: string;
+      collectionId?: string;
     } = {},
   ) {
     // Note: Drizzle with Supabase/Postgres works best with ilike for simple search
@@ -595,7 +606,13 @@ export class ProductService {
       sortBy = "relevance",
       categoryId,
       tagId,
+      collectionId,
     } = filters;
+
+    // Add collection filter
+    if (collectionId) {
+      conditions.push(eq(products.collection_id, collectionId));
+    }
 
     // Text Search (Title, Description, Handle)
     if (query) {

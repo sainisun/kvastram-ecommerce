@@ -15,30 +15,35 @@ interface Tag {
     name: string;
 }
 
+interface Collection {
+    id: string;
+    title: string;
+}
+
 interface FilterSidebarProps {
     categories: Category[];
     tags: Tag[];
+    collections?: Collection[];
     className?: string;
 }
 
-export default function FilterSidebar({ categories, tags, className = '' }: FilterSidebarProps) {
+export default function FilterSidebar({ categories, tags, collections = [], className = '' }: FilterSidebarProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [expandedCats, setExpandedCats] = useState<string[]>([]);
 
     const currentCategoryId = searchParams.get('category_id');
     const currentTagId = searchParams.get('tag_id');
-    // currentSort is available for future sorting functionality
+    const currentCollectionId = searchParams.get('collection_id');
     const _currentSort = searchParams.get('sort');
 
-    const updateFilter = (type: 'category_id' | 'tag_id', value: string | null) => {
+    const updateFilter = (type: 'category_id' | 'tag_id' | 'collection_id', value: string | null) => {
         const params = new URLSearchParams(searchParams.toString());
         if (value) {
             params.set(type, value);
         } else {
             params.delete(type);
         }
-        // Reset pagination if implemented
         router.push(`/products?${params.toString()}`);
     };
 
@@ -54,7 +59,7 @@ export default function FilterSidebar({ categories, tags, className = '' }: Filt
         <div className={`w-64 flex-shrink-0 border-r border-stone-100 pr-8 ${className}`}>
             <div className="flex items-center justify-between mb-6">
                 <h3 className="font-serif text-lg font-bold text-stone-900">Filters</h3>
-                {(currentCategoryId || currentTagId) && (
+                {(currentCategoryId || currentTagId || currentCollectionId) && (
                     <button
                         onClick={() => router.push('/products')}
                         className="text-xs text-red-500 hover:text-red-700 underline"
@@ -110,10 +115,31 @@ export default function FilterSidebar({ categories, tags, className = '' }: Filt
                 </div>
             </div>
 
+            {/* Collections */}
+            {collections.length > 0 && (
+                <div className="mb-8">
+                    <h4 className="text-sm font-bold uppercase tracking-wider text-stone-900 mb-4 pb-2 border-b border-stone-100">
+                        Collections
+                    </h4>
+                    <div className="space-y-1">
+                        {collections.map(col => (
+                            <button
+                                key={col.id}
+                                onClick={() => updateFilter('collection_id', currentCollectionId === col.id ? null : col.id)}
+                                className={`block w-full text-left py-1 text-sm hover:text-black transition-colors ${currentCollectionId === col.id ? 'font-bold text-black' : 'text-stone-600'
+                                    }`}
+                            >
+                                {col.title}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Tags */}
             <div>
                 <h4 className="text-sm font-bold uppercase tracking-wider text-stone-900 mb-4 pb-2 border-b border-stone-100">
-                    Collections
+                    Tags
                 </h4>
                 <div className="flex flex-wrap gap-2">
                     {tags.map(tag => (

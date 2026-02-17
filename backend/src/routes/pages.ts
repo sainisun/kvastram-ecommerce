@@ -21,6 +21,8 @@ app.get("/storefront", async (c) => {
   try {
     const publicPages = await db
       .select({
+        id: pages.id,
+        title: pages.title,
         slug: pages.slug,
         updated_at: pages.updated_at,
       })

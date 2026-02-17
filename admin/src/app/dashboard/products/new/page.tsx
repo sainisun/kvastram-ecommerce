@@ -25,10 +25,12 @@ export default function NewProductPage() {
     const [regions, setRegions] = useState<Region[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
     const [tags, setTags] = useState<any[]>([]);
+    const [collections, setCollections] = useState<any[]>([]);
 
     // Selection State
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
     const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+    const [selectedCollectionId, setSelectedCollectionId] = useState<string>('');
 
     // Form
     const [formData, setFormData] = useState({
@@ -46,6 +48,7 @@ export default function NewProductPage() {
         origin_country: '',
         material: '',
         thumbnail: '',
+        sku: '',
     });
 
     const [images, setImages] = useState<ImageItem[]>([]);
@@ -69,14 +72,16 @@ export default function NewProductPage() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [catsData, tagsData] = await Promise.all([
+                const [catsData, tagsData, collectionsData] = await Promise.all([
                     api.getCategories(),
-                    api.getTags()
+                    api.getTags(),
+                    api.getCollections()
                 ]);
                 setCategories(catsData.categories || []);
                 setTags(tagsData.tags || []);
+                setCollections(collectionsData.collections || []);
             } catch (err) {
-                console.error('Failed to load categories/tags', err);
+                console.error('Failed to load categories/tags/collections', err);
             }
         };
         loadData();
@@ -133,7 +138,9 @@ export default function NewProductPage() {
                 })),
                 thumbnail: images.find(img => img.is_thumbnail)?.url || images[0]?.url || '',
                 category_ids: selectedCategoryIds,
-                tag_ids: selectedTagIds
+                tag_ids: selectedTagIds,
+                collection_id: selectedCollectionId || undefined,
+                sku: formData.sku || undefined,
             };
 
             await api.createProduct(payload);
@@ -377,6 +384,35 @@ export default function NewProductPage() {
                                     <option value="published">Published</option>
                                     <option value="proposed">Proposed</option>
                                     <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+                                <input
+                                    type="text"
+                                    name="sku"
+                                    value={formData.sku}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                    placeholder="e.g. TSHIRT-L-BLU"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Stock Keeping Unit - unique product identifier</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Collection</label>
+                                <select
+                                    value={selectedCollectionId}
+                                    onChange={(e) => setSelectedCollectionId(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                >
+                                    <option value="">No Collection</option>
+                                    {collections.map((collection: any) => (
+                                        <option key={collection.id} value={collection.id}>
+                                            {collection.title}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 

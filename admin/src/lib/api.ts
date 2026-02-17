@@ -68,10 +68,17 @@ async function fetchWithTimeout(resource: RequestInfo, options: FetchOptions = {
         return response;
     } catch (error: unknown) {
         clearTimeout(id);
-        if (error instanceof Error && error.name === 'AbortError') {
-            throw new Error('Request timed out. Please check your internet connection or try again.');
+        if (error instanceof Error) {
+            if (error.name === 'AbortError') {
+                throw new Error('Request timed out. Please check your internet connection or try again.');
+            }
+            // Provide more helpful error message
+            if (error.message === 'Failed to fetch') {
+                throw new Error('Cannot connect to server. Please ensure the backend is running on port 4000.');
+            }
+            throw error;
         }
-        throw error;
+        throw new Error('An unexpected error occurred');
     }
 }
 
@@ -663,6 +670,140 @@ export const api = {
         if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale stats');
         return res.json();
     },
+
+    // Wholesale Customers endpoints
+    getWholesaleCustomers: async (search?: string, tier?: string, page = 1, limit = 20) => {
+        let url = `${API_BASE_URL}/wholesale-customers?page=${page}&limit=${limit}`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (tier && tier !== 'all') url += `&tier=${tier}`;
+
+        const res = await fetchWithTimeout(url, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale customers');
+        return res.json();
+    },
+
+    getWholesaleCustomerStats: async () => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/wholesale-customers/stats`, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale customer stats');
+        return res.json();
+    },
+
+    updateWholesaleCustomerTier: async (id: string, discount_tier: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/wholesale-customers/${id}/tier`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ discount_tier }),
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to update customer tier');
+        return res.json();
+    },
+
+    // Wholesale Orders endpoints
+    getWholesaleOrders: async (status?: string, page = 1, limit = 20) => {
+        let url = `${API_BASE_URL}/admin/wholesale/orders?page=${page}&limit=${limit}`;
+        if (status && status !== 'all') url += `&status=${status}`;
+
+        const res = await fetchWithTimeout(url, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale orders');
+        return res.json();
+    },
+
+    getWholesaleOrderStats: async () => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/wholesale/orders/stats`, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale order stats');
+        return res.json();
+    },
+
+    getWholesaleOrder: async (id: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/wholesale/orders/${id}`, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale order');
+        return res.json();
+    },
+
+    updateWholesaleOrder: async (id: string, data: any) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/wholesale/orders/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to update wholesale order');
+        return res.json();
+    },
+
+    // Tier Management endpoints
+    getWholesaleTiers: async (active?: boolean) => {
+        let url = `${API_BASE_URL}/admin/tiers/tiers`;
+        if (active !== undefined) url += `?active=${active}`;
+        
+        const res = await fetchWithTimeout(url, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale tiers');
+        return res.json();
+    },
+
+    getWholesaleTier: async (id: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers/tiers/${id}`, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale tier');
+        return res.json();
+    },
+
+    createWholesaleTier: async (data: any) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers/tiers`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to create wholesale tier');
+        return res.json();
+    },
+
+    updateWholesaleTier: async (id: string, data: any) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers/tiers/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to update wholesale tier');
+        return res.json();
+    },
+
+    deleteWholesaleTier: async (id: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers/tiers/${id}`, {
+            method: 'DELETE',
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to delete wholesale tier');
+        return res.json();
+    },
+
+    getWholesaleTierStats: async () => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers/tiers/stats/overview`, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale tier stats');
+        return res.json();
+    },
+
     // Content (Banners) endpoints
     getBanners: async () => {
         const res = await fetchWithTimeout(`${API_BASE_URL}/banners`, {
@@ -871,6 +1012,55 @@ export const api = {
         return res.json();
     },
 
+    // Collections
+    getCollections: async () => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/collections`, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) throw new Error('Failed to fetch collections');
+        return res.json();
+    },
+
+    getCollection: async (id: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}`, {
+            // No Authorization header needed - cookie is sent automatically
+        });
+        if (!res.ok) throw new Error('Failed to fetch collection');
+        return res.json();
+    },
+
+    createCollection: async (data: any) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/collections`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to create collection');
+        return res.json();
+    },
+
+    updateCollection: async (id: string, data: any) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to update collection');
+        return res.json();
+    },
+
+    deleteCollection: async (id: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}`, {
+            method: 'DELETE',
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to delete collection');
+        return res.json();
+    },
+
     // Tags
     getTags: async () => {
         const res = await fetchWithTimeout(`${API_BASE_URL}/tags`, {
@@ -954,6 +1144,101 @@ export const api = {
             // No Authorization header needed - cookie is sent automatically
         });
         if (!res.ok) throw new Error('Failed to fetch orders by status');
+        return res.json();
+    },
+
+    // Testimonials
+    getAdminTestimonials: async () => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/testimonials`, {
+            // Cookie is sent automatically
+        });
+        if (!res.ok) throw new Error('Failed to fetch testimonials');
+        return res.json();
+    },
+
+    createTestimonial: async (data: { name: string; location?: string; avatar_url?: string; rating: number; content: string; is_active: boolean; display_order: number }) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/testimonials`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to create testimonial');
+        return res.json();
+    },
+
+    updateTestimonial: async (id: string, data: Partial<{ name: string; location?: string; avatar_url?: string; rating: number; content: string; is_active: boolean; display_order: number }>) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/testimonials/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to update testimonial');
+        return res.json();
+    },
+
+    deleteTestimonial: async (id: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/testimonials/${id}`, {
+            method: 'DELETE',
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to delete testimonial');
+        return res.json();
+    },
+
+    // Notifications
+    getNotifications: async () => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/notifications`, {
+            headers: {
+                'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
+            },
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch notifications');
+        return res.json();
+    },
+
+    getUnreadNotificationCount: async () => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/notifications/unread-count`, {
+            headers: {
+                'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
+            },
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to fetch unread count');
+        return res.json();
+    },
+
+    markNotificationRead: async (id: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/notifications/${id}/read`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
+            },
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to mark notification as read');
+        return res.json();
+    },
+
+    markAllNotificationsRead: async () => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/notifications/read-all`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
+            },
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to mark all notifications as read');
+        return res.json();
+    },
+
+    deleteNotification: async (id: string) => {
+        const res = await fetchWithTimeout(`${API_BASE_URL}/admin/notifications/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
+            },
+        });
+        if (!res.ok) return handleApiError(res, 'Failed to delete notification');
         return res.json();
     },
 };

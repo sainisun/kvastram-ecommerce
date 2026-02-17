@@ -56,6 +56,7 @@ export default function OrderDetailsPage() {
             try {
                 const res = await api.getOrder(params.id as string);
                 setOrder(res.order);
+                setFetching(false);
             } catch {
                 setError('Failed to load order');
                 setFetching(false);
@@ -143,10 +144,10 @@ export default function OrderDetailsPage() {
                     <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-100">
                         <div className="md:col-span-2 p-6 md:p-8">
                             <h3 className="text-sm font-bold uppercase tracking-widest text-stone-900 mb-6 flex items-center gap-2">
-                                <Package size={16} /> Items ({order.items.length})
+                                <Package size={16} /> Items ({(order.items || []).length})
                             </h3>
                             <div className="space-y-6">
-                                {order.items.map((item) => (
+                                {(order.items || []).map((item) => (
                                     <div key={item.id} className="flex gap-4">
                                         <div className="relative w-16 h-20 bg-stone-100 border border-stone-200 shrink-0">
                                             {item.thumbnail ? (
@@ -158,14 +159,14 @@ export default function OrderDetailsPage() {
                                         <div className="flex-1 min-w-0">
                                             <p className="font-medium text-stone-900 truncate">{item.title}</p>
                                             <p className="text-xs text-stone-500 mt-1">
-                                                Qty: {item.quantity} × {new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code.toUpperCase() }).format(item.unit_price / 100)}
+                                                Qty: {item.quantity} × {new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code?.toUpperCase() || 'INR' }).format(item.unit_price / 100)}
                                             </p>
                                             {item.metadata?.variant && (
                                                 <p className="text-xs text-stone-400 mt-1 uppercase tracking-wider">{String(item.metadata.variant)}</p>
                                             )}
                                         </div>
                                         <p className="font-medium text-stone-900">
-                                            {new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code.toUpperCase() }).format((item.unit_price * item.quantity) / 100)}
+                                            {new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code?.toUpperCase() || 'INR' }).format((item.unit_price * item.quantity) / 100)}
                                         </p>
                                     </div>
                                 ))}
@@ -174,15 +175,15 @@ export default function OrderDetailsPage() {
                             <div className="mt-8 pt-6 border-t border-stone-100 space-y-2">
                                 <div className="flex justify-between text-sm text-stone-500">
                                     <span>Subtotal</span>
-                                    <span>{new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code.toUpperCase() }).format(order.subtotal / 100)}</span>
+                                    <span>{new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code?.toUpperCase() || 'INR' }).format(order.subtotal / 100)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm text-stone-500">
                                     <span>Shipping</span>
-                                    <span>{order.shipping_total ? new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code.toUpperCase() }).format(order.shipping_total / 100) : 'Free'}</span>
+                                    <span>{order.shipping_total ? new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code?.toUpperCase() || 'INR' }).format(order.shipping_total / 100) : 'Free'}</span>
                                 </div>
                                 <div className="flex justify-between text-lg font-serif text-stone-900 pt-4 border-t border-stone-100 mt-4">
                                     <span>Total</span>
-                                    <span>{new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code.toUpperCase() }).format(order.total / 100)}</span>
+                                    <span>{new Intl.NumberFormat(undefined, { style: 'currency', currency: order.currency_code?.toUpperCase() || 'INR' }).format(order.total / 100)}</span>
                                 </div>
                             </div>
                         </div>
@@ -204,7 +205,7 @@ export default function OrderDetailsPage() {
                             <div>
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3">Payment Status</h3>
                                 <div className="text-sm text-stone-600">
-                                    <p className="capitalize mb-1">{order.payment_status.replace('_', ' ')}</p>
+                                    <p className="capitalize mb-1">{order.payment_status?.replace('_', ' ') || 'Unknown'}</p>
                                     <p className="text-xs text-stone-400 font-mono">{order.payment_intent_id?.slice(-8)}...</p>
                                 </div>
                             </div>

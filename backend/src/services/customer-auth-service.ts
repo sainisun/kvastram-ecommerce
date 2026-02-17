@@ -109,6 +109,50 @@ export const LoginCustomerSchema = z.object({
 });
 
 export const customerAuthService = {
+  async setupPassword(token: string, password: string) {
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(eq(customers.verification_token, token))
+      .limit(1);
+
+    if (!customer) {
+      throw new Error("Invalid or expired token");
+    }
+
+    if (customer.verification_expires_at && customer.verification_expires_at < new Date()) {
+      throw new Error("Token has expired");
+    }
+
+    if (customer.password_hash && customer.password_hash !== "") {
+      throw new Error("Password already set");
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      throw new Error(`Password does not meet requirements: ${passwordValidation.errors.join(", ")}`);
+    }
+
+    if (isCommonPassword(password)) {
+      throw new Error("Password is too common. Please choose a more secure password.");
+    }
+
+    const password_hash = await bcrypt.hash(password, 10);
+
+    const [updated] = await db
+      .update(customers)
+      .set({
+        password_hash,
+        verification_token: null,
+        verification_expires_at: null,
+        updated_at: new Date(),
+      })
+      .where(eq(customers.id, customer.id))
+      .returning();
+
+    return updated;
+  },
+
   async register(data: z.infer<typeof RegisterCustomerSchema>) {
     // Check if customer exists
     const existing = await db

@@ -168,7 +168,7 @@ export default function OrderDetailsPage() {
                         </div>
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">
-                                {(order.customer?.first_name?.[0] || order.email[0]).toUpperCase()}
+                                {(order.customer?.first_name?.[0] || order.email?.[0] || '?').toUpperCase()}
                             </div>
                             <div>
                                 <p className="font-medium text-gray-900">
@@ -194,7 +194,7 @@ export default function OrderDetailsPage() {
                                 {order.shipping_address.address_1}<br />
                                 {order.shipping_address.address_2 && <>{order.shipping_address.address_2}<br /></>}
                                 {order.shipping_address.city}, {order.shipping_address.postal_code}<br />
-                                {(order.shipping_address.province || order.shipping_address.country_code).toUpperCase()}<br />
+                                {(order.shipping_address.province || order.shipping_address.country_code || '').toUpperCase()}<br />
                                 <span className="text-gray-400 text-xs mt-1 block">{order.shipping_address.phone}</span>
                             </address>
                         ) : (

@@ -14,7 +14,7 @@ export function RecentlyViewedSection() {
     const formatPrice = (amount: number, currency: string) => {
         return new Intl.NumberFormat(undefined, {
             style: 'currency',
-            currency: currency.toUpperCase(),
+            currency: currency?.toUpperCase() || 'USD',
         }).format(amount / 100);
     };
 

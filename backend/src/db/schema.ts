@@ -54,6 +54,7 @@ export const products = pgTable(
     description: text("description"),
     handle: text("handle").notNull().unique(),
     is_giftcard: boolean("is_giftcard").default(false),
+    is_wholesale_only: boolean("is_wholesale_only").default(false), // Only visible to wholesale customers
     status: text("status").default("draft"), // draft, published, proposed, rejected
     thumbnail: text("thumbnail"),
     weight: integer("weight"),
@@ -100,6 +101,8 @@ export const product_variants = pgTable(
     length: integer("length"),
     height: integer("height"),
     width: integer("width"),
+    wholesale_price: integer("wholesale_price"), // Price in cents for wholesale customers
+    moq: integer("moq"), // Minimum Order Quantity for wholesale customers
     metadata: jsonb("metadata"),
     ...createdUpdated,
   },
@@ -135,6 +138,7 @@ export const product_collections = pgTable("product_collections", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
   handle: text("handle").notNull().unique(),
+  image: text("image"),
   metadata: jsonb("metadata"),
   ...createdUpdated,
 });
@@ -624,6 +628,35 @@ export const wholesale_inquiries = pgTable("wholesale_inquiries", {
   ...createdUpdated,
 });
 
+// --- WHOLESALE TIERS ---
+export const wholesale_tiers = pgTable("wholesale_tiers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(), // e.g., "Starter", "Growth", "Enterprise"
+  slug: text("slug").notNull().unique(), // e.g., "starter", "growth", "enterprise"
+  discount_percent: integer("discount_percent").notNull(), // e.g., 20 for 20%
+  min_order_value: integer("min_order_value").default(0), // Minimum order to qualify (in cents)
+  min_order_quantity: integer("min_order_quantity").default(0), // Minimum items to qualify
+  default_moq: integer("default_moq").default(1), // Default MOQ for products in this tier
+  payment_terms: text("payment_terms").default("net_30"), // net_30, net_45, net_60
+  description: text("description"),
+  color: text("color").default("#3B82F6"), // UI color for the tier
+  active: boolean("active").default(true),
+  priority: integer("priority").default(0), // For ordering tiers
+  ...createdUpdated,
+});
+
+// --- BULK DISCOUNTS ---
+export const bulk_discounts = pgTable("bulk_discounts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  product_id: uuid("product_id").references(() => products.id),
+  variant_id: uuid("variant_id").references(() => product_variants.id),
+  min_quantity: integer("min_quantity").notNull(), // Minimum quantity for this discount
+  discount_percent: integer("discount_percent").notNull(), // Additional discount % for bulk
+  description: text("description"),
+  active: boolean("active").default(true),
+  ...createdUpdated,
+});
+
 // --- CONTACT FORM ---
 export const contacts = pgTable("contacts", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -730,5 +763,47 @@ export const pages = pgTable("pages", {
   is_visible: boolean("is_visible").default(true),
   seo_title: text("seo_title"),
   seo_description: text("seo_description"),
+  ...createdUpdated,
+});
+
+
+// --- TESTIMONIALS ---
+export const testimonials = pgTable("testimonials", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  location: text("location"),
+  avatar_url: text("avatar_url"),
+  rating: integer("rating").default(5),
+  content: text("content").notNull(),
+  is_active: boolean("is_active").default(true),
+  display_order: integer("display_order").default(0),
+  ...createdUpdated,
+});
+
+// --- NOTIFICATIONS ---
+export const notifications = pgTable("notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  type: text("type").notNull(), // order, customer, system
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  read: boolean("read").default(false),
+  metadata: jsonb("metadata"), // store order_id, customer_id etc
+  ...createdUpdated,
+}, (table) => ({
+  typeIdx: index("idx_notifications_type").on(table.type),
+  readIdx: index("idx_notifications_read").on(table.read),
+  createdAtIdx: index("idx_notifications_created_at").on(table.created_at),
+}));
+
+// --- WHATSAPP SETTINGS ---
+export const whatsapp_settings = pgTable("whatsapp_settings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  phone_number_id: text("phone_number_id").notNull(),
+  access_token: text("access_token").notNull(),
+  business_account_id: text("business_account_id"),
+  admin_phone: text("admin_phone").notNull(), // Where to send admin notifications
+  notify_on_order: boolean("notify_on_order").default(true),
+  notify_on_new_customer: boolean("notify_on_new_customer").default(false),
+  is_active: boolean("is_active").default(false),
   ...createdUpdated,
 });

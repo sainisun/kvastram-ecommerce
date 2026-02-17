@@ -461,6 +461,27 @@ checkoutRouter.post(
         console.error("Failed to send order confirmation email:", emailError);
       }
 
+      // 6. Send WhatsApp notification to admin
+      try {
+        const { sendWhatsAppNotification } = await import("../admin/whatsapp");
+        const orderWithItems = await db.query.orders.findFirst({
+          where: eq(orders.id, newOrder.id),
+          with: {
+            items: true,
+          },
+        });
+        
+        if (orderWithItems) {
+          await sendWhatsAppNotification('order', {
+            ...orderWithItems,
+            display_id: newOrder.display_id,
+            total: newOrder.total,
+          });
+        }
+      } catch (whatsappError) {
+        console.error("Failed to send WhatsApp notification:", whatsappError);
+      }
+
       return c.json({ order: newOrder });
     } catch (error: any) {
       console.error("Checkout error:", error);

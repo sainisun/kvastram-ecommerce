@@ -40,8 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // The cookie will be sent automatically with credentials: 'include'
         api.getMe()
             .then((data) => {
-                if (data?.data?.user) {
-                    setUser(data.data.user);
+                if (data?.user) {
+                    setUser(data.user);
                     debugLog('Auth state restored from API');
                 }
             })

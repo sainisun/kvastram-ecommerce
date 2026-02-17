@@ -35,8 +35,8 @@ export default function MarketingPage() {
                 api.getCampaigns(),
                 api.getDiscounts()
             ]);
-            setCampaigns(campaignsData.campaigns);
-            setDiscounts(discountsData.discounts);
+            setCampaigns(campaignsData?.campaigns || []);
+            setDiscounts(discountsData?.discounts || []);
         } catch (error) {
             console.error('Error fetching marketing data:', error);
         } finally {
@@ -351,7 +351,7 @@ export default function MarketingPage() {
                                             discounts.map((discount) => (
                                                 <tr key={discount.id} className="hover:bg-gray-50">
                                                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{discount.code}</td>
-                                                    <td className="px-6 py-4 text-sm text-gray-600 capitalize">{discount.type.replace('_', ' ')}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-600 capitalize">{(discount.type || 'unknown').replace('_', ' ')}</td>
                                                     <td className="px-6 py-4 text-sm text-gray-900">
                                                         {discount.type === 'percentage' ? `${discount.value}%` : `$${discount.value}`}
                                                     </td>

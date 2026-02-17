@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     Settings as SettingsIcon, Store, Globe, Bell, Lock,
-    Mail, CreditCard, Truck, Save, Shield, CheckCircle, X
+    Mail, CreditCard, Truck, Save, Shield, CheckCircle, X, Home, MessageCircle
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -31,6 +31,18 @@ export default function SettingsPage() {
     const [verifying2FA, setVerifying2FA] = useState(false);
     const [disabling2FA, setDisabling2FA] = useState(false);
 
+    // WhatsApp Settings State
+    const [whatsappSettings, setWhatsappSettings] = useState({
+        phone_number_id: '',
+        access_token: '',
+        business_account_id: '',
+        admin_phone: '',
+        notify_on_order: true,
+        notify_on_new_customer: false,
+        is_active: false,
+    });
+    const [testingWhatsapp, setTestingWhatsapp] = useState(false);
+
     useEffect(() => {
         fetchData();
     }, [router]);
@@ -43,19 +55,30 @@ export default function SettingsPage() {
                 api.getMe().catch(() => null)
             ]);
 
-            // Flatten settings
+            // Flatten settings - handle both array and object formats
             const flatSettings: any = {};
             if (settingsData && settingsData.settings) {
-                Object.values(settingsData.settings).forEach((category: any) => {
-                    Object.entries(category).forEach(([key, value]) => {
-                        flatSettings[key] = value;
+                // Backend returns array: [{ key, value, category }, ...]
+                if (Array.isArray(settingsData.settings)) {
+                    settingsData.settings.forEach((setting: any) => {
+                        flatSettings[setting.key] = setting.value;
                     });
-                });
+                } 
+                // Backend returns object: { category: { key: value } }
+                else if (typeof settingsData.settings === 'object') {
+                    Object.values(settingsData.settings).forEach((category: any) => {
+                        if (category && typeof category === 'object') {
+                            Object.entries(category).forEach(([key, value]) => {
+                                flatSettings[key] = value;
+                            });
+                        }
+                    });
+                }
             }
             setSettings(flatSettings);
 
             // Set User Profile
-            if (profileData && profileData.user) {
+            if (profileData && profileData?.user) {
                 setUser(profileData.user);
             }
 
@@ -136,7 +159,7 @@ export default function SettingsPage() {
 
             // Refresh User
             const profile = await api.getMe();
-            setUser(profile.user);
+            setUser(profile?.user);
 
             setShowTwoFactorModal(false);
             setOtp('');
@@ -161,7 +184,7 @@ export default function SettingsPage() {
             setDisabling2FA(true);
             await api.disable2FA(otp);
             const profile = await api.getMe();
-            setUser(profile.user);
+            setUser(profile?.user);
             setShowDisable2FAModal(false);
             setOtp('');
             showNotification('success', 'Two-Factor Authentication Disabled');
@@ -173,9 +196,94 @@ export default function SettingsPage() {
         }
     };
 
+    const fetchWhatsAppSettings = async () => {
+        try {
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+            const res = await fetch(`${API_BASE_URL}/admin/whatsapp/settings`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setWhatsappSettings({
+                    phone_number_id: data.phone_number_id || '',
+                    access_token: '',
+                    business_account_id: data.business_account_id || '',
+                    admin_phone: data.admin_phone || '',
+                    notify_on_order: data.notify_on_order ?? true,
+                    notify_on_new_customer: data.notify_on_new_customer ?? false,
+                    is_active: data.is_active ?? false,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching WhatsApp settings:', error);
+        }
+    };
+
+    const handleSaveWhatsApp = async () => {
+        try {
+            setSaving(true);
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+            const res = await fetch(`${API_BASE_URL}/admin/whatsapp/settings`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(whatsappSettings),
+            });
+            
+            if (res.ok) {
+                showNotification('success', 'WhatsApp settings saved!');
+            } else {
+                const data = await res.json();
+                showNotification('error', data.error || 'Failed to save WhatsApp settings');
+            }
+        } catch (error) {
+            console.error('Error saving WhatsApp settings:', error);
+            showNotification('error', 'Failed to save WhatsApp settings');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleTestWhatsApp = async () => {
+        try {
+            setTestingWhatsapp(true);
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+            const res = await fetch(`${API_BASE_URL}/admin/whatsapp/test`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+            
+            const data = await res.json();
+            if (res.ok) {
+                showNotification('success', 'Test message sent to WhatsApp!');
+            } else {
+                showNotification('error', data.error || 'Failed to send test message');
+            }
+        } catch (error) {
+            console.error('Error testing WhatsApp:', error);
+            showNotification('error', 'Failed to test WhatsApp');
+        } finally {
+            setTestingWhatsapp(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'whatsapp') {
+            fetchWhatsAppSettings();
+        }
+    }, [activeTab]);
+
     const tabs = [
         { id: 'general', label: 'General', icon: Store },
+        { id: 'homepage', label: 'Homepage', icon: Home },
         { id: 'notifications', label: 'Notifications', icon: Bell },
+        { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle },
         { id: 'security', label: 'Security', icon: Lock },
         { id: 'payment', label: 'Payment', icon: CreditCard },
         { id: 'email', label: 'Email', icon: Mail },
@@ -272,6 +380,209 @@ export default function SettingsPage() {
                             </div>
                         )}
 
+                        {activeTab === 'homepage' && (
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold text-gray-900">Homepage Settings</h2>
+                                
+                                <div className="border-b border-gray-200 pb-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Announcement Bar</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="font-medium text-gray-900">Enable Announcement Bar</p>
+                                                <p className="text-sm text-gray-500">Show a banner at the top of the homepage</p>
+                                            </div>
+                                            <input 
+                                                type="checkbox" 
+                                                checked={settings.announcement_bar_enabled ?? false} 
+                                                onChange={(e) => handleChange('announcement_bar_enabled', e.target.checked)} 
+                                                className="w-5 h-5 text-blue-600" 
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Announcement Text</label>
+                                            <input
+                                                type="text"
+                                                value={settings.announcement_bar_text || ''}
+                                                onChange={(e) => handleChange('announcement_bar_text', e.target.value)}
+                                                placeholder="Complimentary Worldwide Shipping on Orders Over $250"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="border-b border-gray-200 pb-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Hero Section</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Hero Title</label>
+                                            <input
+                                                type="text"
+                                                value={settings.hero_title || ''}
+                                                onChange={(e) => handleChange('hero_title', e.target.value)}
+                                                placeholder="Where Tradition Meets Modern"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Hero Subtitle</label>
+                                            <textarea
+                                                rows={3}
+                                                value={settings.hero_subtitle || ''}
+                                                onChange={(e) => handleChange('hero_subtitle', e.target.value)}
+                                                placeholder="Discover handcrafted elegance from master artisans..."
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">CTA Button Text</label>
+                                                <input
+                                                    type="text"
+                                                    value={settings.hero_cta_text || ''}
+                                                    onChange={(e) => handleChange('hero_cta_text', e.target.value)}
+                                                    placeholder="Shop New Arrivals"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Hero Image URL</label>
+                                            <input
+                                                type="text"
+                                                value={settings.hero_image || ''}
+                                                onChange={(e) => handleChange('hero_image', e.target.value)}
+                                                placeholder="https://example.com/hero-image.jpg"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Full URL to hero section background image</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">CTA Button Text</label>
+                                                <input
+                                                    type="text"
+                                                    value={settings.hero_cta_text || ''}
+                                                    onChange={(e) => handleChange('hero_cta_text', e.target.value)}
+                                                    placeholder="Shop New Arrivals"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">CTA Link</label>
+                                                <input
+                                                    type="text"
+                                                    value={settings.hero_cta_link || ''}
+                                                    onChange={(e) => handleChange('hero_cta_link', e.target.value)}
+                                                    placeholder="/products"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Category & Collection Images</h3>
+                                    <p className="text-sm text-gray-500 mb-4">Upload images for categories and collections in their respective pages.</p>
+                                    <div className="flex gap-4">
+                                        <a href="/dashboard/categories" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                            Manage Categories
+                                        </a>
+                                        <a href="/dashboard/collections" className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                                            Manage Collections
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Newsletter Section</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Newsletter Title</label>
+                                            <input
+                                                type="text"
+                                                value={settings.newsletter_title || ''}
+                                                onChange={(e) => handleChange('newsletter_title', e.target.value)}
+                                                placeholder="Unlock 10% Off"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Newsletter Subtitle</label>
+                                            <textarea
+                                                rows={3}
+                                                value={settings.newsletter_subtitle || ''}
+                                                onChange={(e) => handleChange('newsletter_subtitle', e.target.value)}
+                                                placeholder="Be the first to know about new collections..."
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Brand Story Section</h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                                            <input
+                                                type="text"
+                                                value={settings.brand_story_title || ''}
+                                                onChange={(e) => handleChange('brand_story_title', e.target.value)}
+                                                placeholder="Crafted with Soul & Purpose"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                                            <textarea
+                                                rows={4}
+                                                value={settings.brand_story_content || ''}
+                                                onChange={(e) => handleChange('brand_story_content', e.target.value)}
+                                                placeholder="Every Kvastram piece begins its journey..."
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                                            <input
+                                                type="text"
+                                                value={settings.brand_story_image || ''}
+                                                onChange={(e) => handleChange('brand_story_image', e.target.value)}
+                                                placeholder="https://example.com/image.jpg"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Featured Products</h3>
+                                    <p className="text-sm text-gray-500 mb-4">Enter product IDs (comma-separated) to feature on the homepage. Leave empty to show newest products.</p>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Featured Product IDs</label>
+                                            <textarea
+                                                rows={3}
+                                                value={settings.featured_product_ids || ''}
+                                                onChange={(e) => handleChange('featured_product_ids', e.target.value)}
+                                                placeholder="prod_123, prod_456, prod_789"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Enter product IDs separated by commas. First 8 will be displayed.</p>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <a href="/dashboard/products" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                                Browse Products
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {activeTab === 'notifications' && (
                             <div className="space-y-6">
                                 <h2 className="text-xl font-bold text-gray-900">Notification Settings</h2>
@@ -285,6 +596,136 @@ export default function SettingsPage() {
                                     <div className="flex items-center justify-between">
                                         <div><p className="font-medium text-gray-900">Low Stock Alerts</p></div>
                                         <input type="checkbox" checked={settings.notify_low_stock ?? true} onChange={(e) => handleChange('notify_low_stock', e.target.checked)} className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'whatsapp' && (
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h2 className="text-xl font-bold text-gray-900">WhatsApp Notifications</h2>
+                                        <p className="text-sm text-gray-600 mt-1">Receive order notifications on your WhatsApp</p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={handleTestWhatsApp}
+                                            disabled={testingWhatsapp || !whatsappSettings.is_active}
+                                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                                        >
+                                            {testingWhatsapp ? 'Sending...' : 'Test'}
+                                        </button>
+                                        <button
+                                            onClick={handleSaveWhatsApp}
+                                            disabled={saving}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-medium flex items-center gap-2"
+                                        >
+                                            <Save size={16} />
+                                            {saving ? 'Saving...' : 'Save'}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <h3 className="font-medium text-green-900 mb-2">WhatsApp Business API</h3>
+                                    <p className="text-sm text-green-700">
+                                        To enable WhatsApp notifications, you need a WhatsApp Business Account and Meta Developer App.
+                                        Get your credentials from{' '}
+                                        <a href="https://developers.facebook.com/" target="_blank" rel="noopener noreferrer" className="underline font-medium">
+                                            developers.facebook.com
+                                        </a>
+                                    </p>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-medium text-gray-900">Enable WhatsApp Notifications</p>
+                                            <p className="text-sm text-gray-500">Send notifications to your phone</p>
+                                        </div>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={whatsappSettings.is_active} 
+                                            onChange={(e) => setWhatsappSettings(prev => ({ ...prev, is_active: e.target.checked }))} 
+                                            className="w-5 h-5 text-green-600" 
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number ID</label>
+                                        <input
+                                            type="text"
+                                            value={whatsappSettings.phone_number_id}
+                                            onChange={(e) => setWhatsappSettings(prev => ({ ...prev, phone_number_id: e.target.value }))}
+                                            placeholder="123456789012345"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Access Token</label>
+                                        <input
+                                            type="password"
+                                            value={whatsappSettings.access_token}
+                                            onChange={(e) => setWhatsappSettings(prev => ({ ...prev, access_token: e.target.value }))}
+                                            placeholder={whatsappSettings.access_token ? "••••••••••••" : "Enter access token"}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Leave blank to keep existing token</p>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Business Account ID (Optional)</label>
+                                        <input
+                                            type="text"
+                                            value={whatsappSettings.business_account_id}
+                                            onChange={(e) => setWhatsappSettings(prev => ({ ...prev, business_account_id: e.target.value }))}
+                                            placeholder="123456789012345"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Admin Phone Number</label>
+                                        <input
+                                            type="text"
+                                            value={whatsappSettings.admin_phone}
+                                            onChange={(e) => setWhatsappSettings(prev => ({ ...prev, admin_phone: e.target.value }))}
+                                            placeholder="+1234567890"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Your WhatsApp number to receive notifications (with country code)</p>
+                                    </div>
+
+                                    <div className="border-t border-gray-200 pt-4 mt-4">
+                                        <h3 className="font-medium text-gray-900 mb-4">Notification Types</h3>
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="font-medium text-gray-900">New Orders</p>
+                                                    <p className="text-sm text-gray-500">Get notified when a new order is placed</p>
+                                                </div>
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={whatsappSettings.notify_on_order} 
+                                                    onChange={(e) => setWhatsappSettings(prev => ({ ...prev, notify_on_order: e.target.checked }))} 
+                                                    className="w-5 h-5 text-green-600" 
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="font-medium text-gray-900">New Customers</p>
+                                                    <p className="text-sm text-gray-500">Get notified when a new customer registers</p>
+                                                </div>
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={whatsappSettings.notify_on_new_customer} 
+                                                    onChange={(e) => setWhatsappSettings(prev => ({ ...prev, notify_on_new_customer: e.target.checked }))} 
+                                                    className="w-5 h-5 text-green-600" 
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

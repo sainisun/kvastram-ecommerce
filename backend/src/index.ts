@@ -33,6 +33,8 @@ import postRoutes from "./routes/posts";
 import pageRoutes from "./routes/pages";
 import categoriesRoutes from "./routes/categories";
 import tagsRoutes from "./routes/tags";
+import collectionsRoutes from "./routes/collections";
+import testimonialsRoutes from "./routes/testimonials";
 
 import analyticsRoutes from "./routes/analytics";
 import auth2faRoutes from "./routes/auth-2fa";
@@ -41,6 +43,13 @@ import storeCustomersRouter from "./routes/store/customers";
 import checkoutRoutes from "./routes/store/checkout";
 import paymentRoutes from "./routes/store/payments";
 import wholesaleRoutes from "./routes/wholesale";
+import wholesaleCustomersRoutes from "./routes/wholesale-customers";
+import wholesalePricingRoutes from "./routes/store/wholesale-pricing";
+import wholesaleOrdersRoutes from "./routes/store/wholesale-orders";
+import adminWholesaleOrdersRoutes from "./routes/admin/wholesale-orders";
+import adminTiersRoutes from "./routes/admin/tiers";
+import adminNotificationsRoutes from "./routes/admin/notifications";
+import whatsappRoutes from "./routes/admin/whatsapp";
 import reviewsRoutes from "./routes/reviews";
 import contactRoutes from "./routes/contact";
 import newsletterRoutes from "./routes/newsletter";
@@ -118,8 +127,10 @@ csrfForStateChanging([
   "/pages/*",
   "/categories/*",
   "/tags/*",
+  "/collections/*",
   "/wholesale/*",
   "/reviews/*",
+  "/testimonials/*",
   "/upload/*",
   "/auth/2fa/*",
 ]);
@@ -193,9 +204,11 @@ const generalApiRoutes = [
   "/pages/*",
   "/categories/*",
   "/tags/*",
+  "/collections/*",
   "/analytics/*",
   "/wholesale/*",
   "/reviews/*",
+  "/testimonials/*",
   "/store/customers/*",  // OPT-007: Added missing store customer route
 ];
 
@@ -217,12 +230,19 @@ app.route("/posts", postRoutes);
 app.route("/pages", pageRoutes);
 app.route("/categories", categoriesRoutes);
 app.route("/tags", tagsRoutes);
+app.route("/collections", collectionsRoutes);
+app.route("/testimonials", testimonialsRoutes);
 
 app.route("/analytics", analyticsRoutes);
 app.route("/auth/2fa", auth2faRoutes);
 
 // Wholesale Routes
 app.route("/wholesale", wholesaleRoutes);
+app.route("/wholesale-customers", wholesaleCustomersRoutes);
+app.route("/admin/wholesale", adminWholesaleOrdersRoutes);
+app.route("/admin/tiers", adminTiersRoutes);
+app.route("/admin/notifications", adminNotificationsRoutes);
+app.route("/admin/whatsapp", whatsappRoutes);
 
 // Contact Form Route
 app.route("/contact", contactRoutes);
@@ -235,6 +255,8 @@ app.route("/store/auth", storeAuthRoutes);
 app.route("/store/customers", storeCustomersRouter);
 app.route("/store/checkout", checkoutRoutes);
 app.route("/store/payments", paymentRoutes);
+app.route("/store/wholesale", wholesalePricingRoutes);
+app.route("/store/wholesale", wholesaleOrdersRoutes);
 app.route("/reviews", reviewsRoutes);
 
 // Documentation Routes
