@@ -86,9 +86,13 @@ export const api = {
         try {
             // Cache for 1 hour
             const res = await fetch(`${API_URL}/categories/tree`, { next: { revalidate: 3600 } });
-            if (!res.ok) return { categories: [] };
+            if (!res.ok) {
+                console.error('[API] getCategories failed:', res.status, res.statusText);
+                return { categories: [] };
+            }
             return res.json();
-        } catch {
+        } catch (error) {
+            console.error('[API] getCategories error:', error);
             return { categories: [] };
         }
     },
@@ -96,9 +100,13 @@ export const api = {
     async getCollections() {
         try {
             const res = await fetch(`${API_URL}/collections`, { next: { revalidate: 3600 } });
-            if (!res.ok) return { collections: [] };
+            if (!res.ok) {
+                console.error('[API] getCollections failed:', res.status, res.statusText);
+                return { collections: [] };
+            }
             return res.json();
-        } catch {
+        } catch (error) {
+            console.error('[API] getCollections error:', error);
             return { collections: [] };
         }
     },
@@ -106,9 +114,13 @@ export const api = {
     async getHomepageSettings() {
         try {
             const res = await fetch(`${API_URL}/settings/homepage`, { next: { revalidate: 3600 } });
-            if (!res.ok) return { settings: {} };
+            if (!res.ok) {
+                console.error('[API] getHomepageSettings failed:', res.status, res.statusText);
+                return { settings: {} };
+            }
             return res.json();
-        } catch {
+        } catch (error) {
+            console.error('[API] getHomepageSettings error:', error);
             return { settings: {} };
         }
     },
@@ -116,9 +128,13 @@ export const api = {
     async getPages() {
         try {
             const res = await fetch(`${API_URL}/pages/storefront`, { next: { revalidate: 3600 } });
-            if (!res.ok) return { pages: [] };
+            if (!res.ok) {
+                console.error('[API] getPages failed:', res.status, res.statusText);
+                return { pages: [] };
+            }
             return res.json();
-        } catch {
+        } catch (error) {
+            console.error('[API] getPages error:', error);
             return { pages: [] };
         }
     },
@@ -126,9 +142,13 @@ export const api = {
     async getTags() {
         try {
             const res = await fetch(`${API_URL}/tags`, { next: { revalidate: 3600 } });
-            if (!res.ok) return { tags: [] };
+            if (!res.ok) {
+                console.error('[API] getTags failed:', res.status, res.statusText);
+                return { tags: [] };
+            }
             return res.json();
-        } catch {
+        } catch (error) {
+            console.error('[API] getTags error:', error);
             return { tags: [] };
         }
     },
@@ -136,9 +156,13 @@ export const api = {
     async getTestimonials() {
         try {
             const res = await fetch(`${API_URL}/testimonials/store`, { next: { revalidate: 3600 } });
-            if (!res.ok) return { testimonials: [] };
+            if (!res.ok) {
+                console.error('[API] getTestimonials failed:', res.status, res.statusText);
+                return { testimonials: [] };
+            }
             return res.json();
-        } catch {
+        } catch (error) {
+            console.error('[API] getTestimonials error:', error);
             return { testimonials: [] };
         }
     },
@@ -148,10 +172,14 @@ export const api = {
         try {
             const idsString = ids.join(',');
             const res = await fetch(`${API_URL}/products/featured?ids=${encodeURIComponent(idsString)}`, { next: { revalidate: 3600 } });
-            if (!res.ok) return { products: [] };
+            if (!res.ok) {
+                console.error('[API] getFeaturedProducts failed:', res.status, res.statusText);
+                return { products: [] };
+            }
             const data = await res.json();
             return { products: data.data || [] };
-        } catch {
+        } catch (error) {
+            console.error('[API] getFeaturedProducts error:', error);
             return { products: [] };
         }
     },
