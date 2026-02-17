@@ -23,8 +23,10 @@ collectionsRouter.get("/", async (c) => {
       .from(product_collections)
       .orderBy(desc(product_collections.created_at));
     return c.json({ collections: list });
-  } catch (error) {
-    return c.json({ error: "Failed to fetch collections" }, 500);
+  } catch (error: any) {
+    console.error('[Collections] GET / error:', error?.message || error);
+    console.error('[Collections] Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    return c.json({ error: "Failed to fetch collections", details: error?.message }, 500);
   }
 });
 
