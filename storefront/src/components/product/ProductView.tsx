@@ -61,7 +61,11 @@ export default function ProductView({ product }: { product: Product }) {
             const minDate = new Date(Date.now() + minDays * 24 * 60 * 60 * 1000);
             const maxDate = new Date(Date.now() + maxDays * 24 * 60 * 60 * 1000);
             const formatOptions: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
-            setDeliveryDate(`${minDate.toLocaleDateString('en-US', formatOptions)} - ${maxDate.toLocaleDateString('en-US', formatOptions)}`);
+            
+            const timer = setTimeout(() => {
+                setDeliveryDate(`${minDate.toLocaleDateString('en-US', formatOptions)} - ${maxDate.toLocaleDateString('en-US', formatOptions)}`);
+            }, 0);
+            return () => clearTimeout(timer);
         }
     }, [currentRegion]);
 

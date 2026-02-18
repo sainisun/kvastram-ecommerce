@@ -79,11 +79,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 .then(data => {
                     if (data.items && data.items.length > 0) {
                         setSavedCartCount(data.items.length);
+                    } else {
+                        setSavedCartCount(0);
                     }
                 })
-                .catch(console.error);
-        } else {
-            setSavedCartCount(0);
+                .catch(() => setSavedCartCount(0));
+        }
+    }, [customer, isLoaded]);
+
+    // Clear saved cart count when user logs out
+    useEffect(() => {
+        if (!customer && isLoaded) {
+            const timer = setTimeout(() => setSavedCartCount(0), 0);
+            return () => clearTimeout(timer);
         }
     }, [customer, isLoaded]);
 
