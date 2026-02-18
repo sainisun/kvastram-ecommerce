@@ -155,7 +155,7 @@ function ExpressCheckoutForm({
 export default function CheckoutPage() {
     const { customer, loading: authLoading } = useAuth();
     const { items, cartTotal, clearCart } = useCart();
-    const { currentRegion } = useShop();
+    const { currentRegion, settings } = useShop();
     const router = useRouter();
 
     // Initialize all hooks FIRST - before any conditionals
@@ -254,7 +254,8 @@ export default function CheckoutPage() {
             try {
                 // Calculate subtotal after discount
                 const subtotal = cartTotal - (discount?.amount || 0);
-                const data = await api.calculateTax(formData.country_code, subtotal, currentRegion?.id);
+                // Pass settings to use dynamic tax rates from backend
+                const data = await api.calculateTax(formData.country_code, subtotal, currentRegion?.id, settings || undefined);
                 if (data.tax_amount) {
                     setTaxAmount(data.tax_amount);
                     setTaxName(data.tax_name || 'Tax');

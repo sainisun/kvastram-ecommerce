@@ -11,10 +11,25 @@ interface Region {
     tax_rate: number;
 }
 
+interface TaxRate {
+    country_code: string;
+    rate: number;
+    name: string;
+}
+
 interface StoreSettings {
     free_shipping_threshold: number;
     currency_code: string;
     store_name: string;
+    tax_rates?: TaxRate[];
+    default_tax_rate?: number;
+}
+
+interface TaxCalculationResult {
+    tax_amount: number;
+    tax_rate: number;
+    tax_name: string;
+    currency_code: string;
 }
 
 interface ShopContextType {
@@ -23,6 +38,7 @@ interface ShopContextType {
     setRegion: (region: Region) => void;
     isLoading: boolean;
     settings: StoreSettings | null;
+    calculateTax: (countryCode: string, subtotal: number) => TaxCalculationResult;
 }
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
@@ -30,7 +46,18 @@ const ShopContext = createContext<ShopContextType | undefined>(undefined);
 const defaultSettings: StoreSettings = {
     free_shipping_threshold: 25000, // $250 default
     currency_code: 'USD',
-    store_name: 'Kvastram'
+    store_name: 'Kvastram',
+    tax_rates: [
+        { country_code: 'US', rate: 0.08, name: 'Sales Tax' },
+        { country_code: 'GB', rate: 0.20, name: 'VAT' },
+        { country_code: 'CA', rate: 0.13, name: 'HST' },
+        { country_code: 'AU', rate: 0.10, name: 'GST' },
+        { country_code: 'DE', rate: 0.19, name: 'VAT' },
+        { country_code: 'FR', rate: 0.20, name: 'VAT' },
+        { country_code: 'IN', rate: 0.18, name: 'GST' },
+        { country_code: 'JP', rate: 0.10, name: 'Consumption Tax' },
+    ],
+    default_tax_rate: 0.10
 };
 
 export function ShopProvider({ children }: { children: ReactNode }) {
@@ -88,8 +115,29 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         storage.set('kvastram_region', region);
     };
 
+    // Calculate tax using dynamic settings from backend
+    const calculateTax = (countryCode: string, subtotal: number): TaxCalculationResult => {
+        const currentSettings = settings || defaultSettings;
+        const taxRates = currentSettings.tax_rates || defaultSettings.tax_rates!;
+        const defaultRate = currentSettings.default_tax_rate || defaultSettings.default_tax_rate!;
+        
+        // Find tax rate for the country
+        const taxRate = taxRates.find(tr => tr.country_code === countryCode);
+        const rate = taxRate ? taxRate.rate : defaultRate;
+        const taxName = taxRate ? taxRate.name : (countryCode === 'US' ? 'Sales Tax' : 'VAT');
+        
+        const taxAmount = Math.round(subtotal * rate);
+        
+        return {
+            tax_amount: taxAmount,
+            tax_rate: rate,
+            tax_name: taxName,
+            currency_code: currentSettings.currency_code || 'USD'
+        };
+    };
+
     return (
-        <ShopContext.Provider value={{ currentRegion, regions, setRegion, isLoading, settings }}>
+        <ShopContext.Provider value={{ currentRegion, regions, setRegion, isLoading, settings, calculateTax }}>
             {children}
         </ShopContext.Provider>
     );

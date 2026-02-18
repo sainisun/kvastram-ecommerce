@@ -67,6 +67,20 @@ interface ReviewCreateData {
     customer_id?: string;
 }
 
+interface TaxRate {
+    country_code: string;
+    rate: number;
+    name: string;
+}
+
+interface StoreSettings {
+    free_shipping_threshold?: number;
+    currency_code?: string;
+    store_name?: string;
+    tax_rates?: TaxRate[];
+    default_tax_rate?: number;
+}
+
 // Helper to get CSRF token for mutations
 async function getCsrfHeader(): Promise<Record<string, string>> {
     try {
@@ -403,7 +417,7 @@ export const api = {
     },
 
     // --- Tax Calculation (PHASE 1.4) ---
-    async calculateTax(countryCode: string, subtotal: number, regionId?: string) {
+    async calculateTax(countryCode: string, subtotal: number, regionId?: string, settings?: StoreSettings) {
         try {
             const csrfHeader = await getCsrfHeader();
             const res = await fetchWithTrace(`${API_URL}/store/checkout/tax`, {
@@ -421,12 +435,12 @@ export const api = {
             });
             if (!res.ok) {
                 // Return default tax if endpoint doesn't exist
-                return getDefaultTax(countryCode, subtotal);
+                return getDefaultTax(countryCode, subtotal, settings);
             }
             return res.json();
         } catch {
             // Return default tax on error
-            return getDefaultTax(countryCode, subtotal);
+            return getDefaultTax(countryCode, subtotal, settings);
         }
     },
 
@@ -783,28 +797,45 @@ function getDefaultShippingOptions(countryCode: string) {
 }
 
 // Default tax calculation fallback (PHASE 1.4)
-function getDefaultTax(countryCode: string, subtotal: number) {
-    // Mock tax rates - in production these should come from backend
-    const taxRates: Record<string, number> = {
-        'US': 0.08,       // 8% average US sales tax
-        'GB': 0.20,       // 20% UK VAT
-        'CA': 0.13,       // 13% Canada HST
-        'AU': 0.10,       // 10% Australia GST
-        'DE': 0.19,       // 19% Germany VAT
-        'FR': 0.20,       // 20% France VAT
-        'IN': 0.18,       // 18% India GST
-        'JP': 0.10,       // 10% Japan consumption tax
-        // Default for other countries
-        'default': 0.10   // 10% default
+function getDefaultTax(countryCode: string, subtotal: number, settings?: StoreSettings) {
+    // Use dynamic tax rates from settings if available, otherwise use hardcoded defaults
+    const defaultTaxRates: Record<string, { rate: number; name: string }> = {
+        'US': { rate: 0.08, name: 'Sales Tax' },
+        'GB': { rate: 0.20, name: 'VAT' },
+        'CA': { rate: 0.13, name: 'HST' },
+        'AU': { rate: 0.10, name: 'GST' },
+        'DE': { rate: 0.19, name: 'VAT' },
+        'FR': { rate: 0.20, name: 'VAT' },
+        'IN': { rate: 0.18, name: 'GST' },
+        'JP': { rate: 0.10, name: 'Consumption Tax' },
     };
 
-    const rate = taxRates[countryCode] || taxRates['default'];
+    // Try to get rate from settings first
+    let rate: number;
+    let taxName: string;
+    
+    if (settings?.tax_rates) {
+        const settingRate = settings.tax_rates.find(tr => tr.country_code === countryCode);
+        if (settingRate) {
+            rate = settingRate.rate;
+            taxName = settingRate.name;
+        } else {
+            rate = settings.default_tax_rate || 0.10;
+            taxName = countryCode === 'US' ? 'Sales Tax' : 'VAT';
+        }
+    } else {
+        // Fall back to hardcoded defaults
+        const defaultRate = defaultTaxRates[countryCode] || { rate: 0.10, name: countryCode === 'US' ? 'Sales Tax' : 'VAT' };
+        rate = defaultRate.rate;
+        taxName = defaultRate.name;
+    }
+
     const taxAmount = Math.round(subtotal * rate);
 
     return {
         tax_amount: taxAmount,
         tax_rate: rate,
-        tax_name: countryCode === 'US' ? 'Sales Tax' : 'VAT',
-        currency_code: 'USD'
+        tax_name: taxName,
+        currency_code: settings?.currency_code || 'USD'
     };
 }
