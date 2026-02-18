@@ -11,26 +11,53 @@ interface Region {
     tax_rate: number;
 }
 
+interface StoreSettings {
+    free_shipping_threshold: number;
+    currency_code: string;
+    store_name: string;
+}
+
 interface ShopContextType {
     currentRegion: Region | null;
     regions: Region[];
     setRegion: (region: Region) => void;
     isLoading: boolean;
+    settings: StoreSettings | null;
 }
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
+
+const defaultSettings: StoreSettings = {
+    free_shipping_threshold: 25000, // $250 default
+    currency_code: 'USD',
+    store_name: 'Kvastram'
+};
 
 export function ShopProvider({ children }: { children: ReactNode }) {
     const [regions, setRegions] = useState<Region[]>([]);
     const [currentRegion, setCurrentRegion] = useState<Region | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [settings, setSettings] = useState<StoreSettings>(defaultSettings);
 
     useEffect(() => {
         const init = async () => {
             try {
-                const data = await api.getRegions();
-                const regionList = data.regions || [];
+                // Fetch regions and settings in parallel
+                const [regionsData, settingsData] = await Promise.all([
+                    api.getRegions(),
+                    api.getStoreSettings().catch(() => null) // Don't fail if settings not available
+                ]);
+                
+                const regionList = regionsData.regions || [];
                 setRegions(regionList);
+
+                // Set settings if available
+                if (settingsData) {
+                    setSettings({
+                        ...defaultSettings,
+                        ...settingsData
+                    });
+                }
 
                 // Check localStorage safely
                 const stored = storage.get<Region | null>('kvastram_region', null);
@@ -62,7 +89,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <ShopContext.Provider value={{ currentRegion, regions, setRegion, isLoading }}>
+        <ShopContext.Provider value={{ currentRegion, regions, setRegion, isLoading, settings }}>
             {children}
         </ShopContext.Provider>
     );

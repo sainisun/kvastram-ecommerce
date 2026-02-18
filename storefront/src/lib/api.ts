@@ -195,6 +195,20 @@ export const api = {
         }
     },
 
+    async getStoreSettings() {
+        try {
+            const res = await fetchWithTrace(`${API_URL}/store/settings`, { next: { revalidate: 3600 } });
+            if (!res.ok) {
+                console.error('[API] getStoreSettings failed:', res.status, res.statusText);
+                return null;
+            }
+            return res.json();
+        } catch (error) {
+            console.error('[API] getStoreSettings error:', error);
+            return null;
+        }
+    },
+
     async getPages() {
         try {
             const res = await fetchWithTrace(`${API_URL}/pages/storefront`, { next: { revalidate: 3600 } });

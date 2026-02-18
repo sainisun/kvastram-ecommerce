@@ -10,11 +10,14 @@ import { Trash2, Minus, Plus, ArrowRight, ShoppingBag, AlertCircle } from 'lucid
 
 export default function CartPage() {
     const { items, removeItem, updateQuantity, cartTotal, clearCart } = useCart();
-    const { currentRegion } = useShop();
+    const { currentRegion, settings } = useShop();
     const { showNotification } = useNotification();
     const [promoCode, setPromoCode] = useState('');
     const [promoLoading, setPromoLoading] = useState(false);
     const [discount, setDiscount] = useState<{ code: string; amount: number } | null>(null);
+    
+    // Get free shipping threshold from settings (default 25000 = $250)
+    const freeShippingThreshold = settings?.free_shipping_threshold || 25000;
 
     const formatPrice = (amount: number) => {
         const currency = currentRegion?.currency_code?.toUpperCase() || 'USD';
@@ -62,7 +65,7 @@ export default function CartPage() {
 
     const subtotal = cartTotal;
     const discountAmount = discount ? discount.amount : 0;
-    const shipping = subtotal >= 25000 ? 0 : 1500; // Free shipping over $250
+    const shipping = subtotal >= freeShippingThreshold ? 0 : 1500; // Free shipping over threshold
     const total = subtotal - discountAmount + shipping;
 
     if (items.length === 0) {
@@ -291,7 +294,7 @@ export default function CartPage() {
                             {shipping > 0 && (
                                 <div className="mt-4 flex items-center gap-2 text-sm text-stone-500 bg-stone-50 p-3 rounded-md">
                                     <AlertCircle size={16} />
-                                    <span>Add {formatCartPrice(25000 - subtotal)} more for free shipping!</span>
+                                    <span>Add {formatCartPrice(freeShippingThreshold - subtotal)} more for free shipping!</span>
                                 </div>
                             )}
 
