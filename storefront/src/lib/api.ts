@@ -360,6 +360,21 @@ export const api = {
         }
     },
 
+    // Search product by title (for reorder functionality)
+    async searchProductsByTitle(title: string) {
+        try {
+            const res = await fetchWithTrace(`${API_URL}/products?title=${encodeURIComponent(title)}&limit=1`, {
+                next: { revalidate: 60 }
+            });
+            if (!res.ok) return null;
+            const json = await res.json();
+            return json.products?.[0] || null;
+        } catch (error) {
+            console.error('[API] searchProductsByTitle failed', error);
+            return null;
+        }
+    },
+
     createOrder: async (data: OrderCreateData) => {
         const csrfHeader = await getCsrfHeader();
         const res = await fetchWithTrace(`${API_URL}/store/checkout/place-order`, {

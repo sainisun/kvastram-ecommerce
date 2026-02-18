@@ -1,12 +1,14 @@
 'use client';
 
 import { useAuth } from '@/context/auth-context';
+import { useCart } from '@/context/cart-context';
+import { useShop } from '@/context/shop-context';
 import { api } from '@/lib/api';
 import { Order } from '@/types/backend';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Package, Clock, Truck, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Package, Clock, Truck, CheckCircle, XCircle, RotateCcw, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
 // Extended order interface for frontend display
@@ -37,11 +39,104 @@ interface OrderWithDetails extends Order {
 
 export default function OrderDetailsPage() {
     const { customer, loading } = useAuth();
+    const { addItem } = useCart();
+    const { currentRegion } = useShop();
     const router = useRouter();
     const params = useParams();
     const [order, setOrder] = useState<OrderWithDetails | null>(null);
     const [fetching, setFetching] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [reordering, setReordering] = useState(false);
+    const [reorderError, setReorderError] = useState<string | null>(null);
+
+    // Handle reorder functionality
+    const handleReorder = async () => {
+        if (!order || !order.items || order.items.length === 0) {
+            setReorderError('No items to reorder');
+            return;
+        }
+
+        setReordering(true);
+        setReorderError(null);
+
+        try {
+            let addedCount = 0;
+            let failedCount = 0;
+
+            // Add each item to cart
+            for (const orderItem of order.items) {
+                try {
+                    // Try to fetch current product details to get variant info
+                    const product = await api.searchProductsByTitle(orderItem.title);
+                    
+                    if (product) {
+                        // Find matching variant or use first available
+                        const variant = product.variants?.find((v: { metadata?: { variant?: string } }) => 
+                            v.metadata?.variant === orderItem.metadata?.variant
+                        ) || product.variants?.[0];
+
+                        if (variant) {
+                            addItem({
+                                id: product.id,
+                                variantId: variant.id,
+                                quantity: orderItem.quantity,
+                                title: product.title,
+                                price: variant.prices?.find((p: { currency_code: string }) => 
+                                    p.currency_code === (currentRegion?.currency_code || 'usd')
+                                )?.amount || orderItem.unit_price,
+                                currency: currentRegion?.currency_code?.toUpperCase() || 'USD',
+                                thumbnail: product.thumbnail || orderItem.thumbnail || undefined,
+                                sku: variant.sku,
+                            });
+                            addedCount++;
+                        } else {
+                            // Fallback: add without variant details
+                            addItem({
+                                id: product.id,
+                                variantId: orderItem.id, // Use order item ID as fallback
+                                quantity: orderItem.quantity,
+                                title: orderItem.title,
+                                price: orderItem.unit_price,
+                                currency: currentRegion?.currency_code?.toUpperCase() || 'USD',
+                                thumbnail: orderItem.thumbnail || undefined,
+                            });
+                            addedCount++;
+                        }
+                    } else {
+                        // Product not found, add with order data only
+                        addItem({
+                            id: orderItem.id,
+                            variantId: orderItem.id,
+                            quantity: orderItem.quantity,
+                            title: orderItem.title,
+                            price: orderItem.unit_price,
+                            currency: currentRegion?.currency_code?.toUpperCase() || 'USD',
+                            thumbnail: orderItem.thumbnail || undefined,
+                        });
+                        addedCount++;
+                    }
+                } catch (err) {
+                    console.error('Failed to add item to cart:', orderItem.title, err);
+                    failedCount++;
+                }
+            }
+
+            if (addedCount > 0) {
+                // Show success message
+                if (failedCount > 0) {
+                    alert(`${addedCount} items added to cart. ${failedCount} items could not be added.`);
+                }
+                router.push('/cart');
+            } else {
+                setReorderError('Could not add any items to cart. Please try again.');
+            }
+        } catch (err) {
+            console.error('Reorder failed:', err);
+            setReorderError('Failed to reorder items. Please try again.');
+        } finally {
+            setReordering(false);
+        }
+    };
 
     useEffect(() => {
         if (!loading && !customer) {
@@ -211,15 +306,25 @@ export default function OrderDetailsPage() {
                             </div>
 
                             <div className="pt-8 border-t border-stone-200 space-y-3">
+                                {reorderError && (
+                                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-sm">
+                                        {reorderError}
+                                    </div>
+                                )}
                                 <button 
-                                    onClick={() => {
-                                        // In a real app, this would add items to cart
-                                        alert('Items added to cart! Redirecting to cart...');
-                                        router.push('/cart');
-                                    }}
-                                    className="w-full bg-white border border-stone-300 text-stone-900 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors flex items-center justify-center gap-2"
+                                    onClick={handleReorder}
+                                    disabled={reordering || !order.items || order.items.length === 0}
+                                    className="w-full bg-white border border-stone-300 text-stone-900 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <RotateCcw size={14} /> Reorder
+                                    {reordering ? (
+                                        <>
+                                            <Loader2 size={14} className="animate-spin" /> Adding to Cart...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <RotateCcw size={14} /> Reorder
+                                        </>
+                                    )}
                                 </button>
                                 <button className="w-full bg-white border border-stone-300 text-stone-900 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors">
                                     Need Help?
