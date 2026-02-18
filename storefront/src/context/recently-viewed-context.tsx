@@ -30,8 +30,11 @@ export function RecentlyViewedProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const stored = storage.get<RecentlyViewedItem[]>(STORAGE_KEY, []);
-        setItems(stored || []);
-        setIsLoaded(true);
+        const timer = setTimeout(() => {
+            setItems(stored || []);
+            setIsLoaded(true);
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {

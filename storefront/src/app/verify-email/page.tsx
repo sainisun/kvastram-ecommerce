@@ -14,9 +14,11 @@ function VerifyContent() {
 
     useEffect(() => {
         if (!token) {
-            setStatus('error');
-            setMessage('No verification token provided');
-            return;
+            const timer = setTimeout(() => {
+                setStatus('error');
+                setMessage('No verification token provided');
+            }, 0);
+            return () => clearTimeout(timer);
         }
 
         const verifyEmail = async () => {

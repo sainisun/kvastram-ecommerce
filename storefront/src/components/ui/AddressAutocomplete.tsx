@@ -63,7 +63,8 @@ export function AddressAutocomplete({
                 setIsLoaded(true);
             };
         } else {
-            setIsLoaded(true);
+            const timer = setTimeout(() => setIsLoaded(true), 0);
+            return () => clearTimeout(timer);
         }
     }, []);
 

@@ -66,8 +66,8 @@ export function WholesaleCartProvider({ children }: { children: ReactNode }) {
     // Convert regular items to wholesale items with pricing
     useEffect(() => {
         if (!isWholesaleCart) {
-            setItems(regularItems);
-            return;
+            const timer = setTimeout(() => setItems(regularItems), 0);
+            return () => clearTimeout(timer);
         }
 
         const updateWholesaleItems = async () => {

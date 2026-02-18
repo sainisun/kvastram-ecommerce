@@ -12,11 +12,14 @@ export function BottomNav() {
     const [isVisible, setIsVisible] = useState(true);
     // Hide on checkout and admin pages only
     useEffect(() => {
-        if (pathname?.startsWith('/checkout') || pathname?.startsWith('/admin')) {
-            setIsVisible(false);
-        } else {
-            setIsVisible(true);
-        }
+        const timer = setTimeout(() => {
+            if (pathname?.startsWith('/checkout') || pathname?.startsWith('/admin')) {
+                setIsVisible(false);
+            } else {
+                setIsVisible(true);
+            }
+        }, 0);
+        return () => clearTimeout(timer);
     }, [pathname]);
 
     // Don't render on desktop
