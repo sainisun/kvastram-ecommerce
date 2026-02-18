@@ -10,6 +10,7 @@ import { Package, User, LogOut, MapPin } from 'lucide-react';
 import { UserCard } from '@/components/account/UserCard';
 import { QuickGrid } from '@/components/account/QuickGrid';
 import { SettingsList } from '@/components/account/SettingsList';
+import { AccountSkeleton } from '@/components/ui/Skeleton';
 
 export default function AccountPage() {
     const { customer, loading, logout } = useAuth();
@@ -35,7 +36,7 @@ export default function AccountPage() {
             });
     }, []);
 
-    if (loading || !customer) return null;
+    if (loading || !customer) return <AccountSkeleton />;
 
     return (
         <div className="min-h-screen bg-stone-50">

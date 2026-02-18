@@ -6,7 +6,8 @@ import { OrderWithDetails } from '@/types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Package, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { OrdersListSkeleton } from '@/components/ui/Skeleton';
 
 const ORDERS_PER_PAGE = 10;
 
@@ -48,7 +49,7 @@ export default function OrdersListPage() {
         }
     };
 
-    if (loading || !customer) return null;
+    if (loading || !customer) return <OrdersListSkeleton />;
 
     return (
         <div className="min-h-screen bg-stone-50 pt-24 pb-24">
@@ -69,8 +70,16 @@ export default function OrdersListPage() {
                 {/* Orders List */}
                 <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
                     {ordersLoading ? (
-                        <div className="p-12 text-center">
-                            <Loader2 className="animate-spin h-8 w-8 mx-auto text-stone-900" />
+                        <div className="divide-y divide-stone-100">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                                <div key={i} className="flex items-center justify-between p-6">
+                                    <div className="space-y-2">
+                                        <div className="h-5 w-32 bg-stone-200 animate-pulse rounded" />
+                                        <div className="h-3 w-24 bg-stone-200 animate-pulse rounded" />
+                                    </div>
+                                    <div className="h-8 w-24 bg-stone-200 animate-pulse rounded" />
+                                </div>
+                            ))}
                         </div>
                     ) : orders.length === 0 ? (
                         <div className="p-12 text-center">

@@ -14,6 +14,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements, ExpressCheckoutElement } from '@stripe/react-stripe-js';
 import CountrySelect from '@/components/ui/CountrySelect';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
+import { CheckoutSkeleton } from '@/components/ui/Skeleton';
 
 // Initialize Stripe
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -293,11 +294,7 @@ export default function CheckoutPage() {
     
     // Show loading state
     if (authLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-white">
-                <div className="animate-pulse text-stone-400">Loading...</div>
-            </div>
-        );
+        return <CheckoutSkeleton />;
     }
 
     const inputClasses = "w-full bg-transparent border-b border-stone-200 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-900 transition-colors font-light";
