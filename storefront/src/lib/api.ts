@@ -81,6 +81,20 @@ interface StoreSettings {
     default_tax_rate?: number;
 }
 
+interface CartItem {
+    id: string;
+    variantId: string;
+    quantity: number;
+    title: string;
+    price: number;
+    currency: string;
+    thumbnail?: string;
+    material?: string;
+    origin?: string;
+    sku?: string;
+    description?: string;
+}
+
 // Helper to get CSRF token for mutations
 async function getCsrfHeader(): Promise<Record<string, string>> {
     try {
@@ -585,6 +599,61 @@ export const api = {
         });
         if (!res.ok) throw new Error('Failed to fetch order');
         return res.json();
+    },
+
+    // --- Cart Persistence (Cart Abandonment Recovery) ---
+    async saveCart(items: CartItem[]) {
+        try {
+            const csrfHeader = await getCsrfHeader();
+            const res = await fetchWithTrace(`${API_URL}/store/cart/save`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...csrfHeader
+                },
+                body: JSON.stringify({ items }),
+                credentials: 'include',
+            });
+            if (!res.ok) throw new Error('Failed to save cart');
+            return res.json();
+        } catch (error) {
+            console.error('[API] saveCart error:', error);
+            throw error;
+        }
+    },
+
+    async getSavedCart() {
+        try {
+            const res = await fetchWithTrace(`${API_URL}/store/cart`, {
+                credentials: 'include',
+            });
+            if (!res.ok) {
+                // Return empty cart if not found
+                return { items: [] };
+            }
+            return res.json();
+        } catch (error) {
+            console.error('[API] getSavedCart error:', error);
+            return { items: [] };
+        }
+    },
+
+    async clearSavedCart() {
+        try {
+            const csrfHeader = await getCsrfHeader();
+            const res = await fetchWithTrace(`${API_URL}/store/cart/clear`, {
+                method: 'POST',
+                headers: {
+                    ...csrfHeader
+                },
+                credentials: 'include',
+            });
+            if (!res.ok) throw new Error('Failed to clear saved cart');
+            return res.json();
+        } catch (error) {
+            console.error('[API] clearSavedCart error:', error);
+            throw error;
+        }
     },
 
     async getBanners() {
