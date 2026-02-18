@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
-import { Plus, Minus, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { useInventoryWebSocket } from '@/hooks/useInventoryWebSocket';
+import { Plus, Minus, ShieldCheck, Truck, RotateCcw, Wifi, WifiOff } from 'lucide-react';
 import { SizeGuide } from '@/components/product/SizeGuide';
 import { Reviews } from '@/components/product/Reviews';
 import { BackInStock } from '@/components/product/BackInStock';
@@ -20,8 +21,37 @@ export default function ProductView({ product }: { product: Product }) {
     const [quantity, setQuantity] = useState(1);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
-
     const [deliveryDate, setDeliveryDate] = useState<string>('');
+
+    // Real-time inventory state (key: variantId, value: quantity)
+    const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
+
+    // WebSocket for real-time inventory updates
+    const { isConnected, subscribeToInventory, unsubscribeFromInventory } = useInventoryWebSocket({
+        onInventoryUpdate: (update) => {
+            setRealTimeInventory(prev => ({
+                ...prev,
+                [update.variantId]: update.quantity
+            }));
+        }
+    });
+
+    // Subscribe to all variant inventory updates
+    useEffect(() => {
+        if (product.variants) {
+            product.variants.forEach(variant => {
+                subscribeToInventory(variant.id);
+            });
+        }
+
+        return () => {
+            if (product.variants) {
+                product.variants.forEach(variant => {
+                    unsubscribeFromInventory(variant.id);
+                });
+            }
+        };
+    }, [product.variants, subscribeToInventory, unsubscribeFromInventory]);
 
     // Delivery estimate based on region (simplified - in production would use shipping calculator)
     useEffect(() => {
@@ -244,14 +274,28 @@ export default function ProductView({ product }: { product: Product }) {
 
                         {/* Quantity & Add */}
                         <div className="space-y-6 mb-10">
-                            {/* PHASE 2.4: Real stock indicator - removed fake "people viewing" */}
-                            {selectedVariant && selectedVariant.inventory_quantity > 0 && selectedVariant.inventory_quantity <= 10 && (
+                            {/* PHASE 2.4: Real stock indicator with WebSocket */}
+                            {selectedVariant && (
+                                (realTimeInventory[selectedVariant.id] !== undefined 
+                                    ? realTimeInventory[selectedVariant.id] 
+                                    : selectedVariant.inventory_quantity) > 0 && 
+                                (realTimeInventory[selectedVariant.id] !== undefined 
+                                    ? realTimeInventory[selectedVariant.id] 
+                                    : selectedVariant.inventory_quantity) <= 10
+                            ) && (
                                 <div className="flex items-center gap-2 text-red-700 text-xs font-medium">
                                     <span className="relative flex h-2 w-2">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                                     </span>
-                                    Only {selectedVariant.inventory_quantity} left in stock
+                                    Only {realTimeInventory[selectedVariant.id] !== undefined 
+                                        ? realTimeInventory[selectedVariant.id] 
+                                        : selectedVariant.inventory_quantity} left in stock
+                                    {isConnected && (
+                                        <span title="Live updates enabled">
+                                            <Wifi size={12} className="ml-1 text-green-600" />
+                                        </span>
+                                    )}
                                 </div>
                             )}
 
@@ -266,8 +310,18 @@ export default function ProductView({ product }: { product: Product }) {
                                     </button>
                                     <span className="font-medium text-stone-900" aria-live="polite">{quantity}</span>
                                     <button
-                                        onClick={() => setQuantity(quantity + 1)}
-                                        className="text-stone-400 hover:text-stone-900"
+                                        onClick={() => {
+                                            const maxQuantity = realTimeInventory[selectedVariant?.id || ''] !== undefined 
+                                                ? realTimeInventory[selectedVariant?.id || ''] 
+                                                : selectedVariant?.inventory_quantity || 0;
+                                            if (quantity < maxQuantity) {
+                                                setQuantity(quantity + 1);
+                                            }
+                                        }}
+                                        disabled={(realTimeInventory[selectedVariant?.id || ''] !== undefined 
+                                            ? realTimeInventory[selectedVariant?.id || ''] 
+                                            : selectedVariant?.inventory_quantity || 0) <= quantity}
+                                        className="text-stone-400 hover:text-stone-900 disabled:opacity-30"
                                         aria-label="Increase quantity"
                                     >
                                         <Plus size={16} />
@@ -276,31 +330,59 @@ export default function ProductView({ product }: { product: Product }) {
                                 <button
                                     id="add-to-cart-btn"
                                     onClick={handleAddToCart}
-                                    disabled={!selectedVariant || addedToCart}
+                                    disabled={!selectedVariant || addedToCart || (realTimeInventory[selectedVariant?.id || ''] !== undefined 
+                                        ? realTimeInventory[selectedVariant?.id || ''] 
+                                        : selectedVariant?.inventory_quantity || 0) <= 0}
                                     className={`flex-1 py-3.5 font-bold uppercase tracking-widest text-xs transition-colors ${addedToCart
                                         ? 'bg-green-600 text-white'
-                                        : 'bg-stone-900 text-white hover:bg-stone-800'
+                                        : (realTimeInventory[selectedVariant?.id || ''] !== undefined 
+                                            ? realTimeInventory[selectedVariant?.id || ''] 
+                                            : selectedVariant?.inventory_quantity || 0) <= 0
+                                            ? 'bg-stone-400 text-white cursor-not-allowed'
+                                            : 'bg-stone-900 text-white hover:bg-stone-800'
                                         } disabled:opacity-70`}
                                 >
-                                    {addedToCart ? 'Added!' : 'Add to Cart'}
+                                    {(realTimeInventory[selectedVariant?.id || ''] !== undefined 
+                                        ? realTimeInventory[selectedVariant?.id || ''] 
+                                        : selectedVariant?.inventory_quantity || 0) <= 0
+                                        ? 'Out of Stock'
+                                        : addedToCart 
+                                            ? 'Added!' 
+                                            : 'Add to Cart'}
                                 </button>
                             </div>
 
                             <div className="flex items-center justify-between text-xs text-stone-500 border-b border-stone-100 pb-6">
                                 <span className="flex items-center gap-1">
-                                    {/* PHASE 2.4: Real stock status based on inventory */}
-                                    {selectedVariant && selectedVariant.inventory_quantity > 0 ? (
+                                    {/* PHASE 2.4: Real stock status based on inventory with WebSocket */}
+                                    {selectedVariant && (realTimeInventory[selectedVariant.id] !== undefined 
+                                        ? realTimeInventory[selectedVariant.id] 
+                                        : selectedVariant.inventory_quantity) > 0 ? (
                                         <>
                                             <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                            {selectedVariant.inventory_quantity <= 5 
-                                                ? `Only ${selectedVariant.inventory_quantity} left` 
+                                            {(realTimeInventory[selectedVariant.id] !== undefined 
+                                                ? realTimeInventory[selectedVariant.id] 
+                                                : selectedVariant.inventory_quantity) <= 5 
+                                                ? `Only ${realTimeInventory[selectedVariant.id] !== undefined 
+                                                    ? realTimeInventory[selectedVariant.id] 
+                                                    : selectedVariant.inventory_quantity} left` 
                                                 : 'In Stock, Ready to Ship'
                                             }
+                                            {isConnected && (
+                                                <span title="Live updates">
+                                                    <Wifi size={10} className="ml-1 text-green-600" />
+                                                </span>
+                                            )}
                                         </>
                                     ) : (
                                         <>
                                             <div className="w-2 h-2 rounded-full bg-red-500"></div>
                                             Out of Stock
+                                            {!isConnected && (
+                                                <span title="Live updates unavailable">
+                                                    <WifiOff size={10} className="ml-1 text-stone-400" />
+                                                </span>
+                                            )}
                                             <BackInStock 
                                                 productId={product.id}
                                                 variantId={selectedVariant?.id}
