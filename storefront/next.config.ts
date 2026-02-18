@@ -56,7 +56,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' js.stripe.com browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' res.cloudinary.com images.unsplash.com data: blob:; font-src 'self' fonts.gstatic.com; connect-src 'self' api.kvastram.com kvastram.com localhost:* *.sentry.io; frame-src js.stripe.com hooks.stripe.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' js.stripe.com browser.sentry-cdn.com cdn.logrocket.io; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' res.cloudinary.com images.unsplash.com data: blob:; font-src 'self' fonts.gstatic.com; connect-src 'self' api.kvastram.com kvastram.com localhost:* *.sentry.io *.logrocket.io; frame-src js.stripe.com hooks.stripe.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
           },
           {
             key: 'Permissions-Policy',

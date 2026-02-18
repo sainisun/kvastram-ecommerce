@@ -13,6 +13,7 @@ import { WholesaleCartProvider } from "@/context/wholesale-cart-context";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Analytics } from "@/components/Analytics";
+import { LogRocketProvider } from "@/components/LogRocketProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -111,17 +112,19 @@ export default function RootLayout({
           <NotificationProvider>
             <ShopProvider>
               <AuthProvider>
-                <CartProvider>
-                  <WholesaleCartProvider>
-                    <WishlistProvider>
-                      <RecentlyViewedProvider>
-                        <WholesaleProvider>
-                          <MainLayout>{children}</MainLayout>
-                        </WholesaleProvider>
-                      </RecentlyViewedProvider>
-                    </WishlistProvider>
-                  </WholesaleCartProvider>
-                </CartProvider>
+                <LogRocketProvider>
+                  <CartProvider>
+                    <WholesaleCartProvider>
+                      <WishlistProvider>
+                        <RecentlyViewedProvider>
+                          <WholesaleProvider>
+                            <MainLayout>{children}</MainLayout>
+                          </WholesaleProvider>
+                        </RecentlyViewedProvider>
+                      </WishlistProvider>
+                    </WholesaleCartProvider>
+                  </CartProvider>
+                </LogRocketProvider>
               </AuthProvider>
             </ShopProvider>
           </NotificationProvider>
