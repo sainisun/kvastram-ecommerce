@@ -1,5 +1,21 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
+// 🕵️‍♂️ TRACER: Helper to verify request flow
+async function fetchWithTrace(input: RequestInfo | URL, init?: RequestInit & { next?: any }) {
+    const traceId = `TRC-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    if (typeof input === 'string' && input.includes(API_URL)) {
+        console.log(`[Storefront TRACER] Outgoing -> ${input} [${traceId}]`);
+    }
+
+    const headers = new Headers(init?.headers || {});
+    headers.set('x-debug-trace', traceId);
+
+    return fetch(input, {
+        ...init,
+        headers
+    });
+}
+
 // Type definitions for API requests/responses
 interface OrderCreateData {
     region_id: string;
@@ -54,7 +70,7 @@ interface ReviewCreateData {
 // Helper to get CSRF token for mutations
 async function getCsrfHeader(): Promise<Record<string, string>> {
     try {
-        const res = await fetch(`${API_URL}/auth/csrf`, {
+        const res = await fetchWithTrace(`${API_URL}/auth/csrf`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -71,9 +87,63 @@ async function getCsrfHeader(): Promise<Record<string, string>> {
 }
 
 export const api = {
+    // Generic methods for untyped calls (fixes compilation errors and enables tracing)
+    async get(endpoint: string) {
+        const res = await fetchWithTrace(`${API_URL}${endpoint}`);
+        if (!res.ok) throw await res.json();
+        return res.json();
+    },
+
+    async post(endpoint: string, body: any) {
+        const csrfHeader = await getCsrfHeader();
+        const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...csrfHeader
+            },
+            body: JSON.stringify(body),
+            credentials: 'include',
+        });
+        if (!res.ok) {
+            // Try to parse error response
+            const data = await res.json().catch(() => ({}));
+            throw { ...data, status: res.status, message: data.message || data.error || 'Request failed' };
+        }
+        return res.json();
+    },
+
+    async put(endpoint: string, body: any) {
+        const csrfHeader = await getCsrfHeader();
+        const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...csrfHeader
+            },
+            body: JSON.stringify(body),
+            credentials: 'include',
+        });
+        if (!res.ok) throw await res.json();
+        return res.json();
+    },
+
+    async delete(endpoint: string) {
+        const csrfHeader = await getCsrfHeader();
+        const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
+            method: 'DELETE',
+            headers: {
+                ...csrfHeader
+            },
+            credentials: 'include',
+        });
+        if (!res.ok) throw await res.json();
+        return res.json();
+    },
+
     async getRegions() {
         try {
-            const res = await fetch(`${API_URL}/regions`);
+            const res = await fetchWithTrace(`${API_URL}/regions`);
             if (!res.ok) throw new Error('Failed to fetch regions');
             return res.json();
         } catch {
@@ -85,7 +155,7 @@ export const api = {
     async getCategories() {
         try {
             // Cache for 1 hour
-            const res = await fetch(`${API_URL}/categories/tree`, { next: { revalidate: 3600 } });
+            const res = await fetchWithTrace(`${API_URL}/categories/tree`, { next: { revalidate: 3600 } });
             if (!res.ok) {
                 console.error('[API] getCategories failed:', res.status, res.statusText);
                 return { categories: [] };
@@ -99,7 +169,7 @@ export const api = {
 
     async getCollections() {
         try {
-            const res = await fetch(`${API_URL}/collections`, { next: { revalidate: 3600 } });
+            const res = await fetchWithTrace(`${API_URL}/collections`, { next: { revalidate: 3600 } });
             if (!res.ok) {
                 console.error('[API] getCollections failed:', res.status, res.statusText);
                 return { collections: [] };
@@ -113,7 +183,7 @@ export const api = {
 
     async getHomepageSettings() {
         try {
-            const res = await fetch(`${API_URL}/settings/homepage`, { next: { revalidate: 3600 } });
+            const res = await fetchWithTrace(`${API_URL}/settings/homepage`, { next: { revalidate: 3600 } });
             if (!res.ok) {
                 console.error('[API] getHomepageSettings failed:', res.status, res.statusText);
                 return { settings: {} };
@@ -127,7 +197,7 @@ export const api = {
 
     async getPages() {
         try {
-            const res = await fetch(`${API_URL}/pages/storefront`, { next: { revalidate: 3600 } });
+            const res = await fetchWithTrace(`${API_URL}/pages/storefront`, { next: { revalidate: 3600 } });
             if (!res.ok) {
                 console.error('[API] getPages failed:', res.status, res.statusText);
                 return { pages: [] };
@@ -141,7 +211,7 @@ export const api = {
 
     async getTags() {
         try {
-            const res = await fetch(`${API_URL}/tags`, { next: { revalidate: 3600 } });
+            const res = await fetchWithTrace(`${API_URL}/tags`, { next: { revalidate: 3600 } });
             if (!res.ok) {
                 console.error('[API] getTags failed:', res.status, res.statusText);
                 return { tags: [] };
@@ -155,7 +225,7 @@ export const api = {
 
     async getTestimonials() {
         try {
-            const res = await fetch(`${API_URL}/testimonials/store`, { next: { revalidate: 3600 } });
+            const res = await fetchWithTrace(`${API_URL}/testimonials/store`, { next: { revalidate: 3600 } });
             if (!res.ok) {
                 console.error('[API] getTestimonials failed:', res.status, res.statusText);
                 return { testimonials: [] };
@@ -171,7 +241,7 @@ export const api = {
         if (!ids || ids.length === 0) return { products: [] };
         try {
             const idsString = ids.join(',');
-            const res = await fetch(`${API_URL}/products/featured?ids=${encodeURIComponent(idsString)}`, { next: { revalidate: 3600 } });
+            const res = await fetchWithTrace(`${API_URL}/products/featured?ids=${encodeURIComponent(idsString)}`, { next: { revalidate: 3600 } });
             if (!res.ok) {
                 console.error('[API] getFeaturedProducts failed:', res.status, res.statusText);
                 return { products: [] };
@@ -210,7 +280,7 @@ export const api = {
 
         try {
             // Cache for 60 seconds (ISR)
-            const res = await fetch(url.toString(), {
+            const res = await fetchWithTrace(url.toString(), {
                 next: { revalidate: 60, tags: ['products'] }
             });
             if (!res.ok) {
@@ -236,7 +306,7 @@ export const api = {
     async getSuggestions(query: string) {
         if (!query || query.length < 2) return { suggestions: [] };
         try {
-            const res = await fetch(`${API_URL}/products/search/suggestions?q=${encodeURIComponent(query)}`);
+            const res = await fetchWithTrace(`${API_URL}/products/search/suggestions?q=${encodeURIComponent(query)}`);
             if (!res.ok) return { suggestions: [] };
             return res.json();
         } catch {
@@ -246,7 +316,7 @@ export const api = {
 
     getProduct: async (id: string) => {
         try {
-            const res = await fetch(`${API_URL}/products/${id}`, {
+            const res = await fetchWithTrace(`${API_URL}/products/${id}`, {
                 next: { revalidate: 60, tags: [`product-${id}`] }
             });
             if (!res.ok) throw new Error('Failed to fetch product');
@@ -264,7 +334,7 @@ export const api = {
 
     createOrder: async (data: OrderCreateData) => {
         const csrfHeader = await getCsrfHeader();
-        const res = await fetch(`${API_URL}/store/checkout/place-order`, {
+        const res = await fetchWithTrace(`${API_URL}/store/checkout/place-order`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -282,7 +352,7 @@ export const api = {
 
     validateCoupon: async (code: string, cartTotal: number) => {
         const csrfHeader = await getCsrfHeader();
-        const res = await fetch(`${API_URL}/store/checkout/validate-coupon`, {
+        const res = await fetchWithTrace(`${API_URL}/store/checkout/validate-coupon`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -304,7 +374,7 @@ export const api = {
             const params = new URLSearchParams({ country_code: countryCode });
             if (regionId) params.append('region_id', regionId);
             
-            const res = await fetch(`${API_URL}/store/checkout/shipping-options?${params}`, {
+            const res = await fetchWithTrace(`${API_URL}/store/checkout/shipping-options?${params}`, {
                 credentials: 'include',
             });
             if (!res.ok) {
@@ -322,7 +392,7 @@ export const api = {
     async calculateTax(countryCode: string, subtotal: number, regionId?: string) {
         try {
             const csrfHeader = await getCsrfHeader();
-            const res = await fetch(`${API_URL}/store/checkout/tax`, {
+            const res = await fetchWithTrace(`${API_URL}/store/checkout/tax`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -348,7 +418,7 @@ export const api = {
 
     // --- Auth ---
     async register(data: RegisterData) {
-        const res = await fetch(`${API_URL}/store/auth/register`, {
+        const res = await fetchWithTrace(`${API_URL}/store/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -386,7 +456,7 @@ export const api = {
     // --- Resend Verification Email ---
     async resendVerification(email: string) {
         const csrfHeader = await getCsrfHeader();
-        const res = await fetch(`${API_URL}/store/auth/resend-verification`, {
+        const res = await fetchWithTrace(`${API_URL}/store/auth/resend-verification`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -414,7 +484,7 @@ export const api = {
     },
 
     async login(data: LoginData) {
-        const res = await fetch(`${API_URL}/store/auth/login`, {
+        const res = await fetchWithTrace(`${API_URL}/store/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -425,7 +495,7 @@ export const api = {
     },
 
     async socialLogin(provider: 'google' | 'facebook', data: { id_token?: string; access_token?: string; email: string; name?: string; avatar?: string }) {
-        const res = await fetch(`${API_URL}/store/auth/social/${provider}`, {
+        const res = await fetchWithTrace(`${API_URL}/store/auth/social/${provider}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -438,7 +508,7 @@ export const api = {
     },
 
     async getCustomer() {
-        const res = await fetch(`${API_URL}/store/auth/me`, {
+        const res = await fetchWithTrace(`${API_URL}/store/auth/me`, {
             credentials: 'include', // Cookies are sent automatically
         });
         if (!res.ok) throw new Error('Failed to fetch profile');
@@ -446,7 +516,7 @@ export const api = {
     },
 
     async updateCustomer(data: CustomerUpdateData) {
-        const res = await fetch(`${API_URL}/store/customers/me`, {
+        const res = await fetchWithTrace(`${API_URL}/store/customers/me`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -459,7 +529,7 @@ export const api = {
     },
 
     async getCustomerOrders() {
-        const res = await fetch(`${API_URL}/store/customers/me/orders`, {
+        const res = await fetchWithTrace(`${API_URL}/store/customers/me/orders`, {
             credentials: 'include',
         });
         if (!res.ok) throw new Error('Failed to fetch orders');
@@ -467,7 +537,7 @@ export const api = {
     },
 
     async getOrder(id: string) {
-        const res = await fetch(`${API_URL}/store/customers/me/orders/${id}`, {
+        const res = await fetchWithTrace(`${API_URL}/store/customers/me/orders/${id}`, {
             credentials: 'include',
         });
         if (!res.ok) throw new Error('Failed to fetch order');
@@ -477,7 +547,7 @@ export const api = {
     async getBanners() {
         try {
             // Cache for 60 seconds
-            const res = await fetch(`${API_URL}/banners/storefront`, { next: { revalidate: 60 } });
+            const res = await fetchWithTrace(`${API_URL}/banners/storefront`, { next: { revalidate: 60 } });
             if (!res.ok) return { banners: [] }; // Return empty if fails, don't crash
             return res.json();
         } catch {
@@ -488,7 +558,7 @@ export const api = {
     async getPosts() {
         try {
             // Cache for 60 seconds
-            const res = await fetch(`${API_URL}/posts/storefront`, { next: { revalidate: 60 } });
+            const res = await fetchWithTrace(`${API_URL}/posts/storefront`, { next: { revalidate: 60 } });
             if (!res.ok) return { posts: [] };
             return res.json();
         } catch {
@@ -498,21 +568,21 @@ export const api = {
 
     async getPost(slug: string) {
         // Cache for 60 seconds
-        const res = await fetch(`${API_URL}/posts/storefront/${slug}`, { next: { revalidate: 60 } });
+        const res = await fetchWithTrace(`${API_URL}/posts/storefront/${slug}`, { next: { revalidate: 60 } });
         if (!res.ok) throw new Error('Post not found');
         return res.json();
     },
 
     async getPage(slug: string) {
         // Cache for 60 mins
-        const res = await fetch(`${API_URL}/pages/storefront/${slug}`, { next: { revalidate: 3600 } });
+        const res = await fetchWithTrace(`${API_URL}/pages/storefront/${slug}`, { next: { revalidate: 3600 } });
         if (!res.ok) throw new Error('Page not found');
         return res.json();
     },
 
     async getReviews(productId: string) {
         try {
-            const res = await fetch(`${API_URL}/reviews/store/products/${productId}`, { next: { revalidate: 60 } });
+            const res = await fetchWithTrace(`${API_URL}/reviews/store/products/${productId}`, { next: { revalidate: 60 } });
             if (!res.ok) return { reviews: [] };
             return res.json();
         } catch {
@@ -522,7 +592,7 @@ export const api = {
 
     async createReview(productId: string, data: ReviewCreateData) {
         const csrfHeader = await getCsrfHeader();
-        const res = await fetch(`${API_URL}/reviews/store`, {
+        const res = await fetchWithTrace(`${API_URL}/reviews/store`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -538,7 +608,7 @@ export const api = {
     // --- Back in Stock Notifications ---
     async subscribeBackInStock(productId: string, email: string, variantId?: string) {
         const csrfHeader = await getCsrfHeader();
-        const res = await fetch(`${API_URL}/store/back-in-stock`, {
+        const res = await fetchWithTrace(`${API_URL}/store/back-in-stock`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -558,7 +628,7 @@ export const api = {
     // --- Payments ---
     async createPaymentIntent(orderId: string) {
         const csrfHeader = await getCsrfHeader();
-        const res = await fetch(`${API_URL}/store/payments/create-intent`, {
+        const res = await fetchWithTrace(`${API_URL}/store/payments/create-intent`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -575,7 +645,7 @@ export const api = {
     },
 
     async checkPaymentStatus(orderId: string) {
-        const res = await fetch(`${API_URL}/store/payments/status/${orderId}`);
+        const res = await fetchWithTrace(`${API_URL}/store/payments/status/${orderId}`);
         if (!res.ok) {
             const error = await res.json();
             throw new Error(error.error || 'Failed to check payment status');
@@ -586,7 +656,7 @@ export const api = {
     // --- Wholesale Pricing ---
     async getWholesalePricing() {
         try {
-            const res = await fetch(`${API_URL}/store/wholesale/prices`, {
+            const res = await fetchWithTrace(`${API_URL}/store/wholesale/prices`, {
                 credentials: 'include',
             });
             if (!res.ok) return { hasWholesaleAccess: false, tier: null };
@@ -598,7 +668,7 @@ export const api = {
 
     async getWholesalePrices(variantIds: string[]) {
         try {
-            const res = await fetch(`${API_URL}/store/wholesale/prices/bulk`, {
+            const res = await fetchWithTrace(`${API_URL}/store/wholesale/prices/bulk`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ variantIds }),
@@ -613,7 +683,7 @@ export const api = {
 
     async getWholesaleMOQ(variantId: string) {
         try {
-            const res = await fetch(`${API_URL}/store/wholesale/moq/${variantId}`, {
+            const res = await fetchWithTrace(`${API_URL}/store/wholesale/moq/${variantId}`, {
                 credentials: 'include',
             });
             if (!res.ok) return { moq: 1 };
@@ -625,7 +695,7 @@ export const api = {
 
     async getWholesaleBulkDiscounts(variantId: string) {
         try {
-            const res = await fetch(`${API_URL}/store/wholesale/bulk-discounts/${variantId}`, {
+            const res = await fetchWithTrace(`${API_URL}/store/wholesale/bulk-discounts/${variantId}`, {
                 credentials: 'include',
             });
             if (!res.ok) return { discounts: [] };
@@ -637,7 +707,7 @@ export const api = {
 
     async calculateWholesalePrice(variantId: string, quantity: number) {
         try {
-            const res = await fetch(`${API_URL}/store/wholesale/calculate`, {
+            const res = await fetchWithTrace(`${API_URL}/store/wholesale/calculate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ variantId, quantity }),
@@ -652,7 +722,7 @@ export const api = {
 
     async createWholesaleOrder(data: any) {
         const csrfHeader = await getCsrfHeader();
-        const res = await fetch(`${API_URL}/store/wholesale/orders`, {
+        const res = await fetchWithTrace(`${API_URL}/store/wholesale/orders`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

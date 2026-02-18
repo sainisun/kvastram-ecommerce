@@ -12,21 +12,28 @@ import {
     Palette,
     BarChart3,
     Building2,
-    Layers
+    Layers,
+    Folder,
+    Tag,
+    Star,
+    FileText
 } from 'lucide-react';
 
 
 const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-    { name: 'Catalog', icon: ShoppingBag, path: '/dashboard/products' },
+    { name: 'Products', icon: ShoppingBag, path: '/dashboard/products' },
+    { name: 'Collections', icon: Layers, path: '/dashboard/collections' },
+    { name: 'Categories', icon: Folder, path: '/dashboard/categories' },
+    { name: 'Tags', icon: Tag, path: '/dashboard/tags' },
     { name: 'Orders', icon: Box, path: '/dashboard/orders' },
     { name: 'Customers', icon: Users, path: '/dashboard/customers' },
+    { name: 'Reviews', icon: Star, path: '/dashboard/reviews' },
     { name: 'Analytics', icon: BarChart3, path: '/dashboard/analytics' },
     { name: 'Marketing', icon: Palette, path: '/dashboard/marketing' },
     { name: 'Wholesale', icon: Building2, path: '/dashboard/wholesale' },
-    { name: 'Content', icon: Layers, path: '/dashboard/content' },
+    { name: 'Content', icon: FileText, path: '/dashboard/content' },
     { name: 'Settings', icon: Settings, path: '/dashboard/settings' },
-
 ];
 
 export default function Sidebar() {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Layers, FileText } from 'lucide-react';
+import { Layers, FileText, MessageSquare } from 'lucide-react';
 
 export default function ContentDashboard() {
     return (
@@ -20,6 +20,11 @@ export default function ContentDashboard() {
                     <FileText className="mb-4 text-purple-600" size={32} />
                     <h2 className="text-xl font-bold mb-2">Legal Pages</h2>
                     <p className="text-gray-500">Terms, Privacy, About Us pages.</p>
+                </Link>
+                <Link href="/dashboard/content/testimonials" className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm">
+                    <MessageSquare className="mb-4 text-orange-600" size={32} />
+                    <h2 className="text-xl font-bold mb-2">Testimonials</h2>
+                    <p className="text-gray-500">Manage customer reviews and feedback.</p>
                 </Link>
             </div>
         </div>

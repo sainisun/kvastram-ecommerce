@@ -11,7 +11,7 @@ import SecurityBadges, { PaymentIcons } from '@/components/ui/SecurityBadges';
 import Link from 'next/link';
 import Image from 'next/image';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { Elements, PaymentElement, useStripe, useElements, ExpressCheckoutElement } from '@stripe/react-stripe-js';
 import CountrySelect from '@/components/ui/CountrySelect';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 
@@ -83,6 +83,72 @@ function PaymentForm({
                 {isProcessing ? 'Processing Payment...' : 'Pay Now'}
             </button>
         </form>
+    );
+}
+
+// Express Checkout Component (Apple Pay / Google Pay)
+function ExpressCheckoutForm({
+    orderId,
+    onSuccess,
+    onError
+}: {
+    orderId: string;
+    onSuccess: () => void;
+    onError: (msg: string) => void;
+}) {
+    const stripe = useStripe();
+    const elements = useElements();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleConfirm = async () => {
+        if (!stripe || !elements) return;
+        
+        setIsLoading(true);
+        
+        try {
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/checkout/success?order_id=${orderId}`,
+                },
+                redirect: 'if_required',
+            });
+
+            if (error) {
+                onError(error.message || 'Express payment failed');
+            } else {
+                onSuccess();
+            }
+        } catch (err) {
+            onError('An unexpected error occurred during payment');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="mb-6">
+            <ExpressCheckoutElement
+                onConfirm={handleConfirm}
+                options={{
+                    paymentMethods: {
+                        applePay: 'always',
+                        googlePay: 'always',
+                        link: 'auto',
+                    },
+                    buttonType: {
+                        applePay: 'buy',
+                        googlePay: 'buy',
+                    },
+                    buttonHeight: 44,
+                }}
+            />
+            {isLoading && (
+                <div className="mt-2 text-center text-sm text-stone-600">
+                    Processing payment...
+                </div>
+            )}
+        </div>
     );
 }
 
@@ -563,32 +629,15 @@ export default function CheckoutPage() {
                                 <h3 className="text-lg font-serif text-stone-900 mb-6 border-b border-stone-100 pb-2">Payment</h3>
                                 
                                 {/* PHASE 7.3: Express Checkout Buttons */}
-                                <div className="mb-6 space-y-3">
-                                    <button
-                                        type="button"
-                                        className="w-full py-3 bg-black text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
-                                        onClick={() => {
-                                            alert('Express Checkout requires Stripe Apple Pay/Google Pay setup. Please use card payment for now.');
-                                        }}
-                                    >
-                                        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-                                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                                        </svg>
-                                        Pay with Apple Pay
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="w-full py-3 bg-[#4285F4] text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-[#3367D6] transition-colors"
-                                        onClick={() => {
-                                            alert('Express Checkout requires Stripe Google Pay setup. Please use card payment for now.');
-                                        }}
-                                    >
-                                        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-                                            <path d="M12 11h8.533c.044.385.067.778.067 1.178 0 2.328-.778 4.4-2.022 6.022L19.6 21h-1.867l-1.222-1.489C14.855 17.2 13.333 15.667 12.667 14H12v-3.022h2.222c.456.667.911 1.333 1.222 2.022H12v-2h2.222c-.378-.756-.889-1.333-1.222-1.756V11H12V8.756c.667-.133 1.556-.133 2.222 0H12zM3 3v18h18V3H3z"/>
-                                        </svg>
-                                        Pay with Google Pay
-                                    </button>
-                                </div>
+                                {clientSecret && (
+                                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                                        <ExpressCheckoutForm
+                                            orderId={orderId}
+                                            onSuccess={handlePaymentSuccess}
+                                            onError={handlePaymentError}
+                                        />
+                                    </Elements>
+                                )}
                                 
                                 <div className="relative mb-6">
                                     <div className="absolute inset-0 flex items-center">

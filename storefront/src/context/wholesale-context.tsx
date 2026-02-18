@@ -24,6 +24,7 @@ interface WholesaleContextType {
     loading: boolean;
     refreshPricing: () => Promise<void>;
     getPrice: (variantId: string, retailPrice: number) => { price: number; isWholesale: boolean; savings: number };
+    fetchPrices: (variantIds: string[]) => Promise<void>;
 }
 
 const WholesaleContext = createContext<WholesaleContextType>({} as WholesaleContextType);

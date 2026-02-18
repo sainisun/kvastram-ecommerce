@@ -58,6 +58,21 @@ import docsApp from "./docs";
 
 const app = new Hono();
 
+// 🕵️‍♂️ TRACER: Log every request to confirm frontend-backend communication
+app.use('*', async (c, next) => {
+  const method = c.req.method;
+  const path = c.req.path;
+  const traceId = c.req.header('x-debug-trace') || 'NONE';
+  
+  console.log(`[TRACER] ${method} ${path} | Trace-ID: ${traceId} | Time: ${new Date().toISOString()}`);
+  
+  if (traceId !== 'NONE') {
+    console.log(`[TRACER] ✅ MATCH! Request received from frontend with ID: ${traceId}`);
+  }
+
+  await next();
+});
+
 // Security & Logging Middleware
 app.use("*", secureHeaders());
 app.use("*", logger());
