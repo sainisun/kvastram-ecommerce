@@ -65,6 +65,7 @@ interface ReviewCreateData {
     content: string;
     author_name?: string;
     customer_id?: string;
+    images?: string[];
 }
 
 interface TaxRate {
@@ -118,7 +119,10 @@ export const api = {
     // Generic methods for untyped calls (fixes compilation errors and enables tracing)
     async get(endpoint: string) {
         const res = await fetchWithTrace(`${API_URL}${endpoint}`);
-        if (!res.ok) throw await res.json();
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw { ...data, status: res.status, message: data.message || data.error || 'Request failed' };
+        }
         return res.json();
     },
 
@@ -152,7 +156,10 @@ export const api = {
             body: JSON.stringify(body),
             credentials: 'include',
         });
-        if (!res.ok) throw await res.json();
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw { ...data, status: res.status, message: data.message || data.error || 'Request failed' };
+        }
         return res.json();
     },
 
@@ -165,7 +172,10 @@ export const api = {
             },
             credentials: 'include',
         });
-        if (!res.ok) throw await res.json();
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw { ...data, status: res.status, message: data.message || data.error || 'Request failed' };
+        }
         return res.json();
     },
 
@@ -382,7 +392,7 @@ export const api = {
             });
             if (!res.ok) return null;
             const json = await res.json();
-            return json.products?.[0] || null;
+            return json.data?.[0] || null;
         } catch (error) {
             console.error('[API] searchProductsByTitle failed', error);
             return null;
@@ -904,12 +914,12 @@ function getDefaultTax(countryCode: string, subtotal: number, settings?: StoreSe
             rate = settingRate.rate;
             taxName = settingRate.name;
         } else {
-            rate = settings.default_tax_rate || 0.10;
+            rate = settings.default_tax_rate ?? 0.10;
             taxName = countryCode === 'US' ? 'Sales Tax' : 'VAT';
         }
     } else {
         // Fall back to hardcoded defaults
-        const defaultRate = defaultTaxRates[countryCode] || { rate: 0.10, name: countryCode === 'US' ? 'Sales Tax' : 'VAT' };
+        const defaultRate = defaultTaxRates[countryCode] ?? { rate: 0.10, name: countryCode === 'US' ? 'Sales Tax' : 'VAT' };
         rate = defaultRate.rate;
         taxName = defaultRate.name;
     }

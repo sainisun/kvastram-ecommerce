@@ -10,6 +10,7 @@ export const CreateReviewSchema = z.object({
   title: z.string().optional(),
   content: z.string().optional(),
   author_name: z.string(),
+  images: z.array(z.string()).optional(),
 });
 
 export const UpdateReviewStatusSchema = z.object({
@@ -37,6 +38,7 @@ class ReviewService {
         content: product_reviews.content,
         author_name: product_reviews.author_name,
         created_at: product_reviews.created_at,
+        images: product_reviews.images,
       })
       .from(product_reviews)
       .where(

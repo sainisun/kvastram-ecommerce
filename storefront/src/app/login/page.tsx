@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
 import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import FacebookLogin from 'react-facebook-login';
@@ -173,6 +173,7 @@ function LoginContent() {
     const [showResend, setShowResend] = useState(false);
     const [resending, setResending] = useState(false);
     const [resendSuccess, setResendSuccess] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -263,13 +264,23 @@ function LoginContent() {
 
                     <div className="space-y-2">
                         <label className="text-xs uppercase font-bold text-stone-500">Password</label>
-                        <input
-                            type="password"
-                            required
-                            className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                required
+                                className="w-full border-b border-stone-200 py-2 pr-10 focus:outline-none focus:border-stone-900 transition-colors"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors"
+                                tabIndex={-1}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     </div>
 
                     <button

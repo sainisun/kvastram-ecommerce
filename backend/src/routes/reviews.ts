@@ -4,7 +4,11 @@ import { zValidator } from "@hono/zod-validator";
 import { db } from "../db/client";
 import { product_reviews, products } from "../db/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
-import { verifyAdmin } from "../middleware/auth"; // BUG-012 FIX: was verifyAuth
+import { verifyAdmin, verifyAuth } from "../middleware/auth"; // BUG-012 FIX: was verifyAuth
+import { generalLimiter } from "../middleware/rate-limiter";
+import { mkdir, writeFile } from "fs/promises";
+import { join } from "path";
+import { existsSync } from "fs";
 
 const reviewsRouter = new Hono();
 
@@ -15,6 +19,7 @@ const CreateReviewSchema = z.object({
   title: z.string().optional(),
   content: z.string().optional(),
   author_name: z.string().min(1),
+  images: z.array(z.string()).optional(),
 });
 
 const UpdateReviewStatusSchema = z.object({
@@ -73,6 +78,83 @@ reviewsRouter.post(
     }
   },
 );
+
+// POST /reviews/upload - Upload review images (auth + rate limited)
+reviewsRouter.post("/upload", generalLimiter, verifyAuth, async (c) => {
+  try {
+    const body = await c.req.parseBody();
+    const files = body.images;
+
+    if (!files) {
+      return c.json({ error: "No files uploaded" }, 400);
+    }
+
+    // Handle single file or multiple files
+    const fileArray = Array.isArray(files) ? files : [files];
+
+    // Validate max 5 images
+    if (fileArray.length > 5) {
+      return c.json({ error: "Maximum 5 images allowed" }, 400);
+    }
+
+    const uploadedUrls: string[] = [];
+    const uploadDir = join(process.cwd(), "uploads", "reviews");
+
+    // Create directory if it doesn't exist
+    if (!existsSync(uploadDir)) {
+      await mkdir(uploadDir, { recursive: true });
+    }
+
+    for (const file of fileArray) {
+      if (!(file instanceof File)) {
+        continue;
+      }
+
+      // Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedTypes.includes(file.type)) {
+        return c.json({ error: `Invalid file type: ${file.name}. Only JPEG, PNG, and WebP allowed.` }, 400);
+      }
+
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        return c.json({ error: `File too large: ${file.name}. Maximum size is 5MB.` }, 400);
+      }
+
+      // Generate unique filename with sanitized extension
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 8);
+      
+      // Safely extract and sanitize extension
+      const rawExtension = file.name.split(".").pop()?.toLowerCase() || "";
+      const sanitizedExtension = rawExtension.replace(/[^a-z0-9]/g, "");
+      const allowedExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+      const extension = allowedExtensions.includes(sanitizedExtension) ? sanitizedExtension : "jpg";
+      
+      const filename = `review_${timestamp}_${randomString}.${extension}`;
+      const filepath = join(uploadDir, filename);
+
+      // Save file
+      const buffer = await file.arrayBuffer();
+      await writeFile(filepath, Buffer.from(buffer));
+
+      // Generate URL
+      const baseUrl = process.env.UPLOAD_URL || "/uploads";
+      const url = `${baseUrl}/reviews/${filename}`;
+      uploadedUrls.push(url);
+    }
+
+    return c.json({ 
+      success: true, 
+      images: uploadedUrls,
+      count: uploadedUrls.length 
+    }, 201);
+  } catch (error) {
+    console.error("Error uploading review images:", error);
+    return c.json({ error: "Failed to upload images" }, 500);
+  }
+});
 
 // --- ADMIN ROUTES ---
 

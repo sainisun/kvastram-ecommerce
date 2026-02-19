@@ -1,14 +1,16 @@
 import { api } from '@/lib/api';
 import Link from 'next/link';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
+import { PaymentIcons } from '@/components/ui/SecurityBadges';
+import NewsletterForm from '@/components/NewsletterForm';
 
 async function getPages() {
-  try {
-    const data = await api.getPages();
-    return data.pages || [];
-  } catch {
+  // try {
+  //   const data = await api.getPages();
+  //   return data.pages || [];
+  // } catch {
     return [];
-  }
+  // }
 }
 
 export async function Footer() {
@@ -21,13 +23,17 @@ export async function Footer() {
   return (
     <footer className="bg-black text-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="space-y-4">
             <h3 className="text-2xl font-bold tracking-tighter">KVASTRAM</h3>
             <p className="text-stone-400 text-sm leading-relaxed">
               Connecting global citizens with the finest artisanal craftsmanship from India and beyond.
             </p>
+            <div className="mt-4 space-y-1 text-sm text-stone-400">
+              <p>123 Fashion Avenue, New York, NY 10001</p>
+              <p>support@kvastram.com | +1 (555) 123-4567</p>
+            </div>
           </div>
 
           {/* Shop */}
@@ -67,10 +73,22 @@ export async function Footer() {
               <a href="#" className="text-stone-400 hover:text-white transition-colors"><Facebook size={20} /></a>
             </div>
           </div>
+
+          {/* Newsletter */}
+          <div className="lg:col-span-1">
+            <h4 className="text-lg font-semibold mb-4">Stay Updated</h4>
+            <p className="text-stone-400 text-sm mb-4">
+              Subscribe for exclusive offers and new arrivals.
+            </p>
+            <NewsletterForm minimal />
+          </div>
         </div>
 
-        <div className="border-t border-stone-800 mt-16 pt-8 text-center text-sm text-stone-500">
-          <p>&copy; {new Date().getFullYear()} Kvastram. All rights reserved.</p>
+        <div className="border-t border-stone-800 mt-16 pt-8">
+          <PaymentIcons className="mb-6" />
+          <p className="text-center text-sm text-stone-500">
+            &copy; {new Date().getFullYear()} Kvastram. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

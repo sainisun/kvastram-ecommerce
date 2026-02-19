@@ -10,6 +10,7 @@ import Link from 'next/link';
 import type { Product, MoneyAmount } from '@/types';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { Eye, ShoppingBag, Tag } from 'lucide-react';
+import { QuickViewModal } from '@/components/product/QuickViewModal';
 
 
 interface ProductGridProps {
@@ -23,6 +24,7 @@ export default function ProductGrid({ initialProducts = [], loading: externalLoa
     const { showNotification } = useNotification();
     const { wholesaleInfo, getPrice: getWholesalePrice, fetchPrices } = useWholesale();
     const [addedId, setAddedId] = useState<string | null>(null);
+    const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
     const products = initialProducts;
     const loading = externalLoading || initialProducts.length === 0;
 
@@ -152,6 +154,16 @@ export default function ProductGrid({ initialProducts = [], loading: externalLoa
                         {/* Quick Actions Bar - Slide Up */}
                         <div className="absolute inset-x-0 bottom-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10 flex gap-2 justify-center pb-6">
                             <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setQuickViewProduct(product);
+                                }}
+                                className="py-3 px-4 bg-white/90 backdrop-blur-sm text-stone-900 hover:bg-stone-900 hover:text-white transition-all shadow-lg"
+                                aria-label="Quick view"
+                            >
+                                <Eye size={18} />
+                            </button>
+                            <button
                                 onClick={(e) => handleAddToCart(e, product)}
                                 className={`flex-1 py-3 px-4 text-xs font-bold uppercase tracking-widest transition-all shadow-lg ${addedId === product.id
                                     ? 'bg-green-600 text-white border-green-600'
@@ -223,6 +235,13 @@ export default function ProductGrid({ initialProducts = [], loading: externalLoa
                     </Link>
                 </div>
             ))}
+            
+            {/* Quick View Modal */}
+            <QuickViewModal
+                product={quickViewProduct || ({} as Product)}
+                isOpen={!!quickViewProduct}
+                onClose={() => setQuickViewProduct(null)}
+            />
         </div>
     );
 }
