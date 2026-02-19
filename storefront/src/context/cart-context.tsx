@@ -64,12 +64,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     // Save cart to backend when user is logged in and cart changes
     useEffect(() => {
-        if (customer && isLoaded && items.length > 0) {
-            const timeout = setTimeout(() => {
+        if (!customer || !isLoaded) return;
+        
+        const timeout = setTimeout(() => {
+            if (items.length === 0) {
+                // Clear saved cart when local cart is empty
+                api.clearSavedCart().catch(console.error);
+            } else {
                 api.saveCart(items).catch(console.error);
-            }, 1000); // Debounce 1 second
-            return () => clearTimeout(timeout);
-        }
+            }
+        }, 1000); // Debounce 1 second
+        return () => clearTimeout(timeout);
     }, [items, customer, isLoaded]);
 
     // Check for saved cart when user logs in
@@ -99,15 +104,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
         try {
             const data = await api.getSavedCart();
             if (data.items && data.items.length > 0) {
-                // Merge saved cart with current cart
+                // Merge saved cart with current cart - immutable updates
                 setItems(prev => {
                     const merged = [...prev];
                     data.items.forEach((savedItem: CartItem) => {
-                        const existing = merged.find(i => i.variantId === savedItem.variantId);
-                        if (existing) {
-                            existing.quantity += savedItem.quantity;
+                        const existingIndex = merged.findIndex(i => i.variantId === savedItem.variantId);
+                        if (existingIndex >= 0) {
+                            // Update existing item with new quantity (create new object)
+                            merged[existingIndex] = {
+                                ...merged[existingIndex],
+                                quantity: merged[existingIndex].quantity + savedItem.quantity
+                            };
                         } else {
-                            merged.push(savedItem);
+                            // Add new item (create new object)
+                            merged.push({ ...savedItem });
                         }
                     });
                     return merged;

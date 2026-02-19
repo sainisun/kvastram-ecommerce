@@ -22,8 +22,20 @@ export function useInventoryWebSocket(options: UseInventoryWebSocketOptions = {}
     const [lastUpdate, setLastUpdate] = useState<InventoryUpdate | null>(null);
     const socketRef = useRef<Socket | null>(null);
     const subscribedVariants = useRef<Set<string>>(new Set());
-
-    const { onInventoryUpdate, onConnect, onDisconnect, onError } = options;
+    
+    // Stable refs for callbacks to prevent reconnects
+    const inventoryUpdateRef = useRef(options.onInventoryUpdate);
+    const connectRef = useRef(options.onConnect);
+    const disconnectRef = useRef(options.onDisconnect);
+    const errorRef = useRef(options.onError);
+    
+    // Update refs when callbacks change
+    useEffect(() => {
+        inventoryUpdateRef.current = options.onInventoryUpdate;
+        connectRef.current = options.onConnect;
+        disconnectRef.current = options.onDisconnect;
+        errorRef.current = options.onError;
+    }, [options.onInventoryUpdate, options.onConnect, options.onDisconnect, options.onError]);
 
     // Initialize WebSocket connection
     useEffect(() => {
@@ -35,8 +47,10 @@ export function useInventoryWebSocket(options: UseInventoryWebSocketOptions = {}
             return;
         }
 
+        let socket: Socket | null = null;
+        
         try {
-            socketRef.current = io(WS_URL, {
+            socket = io(WS_URL, {
                 path: '/socket.io',
                 transports: ['websocket', 'polling'],
                 reconnection: true,
@@ -44,51 +58,56 @@ export function useInventoryWebSocket(options: UseInventoryWebSocketOptions = {}
                 reconnectionDelay: 1000,
                 timeout: 10000,
             });
-
-            const socket = socketRef.current;
+            
+            socketRef.current = socket;
 
             socket.on('connect', () => {
                 console.log('[Inventory WebSocket] Connected');
                 setIsConnected(true);
-                onConnect?.();
+                connectRef.current?.();
                 
                 // Re-subscribe to previously subscribed variants
                 subscribedVariants.current.forEach(variantId => {
-                    socket.emit('subscribe:inventory', { variantId });
+                    socket?.emit('subscribe:inventory', { variantId });
                 });
             });
 
             socket.on('disconnect', () => {
                 console.log('[Inventory WebSocket] Disconnected');
                 setIsConnected(false);
-                onDisconnect?.();
+                disconnectRef.current?.();
             });
 
             socket.on('inventory:update', (update: InventoryUpdate) => {
                 console.log('[Inventory WebSocket] Update received:', update);
                 setLastUpdate(update);
-                onInventoryUpdate?.(update);
+                inventoryUpdateRef.current?.(update);
             });
 
             socket.on('error', (error: Error) => {
                 console.error('[Inventory WebSocket] Error:', error);
-                onError?.(error);
+                errorRef.current?.(error);
             });
 
             socket.on('connect_error', (error: Error) => {
                 console.error('[Inventory WebSocket] Connection error:', error);
-                onError?.(error);
+                errorRef.current?.(error);
             });
-
-            return () => {
-                socket.disconnect();
-                socketRef.current = null;
-            };
         } catch (error) {
             console.error('[Inventory WebSocket] Failed to initialize:', error);
-            onError?.(error as Error);
+            // Clean up socket on partial initialization failure
+            if (socket) {
+                socket.disconnect();
+                socketRef.current = null;
+            }
+            errorRef.current?.(error as Error);
         }
-    }, [onInventoryUpdate, onConnect, onDisconnect, onError]);
+
+        return () => {
+            socket?.disconnect();
+            socketRef.current = null;
+        };
+    }, []); // Empty deps - socket initialized once
 
     // Subscribe to inventory updates for a variant
     const subscribeToInventory = useCallback((variantId: string) => {

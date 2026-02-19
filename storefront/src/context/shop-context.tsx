@@ -37,7 +37,7 @@ interface ShopContextType {
     regions: Region[];
     setRegion: (region: Region) => void;
     isLoading: boolean;
-    settings: StoreSettings | null;
+    settings: StoreSettings;
     calculateTax: (countryCode: string, subtotal: number) => TaxCalculationResult;
 }
 
@@ -78,11 +78,21 @@ export function ShopProvider({ children }: { children: ReactNode }) {
                 const regionList = regionsData.regions || [];
                 setRegions(regionList);
 
-                // Set settings if available
+                // Set settings if available - deep merge to preserve defaults
                 if (settingsData) {
+                    const sanitizedSettings = {
+                        ...settingsData,
+                        // Use nullish coalescing to preserve 0 values
+                        tax_rates: settingsData.tax_rates ?? defaultSettings.tax_rates,
+                        default_tax_rate: settingsData.default_tax_rate ?? defaultSettings.default_tax_rate,
+                        free_shipping_threshold: settingsData.free_shipping_threshold ?? defaultSettings.free_shipping_threshold,
+                        currency_code: settingsData.currency_code ?? defaultSettings.currency_code,
+                        store_name: settingsData.store_name ?? defaultSettings.store_name,
+                    };
                     setSettings({
                         ...defaultSettings,
-                        ...settingsData
+                        ...sanitizedSettings,
+                        tax_rates: sanitizedSettings.tax_rates,
                     });
                 }
 

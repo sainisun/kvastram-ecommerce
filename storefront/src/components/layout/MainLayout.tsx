@@ -26,8 +26,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             {!isCheckoutPage && <BottomNav />}
             {/* PHASE 7.1: Chat Widget - Show on all pages except checkout */}
             {!isCheckoutPage && <ChatWidget />}
-            {/* Cart Abandonment Recovery Modal */}
-            <CartRecovery />
+            {/* Cart Abandonment Recovery Modal - Hide on checkout */}
+            {!isCheckoutPage && <CartRecovery />}
         </>
     );
 }

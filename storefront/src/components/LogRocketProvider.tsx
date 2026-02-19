@@ -9,10 +9,22 @@ const LOGROCKET_APP_ID = process.env.NEXT_PUBLIC_LOGROCKET_APP_ID;
 export function LogRocketProvider({ children }: { children: React.ReactNode }) {
     const { customer } = useAuth();
     const initialized = useRef(false);
+    const consentGranted = useRef(false);
+
+    // Check for user consent (GDPR/CCPA)
+    useEffect(() => {
+        const consent = localStorage.getItem('logrocket_consent');
+        consentGranted.current = consent === 'true';
+    }, []);
+
+    const requestConsent = () => {
+        localStorage.setItem('logrocket_consent', 'true');
+        consentGranted.current = true;
+    };
 
     useEffect(() => {
-        // Only initialize once and if app ID is provided
-        if (!LOGROCKET_APP_ID || initialized.current) return;
+        // Only initialize once, if app ID is provided, and user has consented
+        if (!LOGROCKET_APP_ID || initialized.current || !consentGranted.current) return;
         
         // Don't initialize in development unless explicitly enabled
         if (process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_ENABLE_LOGROCKET_DEV) {
@@ -25,8 +37,8 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
                 dom: {
                     // Don't record sensitive input fields
                     inputSanitizer: true,
-                    // Hide password fields
-                    privateAttributeBlocklist: ['password', 'credit-card', 'cvv', 'ssn'],
+                    // Hide password fields and other PII
+                    privateAttributeBlocklist: ['password', 'credit-card', 'cvv', 'ssn', 'email', 'name', 'address'],
                 },
                 // Network request/response sanitization
                 network: {
@@ -42,9 +54,16 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
                         if (request.body) {
                             try {
                                 const body = JSON.parse(request.body);
-                                if (body.password) body.password = '[REDACTED]';
-                                if (body.creditCard) body.creditCard = '[REDACTED]';
-                                if (body.cvv) body.cvv = '[REDACTED]';
+                                const piiKeys = ['email', 'name', 'address', 'card_number', 'cvv', 'ssn', 'password', 'creditCard'];
+                                piiKeys.forEach(key => {
+                                    if (body[key]) body[key] = '[REDACTED]';
+                                });
+                                // Also check for keys matching PII patterns
+                                Object.keys(body).forEach(key => {
+                                    if (/(email|name|address|card|cc|cvv|ssn)/i.test(key)) {
+                                        body[key] = '[REDACTED]';
+                                    }
+                                });
                                 request.body = JSON.stringify(body);
                             } catch {
                                 // Not JSON, leave as is
@@ -62,6 +81,11 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
                                 if (body.token) body.token = '[REDACTED]';
                                 if (body.accessToken) body.accessToken = '[REDACTED]';
                                 if (body.refreshToken) body.refreshToken = '[REDACTED]';
+                                // Redact PII in response
+                                const piiKeys = ['email', 'name', 'address', 'card_number', 'cvv', 'ssn'];
+                                piiKeys.forEach(key => {
+                                    if (body[key]) body[key] = '[REDACTED]';
+                                });
                                 response.body = JSON.stringify(body);
                             } catch {
                                 // Not JSON, leave as is
@@ -109,7 +133,7 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
             }
             
             LogRocket.identify(customer.id, traits);
-            console.log('[LogRocket] User identified:', customer.email);
+            console.log('[LogRocket] User identified:', customer.id);
         } else {
             // User logged out - anonymize
             LogRocket.identify('anonymous');
@@ -118,6 +142,14 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
 
     return <>{children}</>;
 }
+
+// Export function to request LogRocket consent (to be called from consent banner)
+export const requestLogRocketConsent = () => {
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('logrocket_consent', 'true');
+        window.location.reload(); // Reload to initialize LogRocket
+    }
+};
 
 // Export LogRocket instance for manual logging
 export { LogRocket };

@@ -25,6 +25,11 @@ export default function OrdersListPage() {
     }, [loading, customer, router]);
 
     useEffect(() => {
+        // Wait until auth is resolved and customer exists
+        if (loading || !customer) {
+            return;
+        }
+
         api.getCustomerOrders()
             .then(data => {
                 setOrders(data.orders || []);
@@ -34,7 +39,7 @@ export default function OrdersListPage() {
                 setOrders([]);
                 setOrdersLoading(false);
             });
-    }, []);
+    }, [customer, loading]);
 
     // Calculate pagination
     const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);

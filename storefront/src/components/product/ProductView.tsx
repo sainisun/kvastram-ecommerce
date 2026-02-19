@@ -128,6 +128,23 @@ export default function ProductView({ product }: { product: Product }) {
         }
     }, [product.variants, product.options, selectedOptions, selectedVariantId, hasStructuredOptions]);
 
+    // Clamp quantity when variant or inventory changes
+    useEffect(() => {
+        if (!selectedVariant) return;
+        
+        const available = realTimeInventory[selectedVariant.id] !== undefined 
+            ? realTimeInventory[selectedVariant.id] 
+            : selectedVariant.inventory_quantity;
+        
+        if (available !== undefined && available > 0) {
+            if (quantity > available) {
+                setQuantity(available);
+            }
+        } else if (available === 0) {
+            setQuantity(1);
+        }
+    }, [selectedVariant?.id, realTimeInventory]);
+
     const prices = selectedVariant?.prices || [];
     const priceObj = prices.find((p: MoneyAmount) => p.currency_code === (currentRegion?.currency_code || 'usd').toLowerCase()) || prices[0];
 
@@ -372,9 +389,13 @@ export default function ProductView({ product }: { product: Product }) {
                                                     : selectedVariant.inventory_quantity} left` 
                                                 : 'In Stock, Ready to Ship'
                                             }
-                                            {isConnected && (
+                                            {isConnected ? (
                                                 <span title="Live updates">
                                                     <Wifi size={10} className="ml-1 text-green-600" />
+                                                </span>
+                                            ) : (
+                                                <span title="Live updates unavailable">
+                                                    <WifiOff size={10} className="ml-1 text-stone-400" />
                                                 </span>
                                             )}
                                         </>
@@ -382,7 +403,11 @@ export default function ProductView({ product }: { product: Product }) {
                                         <>
                                             <div className="w-2 h-2 rounded-full bg-red-500"></div>
                                             Out of Stock
-                                            {!isConnected && (
+                                            {isConnected ? (
+                                                <span title="Live updates">
+                                                    <Wifi size={10} className="ml-1 text-green-600" />
+                                                </span>
+                                            ) : (
                                                 <span title="Live updates unavailable">
                                                     <WifiOff size={10} className="ml-1 text-stone-400" />
                                                 </span>

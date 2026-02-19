@@ -58,20 +58,22 @@ import docsApp from "./docs";
 
 const app = new Hono();
 
-// 🕵️‍♂️ TRACER: Log every request to confirm frontend-backend communication
-app.use('*', async (c, next) => {
-  const method = c.req.method;
-  const path = c.req.path;
-  const traceId = c.req.header('x-debug-trace') || 'NONE';
-  
-  console.log(`[TRACER] ${method} ${path} | Trace-ID: ${traceId} | Time: ${new Date().toISOString()}`);
-  
-  if (traceId !== 'NONE') {
-    console.log(`[TRACER] ✅ MATCH! Request received from frontend with ID: ${traceId}`);
-  }
+// 🕵️‍♂️ TRACER: Log every request to confirm frontend-backend communication (dev only)
+if (process.env.NODE_ENV !== 'production') {
+  app.use('*', async (c, next) => {
+    const method = c.req.method;
+    const path = c.req.path.split('?')[0]; // Mask query params
+    const traceId = c.req.header('x-debug-trace') || 'NONE';
+    
+    console.log(`[TRACER] ${method} ${path} | Trace-ID: ${traceId} | Time: ${new Date().toISOString()}`);
+    
+    if (traceId !== 'NONE') {
+      console.log(`[TRACER] ✅ MATCH! Request received from frontend with ID: ${traceId}`);
+    }
 
-  await next();
-});
+    await next();
+  });
+}
 
 // Security & Logging Middleware
 app.use("*", secureHeaders());
@@ -100,7 +102,7 @@ app.use(
     origin: allowedOrigins,
     credentials: true, // Required for httpOnly cookies
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+    allowHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "x-debug-trace"],
     exposeHeaders: ["Set-Cookie"], // Allow frontend to receive cookies
   }),
 );

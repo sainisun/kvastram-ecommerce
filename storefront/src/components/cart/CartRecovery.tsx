@@ -2,11 +2,14 @@
 
 import { useCart } from '@/context/cart-context';
 import { ShoppingCart, X, ArrowRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 export function CartRecovery() {
     const { savedCartCount, recoverSavedCart, dismissSavedCart } = useCart();
     const [isVisible, setIsVisible] = useState(false);
+    const [isRecovering, setIsRecovering] = useState(false);
+    const [recoverError, setRecoverError] = useState<string | null>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (savedCartCount > 0) {
@@ -18,28 +21,85 @@ export function CartRecovery() {
         }
     }, [savedCartCount]);
 
-    const handleDismiss = () => {
+    // Keyboard handler for Escape
+    const handleDismiss = useCallback(() => {
         setIsVisible(false);
         dismissSavedCart();
-    };
+    }, [dismissSavedCart]);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isVisible) {
+                handleDismiss();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isVisible, handleDismiss]);
+
+    // Focus trap
+    useEffect(() => {
+        if (isVisible && modalRef.current) {
+            const focusableElements = modalRef.current.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]):not([disabled])'
+            );
+            const firstElement = focusableElements[0] as HTMLElement;
+            const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+            const handleTab = (e: KeyboardEvent) => {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey && document.activeElement === firstElement) {
+                        e.preventDefault();
+                        lastElement.focus();
+                    } else if (!e.shiftKey && document.activeElement === lastElement) {
+                        e.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            };
+
+            if (focusableElements.length > 0) {
+                document.addEventListener('keydown', handleTab);
+                firstElement?.focus();
+
+                return () => document.removeEventListener('keydown', handleTab);
+            }
+        }
+    }, [isVisible, isRecovering]);
 
     const handleRecover = async () => {
-        setIsVisible(false);
-        await recoverSavedCart();
+        setRecoverError(null);
+        setIsRecovering(true);
+        try {
+            await recoverSavedCart();
+            setIsVisible(false);
+        } catch (err) {
+            console.error('Failed to recover cart:', err);
+            setRecoverError('Failed to restore cart. Please try again.');
+            // Keep modal visible on failure
+        } finally {
+            setIsRecovering(false);
+        }
     };
 
     if (!isVisible || savedCartCount === 0) return null;
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white max-w-md w-full p-8 rounded-lg shadow-xl animate-in fade-in zoom-in duration-300">
+            <div 
+                ref={modalRef}
+                role="dialog" 
+                aria-modal="true" 
+                aria-labelledby="recovery-title"
+                className="bg-white max-w-md w-full p-8 rounded-lg shadow-xl animate-in fade-in zoom-in duration-300"
+            >
                 <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center">
                             <ShoppingCart className="w-6 h-6 text-stone-600" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-serif text-stone-900">Welcome Back!</h3>
+                            <h3 id="recovery-title" className="text-lg font-serif text-stone-900">Welcome Back!</h3>
                             <p className="text-sm text-stone-500">You have items in your saved cart</p>
                         </div>
                     </div>
@@ -61,19 +121,33 @@ export function CartRecovery() {
                     </p>
                 </div>
 
+                {recoverError && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-sm mb-4">
+                        {recoverError}
+                    </div>
+                )}
+
                 <div className="flex gap-3">
                     <button
                         onClick={handleDismiss}
                         className="flex-1 py-3 border border-stone-200 text-stone-600 font-medium text-sm hover:bg-stone-50 transition-colors"
+                        disabled={isRecovering}
                     >
                         No, start fresh
                     </button>
                     <button
                         onClick={handleRecover}
-                        className="flex-1 py-3 bg-stone-900 text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors"
+                        disabled={isRecovering}
+                        className="flex-1 py-3 bg-stone-900 text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors disabled:opacity-50"
                     >
-                        Restore Cart
-                        <ArrowRight size={16} />
+                        {isRecovering ? (
+                            <>Restoring...</>
+                        ) : (
+                            <>
+                                Restore Cart
+                                <ArrowRight size={16} />
+                            </>
+                        )}
                     </button>
                 </div>
             </div>

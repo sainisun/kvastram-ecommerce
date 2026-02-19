@@ -9,17 +9,17 @@ import { useCart } from '@/context/cart-context';
 export function BottomNav() {
     const pathname = usePathname();
     const { totalItems } = useCart();
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(() => {
+        // Initialize synchronously based on pathname
+        if (typeof window !== 'undefined') {
+            return !pathname?.startsWith('/checkout') && !pathname?.startsWith('/admin');
+        }
+        return true;
+    });
+
     // Hide on checkout and admin pages only
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (pathname?.startsWith('/checkout') || pathname?.startsWith('/admin')) {
-                setIsVisible(false);
-            } else {
-                setIsVisible(true);
-            }
-        }, 0);
-        return () => clearTimeout(timer);
+        setIsVisible(!pathname?.startsWith('/checkout') && !pathname?.startsWith('/admin'));
     }, [pathname]);
 
     // Don't render on desktop

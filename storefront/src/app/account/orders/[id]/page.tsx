@@ -15,12 +15,15 @@ import Image from 'next/image';
 interface OrderWithDetails extends Order {
     items: Array<{
         id: string;
+        product_id?: string;
+        variant_id?: string;
         title: string;
         thumbnail?: string | null;
         quantity: number;
         unit_price: number;
         metadata?: {
             variant?: string;
+            original_variant_id?: string;
         } | null;
     }>;
     subtotal: number;
@@ -66,14 +69,28 @@ export default function OrderDetailsPage() {
             // Add each item to cart
             for (const orderItem of order.items) {
                 try {
-                    // Try to fetch current product details to get variant info
-                    const product = await api.searchProductsByTitle(orderItem.title);
+                    let product = null;
+
+                    // Prefer product_id for stable lookup, fall back to title search
+                    if (orderItem.product_id) {
+                        try {
+                            product = await api.getProduct(orderItem.product_id);
+                        } catch {
+                            // Product not found, try title search as fallback
+                            product = await api.searchProductsByTitle(orderItem.title);
+                        }
+                    } else {
+                        // Fallback: search by title
+                        product = await api.searchProductsByTitle(orderItem.title);
+                    }
                     
                     if (product) {
-                        // Find matching variant or use first available
-                        const variant = product.variants?.find((v: { metadata?: { variant?: string } }) => 
-                            v.metadata?.variant === orderItem.metadata?.variant
-                        ) || product.variants?.[0];
+                        // Find matching variant - prefer variant_id, then metadata.variant, then first variant
+                        const variant = orderItem.variant_id 
+                            ? product.variants?.find((v: { id: string }) => v.id === orderItem.variant_id)
+                            : product.variants?.find((v: { metadata?: { variant?: string } }) => 
+                                v.metadata?.variant === orderItem.metadata?.variant
+                            ) || product.variants?.[0];
 
                         if (variant) {
                             addItem({
@@ -90,30 +107,14 @@ export default function OrderDetailsPage() {
                             });
                             addedCount++;
                         } else {
-                            // Fallback: add without variant details
-                            addItem({
-                                id: product.id,
-                                variantId: orderItem.id, // Use order item ID as fallback
-                                quantity: orderItem.quantity,
-                                title: orderItem.title,
-                                price: orderItem.unit_price,
-                                currency: currentRegion?.currency_code?.toUpperCase() || 'USD',
-                                thumbnail: orderItem.thumbnail || undefined,
-                            });
-                            addedCount++;
+                            // No valid variant - skip this item
+                            console.warn('No matching variant found for item:', orderItem.title);
+                            failedCount++;
                         }
                     } else {
-                        // Product not found, add with order data only
-                        addItem({
-                            id: orderItem.id,
-                            variantId: orderItem.id,
-                            quantity: orderItem.quantity,
-                            title: orderItem.title,
-                            price: orderItem.unit_price,
-                            currency: currentRegion?.currency_code?.toUpperCase() || 'USD',
-                            thumbnail: orderItem.thumbnail || undefined,
-                        });
-                        addedCount++;
+                        // Product not found - skip this item
+                        console.warn('Product not found for item:', orderItem.title);
+                        failedCount++;
                     }
                 } catch (err) {
                     console.error('Failed to add item to cart:', orderItem.title, err);
