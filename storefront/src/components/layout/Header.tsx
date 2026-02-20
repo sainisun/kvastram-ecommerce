@@ -10,6 +10,31 @@ import { usePathname } from 'next/navigation';
 import SearchOverlay from '@/components/search/SearchOverlay';
 import MobileMenu from '@/components/layout/MobileMenu';
 
+interface NavLink {
+    label: string;
+    url: string;
+    order: number;
+    highlight?: boolean;
+}
+
+// DEFAULT FALLBACK VALUES - Used if API fails or returns empty
+const DEFAULT_NAV_LINKS: NavLink[] = [
+    { label: 'Home', url: '/', order: 1 },
+    { label: 'New Arrivals', url: '/products?sort=newest', order: 2 },
+    { label: 'Shop', url: '/products', order: 3 },
+    { label: 'Collections', url: '/collections', order: 4 },
+    { label: 'Sale', url: '/sale', order: 5, highlight: true },
+    { label: 'About', url: '/about', order: 6 },
+    { label: 'Contact', url: '/contact', order: 7 },
+];
+
+const DEFAULT_QUICK_LINKS: NavLink[] = [
+    { label: 'Bestsellers', url: '/products?tag=bestseller', order: 1 },
+    { label: 'New Arrivals', url: '/products?tag=new', order: 2 },
+    { label: 'Collections', url: '/collections', order: 3 },
+    { label: 'Sale', url: '/sale', order: 4, highlight: true },
+];
+
 export function Header() {
     const { currentRegion, regions, setRegion } = useShop();
     const { totalItems } = useCart();
@@ -37,16 +62,58 @@ export function Header() {
     const [showShopMenu, setShowShopMenu] = useState(false);
     const [announcementText, setAnnouncementText] = useState('');
     const [announcementEnabled, setAnnouncementEnabled] = useState(false);
+    const [navLinks, setNavLinks] = useState<NavLink[]>(DEFAULT_NAV_LINKS);
+    const [quickLinks, setQuickLinks] = useState<NavLink[]>(DEFAULT_QUICK_LINKS);
 
     useEffect(() => {
-        Promise.all([
-            import('@/lib/api').then(({ api }) => api.getCategories().then(data => setCategories(data.categories || []))),
-            import('@/lib/api').then(({ api }) => api.getHomepageSettings().then(data => {
-                const settings = data.settings || {};
+        async function fetchData() {
+            try {
+                const [{ api: apiModule }] = await Promise.all([
+                    import('@/lib/api')
+                ]);
+                
+                // Fetch categories
+                const categoriesData = await apiModule.getCategories();
+                setCategories(categoriesData.categories || []);
+                
+                // Fetch homepage settings (includes nav_links and quick_links)
+                const settingsData = await apiModule.getHomepageSettings();
+                const settings = settingsData.settings || {};
+                
                 setAnnouncementText(settings.announcement_bar_text || '');
                 setAnnouncementEnabled(settings.announcement_bar_enabled || false);
-            }))
-        ]);
+                
+                // Parse nav_links from JSON
+                if (settings.nav_links) {
+                    try {
+                        const parsed = JSON.parse(settings.nav_links);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            setNavLinks(parsed.sort((a: NavLink, b: NavLink) => a.order - b.order));
+                        }
+                    } catch (e) {
+                        console.error('Error parsing nav_links:', e);
+                        // Uses DEFAULT_NAV_LINKS
+                    }
+                }
+                
+                // Parse quick_links from JSON
+                if (settings.quick_links) {
+                    try {
+                        const parsed = JSON.parse(settings.quick_links);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            setQuickLinks(parsed.sort((a: NavLink, b: NavLink) => a.order - b.order));
+                        }
+                    } catch (e) {
+                        console.error('Error parsing quick_links:', e);
+                        // Uses DEFAULT_QUICK_LINKS
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching header data:', error);
+                // Uses DEFAULT values (already set in useState)
+            }
+        }
+        fetchData();
     }, []);
 
     return (
@@ -104,88 +171,93 @@ export function Header() {
 
                     {/* Nav - Desktop */}
                     <nav className="flex items-center gap-8 text-sm font-medium text-stone-600">
-                        <Link href="/" className="hover:text-black transition-colors">Home</Link>
-                        <Link href="/products?sort=newest" className="hover:text-black transition-colors">New Arrivals</Link>
+                        {navLinks.map((link) => {
+                            if (link.label === 'Shop') {
+                                return (
+                                    <div key={link.label} className="relative group" onMouseEnter={() => setShowShopMenu(true)} onMouseLeave={() => setShowShopMenu(false)}>
+                                        <button
+                                            className="flex items-center gap-1 hover:text-black transition-colors py-2"
+                                            aria-label="Shop menu"
+                                            aria-expanded={showShopMenu}
+                                            aria-haspopup="true"
+                                        >
+                                            {link.label}
+                                            <ChevronDown size={14} className={`transition-transform duration-200 ${showShopMenu ? 'rotate-180' : ''}`} />
+                                        </button>
 
-                        {/* Shop Mega Menu */}
-                        <div className="relative group" onMouseEnter={() => setShowShopMenu(true)} onMouseLeave={() => setShowShopMenu(false)}>
-                            <button
-                                className="flex items-center gap-1 hover:text-black transition-colors py-2"
-                                aria-label="Shop menu"
-                                aria-expanded={showShopMenu}
-                                aria-haspopup="true"
-                            >
-                                Shop
-                                <ChevronDown size={14} className={`transition-transform duration-200 ${showShopMenu ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            {showShopMenu && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 w-[800px] max-w-[90vw] bg-white shadow-2xl border border-stone-100 py-6 px-6 animate-in fade-in slide-in-from-top-2 duration-200">
-                                    <div className="grid grid-cols-4 gap-6">
-                                        {/* Featured Category */}
-                                        <div className="col-span-1">
-                                            <Link
-                                                href="/products"
-                                                className="block group/menu"
-                                                onClick={() => setShowShopMenu(false)}
-                                            >
-                                                <div className="aspect-[3/4] bg-stone-100 relative overflow-hidden mb-3 rounded-sm">
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                                                    <div className="absolute bottom-4 left-4 right-4">
-                                                        <span className="text-white text-xs font-bold uppercase tracking-wider">New Arrivals</span>
+                                        {showShopMenu && (
+                                            <div className="absolute top-full left-1/2 -translate-x-1/2 w-[800px] max-w-[90vw] bg-white shadow-2xl border border-stone-100 py-6 px-6 animate-in fade-in slide-in-from-top-2 duration-200">
+                                                <div className="grid grid-cols-4 gap-6">
+                                                    {/* Featured Category */}
+                                                    <div className="col-span-1">
+                                                        <Link
+                                                            href="/products"
+                                                            className="block group/menu"
+                                                            onClick={() => setShowShopMenu(false)}
+                                                        >
+                                                            <div className="aspect-[3/4] bg-stone-100 relative overflow-hidden mb-3 rounded-sm">
+                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                                                <div className="absolute bottom-4 left-4 right-4">
+                                                                    <span className="text-white text-xs font-bold uppercase tracking-wider">New Arrivals</span>
+                                                                </div>
+                                                            </div>
+                                                            <span className="text-sm font-medium text-stone-900 group-hover/menu:text-stone-600">Shop All</span>
+                                                        </Link>
+                                                    </div>
+                                                    
+                                                    {/* Categories */}
+                                                    <div className="col-span-2 grid grid-cols-2 gap-x-8 gap-y-3">
+                                                        {categories.slice(0, 6).map((cat) => (
+                                                            <Link
+                                                                key={cat.id}
+                                                                href={`/products?category_id=${cat.id}`}
+                                                                className="text-sm text-stone-600 hover:text-black transition-colors py-1"
+                                                                onClick={() => setShowShopMenu(false)}
+                                                            >
+                                                                {cat.name}
+                                                            </Link>
+                                                        ))}
+                                                        <div className="col-span-2 h-px bg-stone-100 my-2" />
+                                                        <Link
+                                                            href="/products?sort=newest"
+                                                            className="text-sm font-medium text-stone-900 hover:text-stone-600"
+                                                            onClick={() => setShowShopMenu(false)}
+                                                        >
+                                                            View All Categories →
+                                                        </Link>
+                                                    </div>
+                                                    
+                                                    {/* Quick Links */}
+                                                    <div className="col-span-1 space-y-3 bg-stone-50 p-4 rounded-sm">
+                                                        <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Shop By</p>
+                                                        {quickLinks.map((qLink) => (
+                                                            <Link 
+                                                                key={qLink.label}
+                                                                href={qLink.url} 
+                                                                className={`block text-sm hover:text-black ${qLink.highlight ? 'text-amber-600 font-medium hover:text-amber-700' : 'text-stone-700'}`}
+                                                                onClick={() => setShowShopMenu(false)}
+                                                            >
+                                                                {qLink.label}
+                                                            </Link>
+                                                        ))}
                                                     </div>
                                                 </div>
-                                                <span className="text-sm font-medium text-stone-900 group-hover/menu:text-stone-600">Shop All</span>
-                                            </Link>
-                                        </div>
-                                        
-                                        {/* Categories */}
-                                        <div className="col-span-2 grid grid-cols-2 gap-x-8 gap-y-3">
-                                            {categories.slice(0, 6).map((cat) => (
-                                                <Link
-                                                    key={cat.id}
-                                                    href={`/products?category_id=${cat.id}`}
-                                                    className="text-sm text-stone-600 hover:text-black transition-colors py-1"
-                                                    onClick={() => setShowShopMenu(false)}
-                                                >
-                                                    {cat.name}
-                                                </Link>
-                                            ))}
-                                            <div className="col-span-2 h-px bg-stone-100 my-2" />
-                                            <Link
-                                                href="/products?sort=newest"
-                                                className="text-sm font-medium text-stone-900 hover:text-stone-600"
-                                                onClick={() => setShowShopMenu(false)}
-                                            >
-                                                View All Categories →
-                                            </Link>
-                                        </div>
-                                        
-                                        {/* Quick Links */}
-                                        <div className="col-span-1 space-y-3 bg-stone-50 p-4 rounded-sm">
-                                            <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Shop By</p>
-                                            <Link href="/products?tag=bestseller" className="block text-sm text-stone-700 hover:text-black" onClick={() => setShowShopMenu(false)}>
-                                                Bestsellers
-                                            </Link>
-                                            <Link href="/products?tag=new" className="block text-sm text-stone-700 hover:text-black" onClick={() => setShowShopMenu(false)}>
-                                                New Arrivals
-                                            </Link>
-                                            <Link href="/collections" className="block text-sm text-stone-700 hover:text-black" onClick={() => setShowShopMenu(false)}>
-                                                Collections
-                                            </Link>
-                                            <Link href="/sale" className="block text-sm text-amber-600 font-medium hover:text-amber-700" onClick={() => setShowShopMenu(false)}>
-                                                Sale
-                                            </Link>
-                                        </div>
+                                            </div>
+                                        )}
                                     </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <Link href="/collections" className="hover:text-black transition-colors">Collections</Link>
-                        <Link href="/sale" className="hover:text-black transition-colors text-amber-600 font-medium">Sale</Link>
-                        <Link href="/about" className="hover:text-black transition-colors">About</Link>
-                        <Link href="/contact" className="hover:text-black transition-colors">Contact</Link>
+                                );
+                            }
+                            
+                            return (
+                                <Link 
+                                    key={link.label}
+                                    href={link.url} 
+                                    className={`hover:text-black transition-colors ${link.highlight ? 'text-amber-600 font-medium' : ''}`}
+                                >
+                                    {link.label}
+                                </Link>
+                            );
+                        })}
                     </nav>
 
                     {/* Actions */}

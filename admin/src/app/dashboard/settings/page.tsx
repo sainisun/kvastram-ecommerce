@@ -10,6 +10,11 @@ import { api } from '@/lib/api';
 
 import { useNotification } from '@/context/notification-context';
 
+// Default values for navigation and quick links
+const DEFAULT_NAV_LINKS = '[{"label":"Home","url":"/","order":1},{"label":"New Arrivals","url":"/products?sort=newest","order":2},{"label":"Shop","url":"/products","order":3},{"label":"Collections","url":"/collections","order":4},{"label":"Sale","url":"/sale","order":5,"highlight":true},{"label":"About","url":"/about","order":6},{"label":"Contact","url":"/contact","order":7}]';
+
+const DEFAULT_QUICK_LINKS = '[{"label":"Bestsellers","url":"/products?tag=bestseller","order":1},{"label":"New Arrivals","url":"/products?tag=new","order":2},{"label":"Collections","url":"/collections","order":3},{"label":"Sale","url":"/sale","order":4,"highlight":true}]';
+
 export default function SettingsPage() {
     const router = useRouter();
     const { showNotification } = useNotification();
@@ -577,6 +582,120 @@ export default function SettingsPage() {
                                             <a href="/dashboard/products" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                                                 Browse Products
                                             </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Navigation Links Section */}
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Navigation Links</h3>
+                                    <p className="text-sm text-gray-500 mb-4">Configure the navigation menu links shown in the header.</p>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Nav Links (JSON)
+                                                <span className="ml-2 text-xs text-gray-400 font-normal">Array of {label, url, order, highlight}</span>
+                                            </label>
+                                            <textarea
+                                                rows={8}
+                                                value={settings.nav_links || '[]'}
+                                                onChange={(e) => {
+                                                    try {
+                                                        JSON.parse(e.target.value);
+                                                        handleChange('nav_links', e.target.value);
+                                                    } catch {
+                                                        // Invalid JSON - don't save
+                                                    }
+                                                }}
+                                                placeholder='[{"label":"Home","url":"/","order":1}]'
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Valid JSON required. See placeholder for format example.</p>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleChange('nav_links', DEFAULT_NAV_LINKS)}
+                                                className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+                                            >
+                                                Reset to Default
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Quick Links (JSON)
+                                                <span className="ml-2 text-xs text-gray-400 font-normal">Array of {'{'}label, url, order, highlight{'}'}</span>
+                                            </label>
+                                            <textarea
+                                                rows={6}
+                                                value={settings.quick_links || '[]'}
+                                                onChange={(e) => {
+                                                    try {
+                                                        JSON.parse(e.target.value);
+                                                        handleChange('quick_links', e.target.value);
+                                                    } catch {
+                                                        // Invalid JSON - don't save
+                                                    }
+                                                }}
+                                                placeholder='[{"label":"Bestsellers","url":"/products?tag=bestseller","order":1}]'
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Valid JSON required. Use "highlight":true for Sale/featured links.</p>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleChange('quick_links', DEFAULT_QUICK_LINKS)}
+                                                className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+                                            >
+                                                Reset to Default
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Store Info Section */}
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Store Information</h3>
+                                    <p className="text-sm text-gray-500 mb-4">Contact information shown in the footer.</p>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Store Logo URL</label>
+                                            <input
+                                                type="text"
+                                                value={settings.store_logo_url || ''}
+                                                onChange={(e) => handleChange('store_logo_url', e.target.value)}
+                                                placeholder="https://example.com/logo.png"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Store Address</label>
+                                            <textarea
+                                                rows={2}
+                                                value={settings.store_address || ''}
+                                                onChange={(e) => handleChange('store_address', e.target.value)}
+                                                placeholder="123 Fashion Avenue, New York, NY 10001"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                                <input
+                                                    type="tel"
+                                                    value={settings.store_phone || ''}
+                                                    onChange={(e) => handleChange('store_phone', e.target.value)}
+                                                    placeholder="+1 (555) 123-4567"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                                <input
+                                                    type="email"
+                                                    value={settings.store_email || ''}
+                                                    onChange={(e) => handleChange('store_email', e.target.value)}
+                                                    placeholder="support@kvastram.com"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
