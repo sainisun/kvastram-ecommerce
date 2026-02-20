@@ -118,10 +118,16 @@ async function getCsrfHeader(): Promise<Record<string, string>> {
 export const api = {
     // Generic methods for untyped calls (fixes compilation errors and enables tracing)
     async get(endpoint: string) {
-        const res = await fetchWithTrace(`${API_URL}${endpoint}`);
+        const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
+            credentials: 'include',
+        });
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
-            throw { ...data, status: res.status, message: data.message || data.error || 'Request failed' };
+            const message = data.message || data.error || 'Request failed';
+            const error = new Error(message);
+            error.status = res.status;
+            error.data = data;
+            throw error;
         }
         return res.json();
     },
@@ -158,7 +164,11 @@ export const api = {
         });
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
-            throw { ...data, status: res.status, message: data.message || data.error || 'Request failed' };
+            const message = data.message || data.error || 'Request failed';
+            const error = new Error(message);
+            error.status = res.status;
+            error.data = data;
+            throw error;
         }
         return res.json();
     },
@@ -172,9 +182,16 @@ export const api = {
             },
             credentials: 'include',
         });
+        if (res.status === 204) {
+            return null;
+        }
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
-            throw { ...data, status: res.status, message: data.message || data.error || 'Request failed' };
+            const message = data.message || data.error || 'Request failed';
+            const error = new Error(message);
+            error.status = res.status;
+            error.data = data;
+            throw error;
         }
         return res.json();
     },

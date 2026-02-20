@@ -9,13 +9,7 @@ import { useCart } from '@/context/cart-context';
 export function BottomNav() {
     const pathname = usePathname();
     const { totalItems } = useCart();
-    const [isVisible, setIsVisible] = useState(() => {
-        // Initialize synchronously based on pathname
-        if (typeof window !== 'undefined') {
-            return !pathname?.startsWith('/checkout') && !pathname?.startsWith('/admin');
-        }
-        return true;
-    });
+    const [isVisible, setIsVisible] = useState(() => false);
 
     // Hide on checkout and admin pages only
     useEffect(() => {

@@ -38,6 +38,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [savedCartCount, setSavedCartCount] = useState(0);
+    const [recoveryOffered, setRecoveryOffered] = useState(false);
     const { customer } = useAuth();
 
     // Load cart from localStorage on mount
@@ -46,6 +47,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (stored && stored.length > 0) {
             const timer = setTimeout(() => {
                 setItems(stored);
+                setIsLoaded(true);
             }, 0);
             return () => clearTimeout(timer);
         }
@@ -68,14 +70,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         
         const timeout = setTimeout(() => {
             if (items.length === 0) {
-                // Clear saved cart when local cart is empty
-                api.clearSavedCart().catch(console.error);
+                // Clear saved cart only when we know there's no saved cart to recover
+                // or when recovery has already been offered/dismissed
+                if (savedCartCount === 0 || !recoveryOffered) {
+                    api.clearSavedCart().catch(console.error);
+                }
             } else {
                 api.saveCart(items).catch(console.error);
             }
         }, 1000); // Debounce 1 second
         return () => clearTimeout(timeout);
-    }, [items, customer, isLoaded]);
+    }, [items, customer, isLoaded, savedCartCount, recoveryOffered]);
 
     // Check for saved cart when user logs in
     useEffect(() => {
@@ -84,6 +89,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 .then(data => {
                     if (data.items && data.items.length > 0) {
                         setSavedCartCount(data.items.length);
+                        setRecoveryOffered(true);
                     } else {
                         setSavedCartCount(0);
                     }
@@ -95,7 +101,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // Clear saved cart count when user logs out
     useEffect(() => {
         if (!customer && isLoaded) {
-            const timer = setTimeout(() => setSavedCartCount(0), 0);
+            const timer = setTimeout(() => {
+                setSavedCartCount(0);
+                setRecoveryOffered(false);
+            }, 0);
             return () => clearTimeout(timer);
         }
     }, [customer, isLoaded]);
@@ -123,6 +132,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     return merged;
                 });
                 setSavedCartCount(0);
+                setRecoveryOffered(false);
                 // Clear saved cart from backend after recovery
                 await api.clearSavedCart();
             }
@@ -133,6 +143,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const dismissSavedCart = useCallback(() => {
         setSavedCartCount(0);
+        setRecoveryOffered(false);
         api.clearSavedCart().catch(console.error);
     }, []);
 

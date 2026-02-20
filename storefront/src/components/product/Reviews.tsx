@@ -36,6 +36,8 @@ export function Reviews({ productId }: ReviewsProps) {
             imagePreviewUrls.forEach(url => URL.revokeObjectURL(url));
         };
     }, [imagePreviewUrls]);
+    useEffect(() => {
+        const fetchReviews = async () => {
             try {
                 const data = await api.getReviews(productId);
                 setReviews(data.reviews || []);
