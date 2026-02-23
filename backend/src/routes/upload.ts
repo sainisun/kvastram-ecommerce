@@ -1,28 +1,28 @@
-import { Hono } from "hono";
-import { verifyAuth } from "../middleware/auth";
-import * as path from "path";
-import { createHash } from "crypto";
-import { z } from "zod";
+import { Hono } from 'hono';
+import { verifyAuth } from '../middleware/auth';
+import * as path from 'path';
+import { createHash } from 'crypto';
+import { z } from 'zod';
 import {
   validateFileUpload,
   isPathWithinUploadDir,
   MAX_FILE_SIZE,
   getUploadDir,
-} from "../utils/safe-file-upload";
-import { writeFile, mkdir } from "fs/promises";
+} from '../utils/safe-file-upload';
+import { writeFile, mkdir } from 'fs/promises';
 
 const uploadRouter = new Hono();
 
 // Allowed file types for documentation purposes
 const ALLOWED_EXTENSIONS = [
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".gif",
-  ".webp",
-  ".pdf",
-  ".doc",
-  ".docx",
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.webp',
+  '.pdf',
+  '.doc',
+  '.docx',
 ];
 
 // 🔒 FIX-005: Zod schema for robust input validation
@@ -30,21 +30,25 @@ const ALLOWED_EXTENSIONS = [
 const FileUploadSchema = z.object({
   filename: z.string().min(1).max(255),
   mimeType: z.string().min(1).max(100),
-  size: z.number().int().positive().max(5 * 1024 * 1024), // Max 5MB, matches MAX_FILE_SIZE
+  size: z
+    .number()
+    .int()
+    .positive()
+    .max(5 * 1024 * 1024), // Max 5MB, matches MAX_FILE_SIZE
 });
 
 type FileUploadInput = z.infer<typeof FileUploadSchema>;
 
 // Use verifiedAuth middleware
-uploadRouter.use("*", verifyAuth);
+uploadRouter.use('*', verifyAuth);
 
-uploadRouter.post("/", async (c) => {
+uploadRouter.post('/', async (c) => {
   try {
     const body = await c.req.parseBody();
-    const file = body["file"];
+    const file = body['file'];
 
     if (!file || !(file instanceof File)) {
-      return c.json({ error: "No file uploaded" }, 400);
+      return c.json({ error: 'No file uploaded' }, 400);
     }
 
     // 🔒 FIX-005: Zod schema validation for robust input validation
@@ -57,10 +61,10 @@ uploadRouter.post("/", async (c) => {
     if (!validationResult.success) {
       return c.json(
         {
-          error: "Invalid file upload parameters",
+          error: 'Invalid file upload parameters',
           details: validationResult.error.errors,
         },
-        400,
+        400
       );
     }
 
@@ -70,7 +74,7 @@ uploadRouter.post("/", async (c) => {
         {
           error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB`,
         },
-        400,
+        400
       );
     }
 
@@ -97,23 +101,23 @@ uploadRouter.post("/", async (c) => {
     const relativePath = path.relative(resolvedUploadDir, resolvedPath);
 
     // Verify resolved path is still within upload directory
-    if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
-      console.error("🚨 Path traversal attack detected (resolved path):", {
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+      console.error('🚨 Path traversal attack detected (resolved path):', {
         filename: file.name,
         secureFilename,
         targetPath,
         resolvedPath,
       });
-      return c.json({ error: "Invalid file path" }, 400);
+      return c.json({ error: 'Invalid file path' }, 400);
     }
 
     if (!isPathWithinUploadDir(targetPath, uploadDir)) {
-      console.error("🚨 Path traversal attack detected:", {
+      console.error('🚨 Path traversal attack detected:', {
         filename: file.name,
         secureFilename,
         targetPath,
       });
-      return c.json({ error: "Invalid file path" }, 400);
+      return c.json({ error: 'Invalid file path' }, 400);
     }
 
     // Ensure directory exists
@@ -121,13 +125,20 @@ uploadRouter.post("/", async (c) => {
 
     // 🔒 FIX-005: Additional check - ensure path is not a directory
     try {
-      const { stat } = await import("fs/promises");
+      const { stat } = await import('fs/promises');
       const stats = await stat(targetPath);
       if (stats.isDirectory()) {
-        return c.json({ error: "Cannot overwrite directory" }, 400);
+        return c.json({ error: 'Cannot overwrite directory' }, 400);
       }
-    } catch (e) {
-      // File doesn't exist - safe to proceed
+    } catch (error: unknown) {
+      const nodeError = error as NodeJS.ErrnoException;
+      if (nodeError.code === 'ENOENT') {
+        // File doesn't exist - safe to proceed (normal/happy path)
+      } else {
+        // Other errors (EACCES, EIO, etc.) are real problems
+        console.error('Error checking file stat:', error);
+        return c.json({ error: 'Failed to check file path' }, 500);
+      }
     }
 
     // Write file
@@ -136,14 +147,14 @@ uploadRouter.post("/", async (c) => {
     await writeFile(targetPath, fileBuffer);
 
     // 🔒 FIX-005: Generate SHA-256 hash for file integrity verification
-    const fileHash = createHash("sha256").update(fileBuffer).digest("hex");
+    const fileHash = createHash('sha256').update(fileBuffer).digest('hex');
 
     // Construct URL (using secure filename only)
-    const protocol = c.req.header("x-forwarded-proto") || "http";
-    const host = c.req.header("host") || "localhost";
+    const protocol = c.req.header('x-forwarded-proto') || 'http';
+    const host = c.req.header('host') || 'localhost';
     const url = `${protocol}://${host}/uploads/${secureFilename}`;
 
-    console.log("✅ File uploaded securely:", {
+    console.log('✅ File uploaded securely:', {
       originalName: file.name,
       secureFilename,
       size: file.size,
@@ -160,11 +171,11 @@ uploadRouter.post("/", async (c) => {
       hash: fileHash,
     });
   } catch (error: any) {
-    console.error("❌ Upload error:", error);
-    console.error("Stack:", error.stack);
+    console.error('❌ Upload error:', error);
+    console.error('Stack:', error.stack);
     return c.json(
-      { error: "Failed to upload file", details: error.message },
-      500,
+      { error: 'Failed to upload file', details: error.message },
+      500
     );
   }
 });

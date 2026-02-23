@@ -1,4 +1,4 @@
-import { db } from "../db/client";
+import { db } from '../db/client';
 import {
   orders,
   line_items,
@@ -6,20 +6,20 @@ import {
   products,
   product_variants,
   addresses,
-} from "../db/schema";
-import { eq, desc, like, or, sql, and, gte, lte, inArray } from "drizzle-orm";
-import { alias } from "drizzle-orm/pg-core";
-import { generateInvoice } from "../services/pdf-service";
-import { sanitizeSearchInput } from "../utils/validation";
+} from '../db/schema';
+import { eq, desc, like, or, sql, and, gte, lte, inArray } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
+import { generateInvoice } from '../services/pdf-service';
+import { sanitizeSearchInput } from '../utils/validation';
 
 // --- TYPES ---
 export type OrderStatus =
-  | "pending"
-  | "processing"
-  | "shipped"
-  | "delivered"
-  | "cancelled"
-  | "refunded";
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'refunded';
 
 export interface OrderFilters {
   page?: number;
@@ -29,22 +29,22 @@ export interface OrderFilters {
   date_from?: string;
   date_to?: string;
   sort_by?: string;
-  sort_order?: "asc" | "desc";
+  sort_order?: 'asc' | 'desc';
 }
 
 // --- CONSTANTS ---
 const VALID_TRANSITIONS: Record<string, string[]> = {
-  pending: ["processing", "cancelled"],
-  processing: ["shipped", "cancelled", "refunded"],
-  shipped: ["delivered", "refunded", "cancelled"],
-  delivered: ["refunded"],
+  pending: ['processing', 'cancelled'],
+  processing: ['shipped', 'cancelled', 'refunded'],
+  shipped: ['delivered', 'refunded', 'cancelled'],
+  delivered: ['refunded'],
   cancelled: [],
   refunded: [],
 };
 
 // Aliases
-const shippingAddr = alias(addresses, "shipping_address");
-const billingAddr = alias(addresses, "billing_address");
+const shippingAddr = alias(addresses, 'shipping_address');
+const billingAddr = alias(addresses, 'billing_address');
 
 // --- SERVICE CLASS ---
 class OrderService {
@@ -52,12 +52,12 @@ class OrderService {
     const {
       page = 1,
       limit = 20,
-      search = "",
-      status = "",
-      date_from = "",
-      date_to = "",
-      sort_by = "created_at",
-      sort_order = "desc",
+      search = '',
+      status = '',
+      date_from = '',
+      date_to = '',
+      sort_by = 'created_at',
+      sort_order = 'desc',
     } = filters;
 
     const offset = (page - 1) * limit;
@@ -69,13 +69,13 @@ class OrderService {
         conditions.push(
           or(
             sql`CAST(${orders.display_id} AS TEXT) LIKE ${`%${sanitizedSearch}%`}`,
-            like(orders.email, `%${sanitizedSearch}%`),
-          ),
+            like(orders.email, `%${sanitizedSearch}%`)
+          )
         );
       }
     }
 
-    if (status && status !== "all") conditions.push(eq(orders.status, status));
+    if (status && status !== 'all') conditions.push(eq(orders.status, status));
     if (date_from) conditions.push(gte(orders.created_at, new Date(date_from)));
     if (date_to) conditions.push(lte(orders.created_at, new Date(date_to)));
 
@@ -89,10 +89,10 @@ class OrderService {
 
     // Sort Column
     let sortCol: any = orders.created_at;
-    if (sort_by === "order_number") sortCol = orders.display_id;
-    else if (sort_by === "total") sortCol = orders.total;
-    else if (sort_by === "status") sortCol = orders.status;
-    else if (sort_by === "email") sortCol = orders.email;
+    if (sort_by === 'order_number') sortCol = orders.display_id;
+    else if (sort_by === 'total') sortCol = orders.total;
+    else if (sort_by === 'status') sortCol = orders.status;
+    else if (sort_by === 'email') sortCol = orders.email;
 
     // Fetch
     const ordersList = await db
@@ -115,7 +115,7 @@ class OrderService {
       .from(orders)
       .leftJoin(customers, eq(orders.customer_id, customers.id))
       .where(whereClause)
-      .orderBy(sort_order === "asc" ? sortCol : desc(sortCol))
+      .orderBy(sort_order === 'asc' ? sortCol : desc(sortCol))
       .limit(limit)
       .offset(offset);
 
@@ -174,7 +174,7 @@ class OrderService {
       .from(line_items)
       .leftJoin(
         product_variants,
-        eq(line_items.variant_id, product_variants.id),
+        eq(line_items.variant_id, product_variants.id)
       )
       .leftJoin(products, eq(product_variants.product_id, products.id))
       .where(eq(line_items.order_id, id));
@@ -187,16 +187,16 @@ class OrderService {
       .select({ status: orders.status })
       .from(orders)
       .where(eq(orders.id, id));
-    if (!existingOrder) throw new Error("Order not found");
+    if (!existingOrder) throw new Error('Order not found');
 
-    const currentStatus = existingOrder.status || "pending";
+    const currentStatus = existingOrder.status || 'pending';
 
     // Validate transition
     if (currentStatus !== newStatus) {
       const allowedTransitions = VALID_TRANSITIONS[currentStatus] || [];
       if (!allowedTransitions.includes(newStatus)) {
         throw new Error(
-          `Invalid status transition from '${currentStatus}' to '${newStatus}'`,
+          `Invalid status transition from '${currentStatus}' to '${newStatus}'`
         );
       }
     }
@@ -217,11 +217,11 @@ class OrderService {
       .from(orders)
       .where(inArray(orders.id, orderIds));
 
-    if (targets.length === 0) throw new Error("No valid orders found");
+    if (targets.length === 0) throw new Error('No valid orders found');
 
     const invalidIds: string[] = [];
     for (const order of targets) {
-      const currentStatus = order.status || "pending";
+      const currentStatus = order.status || 'pending';
       if (currentStatus === newStatus) continue;
 
       const allowed = VALID_TRANSITIONS[currentStatus] || [];
@@ -232,7 +232,7 @@ class OrderService {
 
     if (invalidIds.length > 0) {
       throw new Error(
-        `Cannot update ${invalidIds.length} orders. Invalid status transition.`,
+        `Cannot update ${invalidIds.length} orders. Invalid status transition.`
       );
     }
 
@@ -248,9 +248,10 @@ class OrderService {
     // Delete line items
     try {
       await db.delete(line_items).where(eq(line_items.order_id, id));
-    } catch (e) {
+    } catch (error: unknown) {
       console.warn(
         `[OrderService] Failed to delete line items for ${id}, assuming explicitly deleted.`,
+        error
       );
     }
     // Delete order
@@ -310,7 +311,7 @@ class OrderService {
       .from(line_items)
       .leftJoin(
         product_variants,
-        eq(line_items.variant_id, product_variants.id),
+        eq(line_items.variant_id, product_variants.id)
       )
       .leftJoin(products, eq(product_variants.product_id, products.id))
       .where(eq(line_items.order_id, id));

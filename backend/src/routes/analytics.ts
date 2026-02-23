@@ -1,42 +1,42 @@
-import { Hono } from "hono";
-import { analyticsService } from "../services/analytics-service";
-import { verifyAdmin } from "../middleware/auth"; // BUG-014 FIX: was verifyAuth
+import { Hono } from 'hono';
+import { analyticsService } from '../services/analytics-service';
+import { verifyAdmin } from '../middleware/auth'; // BUG-014 FIX: was verifyAuth
 
 const analyticsRouter = new Hono();
 
 // GET /analytics/overview
-analyticsRouter.get("/overview", verifyAdmin, async (c) => {
+analyticsRouter.get('/overview', verifyAdmin, async (c) => {
   try {
     const overview = await analyticsService.getOverview();
     return c.json(overview);
-  } catch (error) {
-    console.error("Error fetching analytics overview:", error);
-    return c.json({ error: "Failed to fetch overview" }, 500);
+  } catch (error: unknown) {
+    console.error('Error fetching analytics overview:', error);
+    return c.json({ error: 'Failed to fetch overview' }, 500);
   }
 });
 
 // GET /analytics/sales-trend
-analyticsRouter.get("/sales-trend", verifyAdmin, async (c) => {
+analyticsRouter.get('/sales-trend', verifyAdmin, async (c) => {
   // OPT-005: Validate and clamp days parameter
-  const rawDays = c.req.query("days") ? parseInt(c.req.query("days")!) : 30;
+  const rawDays = c.req.query('days') ? parseInt(c.req.query('days')!) : 30;
   const days = Math.max(1, Math.min(365, isNaN(rawDays) ? 30 : rawDays));
   try {
     const trend = await analyticsService.getSalesTrend(days);
     return c.json(trend);
-  } catch (error) {
-    console.error("Error fetching sales trend:", error);
-    return c.json({ error: "Failed to fetch sales trend" }, 500);
+  } catch (error: unknown) {
+    console.error('Error fetching sales trend:', error);
+    return c.json({ error: 'Failed to fetch sales trend' }, 500);
   }
 });
 
 // GET /analytics/orders-by-status
-analyticsRouter.get("/orders-by-status", verifyAdmin, async (c) => {
+analyticsRouter.get('/orders-by-status', verifyAdmin, async (c) => {
   try {
     const statusData = await analyticsService.getOrdersByStatus();
     return c.json(statusData);
-  } catch (error) {
-    console.error("Error fetching orders by status:", error);
-    return c.json({ error: "Failed to fetch orders by status" }, 500);
+  } catch (error: unknown) {
+    console.error('Error fetching orders by status:', error);
+    return c.json({ error: 'Failed to fetch orders by status' }, 500);
   }
 });
 

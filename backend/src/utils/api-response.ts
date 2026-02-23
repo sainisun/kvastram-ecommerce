@@ -3,8 +3,8 @@
  * Ensures consistent response format and strong typing across all endpoints
  */
 
-import { Context } from "hono";
-import { StatusCode, ContentfulStatusCode } from "hono/utils/http-status";
+import { Context } from 'hono';
+import { StatusCode, ContentfulStatusCode } from 'hono/utils/http-status';
 
 // Common HTTP status codes as typed constants
 export const HttpStatus = {
@@ -22,14 +22,14 @@ export const HttpStatus = {
 
 // Standard Error Messages
 export const ErrorMessages = {
-  UNAUTHORIZED: "Authentication required. Please log in.",
-  FORBIDDEN: "You do not have permission to perform this action.",
-  NOT_FOUND: "The requested resource was not found.",
-  VALIDATION_ERROR: "Validation failed. Please check your input.",
-  INTERNAL_ERROR: "An unexpected error occurred. Please try again later.",
-  CONFLICT: "A resource with this identifier already exists.",
-  RATE_LIMIT: "Too many requests. Please try again later.",
-  DATABASE_ERROR: "Database operation failed. Please try again.",
+  UNAUTHORIZED: 'Authentication required. Please log in.',
+  FORBIDDEN: 'You do not have permission to perform this action.',
+  NOT_FOUND: 'The requested resource was not found.',
+  VALIDATION_ERROR: 'Validation failed. Please check your input.',
+  INTERNAL_ERROR: 'An unexpected error occurred. Please try again later.',
+  CONFLICT: 'A resource with this identifier already exists.',
+  RATE_LIMIT: 'Too many requests. Please try again later.',
+  DATABASE_ERROR: 'Database operation failed. Please try again.',
 } as const;
 
 // Interface for consistent response shape
@@ -56,8 +56,8 @@ export interface APIResponse<T = any> {
 export function successResponse<T>(
   c: Context,
   data: T,
-  message: string = "Success",
-  status: StatusCode = HttpStatus.OK,
+  message: string = 'Success',
+  status: StatusCode = HttpStatus.OK
 ) {
   // c.json requires ContentfulStatusCode (excludes 204, 304 etc which have no body)
   return c.json(
@@ -67,7 +67,7 @@ export function successResponse<T>(
       data,
       timestamp: new Date().toISOString(),
     } satisfies APIResponse<T>,
-    status as ContentfulStatusCode,
+    status as ContentfulStatusCode
   );
 }
 
@@ -79,7 +79,7 @@ export function errorResponse(
   c: Context,
   message: string,
   errors: any = null,
-  status: StatusCode = HttpStatus.BAD_REQUEST,
+  status: StatusCode = HttpStatus.BAD_REQUEST
 ) {
   const response: APIResponse = {
     success: false,
@@ -87,7 +87,7 @@ export function errorResponse(
     timestamp: new Date().toISOString(),
   };
 
-  if (errors && process.env.NODE_ENV === "development") {
+  if (errors && process.env.NODE_ENV === 'development') {
     response.errors = errors;
   }
 
@@ -106,11 +106,11 @@ export function paginatedResponse<T>(
     limit: number;
     total: number;
   },
-  message: string = "Success",
-  status: StatusCode = HttpStatus.OK,
+  message: string = 'Success',
+  status: StatusCode = HttpStatus.OK
 ) {
   const total_pages = Math.ceil(
-    pagination.total / Math.max(pagination.limit, 1),
+    pagination.total / Math.max(pagination.limit, 1)
   );
 
   return c.json(
@@ -128,6 +128,6 @@ export function paginatedResponse<T>(
       },
       timestamp: new Date().toISOString(),
     } satisfies APIResponse<T[]>,
-    status as ContentfulStatusCode,
+    status as ContentfulStatusCode
   );
 }

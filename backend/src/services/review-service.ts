@@ -1,7 +1,7 @@
-import { db } from "../db/client";
-import { product_reviews, customers } from "../db/schema";
-import { eq, desc, and } from "drizzle-orm";
-import { z } from "zod";
+import { db } from '../db/client';
+import { product_reviews, customers } from '../db/schema';
+import { eq, desc, and } from 'drizzle-orm';
+import { z } from 'zod';
 
 export const CreateReviewSchema = z.object({
   product_id: z.string(),
@@ -14,7 +14,7 @@ export const CreateReviewSchema = z.object({
 });
 
 export const UpdateReviewStatusSchema = z.object({
-  status: z.enum(["pending", "approved", "rejected"]),
+  status: z.enum(['pending', 'approved', 'rejected']),
 });
 
 class ReviewService {
@@ -23,7 +23,7 @@ class ReviewService {
       .insert(product_reviews)
       .values({
         ...data,
-        status: "pending", // Default to pending moderation
+        status: 'pending', // Default to pending moderation
       })
       .returning();
     return review;
@@ -44,8 +44,8 @@ class ReviewService {
       .where(
         and(
           eq(product_reviews.product_id, productId),
-          eq(product_reviews.status, "approved"),
-        ),
+          eq(product_reviews.status, 'approved')
+        )
       )
       .orderBy(desc(product_reviews.created_at));
   }
@@ -76,7 +76,7 @@ class ReviewService {
       .offset(offset);
   }
 
-  async updateStatus(id: string, status: "pending" | "approved" | "rejected") {
+  async updateStatus(id: string, status: 'pending' | 'approved' | 'rejected') {
     const [review] = await db
       .update(product_reviews)
       .set({ status, updated_at: new Date() })

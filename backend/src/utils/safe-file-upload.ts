@@ -1,6 +1,6 @@
-import { randomBytes, createHash } from "crypto";
-import * as path from "path";
-import * as fs from "fs";
+import { randomBytes, createHash } from 'crypto';
+import * as path from 'path';
+import * as fs from 'fs';
 
 /**
  * 🔒 FIX-005: Secure File Upload Utilities
@@ -16,27 +16,27 @@ import * as fs from "fs";
 
 // Allowed extensions (lowercase, with dot)
 const ALLOWED_EXTENSIONS = new Set([
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".gif",
-  ".webp",
-  ".pdf",
-  ".doc",
-  ".docx",
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.webp',
+  '.pdf',
+  '.doc',
+  '.docx',
 ]);
 
 // Allowed MIME types (verified against extension)
 const ALLOWED_MIME_TYPES: Record<string, string[]> = {
-  ".jpg": ["image/jpeg"],
-  ".jpeg": ["image/jpeg"],
-  ".png": ["image/png"],
-  ".gif": ["image/gif"],
-  ".webp": ["image/webp"],
-  ".pdf": ["application/pdf"],
-  ".doc": ["application/msword"],
-  ".docx": [
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  '.jpg': ['image/jpeg'],
+  '.jpeg': ['image/jpeg'],
+  '.png': ['image/png'],
+  '.gif': ['image/gif'],
+  '.webp': ['image/webp'],
+  '.pdf': ['application/pdf'],
+  '.doc': ['application/msword'],
+  '.docx': [
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ],
 };
 
@@ -57,7 +57,7 @@ export function generateSecureFilename(originalName: string): string {
 
   // Generate 32 bytes of cryptographically secure randomness (256 bits)
   // This makes filenames completely unpredictable
-  const randomHex = randomBytes(32).toString("hex");
+  const randomHex = randomBytes(32).toString('hex');
 
   // Add timestamp for chronological sorting (not for security)
   const timestamp = Date.now();
@@ -80,10 +80,7 @@ export function validateExtension(filename: string): boolean {
  * Validate MIME type matches extension
  * Prevents MIME type spoofing attacks
  */
-export function validateMimeType(
-  filename: string,
-  mimeType: string,
-): boolean {
+export function validateMimeType(filename: string, mimeType: string): boolean {
   const ext = path.extname(filename).toLowerCase();
   const allowedTypes = ALLOWED_MIME_TYPES[ext];
 
@@ -105,7 +102,7 @@ export function validateMimeType(
  */
 export function isPathWithinUploadDir(
   targetPath: string,
-  uploadDir: string,
+  uploadDir: string
 ): boolean {
   // Resolve both paths to absolute form
   const resolvedTarget = path.resolve(targetPath);
@@ -118,8 +115,7 @@ export function isPathWithinUploadDir(
   // Check if path is within upload directory:
   // - relative path should not start with '..'
   // - relative path should not be absolute
-  const isInside =
-    !relative.startsWith("..") && !path.isAbsolute(relative);
+  const isInside = !relative.startsWith('..') && !path.isAbsolute(relative);
 
   return isInside;
 }
@@ -130,18 +126,18 @@ export function isPathWithinUploadDir(
  */
 export function sanitizeFilename(filename: string): string {
   // Remove null bytes
-  let sanitized = filename.replace(/\0/g, "");
+  let sanitized = filename.replace(/\0/g, '');
 
   // Remove path traversal sequences
-  sanitized = sanitized.replace(/\.\./g, "");
+  sanitized = sanitized.replace(/\.\./g, '');
 
   // Remove absolute path prefixes
-  sanitized = sanitized.replace(/^[a-zA-Z]:[/\\]/, "");
-  sanitized = sanitized.replace(/^[/\\]+/, "");
+  sanitized = sanitized.replace(/^[a-zA-Z]:[/\\]/, '');
+  sanitized = sanitized.replace(/^[/\\]+/, '');
 
   // Replace remaining dangerous characters with underscore
   // Allow: alphanumeric, dot, dash, underscore
-  sanitized = sanitized.replace(/[^a-zA-Z0-9._-]/g, "_");
+  sanitized = sanitized.replace(/[^a-zA-Z0-9._-]/g, '_');
 
   return sanitized;
 }
@@ -159,7 +155,7 @@ export interface FileValidationResult {
 export function validateFileUpload(
   filename: string,
   mimeType: string,
-  size: number,
+  size: number
 ): FileValidationResult {
   // Check file size
   if (size > MAX_FILE_SIZE) {
@@ -173,7 +169,7 @@ export function validateFileUpload(
   if (!validateExtension(filename)) {
     return {
       valid: false,
-      error: `Invalid file extension. Allowed: ${Array.from(ALLOWED_EXTENSIONS).join(", ")}`,
+      error: `Invalid file extension. Allowed: ${Array.from(ALLOWED_EXTENSIONS).join(', ')}`,
     };
   }
 
@@ -181,7 +177,7 @@ export function validateFileUpload(
   if (!validateMimeType(filename, mimeType)) {
     return {
       valid: false,
-      error: "MIME type does not match file extension",
+      error: 'MIME type does not match file extension',
     };
   }
 
@@ -201,7 +197,7 @@ export function validateFileUpload(
 export async function secureWriteFile(
   uploadDir: string,
   filename: string,
-  data: Buffer,
+  data: Buffer
 ): Promise<{ success: boolean; error?: string; filepath?: string }> {
   try {
     // Construct full path
@@ -211,7 +207,7 @@ export async function secureWriteFile(
     if (!isPathWithinUploadDir(filepath, uploadDir)) {
       return {
         success: false,
-        error: "Path traversal detected - access denied",
+        error: 'Path traversal detected - access denied',
       };
     }
 
@@ -224,7 +220,7 @@ export async function secureWriteFile(
       if (stats.isDirectory()) {
         return {
           success: false,
-          error: "Cannot overwrite directory",
+          error: 'Cannot overwrite directory',
         };
       }
     } catch (e) {
@@ -262,7 +258,7 @@ export async function secureWriteFile(
 export function getUploadDir(): string {
   // Store uploads outside web root for security
   // Serve via API or static file handler
-  const uploadDir = process.env.UPLOAD_DIR || "./uploads";
+  const uploadDir = process.env.UPLOAD_DIR || './uploads';
 
   // Resolve to absolute path
   return path.resolve(uploadDir);
@@ -276,13 +272,14 @@ export function getSecureFileHeaders(filename: string): Record<string, string> {
   const ext = path.extname(filename).toLowerCase();
 
   const headers: Record<string, string> = {
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
   };
 
   // Force download for executable-like files
-  if (ext === ".pdf" || ext === ".doc" || ext === ".docx") {
-    headers["Content-Disposition"] = `attachment; filename="${path.basename(filename)}"`;
+  if (ext === '.pdf' || ext === '.doc' || ext === '.docx') {
+    headers['Content-Disposition'] =
+      `attachment; filename="${path.basename(filename)}"`;
   }
 
   return headers;

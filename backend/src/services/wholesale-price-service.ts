@@ -1,10 +1,10 @@
-import { db } from "../db/client";
-import { product_variants, products } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { db } from '../db/client';
+import { product_variants, products } from '../db/schema';
+import { eq } from 'drizzle-orm';
 
 export const TIER_DISCOUNTS: Record<string, number> = {
-  starter: 0.2,    // 20% off
-  growth: 0.3,     // 30% off
+  starter: 0.2, // 20% off
+  growth: 0.3, // 30% off
   enterprise: 0.4, // 40% off
 };
 
@@ -48,7 +48,7 @@ export const wholesalePriceService = {
     savings: number;
   } {
     const discount = this.getTierDiscount(tier);
-    
+
     // If variant has explicit wholesale price, use that
     if (wholesalePrice !== null && wholesalePrice > 0) {
       const savings = retailPrice - wholesalePrice;
@@ -59,7 +59,7 @@ export const wholesalePriceService = {
         savings,
       };
     }
-    
+
     // Otherwise calculate from retail price using tier discount
     if (discount > 0) {
       const wholesalePrice = Math.round(retailPrice * (1 - discount));
@@ -70,7 +70,7 @@ export const wholesalePriceService = {
         savings: retailPrice - wholesalePrice,
       };
     }
-    
+
     return {
       price: retailPrice,
       isWholesalePrice: false,
@@ -82,7 +82,10 @@ export const wholesalePriceService = {
   /**
    * Get wholesale price for a single variant
    */
-  async getVariantPrice(variantId: string, tier: string | null): Promise<WholesalePriceResult | null> {
+  async getVariantPrice(
+    variantId: string,
+    tier: string | null
+  ): Promise<WholesalePriceResult | null> {
     const [variant] = await db
       .select()
       .from(product_variants)
@@ -100,7 +103,7 @@ export const wholesalePriceService = {
     if (!product) return null;
 
     // Get retail price from money_amounts
-    const { money_amounts } = await import("../db/schema");
+    const { money_amounts } = await import('../db/schema');
     const [priceAmount] = await db
       .select()
       .from(money_amounts)
@@ -110,7 +113,11 @@ export const wholesalePriceService = {
     const retailPrice = priceAmount?.amount || 0;
     const wholesalePriceField = variant.wholesale_price || null;
 
-    const calculation = this.calculateWholesalePrice(retailPrice, wholesalePriceField, tier);
+    const calculation = this.calculateWholesalePrice(
+      retailPrice,
+      wholesalePriceField,
+      tier
+    );
 
     return {
       variantId: variant.id,
@@ -126,21 +133,24 @@ export const wholesalePriceService = {
   /**
    * Get wholesale prices for multiple variants
    */
-  async getBulkPrices(variantIds: string[], tier: string | null): Promise<WholesalePriceResult[]> {
+  async getBulkPrices(
+    variantIds: string[],
+    tier: string | null
+  ): Promise<WholesalePriceResult[]> {
     const results: WholesalePriceResult[] = [];
-    
+
     for (const variantId of variantIds) {
       try {
         const result = await this.getVariantPrice(variantId, tier);
         if (result) {
           results.push(result);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error(`Error getting price for variant ${variantId}:`, error);
         // Skip invalid variants but continue processing others
       }
     }
-    
+
     return results;
   },
 
@@ -152,9 +162,9 @@ export const wholesalePriceService = {
     tier: string | null;
     companyName: string | null;
   }> {
-    const { customers } = await import("../db/schema");
-    const { eq } = await import("drizzle-orm");
-    
+    const { customers } = await import('../db/schema');
+    const { eq } = await import('drizzle-orm');
+
     const [customer] = await db
       .select()
       .from(customers)
@@ -181,8 +191,8 @@ export const wholesalePriceService = {
    * Get MOQ for a variant
    */
   async getVariantMOQ(variantId: string): Promise<number> {
-    const { eq } = await import("drizzle-orm");
-    
+    const { eq } = await import('drizzle-orm');
+
     const [variant] = await db
       .select()
       .from(product_variants)
@@ -195,24 +205,28 @@ export const wholesalePriceService = {
   /**
    * Get bulk discounts for a variant
    */
-  async getBulkDiscounts(variantId: string): Promise<Array<{
-    min_quantity: number;
-    discount_percent: number;
-    description: string | null;
-  }>> {
-    const { bulk_discounts } = await import("../db/schema");
-    const { eq, and, desc } = await import("drizzle-orm");
-    
+  async getBulkDiscounts(variantId: string): Promise<
+    Array<{
+      min_quantity: number;
+      discount_percent: number;
+      description: string | null;
+    }>
+  > {
+    const { bulk_discounts } = await import('../db/schema');
+    const { eq, and, desc } = await import('drizzle-orm');
+
     const discounts = await db
       .select()
       .from(bulk_discounts)
-      .where(and(
-        eq(bulk_discounts.variant_id, variantId),
-        eq(bulk_discounts.active, true)
-      ))
+      .where(
+        and(
+          eq(bulk_discounts.variant_id, variantId),
+          eq(bulk_discounts.active, true)
+        )
+      )
       .orderBy(desc(bulk_discounts.min_quantity));
 
-    return discounts.map(d => ({
+    return discounts.map((d) => ({
       min_quantity: d.min_quantity,
       discount_percent: d.discount_percent,
       description: d.description,
@@ -234,7 +248,7 @@ export const wholesalePriceService = {
     // Sort by min_quantity descending to find highest applicable tier
     const applicableDiscount = bulkDiscounts
       .sort((a, b) => b.min_quantity - a.min_quantity)
-      .find(d => quantity >= d.min_quantity);
+      .find((d) => quantity >= d.min_quantity);
 
     if (!applicableDiscount) {
       return { price: basePrice, discountPercent: 0, savings: 0 };
@@ -255,8 +269,8 @@ export const wholesalePriceService = {
    * Check if product is wholesale-only
    */
   async isWholesaleOnly(productId: string): Promise<boolean> {
-    const { eq } = await import("drizzle-orm");
-    
+    const { eq } = await import('drizzle-orm');
+
     const [product] = await db
       .select()
       .from(products)
@@ -273,9 +287,9 @@ export const wholesalePriceService = {
     tier: string | null;
     reason: string;
   }> {
-    const { wholesale_tiers, orders, customers } = await import("../db/schema");
-    const { eq, and, sql, desc } = await import("drizzle-orm");
-    
+    const { wholesale_tiers, orders, customers } = await import('../db/schema');
+    const { eq, and, sql, desc } = await import('drizzle-orm');
+
     // Get customer
     const [customer] = await db
       .select()
@@ -284,15 +298,15 @@ export const wholesalePriceService = {
       .limit(1);
 
     if (!customer) {
-      return { tier: null, reason: "Customer not found" };
+      return { tier: null, reason: 'Customer not found' };
     }
 
     // Check if already a wholesale customer
     const metadata = customer.metadata as Record<string, any> | null;
     const isWholesale = metadata?.wholesale_customer === true;
-    
+
     if (!isWholesale) {
-      return { tier: null, reason: "Not a wholesale customer" };
+      return { tier: null, reason: 'Not a wholesale customer' };
     }
 
     // Get customer's total order stats
@@ -303,11 +317,13 @@ export const wholesalePriceService = {
         orderCount: sql<number>`count(*)`,
       })
       .from(orders)
-      .where(and(
-        eq(orders.customer_id, customerId),
-        sql`${orders.metadata}->>'is_wholesale' = 'true'`,
-        eq(orders.status, 'completed')
-      ));
+      .where(
+        and(
+          eq(orders.customer_id, customerId),
+          sql`${orders.metadata}->>'is_wholesale' = 'true'`,
+          eq(orders.status, 'completed')
+        )
+      );
 
     const totalValue = Number(orderStats?.totalValue) || 0;
     const totalQuantity = Number(orderStats?.totalQuantity) || 0;
@@ -324,7 +340,7 @@ export const wholesalePriceService = {
     for (const tier of tiers) {
       const meetsValue = totalValue >= tier.min_order_value;
       const meetsQuantity = totalQuantity >= tier.min_order_quantity;
-      
+
       if (meetsValue && meetsQuantity) {
         // Update customer's tier
         await db
@@ -347,7 +363,7 @@ export const wholesalePriceService = {
 
     return {
       tier: metadata?.discount_tier || null,
-      reason: "Does not qualify for higher tier",
+      reason: 'Does not qualify for higher tier',
     };
   },
 
@@ -369,9 +385,9 @@ export const wholesalePriceService = {
       orderCount: number;
     };
   }> {
-    const { wholesale_tiers, orders, customers } = await import("../db/schema");
-    const { eq, and, sql, desc } = await import("drizzle-orm");
-    
+    const { wholesale_tiers, orders, customers } = await import('../db/schema');
+    const { eq, and, sql, desc } = await import('drizzle-orm');
+
     // Get customer
     const [customer] = await db
       .select()
@@ -390,11 +406,13 @@ export const wholesalePriceService = {
         orderCount: sql<number>`count(*)`,
       })
       .from(orders)
-      .where(and(
-        eq(orders.customer_id, customerId),
-        sql`${orders.metadata}->>'is_wholesale' = 'true'`,
-        eq(orders.status, 'completed')
-      ));
+      .where(
+        and(
+          eq(orders.customer_id, customerId),
+          sql`${orders.metadata}->>'is_wholesale' = 'true'`,
+          eq(orders.status, 'completed')
+        )
+      );
 
     const totalValue = Number(orderStats?.totalValue) || 0;
     const totalQuantity = Number(orderStats?.totalQuantity) || 0;
@@ -407,10 +425,10 @@ export const wholesalePriceService = {
       .where(eq(wholesale_tiers.active, true))
       .orderBy(desc(wholesale_tiers.priority));
 
-    const eligibleTiers = tiers.map(tier => {
+    const eligibleTiers = tiers.map((tier) => {
       const meetsValue = totalValue >= tier.min_order_value;
       const meetsQuantity = totalQuantity >= tier.min_order_quantity;
-      
+
       let requirements = '';
       if (tier.min_order_value > 0) {
         requirements += `$${(tier.min_order_value / 100).toFixed(0)} order value`;

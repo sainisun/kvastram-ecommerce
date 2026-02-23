@@ -18,7 +18,9 @@ export default function GlobalError({
     <div className="min-h-screen flex items-center justify-center bg-stone-50 px-4">
       <div className="text-center max-w-lg">
         <h1 className="text-6xl font-serif text-stone-900 mb-4">Oops!</h1>
-        <h2 className="text-2xl font-serif text-stone-700 mb-4">Something went wrong</h2>
+        <h2 className="text-2xl font-serif text-stone-700 mb-4">
+          Something went wrong
+        </h2>
         <p className="text-stone-600 mb-8 leading-relaxed">
           We apologize for the inconvenience. An unexpected error has occurred.
           Our team has been notified and we&apos;re working to fix it.

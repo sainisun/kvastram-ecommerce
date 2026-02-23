@@ -1,7 +1,7 @@
-import { Hono } from "hono";
-import { z } from "zod";
-import { zValidator } from "@hono/zod-validator";
-import { db } from "../../db";
+import { Hono } from 'hono';
+import { z } from 'zod';
+import { zValidator } from '@hono/zod-validator';
+import { db } from '../../db';
 import {
   orders,
   line_items,
@@ -14,10 +14,10 @@ import {
   campaigns,
   regions,
   discount_usage,
-} from "../../db/schema";
-import { eq, and, gte, lte, sql } from "drizzle-orm";
-import { config } from "../../config";
-import { calculateTax, type TaxBreakdown } from "../../utils/tax-calculator";
+} from '../../db/schema';
+import { eq, and, gte, lte, sql, inArray } from 'drizzle-orm';
+import { config } from '../../config';
+import { calculateTax, type TaxBreakdown } from '../../utils/tax-calculator';
 
 const checkoutRouter = new Hono();
 
@@ -64,7 +64,7 @@ const PlaceOrderSchema = z.object({
       z.object({
         variant_id: z.string(),
         quantity: z.number().int().positive(),
-      }),
+      })
     )
     .min(1),
   discount_code: z.string().optional(),
@@ -72,7 +72,35 @@ const PlaceOrderSchema = z.object({
 
 // --- HELPERS ---
 
-const validateDiscount = async (code: string, cartTotal: number, customerId: string | null) => {
+// Sanitize checkout body to remove PII before logging
+const sanitizeCheckoutBody = (data: z.infer<typeof PlaceOrderSchema>): any => {
+  const safe: any = { ...data };
+  const piiFields = [
+    'email',
+    'phone',
+    'first_name',
+    'last_name',
+    'address',
+    'payment_info',
+    'card',
+  ];
+  for (const field of piiFields) {
+    if (safe[field]) safe[field] = '[REDACTED]';
+  }
+  if (safe.shipping_address)
+    safe.shipping_address =
+      '[REDACTED]' as unknown as typeof safe.shipping_address;
+  if (safe.billing_address)
+    safe.billing_address =
+      '[REDACTED]' as unknown as typeof safe.billing_address;
+  return safe;
+};
+
+const validateDiscount = async (
+  code: string,
+  cartTotal: number,
+  customerId: string | null
+) => {
   const now = new Date();
 
   // Find discount
@@ -83,19 +111,19 @@ const validateDiscount = async (code: string, cartTotal: number, customerId: str
     .limit(1);
 
   if (!discount) {
-    throw new Error("Invalid discount code");
+    throw new Error('Invalid discount code');
   }
 
   if (!discount.is_active) {
-    throw new Error("Discount code is inactive");
+    throw new Error('Discount code is inactive');
   }
 
   // Check dates
   if (discount.starts_at && discount.starts_at > now) {
-    throw new Error("Discount code is not active yet");
+    throw new Error('Discount code is not active yet');
   }
   if (discount.ends_at && discount.ends_at < now) {
-    throw new Error("Discount code has expired");
+    throw new Error('Discount code has expired');
   }
 
   // Check usage limits (total)
@@ -103,7 +131,7 @@ const validateDiscount = async (code: string, cartTotal: number, customerId: str
     discount.usage_limit !== null &&
     (discount.usage_count || 0) >= discount.usage_limit
   ) {
-    throw new Error("Discount usage limit reached");
+    throw new Error('Discount usage limit reached');
   }
 
   // 🔒 FIX-006: Check per-customer usage limit
@@ -121,7 +149,7 @@ const validateDiscount = async (code: string, cartTotal: number, customerId: str
       .limit(1);
 
     if (existingUsage) {
-      throw new Error("You have already used this discount code");
+      throw new Error('You have already used this discount code');
     }
   }
 
@@ -131,17 +159,17 @@ const validateDiscount = async (code: string, cartTotal: number, customerId: str
     cartTotal < discount.min_purchase_amount
   ) {
     throw new Error(
-      `Minimum purchase of ${(discount.min_purchase_amount / 100).toFixed(2)} required`,
+      `Minimum purchase of ${(discount.min_purchase_amount / 100).toFixed(2)} required`
     );
   }
 
   // Calculate discount amount
   let discountAmount = 0;
-  if (discount.type === "percentage") {
+  if (discount.type === 'percentage') {
     discountAmount = Math.round((cartTotal * discount.value) / 100);
-  } else if (discount.type === "fixed_amount") {
+  } else if (discount.type === 'fixed_amount') {
     discountAmount = discount.value;
-  } else if (discount.type === "free_shipping") {
+  } else if (discount.type === 'free_shipping') {
     discountAmount = 0;
   }
 
@@ -155,16 +183,16 @@ const validateDiscount = async (code: string, cartTotal: number, customerId: str
 
 // POST /store/checkout/validate-coupon
 checkoutRouter.post(
-  "/validate-coupon",
-  zValidator("json", ValidateCouponSchema),
+  '/validate-coupon',
+  zValidator('json', ValidateCouponSchema),
   async (c) => {
     try {
-      const { code, cart_total } = c.req.valid("json");
+      const { code, cart_total } = c.req.valid('json');
 
       const { discount, discountAmount } = await validateDiscount(
         code,
         cart_total,
-        null, // validate-coupon doesn't require customer check
+        null // validate-coupon doesn't require customer check
       );
 
       return c.json({
@@ -177,32 +205,23 @@ checkoutRouter.post(
     } catch (error: any) {
       return c.json({ valid: false, message: error.message }, 400);
     }
-  },
+  }
 );
 
 // POST /store/checkout/place-order
 checkoutRouter.post(
-  "/place-order",
-  zValidator("json", PlaceOrderSchema),
+  '/place-order',
+  zValidator('json', PlaceOrderSchema),
   async (c) => {
     try {
-      const body = c.req.valid("json");
+      const body = c.req.valid('json');
       const { region_id, currency_code } = body;
-      
-      // Sanitize checkout body to remove PII before logging
-      const sanitizeCheckoutBody = (data: any) => {
-        const safe = { ...data };
-        const piiFields = ['email', 'phone', 'first_name', 'last_name', 'address', 'payment_info', 'card'];
-        for (const field of piiFields) {
-          if (safe[field]) safe[field] = '[REDACTED]';
-        }
-        if (safe.shipping_address) safe.shipping_address = '[REDACTED]';
-        if (safe.billing_address) safe.billing_address = '[REDACTED]';
-        return safe;
-      };
-      
+
       if (process.env.NODE_ENV !== 'production') {
-        console.log('[CHECKOUT] Order request:', JSON.stringify(sanitizeCheckoutBody(body)));
+        console.log(
+          '[CHECKOUT] Order request:',
+          JSON.stringify(sanitizeCheckoutBody(body))
+        );
       }
 
       // Fetch region for tax rate
@@ -213,10 +232,11 @@ checkoutRouter.post(
         .limit(1);
 
       if (!region) {
-        return c.json({ error: "Region not found" }, 400);
+        return c.json({ error: 'Region not found' }, 400);
       }
 
-      const taxRate = parseFloat(region.tax_rate as string) || config.tax.defaultRate;
+      const taxRate =
+        parseFloat(region.tax_rate as string) || config.tax.defaultRate;
 
       // 1. Validate Items & Calculate Subtotal
       let subtotal = 0;
@@ -231,8 +251,12 @@ checkoutRouter.post(
       }
       const validatedItems: ValidatedItem[] = [];
 
-      for (const item of body.items) {
-        const [variant] = await db
+      // Batch fetch all variants in ONE query to avoid N+1 problem
+      const variantIds = body.items.map((item) => item.variant_id);
+      const variantsMap = new Map<string, typeof variant>();
+
+      if (variantIds.length > 0) {
+        const allVariants = await db
           .select({
             id: product_variants.id,
             price: money_amounts.amount,
@@ -251,8 +275,17 @@ checkoutRouter.post(
             )
           )
           .leftJoin(products, eq(product_variants.product_id, products.id))
-          .where(eq(product_variants.id, item.variant_id))
-          .limit(1);
+          .where(inArray(product_variants.id, variantIds));
+
+        // Store in map for O(1) lookup
+        for (const v of allVariants) {
+          variantsMap.set(v.id, v);
+        }
+      }
+
+      // Now validate each item using the map
+      for (const item of body.items) {
+        const variant = variantsMap.get(item.variant_id);
 
         if (!variant) {
           return c.json({ error: `Variant ${item.variant_id} not found` }, 400);
@@ -261,14 +294,22 @@ checkoutRouter.post(
         // Check inventory
         const availableQty = variant.inventory_quantity ?? 0;
         if (availableQty < item.quantity) {
-          return c.json({
-            error: `Insufficient stock for ${variant.variant_title}. Available: ${availableQty}`
-          }, 400);
+          return c.json(
+            {
+              error: `Insufficient stock for ${variant.variant_title}. Available: ${availableQty}`,
+            },
+            400
+          );
         }
 
         // Check if price valid for region
         if (variant.price === null || variant.price === undefined) {
-          return c.json({ error: `Variant ${item.variant_id} not priced for region ${region_id}` }, 400);
+          return c.json(
+            {
+              error: `Variant ${item.variant_id} not priced for region ${region_id}`,
+            },
+            400
+          );
         }
 
         const unitPrice = variant.price;
@@ -296,7 +337,7 @@ checkoutRouter.post(
           const result = await validateDiscount(
             body.discount_code,
             subtotal,
-            null, // Will check per-customer inside transaction
+            null // Will check per-customer inside transaction
           );
           discount = result.discount;
           discountTotal = result.discountAmount;
@@ -329,12 +370,14 @@ checkoutRouter.post(
           customerId = existingCustomer.id;
         } else {
           // For guest checkout, create a minimal customer record
-          const customerData: any = { email: body.email };
+          const customerData: Record<string, unknown> = {
+            email: body.email,
+            has_account: false,
+          };
           if (body.first_name) customerData.first_name = body.first_name;
           if (body.last_name) customerData.last_name = body.last_name;
           if (body.phone) customerData.phone = body.phone;
-          customerData.has_account = false;
-          
+
           const [newCust] = await tx
             .insert(customers)
             .values(customerData)
@@ -343,14 +386,25 @@ checkoutRouter.post(
         }
 
         // Create Address - only include defined values
-        const addressFields = ['first_name', 'last_name', 'address_1', 'address_2', 'city', 'postal_code', 'province', 'country_code', 'phone'];
+        const addressFields = [
+          'first_name',
+          'last_name',
+          'address_1',
+          'address_2',
+          'city',
+          'postal_code',
+          'province',
+          'country_code',
+          'phone',
+        ];
         const addressData: any = { customer_id: customerId };
-        
+
         for (const field of addressFields) {
-            const value = body.shipping_address[field as keyof typeof body.shipping_address];
-            if (value !== undefined && value !== null && value !== '') {
-                (addressData as any)[field] = value;
-            }
+          const value =
+            body.shipping_address[field as keyof typeof body.shipping_address];
+          if (value !== undefined && value !== null && value !== '') {
+            addressData[field] = value;
+          }
         }
 
         const [shAddr] = await tx
@@ -360,64 +414,82 @@ checkoutRouter.post(
 
         // Create Order - only include defined values
         const orderData: any = {
-            email: body.email,
-            region_id: region_id,
-            currency_code: currency_code,
-            status: "pending",
-            payment_status: "awaiting",
-            fulfillment_status: "not_fulfilled",
-            subtotal,
-            shipping_total: shippingTotal,
-            tax_total: taxTotal,
-            total,
-            shipping_address_id: shAddr.id,
-            metadata: {
-              tax_rate: taxBreakdown.rate,
-              tax_breakdown: {
-                subtotal: taxBreakdown.subtotal,
-                cgst: taxBreakdown.cgst,
-                sgst: taxBreakdown.sgst,
-                total: taxBreakdown.total,
-                calculated_at: new Date().toISOString(),
-              },
+          email: body.email,
+          region_id: region_id,
+          currency_code: currency_code,
+          status: 'pending',
+          payment_status: 'awaiting',
+          fulfillment_status: 'not_fulfilled',
+          subtotal,
+          shipping_total: shippingTotal,
+          tax_total: taxTotal,
+          total,
+          shipping_address_id: shAddr.id,
+          metadata: {
+            tax_rate: taxBreakdown.rate,
+            tax_breakdown: {
+              subtotal: taxBreakdown.subtotal,
+              cgst: taxBreakdown.cgst,
+              sgst: taxBreakdown.sgst,
+              total: taxBreakdown.total,
+              calculated_at: new Date().toISOString(),
             },
+          },
         };
-        
+
         // Only add optional fields if they have values
         if (customerId) orderData.customer_id = customerId;
         if (discountTotal > 0) orderData.discount_total = discountTotal;
         if (finalDiscountId) orderData.discount_id = finalDiscountId;
 
-        const [order] = await tx
-          .insert(orders)
-          .values(orderData)
-          .returning();
+        const [order] = await tx.insert(orders).values(orderData).returning();
 
         newOrder = order;
 
         // Create Line Items - only include defined values
         for (const item of validatedItems) {
-            const lineItemData: any = {
-                order_id: order.id,
-                variant_id: item.id,
-                quantity: item.quantity,
-                unit_price: item.unitPrice,
-                total_price: item.lineTotal,
-            };
-            
-            if (item.product_title) lineItemData.title = item.product_title;
-            if (item.variant_title) lineItemData.description = item.variant_title;
-            if (item.thumbnail) lineItemData.thumbnail = item.thumbnail;
-            
-            await tx.insert(line_items).values(lineItemData);
+          const lineItemData: any = {
+            order_id: order.id,
+            variant_id: item.id,
+            quantity: item.quantity,
+            unit_price: item.unitPrice,
+            total_price: item.lineTotal,
+          };
+
+          if (item.product_title) lineItemData.title = item.product_title;
+          if (item.variant_title) lineItemData.description = item.variant_title;
+          if (item.thumbnail) lineItemData.thumbnail = item.thumbnail;
+
+          await tx.insert(line_items).values(lineItemData);
         }
 
-        // Deduct inventory
+        // Deduct inventory - use atomic update with inventory check to prevent race conditions
         for (const item of validatedItems) {
+          // First check if there's enough inventory
+          const [currentVariant] = await tx
+            .select({
+              id: product_variants.id,
+              inventory_quantity: product_variants.inventory_quantity,
+            })
+            .from(product_variants)
+            .where(eq(product_variants.id, item.id));
+
+          if (!currentVariant) {
+            throw new Error(`Variant ${item.variant_title} not found`);
+          }
+
+          const availableQty = currentVariant.inventory_quantity ?? 0;
+          if (availableQty < item.quantity) {
+            throw new Error(
+              `Insufficient stock for ${item.variant_title}. Available: ${availableQty}`
+            );
+          }
+
+          // Atomic update
           await tx
             .update(product_variants)
             .set({
-              inventory_quantity: sql`COALESCE(${product_variants.inventory_quantity}, 0) - ${item.quantity}`
+              inventory_quantity: sql`COALESCE(${product_variants.inventory_quantity}, 0) - ${item.quantity}`,
             })
             .where(eq(product_variants.id, item.id));
         }
@@ -439,38 +511,38 @@ checkoutRouter.post(
       });
 
       if (!newOrder) {
-        throw new Error("Failed to create order");
+        throw new Error('Failed to create order');
       }
 
       // 5. Send order confirmation email
       try {
-        const { emailService } = await import("../../services/email-service");
+        const { emailService } = await import('../../services/email-service');
         if (newOrder && newOrder.display_id) {
           await emailService.sendOrderConfirmation(
             {
               ...newOrder,
               order_number: newOrder.display_id.toString(),
             },
-            newOrder.email,
+            newOrder.email
           );
           console.log(
-            `Order Confirmation sent for order #${newOrder.display_id}`,
+            `Order Confirmation sent for order #${newOrder.display_id}`
           );
         }
-      } catch (emailError) {
-        console.error("Failed to send order confirmation email:", emailError);
+      } catch (emailError: unknown) {
+        console.error('Failed to send order confirmation email:', emailError);
       }
 
       // 6. Send WhatsApp notification to admin
       try {
-        const { sendWhatsAppNotification } = await import("../admin/whatsapp");
+        const { sendWhatsAppNotification } = await import('../admin/whatsapp');
         const orderWithItems = await db.query.orders.findFirst({
           where: eq(orders.id, newOrder.id),
           with: {
             items: true,
           },
         });
-        
+
         if (orderWithItems) {
           await sendWhatsAppNotification('order', {
             ...orderWithItems,
@@ -478,22 +550,23 @@ checkoutRouter.post(
             total: newOrder.total,
           });
         }
-      } catch (whatsappError) {
-        console.error("Failed to send WhatsApp notification:", whatsappError);
+      } catch (whatsappError: unknown) {
+        console.error('Failed to send WhatsApp notification:', whatsappError);
       }
 
       return c.json({ order: newOrder });
     } catch (error: any) {
-      console.error("Checkout error:", error);
+      console.error('Checkout error:', error);
 
       // Return 400 for validation/inventory errors, 500 for server errors
-      const isValidationError = error.message.includes("Insufficient stock")
-        || error.message.includes("Product not found")
-        || error.message.includes("Invalid discount");
+      const isValidationError =
+        error.message.includes('Insufficient stock') ||
+        error.message.includes('Product not found') ||
+        error.message.includes('Invalid discount');
 
       return c.json({ error: error.message }, isValidationError ? 400 : 500);
     }
-  },
+  }
 );
 
 export default checkoutRouter;

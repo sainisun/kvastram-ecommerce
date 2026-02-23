@@ -16,7 +16,9 @@ interface TestimonialsCarouselProps {
   testimonials: Testimonial[];
 }
 
-export default function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps) {
+export default function TestimonialsCarousel({
+  testimonials,
+}: TestimonialsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!testimonials || testimonials.length === 0) {
@@ -70,7 +72,11 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
               key={i}
               size={24}
               fill={i < currentTestimonial.rating ? 'currentColor' : 'none'}
-              className={i < currentTestimonial.rating ? 'text-amber-400' : 'text-stone-600'}
+              className={
+                i < currentTestimonial.rating
+                  ? 'text-amber-400'
+                  : 'text-stone-600'
+              }
             />
           ))}
         </div>
@@ -90,12 +96,18 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-stone-300 font-serif text-xl italic">{initials}</span>
+              <span className="text-stone-300 font-serif text-xl italic">
+                {initials}
+              </span>
             )}
           </div>
-          <p className="font-bold text-sm tracking-widest uppercase">{currentTestimonial.name}</p>
+          <p className="font-bold text-sm tracking-widest uppercase">
+            {currentTestimonial.name}
+          </p>
           {currentTestimonial.location && (
-            <p className="text-stone-400 text-sm font-serif italic">{currentTestimonial.location}</p>
+            <p className="text-stone-400 text-sm font-serif italic">
+              {currentTestimonial.location}
+            </p>
           )}
         </div>
       </div>
@@ -108,7 +120,9 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-all ${
-                index === currentIndex ? 'bg-white w-6' : 'bg-stone-600 hover:bg-stone-500'
+                index === currentIndex
+                  ? 'bg-white w-6'
+                  : 'bg-stone-600 hover:bg-stone-500'
               }`}
               aria-label={`Go to testimonial ${index + 1}`}
             />

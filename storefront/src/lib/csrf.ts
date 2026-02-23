@@ -7,25 +7,25 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 let csrfToken: string | null = null;
 
 export async function getCsrfToken(): Promise<string> {
-    if (csrfToken) return csrfToken;
+  if (csrfToken) return csrfToken;
 
-    try {
-        const res = await fetch(`${API_URL}/auth/csrf`, {
-            method: 'GET',
-            credentials: 'include',
-        });
-        if (res.ok) {
-            const data = await res.json();
-            csrfToken = data.csrf_token;
-            return csrfToken || '';
-        }
-    } catch (_error) {
-        console.warn('[CSRF] Failed to fetch CSRF token, continuing without it');
+  try {
+    const res = await fetch(`${API_URL}/auth/csrf`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      csrfToken = data.csrf_token;
+      return csrfToken || '';
     }
+  } catch (_error) {
+    console.warn('[CSRF] Failed to fetch CSRF token, continuing without it');
+  }
 
-    return '';
+  return '';
 }
 
 export function clearCsrfToken() {
-    csrfToken = null;
+  csrfToken = null;
 }

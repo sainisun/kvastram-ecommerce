@@ -1,15 +1,21 @@
 /**
  * 🔒 FIX-007: Safe User Serialization Utilities
- * 
+ *
  * Ensures sensitive fields are always excluded from API responses
  * Prevents password hash and other sensitive data leakage
  */
 
-import type { InferSelectModel } from "drizzle-orm";
-import { users, customers } from "../db/schema";
+import type { InferSelectModel } from 'drizzle-orm';
+import { users, customers } from '../db/schema';
 
-export type SafeUser = Omit<InferSelectModel<typeof users>, "password_hash" | "two_factor_secret">;
-export type SafeCustomer = Omit<InferSelectModel<typeof customers>, "password_hash">;
+export type SafeUser = Omit<
+  InferSelectModel<typeof users>,
+  'password_hash' | 'two_factor_secret'
+>;
+export type SafeCustomer = Omit<
+  InferSelectModel<typeof customers>,
+  'password_hash'
+>;
 
 /**
  * Safely serialize admin user - removes password_hash and two_factor_secret
@@ -24,7 +30,9 @@ export function serializeUser(user: InferSelectModel<typeof users>): SafeUser {
  * Safely serialize customer - removes password_hash
  * Use this for all /customers/* and /store/customers/* responses
  */
-export function serializeCustomer(customer: InferSelectModel<typeof customers>): SafeCustomer {
+export function serializeCustomer(
+  customer: InferSelectModel<typeof customers>
+): SafeCustomer {
   const { password_hash, ...safeCustomer } = customer;
   return safeCustomer as SafeCustomer;
 }
@@ -32,14 +40,18 @@ export function serializeCustomer(customer: InferSelectModel<typeof customers>):
 /**
  * Safely serialize array of users
  */
-export function serializeUsers(users: InferSelectModel<typeof users>[]): SafeUser[] {
+export function serializeUsers(
+  users: InferSelectModel<typeof users>[]
+): SafeUser[] {
   return users.map(serializeUser);
 }
 
 /**
  * Safely serialize array of customers
  */
-export function serializeCustomers(customers: InferSelectModel<typeof customers>[]): SafeCustomer[] {
+export function serializeCustomers(
+  customers: InferSelectModel<typeof customers>[]
+): SafeCustomer[] {
   return customers.map(serializeCustomer);
 }
 
@@ -48,30 +60,47 @@ export function serializeCustomers(customers: InferSelectModel<typeof customers>
  * Performs recursive sanitization to handle nested objects
  * Use as fallback for any entity
  */
-export function sanitizeEntity<T extends Record<string, any>>(entity: T): Omit<T, "password_hash" | "two_factor_secret" | "refresh_token" | "access_token" | "secret" | "api_key"> {
-  const sensitiveFields = new Set(["password_hash", "two_factor_secret", "refresh_token", "access_token", "secret", "api_key"]);
+export function sanitizeEntity<T extends Record<string, any>>(
+  entity: T
+): Omit<
+  T,
+  | 'password_hash'
+  | 'two_factor_secret'
+  | 'refresh_token'
+  | 'access_token'
+  | 'secret'
+  | 'api_key'
+> {
+  const sensitiveFields = new Set([
+    'password_hash',
+    'two_factor_secret',
+    'refresh_token',
+    'access_token',
+    'secret',
+    'api_key',
+  ]);
   const visited = new WeakSet();
-  
+
   function sanitize(obj: any): any {
     if (obj === null || obj === undefined) {
       return obj;
     }
-    
+
     if (typeof obj !== 'object') {
       return obj;
     }
-    
+
     // Handle arrays
     if (Array.isArray(obj)) {
-      return obj.map(item => sanitize(item));
+      return obj.map((item) => sanitize(item));
     }
-    
+
     // Prevent infinite loops with circular references
     if (visited.has(obj)) {
       return obj;
     }
     visited.add(obj);
-    
+
     const result: Record<string, any> = {};
     for (const [key, value] of Object.entries(obj)) {
       if (sensitiveFields.has(key)) {
@@ -81,6 +110,6 @@ export function sanitizeEntity<T extends Record<string, any>>(entity: T): Omit<T
     }
     return result;
   }
-  
+
   return sanitize(entity);
 }

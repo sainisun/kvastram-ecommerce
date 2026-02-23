@@ -14,9 +14,9 @@ notificationsRouter.get('/', verifyAdmin, async (c) => {
       .from(notifications)
       .orderBy(desc(notifications.created_at))
       .limit(50);
-    
+
     return c.json({ notifications: notificationsList });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching notifications:', error);
     return c.json({ error: 'Failed to fetch notifications' }, 500);
   }
@@ -29,9 +29,9 @@ notificationsRouter.get('/unread-count', verifyAdmin, async (c) => {
       .select({ count: sql<number>`count(*)` })
       .from(notifications)
       .where(eq(notifications.read, false));
-    
+
     return c.json({ count: result[0]?.count || 0 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching unread count:', error);
     return c.json({ error: 'Failed to fetch unread count' }, 500);
   }
@@ -45,9 +45,9 @@ notificationsRouter.post('/:id/read', verifyAdmin, async (c) => {
       .update(notifications)
       .set({ read: true })
       .where(eq(notifications.id, id));
-    
+
     return c.json({ success: true });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error marking notification as read:', error);
     return c.json({ error: 'Failed to mark notification as read' }, 500);
   }
@@ -60,9 +60,9 @@ notificationsRouter.post('/read-all', verifyAdmin, async (c) => {
       .update(notifications)
       .set({ read: true })
       .where(eq(notifications.read, false));
-    
+
     return c.json({ success: true });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error marking all notifications as read:', error);
     return c.json({ error: 'Failed to mark all notifications as read' }, 500);
   }
@@ -72,19 +72,22 @@ notificationsRouter.post('/read-all', verifyAdmin, async (c) => {
 notificationsRouter.delete('/:id', verifyAdmin, async (c) => {
   try {
     const id = c.req.param('id');
-    await db
-      .delete(notifications)
-      .where(eq(notifications.id, id));
-    
+    await db.delete(notifications).where(eq(notifications.id, id));
+
     return c.json({ success: true });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error deleting notification:', error);
     return c.json({ error: 'Failed to delete notification' }, 500);
   }
 });
 
 // Create notification (for internal use)
-export const createNotification = async (type: string, title: string, message: string, metadata?: any) => {
+export const createNotification = async (
+  type: string,
+  title: string,
+  message: string,
+  metadata?: any
+) => {
   try {
     const result = await db
       .insert(notifications)
@@ -96,7 +99,7 @@ export const createNotification = async (type: string, title: string, message: s
       })
       .returning();
     return result[0];
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error creating notification:', error);
     return null;
   }

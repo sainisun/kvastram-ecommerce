@@ -1,14 +1,22 @@
-import { db } from "./client";
-import { users } from "./schema";
-import { eq } from "drizzle-orm";
-import bcrypt from "bcryptjs";
-import "dotenv/config";
+import { db } from './client';
+import { users } from './schema';
+import { eq } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
+import 'dotenv/config';
 
 async function seed() {
-  console.log("🌱 Starting Seed...");
+  console.log('🌱 Starting Seed...');
 
-  const email = "admin@kvastram.com";
-  const password = process.env.ADMIN_PASSWORD || "admin123";
+  const email = 'admin@kvastram.com';
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!password) {
+    console.error('❌ ADMIN_PASSWORD environment variable is required');
+    console.error(
+      "   Set it with: export ADMIN_PASSWORD='your-secure-password'"
+    );
+    process.exit(1);
+  }
 
   // Check if admin already exists
   const existing = await db
@@ -18,7 +26,7 @@ async function seed() {
     .limit(1);
 
   if (existing.length > 0) {
-    console.log("⚠️ Admin user already exists. Skipping...");
+    console.log('⚠️ Admin user already exists. Skipping...');
     process.exit(0);
   }
 
@@ -29,19 +37,19 @@ async function seed() {
   await db.insert(users).values({
     email,
     password_hash: hash,
-    first_name: "Super",
-    last_name: "Admin",
-    role: "admin",
+    first_name: 'Super',
+    last_name: 'Admin',
+    role: 'admin',
   });
 
-  console.log("✅ Admin user created!");
-  console.log("   Email: " + email);
-  console.log("   Password: " + password);
+  console.log('✅ Admin user created!');
+  console.log('   Email: ' + email);
+  console.log('   Password: (set via ADMIN_PASSWORD env var)');
 
   process.exit(0);
 }
 
 seed().catch((err) => {
-  console.error("❌ Seeding failed:", err);
+  console.error('❌ Seeding failed:', err);
   process.exit(1);
 });

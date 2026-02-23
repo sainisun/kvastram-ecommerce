@@ -1,9 +1,9 @@
-import { rateLimiter } from "hono-rate-limiter";
-import { Context } from "hono";
+import { rateLimiter } from 'hono-rate-limiter';
+import { Context } from 'hono';
 
 // Get environment
-const isTest = process.env.NODE_ENV === "test";
-const isDev = process.env.NODE_ENV === "development" || !process.env.NODE_ENV;
+const isTest = process.env.NODE_ENV === 'test';
+const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
 
 // Helper to create consistent limiters
 const createLimiter = (windowMs: number, limit: number) => {
@@ -12,18 +12,21 @@ const createLimiter = (windowMs: number, limit: number) => {
     return rateLimiter({
       windowMs: windowMs * 100, // Much longer window in test
       limit: limit * 100, // Much higher limit in test
-      standardHeaders: "draft-7",
+      standardHeaders: 'draft-7',
       keyGenerator: (c: Context) => {
-        const forwarded = c.req.header("x-forwarded-for");
-        const realIp = c.req.header("x-real-ip");
-        return forwarded ? forwarded.split(",")[0].trim() : realIp || "anonymous";
+        const forwarded = c.req.header('x-forwarded-for');
+        const realIp = c.req.header('x-real-ip');
+        return forwarded
+          ? forwarded.split(',')[0].trim()
+          : realIp || 'anonymous';
       },
       handler: (c: Context) => {
         return c.json(
           {
-            error: "Too many requests. Please wait a moment before trying again.",
+            error:
+              'Too many requests. Please wait a moment before trying again.',
           },
-          429,
+          429
         );
       },
     });
@@ -32,18 +35,18 @@ const createLimiter = (windowMs: number, limit: number) => {
   return rateLimiter({
     windowMs,
     limit,
-    standardHeaders: "draft-7",
+    standardHeaders: 'draft-7',
     keyGenerator: (c: Context) => {
-      const forwarded = c.req.header("x-forwarded-for");
-      const realIp = c.req.header("x-real-ip");
-      return forwarded ? forwarded.split(",")[0].trim() : realIp || "anonymous";
+      const forwarded = c.req.header('x-forwarded-for');
+      const realIp = c.req.header('x-real-ip');
+      return forwarded ? forwarded.split(',')[0].trim() : realIp || 'anonymous';
     },
     handler: (c: Context) => {
       return c.json(
         {
-          error: "Too many requests. Please wait a moment before trying again.",
+          error: 'Too many requests. Please wait a moment before trying again.',
         },
-        429,
+        429
       );
     },
   });

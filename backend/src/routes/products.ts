@@ -1,52 +1,58 @@
-import { Hono } from "hono";
+import { Hono } from 'hono';
 import {
   productService,
   CreateProductSchema,
   UpdateProductSchema,
-} from "../services/product-service";
-import { verifyAuth, verifyAdmin } from "../middleware/auth";
-import { z } from "zod";
+} from '../services/product-service';
+import { verifyAuth, verifyAdmin } from '../middleware/auth';
+import { z } from 'zod';
 import {
   successResponse,
   paginatedResponse,
   HttpStatus,
-} from "../utils/api-response";
+} from '../utils/api-response';
 import {
   asyncHandler,
   NotFoundError,
   ValidationError,
-} from "../middleware/error-handler";
+} from '../middleware/error-handler';
 
 const productsRouter = new Hono();
 
 // GET /products - List products with advanced filters (Public)
 productsRouter.get(
-  "/",
+  '/',
   asyncHandler(async (c) => {
     const query = c.req.query();
     const {
-      limit = "20",
-      offset = "0",
-      search = "",
-      status = "",
-      sort = "created_at",
-      min_price = "",
-      max_price = "",
-      category_id = "",
-      tag_id = "",
-      collection_id = "",
+      limit = '20',
+      offset = '0',
+      search = '',
+      status = '',
+      sort = 'created_at',
+      min_price = '',
+      max_price = '',
+      category_id = '',
+      tag_id = '',
+      collection_id = '',
     } = query;
 
     const limitNum = Math.min(parseInt(limit) || 20, 100);
     const offsetNum = Math.max(parseInt(offset) || 0, 0);
 
     // If search or advanced price/sort filters are active, use the search service
-    if (search || min_price || max_price || (sort && sort !== "created_at") || collection_id) {
-      let sortBy: "relevance" | "price_asc" | "price_desc" | "newest" =
-        "relevance";
-      if (sort === "price_asc") sortBy = "price_asc";
-      if (sort === "price_desc") sortBy = "price_desc";
-      if (sort === "created_at" || sort === "newest") sortBy = "newest";
+    if (
+      search ||
+      min_price ||
+      max_price ||
+      (sort && sort !== 'created_at') ||
+      collection_id
+    ) {
+      let sortBy: 'relevance' | 'price_asc' | 'price_desc' | 'newest' =
+        'relevance';
+      if (sort === 'price_asc') sortBy = 'price_asc';
+      if (sort === 'price_desc') sortBy = 'price_desc';
+      if (sort === 'created_at' || sort === 'newest') sortBy = 'newest';
 
       const results = await productService.search(search, {
         minPrice: min_price ? Number(min_price) : undefined,
@@ -69,7 +75,7 @@ productsRouter.get(
           limit: limitNum,
           total: results.length,
         },
-        "Products retrieved successfully",
+        'Products retrieved successfully'
       );
     }
 
@@ -91,68 +97,69 @@ productsRouter.get(
         limit: result.limit || 20,
         total: result.total || 0,
       },
-      "Products retrieved successfully",
+      'Products retrieved successfully'
     );
-  }),
+  })
 );
 
 // GET /products/search/suggestions - Autocomplete
 productsRouter.get(
-  "/search/suggestions",
+  '/search/suggestions',
   asyncHandler(async (c) => {
     const { q } = c.req.query();
     if (!q || q.trim().length < 2) {
-      return successResponse(c, [], "Search query too short");
+      return successResponse(c, [], 'Search query too short');
     }
 
     const suggestions = await productService.getSuggestions(q);
     return successResponse(
       c,
       suggestions,
-      "Suggestions retrieved successfully",
+      'Suggestions retrieved successfully'
     );
-  }),
+  })
 );
 
 // GET /products/stats/overview - Get product statistics
 productsRouter.get(
-  "/stats/overview",
+  '/stats/overview',
   verifyAuth,
   asyncHandler(async (c) => {
     const stats = await productService.getStats();
     return successResponse(
       c,
       stats,
-      "Product statistics retrieved successfully",
+      'Product statistics retrieved successfully'
     );
-  }),
+  })
 );
 
 // GET /products/:id - Get single product (Public)
 productsRouter.get(
-  "/:id",
+  '/:id',
   asyncHandler(async (c) => {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     try {
       const product = await productService.retrieve(id);
-      if (!product) throw new NotFoundError("Product not found");
-      return successResponse(c, { product }, "Product retrieved successfully");
-    } catch (e) {
-      throw new NotFoundError("Product not found");
+      if (!product) throw new NotFoundError('Product not found');
+      return successResponse(c, { product }, 'Product retrieved successfully');
+    } catch (error: unknown) {
+      console.error('Error fetching product:', error);
+      throw new NotFoundError('Product not found');
     }
-  }),
+  })
 );
 
 // POST /products - Create product (Protected)
 productsRouter.post(
-  "/",
+  '/',
   verifyAdmin,
   asyncHandler(async (c) => {
     const body = await c.req.json();
     const result = CreateProductSchema.safeParse(body);
 
     if (!result.success) {
-      throw new ValidationError("Invalid product data", result.error.errors);
+      throw new ValidationError('Invalid product data', result.error.errors);
     }
 
     // Convert status to correct type if needed, Zod handles validation
@@ -160,49 +167,49 @@ productsRouter.post(
     return successResponse(
       c,
       { product },
-      "Product created successfully",
-      HttpStatus.CREATED,
+      'Product created successfully',
+      HttpStatus.CREATED
     );
-  }),
+  })
 );
 
 // PUT /products/:id - Update product (Protected)
 productsRouter.put(
-  "/:id",
+  '/:id',
   verifyAdmin,
   asyncHandler(async (c) => {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     const body = await c.req.json();
     const result = UpdateProductSchema.safeParse(body);
 
     if (!result.success) {
-      throw new ValidationError("Invalid product data", result.error.errors);
+      throw new ValidationError('Invalid product data', result.error.errors);
     }
 
     try {
       const product = await productService.update(id, result.data as any);
-      return successResponse(c, { product }, "Product updated successfully");
+      return successResponse(c, { product }, 'Product updated successfully');
     } catch (e: any) {
-      if (e.message.includes("not found"))
-        throw new NotFoundError("Product not found");
+      if (e.message.includes('not found'))
+        throw new NotFoundError('Product not found');
       throw e;
     }
-  }),
+  })
 );
 
 // POST /products/bulk-update - Bulk update products (Protected)
 const BulkUpdateSchema = z.object({
   product_ids: z
     .array(z.string())
-    .min(1, "At least one product ID is required"),
+    .min(1, 'At least one product ID is required'),
   updates: z.object({
-    status: z.enum(["draft", "published", "archived"]).optional(),
+    status: z.enum(['draft', 'published', 'archived']).optional(),
     collection_id: z.string().optional(),
   }),
 });
 
 productsRouter.post(
-  "/bulk-update",
+  '/bulk-update',
   verifyAdmin,
   asyncHandler(async (c) => {
     const body = await c.req.json();
@@ -210,8 +217,8 @@ productsRouter.post(
 
     if (!result.success) {
       throw new ValidationError(
-        "Invalid bulk update data",
-        result.error.errors,
+        'Invalid bulk update data',
+        result.error.errors
       );
     }
 
@@ -224,20 +231,20 @@ productsRouter.post(
         updated_count: count,
         product_ids,
       },
-      `${count} products updated successfully`,
+      `${count} products updated successfully`
     );
-  }),
+  })
 );
 
 // POST /products/bulk-delete - Bulk delete products (Protected)
 const BulkDeleteSchema = z.object({
   product_ids: z
     .array(z.string())
-    .min(1, "At least one product ID is required"),
+    .min(1, 'At least one product ID is required'),
 });
 
 productsRouter.post(
-  "/bulk-delete",
+  '/bulk-delete',
   verifyAdmin,
   asyncHandler(async (c) => {
     const body = await c.req.json();
@@ -245,8 +252,8 @@ productsRouter.post(
 
     if (!result.success) {
       throw new ValidationError(
-        "Invalid bulk delete data",
-        result.error.errors,
+        'Invalid bulk delete data',
+        result.error.errors
       );
     }
 
@@ -259,45 +266,48 @@ productsRouter.post(
         deleted_count: count,
         product_ids,
       },
-      `${count} products deleted successfully`,
+      `${count} products deleted successfully`
     );
-  }),
+  })
 );
 
 // DELETE /products/:id - Delete product (Protected)
 productsRouter.delete(
-  "/:id",
+  '/:id',
   verifyAdmin,
   asyncHandler(async (c) => {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     const product = await productService.retrieve(id);
     if (!product) {
-      throw new NotFoundError("Product not found");
+      throw new NotFoundError('Product not found');
     }
     await productService.delete(id);
     return successResponse(
       c,
       { id, deleted: true },
-      "Product deleted successfully",
+      'Product deleted successfully'
     );
-  }),
+  })
 );
 
 // GET /products/featured - Get featured products by IDs (Public)
 productsRouter.get(
-  "/featured",
+  '/featured',
   asyncHandler(async (c) => {
     const query = c.req.query();
-    const { ids = "" } = query;
+    const { ids = '' } = query;
 
     if (!ids) {
-      return successResponse(c, [], "No featured product IDs provided");
+      return successResponse(c, [], 'No featured product IDs provided');
     }
 
-    const productIds = ids.split(",").map((id) => id.trim()).filter(Boolean);
+    const productIds = ids
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
 
     if (productIds.length === 0) {
-      return successResponse(c, [], "No valid product IDs provided");
+      return successResponse(c, [], 'No valid product IDs provided');
     }
 
     // Fetch each product by ID
@@ -308,20 +318,20 @@ productsRouter.get(
         } catch {
           return null;
         }
-      }),
+      })
     );
 
     // Filter out nulls and inactive products
     const validProducts = products.filter(
-      (p): p is NonNullable<typeof p> => p !== null && p.status === "published"
+      (p): p is NonNullable<typeof p> => p !== null && p.status === 'published'
     );
 
     return successResponse(
       c,
       validProducts,
-      "Featured products retrieved successfully",
+      'Featured products retrieved successfully'
     );
-  }),
+  })
 );
 
 export default productsRouter;

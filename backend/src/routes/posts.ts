@@ -1,9 +1,9 @@
-import { Hono } from "hono";
-import { db } from "../db";
-import { posts } from "../db/schema";
-import { eq, desc, and } from "drizzle-orm";
-import { verifyAuth } from "../middleware/auth";
-import { z } from "zod";
+import { Hono } from 'hono';
+import { db } from '../db';
+import { posts } from '../db/schema';
+import { eq, desc, and } from 'drizzle-orm';
+import { verifyAuth } from '../middleware/auth';
+import { z } from 'zod';
 
 const app = new Hono();
 
@@ -13,7 +13,7 @@ const postSchema = z.object({
   content: z.string().min(1),
   excerpt: z.string().optional(),
   cover_image: z.string().optional(),
-  status: z.enum(["draft", "published", "archived"]).default("draft"),
+  status: z.enum(['draft', 'published', 'archived']).default('draft'),
   published_at: z
     .string()
     .optional()
@@ -24,12 +24,12 @@ const postSchema = z.object({
 });
 
 // Public: Get published posts
-app.get("/storefront", async (c) => {
+app.get('/storefront', async (c) => {
   try {
     const publishedPosts = await db
       .select()
       .from(posts)
-      .where(eq(posts.status, "published"))
+      .where(eq(posts.status, 'published'))
       .orderBy(desc(posts.published_at));
     return c.json({ posts: publishedPosts });
   } catch (error: any) {
@@ -38,15 +38,15 @@ app.get("/storefront", async (c) => {
 });
 
 // Public: Get single post by slug
-app.get("/storefront/:slug", async (c) => {
+app.get('/storefront/:slug', async (c) => {
   try {
-    const slug = c.req.param("slug");
+    const slug = c.req.param('slug');
     const [post] = await db
       .select()
       .from(posts)
-      .where(and(eq(posts.slug, slug), eq(posts.status, "published")));
+      .where(and(eq(posts.slug, slug), eq(posts.status, 'published')));
 
-    if (!post) return c.json({ error: "Post not found" }, 404);
+    if (!post) return c.json({ error: 'Post not found' }, 404);
     return c.json({ post });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
@@ -54,7 +54,7 @@ app.get("/storefront/:slug", async (c) => {
 });
 
 // Admin: Get all posts
-app.get("/", verifyAuth, async (c) => {
+app.get('/', verifyAuth, async (c) => {
   try {
     const allPosts = await db
       .select()
@@ -67,11 +67,11 @@ app.get("/", verifyAuth, async (c) => {
 });
 
 // Admin: Get single post
-app.get("/:id", verifyAuth, async (c) => {
+app.get('/:id', verifyAuth, async (c) => {
   try {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     const [post] = await db.select().from(posts).where(eq(posts.id, id));
-    if (!post) return c.json({ error: "Post not found" }, 404);
+    if (!post) return c.json({ error: 'Post not found' }, 404);
     return c.json({ post });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
@@ -79,7 +79,7 @@ app.get("/:id", verifyAuth, async (c) => {
 });
 
 // Admin: Create post
-app.post("/", verifyAuth, async (c) => {
+app.post('/', verifyAuth, async (c) => {
   try {
     const body = await c.req.json();
     const validated = postSchema.parse(body);
@@ -90,22 +90,22 @@ app.post("/", verifyAuth, async (c) => {
       .from(posts)
       .where(eq(posts.slug, validated.slug));
     if (existing.length > 0) {
-      return c.json({ error: "Slug already exists" }, 409);
+      return c.json({ error: 'Slug already exists' }, 409);
     }
 
     const [newPost] = await db.insert(posts).values(validated).returning();
     return c.json({ post: newPost }, 201);
   } catch (error: any) {
     if (error instanceof z.ZodError)
-      return c.json({ error: "Validation failed", details: error.errors }, 400);
+      return c.json({ error: 'Validation failed', details: error.errors }, 400);
     return c.json({ error: error.message }, 500);
   }
 });
 
 // Admin: Update post
-app.put("/:id", verifyAuth, async (c) => {
+app.put('/:id', verifyAuth, async (c) => {
   try {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     const body = await c.req.json();
     const validated = postSchema.partial().parse(body);
 
@@ -116,7 +116,7 @@ app.put("/:id", verifyAuth, async (c) => {
         .from(posts)
         .where(eq(posts.slug, validated.slug));
       if (existing && existing.id !== id) {
-        return c.json({ error: "Slug already exists" }, 409);
+        return c.json({ error: 'Slug already exists' }, 409);
       }
     }
 
@@ -129,17 +129,17 @@ app.put("/:id", verifyAuth, async (c) => {
     return c.json({ post: updated });
   } catch (error: any) {
     if (error instanceof z.ZodError)
-      return c.json({ error: "Validation failed", details: error.errors }, 400);
+      return c.json({ error: 'Validation failed', details: error.errors }, 400);
     return c.json({ error: error.message }, 500);
   }
 });
 
 // Admin: Delete post
-app.delete("/:id", verifyAuth, async (c) => {
+app.delete('/:id', verifyAuth, async (c) => {
   try {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     await db.delete(posts).where(eq(posts.id, id));
-    return c.json({ message: "Post deleted" });
+    return c.json({ message: 'Post deleted' });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
   }

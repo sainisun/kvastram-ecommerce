@@ -1,13 +1,13 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
 // PHASE-2 FIX: HTML escape utility to prevent XSS in email templates
 function escapeHtml(str: string): string {
   return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 interface EmailOptions {
   to: string;
@@ -16,13 +16,27 @@ interface EmailOptions {
   html?: string;
 }
 
+// Type definitions for email data
+interface OrderEmailData {
+  order_number: string | number;
+  total: number;
+  currency_code: string;
+  status?: string;
+}
+
+interface InquiryEmailData {
+  contact_name: string;
+  company_name?: string;
+  email: string;
+}
+
 class EmailService {
   private transporter!: nodemailer.Transporter;
   private ready: Promise<void>;
 
   constructor() {
     // OPT-001 FIX: Use async-ready pattern to prevent race condition
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === 'production') {
       this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
@@ -39,9 +53,11 @@ class EmailService {
       this.ready = new Promise<void>((resolve) => {
         nodemailer.createTestAccount((err, account) => {
           if (err) {
-            console.error("Failed to create Ethereal account:", err);
+            console.error('Failed to create Ethereal account:', err);
             // Fallback: log-only transporter
-            this.transporter = nodemailer.createTransport({ jsonTransport: true });
+            this.transporter = nodemailer.createTransport({
+              jsonTransport: true,
+            });
             resolve();
             return;
           }
@@ -54,7 +70,7 @@ class EmailService {
               pass: account.pass,
             },
           });
-          console.log("📧 Email Service ready (Ethereal Dev Mode)");
+          console.log('📧 Email Service ready (Ethereal Dev Mode)');
           console.log(`📧 Preview URL: https://ethereal.email/messages`);
           resolve();
         });
@@ -80,20 +96,20 @@ class EmailService {
 
       console.log(`Message sent: ${info.messageId}`);
 
-      if (process.env.NODE_ENV !== "production") {
+      if (process.env.NODE_ENV !== 'production') {
         console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
       }
 
       return info;
-    } catch (error) {
-      console.error("Error sending email:", error);
+    } catch (error: unknown) {
+      console.error('Error sending email:', error);
       // In production, you might want to throw or log to a monitoring service
       // For now, we log and return false to indicate failure without crashing
       return false;
     }
   }
 
-  async sendOrderConfirmation(order: any, customerEmail: string) {
+  async sendOrderConfirmation(order: OrderEmailData, customerEmail: string) {
     const subject = `Order Confirmation #${order.order_number}`;
     const text = `Thank you for your order! Your order #${order.order_number} has been placed successfully. Total: ${order.total / 100} ${order.currency_code}.`;
     const html = `
@@ -129,7 +145,7 @@ class EmailService {
     return this.sendEmail({ to: customerEmail, subject, text, html });
   }
 
-  async sendOrderStatusUpdate(order: any, customerEmail: string) {
+  async sendOrderStatusUpdate(order: OrderEmailData, customerEmail: string) {
     const subject = `Order Update #${order.order_number}`;
     const text = `Your order #${order.order_number} status has been updated to: ${order.status}.`;
     const html = `
@@ -145,7 +161,7 @@ class EmailService {
   }
 
   async sendInquiryReceived(data: { email: string; contact_name: string }) {
-    const subject = "Wholesale Inquiry Received";
+    const subject = 'Wholesale Inquiry Received';
     const text = `Hi ${data.contact_name},\n\nThank you for your wholesale inquiry. We have received your request and will review it shortly.\n\nBest regards,\nKvastram Team`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -158,8 +174,8 @@ class EmailService {
     return this.sendEmail({ to: data.email, subject, text, html });
   }
 
-  async sendNewInquiryAlert(inquiry: any) {
-    const subject = "New Wholesale Inquiry Received";
+  async sendNewInquiryAlert(inquiry: InquiryEmailData) {
+    const subject = 'New Wholesale Inquiry Received';
     const text = `A new wholesale inquiry has been submitted by ${inquiry.contact_name} from ${inquiry.company_name}.\n\nPlease review it in the admin dashboard.`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -174,7 +190,7 @@ class EmailService {
             </div>
         `;
     // Send to admin email
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@kvastram.com";
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@kvastram.com';
     return this.sendEmail({ to: adminEmail, subject, text, html });
   }
 
@@ -184,7 +200,7 @@ class EmailService {
     company_name: string;
     discount_tier: string;
   }) {
-    const subject = "Wholesale Inquiry Approved!";
+    const subject = 'Wholesale Inquiry Approved!';
     const text = `Hi ${data.contact_name},\n\nGreat news! Your wholesale inquiry for ${data.company_name} has been approved.\n\nYou have been assigned discount tier: ${data.discount_tier}\n\nBest regards,\nKvastram Team`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -205,9 +221,10 @@ class EmailService {
     discount_tier: string;
     token: string;
   }) {
-    const setupUrl = `${process.env.FRONTEND_URL || "http://localhost:3001"}/wholesale/set-password?token=${encodeURIComponent(data.token)}`;
-    const tierDisplay = data.discount_tier.charAt(0).toUpperCase() + data.discount_tier.slice(1);
-    const subject = "Welcome to Kvastram Wholesale - Set Up Your Account";
+    const setupUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/wholesale/set-password?token=${encodeURIComponent(data.token)}`;
+    const tierDisplay =
+      data.discount_tier.charAt(0).toUpperCase() + data.discount_tier.slice(1);
+    const subject = 'Welcome to Kvastram Wholesale - Set Up Your Account';
     const text = `Hi ${data.contact_name},\n\nWelcome to Kvastram Wholesale! Your application for ${data.company_name} has been approved.\n\nYour discount tier: ${tierDisplay}\n\nPlease set up your password by clicking the link below:\n\n${setupUrl}\n\nThis link will expire in 7 days.\n\nBest regards,\nKvastram Team`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
@@ -229,14 +246,14 @@ class EmailService {
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
-    
-    if (process.env.NODE_ENV !== "production") {
+
+    if (process.env.NODE_ENV !== 'production') {
       console.log('\n📧 WHOLESALE WELCOME EMAIL (DEV MODE)');
       console.log('   To:', data.email);
       console.log('   Setup URL:', setupUrl);
       console.log('');
     }
-    
+
     return this.sendEmail({ to: data.email, subject, text, html });
   }
 
@@ -246,14 +263,14 @@ class EmailService {
     company_name: string;
     admin_notes?: string;
   }) {
-    const subject = "Wholesale Inquiry Update";
-    const text = `Hi ${data.contact_name},\n\nThank you for your interest in Kvastram wholesale program. After careful review, we are unable to approve your inquiry for ${data.company_name} at this time.\n\n${data.admin_notes ? `Notes: ${data.admin_notes}\n\n` : ""}Best regards,\nKvastram Team`;
+    const subject = 'Wholesale Inquiry Update';
+    const text = `Hi ${data.contact_name},\n\nThank you for your interest in Kvastram wholesale program. After careful review, we are unable to approve your inquiry for ${data.company_name} at this time.\n\n${data.admin_notes ? `Notes: ${data.admin_notes}\n\n` : ''}Best regards,\nKvastram Team`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Inquiry Update</h1>
                 <p>Hi ${escapeHtml(data.contact_name)},</p>
                 <p>Thank you for your interest in our wholesale program. After careful review, we are unable to approve your inquiry for <strong>${escapeHtml(data.company_name)}</strong> at this time.</p>
-                ${data.admin_notes ? `<p><strong>Notes:</strong> ${escapeHtml(data.admin_notes)}</p>` : ""}
+                ${data.admin_notes ? `<p><strong>Notes:</strong> ${escapeHtml(data.admin_notes)}</p>` : ''}
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
@@ -266,8 +283,8 @@ class EmailService {
     first_name: string;
     token: string;
   }) {
-    const verificationUrl = `${process.env.FRONTEND_URL || "http://localhost:3001"}/verify-email?token=${encodeURIComponent(data.token)}`;
-    const subject = "Verify Your Email Address";
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/verify-email?token=${encodeURIComponent(data.token)}`;
+    const subject = 'Verify Your Email Address';
     const text = `Hi ${data.first_name},\n\nWelcome to Kvastram! Please verify your email address by clicking the link below:\n\n${verificationUrl}\n\nThis link will expire in 24 hours.\n\nBest regards,\nKvastram Team`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -285,15 +302,15 @@ class EmailService {
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
-    
+
     // DEV MODE: Log verification URL directly for testing
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== 'production') {
       console.log('\n📧 EMAIL VERIFICATION (DEV MODE)');
       console.log('   To:', data.email);
       console.log('   Verification URL:', verificationUrl);
       console.log('');
     }
-    
+
     return this.sendEmail({ to: data.email, subject, text, html });
   }
 }

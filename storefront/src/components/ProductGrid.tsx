@@ -38,11 +38,13 @@ export default function ProductGrid({
 
   // Fetch wholesale prices when products load
   useEffect(() => {
-    if (wholesaleInfo?.hasWholesaleAccess && products.length > 0) {
+    if (wholesaleInfo?.hasWholesaleAccess && products.length > 0 && fetchPrices) {
       const variantIds = products
         .map((p) => p.variants?.[0]?.id)
         .filter(Boolean) as string[];
-      fetchPrices(variantIds);
+      if (variantIds.length > 0) {
+        fetchPrices(variantIds).catch(console.error);
+      }
     }
   }, [wholesaleInfo, products, fetchPrices]);
 
@@ -120,7 +122,7 @@ export default function ProductGrid({
     return {
       price: new Intl.NumberFormat(undefined, {
         style: 'currency',
-        currency: price.currency_code.toUpperCase(),
+        currency: price.currency_code?.toUpperCase() || 'USD',
       }).format(price.amount / 100),
       isWholesale: false,
       savings: 0,

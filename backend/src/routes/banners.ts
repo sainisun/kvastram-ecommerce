@@ -1,9 +1,9 @@
-import { Hono } from "hono";
-import { db } from "../db";
-import { banners } from "../db/schema";
-import { eq, asc, desc } from "drizzle-orm";
-import { verifyAdmin } from "../middleware/auth"; // BUG-013 FIX: was verifyAuth
-import { z } from "zod";
+import { Hono } from 'hono';
+import { db } from '../db';
+import { banners } from '../db/schema';
+import { eq, asc, desc } from 'drizzle-orm';
+import { verifyAdmin } from '../middleware/auth'; // BUG-013 FIX: was verifyAuth
+import { z } from 'zod';
 
 const app = new Hono();
 
@@ -14,11 +14,11 @@ const bannerSchema = z.object({
   button_text: z.string().optional(),
   position: z.number().int().default(0),
   is_active: z.boolean().default(true),
-  section: z.string().default("hero"),
+  section: z.string().default('hero'),
 });
 
 // Public: Get active banners for storefront
-app.get("/storefront", async (c) => {
+app.get('/storefront', async (c) => {
   try {
     const activeBanners = await db
       .select()
@@ -32,7 +32,7 @@ app.get("/storefront", async (c) => {
 });
 
 // Admin: Get all banners
-app.get("/", verifyAdmin, async (c) => {
+app.get('/', verifyAdmin, async (c) => {
   try {
     const allBanners = await db
       .select()
@@ -45,7 +45,7 @@ app.get("/", verifyAdmin, async (c) => {
 });
 
 // Admin: Create banner
-app.post("/", verifyAdmin, async (c) => {
+app.post('/', verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const validated = bannerSchema.parse(body);
@@ -54,15 +54,15 @@ app.post("/", verifyAdmin, async (c) => {
     return c.json({ banner: newBanner }, 201);
   } catch (error: any) {
     if (error instanceof z.ZodError)
-      return c.json({ error: "Validation failed", details: error.errors }, 400);
+      return c.json({ error: 'Validation failed', details: error.errors }, 400);
     return c.json({ error: error.message }, 500);
   }
 });
 
 // Admin: Update banner
-app.put("/:id", verifyAdmin, async (c) => {
+app.put('/:id', verifyAdmin, async (c) => {
   try {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     const body = await c.req.json();
     const validated = bannerSchema.partial().parse(body);
 
@@ -75,17 +75,17 @@ app.put("/:id", verifyAdmin, async (c) => {
     return c.json({ banner: updated });
   } catch (error: any) {
     if (error instanceof z.ZodError)
-      return c.json({ error: "Validation failed", details: error.errors }, 400);
+      return c.json({ error: 'Validation failed', details: error.errors }, 400);
     return c.json({ error: error.message }, 500);
   }
 });
 
 // Admin: Delete banner
-app.delete("/:id", verifyAdmin, async (c) => {
+app.delete('/:id', verifyAdmin, async (c) => {
   try {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     await db.delete(banners).where(eq(banners.id, id));
-    return c.json({ message: "Banner deleted" });
+    return c.json({ message: 'Banner deleted' });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
   }
@@ -94,13 +94,18 @@ app.delete("/:id", verifyAdmin, async (c) => {
 // Admin: Reorder banners
 // BUG-015 FIX: Added input validation for reorder items
 const reorderSchema = z.object({
-  items: z.array(z.object({
-    id: z.string().uuid(),
-    position: z.number().int().min(0),
-  })).min(1).max(100),
+  items: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        position: z.number().int().min(0),
+      })
+    )
+    .min(1)
+    .max(100),
 });
 
-app.post("/reorder", verifyAdmin, async (c) => {
+app.post('/reorder', verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const { items } = reorderSchema.parse(body);
@@ -110,14 +115,14 @@ app.post("/reorder", verifyAdmin, async (c) => {
         db
           .update(banners)
           .set({ position: item.position })
-          .where(eq(banners.id, item.id)),
-      ),
+          .where(eq(banners.id, item.id))
+      )
     );
 
-    return c.json({ message: "Banners reordered" });
+    return c.json({ message: 'Banners reordered' });
   } catch (error: any) {
     if (error instanceof z.ZodError)
-      return c.json({ error: "Validation failed", details: error.errors }, 400);
+      return c.json({ error: 'Validation failed', details: error.errors }, 400);
     return c.json({ error: error.message }, 500);
   }
 });

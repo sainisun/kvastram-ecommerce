@@ -1,39 +1,39 @@
 /**
  * Payment Routes
- * 
+ *
  * These routes handle Stripe payment processing including:
  * - PaymentIntent creation for orders
  * - Payment status checking
  * - Stripe webhook handling with idempotency
  * - Payment success/failure/refund handling
- * 
+ *
  * Security Features:
  * - Stripe signature verification on webhooks
  * - Idempotent webhook processing (prevents double charges)
  * - Log sanitization (PII not logged)
- * 
+ *
  * @module payments
  */
 
-import { Hono } from "hono";
-import { z } from "zod";
-import { zValidator } from "@hono/zod-validator";
-import Stripe from "stripe";
-import { db } from "../../db";
-import { orders, line_items, webhook_events } from "../../db/schema";
-import { eq, sql } from "drizzle-orm";
-import { logInfo, logError } from "../../utils/logger";
-import { asyncHandler } from "../../middleware/error-handler";
+import { Hono } from 'hono';
+import { z } from 'zod';
+import { zValidator } from '@hono/zod-validator';
+import Stripe from 'stripe';
+import { db } from '../../db';
+import { orders, line_items, webhook_events } from '../../db/schema';
+import { eq, sql } from 'drizzle-orm';
+import { logInfo, logError } from '../../utils/logger';
+import { asyncHandler } from '../../middleware/error-handler';
 
 // BUG-005 FIX: Fail early if Stripe key is missing rather than creating invalid client
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 if (!STRIPE_SECRET_KEY) {
-  console.warn("⚠️  STRIPE_SECRET_KEY not set — payment routes will fail");
+  console.warn('⚠️  STRIPE_SECRET_KEY not set — payment routes will fail');
 }
 
-const stripe = new Stripe(STRIPE_SECRET_KEY || "sk_test_placeholder", {
+const stripe = new Stripe(STRIPE_SECRET_KEY || 'sk_test_placeholder', {
   // Cast to any because the types might not cover this specific version string yet
-  apiVersion: "2025-02-05.acacia" as any,
+  apiVersion: '2025-02-05.acacia' as any,
 });
 
 const paymentRouter = new Hono();
@@ -49,11 +49,11 @@ const CreatePaymentIntentSchema = z.object({
 // POST /store/payments/create-intent
 // Creates a Stripe PaymentIntent for an order
 paymentRouter.post(
-  "/create-intent",
-  zValidator("json", CreatePaymentIntentSchema),
+  '/create-intent',
+  zValidator('json', CreatePaymentIntentSchema),
   async (c) => {
     try {
-      const { order_id } = c.req.valid("json");
+      const { order_id } = c.req.valid('json');
 
       // Fetch the order with line items
       const [order] = await db
@@ -63,11 +63,11 @@ paymentRouter.post(
         .limit(1);
 
       if (!order) {
-        return c.json({ error: "Order not found" }, 404);
+        return c.json({ error: 'Order not found' }, 404);
       }
 
-      if (order.payment_status === "captured") {
-        return c.json({ error: "Order already paid" }, 400);
+      if (order.payment_status === 'captured') {
+        return c.json({ error: 'Order already paid' }, 400);
       }
 
       // Fetch line items for the order (for metadata/receipts if needed later)
@@ -86,7 +86,7 @@ paymentRouter.post(
         },
         metadata: {
           order_id: order.id,
-          order_display_id: order.display_id?.toString() || "",
+          order_display_id: order.display_id?.toString() || '',
           customer_email: order.email,
         },
         description: `Order #${order.display_id} - ${order.email}`,
@@ -109,17 +109,17 @@ paymentRouter.post(
         payment_intent_id: paymentIntent.id,
       });
     } catch (error: any) {
-      logError("Payment intent creation failed", error);
+      logError('Payment intent creation failed', error);
       return c.json({ error: error.message }, 500);
     }
-  },
+  }
 );
 
 // GET /store/payments/status/:order_id
 // Check payment status of an order
-paymentRouter.get("/status/:order_id", async (c) => {
+paymentRouter.get('/status/:order_id', async (c) => {
   try {
-    const order_id = c.req.param("order_id");
+    const order_id = c.req.param('order_id');
 
     const [order] = await db
       .select()
@@ -128,7 +128,7 @@ paymentRouter.get("/status/:order_id", async (c) => {
       .limit(1);
 
     if (!order) {
-      return c.json({ error: "Order not found" }, 404);
+      return c.json({ error: 'Order not found' }, 404);
     }
 
     return c.json({
@@ -137,19 +137,19 @@ paymentRouter.get("/status/:order_id", async (c) => {
       status: order.status,
     });
   } catch (error: any) {
-    logError("Payment status check failed", error);
+    logError('Payment status check failed', error);
     return c.json({ error: error.message }, 500);
   }
 });
 
 // POST /store/payments/webhook
 // Stripe webhook handler for payment events
-paymentRouter.post("/webhook", async (c) => {
+paymentRouter.post('/webhook', async (c) => {
   const payload = await c.req.text();
-  const signature = c.req.header("stripe-signature");
+  const signature = c.req.header('stripe-signature');
 
   if (!signature) {
-    return c.json({ error: "No signature" }, 400);
+    return c.json({ error: 'No signature' }, 400);
   }
 
   let event: Stripe.Event;
@@ -158,17 +158,13 @@ paymentRouter.post("/webhook", async (c) => {
     // BUG-006 FIX: Reject webhooks if secret is not configured
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) {
-      logError("STRIPE_WEBHOOK_SECRET not configured");
-      return c.json({ error: "Webhook processing not configured" }, 500);
+      logError('STRIPE_WEBHOOK_SECRET not configured');
+      return c.json({ error: 'Webhook processing not configured' }, 500);
     }
 
-    event = stripe.webhooks.constructEvent(
-      payload,
-      signature,
-      webhookSecret,
-    );
+    event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
   } catch (err: any) {
-    logError("Webhook signature verification failed", err);
+    logError('Webhook signature verification failed', err);
     return c.json({ error: `Webhook Error: ${err.message}` }, 400);
   }
 
@@ -181,25 +177,29 @@ paymentRouter.post("/webhook", async (c) => {
     await db.insert(webhook_events).values({
       event_id: eventId,
       event_type: eventType,
-      status: "processing",
+      status: 'processing',
     });
   } catch (insertError: any) {
     // If insert fails (event already exists), check if already processed
-    if (insertError.code === "23505") { // PostgreSQL unique violation
+    if (insertError.code === '23505') {
+      // PostgreSQL unique violation
       const [existingEvent] = await db
-        .select({ processed_at: webhook_events.processed_at, status: webhook_events.status })
+        .select({
+          processed_at: webhook_events.processed_at,
+          status: webhook_events.status,
+        })
         .from(webhook_events)
         .where(eq(webhook_events.event_id, eventId))
         .limit(1);
 
-      if (existingEvent?.status === "processed") {
+      if (existingEvent?.status === 'processed') {
         logInfo(`Duplicate webhook event ${eventId}, already processed`);
         return c.json({ received: true, duplicate: true });
       }
 
       // If still processing, return error to avoid duplicate processing
       logInfo(`Webhook event ${eventId} is currently being processed`);
-      return c.json({ error: "Event already being processed" }, 409);
+      return c.json({ error: 'Event already being processed' }, 409);
     }
     throw insertError; // Re-throw other errors
   }
@@ -207,7 +207,7 @@ paymentRouter.post("/webhook", async (c) => {
   // Handle the event
   try {
     switch (event.type) {
-      case "payment_intent.succeeded": {
+      case 'payment_intent.succeeded': {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         const order_id = paymentIntent.metadata?.order_id;
 
@@ -222,10 +222,10 @@ paymentRouter.post("/webhook", async (c) => {
           await db
             .update(orders)
             .set({
-              payment_status: "captured",
-              status: "completed",
+              payment_status: 'captured',
+              status: 'completed',
               metadata: {
-                ...(existingOrder?.metadata as Record<string, any> || {}),
+                ...((existingOrder?.metadata as Record<string, any>) || {}),
                 stripe_payment_intent_id: paymentIntent.id,
                 stripe_payment_status: paymentIntent.status,
                 paid_at: new Date().toISOString(),
@@ -238,7 +238,7 @@ paymentRouter.post("/webhook", async (c) => {
         break;
       }
 
-      case "payment_intent.payment_failed": {
+      case 'payment_intent.payment_failed': {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         const order_id = paymentIntent.metadata?.order_id;
 
@@ -253,9 +253,9 @@ paymentRouter.post("/webhook", async (c) => {
           await db
             .update(orders)
             .set({
-              payment_status: "failed",
+              payment_status: 'failed',
               metadata: {
-                ...(existingOrder?.metadata as Record<string, any> || {}),
+                ...((existingOrder?.metadata as Record<string, any>) || {}),
                 stripe_payment_intent_id: paymentIntent.id,
                 stripe_payment_status: paymentIntent.status,
                 payment_failed_at: new Date().toISOString(),
@@ -270,7 +270,7 @@ paymentRouter.post("/webhook", async (c) => {
         break;
       }
 
-      case "charge.refunded": {
+      case 'charge.refunded': {
         const charge = event.data.object as Stripe.Charge;
         const paymentIntentId = charge.payment_intent as string;
 
@@ -280,7 +280,7 @@ paymentRouter.post("/webhook", async (c) => {
             .select()
             .from(orders)
             .where(
-              sql`${orders.metadata}->>'stripe_payment_intent_id' = ${paymentIntentId}`,
+              sql`${orders.metadata}->>'stripe_payment_intent_id' = ${paymentIntentId}`
             )
             .limit(1);
 
@@ -288,7 +288,7 @@ paymentRouter.post("/webhook", async (c) => {
             await db
               .update(orders)
               .set({
-                payment_status: "refunded",
+                payment_status: 'refunded',
                 metadata: {
                   ...(order[0].metadata as Record<string, any>),
                   stripe_refund_id: charge.refunds?.data[0]?.id,
@@ -312,17 +312,17 @@ paymentRouter.post("/webhook", async (c) => {
       .update(webhook_events)
       .set({
         processed_at: new Date(),
-        status: "processed",
+        status: 'processed',
       })
       .where(eq(webhook_events.event_id, eventId));
 
     return c.json({ received: true });
   } catch (error: any) {
-    logError("Webhook processing error", error);
+    logError('Webhook processing error', error);
     // 🔒 FIX-007: Mark as failed so Stripe can retry
     await db
       .update(webhook_events)
-      .set({ status: "failed" })
+      .set({ status: 'failed' })
       .where(eq(webhook_events.event_id, eventId));
     return c.json({ error: error.message }, 500);
   }

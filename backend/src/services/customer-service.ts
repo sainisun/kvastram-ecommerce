@@ -1,13 +1,13 @@
-import { db } from "../db/client";
-import { customers, orders, addresses } from "../db/schema";
-import { eq, desc, like, or, sql, and, inArray } from "drizzle-orm";
-import { z } from "zod";
-import { sanitizeSearchInput } from "../utils/validation";
+import { db } from '../db/client';
+import { customers, orders, addresses } from '../db/schema';
+import { eq, desc, like, or, sql, and, inArray } from 'drizzle-orm';
+import { z } from 'zod';
+import { sanitizeSearchInput } from '../utils/validation';
 
 export const UpdateCustomerSchema = z.object({
-  first_name: z.string().min(1, "First name is required").optional(),
-  last_name: z.string().min(1, "Last name is required").optional(),
-  email: z.string().email("Invalid email address").optional(),
+  first_name: z.string().min(1, 'First name is required').optional(),
+  last_name: z.string().min(1, 'Last name is required').optional(),
+  email: z.string().email('Invalid email address').optional(),
   phone: z.string().optional(),
 });
 
@@ -30,7 +30,7 @@ export interface CustomerFilters {
   search?: string;
   has_account?: string;
   sort_by?: string;
-  sort_order?: "asc" | "desc";
+  sort_order?: 'asc' | 'desc';
 }
 
 class CustomerService {
@@ -38,10 +38,10 @@ class CustomerService {
     const {
       page = 1,
       limit = 20,
-      search = "",
-      has_account = "",
-      sort_by = "created_at",
-      sort_order = "desc",
+      search = '',
+      has_account = '',
+      sort_by = 'created_at',
+      sort_order = 'desc',
     } = filters;
 
     const offset = (page - 1) * limit;
@@ -56,15 +56,15 @@ class CustomerService {
             like(customers.email, pattern),
             like(customers.first_name, pattern),
             like(customers.last_name, pattern),
-            like(customers.phone, pattern),
-          ),
+            like(customers.phone, pattern)
+          )
         );
       }
     }
 
-    if (has_account === "true")
+    if (has_account === 'true')
       conditions.push(eq(customers.has_account, true));
-    else if (has_account === "false")
+    else if (has_account === 'false')
       conditions.push(eq(customers.has_account, false));
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
@@ -92,8 +92,8 @@ class CustomerService {
       .orderBy(
         (() => {
           const col = CUSTOMER_SORT_MAP[sort_by] ?? customers.created_at;
-          return sort_order === "asc" ? sql`${col} asc` : sql`${col} desc`;
-        })(),
+          return sort_order === 'asc' ? sql`${col} asc` : sql`${col} desc`;
+        })()
       )
       .limit(limit)
       .offset(offset);
@@ -103,14 +103,14 @@ class CustomerService {
     const orderCounts =
       customerIds.length > 0
         ? await db
-          .select({
-            customer_id: orders.customer_id,
-            order_count: sql<number>`count(*)`,
-            total_spent: sql<number>`sum(${orders.total})`,
-          })
-          .from(orders)
-          .where(inArray(orders.customer_id, customerIds))
-          .groupBy(orders.customer_id)
+            .select({
+              customer_id: orders.customer_id,
+              order_count: sql<number>`count(*)`,
+              total_spent: sql<number>`sum(${orders.total})`,
+            })
+            .from(orders)
+            .where(inArray(orders.customer_id, customerIds))
+            .groupBy(orders.customer_id)
         : [];
 
     // Merge order data with customers
@@ -154,7 +154,7 @@ class CustomerService {
     const totalOrders = customerOrders.length;
     const totalSpent = customerOrders.reduce(
       (sum, order) => sum + Number(order.total || 0),
-      0,
+      0
     );
     const averageOrderValue = totalOrders > 0 ? totalSpent / totalOrders : 0;
 
@@ -197,7 +197,15 @@ class CustomerService {
     };
   }
 
-  async update(id: string, data: any) {
+  async update(
+    id: string,
+    data: Partial<{
+      first_name: string;
+      last_name: string;
+      phone: string;
+      email: string;
+    }>
+  ) {
     const [updated] = await db
       .update(customers)
       .set({
@@ -218,7 +226,7 @@ class CustomerService {
       .where(eq(orders.customer_id, id));
     if (customerOrders.length > 0) {
       throw new Error(
-        "Cannot delete customer with existing orders. Consider deactivating instead.",
+        'Cannot delete customer with existing orders. Consider deactivating instead.'
       );
     }
 

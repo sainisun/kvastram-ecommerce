@@ -1,7 +1,7 @@
-import { db } from "../db/client";
-import { regions, countries } from "../db/schema";
-import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { db } from '../db/client';
+import { regions, countries } from '../db/schema';
+import { eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 // --- Validation Schemas ---
 export const RegionSchema = z.object({
@@ -38,7 +38,7 @@ class RegionService {
         .values({
           name: data.name,
           currency_code: data.currency_code,
-          tax_rate: data.tax_rate ? String(data.tax_rate) : "0",
+          tax_rate: data.tax_rate ? String(data.tax_rate) : '0',
           tax_code: data.tax_code,
         })
         .returning();
@@ -111,11 +111,11 @@ class RegionService {
         .from(regions)
         .where(eq(regions.id, id))
         .limit(1);
-      
+
       if (existing.length === 0) {
         return null;
       }
-      
+
       await tx.delete(countries).where(eq(countries.region_id, id));
       await tx.delete(regions).where(eq(regions.id, id));
       return true;

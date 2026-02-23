@@ -1,21 +1,21 @@
-import { Hono } from "hono";
-import { verifyCustomer } from "../../middleware/customer-auth";
-import { db } from "../../db/client";
-import { customers, orders, line_items } from "../../db/schema";
-import { eq, desc } from "drizzle-orm";
-import { z } from "zod";
-import { serializeCustomer } from "../../utils/safe-user";
+import { Hono } from 'hono';
+import { verifyCustomer } from '../../middleware/customer-auth';
+import { db } from '../../db/client';
+import { customers, orders, line_items } from '../../db/schema';
+import { eq, desc } from 'drizzle-orm';
+import { z } from 'zod';
+import { serializeCustomer } from '../../utils/safe-user';
 
 const storeCustomersRouter = new Hono();
 
 // Get Current Customer Profile
-storeCustomersRouter.get("/me", verifyCustomer, async (c) => {
-  const payload = c.get("customer" as any) as any;
+storeCustomersRouter.get('/me', verifyCustomer, async (c) => {
+  const payload = c.get('customer' as any) as any;
   const customer = await db.query.customers.findFirst({
     where: eq(customers.id, payload.sub),
   });
 
-  if (!customer) return c.json({ error: "Customer not found" }, 404);
+  if (!customer) return c.json({ error: 'Customer not found' }, 404);
 
   // 🔒 FIX-007: Use serializeCustomer utility
   const safeCustomer = serializeCustomer(customer);
@@ -31,19 +31,22 @@ const UpdateProfileSchema = z.object({
 });
 
 // Update Current Customer Profile
-storeCustomersRouter.put("/me", verifyCustomer, async (c) => {
-  const payload = c.get("customer" as any) as any;
+storeCustomersRouter.put('/me', verifyCustomer, async (c) => {
+  const payload = c.get('customer' as any) as any;
   let body;
   try {
     body = await c.req.json();
   } catch {
-    return c.json({ error: "Invalid JSON" }, 400);
+    return c.json({ error: 'Invalid JSON' }, 400);
   }
 
   // Validate input
   const parseResult = UpdateProfileSchema.safeParse(body);
   if (!parseResult.success) {
-    return c.json({ error: "Validation failed", details: parseResult.error.errors }, 400);
+    return c.json(
+      { error: 'Validation failed', details: parseResult.error.errors },
+      400
+    );
   }
 
   const allowedUpdates = parseResult.data;
@@ -58,14 +61,15 @@ storeCustomersRouter.put("/me", verifyCustomer, async (c) => {
     // 🔒 FIX-007: Use serializeCustomer utility
     const safeCustomer = serializeCustomer(updated[0]);
     return c.json({ customer: safeCustomer });
-  } catch (error) {
-    return c.json({ error: "Failed to update profile" }, 500);
+  } catch (error: unknown) {
+    console.error('Error updating profile:', error);
+    return c.json({ error: 'Failed to update profile' }, 500);
   }
 });
 
 // Get Customer Orders
-storeCustomersRouter.get("/me/orders", verifyCustomer, async (c) => {
-  const payload = c.get("customer" as any) as any;
+storeCustomersRouter.get('/me/orders', verifyCustomer, async (c) => {
+  const payload = c.get('customer' as any) as any;
 
   const customerOrders = await db.query.orders.findMany({
     where: eq(orders.customer_id, payload.sub),
@@ -80,9 +84,9 @@ storeCustomersRouter.get("/me/orders", verifyCustomer, async (c) => {
 });
 
 // Get Single Order
-storeCustomersRouter.get("/me/orders/:id", verifyCustomer, async (c) => {
-  const payload = c.get("customer" as any) as any;
-  const orderId = c.req.param("id");
+storeCustomersRouter.get('/me/orders/:id', verifyCustomer, async (c) => {
+  const payload = c.get('customer' as any) as any;
+  const orderId = c.req.param('id');
 
   const order = await db.query.orders.findFirst({
     where: (orders, { and, eq }) =>
@@ -94,7 +98,7 @@ storeCustomersRouter.get("/me/orders/:id", verifyCustomer, async (c) => {
     },
   });
 
-  if (!order) return c.json({ error: "Order not found" }, 404);
+  if (!order) return c.json({ error: 'Order not found' }, 404);
 
   return c.json({ order });
 });

@@ -1,41 +1,41 @@
-import { db } from "./client";
-import { regions } from "./schema";
-import { eq } from "drizzle-orm";
-import "dotenv/config";
+import { db } from './client';
+import { regions } from './schema';
+import { eq } from 'drizzle-orm';
+import 'dotenv/config';
 
 async function seedMoreRegions() {
-  console.log("🌱 Seeding More Regions...");
+  console.log('🌱 Seeding More Regions...');
 
   const moreRegions = [
     {
-      name: "United Kingdom",
-      currency_code: "gbp",
-      tax_rate: "20",
-      tax_code: "VAT",
+      name: 'United Kingdom',
+      currency_code: 'gbp',
+      tax_rate: '20',
+      tax_code: 'VAT',
     },
     {
-      name: "Middle East (Gulf)",
-      currency_code: "aed",
-      tax_rate: "5",
-      tax_code: "VAT",
+      name: 'Middle East (Gulf)',
+      currency_code: 'aed',
+      tax_rate: '5',
+      tax_code: 'VAT',
     },
     {
-      name: "Australia",
-      currency_code: "aud",
-      tax_rate: "10",
-      tax_code: "GST",
+      name: 'Australia',
+      currency_code: 'aud',
+      tax_rate: '10',
+      tax_code: 'GST',
     },
     {
-      name: "Japan",
-      currency_code: "jpy",
-      tax_rate: "10",
-      tax_code: "VAT",
+      name: 'Japan',
+      currency_code: 'jpy',
+      tax_rate: '10',
+      tax_code: 'VAT',
     },
     {
-      name: "Canada",
-      currency_code: "cad",
-      tax_rate: "13",
-      tax_code: "HST",
+      name: 'Canada',
+      currency_code: 'cad',
+      tax_rate: '13',
+      tax_code: 'HST',
     },
   ];
 
@@ -58,6 +58,6 @@ async function seedMoreRegions() {
 }
 
 seedMoreRegions().catch((err) => {
-  console.error("❌ Seeding failed:", err);
+  console.error('❌ Seeding failed:', err);
   process.exit(1);
 });

@@ -1,15 +1,15 @@
-import postgres from "postgres";
-import "dotenv/config";
+import postgres from 'postgres';
+import 'dotenv/config';
 
 const connectionString =
   process.env.DATABASE_URL ||
-  "postgresql://postgres:postgres@localhost:5432/kvastram_dev";
+  'postgresql://postgres:postgres@localhost:5432/kvastram_dev';
 
 const client = postgres(connectionString);
 
 async function migrate() {
   console.log('Running notification and WhatsApp tables migration...');
-  
+
   try {
     // Create notifications table if not exists
     await client`CREATE TABLE IF NOT EXISTS notifications (
@@ -70,7 +70,7 @@ async function migrate() {
   process.exit(0);
 }
 
-migrate().catch(e => {
+migrate().catch((e) => {
   console.error('Migration failed:', e);
   process.exit(1);
 });

@@ -1,9 +1,9 @@
-import { Hono } from "hono";
-import { db } from "../db";
-import { pages } from "../db/schema";
-import { eq, desc, and } from "drizzle-orm";
-import { verifyAuth } from "../middleware/auth";
-import { z } from "zod";
+import { Hono } from 'hono';
+import { db } from '../db';
+import { pages } from '../db/schema';
+import { eq, desc, and } from 'drizzle-orm';
+import { verifyAuth } from '../middleware/auth';
+import { z } from 'zod';
 
 const app = new Hono();
 
@@ -17,7 +17,7 @@ const pageSchema = z.object({
 });
 
 // Public: Get list of visible pages
-app.get("/storefront", async (c) => {
+app.get('/storefront', async (c) => {
   try {
     const publicPages = await db
       .select({
@@ -35,15 +35,15 @@ app.get("/storefront", async (c) => {
 });
 
 // Public: Get page by slug
-app.get("/storefront/:slug", async (c) => {
+app.get('/storefront/:slug', async (c) => {
   try {
-    const slug = c.req.param("slug");
+    const slug = c.req.param('slug');
     const [page] = await db
       .select()
       .from(pages)
       .where(and(eq(pages.slug, slug), eq(pages.is_visible, true)));
 
-    if (!page) return c.json({ error: "Page not found" }, 404);
+    if (!page) return c.json({ error: 'Page not found' }, 404);
     return c.json({ page });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
@@ -51,7 +51,7 @@ app.get("/storefront/:slug", async (c) => {
 });
 
 // Admin: Get all pages
-app.get("/", verifyAuth, async (c) => {
+app.get('/', verifyAuth, async (c) => {
   try {
     const allPages = await db.select().from(pages).orderBy(pages.title);
     return c.json({ pages: allPages });
@@ -61,11 +61,11 @@ app.get("/", verifyAuth, async (c) => {
 });
 
 // Admin: Get single page
-app.get("/:id", verifyAuth, async (c) => {
+app.get('/:id', verifyAuth, async (c) => {
   try {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     const [page] = await db.select().from(pages).where(eq(pages.id, id));
-    if (!page) return c.json({ error: "Page not found" }, 404);
+    if (!page) return c.json({ error: 'Page not found' }, 404);
     return c.json({ page });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
@@ -73,7 +73,7 @@ app.get("/:id", verifyAuth, async (c) => {
 });
 
 // Admin: Create page
-app.post("/", verifyAuth, async (c) => {
+app.post('/', verifyAuth, async (c) => {
   try {
     const body = await c.req.json();
     const validated = pageSchema.parse(body);
@@ -83,21 +83,21 @@ app.post("/", verifyAuth, async (c) => {
       .from(pages)
       .where(eq(pages.slug, validated.slug));
     if (existing.length > 0)
-      return c.json({ error: "Slug already exists" }, 409);
+      return c.json({ error: 'Slug already exists' }, 409);
 
     const [newPage] = await db.insert(pages).values(validated).returning();
     return c.json({ page: newPage }, 201);
   } catch (error: any) {
     if (error instanceof z.ZodError)
-      return c.json({ error: "Validation failed", details: error.errors }, 400);
+      return c.json({ error: 'Validation failed', details: error.errors }, 400);
     return c.json({ error: error.message }, 500);
   }
 });
 
 // Admin: Update page
-app.put("/:id", verifyAuth, async (c) => {
+app.put('/:id', verifyAuth, async (c) => {
   try {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     const body = await c.req.json();
     const validated = pageSchema.partial().parse(body);
 
@@ -107,7 +107,7 @@ app.put("/:id", verifyAuth, async (c) => {
         .from(pages)
         .where(eq(pages.slug, validated.slug));
       if (existing && existing.id !== id)
-        return c.json({ error: "Slug already exists" }, 409);
+        return c.json({ error: 'Slug already exists' }, 409);
     }
 
     const [updated] = await db
@@ -119,17 +119,17 @@ app.put("/:id", verifyAuth, async (c) => {
     return c.json({ page: updated });
   } catch (error: any) {
     if (error instanceof z.ZodError)
-      return c.json({ error: "Validation failed", details: error.errors }, 400);
+      return c.json({ error: 'Validation failed', details: error.errors }, 400);
     return c.json({ error: error.message }, 500);
   }
 });
 
 // Admin: Delete page
-app.delete("/:id", verifyAuth, async (c) => {
+app.delete('/:id', verifyAuth, async (c) => {
   try {
-    const id = c.req.param("id");
+    const id = c.req.param('id');
     await db.delete(pages).where(eq(pages.id, id));
-    return c.json({ message: "Page deleted" });
+    return c.json({ message: 'Page deleted' });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
   }

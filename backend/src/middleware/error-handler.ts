@@ -3,16 +3,16 @@
  * Catches and formats all errors consistently
  */
 
-import { Context, Next } from "hono";
-import { HTTPException } from "hono/http-exception";
-import { StatusCode, ContentfulStatusCode } from "hono/utils/http-status";
-import { ZodError } from "zod";
+import { Context, Next } from 'hono';
+import { HTTPException } from 'hono/http-exception';
+import { StatusCode, ContentfulStatusCode } from 'hono/utils/http-status';
+import { ZodError } from 'zod';
 import {
   errorResponse,
   ErrorMessages,
   HttpStatus,
-} from "../utils/api-response";
-import { formatZodErrors } from "../utils/validation";
+} from '../utils/api-response';
+import { formatZodErrors } from '../utils/validation';
 
 /**
  * Validation error details structure
@@ -31,10 +31,10 @@ export class APIError extends Error {
   constructor(
     message: string,
     statusCode: number = 400,
-    public errors?: ValidationErrorDetails[],
+    public errors?: ValidationErrorDetails[]
   ) {
     super(message);
-    this.name = "APIError";
+    this.name = 'APIError';
     this.statusCode = statusCode as StatusCode;
   }
 }
@@ -43,15 +43,18 @@ export class APIError extends Error {
 export class NotFoundError extends APIError {
   constructor(message: string = ErrorMessages.NOT_FOUND) {
     super(message, HttpStatus.NOT_FOUND);
-    this.name = "NotFoundError";
+    this.name = 'NotFoundError';
   }
 }
 
 // Validation Error
 export class ValidationError extends APIError {
-  constructor(message: string = ErrorMessages.VALIDATION_ERROR, errors?: ValidationErrorDetails[]) {
+  constructor(
+    message: string = ErrorMessages.VALIDATION_ERROR,
+    errors?: ValidationErrorDetails[]
+  ) {
     super(message, HttpStatus.UNPROCESSABLE_ENTITY as number, errors);
-    this.name = "ValidationError";
+    this.name = 'ValidationError';
   }
 }
 
@@ -59,7 +62,7 @@ export class ValidationError extends APIError {
 export class AuthError extends APIError {
   constructor(message: string = ErrorMessages.UNAUTHORIZED) {
     super(message, HttpStatus.UNAUTHORIZED);
-    this.name = "AuthError";
+    this.name = 'AuthError';
   }
 }
 
@@ -67,7 +70,7 @@ export class AuthError extends APIError {
 export class ForbiddenError extends APIError {
   constructor(message: string = ErrorMessages.FORBIDDEN) {
     super(message, HttpStatus.FORBIDDEN);
-    this.name = "ForbiddenError";
+    this.name = 'ForbiddenError';
   }
 }
 
@@ -75,13 +78,13 @@ export class ForbiddenError extends APIError {
 export class ConflictError extends APIError {
   constructor(message: string = ErrorMessages.CONFLICT) {
     super(message, HttpStatus.CONFLICT);
-    this.name = "ConflictError";
+    this.name = 'ConflictError';
   }
 }
 
 // Global error handler middleware
 export async function errorHandler(err: Error, c: Context) {
-  console.error("[ERROR]", err);
+  console.error('[ERROR]', err);
 
   // Handle Zod validation errors
   if (err instanceof ZodError) {
@@ -89,7 +92,7 @@ export async function errorHandler(err: Error, c: Context) {
       c,
       ErrorMessages.VALIDATION_ERROR,
       formatZodErrors(err),
-      HttpStatus.UNPROCESSABLE_ENTITY as StatusCode,
+      HttpStatus.UNPROCESSABLE_ENTITY as StatusCode
     );
   }
 
@@ -105,55 +108,58 @@ export async function errorHandler(err: Error, c: Context) {
 
   // Handle specific error types by message (legacy support)
   if (
-    err.message?.includes("not found") ||
-    err.message?.includes("Not found")
+    err.message?.includes('not found') ||
+    err.message?.includes('Not found')
   ) {
     return errorResponse(
       c,
       ErrorMessages.NOT_FOUND,
       null,
-      HttpStatus.NOT_FOUND,
+      HttpStatus.NOT_FOUND
     );
   }
 
-  if (err.message?.toLowerCase().includes("unauthorized")) {
+  if (err.message?.toLowerCase().includes('unauthorized')) {
     return errorResponse(
       c,
       ErrorMessages.UNAUTHORIZED,
       null,
-      HttpStatus.UNAUTHORIZED,
+      HttpStatus.UNAUTHORIZED
     );
   }
 
   if (
-    err.message?.toLowerCase().includes("conflict") ||
-    err.message?.includes("already exists")
+    err.message?.toLowerCase().includes('conflict') ||
+    err.message?.includes('already exists')
   ) {
     return errorResponse(c, ErrorMessages.CONFLICT, null, HttpStatus.CONFLICT);
   }
 
   // Default: Internal Server Error
   // 🔒 FIX-006: Never expose stack traces - sanitize error messages
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProduction = process.env.NODE_ENV === 'production';
 
   // Sanitize error message - remove internal paths and sensitive info
   const sanitizeMessage = (msg: string): string => {
-    const urlPlaceholder = "___URL_PLACEHOLDER___";
+    const urlPlaceholder = '___URL_PLACEHOLDER___';
     const urlRegex = /https?:\/\/[^\s'")\]}]+/g;
     const lines = msg.split('\n');
-    const sanitizedLines = lines.map(line => {
+    const sanitizedLines = lines.map((line) => {
       const urls: string[] = [];
       const lineWithPlaceholders = line.replace(urlRegex, (match) => {
         urls.push(match);
         return urlPlaceholder;
       });
       let sanitized = lineWithPlaceholders
-        .replace(/[A-Za-z]:\\(?:[^\\]+\\)+/g, "[internal]")
-        .replace(/\/(?:[^/]+\/)+/g, "[internal]/")
-        .replace(/:\d+:\d+/g, ":line [hidden]:col [hidden]")
-        .replace(/:\d+\b/g, ":line [hidden]");
+        .replace(/[A-Za-z]:\\(?:[^\\]+\\)+/g, '[internal]')
+        .replace(/\/(?:[^/]+\/)+/g, '[internal]/')
+        .replace(/:\d+:\d+/g, ':line [hidden]:col [hidden]')
+        .replace(/:\d+\b/g, ':line [hidden]');
       let index = 0;
-      sanitized = sanitized.replace(new RegExp(urlPlaceholder, 'g'), () => urls[index++] || "");
+      sanitized = sanitized.replace(
+        new RegExp(urlPlaceholder, 'g'),
+        () => urls[index++] || ''
+      );
       return sanitized;
     });
     return sanitizedLines.join('\n');
@@ -169,7 +175,7 @@ export async function errorHandler(err: Error, c: Context) {
     c,
     ErrorMessages.INTERNAL_ERROR,
     errorDetails,
-    HttpStatus.INTERNAL_SERVER_ERROR,
+    HttpStatus.INTERNAL_SERVER_ERROR
   );
 }
 

@@ -1,25 +1,25 @@
-import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
-import { verifyAuth } from "../middleware/auth";
-import { db } from "../db/client";
-import { testimonials } from "../db/schema";
-import { eq, desc, asc } from "drizzle-orm";
-import { z } from "zod";
+import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
+import { verifyAuth } from '../middleware/auth';
+import { db } from '../db/client';
+import { testimonials } from '../db/schema';
+import { eq, desc, asc } from 'drizzle-orm';
+import { z } from 'zod';
 
 const testimonialsRouter = new Hono();
 
 const TestimonialSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   location: z.string().optional(),
   avatar_url: z.string().optional(),
   rating: z.number().min(1).max(5).default(5),
-  content: z.string().min(1, "Content is required"),
+  content: z.string().min(1, 'Content is required'),
   is_active: z.boolean().default(true),
   display_order: z.number().default(0),
 });
 
 // Public: Get all active testimonials (for storefront)
-testimonialsRouter.get("/store", async (c) => {
+testimonialsRouter.get('/store', async (c) => {
   try {
     const list = await db
       .select()
@@ -28,12 +28,12 @@ testimonialsRouter.get("/store", async (c) => {
       .orderBy(asc(testimonials.display_order), desc(testimonials.created_at));
     return c.json({ testimonials: list });
   } catch (error: any) {
-    return c.json({ error: "Failed to fetch testimonials" }, 500);
+    return c.json({ error: 'Failed to fetch testimonials' }, 500);
   }
 });
 
 // Admin: Get all testimonials
-testimonialsRouter.get("/", verifyAuth, async (c) => {
+testimonialsRouter.get('/', verifyAuth, async (c) => {
   try {
     const list = await db
       .select()
@@ -41,35 +41,36 @@ testimonialsRouter.get("/", verifyAuth, async (c) => {
       .orderBy(asc(testimonials.display_order), desc(testimonials.created_at));
     return c.json({ testimonials: list });
   } catch (error: any) {
-    return c.json({ error: "Failed to fetch testimonials" }, 500);
+    return c.json({ error: 'Failed to fetch testimonials' }, 500);
   }
 });
 
 // Admin: Get single testimonial
-testimonialsRouter.get("/:id", verifyAuth, async (c) => {
-  const id = c.req.param("id");
+testimonialsRouter.get('/:id', verifyAuth, async (c) => {
+  const id = c.req.param('id');
   try {
     const testimonial = await db.query.testimonials.findFirst({
       where: eq(testimonials.id, id),
     });
 
     if (!testimonial) {
-      return c.json({ error: "Testimonial not found" }, 404);
+      return c.json({ error: 'Testimonial not found' }, 404);
     }
 
     return c.json({ testimonial });
-  } catch (error) {
-    return c.json({ error: "Failed to fetch testimonial" }, 500);
+  } catch (error: unknown) {
+    console.error('Error fetching testimonial:', error);
+    return c.json({ error: 'Failed to fetch testimonial' }, 500);
   }
 });
 
 // Admin: Create testimonial
 testimonialsRouter.post(
-  "/",
+  '/',
   verifyAuth,
-  zValidator("json", TestimonialSchema),
+  zValidator('json', TestimonialSchema),
   async (c) => {
-    const data = c.req.valid("json");
+    const data = c.req.valid('json');
     try {
       const [newTestimonial] = await db
         .insert(testimonials)
@@ -87,21 +88,21 @@ testimonialsRouter.post(
       return c.json({ testimonial: newTestimonial }, 201);
     } catch (error: any) {
       return c.json(
-        { error: error.message || "Failed to create testimonial" },
-        500,
+        { error: error.message || 'Failed to create testimonial' },
+        500
       );
     }
-  },
+  }
 );
 
 // Admin: Update testimonial
 testimonialsRouter.put(
-  "/:id",
+  '/:id',
   verifyAuth,
-  zValidator("json", TestimonialSchema.partial()),
+  zValidator('json', TestimonialSchema.partial()),
   async (c) => {
-    const id = c.req.param("id");
-    const data = c.req.valid("json");
+    const id = c.req.param('id');
+    const data = c.req.valid('json');
     try {
       const [updatedTestimonial] = await db
         .update(testimonials)
@@ -115,21 +116,24 @@ testimonialsRouter.put(
       return c.json({ testimonial: updatedTestimonial });
     } catch (error: any) {
       return c.json(
-        { error: error.message || "Failed to update testimonial" },
-        500,
+        { error: error.message || 'Failed to update testimonial' },
+        500
       );
     }
-  },
+  }
 );
 
 // Admin: Delete testimonial
-testimonialsRouter.delete("/:id", verifyAuth, async (c) => {
-  const id = c.req.param("id");
+testimonialsRouter.delete('/:id', verifyAuth, async (c) => {
+  const id = c.req.param('id');
   try {
     await db.delete(testimonials).where(eq(testimonials.id, id));
     return c.json({ success: true });
   } catch (error: any) {
-    return c.json({ error: error.message || "Failed to delete testimonial" }, 500);
+    return c.json(
+      { error: error.message || 'Failed to delete testimonial' },
+      500
+    );
   }
 });
 

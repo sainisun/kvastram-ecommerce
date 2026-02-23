@@ -35,14 +35,21 @@ interface QuickViewModalProps {
   onClose: () => void;
 }
 
-export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps) {
+export function QuickViewModal({
+  product,
+  isOpen,
+  onClose,
+}: QuickViewModalProps) {
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [reviews, setReviews] = useState<{ rating: number; review_count: number }>({ rating: 0, review_count: 0 });
+  const [reviews, setReviews] = useState<{
+    rating: number;
+    review_count: number;
+  }>({ rating: 0, review_count: 0 });
   const { addItem } = useCart();
   const addedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -70,20 +77,27 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   useEffect(() => {
     if (isOpen && product.id) {
       let cancelled = false;
-      api.getReviews(product.id)
-        .then(data => {
+      api
+        .getReviews(product.id)
+        .then((data) => {
           if (cancelled) return;
           const reviewList = data.reviews || [];
           if (reviewList.length > 0) {
-            const avgRating = reviewList.reduce((acc: number, r: { rating: number }) => acc + r.rating, 0) / reviewList.length;
+            const avgRating =
+              reviewList.reduce(
+                (acc: number, r: { rating: number }) => acc + r.rating,
+                0
+              ) / reviewList.length;
             setReviews({ rating: avgRating, review_count: reviewList.length });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           if (cancelled) return;
           console.error('Failed to fetch reviews:', err);
         });
-      return () => { cancelled = true; };
+      return () => {
+        cancelled = true;
+      };
     }
   }, [isOpen, product.id]);
 
@@ -91,7 +105,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
-      
+
       if (e.key === 'Escape') {
         onClose();
       } else if (e.key === 'ArrowLeft') {
@@ -117,9 +131,11 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     };
   }, [isOpen]);
 
-  const images = product.images?.length 
-    ? product.images.map((img: any) => typeof img === 'string' ? img : img.url)
-    : [product.thumbnail].filter(Boolean) as string[];
+  const images = product.images?.length
+    ? product.images.map((img: any) =>
+        typeof img === 'string' ? img : img.url
+      )
+    : ([product.thumbnail].filter(Boolean) as string[]);
   const displayPrice = selectedVariant?.prices?.[0]?.amount || 0;
 
   const nextImage = () => {
@@ -127,7 +143,9 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + (images.length || 1)) % (images.length || 1));
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + (images.length || 1)) % (images.length || 1)
+    );
   };
 
   const handleAddToCart = async () => {
@@ -142,7 +160,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
         title: product.title,
         price: displayPrice,
         currency: currency.toUpperCase(),
-        thumbnail: product.thumbnail || undefined
+        thumbnail: product.thumbnail || undefined,
       });
       setAdded(true);
       // Clear previous timeout if exists
@@ -182,7 +200,9 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             <div className="h-full flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
-                <h2 className="text-lg font-serif text-stone-900 truncate">{product.title}</h2>
+                <h2 className="text-lg font-serif text-stone-900 truncate">
+                  {product.title}
+                </h2>
                 <button
                   onClick={onClose}
                   className="p-2 hover:bg-stone-100 rounded-full transition-colors"
@@ -201,7 +221,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                       <>
                         <div className="relative w-full max-w-md aspect-square">
                           <Image
-                            src={images[currentImageIndex] || '/images/placeholder.jpg'}
+                            src={
+                              images[currentImageIndex] ||
+                              '/images/placeholder.jpg'
+                            }
                             alt={product.title}
                             fill
                             className="object-cover rounded-lg"
@@ -250,7 +273,8 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                       <div className="flex items-center gap-2 mb-4">
                         <StarRating rating={reviews.rating} size={16} />
                         <span className="text-sm text-stone-500">
-                          {reviews.rating.toFixed(1)} ({reviews.review_count} reviews)
+                          {reviews.rating.toFixed(1)} ({reviews.review_count}{' '}
+                          reviews)
                         </span>
                       </div>
                     )}
@@ -305,7 +329,9 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                         >
                           -
                         </button>
-                        <span className="px-4 py-2 min-w-[3rem] text-center">{quantity}</span>
+                        <span className="px-4 py-2 min-w-[3rem] text-center">
+                          {quantity}
+                        </span>
                         <button
                           onClick={() => setQuantity(quantity + 1)}
                           className="px-4 py-2 hover:bg-stone-100 transition-colors"
@@ -329,7 +355,11 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                         {adding ? (
                           <motion.div
                             animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                            transition={{
+                              duration: 1,
+                              repeat: Infinity,
+                              ease: 'linear',
+                            }}
                           >
                             <ShoppingBag size={18} />
                           </motion.div>

@@ -24,7 +24,11 @@ export default function LoginPage() {
 
     try {
       console.log('[PAGE] Login attempt');
-      const result = await api.login(email, password, show2FA ? twoFactorCode : undefined);
+      const result = await api.login(
+        email,
+        password,
+        show2FA ? twoFactorCode : undefined
+      );
       console.log('[PAGE] Login succeeded');
 
       // Use context login to update state globally
@@ -55,9 +59,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div suppressHydrationWarning className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div
+      suppressHydrationWarning
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+    >
       <div className="w-full max-w-md p-8 space-y-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl relative overflow-hidden">
-
         {/* Background blobs for aesthetics */}
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-purple-500/30 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/30 rounded-full blur-3xl"></div>
@@ -73,7 +79,10 @@ export default function LoginPage() {
           {!show2FA ? (
             <>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2 flex items-center gap-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-200 mb-2 flex items-center gap-2"
+                >
                   <Mail size={16} /> Email
                 </label>
                 <input
@@ -88,7 +97,10 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2 flex items-center gap-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-200 mb-2 flex items-center gap-2"
+                >
                   <Lock size={16} /> Password
                 </label>
                 <input
@@ -108,14 +120,19 @@ export default function LoginPage() {
                 Enter the 6-digit code from your authenticator app to continue.
               </div>
               <div>
-                <label htmlFor="2fa" className="block text-sm font-medium text-gray-200 mb-2 flex items-center gap-2">
+                <label
+                  htmlFor="2fa"
+                  className="block text-sm font-medium text-gray-200 mb-2 flex items-center gap-2"
+                >
                   <Shield size={16} /> Authentication Code
                 </label>
                 <input
                   id="2fa"
                   type="text"
                   value={twoFactorCode}
-                  onChange={(e) => setTwoFactorCode(e.target.value.replace(/[^0-9]/g, ''))}
+                  onChange={(e) =>
+                    setTwoFactorCode(e.target.value.replace(/[^0-9]/g, ''))
+                  }
                   required
                   maxLength={6}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-center text-2xl tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
@@ -126,7 +143,10 @@ export default function LoginPage() {
               <div className="text-center mt-2">
                 <button
                   type="button"
-                  onClick={() => { setShow2FA(false); setTwoFactorCode(''); }}
+                  onClick={() => {
+                    setShow2FA(false);
+                    setTwoFactorCode('');
+                  }}
                   className="text-sm text-gray-400 hover:text-white underline"
                 >
                   Back to Login
@@ -140,7 +160,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-900/50"
           >
-            {loading ? 'Verifying...' : (show2FA ? 'Verify Code' : 'Sign In')}
+            {loading ? 'Verifying...' : show2FA ? 'Verify Code' : 'Sign In'}
             {!loading && <ArrowRight size={18} />}
           </button>
         </form>

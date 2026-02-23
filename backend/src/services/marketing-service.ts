@@ -1,7 +1,7 @@
-import { db } from "../db/client";
-import { campaigns, discounts } from "../db/schema";
-import { eq, desc } from "drizzle-orm";
-import { z } from "zod";
+import { db } from '../db/client';
+import { campaigns, discounts } from '../db/schema';
+import { eq, desc } from 'drizzle-orm';
+import { z } from 'zod';
 
 // --- ZOD SCHEMAS ---
 // (Moved from routes/marketing.ts)
@@ -9,8 +9,8 @@ import { z } from "zod";
 export const CampaignSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  type: z.enum(["promotion", "email", "social"]).optional(),
-  status: z.enum(["draft", "active", "paused", "completed"]).optional(),
+  type: z.enum(['promotion', 'email', 'social']).optional(),
+  status: z.enum(['draft', 'active', 'paused', 'completed']).optional(),
   start_date: z
     .string()
     .optional()
@@ -24,7 +24,7 @@ export const CampaignSchema = z.object({
 
 export const BaseDiscountSchema = z.object({
   code: z.string().min(3).toUpperCase(),
-  type: z.enum(["percentage", "fixed_amount", "free_shipping"]),
+  type: z.enum(['percentage', 'fixed_amount', 'free_shipping']),
   value: z.number().int().min(0),
   description: z.string().optional(),
   starts_at: z
@@ -41,22 +41,22 @@ export const BaseDiscountSchema = z.object({
   campaign_id: z
     .string()
     .optional()
-    .transform((val) => (val === "" ? undefined : val)),
+    .transform((val) => (val === '' ? undefined : val)),
 });
 
 export const DiscountSchema = BaseDiscountSchema.superRefine((data, ctx) => {
-  if (data.type === "percentage" && data.value > 100) {
+  if (data.type === 'percentage' && data.value > 100) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Percentage value cannot exceed 100",
-      path: ["value"],
+      message: 'Percentage value cannot exceed 100',
+      path: ['value'],
     });
   }
   if (data.starts_at && data.ends_at && data.starts_at > data.ends_at) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "End date cannot be before start date",
-      path: ["ends_at"],
+      message: 'End date cannot be before start date',
+      path: ['ends_at'],
     });
   }
 });

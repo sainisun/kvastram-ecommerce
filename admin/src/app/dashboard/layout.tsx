@@ -5,22 +5,20 @@ import Topbar from '@/components/layout/Topbar';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 export default function DashboardLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    return (
-        <ProtectedRoute>
-            <div className="min-h-screen bg-slate-50">
-                <Sidebar />
-                <Topbar />
+  return (
+    <ProtectedRoute>
+      <div className="min-h-screen bg-slate-50">
+        <Sidebar />
+        <Topbar />
 
-                <main className="ml-64 pt-16 min-h-screen transition-all">
-                    <div className="p-8">
-                        {children}
-                    </div>
-                </main>
-            </div>
-        </ProtectedRoute>
-    );
+        <main className="ml-64 pt-16 min-h-screen transition-all">
+          <div className="p-8">{children}</div>
+        </main>
+      </div>
+    </ProtectedRoute>
+  );
 }

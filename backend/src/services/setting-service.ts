@@ -1,20 +1,20 @@
-import { db } from "../db/client";
-import { settings } from "../db/schema";
-import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { db } from '../db/client';
+import { settings } from '../db/schema';
+import { eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 export const SettingSchema = z.object({
   key: z.string().min(1),
   value: z.any(),
   category: z
     .enum([
-      "general",
-      "homepage",
-      "notifications",
-      "security",
-      "email",
-      "payment",
-      "shipping",
+      'general',
+      'homepage',
+      'notifications',
+      'security',
+      'email',
+      'payment',
+      'shipping',
     ])
     .optional(),
 });
@@ -26,7 +26,7 @@ class SettingService {
     const allSettings = await db.select().from(settings);
     // Group by category
     return allSettings.reduce((acc: any, setting) => {
-      const category = setting.category || "general";
+      const category = setting.category || 'general';
       if (!acc[category]) {
         acc[category] = {};
       }
@@ -75,7 +75,7 @@ class SettingService {
         .values({
           key: data.key,
           value: data.value,
-          category: data.category || "general",
+          category: data.category || 'general',
         })
         .returning();
     }

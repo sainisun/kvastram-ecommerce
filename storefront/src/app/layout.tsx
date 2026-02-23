@@ -1,31 +1,30 @@
-
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { ShopProvider } from "@/context/shop-context";
-import { AuthProvider } from "@/context/auth-context";
-import { CartProvider } from "@/context/cart-context";
-import { WishlistProvider } from "@/context/wishlist-context";
-import { NotificationProvider } from "@/context/notification-context";
-import { RecentlyViewedProvider } from "@/context/recently-viewed-context";
-import { WholesaleProvider } from "@/context/wholesale-context";
-import { WholesaleCartProvider } from "@/context/wholesale-cart-context";
-import { MainLayout } from "@/components/layout/MainLayout";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Analytics } from "@/components/Analytics";
-import { LogRocketProvider } from "@/components/LogRocketProvider";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ShopProvider } from '@/context/shop-context';
+import { AuthProvider } from '@/context/auth-context';
+import { CartProvider } from '@/context/cart-context';
+import { WishlistProvider } from '@/context/wishlist-context';
+import { NotificationProvider } from '@/context/notification-context';
+import { RecentlyViewedProvider } from '@/context/recently-viewed-context';
+import { WholesaleProvider } from '@/context/wholesale-context';
+import { WholesaleCartProvider } from '@/context/wholesale-cart-context';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Analytics } from '@/components/Analytics';
+import { LogRocketProvider } from '@/components/LogRocketProvider';
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+  variable: '--font-inter',
+  subsets: ['latin'],
   display: 'swap',
 });
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
 
 export const metadata: Metadata = {
-  title: "Kvastram | Modern International Fashion",
-  description: "Premium clothing for the global citizen.",
+  title: 'Kvastram | Modern International Fashion',
+  description: 'Premium clothing for the global citizen.',
   metadataBase: new URL(baseUrl),
   alternates: {
     canonical: '/',
@@ -65,8 +64,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Preconnect to API and CDN for faster loading */}
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'} />
-        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}
+        />
+        <link
+          rel="preconnect"
+          href="https://res.cloudinary.com"
+          crossOrigin="anonymous"
+        />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
         {/* Tawk.to Chat Widget */}
@@ -97,9 +103,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body
-        className={`${inter.variable} antialiased bg-white text-stone-900`}
-      >
+      <body className={`${inter.variable} antialiased bg-white text-stone-900`}>
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"

@@ -1,12 +1,15 @@
-import { db } from "../db/client";
-import { customers } from "../db/schema";
-import { eq, sql } from "drizzle-orm";
-import bcrypt from "bcryptjs";
-import { sign, verify } from "hono/jwt";
-import { z } from "zod";
-import { config } from "../config";
-import crypto from "crypto";
-import { validatePassword, isCommonPassword } from "../utils/password-validator";
+import { db } from '../db/client';
+import { customers } from '../db/schema';
+import { eq, sql } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
+import { sign, verify } from 'hono/jwt';
+import { z } from 'zod';
+import { config } from '../config';
+import crypto from 'crypto';
+import {
+  validatePassword,
+  isCommonPassword,
+} from '../utils/password-validator';
 
 const JWT_SECRET = config.jwt.secret;
 
@@ -21,7 +24,7 @@ const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
  * Generate a secure verification token
  */
 export function generateVerificationToken(): string {
-  return crypto.randomBytes(32).toString("hex");
+  return crypto.randomBytes(32).toString('hex');
 }
 
 /**
@@ -90,16 +93,19 @@ async function resetFailedAttempts(customerId: string): Promise<void> {
 }
 
 export const RegisterCustomerSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z.string().email('Invalid email address'),
   password: z
     .string()
-    .min(12, "Password must be at least 12 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character"),
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
+    .min(12, 'Password must be at least 12 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(
+      /[!@#$%^&*(),.?":{}|<>]/,
+      'Password must contain at least one special character'
+    ),
+  first_name: z.string().min(1, 'First name is required'),
+  last_name: z.string().min(1, 'Last name is required'),
   phone: z.string().optional(),
 });
 
@@ -117,24 +123,31 @@ export const customerAuthService = {
       .limit(1);
 
     if (!customer) {
-      throw new Error("Invalid or expired token");
+      throw new Error('Invalid or expired token');
     }
 
-    if (customer.verification_expires_at && customer.verification_expires_at < new Date()) {
-      throw new Error("Token has expired");
+    if (
+      customer.verification_expires_at &&
+      customer.verification_expires_at < new Date()
+    ) {
+      throw new Error('Token has expired');
     }
 
-    if (customer.password_hash && customer.password_hash !== "") {
-      throw new Error("Password already set");
+    if (customer.password_hash && customer.password_hash !== '') {
+      throw new Error('Password already set');
     }
 
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
-      throw new Error(`Password does not meet requirements: ${passwordValidation.errors.join(", ")}`);
+      throw new Error(
+        `Password does not meet requirements: ${passwordValidation.errors.join(', ')}`
+      );
     }
 
     if (isCommonPassword(password)) {
-      throw new Error("Password is too common. Please choose a more secure password.");
+      throw new Error(
+        'Password is too common. Please choose a more secure password.'
+      );
     }
 
     const password_hash = await bcrypt.hash(password, 10);
@@ -163,12 +176,16 @@ export const customerAuthService = {
     // 🔒 Q10: Validate password strength
     const passwordValidation = validatePassword(data.password);
     if (!passwordValidation.valid) {
-      throw new Error(`Password does not meet requirements: ${passwordValidation.errors.join(", ")}`);
+      throw new Error(
+        `Password does not meet requirements: ${passwordValidation.errors.join(', ')}`
+      );
     }
 
     // 🔒 Q10: Check for common passwords
     if (isCommonPassword(data.password)) {
-      throw new Error("Password is too common. Please choose a more secure password.");
+      throw new Error(
+        'Password is too common. Please choose a more secure password.'
+      );
     }
 
     const password_hash = await bcrypt.hash(data.password, 10);
@@ -176,7 +193,7 @@ export const customerAuthService = {
     if (existing.length > 0) {
       const customer = existing[0];
       if (customer.has_account) {
-        throw new Error("Customer already has an account");
+        throw new Error('Customer already has an account');
       }
 
       // Upgrade guest to account
@@ -222,14 +239,14 @@ export const customerAuthService = {
 
       // Send verification email
       try {
-        const { emailService } = await import("./email-service");
+        const { emailService } = await import('./email-service');
         await emailService.sendVerificationEmail({
           email: newCustomer.email!,
           first_name: newCustomer.first_name!,
           token: verificationToken,
         });
-      } catch (emailError) {
-        console.error("Failed to send verification email:", emailError);
+      } catch (emailError: unknown) {
+        console.error('Failed to send verification email:', emailError);
       }
 
       return newCustomer;
@@ -247,7 +264,7 @@ export const customerAuthService = {
       !existing[0].has_account ||
       !existing[0].password_hash
     ) {
-      throw new Error("Invalid email or password");
+      throw new Error('Invalid email or password');
     }
 
     const customer = existing[0];
@@ -267,16 +284,22 @@ export const customerAuthService = {
       const newFailedAttempts = (customer.failed_login_attempts || 0) + 1;
       if (newFailedAttempts >= MAX_FAILED_ATTEMPTS) {
         await lockAccount(customer.id);
-        throw new Error(getLockoutMessage(new Date(Date.now() + LOCKOUT_DURATION_MS)));
+        throw new Error(
+          getLockoutMessage(new Date(Date.now() + LOCKOUT_DURATION_MS))
+        );
       }
 
       const attemptsRemaining = MAX_FAILED_ATTEMPTS - newFailedAttempts;
-      throw new Error(`Invalid credentials. ${attemptsRemaining} attempts remaining before lockout.`);
+      throw new Error(
+        `Invalid credentials. ${attemptsRemaining} attempts remaining before lockout.`
+      );
     }
 
     // 🔒 FIX-011: Check if email is verified AFTER password validation
     if (!customer.email_verified) {
-      throw new Error("Please verify your email before logging in. Check your inbox for the verification link.");
+      throw new Error(
+        'Please verify your email before logging in. Check your inbox for the verification link.'
+      );
     }
 
     // 🔒 Q9: Reset failed attempts on successful login
@@ -285,10 +308,10 @@ export const customerAuthService = {
     const token = await sign(
       {
         sub: customer.id,
-        role: "customer",
+        role: 'customer',
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
       },
-      JWT_SECRET,
+      JWT_SECRET
     );
 
     return { token, customer };
@@ -305,17 +328,20 @@ export const customerAuthService = {
       .limit(1);
 
     if (!customer) {
-      throw new Error("Invalid verification token");
+      throw new Error('Invalid verification token');
     }
 
     // Check if token has expired
-    if (customer.verification_expires_at && customer.verification_expires_at < new Date()) {
-      throw new Error("Verification token has expired");
+    if (
+      customer.verification_expires_at &&
+      customer.verification_expires_at < new Date()
+    ) {
+      throw new Error('Verification token has expired');
     }
 
     // Check if already verified
     if (customer.email_verified) {
-      throw new Error("Email is already verified");
+      throw new Error('Email is already verified');
     }
 
     // Update customer to verified
@@ -341,11 +367,11 @@ export const customerAuthService = {
       .limit(1);
 
     if (!customer) {
-      throw new Error("Customer not found");
+      throw new Error('Customer not found');
     }
 
     if (customer.email_verified) {
-      throw new Error("Email is already verified");
+      throw new Error('Email is already verified');
     }
 
     // Generate new verification token
@@ -364,18 +390,18 @@ export const customerAuthService = {
 
     // Send verification email
     try {
-      const { emailService } = await import("./email-service");
+      const { emailService } = await import('./email-service');
       await emailService.sendVerificationEmail({
         email: customer.email!,
         first_name: customer.first_name!,
         token: verificationToken,
       });
-    } catch (emailError) {
-      console.error("Failed to send verification email:", emailError);
-      throw new Error("Failed to send verification email");
+    } catch (emailError: unknown) {
+      console.error('Failed to send verification email:', emailError);
+      throw new Error('Failed to send verification email');
     }
 
-    return { message: "Verification email sent" };
+    return { message: 'Verification email sent' };
   },
 
   async getVerificationStatus(email: string) {
@@ -402,7 +428,7 @@ export const customerAuthService = {
   async getCustomer(token: string) {
     try {
       // Verify and decode the JWT token
-      const payload = await verify(token, JWT_SECRET, "HS256");
+      const payload = await verify(token, JWT_SECRET, 'HS256');
       const customerId = payload.sub as string;
 
       const [customer] = await db
@@ -421,18 +447,24 @@ export const customerAuthService = {
         .limit(1);
 
       if (!customer) {
-        throw new Error("Customer not found");
+        throw new Error('Customer not found');
       }
 
       return { customer };
-    } catch (error) {
-      throw new Error("Invalid or expired token");
+    } catch (error: unknown) {
+      throw new Error('Invalid or expired token');
     }
   },
 
   // Social Login (Google/Facebook)
-  async socialLogin({ provider, providerId, email, name, avatar }: {
-    provider: "google" | "facebook";
+  async socialLogin({
+    provider,
+    providerId,
+    email,
+    name,
+    avatar,
+  }: {
+    provider: 'google' | 'facebook';
     providerId: string;
     email: string;
     name?: string;
@@ -449,9 +481,9 @@ export const customerAuthService = {
 
     if (!customer) {
       // Create new customer
-      const nameParts = (name || "").split(" ");
-      const firstName = nameParts[0] || "";
-      const lastName = nameParts.slice(1).join(" ") || "";
+      const nameParts = (name || '').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
 
       [customer] = await db
         .insert(customers)
@@ -477,7 +509,7 @@ export const customerAuthService = {
         .update(customers)
         .set({
           metadata: {
-            ...(customer.metadata as Record<string, any> || {}),
+            ...((customer.metadata as Record<string, any>) || {}),
             provider,
             provider_id: providerId,
             avatar,
@@ -490,10 +522,10 @@ export const customerAuthService = {
     const token = await sign(
       {
         sub: customer.id,
-        role: "customer",
+        role: 'customer',
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
       },
-      JWT_SECRET,
+      JWT_SECRET
     );
 
     return { token, customer, isNewUser };

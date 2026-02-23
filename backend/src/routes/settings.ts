@@ -1,39 +1,39 @@
-import { Hono } from "hono";
-import { verifyAdmin } from "../middleware/auth"; // BUG-011 FIX: was verifyAuth
-import { z } from "zod";
-import { settingService, SettingSchema } from "../services/setting-service";
-import { db } from "../db/client";
-import { settings } from "../db/schema";
+import { Hono } from 'hono';
+import { verifyAdmin } from '../middleware/auth'; // BUG-011 FIX: was verifyAuth
+import { z } from 'zod';
+import { settingService, SettingSchema } from '../services/setting-service';
+import { db } from '../db/client';
+import { settings } from '../db/schema';
 
 const settingsRouter = new Hono();
 
 // DEFAULT VALUES - Always used as fallback
 const DEFAULT_NAV_LINKS = JSON.stringify([
-  { label: "Home", url: "/", order: 1 },
-  { label: "New Arrivals", url: "/products?sort=newest", order: 2 },
-  { label: "Shop", url: "/products", order: 3 },
-  { label: "Collections", url: "/collections", order: 4 },
-  { label: "Sale", url: "/sale", order: 5, highlight: true },
-  { label: "About", url: "/about", order: 6 },
-  { label: "Contact", url: "/contact", order: 7 }
+  { label: 'Home', url: '/', order: 1 },
+  { label: 'New Arrivals', url: '/products?sort=newest', order: 2 },
+  { label: 'Shop', url: '/products', order: 3 },
+  { label: 'Collections', url: '/collections', order: 4 },
+  { label: 'Sale', url: '/sale', order: 5, highlight: true },
+  { label: 'About', url: '/about', order: 6 },
+  { label: 'Contact', url: '/contact', order: 7 },
 ]);
 
 const DEFAULT_QUICK_LINKS = JSON.stringify([
-  { label: "Bestsellers", url: "/products?tag=bestseller", order: 1 },
-  { label: "New Arrivals", url: "/products?tag=new", order: 2 },
-  { label: "Collections", url: "/collections", order: 3 },
-  { label: "Sale", url: "/sale", order: 4, highlight: true }
+  { label: 'Bestsellers', url: '/products?tag=bestseller', order: 1 },
+  { label: 'New Arrivals', url: '/products?tag=new', order: 2 },
+  { label: 'Collections', url: '/collections', order: 3 },
+  { label: 'Sale', url: '/sale', order: 4, highlight: true },
 ]);
 
 const DEFAULT_STORE_INFO = {
-  store_logo_url: "",
-  store_address: "123 Fashion Avenue, New York, NY 10001",
-  store_phone: "+1 (555) 123-4567",
-  store_email: "support@kvastram.com"
+  store_logo_url: '',
+  store_address: '123 Fashion Avenue, New York, NY 10001',
+  store_phone: '+1 (555) 123-4567',
+  store_email: 'support@kvastram.com',
 };
 
 // Public: Get public settings for storefront (no auth required)
-settingsRouter.get("/public", async (c) => {
+settingsRouter.get('/public', async (c) => {
   try {
     const allSettings = await db.select().from(settings);
     const publicSettings = allSettings.filter((s: any) => s.is_public === true);
@@ -44,7 +44,7 @@ settingsRouter.get("/public", async (c) => {
 });
 
 // Public: Get homepage settings
-settingsRouter.get("/homepage", async (c) => {
+settingsRouter.get('/homepage', async (c) => {
   try {
     const allSettings = await db.select().from(settings);
     const homepageKeys = [
@@ -65,17 +65,19 @@ settingsRouter.get("/homepage", async (c) => {
       'nav_links',
       'quick_links',
     ];
-    const homepageSettings = allSettings.filter((s: any) => homepageKeys.includes(s.key));
+    const homepageSettings = allSettings.filter((s: any) =>
+      homepageKeys.includes(s.key)
+    );
     const settingsObj: Record<string, any> = {};
     homepageSettings.forEach((s: any) => {
       settingsObj[s.key] = s.value;
     });
 
     // Apply defaults if empty
-    if (!settingsObj.nav_links || settingsObj.nav_links === "") {
+    if (!settingsObj.nav_links || settingsObj.nav_links === '') {
       settingsObj.nav_links = DEFAULT_NAV_LINKS;
     }
-    if (!settingsObj.quick_links || settingsObj.quick_links === "") {
+    if (!settingsObj.quick_links || settingsObj.quick_links === '') {
       settingsObj.quick_links = DEFAULT_QUICK_LINKS;
     }
 
@@ -86,12 +88,19 @@ settingsRouter.get("/homepage", async (c) => {
 });
 
 // Public: Get store info (address, phone, email, logo)
-settingsRouter.get("/store-info", async (c) => {
+settingsRouter.get('/store-info', async (c) => {
   try {
     const allSettings = await db.select().from(settings);
-    const storeInfoKeys = ['store_logo_url', 'store_address', 'store_phone', 'store_email'];
-    const storeSettings = allSettings.filter((s: any) => storeInfoKeys.includes(s.key));
-    
+    const storeInfoKeys = [
+      'store_logo_url',
+      'store_address',
+      'store_phone',
+      'store_email',
+    ];
+    const storeSettings = allSettings.filter((s: any) =>
+      storeInfoKeys.includes(s.key)
+    );
+
     const settingsObj: Record<string, any> = { ...DEFAULT_STORE_INFO };
     storeSettings.forEach((s: any) => {
       if (s.value) {
@@ -106,7 +115,7 @@ settingsRouter.get("/store-info", async (c) => {
 });
 
 // Get all settings
-settingsRouter.get("/", verifyAdmin, async (c) => {
+settingsRouter.get('/', verifyAdmin, async (c) => {
   try {
     const allSettings = await settingService.getAll();
     return c.json({ settings: allSettings });
@@ -116,9 +125,9 @@ settingsRouter.get("/", verifyAdmin, async (c) => {
 });
 
 // Get settings by category
-settingsRouter.get("/category/:category", verifyAdmin, async (c) => {
+settingsRouter.get('/category/:category', verifyAdmin, async (c) => {
   try {
-    const category = c.req.param("category");
+    const category = c.req.param('category');
     const settingsObj = await settingService.getByCategory(category);
     return c.json({ category, settings: settingsObj });
   } catch (error: any) {
@@ -127,12 +136,12 @@ settingsRouter.get("/category/:category", verifyAdmin, async (c) => {
 });
 
 // Get single setting by key
-settingsRouter.get("/:key", verifyAdmin, async (c) => {
+settingsRouter.get('/:key', verifyAdmin, async (c) => {
   try {
-    const key = c.req.param("key");
+    const key = c.req.param('key');
     const setting = await settingService.getByKey(key);
 
-    if (!setting) return c.json({ error: "Setting not found" }, 404);
+    if (!setting) return c.json({ error: 'Setting not found' }, 404);
     return c.json({ setting });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
@@ -140,14 +149,14 @@ settingsRouter.get("/:key", verifyAdmin, async (c) => {
 });
 
 // Update or create setting
-settingsRouter.put("/:key", verifyAdmin, async (c) => {
+settingsRouter.put('/:key', verifyAdmin, async (c) => {
   try {
-    const key = c.req.param("key");
+    const key = c.req.param('key');
     const body = await c.req.json();
 
     // Basic validation on body structure
-    if (!body || typeof body.value === "undefined") {
-      return c.json({ error: "Value is required" }, 400);
+    if (!body || typeof body.value === 'undefined') {
+      return c.json({ error: 'Value is required' }, 400);
     }
 
     const result = await settingService.upsert(key, { key, ...body });
@@ -158,18 +167,18 @@ settingsRouter.put("/:key", verifyAdmin, async (c) => {
 });
 
 // Bulk update settings
-settingsRouter.post("/bulk", verifyAdmin, async (c) => {
+settingsRouter.post('/bulk', verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const { settings: settingsToUpdate } = body;
 
-    if (!settingsToUpdate || typeof settingsToUpdate !== "object") {
-      return c.json({ error: "Invalid settings format" }, 400);
+    if (!settingsToUpdate || typeof settingsToUpdate !== 'object') {
+      return c.json({ error: 'Invalid settings format' }, 400);
     }
 
     const results = await settingService.bulkUpsert(settingsToUpdate);
     return c.json({
-      message: "Settings updated",
+      message: 'Settings updated',
       count: results.length,
       settings: results,
     });
@@ -179,13 +188,13 @@ settingsRouter.post("/bulk", verifyAdmin, async (c) => {
 });
 
 // Delete setting
-settingsRouter.delete("/:key", verifyAdmin, async (c) => {
+settingsRouter.delete('/:key', verifyAdmin, async (c) => {
   try {
-    const key = c.req.param("key");
+    const key = c.req.param('key');
     const deleted = await settingService.delete(key);
 
-    if (!deleted) return c.json({ error: "Setting not found" }, 404);
-    return c.json({ message: "Setting deleted", setting: deleted });
+    if (!deleted) return c.json({ error: 'Setting not found' }, 404);
+    return c.json({ message: 'Setting deleted', setting: deleted });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
   }

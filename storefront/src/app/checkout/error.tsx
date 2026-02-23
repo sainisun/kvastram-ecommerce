@@ -13,7 +13,10 @@ export default function CheckoutError({
   return (
     <div className="min-h-screen bg-stone-50 pt-24 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Link href="/cart" className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-900 mb-8 text-sm transition-colors">
+        <Link
+          href="/cart"
+          className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-900 mb-8 text-sm transition-colors"
+        >
           <ArrowLeft size={16} /> Back to Cart
         </Link>
 
@@ -21,15 +24,17 @@ export default function CheckoutError({
           <div className="flex justify-center mb-6">
             <ShoppingBag size={48} className="text-stone-400" />
           </div>
-          <h1 className="text-3xl font-serif text-stone-900 mb-4">Checkout Error</h1>
+          <h1 className="text-3xl font-serif text-stone-900 mb-4">
+            Checkout Error
+          </h1>
           <p className="text-stone-600 mb-4 leading-relaxed">
-            We&apos;re sorry, but we encountered an issue processing your checkout. 
-            Your cart items are still saved.
+            We&apos;re sorry, but we encountered an issue processing your
+            checkout. Your cart items are still saved.
           </p>
           <p className="text-sm text-stone-500 mb-8">
             Please try again. If the problem persists, contact our support team.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={reset}
