@@ -741,7 +741,7 @@ export default function SettingsPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Nav Links (JSON)
                         <span className="ml-2 text-xs text-gray-400 font-normal">
-                          Array of (label, url, order, highlight)
+                          {'Array of (label, url, order, highlight)'}
                         </span>
                       </label>
                       <textarea
