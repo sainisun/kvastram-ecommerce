@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Banner } from '@/types';
 
@@ -68,7 +68,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
         >
           <div className="absolute inset-0 bg-stone-200">
-            <Image
+            <OptimizedImage
               src={banner.image_url}
               alt={banner.title}
               fill
@@ -104,14 +104,14 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 transition-colors z-20"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 transition-colors z-20 min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Previous slide"
           >
             <ChevronLeft size={48} />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 transition-colors z-20"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 transition-colors z-20 min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Next slide"
           >
             <ChevronRight size={48} />

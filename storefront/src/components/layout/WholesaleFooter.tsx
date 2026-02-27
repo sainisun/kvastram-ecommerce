@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { api } from '@/lib/api';
 import {
   Building2,
   Mail,
@@ -9,7 +11,35 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
+interface FooterSettings {
+  wholesale_footer_catalog_link?: string;
+  wholesale_footer_price_list_link?: string;
+  wholesale_footer_terms_link?: string;
+  wholesale_footer_shipping_link?: string;
+  wholesale_footer_return_link?: string;
+}
+
 export function WholesaleFooter() {
+  const [footerSettings, setFooterSettings] = useState<FooterSettings>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFooterSettings = async () => {
+      try {
+        const data = await api.getFooterSettings();
+        if (data.settings) {
+          setFooterSettings(data.settings);
+        }
+      } catch (error) {
+        console.error('Error fetching footer settings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFooterSettings();
+  }, []);
+
   return (
     <footer className="bg-stone-900 text-white">
       {/* Main Footer */}
@@ -99,49 +129,88 @@ export function WholesaleFooter() {
               </h4>
               <ul className="space-y-3 text-sm text-stone-400">
                 <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors flex items-center gap-2"
-                  >
-                    <Download size={14} />
-                    Product Catalog (PDF)
-                  </a>
+                  {footerSettings.wholesale_footer_catalog_link ? (
+                    <a
+                      href={footerSettings.wholesale_footer_catalog_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <Download size={14} />
+                      Product Catalog (PDF)
+                    </a>
+                  ) : (
+                    <span className="flex items-center gap-2 opacity-50">
+                      <Download size={14} />
+                      Product Catalog (PDF)
+                    </span>
+                  )}
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors flex items-center gap-2"
-                  >
-                    <Download size={14} />
-                    Price List 2024
-                  </a>
+                  {footerSettings.wholesale_footer_price_list_link ? (
+                    <a
+                      href={footerSettings.wholesale_footer_price_list_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <Download size={14} />
+                      Price List
+                    </a>
+                  ) : (
+                    <span className="flex items-center gap-2 opacity-50">
+                      <Download size={14} />
+                      Price List
+                    </span>
+                  )}
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors flex items-center gap-2"
-                  >
-                    <FileText size={14} />
-                    Terms & Conditions
-                  </a>
+                  {footerSettings.wholesale_footer_terms_link ? (
+                    <a
+                      href={footerSettings.wholesale_footer_terms_link}
+                      className="hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <FileText size={14} />
+                      Terms & Conditions
+                    </a>
+                  ) : (
+                    <span className="flex items-center gap-2 opacity-50">
+                      <FileText size={14} />
+                      Terms & Conditions
+                    </span>
+                  )}
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors flex items-center gap-2"
-                  >
-                    <FileText size={14} />
-                    Shipping Policy
-                  </a>
+                  {footerSettings.wholesale_footer_shipping_link ? (
+                    <a
+                      href={footerSettings.wholesale_footer_shipping_link}
+                      className="hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <FileText size={14} />
+                      Shipping Policy
+                    </a>
+                  ) : (
+                    <span className="flex items-center gap-2 opacity-50">
+                      <FileText size={14} />
+                      Shipping Policy
+                    </span>
+                  )}
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors flex items-center gap-2"
-                  >
-                    <FileText size={14} />
-                    Return Policy
-                  </a>
+                  {footerSettings.wholesale_footer_return_link ? (
+                    <a
+                      href={footerSettings.wholesale_footer_return_link}
+                      className="hover:text-white transition-colors flex items-center gap-2"
+                    >
+                      <FileText size={14} />
+                      Return Policy
+                    </a>
+                  ) : (
+                    <span className="flex items-center gap-2 opacity-50">
+                      <FileText size={14} />
+                      Return Policy
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>

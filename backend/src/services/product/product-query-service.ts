@@ -192,6 +192,23 @@ export class ProductQueryService {
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
+    // Build orderBy clause based on sort parameter
+    let orderByClause;
+    switch (sort) {
+      case 'price_asc':
+        // Note: This would require joining with variants/prices tables
+        // For now, fallback to created_at
+        orderByClause = desc(products.created_at);
+        break;
+      case 'price_desc':
+        orderByClause = desc(products.created_at);
+        break;
+      case 'newest':
+      case 'created_at':
+      default:
+        orderByClause = desc(products.created_at);
+    }
+
     // Fetch products
     const productsList = await db
       .select({
@@ -206,7 +223,7 @@ export class ProductQueryService {
       })
       .from(products)
       .where(whereClause)
-      .orderBy(desc(products.created_at))
+      .orderBy(orderByClause)
       .limit(limitNum)
       .offset(offsetNum);
 

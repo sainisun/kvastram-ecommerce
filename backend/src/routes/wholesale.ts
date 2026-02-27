@@ -62,14 +62,19 @@ app.post('/', zValidator('json', createInquirySchema), async (c) => {
       })
       .returning();
 
-    // Send email notifications (non-blocking in background)
-    Promise.all([
-      emailService.sendInquiryReceived({
-        email: inquiry.email,
-        contact_name: inquiry.contact_name,
-      }),
-      emailService.sendNewInquiryAlert(inquiry),
-    ]).catch((err) => console.error('Error sending emails:', err));
+    // Send email notifications - await to ensure delivery
+    try {
+      await Promise.all([
+        emailService.sendInquiryReceived({
+          email: inquiry.email,
+          contact_name: inquiry.contact_name,
+        }),
+        emailService.sendNewInquiryAlert(inquiry),
+      ]);
+    } catch (emailError) {
+      // Log but don't fail the request - inquiry was saved successfully
+      console.error('Error sending inquiry notification emails:', emailError);
+    }
 
     return c.json(
       {

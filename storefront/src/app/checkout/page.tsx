@@ -4,7 +4,6 @@ import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { api } from '@/lib/api';
-import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
   ArrowLeft,
@@ -15,7 +14,7 @@ import {
 } from 'lucide-react';
 import SecurityBadges, { PaymentIcons } from '@/components/ui/SecurityBadges';
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   Elements,
@@ -30,23 +29,24 @@ import { CheckoutSkeleton } from '@/components/ui/Skeleton';
 
 // Initialize Stripe
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-if (!stripeKey) {
-  console.error(
-    'Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable'
-  );
-}
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
+
+interface ShippingOption {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  estimated_days: string;
+  currency_code: string;
+}
 
 // Payment Form Component
 function PaymentForm({
   orderId,
-  // clientSecret is passed for Stripe Elements but may be used by parent
-  clientSecret: _clientSecret,
   onSuccess,
   onError,
 }: {
   orderId: string;
-  clientSecret: string;
   onSuccess: () => void;
   onError: (msg: string) => void;
 }) {
@@ -134,7 +134,7 @@ function ExpressCheckoutForm({
       } else {
         onSuccess();
       }
-    } catch (err) {
+    } catch (_err) {
       onError('An unexpected error occurred during payment');
     } finally {
       setIsLoading(false);
@@ -171,7 +171,6 @@ export default function CheckoutPage() {
   const { customer, loading: authLoading } = useAuth();
   const { items, cartTotal, clearCart } = useCart();
   const { currentRegion, settings } = useShop();
-  const router = useRouter();
 
   // Initialize all hooks FIRST - before any conditionals
   const [loading, setLoading] = useState(false);
@@ -195,8 +194,8 @@ export default function CheckoutPage() {
   } | null>(null);
 
   // PHASE 1.3: Shipping Options State
-  const [shippingOptions, setShippingOptions] = useState<any[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<any>(null);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(25000);
 
@@ -216,6 +215,7 @@ export default function CheckoutPage() {
     address_1: '',
     address_2: '',
     city: '',
+    province: '',
     country_code: '',
     postal_code: '',
     phone: customer?.phone || '',
@@ -416,10 +416,6 @@ export default function CheckoutPage() {
         throw new Error('Please select a shipping method');
       }
 
-      // Calculate final shipping cost
-      const shippingCost =
-        cartTotal >= freeShippingThreshold ? 0 : selectedShipping?.price || 0;
-
       const payload = {
         region_id: currentRegion.id,
         email: formData.email,
@@ -434,6 +430,7 @@ export default function CheckoutPage() {
           address_1: formData.address_1,
           address_2: formData.address_2 || undefined,
           city: formData.city,
+          province: formData.province || undefined,
           country_code: formData.country_code,
           postal_code: formData.postal_code,
           phone: formData.phone || undefined,
@@ -453,10 +450,10 @@ export default function CheckoutPage() {
 
       // Move to payment step
       setStep('payment');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Order creation error:', err);
       const errorMsg =
-        err?.message || 'Failed to create order. Please try again.';
+        err instanceof Error ? err.message : 'Failed to create order. Please try again.';
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -638,6 +635,22 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
+                      <label htmlFor="province" className={labelClasses}>
+                        State/Province
+                      </label>
+                      <input
+                        id="province"
+                        type="text"
+                        name="province"
+                        value={formData.province}
+                        onChange={handleChange}
+                        className={inputClasses}
+                        autoComplete="address-level1"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
+                    <div>
                       <label htmlFor="postal_code" className={labelClasses}>
                         Postal Code
                       </label>
@@ -726,7 +739,7 @@ export default function CheckoutPage() {
                       {cartTotal >= freeShippingThreshold &&
                         selectedShipping && (
                           <p className="text-sm text-green-600 bg-green-50 p-3 border border-green-200">
-                            🎉 You've unlocked FREE shipping!
+                            🎉 You&apos;ve unlocked FREE shipping!
                           </p>
                         )}
                     </div>
@@ -815,7 +828,6 @@ export default function CheckoutPage() {
                   <Elements stripe={stripePromise} options={{ clientSecret }}>
                     <PaymentForm
                       orderId={orderId}
-                      clientSecret={clientSecret}
                       onSuccess={handlePaymentSuccess}
                       onError={handlePaymentError}
                     />
@@ -844,7 +856,7 @@ export default function CheckoutPage() {
                 <div key={item.variantId} className="flex gap-4">
                   <div className="relative w-20 h-24 bg-white border border-stone-200">
                     {item.thumbnail ? (
-                      <Image
+                      <OptimizedImage
                         src={item.thumbnail}
                         alt={item.title}
                         fill

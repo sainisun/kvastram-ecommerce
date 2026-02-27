@@ -114,6 +114,53 @@ settingsRouter.get('/store-info', async (c) => {
   }
 });
 
+// Public: Get footer settings for wholesale page
+settingsRouter.get('/footer', async (c) => {
+  try {
+    const allSettings = await db.select().from(settings);
+    const footerKeys = [
+      'wholesale_footer_catalog_link',
+      'wholesale_footer_price_list_link',
+      'wholesale_footer_terms_link',
+      'wholesale_footer_shipping_link',
+      'wholesale_footer_return_link',
+    ];
+    
+    const footerSettings = allSettings.filter((s: any) =>
+      footerKeys.includes(s.key)
+    );
+    
+    const settingsObj: Record<string, any> = {};
+    footerSettings.forEach((s: any) => {
+      settingsObj[s.key] = s.value;
+    });
+    
+    return c.json({ settings: settingsObj });
+  } catch (error: any) {
+    return c.json({ settings: {} }, 200);
+  }
+});
+
+// Public: Get wholesale pricing tiers for public page
+settingsRouter.get('/wholesale-tiers', async (c) => {
+  try {
+    const { wholesale_tiers } = await import('../db/schema');
+    const { eq, asc } = await import('drizzle-orm');
+    const { db } = await import('../db/client');
+    
+    const tiers = await db
+      .select()
+      .from(wholesale_tiers)
+      .where(eq(wholesale_tiers.active, true))
+      .orderBy(asc(wholesale_tiers.priority));
+    
+    return c.json({ tiers });
+  } catch (error: any) {
+    console.error('Error fetching wholesale tiers:', error);
+    return c.json({ tiers: [] }, 200);
+  }
+});
+
 // Get all settings
 settingsRouter.get('/', verifyAdmin, async (c) => {
   try {

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, ShoppingBag, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { StarRating } from '@/components/ui/StarRating';
@@ -101,6 +101,23 @@ export function QuickViewModal({
     }
   }, [isOpen, product.id]);
 
+  const images = product.images?.length
+    ? product.images.map((img: any) =>
+        typeof img === 'string' ? img : img.url
+      )
+    : ([product.thumbnail].filter(Boolean) as string[]);
+  const displayPrice = selectedVariant?.prices?.[0]?.amount || 0;
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % (images.length || 1));
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + (images.length || 1)) % (images.length || 1)
+    );
+  };
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -130,23 +147,6 @@ export function QuickViewModal({
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
-
-  const images = product.images?.length
-    ? product.images.map((img: any) =>
-        typeof img === 'string' ? img : img.url
-      )
-    : ([product.thumbnail].filter(Boolean) as string[]);
-  const displayPrice = selectedVariant?.prices?.[0]?.amount || 0;
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % (images.length || 1));
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex(
-      (prev) => (prev - 1 + (images.length || 1)) % (images.length || 1)
-    );
-  };
 
   const handleAddToCart = async () => {
     setAdding(true);
@@ -205,7 +205,7 @@ export function QuickViewModal({
                 </h2>
                 <button
                   onClick={onClose}
-                  className="p-2 hover:bg-stone-100 rounded-full transition-colors"
+                  className="p-2 min-h-[44px] min-w-[44px] hover:bg-stone-100 rounded-full transition-colors flex items-center justify-center"
                   aria-label="Close modal"
                 >
                   <X size={20} className="text-stone-600" />
@@ -220,7 +220,7 @@ export function QuickViewModal({
                     {images.length > 0 ? (
                       <>
                         <div className="relative w-full max-w-md aspect-square">
-                          <Image
+                          <OptimizedImage
                             src={
                               images[currentImageIndex] ||
                               '/images/placeholder.jpg'
@@ -237,14 +237,14 @@ export function QuickViewModal({
                           <>
                             <button
                               onClick={prevImage}
-                              className="absolute left-4 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors"
+                              className="absolute left-4 p-2 min-h-[44px] min-w-[44px] bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors flex items-center justify-center"
                               aria-label="Previous image"
                             >
                               <ChevronLeft size={20} />
                             </button>
                             <button
                               onClick={nextImage}
-                              className="absolute right-4 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors"
+                              className="absolute right-4 p-2 min-h-[44px] min-w-[44px] bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors flex items-center justify-center"
                               aria-label="Next image"
                             >
                               <ChevronRight size={20} />

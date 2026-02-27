@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ArrowRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import PageHero from '@/components/hero/PageHero';
@@ -45,7 +45,7 @@ export default async function CollectionsPage() {
           >
             <div className="w-full md:w-1/2 aspect-[4/3] bg-stone-100 relative group overflow-hidden cursor-pointer">
               {col.image ? (
-                <Image
+                <OptimizedImage
                   src={col.image}
                   alt={col.title}
                   fill

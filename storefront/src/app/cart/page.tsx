@@ -3,8 +3,9 @@
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { useNotification } from '@/context/notification-context';
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { api } from '@/lib/api';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import {
   Trash2,
@@ -14,6 +15,15 @@ import {
   ShoppingBag,
   AlertCircle,
 } from 'lucide-react';
+
+interface ShippingOption {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  estimated_days: string;
+  currency_code: string;
+}
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, cartTotal, clearCart } = useCart();
@@ -29,12 +39,51 @@ export default function CartPage() {
   // Get free shipping threshold from settings (default 25000 = $250)
   const freeShippingThreshold = settings?.free_shipping_threshold || 25000;
 
-  const formatPrice = (amount: number) => {
-    const currency = currentRegion?.currency_code?.toUpperCase() || 'USD';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-    }).format(amount / 100);
+  // Dynamic shipping state
+  const [countryCode, setCountryCode] = useState('');
+  const [_shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
+  const [selectedShippingOption, setSelectedShippingOption] = useState<string>('');
+  const [shippingLoading, setShippingLoading] = useState(false);
+
+  // Fetch shipping options when country changes
+  useEffect(() => {
+    const fetchShippingOptions = async () => {
+      if (!countryCode || !currentRegion?.id || items.length === 0) {
+        setShippingOptions([]);
+        setSelectedShipping(null);
+        setSelectedShippingOption('');
+        return;
+      }
+
+      setShippingLoading(true);
+      try {
+        const data = await api.getShippingOptions(countryCode, currentRegion.id);
+        if (data.options && data.options.length > 0) {
+          setShippingOptions(data.options);
+          // Auto-select first option
+          setSelectedShipping(data.options[0]);
+          setSelectedShippingOption(data.options[0].id);
+        }
+      } catch (error) {
+        console.error('Failed to fetch shipping options:', error);
+        setShippingOptions([]);
+        setSelectedShipping(null);
+        setSelectedShippingOption('');
+      } finally {
+        setShippingLoading(false);
+      }
+    };
+
+    const timer = setTimeout(fetchShippingOptions, 300);
+    return () => clearTimeout(timer);
+  }, [countryCode, items.length, currentRegion?.id]);
+
+  // Handle shipping option selection
+  const handleShippingOptionChange = (optionId: string) => {
+    setSelectedShippingOption(optionId);
+    const option = _shippingOptions.find(o => o.id === optionId);
+    setSelectedShipping(option || null);
   };
 
   const formatCartPrice = (amount: number) => {
@@ -50,19 +99,11 @@ export default function CartPage() {
     setPromoLoading(true);
 
     try {
-      // Simulate promo code validation (replace with actual API call)
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Demo: Accept "SAVE10" for 10% off
-      if (promoCode.toUpperCase() === 'SAVE10') {
-        const discountAmount = Math.round(cartTotal * 0.1);
-        setDiscount({ code: promoCode.toUpperCase(), amount: discountAmount });
-        showNotification('success', 'Promo code applied successfully!');
-      } else {
-        showNotification('error', 'Invalid promo code');
-      }
-    } catch (error) {
-      showNotification('error', 'Failed to apply promo code');
+      const res = await api.validateCoupon(promoCode, cartTotal);
+      setDiscount({ code: res.code, amount: res.discount_amount });
+      showNotification('success', `Coupon ${res.code} applied!`);
+    } catch (_error) {
+      showNotification('error', 'Invalid promo code');
     } finally {
       setPromoLoading(false);
     }
@@ -75,8 +116,20 @@ export default function CartPage() {
 
   const subtotal = cartTotal;
   const discountAmount = discount ? discount.amount : 0;
-  const shipping = subtotal >= freeShippingThreshold ? 0 : 1500; // Free shipping over threshold
-  const total = subtotal - discountAmount + shipping;
+  
+  // Calculate dynamic shipping cost - null represents "no shipping option selected"
+  let shippingCost: number | null = null;
+  if (selectedShipping && subtotal < freeShippingThreshold) {
+    shippingCost = selectedShipping.price;
+  } else if (subtotal >= freeShippingThreshold && selectedShipping) {
+    shippingCost = 0; // Free shipping when above threshold
+  } else if (!selectedShipping && subtotal >= freeShippingThreshold) {
+    shippingCost = 0; // No option but qualifies for free shipping
+  }
+  
+  // Use 0 for math when shippingCost is null, but track presence for display
+  const shippingCostForMath = shippingCost ?? 0;
+  const total = Math.max(0, subtotal - discountAmount + shippingCostForMath);
 
   if (items.length === 0) {
     return (
@@ -88,7 +141,7 @@ export default function CartPage() {
               Your cart is empty
             </h2>
             <p className="mt-2 text-stone-500">
-              Looks like you haven't added anything to your cart yet.
+              Looks like you haven&apos;t added anything to your cart yet.
             </p>
             <Link
               href="/products"
@@ -131,7 +184,7 @@ export default function CartPage() {
                   <div className="flex-shrink-0">
                     <div className="relative h-24 w-24 sm:h-32 sm:w-32 bg-stone-100 overflow-hidden">
                       {item.thumbnail ? (
-                        <Image
+                        <OptimizedImage
                           src={item.thumbnail}
                           alt={item.title}
                           fill
@@ -151,12 +204,16 @@ export default function CartPage() {
                       <div>
                         <div className="flex justify-between">
                           <h3 className="text-sm font-medium text-stone-900">
-                            <Link
-                              href={`/products/${item.variantId}`}
-                              className="hover:underline"
-                            >
-                              {item.title}
-                            </Link>
+                            {item.handle ? (
+                              <Link
+                                href={`/products/${item.handle}`}
+                                className="hover:underline"
+                              >
+                                {item.title}
+                              </Link>
+                            ) : (
+                              <span>{item.title}</span>
+                            )}
                           </h3>
                         </div>
                         <p className="mt-1 text-sm text-stone-500">
@@ -180,7 +237,7 @@ export default function CartPage() {
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity - 1)
                             }
-                            className="p-1 text-stone-400 hover:text-stone-600"
+                            className="p-1 min-h-[44px] min-w-[44px] text-stone-400 hover:text-stone-600 flex items-center justify-center"
                             aria-label="Decrease quantity"
                           >
                             <Minus size={16} />
@@ -199,7 +256,7 @@ export default function CartPage() {
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity + 1)
                             }
-                            className="p-1 text-stone-400 hover:text-stone-600"
+                            className="p-1 min-h-[44px] min-w-[44px] text-stone-400 hover:text-stone-600 flex items-center justify-center"
                             aria-label="Increase quantity"
                           >
                             <Plus size={16} />
@@ -210,7 +267,7 @@ export default function CartPage() {
                         <div className="absolute right-0 top-0">
                           <button
                             onClick={() => removeItem(item.variantId)}
-                            className="p-2 text-stone-400 hover:text-red-500 transition-colors"
+                            className="p-2 min-h-[44px] min-w-[44px] text-stone-400 hover:text-red-500 transition-colors flex items-center justify-center"
                             aria-label="Remove item"
                           >
                             <Trash2 size={18} />
@@ -285,9 +342,74 @@ export default function CartPage() {
                     </button>
                   </div>
                 )}
-                <p className="text-xs text-stone-500 mt-2">
-                  Try "SAVE10" for 10% off
-                </p>
+              </div>
+
+              {/* Country Selector for Shipping */}
+              <div className="mb-6">
+                <label className="block text-xs font-medium text-stone-500 mb-2">
+                  Shipping to
+                </label>
+                <select
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="w-full border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-stone-900"
+                >
+                  <option value="">Select country</option>
+                  <option value="US">United States</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="CA">Canada</option>
+                  <option value="AU">Australia</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="IN">India</option>
+                  <option value="JP">Japan</option>
+                </select>
+                {shippingLoading && (
+                  <p className="text-xs text-stone-500 mt-1">Loading shipping options...</p>
+                )}
+
+                {/* Shipping Options Radio Group */}
+                {_shippingOptions.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <label className="block text-xs font-medium text-stone-500 mb-2">
+                      Select shipping method
+                    </label>
+                    {_shippingOptions.map((option) => (
+                      <label
+                        key={option.id}
+                        className={`flex items-center justify-between p-3 border rounded-md cursor-pointer transition-colors ${
+                          selectedShippingOption === option.id
+                            ? 'border-stone-900 bg-stone-50'
+                            : 'border-stone-200 hover:border-stone-400'
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          <input
+                            type="radio"
+                            name="shipping-option"
+                            value={option.id}
+                            checked={selectedShippingOption === option.id}
+                            onChange={() => handleShippingOptionChange(option.id)}
+                            className="h-4 w-4 text-stone-900 focus:ring-stone-900"
+                          />
+                          <div className="ml-3">
+                            <p className="text-sm font-medium text-stone-900">
+                              {option.name}
+                            </p>
+                            <p className="text-xs text-stone-500">
+                              {option.description}{option.estimated_days && option.estimated_days.trim() !== '' ? ` (${option.estimated_days})` : null}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium text-stone-900">
+                          {subtotal >= freeShippingThreshold
+                            ? 'Free'
+                            : formatCartPrice(option.price)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Summary Details */}
@@ -310,14 +432,24 @@ export default function CartPage() {
                   <div className="flex items-center justify-between py-4">
                     <dt className="text-stone-600">
                       Shipping
-                      {shipping === 0 && (
+                      {shippingCost === 0 && subtotal >= freeShippingThreshold && (
                         <span className="ml-2 text-xs text-green-600">
-                          (Free over $250)
+                          (Free over {formatCartPrice(freeShippingThreshold)})
                         </span>
                       )}
                     </dt>
                     <dd className="font-medium text-stone-900">
-                      {shipping === 0 ? 'Free' : formatCartPrice(shipping)}
+                      {!countryCode ? (
+                        <span className="text-stone-400 text-sm">Calculated at checkout</span>
+                      ) : countryCode && _shippingOptions.length === 0 ? (
+                        <span className="text-stone-400 text-sm">Shipping unavailable</span>
+                      ) : !selectedShipping ? (
+                        <span className="text-stone-400 text-sm">Not available</span>
+                      ) : shippingCost === 0 ? (
+                        'Free'
+                      ) : (
+                        formatCartPrice(shippingCost ?? 0)
+                      )}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between py-4">
@@ -332,7 +464,7 @@ export default function CartPage() {
               </div>
 
               {/* Free Shipping Notice */}
-              {shipping > 0 && (
+              {(shippingCost === null || shippingCost > 0) && subtotal < freeShippingThreshold && (
                 <div className="mt-4 flex items-center gap-2 text-sm text-stone-500 bg-stone-50 p-3 rounded-md">
                   <AlertCircle size={16} />
                   <span>

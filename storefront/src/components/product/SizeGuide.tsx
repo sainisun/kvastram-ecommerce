@@ -227,7 +227,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               <div>
                 <p className="font-bold text-stone-900 mb-1">Hip</p>
                 <p>
-                  Measure around the fullest part of your hips, about 8" below
+                  Measure around the fullest part of your hips, about 8&quot; below
                   your waistline.
                 </p>
               </div>

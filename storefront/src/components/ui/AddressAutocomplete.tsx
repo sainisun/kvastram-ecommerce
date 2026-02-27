@@ -47,9 +47,15 @@ export function AddressAutocomplete({
     const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
     if (!API_KEY) {
-      console.warn('Google Maps API key not configured');
+      console.warn('Google Maps API key not configured - address autocomplete disabled');
       return;
     }
+
+    // SECURITY NOTE: For production, restrict API key in Google Cloud Console:
+    // 1. Set HTTP referrer restrictions to your domain
+    // 2. Restrict to Places API only
+    // 3. Enable billing on Google Cloud Platform
+    // Alternative: Create a server-side proxy API route
 
     // Load Google Maps script
     if (!window.google) {

@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { useShop } from '@/context/shop-context';
 import { useCart } from '@/context/cart-context';
 import { Loader2, Filter, ArrowLeft } from 'lucide-react';
@@ -275,7 +275,7 @@ function SearchContent() {
               >
                 <div className="aspect-[3/4] bg-stone-100 relative overflow-hidden mb-4 rounded-sm">
                   {product.thumbnail ? (
-                    <Image
+                    <OptimizedImage
                       src={product.thumbnail}
                       alt={product.title}
                       fill

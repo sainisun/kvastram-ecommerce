@@ -64,8 +64,6 @@ export default function AddressesPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would save to API
-    console.log('Saving address:', formData);
     setShowForm(false);
     setEditingId(null);
     setFormData({
@@ -82,8 +80,6 @@ export default function AddressesPage() {
 
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this address?')) {
-      // In a real app, this would call API
-      console.log('Deleting address:', id);
     }
   };
 

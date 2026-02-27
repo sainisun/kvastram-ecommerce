@@ -4,7 +4,7 @@ import HeroCarousel from '@/components/hero/HeroCarousel';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
 import { Star, Globe, ShieldCheck, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import NewsletterForm from '@/components/NewsletterForm';
 import { api } from '@/lib/api';
 import type { Metadata } from 'next';
@@ -69,18 +69,19 @@ export default async function Home() {
     accessories: '/images/home/category-accessories.jpg',
   };
 
+  // Normalize announcement bar settings to handle both string and boolean
+  const isAnnouncementEnabled = Boolean(homepageSettings.announcement_bar_enabled);
+  const announcementText = homepageSettings.announcement_bar_text || '';
+
   return (
     <>
       <div className="min-h-screen bg-white">
         {/* 1. Announcement Bar */}
-        {(homepageSettings.announcement_bar_enabled === 'true' ||
-          homepageSettings.announcement_bar_enabled === true) &&
-          homepageSettings.announcement_bar_text && (
-            <div className="bg-stone-900 text-white text-[10px] md:text-xs tracking-widest text-center py-3 uppercase font-medium">
-              {homepageSettings.announcement_bar_text}
-            </div>
-          )}
-        {!homepageSettings.announcement_bar_enabled && (
+        {isAnnouncementEnabled && announcementText ? (
+          <div className="bg-stone-900 text-white text-[10px] md:text-xs tracking-widest text-center py-3 uppercase font-medium">
+            {announcementText}
+          </div>
+        ) : (
           <div className="bg-stone-900 text-white text-[10px] md:text-xs tracking-widest text-center py-3 uppercase font-medium">
             Complimentary Worldwide Shipping on Orders Over $250
           </div>
@@ -157,7 +158,7 @@ export default async function Home() {
                     href={`/products?category_id=${category.id}`}
                     className="group relative aspect-[3/4] overflow-hidden rounded-sm shadow-sm hover:shadow-xl transition-all duration-500"
                   >
-                    <Image
+                    <OptimizedImage
                       src={
                         category.image ||
                         categoryImages[category.slug] ||
@@ -213,7 +214,7 @@ export default async function Home() {
                       href={`/collections/${collection.handle}`}
                       className="group relative aspect-[4/5] overflow-hidden rounded-sm shadow-md hover:shadow-2xl transition-all duration-500"
                     >
-                      <Image
+                      <OptimizedImage
                         src={
                           collection.image ||
                           '/images/home/collection-bridal.jpg'
@@ -278,7 +279,7 @@ export default async function Home() {
         <section className="py-32 overflow-hidden bg-stone-50">
           <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="relative aspect-[4/5] md:aspect-square overflow-hidden rounded-sm shadow-2xl group">
-              <Image
+              <OptimizedImage
                 src={
                   homepageSettings.brand_story_image ||
                   '/images/home/atelier-story.jpg'

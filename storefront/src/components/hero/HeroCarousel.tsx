@@ -3,7 +3,7 @@
 import React, { useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 /**
@@ -74,7 +74,7 @@ export default function HeroCarousel() {
               key={slide.id}
             >
               {/* Background Image */}
-              <Image
+              <OptimizedImage
                 src={slide.image}
                 alt={slide.title.replace('\n', ' ')}
                 fill

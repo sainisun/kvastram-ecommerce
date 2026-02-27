@@ -1,22 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { Home, LayoutGrid, Heart, User } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 
 export function BottomNav() {
   const pathname = usePathname();
   const { totalItems } = useCart();
-  const [isVisible, setIsVisible] = useState(() => false);
 
-  // Hide on checkout and admin pages only
-  useEffect(() => {
-    setIsVisible(
-      !pathname?.startsWith('/checkout') && !pathname?.startsWith('/admin')
-    );
-  }, [pathname]);
+  // Compute visibility directly from pathname - no need for useState/useEffect
+  const isVisible = !pathname?.startsWith('/checkout') && !pathname?.startsWith('/admin');
 
   // Don't render on desktop
   if (typeof window !== 'undefined' && window.innerWidth >= 768) {

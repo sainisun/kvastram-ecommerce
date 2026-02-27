@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { StarRating } from '@/components/ui/StarRating';
 import { useAuth } from '@/context/auth-context';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 interface ReviewsProps {
   productId: string;
@@ -282,7 +282,7 @@ export function Reviews({ productId }: ReviewsProps) {
                   {imagePreviewUrls.map((url, index) => (
                     <div key={index} className="relative">
                       <div className="w-20 h-20 relative rounded overflow-hidden border border-stone-200">
-                        <Image
+                        <OptimizedImage
                           src={url}
                           alt={`Preview ${index + 1}`}
                           fill
@@ -387,7 +387,7 @@ export function Reviews({ productId }: ReviewsProps) {
                         key={imgIndex}
                         className="w-20 h-20 relative rounded overflow-hidden border border-stone-200"
                       >
-                        <Image
+                        <OptimizedImage
                           src={imageUrl}
                           alt={`Review photo ${imgIndex + 1}`}
                           fill

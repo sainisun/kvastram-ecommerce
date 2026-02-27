@@ -22,7 +22,7 @@ export interface Product {
   thumbnail?: string | null;
   subtitle?: string;
   status: 'draft' | 'published' | 'archived';
-  variants: ProductVariant[];
+  variants?: ProductVariant[];
   options?: ProductOption[];
   images?: ProductImage[];
   videos?: ProductVideo[]; // PHASE 2.3: Video support
@@ -34,6 +34,7 @@ export interface Product {
     id: string;
     title: string;
   };
+  categories?: ProductCategory[];
 }
 
 export interface SizeGuide {

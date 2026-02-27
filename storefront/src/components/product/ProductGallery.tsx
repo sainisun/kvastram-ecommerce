@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, ZoomIn, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -162,7 +162,7 @@ export default function ProductGallery({
         ) : (
           /* Image Display */
           <>
-            <Image
+            <OptimizedImage
               src={validImages[selectedIndex]}
               alt={`${title} - View ${selectedIndex + 1}`}
               fill
@@ -193,13 +193,13 @@ export default function ProductGallery({
           <>
             <button
               onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white text-stone-800"
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 min-h-[44px] min-w-[44px] bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white text-stone-800 flex items-center justify-center"
             >
               <ChevronLeft size={20} />
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white text-stone-800"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 min-h-[44px] min-w-[44px] bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white text-stone-800 flex items-center justify-center"
             >
               <ChevronRight size={20} />
             </button>
@@ -237,7 +237,7 @@ export default function ProductGallery({
                   : 'border-transparent opacity-60 hover:opacity-100'
               )}
             >
-              <Image
+              <OptimizedImage
                 src={img}
                 alt={`Thumbnail ${idx + 1}`}
                 fill
@@ -265,7 +265,7 @@ export default function ProductGallery({
                   )}
                 >
                   {video.thumbnail ? (
-                    <Image
+                    <OptimizedImage
                       src={video.thumbnail}
                       alt={`Video ${idx + 1}`}
                       fill
@@ -300,21 +300,21 @@ export default function ProductGallery({
           >
             <button
               onClick={() => setIsLightboxOpen(false)}
-              className="absolute top-4 right-4 text-white p-2 hover:bg-white/10 rounded-full transition-colors z-50"
+              className="absolute top-4 right-4 text-white p-2 min-h-[44px] min-w-[44px] hover:bg-white/10 rounded-full transition-colors z-50 flex items-center justify-center"
             >
               <X size={32} />
             </button>
 
             <button
               onClick={handlePrev}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 text-white hover:bg-white/10 rounded-full transition-colors z-50"
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 min-h-[44px] min-w-[44px] text-white hover:bg-white/10 rounded-full transition-colors z-50 flex items-center justify-center"
             >
               <ChevronLeft size={48} />
             </button>
 
             <button
               onClick={handleNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 text-white hover:bg-white/10 rounded-full transition-colors z-50"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 min-h-[44px] min-w-[44px] text-white hover:bg-white/10 rounded-full transition-colors z-50 flex items-center justify-center"
             >
               <ChevronRight size={48} />
             </button>
@@ -326,7 +326,7 @@ export default function ProductGallery({
               className="relative w-full h-full max-w-5xl max-h-[90vh] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()} // Prevent clicking image from closing modal
             >
-              <Image
+              <OptimizedImage
                 src={validImages[selectedIndex]}
                 alt={title}
                 fill

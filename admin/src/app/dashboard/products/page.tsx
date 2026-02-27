@@ -112,7 +112,7 @@ export default function ProductsPage() {
         categoryFilter,
         collectionFilter
       );
-      setProducts(result || []);
+      setProducts(result?.data || []);
       setTotalPages(result?.pagination?.total_pages || 1);
     } catch (error) {
       console.error('Error fetching products:', error);

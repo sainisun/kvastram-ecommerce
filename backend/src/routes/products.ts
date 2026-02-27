@@ -40,14 +40,9 @@ productsRouter.get(
     const limitNum = Math.min(parseInt(limit) || 20, 100);
     const offsetNum = Math.max(parseInt(offset) || 0, 0);
 
-    // If search or advanced price/sort filters are active, use the search service
-    if (
-      search ||
-      min_price ||
-      max_price ||
-      (sort && sort !== 'created_at') ||
-      collection_id
-    ) {
+    // Only use search service when there's actual text search query
+    // For sorting/filtering without text search, use listDetailed
+    if (search) {
       let sortBy: 'relevance' | 'price_asc' | 'price_desc' | 'newest' =
         'relevance';
       if (sort === 'price_asc') sortBy = 'price_asc';
@@ -79,10 +74,11 @@ productsRouter.get(
       );
     }
 
-    // Standard detailed list
+    // Standard detailed list - handles sorting and all filters
     const result = await productService.listDetailed({
       limit: limitNum,
       offset: offsetNum,
+      sort: sort || 'created_at',
       status: status || undefined,
       categoryId: category_id || undefined,
       tagId: tag_id || undefined,

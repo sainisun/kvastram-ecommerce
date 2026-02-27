@@ -2,7 +2,7 @@
 
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import { useShop } from '@/context/shop-context';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 
 export function RecentlyViewedSection() {
@@ -33,7 +33,7 @@ export function RecentlyViewedSection() {
             >
               <div className="aspect-[3/4] bg-stone-100 relative overflow-hidden mb-3 rounded-sm">
                 {item.thumbnail ? (
-                  <Image
+                  <OptimizedImage
                     src={item.thumbnail}
                     alt={item.title}
                     fill

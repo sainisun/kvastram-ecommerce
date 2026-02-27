@@ -4,12 +4,11 @@ import { useState, useRef } from 'react';
 import { useShop } from '@/context/shop-context';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import type { Product, MoneyAmount } from '@/types';
 import WishlistButton from '@/components/ui/WishlistButton';
-import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
-import { QuickViewModal } from '@/components/product/QuickViewModal';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product as ProductType } from '@/types';
 
 interface ProductCarouselProps {
@@ -32,9 +31,6 @@ export default function ProductCarousel({
   const { showNotification } = useNotification();
   const [addedId, setAddedId] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
-    null
-  );
   const carouselRef = useRef<HTMLDivElement>(null);
   const loading = externalLoading || products.length === 0;
 
@@ -182,7 +178,7 @@ export default function ProductCarousel({
               className="block relative aspect-[3/4] bg-stone-100 overflow-hidden mb-6 rounded-sm shadow-sm hover:shadow-xl transition-shadow duration-500"
             >
               {product.thumbnail ? (
-                <Image
+                <OptimizedImage
                   src={product.thumbnail}
                   alt={product.title}
                   fill
@@ -200,16 +196,6 @@ export default function ProductCarousel({
 
               {/* Quick Actions Bar - Slide Up */}
               <div className="absolute inset-x-0 bottom-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10 flex gap-2 justify-center pb-6">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setQuickViewProduct(product);
-                  }}
-                  className="py-3 px-4 bg-white/90 backdrop-blur-sm text-stone-900 hover:bg-stone-900 hover:text-white transition-all shadow-lg"
-                  aria-label="Quick view"
-                >
-                  <Eye size={18} />
-                </button>
                 <button
                   onClick={(e) => handleAddToCart(e, product)}
                   className={`flex-1 py-3 px-4 text-xs font-bold uppercase tracking-widest transition-all shadow-lg ${
@@ -279,15 +265,6 @@ export default function ProductCarousel({
             />
           ))}
         </div>
-      )}
-
-      {/* Quick View Modal */}
-      {quickViewProduct && (
-        <QuickViewModal
-          product={quickViewProduct}
-          isOpen={!!quickViewProduct}
-          onClose={() => setQuickViewProduct(null)}
-        />
       )}
     </div>
   );

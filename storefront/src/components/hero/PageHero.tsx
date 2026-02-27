@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 /**
  * PageHero Component
@@ -29,7 +29,7 @@ export default function PageHero({
     <section className="relative h-[40vh] min-h-[280px] md:h-[50vh] md:min-h-[360px] overflow-hidden flex items-center justify-center">
       {/* Background */}
       {image ? (
-        <Image src={image} alt={title} fill className="object-cover" priority />
+        <OptimizedImage src={image} alt={title} fill className="object-cover" priority />
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-stone-800 via-stone-700 to-stone-900" />
       )}

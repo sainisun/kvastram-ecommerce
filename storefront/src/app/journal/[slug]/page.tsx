@@ -1,7 +1,7 @@
 import { api } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
 
@@ -61,7 +61,7 @@ export default async function ArticlePage({ params }: Props) {
         <div className="h-[60vh] relative text-white">
           {post.cover_image ? (
             <div className="absolute inset-0">
-              <Image
+              <OptimizedImage
                 src={post.cover_image}
                 alt={post.title}
                 fill

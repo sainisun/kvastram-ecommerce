@@ -9,8 +9,7 @@ import {
   validatePassword,
   isCommonPassword,
 } from '../utils/password-validator';
-// @ts-ignore
-import { authenticator } from 'otplib';
+import speakeasy from 'speakeasy';
 
 // --- Configuration ---
 const JWT_SECRET = config.jwt.secret;
@@ -151,9 +150,11 @@ export class AuthService {
         throw new Error('2FA enabled but secret missing');
       }
 
-      const isValid = authenticator.verify({
-        token: data.twoFactorCode,
+      const isValid = speakeasy.totp.verify({
         secret: user.two_factor_secret,
+        encoding: 'base32',
+        token: data.twoFactorCode,
+        window: 1,
       });
 
       if (!isValid) {

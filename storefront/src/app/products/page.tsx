@@ -3,6 +3,21 @@ import { api } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
+async function fetchWithTimeout<T>(
+  promise: Promise<T>,
+  ms: number
+): Promise<T> {
+  let timeoutId: NodeJS.Timeout | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(`Request timeout after ${ms}ms`)), ms);
+  });
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 export default async function CatalogPage({
   searchParams,
 }: {
@@ -20,31 +35,33 @@ export default async function CatalogPage({
   let collectionsData = { collections: [] };
 
   try {
-    const timeout = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Request timeout')), 8000)
+    // Fetch products with 15 second timeout and bypass cache
+    const productsResult = await fetchWithTimeout(
+      api.getProducts({ limit: 50, category_id, tag_id, collection_id, sort, cache: false }),
+      15000
     );
+    productsData = productsResult || { products: [], total: 0 };
     
-    const productsPromise = api.getProducts({
-      limit: 50,
-      category_id,
-      tag_id,
-      collection_id,
-      sort,
-    });
+    // Fetch other data in parallel (with separate error handling)
+    const [categoriesResult, tagsResult, collectionsResult] = await Promise.allSettled([
+      api.getCategories(),
+      api.getTags(),
+      api.getCollections()
+    ]);
     
-    const categoriesPromise = api.getCategories();
-    const tagsPromise = api.getTags();
-    const collectionsPromise = api.getCollections();
-
-    const results = await Promise.race([
-      Promise.all([productsPromise, categoriesPromise, tagsPromise, collectionsPromise]),
-      timeout
-    ]) as any[];
-
-    [productsData, categoriesData, tagsData, collectionsData] = results;
+    if (categoriesResult.status === 'fulfilled') {
+      categoriesData = categoriesResult.value || { categories: [] };
+    } else {
+      console.warn('[CatalogPage] Failed to fetch categories:', categoriesResult.reason);
+    }
+    if (tagsResult.status === 'fulfilled') {
+      tagsData = tagsResult.value || { tags: [] };
+    }
+    if (collectionsResult.status === 'fulfilled') {
+      collectionsData = collectionsResult.value || { collections: [] };
+    }
   } catch (error) {
-    console.error('[CatalogPage] Error fetching data:', error);
-    // Continue with empty data
+    // Log error for debugging
   }
 
   const products = productsData.products || [];

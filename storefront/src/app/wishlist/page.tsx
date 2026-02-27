@@ -4,7 +4,7 @@ import { useWishlist, WishlistItem } from '@/context/wishlist-context';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { useNotification } from '@/context/notification-context';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 
@@ -91,7 +91,7 @@ export default function WishlistPage() {
               <div className="relative aspect-[3/4] bg-stone-100 mb-4 overflow-hidden rounded-sm">
                 <Link href={`/products/${item.handle}`}>
                   {item.thumbnail ? (
-                    <Image
+                    <OptimizedImage
                       src={item.thumbnail}
                       alt={item.title}
                       fill

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '@/lib/api';
 import {
   Package,
   TrendingUp,
@@ -12,6 +13,16 @@ import {
   FileText,
   ArrowRight,
 } from 'lucide-react';
+
+interface TierData {
+  id: string;
+  name: string;
+  slug: string;
+  discount_percent: number;
+  default_moq: number;
+  payment_terms: string;
+  description: string | null;
+}
 
 export default function WholesalePage() {
   const [formData, setFormData] = useState({
@@ -27,6 +38,39 @@ export default function WholesalePage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [tiers, setTiers] = useState<TierData[]>([]);
+  const [tiersLoading, setTiersLoading] = useState(true);
+
+  // Fetch tiers from API on mount
+  useEffect(() => {
+    const fetchTiers = async () => {
+      try {
+        const data = await api.getWholesaleTiers();
+        if (data.tiers && data.tiers.length > 0) {
+          setTiers(data.tiers);
+        } else {
+          // Fallback to default tiers if API returns empty
+          setTiers([
+            { id: '1', name: 'Starter', slug: 'starter', discount_percent: 20, default_moq: 50, payment_terms: 'net_30', description: 'Perfect for boutiques' },
+            { id: '2', name: 'Growth', slug: 'growth', discount_percent: 30, default_moq: 200, payment_terms: 'net_45', description: 'For established retailers' },
+            { id: '3', name: 'Enterprise', slug: 'enterprise', discount_percent: 40, default_moq: 500, payment_terms: 'net_60', description: 'For distributors & chains' },
+          ]);
+        }
+      } catch (err) {
+        console.error('Error fetching tiers:', err);
+        // Fallback to default tiers
+        setTiers([
+          { id: '1', name: 'Starter', slug: 'starter', discount_percent: 20, default_moq: 50, payment_terms: 'net_30', description: 'Perfect for boutiques' },
+          { id: '2', name: 'Growth', slug: 'growth', discount_percent: 30, default_moq: 200, payment_terms: 'net_45', description: 'For established retailers' },
+          { id: '3', name: 'Enterprise', slug: 'enterprise', discount_percent: 40, default_moq: 500, payment_terms: 'net_60', description: 'For distributors & chains' },
+        ]);
+      } finally {
+        setTiersLoading(false);
+      }
+    };
+
+    fetchTiers();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,138 +240,81 @@ export default function WholesalePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="border border-stone-200 p-8">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-stone-900 mb-2">
-                    Starter
-                  </h3>
-                  <p className="text-sm text-stone-500 mb-4">
-                    Perfect for boutiques
-                  </p>
-                  <div className="text-3xl font-bold text-stone-900">
-                    20% OFF
-                  </div>
-                  <p className="text-xs text-stone-500 mt-1">Retail pricing</p>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>MOQ: 50 units</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>Net 30 payment terms</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>Standard shipping</span>
-                  </li>
-                </ul>
+            {tiersLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
               </div>
-
-              <div className="border-2 border-amber-500 p-8 relative bg-amber-50">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-xs font-bold px-4 py-1 uppercase tracking-wider">
-                  Most Popular
-                </div>
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-stone-900 mb-2">
-                    Growth
-                  </h3>
-                  <p className="text-sm text-stone-500 mb-4">
-                    For established retailers
-                  </p>
-                  <div className="text-3xl font-bold text-stone-900">
-                    30% OFF
+            ) : (
+              <div className={`grid gap-8 ${tiers.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-' + tiers.length}`}>
+                {tiers.map((tier, index) => (
+                  <div
+                    key={tier.id}
+                    className={`border p-8 ${index === 1 ? 'border-2 border-amber-500 p-8 relative bg-amber-50' : 'border-stone-200'}`}
+                  >
+                    {index === 1 && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-xs font-bold px-4 py-1 uppercase tracking-wider">
+                        Most Popular
+                      </div>
+                    )}
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold text-stone-900 mb-2">
+                        {tier.name}
+                      </h3>
+                      <p className="text-sm text-stone-500 mb-4">
+                        {tier.description || 'Wholesale pricing tier'}
+                      </p>
+                      <div className="text-3xl font-bold text-stone-900">
+                        {tier.discount_percent}% OFF
+                      </div>
+                      <p className="text-xs text-stone-500 mt-1">Retail pricing</p>
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                      <li className="flex items-start gap-2 text-sm">
+                        <CheckCircle
+                          size={16}
+                          className="text-green-600 mt-0.5 flex-shrink-0"
+                        />
+                        <span>MOQ: {tier.default_moq} units</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-sm">
+                        <CheckCircle
+                          size={16}
+                          className="text-green-600 mt-0.5 flex-shrink-0"
+                        />
+                        <span className="capitalize">{tier.payment_terms.replace('_', ' ')} payment terms</span>
+                      </li>
+                      {index === 1 && (
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle
+                            size={16}
+                            className="text-green-600 mt-0.5 flex-shrink-0"
+                          />
+                          <span>Dedicated account manager</span>
+                        </li>
+                      )}
+                      {index === 2 && (
+                        <>
+                          <li className="flex items-start gap-2 text-sm">
+                            <CheckCircle
+                              size={16}
+                              className="text-green-600 mt-0.5 flex-shrink-0"
+                            />
+                            <span>White-glove logistics</span>
+                          </li>
+                          <li className="flex items-start gap-2 text-sm">
+                            <CheckCircle
+                              size={16}
+                              className="text-green-600 mt-0.5 flex-shrink-0"
+                            />
+                            <span>Custom product development</span>
+                          </li>
+                        </>
+                      )}
+                    </ul>
                   </div>
-                  <p className="text-xs text-stone-500 mt-1">Retail pricing</p>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>MOQ: 200 units</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>Net 45 payment terms</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>Priority shipping</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>Dedicated account manager</span>
-                  </li>
-                </ul>
+                ))}
               </div>
-
-              <div className="border border-stone-200 p-8">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-stone-900 mb-2">
-                    Enterprise
-                  </h3>
-                  <p className="text-sm text-stone-500 mb-4">
-                    For distributors & chains
-                  </p>
-                  <div className="text-3xl font-bold text-stone-900">
-                    40% OFF
-                  </div>
-                  <p className="text-xs text-stone-500 mt-1">Retail pricing</p>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>MOQ: 500+ units</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>Net 60 payment terms</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>White-glove logistics</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <CheckCircle
-                      size={16}
-                      className="text-green-600 mt-0.5 flex-shrink-0"
-                    />
-                    <span>Custom product development</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            )}
           </div>
         </section>
 

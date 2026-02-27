@@ -73,8 +73,13 @@ export default function ProductView({ product }: { product: Product }) {
   // Delivery estimate based on region (simplified - in production would use shipping calculator)
   useEffect(() => {
     if (currentRegion) {
-      const minDays = currentRegion.id.includes('us') ? 3 : 7;
-      const maxDays = currentRegion.id.includes('us') ? 5 : 14;
+      // Use explicit region ID comparison for reliability
+      const isUSRegion = currentRegion.id === 'us' || 
+                         currentRegion.id === 'us-east' || 
+                         currentRegion.id === 'us-west' ||
+                         currentRegion.id.toLowerCase().startsWith('us');
+      const minDays = isUSRegion ? 3 : 7;
+      const maxDays = isUSRegion ? 5 : 14;
       const minDate = new Date(Date.now() + minDays * 24 * 60 * 60 * 1000);
       const maxDate = new Date(Date.now() + maxDays * 24 * 60 * 60 * 1000);
       const formatOptions: Intl.DateTimeFormatOptions = {
@@ -127,7 +132,7 @@ export default function ProductView({ product }: { product: Product }) {
 
   // Initialize selected variant ID
   const [selectedVariantId, setSelectedVariantId] = useState<string>(() => {
-    if (product.variants?.length > 0) {
+    if (product.variants && product.variants.length > 0) {
       return product.variants[0].id;
     }
     return '';
@@ -167,6 +172,7 @@ export default function ProductView({ product }: { product: Product }) {
   ]);
 
   // Clamp quantity when variant or inventory changes
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (!selectedVariant) return;
 
@@ -219,6 +225,7 @@ export default function ProductView({ product }: { product: Product }) {
       origin: product.origin_country || undefined,
       sku: selectedVariant.sku || undefined,
       description: product.description || undefined,
+      handle: product.handle || product.id,
     });
     // React state-based feedback
     setAddedToCart(true);

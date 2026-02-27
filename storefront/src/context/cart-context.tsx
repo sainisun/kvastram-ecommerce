@@ -24,6 +24,7 @@ export interface CartItem {
   origin?: string;
   sku?: string;
   description?: string;
+  handle?: string;
 }
 
 interface CartContextType {
@@ -51,17 +52,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Load cart from localStorage on mount
   useEffect(() => {
     const stored = storage.get<CartItem[]>('kvastram_cart', []);
-    if (stored && stored.length > 0) {
-      const timer = setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (stored && stored.length > 0) {
         setItems(stored);
-        setIsLoaded(true);
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-    const loadTimer = setTimeout(() => {
+      }
       setIsLoaded(true);
     }, 0);
-    return () => clearTimeout(loadTimer);
+    return () => clearTimeout(timer);
   }, []);
 
   // Save cart to localStorage whenever it changes

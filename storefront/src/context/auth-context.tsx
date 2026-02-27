@@ -43,7 +43,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setCustomer(data.customer);
     } catch {
       eraseCookie('auth_token');
-      localStorage.removeItem('auth_token');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth_token');
+      }
       setCustomer(null);
     } finally {
       setLoading(false);
@@ -57,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Also check localStorage for wholesale login (fallback)
     if (!token && typeof window !== 'undefined') {
       token = localStorage.getItem('auth_token');
-      if (token) {
+      if (token && typeof document !== 'undefined') {
         // Sync to cookie for consistency
         document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`;
       }
@@ -75,9 +77,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes (e.g., from wholesale login)
     const handleAuthChange = () => {
-      const newToken = localStorage.getItem('auth_token');
-      if (newToken) {
-        fetchCustomer(newToken);
+      if (typeof window !== 'undefined') {
+        const newToken = localStorage.getItem('auth_token');
+        if (newToken) {
+          fetchCustomer(newToken);
+        }
       }
     };
 
@@ -90,7 +94,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (data: LoginData) => {
     const res = await api.login(data);
     // Token is set in httpOnly cookie by backend
-    setCustomer(res.customer);
+    // Handle both response formats: { customer: {...} } or direct customer object
+    if (res.customer) {
+      setCustomer(res.customer);
+    } else if (res.data?.customer) {
+      setCustomer(res.data.customer);
+    }
   };
 
   const register = async (data: RegisterData) => {
@@ -102,6 +111,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     eraseCookie('auth_token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+    }
     setCustomer(null);
     router.push('/');
   };

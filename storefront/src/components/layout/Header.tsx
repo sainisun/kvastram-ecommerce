@@ -9,7 +9,7 @@ import {
   Menu,
   Heart,
 } from 'lucide-react';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { useShop } from '@/context/shop-context';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
@@ -67,7 +67,7 @@ export function Header() {
   }, [menuRef]);
 
   const [categories, setCategories] = useState<
-    Array<{ id: string; name: string; slug: string }>
+    Array<{ id: string; name: string; slug: string; image?: string }>
   >([]);
   const [showShopMenu, setShowShopMenu] = useState(false);
   const [announcementText, setAnnouncementText] = useState('');
@@ -141,11 +141,11 @@ export function Header() {
         {/* Mobile Header Layout */}
         <div className="flex items-center justify-between w-full md:hidden relative px-2">
           {/* Left: Hamburger Menu */}
-            <button
-              onClick={() => setMobileMenuOpen(true)}
-              className="p-2 text-stone-900 hover:text-stone-600 transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded"
-              aria-label="Open menu"
-            >
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors rounded flex items-center justify-center"
+            aria-label="Open menu"
+          >
             <Menu size={24} />
           </button>
 
@@ -160,15 +160,17 @@ export function Header() {
           {/* Right: Search & Cart */}
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={() => setShowSearch(true)}
-              className="p-2 text-stone-900 hover:text-stone-600 transition-colors"
+              className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors flex items-center justify-center"
               aria-label="Search"
+              style={{ touchAction: 'manipulation' }}
             >
               <Search size={22} />
             </button>
             <Link
               href="/cart"
-              className="p-2 text-stone-900 hover:text-stone-600 transition-colors relative"
+              className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors relative flex items-center justify-center"
               aria-label="Cart"
             >
               <ShoppingBag size={22} />
@@ -234,7 +236,7 @@ export function Header() {
                               <div className="aspect-[3/4] bg-stone-100 relative overflow-hidden mb-3 rounded-sm">
                                 {categories[0]?.image ? (
                                   <>
-                                    <Image 
+                                    <OptimizedImage 
                                       src={categories[0].image} 
                                       alt={categories[0].name || 'Featured'}
                                       fill
@@ -325,22 +327,18 @@ export function Header() {
           {/* Actions */}
           <div className="flex items-center gap-4">
             <button
+              type="button"
               onClick={() => setShowSearch(true)}
-              className="text-stone-600 hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1"
+              className="text-stone-600 hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Search products"
               title="Search"
             >
               <Search size={20} />
             </button>
 
-            <SearchOverlay
-              isOpen={showSearch}
-              onClose={() => setShowSearch(false)}
-            />
-
             <Link
               href="/account"
-              className="text-stone-600 hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1"
+              className="text-stone-600 hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="My Account"
               title="My Account"
             >
@@ -350,7 +348,7 @@ export function Header() {
             {/* Wishlist Icon */}
             <Link
               href="/wishlist"
-              className="text-stone-600 hover:text-black transition-colors relative focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1"
+              className="text-stone-600 hover:text-black transition-colors relative focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label={`Wishlist with ${wishlistCount} items`}
               title="Wishlist"
             >
@@ -427,7 +425,13 @@ export function Header() {
         </div>
       </div>
 
-      {/* Amazon-style Mobile Menu */}
+      {/* SearchOverlay - Rendered outside mobile/desktop layouts for both views */}
+      <SearchOverlay
+        isOpen={showSearch}
+        onClose={() => setShowSearch(false)}
+      />
+
+      {/* Mobile Menu */}
       <MobileMenu
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}

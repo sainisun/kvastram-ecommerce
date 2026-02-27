@@ -28,8 +28,9 @@ export function BackInStock({
     try {
       await api.subscribeBackInStock(productId, email, variantId);
       setSubscribed(true);
-    } catch (err: any) {
-      setError(err.message || 'Failed to subscribe. Please try again.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to subscribe. Please try again.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -41,9 +42,9 @@ export function BackInStock({
         <div className="flex items-center gap-3 text-green-800">
           <CheckCircle size={20} />
           <div>
-            <p className="font-medium text-sm">You're on the list!</p>
+            <p className="font-medium text-sm">You&apos;re on the list!</p>
             <p className="text-xs text-green-700 mt-1">
-              We'll notify you when {productTitle} is back in stock.
+              We&apos;ll notify you when {productTitle} is back in stock.
             </p>
           </div>
         </div>
@@ -88,7 +89,7 @@ export function BackInStock({
         </div>
         {error && <p className="text-red-500 text-xs">{error}</p>}
         <p className="text-[10px] text-stone-400">
-          We'll email you when this item is back in stock.
+          We&apos;ll email you when this item is back in stock.
         </p>
       </form>
     </div>

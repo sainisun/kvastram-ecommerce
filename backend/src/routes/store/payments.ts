@@ -25,16 +25,12 @@ import { eq, sql } from 'drizzle-orm';
 import { logInfo, logError } from '../../utils/logger';
 import { asyncHandler } from '../../middleware/error-handler';
 
-// BUG-005 FIX: Fail early if Stripe key is missing rather than creating invalid client
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-if (!STRIPE_SECRET_KEY) {
-  console.warn('⚠️  STRIPE_SECRET_KEY not set — payment routes will fail');
-}
+// Only create Stripe instance if key is available
+const stripeKey = process.env.STRIPE_SECRET_KEY;
 
-const stripe = new Stripe(STRIPE_SECRET_KEY || 'sk_test_placeholder', {
-  // Cast to any because the types might not cover this specific version string yet
+const stripe = stripeKey ? new Stripe(stripeKey, {
   apiVersion: '2025-02-05.acacia' as any,
-});
+}) : null;
 
 const paymentRouter = new Hono();
 
@@ -53,6 +49,11 @@ paymentRouter.post(
   zValidator('json', CreatePaymentIntentSchema),
   async (c) => {
     try {
+      // Fail fast if Stripe is not configured
+      if (!stripe) {
+        return c.json({ error: 'Payment processing not configured' }, 503);
+      }
+
       const { order_id } = c.req.valid('json');
 
       // Fetch the order with line items

@@ -18,7 +18,7 @@ import {
   RotateCcw,
   Loader2,
 } from 'lucide-react';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 // Extended order interface for frontend display
 interface OrderWithDetails extends Order {
@@ -306,7 +306,7 @@ export default function OrderDetailsPage() {
                   <div key={item.id} className="flex gap-4">
                     <div className="relative w-16 h-20 bg-stone-100 border border-stone-200 shrink-0">
                       {item.thumbnail ? (
-                        <Image
+                        <OptimizedImage
                           src={item.thumbnail}
                           alt={item.title}
                           fill

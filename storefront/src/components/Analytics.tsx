@@ -6,9 +6,9 @@ import { useEffect, Suspense } from 'react';
 
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
-    fbq: (...args: any[]) => void;
+    gtag: (...args: unknown[]) => void;
+    dataLayer: unknown[];
+    fbq: (...args: unknown[]) => void;
   }
 }
 
@@ -95,7 +95,7 @@ export function Analytics() {
 }
 
 // Event tracking helpers
-export function trackEvent(eventName: string, params?: Record<string, any>) {
+export function trackEvent(eventName: string, params?: Record<string, unknown>) {
   if (typeof window.gtag === 'function') {
     window.gtag('event', eventName, params);
   }
@@ -125,7 +125,7 @@ export function trackAddToCart(
 export function trackBeginCheckout(
   total: number,
   currency: string,
-  items: any[]
+  items: unknown[]
 ) {
   trackEvent('begin_checkout', {
     currency,
@@ -138,7 +138,7 @@ export function trackPurchase(
   transactionId: string,
   total: number,
   currency: string,
-  items: any[]
+  items: unknown[]
 ) {
   trackEvent('purchase', {
     transaction_id: transactionId,

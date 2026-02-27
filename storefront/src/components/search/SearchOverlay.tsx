@@ -5,7 +5,7 @@ import { Search, X, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useDebounce } from 'use-debounce';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
 import { useShop } from '@/context/shop-context';
 
@@ -151,7 +151,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] md:z-[60]"
           />
 
           {/* Search Panel */}
@@ -164,7 +164,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 right-0 bg-white z-[60] shadow-xl rounded-b-3xl overflow-hidden max-h-[80vh] flex flex-col"
+            className="fixed top-0 left-0 right-0 bg-white z-[70] md:z-[70] shadow-xl rounded-b-3xl overflow-hidden max-h-[80vh] flex flex-col"
           >
             {/* Search Input Header */}
             <div className="p-6 border-b border-stone-100 flex items-center gap-4">
@@ -192,7 +192,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               )}
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-stone-100 rounded-full transition-colors"
+                className="p-2 min-h-[44px] min-w-[44px] hover:bg-stone-100 rounded-full transition-colors flex items-center justify-center"
                 aria-label="Close search"
                 type="button"
               >
@@ -292,7 +292,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           >
                             <div className="aspect-[3/4] bg-stone-100 relative rounded-lg overflow-hidden mb-3">
                               {product.thumbnail && (
-                                <Image
+                                <OptimizedImage
                                   src={product.thumbnail}
                                   alt={product.title}
                                   fill

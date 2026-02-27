@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
-// @ts-ignore
-import { authenticator } from 'otplib';
+import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
 import { db } from '../db';
 import { users } from '../db/schema';
@@ -24,8 +23,13 @@ app.post('/generate', verifyAuth, async (c) => {
 
     if (!user) return c.json({ error: 'User not found' }, 404);
 
-    const secret = authenticator.generateSecret();
-    const otpauth = authenticator.keyuri(user.email, 'Kvastram Admin', secret);
+    const secret = speakeasy.generateSecret({ length: 20 }).base32;
+    const otpauth = speakeasy.otpauthURL({ 
+      secret, 
+      label: user.email, 
+      issuer: 'Kvastram Admin', 
+      encoding: 'base32' 
+    });
 
     // Save secret but keep enabled=false until verified
     await db
@@ -61,9 +65,11 @@ app.post('/verify', verifyAuth, async (c) => {
       return c.json({ error: '2FA not initialized. Generate first.' }, 400);
     }
 
-    const isValid = authenticator.verify({
-      token,
+    const isValid = speakeasy.totp.verify({
       secret: user.two_factor_secret,
+      encoding: 'base32',
+      token,
+      window: 1,
     });
 
     if (isValid) {
@@ -104,9 +110,11 @@ app.post('/disable', verifyAuth, async (c) => {
       return c.json({ error: '2FA is not enabled' }, 400);
     }
 
-    const isValid = authenticator.verify({
-      token,
+    const isValid = speakeasy.totp.verify({
       secret: user.two_factor_secret,
+      encoding: 'base32',
+      token,
+      window: 1,
     });
 
     if (!isValid) {

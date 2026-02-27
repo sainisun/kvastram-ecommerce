@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
@@ -44,7 +44,7 @@ export default async function JournalPage() {
           >
             <div className="aspect-[4/5] bg-stone-200 overflow-hidden relative">
               {post.cover_image ? (
-                <Image
+                <OptimizedImage
                   src={post.cover_image}
                   alt={post.title}
                   fill

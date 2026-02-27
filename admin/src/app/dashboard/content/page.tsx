@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Layers, FileText, MessageSquare } from 'lucide-react';
+import { Layers, FileText, MessageSquare, Link as LinkIcon } from 'lucide-react';
 
 export default function ContentDashboard() {
   return (
@@ -41,6 +41,14 @@ export default function ContentDashboard() {
           <MessageSquare className="mb-4 text-orange-600" size={32} />
           <h2 className="text-xl font-bold mb-2">Testimonials</h2>
           <p className="text-gray-500">Manage customer reviews and feedback.</p>
+        </Link>
+        <Link
+          href="/dashboard/content/footer-links"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <LinkIcon className="mb-4 text-amber-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Footer PDF Links</h2>
+          <p className="text-gray-500">Manage wholesale footer PDF links and resources.</p>
         </Link>
       </div>
     </div>

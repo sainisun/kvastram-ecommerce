@@ -94,12 +94,14 @@ export default function RootLayout({
           />
         )}
 
-        {/* Preload critical fonts */}
+        {/* Preload critical fonts - use Google Fonts URL */}
         <link
-          rel="preload"
-          href="/fonts/inter-var.woff2"
-          as="font"
-          type="font/woff2"
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
       </head>

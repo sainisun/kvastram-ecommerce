@@ -302,10 +302,10 @@ app.onError(errorHandler);
 
 const port = Number(process.env.PORT) || 4000;
 
-console.log(`🚀 Server starting on port ${port}`);
-console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`Server starting on port ${port}`);
+console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 if (process.env.NODE_ENV !== 'production') {
-  console.log(`🔒 CORS enabled for: ${allowedOrigins.join(', ')}`);
+  console.log(`CORS enabled for: ${allowedOrigins.join(', ')}`);
 }
 
 const server = serve({

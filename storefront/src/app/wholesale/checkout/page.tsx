@@ -15,7 +15,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import CountrySelect from '@/components/ui/CountrySelect';
 
 const PAYMENT_TERMS = [
@@ -93,7 +93,7 @@ export default function WholesaleCheckoutPage() {
 
     try {
       const orderData = {
-        email: customer?.email,
+        email: customer?.email || '',
         ...formData,
         items: items.map((item) => ({
           variant_id: item.variantId,
@@ -535,7 +535,7 @@ export default function WholesaleCheckoutPage() {
                   <div key={item.variantId} className="flex gap-4">
                     {item.thumbnail && (
                       <div className="relative w-16 h-16 flex-shrink-0">
-                        <Image
+                        <OptimizedImage
                           src={item.thumbnail}
                           alt={item.title}
                           fill

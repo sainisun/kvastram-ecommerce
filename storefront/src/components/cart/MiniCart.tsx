@@ -3,7 +3,7 @@
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { X, Minus, Plus, Trash2 } from 'lucide-react';
 
@@ -68,7 +68,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-stone-400 hover:text-stone-600 transition-colors"
+            className="p-2 min-h-[44px] min-w-[44px] text-stone-400 hover:text-stone-600 transition-colors flex items-center justify-center"
             aria-label="Close cart"
           >
             <X size={20} />
@@ -95,7 +95,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                   {/* Image */}
                   <div className="relative h-20 w-20 flex-shrink-0 bg-stone-100 overflow-hidden">
                     {item.thumbnail ? (
-                      <Image
+                      <OptimizedImage
                         src={item.thumbnail}
                         alt={item.title}
                         fill
@@ -137,7 +137,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                             updateQuantity(item.variantId, item.quantity - 1)
                           }
                           disabled={item.quantity <= 1}
-                          className="p-1 text-stone-400 hover:text-stone-600 disabled:opacity-30"
+                          className="p-1 min-h-[44px] min-w-[44px] text-stone-400 hover:text-stone-600 disabled:opacity-30 flex items-center justify-center"
                           aria-label={`Decrease quantity of ${item.title}`}
                         >
                           <Minus size={14} />
@@ -149,7 +149,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                           onClick={() =>
                             updateQuantity(item.variantId, item.quantity + 1)
                           }
-                          className="p-1 text-stone-400 hover:text-stone-600"
+                          className="p-1 min-h-[44px] min-w-[44px] text-stone-400 hover:text-stone-600 flex items-center justify-center"
                           aria-label={`Increase quantity of ${item.title}`}
                         >
                           <Plus size={14} />
@@ -158,7 +158,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
 
                       <button
                         onClick={() => removeItem(item.variantId)}
-                        className="p-1 text-stone-400 hover:text-red-500"
+                        className="p-1 min-h-[44px] min-w-[44px] text-stone-400 hover:text-red-500 flex items-center justify-center"
                         aria-label="Remove item"
                       >
                         <Trash2 size={16} />

@@ -20,20 +20,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }, []);
 
   useEffect(() => {
-    console.log('[ProtectedRoute DEBUG] Checking auth...');
-    console.log('[ProtectedRoute DEBUG] Loading:', loading);
-    console.log('[ProtectedRoute DEBUG] User:', user ? 'Present' : 'Missing');
-    console.log('[ProtectedRoute DEBUG] Pathname:', pathname);
-
     // Only check auth after loading is complete and we're on client
     if (!loading && isClient) {
       if (!user) {
-        console.log(
-          '[ProtectedRoute DEBUG] No user found, redirecting to login'
-        );
         router.push('/');
-      } else {
-        console.log('[ProtectedRoute DEBUG] User found, allowing access');
       }
     }
   }, [user, loading, router, pathname, isClient]);
