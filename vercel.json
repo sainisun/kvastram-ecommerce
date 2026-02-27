@@ -2,11 +2,15 @@
   "projects": [
     {
       "path": "storefront",
-      "name": "kvastram-storefront"
+      "name": "kvastram-storefront",
+      "buildCommand": "npm run build",
+      "installCommand": "npm install --legacy-peer-deps"
     },
     {
       "path": "admin",
-      "name": "kvastram-admin"
+      "name": "kvastram-admin",
+      "buildCommand": "npm run build",
+      "installCommand": "npm install --legacy-peer-deps"
     }
   ]
 }
