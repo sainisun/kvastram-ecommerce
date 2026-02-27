@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: kvastram-backend
+    rootDir: backend
+    env: node
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://postgres.qsnradlhidpbeopahztr:WUaXy0ENSM59wCiS@aws-1-us-east-1.pooler.supabase.com:6543/postgres
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://your-storefront.vercel.app,https://your-admin.vercel.app
+      - key: FRONTEND_URL
+        value: https://your-storefront.vercel.app
+      - key: SMTP_HOST
+        value: smtp.mailtrap.io
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        value: your_mailtrap_username
+      - key: SMTP_PASS
+        value: your_mailtrap_password
