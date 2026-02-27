@@ -1,0 +1,12 @@
+{
+  "projects": [
+    {
+      "path": "storefront",
+      "name": "kvastram-storefront"
+    },
+    {
+      "path": "admin",
+      "name": "kvastram-admin"
+    }
+  ]
+}
