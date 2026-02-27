@@ -1547,8 +1547,9 @@ export default function SettingsPage() {
                 authenticator app:
               </p>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div>
+                      {/* Nav Links JSON format hint */}
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                   Authentication Code
                 </label>
                 <input
