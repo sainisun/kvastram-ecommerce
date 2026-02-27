@@ -736,6 +736,7 @@ export default function SettingsPage() {
                   <p className="text-sm text-gray-500 mb-4">
                     Configure the navigation menu links shown in the header.
                   </p>
+                  {/* Force rebuild */}
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
