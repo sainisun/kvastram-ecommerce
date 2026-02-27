@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "verify:system": "npx tsx scripts/verify-system.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "cd backend && npm install --legacy-peer-deps",
+    "build": "cd backend && npm run build",
+    "start": "cd backend && npm run start"
   },
   "keywords": [],
   "author": "sunil kumar saini",
