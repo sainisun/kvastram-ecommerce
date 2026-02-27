@@ -294,11 +294,16 @@ export const customers = pgTable(
     // 🔒 Q9: Account lockout fields
     failed_login_attempts: integer('failed_login_attempts').default(0),
     locked_until: timestamp('locked_until'),
+    // 🔒 Password reset fields
+    reset_token: text('reset_token'),
+    reset_token_expires_at: timestamp('reset_token_expires_at'),
+    reset_attempts: integer('reset_attempts').default(0),
     ...createdUpdated,
   },
   (table) => ({
     createdAtIndex: index('idx_customers_created_at').on(table.created_at),
     lockedIdx: index('idx_customers_locked_until').on(table.locked_until),
+    resetTokenIdx: index('idx_customers_reset_token').on(table.reset_token),
   })
 );
 

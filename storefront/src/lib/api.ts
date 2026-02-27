@@ -1,22 +1,77 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+// Use absolute URL for SSR, relative for client (Next.js rewrites)
+const API_URL = typeof window === 'undefined' 
+  ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+  : '/api';
 
-// 🕵️‍♂️ TRACER: Helper to verify request flow
+const DEFAULT_API_TIMEOUT_MS = 15000;
+const DEFAULT_CLIENT_TIMEOUT_MS = 5000;
+
+// Environment-aware timeout: longer for SSR, shorter for client
+// Note: API_TIMEOUT only applies to SSR (server-side). For client-side overrides,
+// use NEXT_PUBLIC_API_TIMEOUT (process.env.NEXT_PUBLIC_API_TIMEOUT)
+function getApiTimeout(): number {
+  // Server-side: check API_TIMEOUT environment variable
+  if (typeof window === 'undefined') {
+    const envTimeout = process.env.API_TIMEOUT;
+    if (envTimeout) {
+      const parsed = parseInt(envTimeout, 10);
+      if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
+        return parsed;
+      }
+    }
+    return DEFAULT_API_TIMEOUT_MS;
+  }
+
+  // Client-side: check NEXT_PUBLIC_API_TIMEOUT for runtime configurability
+  const publicEnvTimeout = process.env.NEXT_PUBLIC_API_TIMEOUT;
+  if (publicEnvTimeout) {
+    const parsed = parseInt(publicEnvTimeout, 10);
+    if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return DEFAULT_CLIENT_TIMEOUT_MS;
+}
+const API_TIMEOUT = getApiTimeout();
+
+// Helper function for API requests with basic timing and timeout
 async function fetchWithTrace(
   input: RequestInfo | URL,
   init?: RequestInit & { next?: any }
 ) {
-  const traceId = `TRC-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  if (typeof input === 'string' && input.includes(API_URL)) {
-    console.log(`[Storefront TRACER] Outgoing -> ${input} [${traceId}]`);
+  const startTime = typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  
+  // Create abort controller for timeout
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timeoutId = controller ? setTimeout(() => controller.abort(), API_TIMEOUT) : null;
+  
+  try {
+    const fetchOptions: RequestInit = {
+      ...init,
+      signal: controller?.signal,
+    };
+    
+    const response = await fetch(input, fetchOptions);
+    const now = typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+    const duration = Math.round(now - startTime);
+    
+    // Log API timing in development only
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      const url = typeof input === 'string' ? input : input.toString();
+      console.log(`[API] ${init?.method || 'GET'} ${url} - ${response.status} (${duration}ms)`);
+    }
+    return response;
+  } catch (error) {
+    const now = typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+    const duration = Math.round(now - startTime);
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      const url = typeof input === 'string' ? input : input.toString();
+      console.error(`[API] ${init?.method || 'GET'} ${url} - Error (${duration}ms)`, error);
+    }
+    throw error;
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
   }
-
-  const headers = new Headers(init?.headers || {});
-  headers.set('x-debug-trace', traceId);
-
-  return fetch(input, {
-    ...init,
-    headers,
-  });
 }
 
 // Type definitions for API requests/responses
@@ -113,15 +168,15 @@ export const api = {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       const message = data.message || data.error || 'Request failed';
-      const error = new Error(message);
-      error.status = res.status;
-      error.data = data;
+      const error = new Error(message) as Error & { status: number; data: unknown };
+      (error as any).status = res.status;
+      (error as any).data = data;
       throw error;
     }
     return res.json();
   },
 
-  async post(endpoint: string, body: any) {
+  async post<T = unknown>(endpoint: string, body: T) {
     const csrfHeader = await getCsrfHeader();
     const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
       method: 'POST',
@@ -135,16 +190,16 @@ export const api = {
     if (!res.ok) {
       // Try to parse error response
       const data = await res.json().catch(() => ({}));
-      throw {
-        ...data,
-        status: res.status,
-        message: data.message || data.error || 'Request failed',
-      };
+      const message = data.message || data.error || 'Request failed';
+      const error = new Error(message) as Error & { status: number; data: unknown };
+      (error as any).status = res.status;
+      (error as any).data = data;
+      throw error;
     }
-    return res.json();
+    return res.json() as Promise<T>;
   },
 
-  async put(endpoint: string, body: any) {
+  async put<T = unknown>(endpoint: string, body: T) {
     const csrfHeader = await getCsrfHeader();
     const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
       method: 'PUT',
@@ -158,12 +213,12 @@ export const api = {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       const message = data.message || data.error || 'Request failed';
-      const error = new Error(message);
-      error.status = res.status;
-      error.data = data;
+      const error = new Error(message) as Error & { status: number; data: unknown };
+      (error as any).status = res.status;
+      (error as any).data = data;
       throw error;
     }
-    return res.json();
+    return res.json() as Promise<T>;
   },
 
   async delete(endpoint: string) {
@@ -181,9 +236,9 @@ export const api = {
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       const message = data.message || data.error || 'Request failed';
-      const error = new Error(message);
-      error.status = res.status;
-      error.data = data;
+      const error = new Error(message) as Error & { status: number; data: unknown };
+      (error as any).status = res.status;
+      (error as any).data = data;
       throw error;
     }
     return res.json();
@@ -207,16 +262,12 @@ export const api = {
         next: { revalidate: 3600 },
       });
       if (!res.ok) {
-        console.error(
-          '[API] getCategories failed:',
-          res.status,
-          res.statusText
-        );
+        // Silently return fallback when backend not available
         return { categories: [] };
       }
       return res.json();
-    } catch (error) {
-      console.error('[API] getCategories error:', error);
+    } catch {
+      // Silently return fallback when backend not available
       return { categories: [] };
     }
   },
@@ -227,16 +278,12 @@ export const api = {
         next: { revalidate: 3600 },
       });
       if (!res.ok) {
-        console.error(
-          '[API] getCollections failed:',
-          res.status,
-          res.statusText
-        );
+        // Silently return fallback when backend not available
         return { collections: [] };
       }
       return res.json();
-    } catch (error) {
-      console.error('[API] getCollections error:', error);
+    } catch {
+      // Silently return fallback when backend not available
       return { collections: [] };
     }
   },
@@ -247,16 +294,12 @@ export const api = {
         next: { revalidate: 3600 },
       });
       if (!res.ok) {
-        console.error(
-          '[API] getHomepageSettings failed:',
-          res.status,
-          res.statusText
-        );
+        // Silently return fallback when backend not available
         return { settings: {} };
       }
       return res.json();
-    } catch (error) {
-      console.error('[API] getHomepageSettings error:', error);
+    } catch {
+      // Silently return fallback when backend not available
       return { settings: {} };
     }
   },
@@ -267,17 +310,47 @@ export const api = {
         next: { revalidate: 3600 },
       });
       if (!res.ok) {
-        console.error(
-          '[API] getStoreSettings failed:',
-          res.status,
-          res.statusText
-        );
+        // Silently return fallback when backend not available
         return null;
       }
       return res.json();
-    } catch (error) {
-      console.error('[API] getStoreSettings error:', error);
+    } catch {
+      // Silently return fallback when backend not available
       return null;
+    }
+  },
+
+  // Get footer settings for wholesale page
+  async getFooterSettings() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/settings/footer`, {
+        next: { revalidate: 3600 },
+      });
+      if (!res.ok) {
+        // Silently return fallback when backend not available
+        return { settings: {} };
+      }
+      return res.json();
+    } catch {
+      // Silently return fallback when backend not available
+      return { settings: {} };
+    }
+  },
+
+  // Get wholesale tiers for public page
+  async getWholesaleTiers() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/settings/wholesale-tiers`, {
+        next: { revalidate: 3600 },
+      });
+      if (!res.ok) {
+        // Silently return fallback when backend not available
+        return { tiers: [] };
+      }
+      return res.json();
+    } catch {
+      // Silently return fallback when backend not available
+      return { tiers: [] };
     }
   },
 
@@ -287,12 +360,12 @@ export const api = {
         next: { revalidate: 3600 },
       });
       if (!res.ok) {
-        console.error('[API] getPages failed:', res.status, res.statusText);
+        // Silently return fallback when backend not available
         return { pages: [] };
       }
       return res.json();
-    } catch (error) {
-      console.error('[API] getPages error:', error);
+    } catch {
+      // Silently return fallback when backend not available
       return { pages: [] };
     }
   },
@@ -303,12 +376,12 @@ export const api = {
         next: { revalidate: 3600 },
       });
       if (!res.ok) {
-        console.error('[API] getTags failed:', res.status, res.statusText);
+        // Silently return fallback when backend not available
         return { tags: [] };
       }
       return res.json();
-    } catch (error) {
-      console.error('[API] getTags error:', error);
+    } catch {
+      // Silently return fallback when backend not available
       return { tags: [] };
     }
   },
@@ -319,16 +392,12 @@ export const api = {
         next: { revalidate: 3600 },
       });
       if (!res.ok) {
-        console.error(
-          '[API] getTestimonials failed:',
-          res.status,
-          res.statusText
-        );
+        // Silently return fallback when backend not available
         return { testimonials: [] };
       }
       return res.json();
-    } catch (error) {
-      console.error('[API] getTestimonials error:', error);
+    } catch {
+      // Silently return fallback when backend not available
       return { testimonials: [] };
     }
   },
@@ -342,17 +411,13 @@ export const api = {
         { next: { revalidate: 3600 } }
       );
       if (!res.ok) {
-        console.error(
-          '[API] getFeaturedProducts failed:',
-          res.status,
-          res.statusText
-        );
+        // Silently return fallback when backend not available
         return { products: [] };
       }
       const data = await res.json();
       return { products: data.data || [] };
-    } catch (error) {
-      console.error('[API] getFeaturedProducts error:', error);
+    } catch {
+      // Silently return fallback when backend not available
       return { products: [] };
     }
   },
@@ -369,29 +434,37 @@ export const api = {
       category_id?: string;
       tag_id?: string;
       collection_id?: string;
+      cache?: boolean;
     } = {}
   ) {
-    const url = new URL(`${API_URL}/products`);
-    url.searchParams.set('status', 'published'); // Only show published products
-    if (params.search) url.searchParams.set('search', params.search);
-    if (params.min_price)
-      url.searchParams.set('min_price', params.min_price.toString());
-    if (params.max_price)
-      url.searchParams.set('max_price', params.max_price.toString());
-    if (params.sort) url.searchParams.set('sort', params.sort);
-    if (params.limit) url.searchParams.set('limit', params.limit.toString());
-    if (params.offset) url.searchParams.set('offset', params.offset.toString());
+    const searchParams = new URLSearchParams();
+    searchParams.set('status', 'published'); // Only show published products
+    if (params.search) searchParams.set('search', params.search);
+    if (params.min_price != null)
+      searchParams.set('min_price', params.min_price.toString());
+    if (params.max_price != null)
+      searchParams.set('max_price', params.max_price.toString());
+    if (params.sort) searchParams.set('sort', params.sort);
+    if (params.limit != null && params.limit > 0)
+      searchParams.set('limit', params.limit.toString());
+    if (params.offset != null)
+      searchParams.set('offset', params.offset.toString());
     if (params.category_id)
-      url.searchParams.set('category_id', params.category_id);
-    if (params.tag_id) url.searchParams.set('tag_id', params.tag_id);
+      searchParams.set('category_id', params.category_id);
+    if (params.tag_id) searchParams.set('tag_id', params.tag_id);
     if (params.collection_id)
-      url.searchParams.set('collection_id', params.collection_id);
+      searchParams.set('collection_id', params.collection_id);
+    if (params.region_id) searchParams.set('region_id', params.region_id);
+
+    const url = `${API_URL}/products?${searchParams.toString()}`;
 
     try {
-      // Cache for 60 seconds (ISR)
-      const res = await fetchWithTrace(url.toString(), {
-        next: { revalidate: 60, tags: ['products'] },
-      });
+      // Cache for 60 seconds (ISR), but allow bypassing cache via params
+      const cacheOptions = params.cache === false 
+        ? { cache: 'no-store' as RequestCache }
+        : { next: { revalidate: 60, tags: ['products'] } };
+      
+      const res = await fetchWithTrace(url, cacheOptions);
       if (!res.ok) {
         return { products: [], total: 0 };
       }
@@ -447,7 +520,7 @@ export const api = {
   async searchProductsByTitle(title: string) {
     try {
       const res = await fetchWithTrace(
-        `${API_URL}/products?title=${encodeURIComponent(title)}&limit=1`,
+        `${API_URL}/products?search=${encodeURIComponent(title)}&status=published&limit=1`,
         {
           next: { revalidate: 60 },
         }
@@ -558,7 +631,8 @@ export const api = {
 
   // --- Auth ---
   async register(data: RegisterData) {
-    const res = await fetchWithTrace(`${API_URL}/store/auth/register`, {
+    const url = `${API_URL}/store/auth/register`;
+    const res = await fetchWithTrace(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -591,7 +665,8 @@ export const api = {
       throw error;
     }
 
-    return res.json();
+    const jsonData = await res.json();
+    return jsonData;
   },
 
   // --- Resend Verification Email ---
@@ -628,14 +703,19 @@ export const api = {
   },
 
   async login(data: LoginData) {
-    const res = await fetchWithTrace(`${API_URL}/store/auth/login`, {
+    const url = `${API_URL}/store/auth/login`;
+    const res = await fetchWithTrace(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
       credentials: 'include',
     });
-    if (!res.ok) throw await res.json();
-    return res.json();
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw errorData;
+    }
+    const jsonData = await res.json();
+    return jsonData;
   },
 
   async socialLogin(
@@ -672,13 +752,15 @@ export const api = {
   },
 
   async updateCustomer(data: CustomerUpdateData) {
+    const csrfHeader = await getCsrfHeader();
     const res = await fetchWithTrace(`${API_URL}/store/customers/me`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        ...csrfHeader,
       },
       body: JSON.stringify(data),
-      credentials: 'include', // 🔒 FIX-010: Cookies sent automatically
+      credentials: 'include',
     });
     if (!res.ok) throw new Error('Failed to update profile');
     return res.json();
@@ -963,7 +1045,11 @@ export const api = {
     }
   },
 
-  async createWholesaleOrder(data: any) {
+  async createWholesaleOrder(data: {
+    items: Array<{ variant_id: string; quantity: number }>;
+    shipping_address: Record<string, unknown>;
+    email: string;
+  }) {
     const csrfHeader = await getCsrfHeader();
     const res = await fetchWithTrace(`${API_URL}/store/wholesale/orders`, {
       method: 'POST',
@@ -974,6 +1060,10 @@ export const api = {
       body: JSON.stringify(data),
       credentials: 'include',
     });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ message: 'Failed to create wholesale order' }));
+      throw new Error(error.message || 'Failed to create wholesale order');
+    }
     return res.json();
   },
 };

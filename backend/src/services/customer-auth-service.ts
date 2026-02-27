@@ -530,4 +530,105 @@ export const customerAuthService = {
 
     return { token, customer, isNewUser };
   },
+
+  // 🔒 Password Reset Methods
+  async requestPasswordReset(email: string) {
+    console.log('[ForgotPassword] Processing request for:', email);
+    
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(eq(customers.email, email.toLowerCase()))
+      .limit(1);
+
+    console.log('[ForgotPassword] Customer found:', customer ? 'yes - id: ' + customer.id : 'no');
+    console.log('[ForgotPassword] has_account:', customer?.has_account);
+
+    // Always return success to prevent email enumeration
+    if (!customer) {
+      console.log('[ForgotPassword] No customer found, returning success');
+      return {
+        success: true,
+        message: 'If an account exists, you will receive a password reset link.',
+      };
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await db
+      .update(customers)
+      .set({
+        reset_token: resetToken,
+        reset_token_expires_at: resetExpires,
+        reset_attempts: 0,
+        updated_at: new Date(),
+      })
+      .where(eq(customers.id, customer.id));
+
+    // Send email
+    try {
+      const { emailService } = await import('./email-service');
+      await emailService.sendPasswordResetEmail({
+        email: customer.email!,
+        first_name: customer.first_name || 'Customer',
+        token: resetToken,
+      });
+    } catch (e) {
+      console.error('Failed to send reset email:', e);
+    }
+
+    return {
+      success: true,
+      message: 'If an account exists, you will receive a password reset link.',
+    };
+  },
+
+  async resetPassword(token: string, newPassword: string) {
+    // Validate password strength
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.valid) {
+      throw new Error(
+        `Password does not meet requirements: ${passwordValidation.errors.join(', ')}`
+      );
+    }
+
+    if (isCommonPassword(newPassword)) {
+      throw new Error('Password is too common. Please choose a more secure password.');
+    }
+
+    // Find customer by token
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(eq(customers.reset_token, token))
+      .limit(1);
+
+    if (!customer) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    if (!customer.reset_token_expires_at || customer.reset_token_expires_at < new Date()) {
+      throw new Error('Reset token has expired');
+    }
+
+    // Hash and update password
+    const password_hash = await bcrypt.hash(newPassword, 10);
+
+    await db
+      .update(customers)
+      .set({
+        password_hash,
+        reset_token: null,
+        reset_token_expires_at: null,
+        reset_attempts: 0,
+        failed_login_attempts: 0,
+        locked_until: null,
+        updated_at: new Date(),
+      })
+      .where(eq(customers.id, customer.id));
+
+    return { success: true, message: 'Password reset successfully' };
+  },
 };

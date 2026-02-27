@@ -99,3 +99,60 @@ body {
 .group:hover .image-zoom-img {
   transform: scale(1.08); /* Subtle zoom */
 }
+
+/* Accessibility: Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Accessibility: Proper focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #1c1917;
+  outline-offset: 2px;
+}
+
+/* Remove ALL focus rings on mouse click/active - keep only for keyboard */
+*:focus:not(:focus-visible),
+*:focus:not(:focus-visible)::before,
+*:focus:not(:focus-visible)::after,
+*:active {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #000 !important;
+  --tw-ring-shadow: 0 0 #000 !important;
+}
+
+/* Button and link specific */
+button:active,
+a:active,
+[role="button"]:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove Tailwind ring classes on click */
+.ring-2:active,
+.ring-black:active,
+.focus\:ring-2:active,
+[class*="ring-"]:active {
+  --tw-ring-offset-shadow: 0 0 #000 !important;
+  --tw-ring-shadow: 0 0 #000 !important;
+  box-shadow: none !important;
+}
+
+/* Mobile search overlay animation fallback */
+@media (max-width: 768px) {
+  .search-overlay-panel {
+    transform: translateY(0) !important;
+    animation: none !important;
+  }
+}

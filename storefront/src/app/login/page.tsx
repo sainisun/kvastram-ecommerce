@@ -317,6 +317,15 @@ function LoginContent() {
             </div>
           </div>
 
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-stone-500 hover:text-stone-800 transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
           <button
             disabled={loading}
             className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
@@ -343,18 +352,24 @@ function LoginContent() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-stone-200"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-stone-400">
-                or continue with
-              </span>
-            </div>
-          </div>
 
-          <div className="space-y-3">
-            <GoogleOAuthWrapper redirect={redirect} />
-            <FacebookOAuthWrapper redirect={redirect} />
+            {/* Only show divider and OAuth section if at least one provider is configured */}
+            {(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_FACEBOOK_APP_ID) && (
+              <>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-stone-400">
+                    or continue with
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <GoogleOAuthWrapper redirect={redirect} />
+                  <FacebookOAuthWrapper redirect={redirect} />
+                </div>
+              </>
+            )}
           </div>
-        </form>
+          </form>
 
         <div className="text-center text-sm text-stone-500">
           Don&apos;t have an account?{' '}

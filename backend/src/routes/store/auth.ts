@@ -254,49 +254,6 @@ storeAuthRouter.get('/me', async (c) => {
   }
 });
 
-// DEBUG: Get verification token for testing (only in non-production)
-storeAuthRouter.get('/debug-token', async (c) => {
-  if (process.env.NODE_ENV === 'production') {
-    return c.json({ error: 'Endpoint not available in production' }, 404);
-  }
-
-  const email = c.req.query('email');
-  if (!email) {
-    return c.json({ error: 'Email is required' }, 400);
-  }
-
-  const { db } = await import('../../db/client');
-  const { customers } = await import('../../db/schema');
-  const { eq } = await import('drizzle-orm');
-
-  const [customer] = await db
-    .select({
-      id: customers.id,
-      email: customers.email,
-      email_verified: customers.email_verified,
-      verification_token: customers.verification_token,
-    })
-    .from(customers)
-    .where(eq(customers.email, email.toLowerCase()))
-    .limit(1);
-
-  if (!customer) {
-    return c.json({ error: 'Customer not found' }, 404);
-  }
-
-  if (customer.email_verified) {
-    return c.json({ message: 'Email already verified', verified: true });
-  }
-
-  const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/verify-email?token=${customer.verification_token}`;
-
-  return c.json({
-    email: customer.email,
-    verified: false,
-    verification_url: verifyUrl,
-    token: customer.verification_token,
-  });
-});
 
 // Social Login - Google
 storeAuthRouter.post('/social/google', async (c) => {
@@ -353,6 +310,43 @@ storeAuthRouter.post('/social/facebook', async (c) => {
       customer: customer.customer,
       isNewUser: customer.isNewUser,
     });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 400);
+  }
+});
+
+// POST /store/auth/forgot-password - Request password reset
+storeAuthRouter.post('/forgot-password', emailLimiter, async (c) => {
+  const { email } = await c.req.json().catch(() => ({}));
+
+  if (!email) {
+    return c.json({ error: 'Email is required' }, 400);
+  }
+
+  try {
+    const result = await customerAuthService.requestPasswordReset(email);
+    // Always return success to prevent email enumeration
+    return c.json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error: any) {
+    console.error('Forgot password error:', error);
+    return c.json({ error: error.message || 'An error occurred. Please try again.' }, 500);
+  }
+});
+
+// POST /store/auth/reset-password - Reset password with token
+storeAuthRouter.post('/reset-password', async (c) => {
+  const { token, password } = await c.req.json().catch(() => ({}));
+
+  if (!token || !password) {
+    return c.json({ error: 'Token and password are required' }, 400);
+  }
+
+  try {
+    const result = await customerAuthService.resetPassword(token, password);
+    return c.json(result);
   } catch (error: any) {
     return c.json({ error: error.message }, 400);
   }

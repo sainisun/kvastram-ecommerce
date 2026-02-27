@@ -195,7 +195,7 @@ export const api = {
     });
     if (!res.ok) throw new Error('Failed to fetch products');
     const response = await res.json();
-    return response.data;
+    return response; // Return full response including pagination
   },
 
   getProductStats: async () => {
@@ -496,6 +496,24 @@ export const api = {
       // No Authorization header needed - cookie is sent automatically
     });
     if (!res.ok) throw new Error('Failed to fetch settings');
+    return res.json();
+  },
+
+  // Get footer settings for wholesale page
+  getFooterSettings: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/settings/footer`, {
+      // No Authorization header needed - cookie is sent automatically
+    });
+    if (!res.ok) throw new Error('Failed to fetch footer settings');
+    return res.json();
+  },
+
+  // Get wholesale tiers for public page
+  getWholesaleTiersPublic: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/settings/wholesale-tiers`, {
+      // Public endpoint - no auth required
+    });
+    if (!res.ok) throw new Error('Failed to fetch wholesale tiers');
     return res.json();
   },
 

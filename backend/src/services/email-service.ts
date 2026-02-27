@@ -313,6 +313,44 @@ class EmailService {
 
     return this.sendEmail({ to: data.email, subject, text, html });
   }
+
+  // 🔒 Password Reset Email
+  async sendPasswordResetEmail(data: {
+    email: string;
+    first_name: string;
+    token: string;
+  }) {
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${encodeURIComponent(data.token)}`;
+    const subject = 'Reset Your Password - Kvastram';
+    const text = `Hi ${data.first_name},\n\nYou requested to reset your password.\n\nClick the link below to create a new password:\n${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nKvastram Team`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+        <h1>Reset Your Password</h1>
+        <p>Hi ${escapeHtml(data.first_name)},</p>
+        <p>You requested to reset your password. Click the button below to create a new password:</p>
+        <p style="text-align: center; margin: 30px 0;">
+          <a href="${resetUrl}" style="background-color: #1c1917; color: white; padding: 14px 28px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
+            Reset Password
+          </a>
+        </p>
+        <p>Or copy this link:<br><small>${resetUrl}</small></p>
+        <p style="color: #666; font-size: 12px; margin-top: 30px;">This link expires in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+        <p>Best regards,<br>Kvastram Team</p>
+      </div>
+    `;
+
+    // DEV MODE: Log reset URL directly for testing
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('\n📧 PASSWORD RESET (DEV MODE)');
+      console.log('   To:', data.email);
+      console.log('   Reset URL:', resetUrl);
+      console.log('');
+    }
+
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
 }
 
 export const emailService = new EmailService();
