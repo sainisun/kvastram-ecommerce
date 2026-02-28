@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://kvastram-backend-production.up.railway.app';
+const API_BASE_URL = '/api';
 
 // Debug logging helper
 const debugLog = (message: string, data?: unknown) => {

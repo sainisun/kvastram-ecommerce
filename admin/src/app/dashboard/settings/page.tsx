@@ -223,9 +223,7 @@ export default function SettingsPage() {
 
   const fetchWhatsAppSettings = async () => {
     try {
-      const API_BASE_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const res = await fetch(`${API_BASE_URL}/admin/whatsapp/settings`, {
+      const res = await fetch(`/api/admin/whatsapp/settings`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -250,9 +248,7 @@ export default function SettingsPage() {
   const handleSaveWhatsApp = async () => {
     try {
       setSaving(true);
-      const API_BASE_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const res = await fetch(`${API_BASE_URL}/admin/whatsapp/settings`, {
+      const res = await fetch(`/api/admin/whatsapp/settings`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -281,9 +277,7 @@ export default function SettingsPage() {
   const handleTestWhatsApp = async () => {
     try {
       setTestingWhatsapp(true);
-      const API_BASE_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const res = await fetch(`${API_BASE_URL}/admin/whatsapp/test`, {
+      const res = await fetch(`/api/admin/whatsapp/test`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -374,7 +368,10 @@ export default function SettingsPage() {
                 </h2>
 
                 <div>
-                  <label htmlFor="store_name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="store_name"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Store Name
                   </label>
                   <input
@@ -387,7 +384,10 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="store_description" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="store_description"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Store Description
                   </label>
                   <textarea
@@ -402,7 +402,10 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="contact_email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="contact_email"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Contact Email
                   </label>
                   <input
@@ -417,7 +420,10 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="phone_number"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Phone Number
                   </label>
                   <input
@@ -467,7 +473,10 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="announcement_bar_text" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="announcement_bar_text"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Announcement Text
                       </label>
                       <input
@@ -490,7 +499,10 @@ export default function SettingsPage() {
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label htmlFor="hero_title" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="hero_title"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Hero Title
                       </label>
                       <input
@@ -505,7 +517,10 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="hero_subtitle" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="hero_subtitle"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Hero Subtitle
                       </label>
                       <textarea
@@ -521,7 +536,10 @@ export default function SettingsPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="hero_cta_text_1" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="hero_cta_text_1"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           CTA Button Text
                         </label>
                         <input
@@ -537,7 +555,10 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <div>
-                      <label htmlFor="hero_image" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="hero_image"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Hero Image URL
                       </label>
                       <input
@@ -556,7 +577,10 @@ export default function SettingsPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="hero_cta_text_2" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="hero_cta_text_2"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           CTA Button Text
                         </label>
                         <input
@@ -571,7 +595,10 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div>
-                        <label htmlFor="hero_cta_link" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="hero_cta_link"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           CTA Link
                         </label>
                         <input
@@ -619,7 +646,10 @@ export default function SettingsPage() {
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label htmlFor="newsletter_title" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="newsletter_title"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Newsletter Title
                       </label>
                       <input
@@ -634,7 +664,10 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="newsletter_subtitle" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="newsletter_subtitle"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Newsletter Subtitle
                       </label>
                       <textarea
@@ -657,7 +690,10 @@ export default function SettingsPage() {
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label htmlFor="brand_story_title" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="brand_story_title"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Title
                       </label>
                       <input
@@ -672,7 +708,10 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="brand_story_content" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="brand_story_content"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Content
                       </label>
                       <textarea
@@ -687,7 +726,10 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="brand_story_image" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="brand_story_image"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Image URL
                       </label>
                       <input
@@ -714,7 +756,10 @@ export default function SettingsPage() {
                   </p>
                   <div className="space-y-4">
                     <div>
-                      <label htmlFor="featured_product_ids" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="featured_product_ids"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Featured Product IDs
                       </label>
                       <textarea
@@ -754,7 +799,10 @@ export default function SettingsPage() {
                   {/* Force rebuild */}
                   <div className="space-y-4">
                     <div>
-                      <label htmlFor="nav_links" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="nav_links"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Nav Links (JSON){' '}
                         <span className="ml-2 text-xs text-gray-400 font-normal">
                           {'Array of (label, url, order, highlight)'}
@@ -789,7 +837,10 @@ export default function SettingsPage() {
                       </button>
                     </div>
                     <div>
-                      <label htmlFor="quick_links" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="quick_links"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Quick Links (JSON){' '}
                         <span className="ml-2 text-xs text-gray-400 font-normal">
                           {'Array of {label, url, order, highlight}'}
@@ -837,7 +888,10 @@ export default function SettingsPage() {
                   </p>
                   <div className="space-y-4">
                     <div>
-                      <label htmlFor="store_logo_url" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="store_logo_url"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Store Logo URL
                       </label>
                       <input
@@ -852,7 +906,10 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="store_address" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="store_address"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Store Address
                       </label>
                       <textarea
@@ -868,7 +925,10 @@ export default function SettingsPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="store_phone" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="store_phone"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           Phone Number
                         </label>
                         <input
@@ -883,7 +943,10 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div>
-                        <label htmlFor="store_email" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="store_email"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           Email
                         </label>
                         <input
@@ -1018,7 +1081,10 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="wa_phone_number_id" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="wa_phone_number_id"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Phone Number ID
                     </label>
                     <input
@@ -1037,7 +1103,10 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="wa_access_token" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="wa_access_token"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Access Token
                     </label>
                     <input
@@ -1063,7 +1132,10 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="wa_business_account_id" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="wa_business_account_id"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Business Account ID (Optional)
                     </label>
                     <input
@@ -1082,7 +1154,10 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="wa_admin_phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="wa_admin_phone"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Admin Phone Number
                     </label>
                     <input
@@ -1252,7 +1327,10 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-1 gap-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="from_name" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="from_name"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         From Name
                       </label>
                       <input
@@ -1267,7 +1345,10 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="from_email" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="from_email"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         From Email
                       </label>
                       <input
@@ -1289,7 +1370,10 @@ export default function SettingsPage() {
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-2 md:col-span-1">
-                        <label htmlFor="smtp_host" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="smtp_host"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           SMTP Host
                         </label>
                         <input
@@ -1304,7 +1388,10 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
-                        <label htmlFor="smtp_port" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="smtp_port"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           SMTP Port
                         </label>
                         <input
@@ -1319,7 +1406,10 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
-                        <label htmlFor="smtp_user" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="smtp_user"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           SMTP User
                         </label>
                         <input
@@ -1334,7 +1424,10 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
-                        <label htmlFor="smtp_pass" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          htmlFor="smtp_pass"
+                          className="block text-sm font-medium text-gray-700 mb-2"
+                        >
                           SMTP Password
                         </label>
                         <div className="relative">
@@ -1366,7 +1459,10 @@ export default function SettingsPage() {
                   Shipping Settings
                 </h2>
                 <div>
-                  <label htmlFor="shipping_rate" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="shipping_rate"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Default Shipping Rate
                   </label>
                   <input
@@ -1374,13 +1470,19 @@ export default function SettingsPage() {
                     type="number"
                     value={settings.shipping_rate || 10}
                     onChange={(e) =>
-                      handleChange('shipping_rate', Number.parseFloat(e.target.value))
+                      handleChange(
+                        'shipping_rate',
+                        Number.parseFloat(e.target.value)
+                      )
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="free_shipping_threshold" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="free_shipping_threshold"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Free Shipping Threshold
                   </label>
                   <input
@@ -1435,7 +1537,10 @@ export default function SettingsPage() {
                 payment processing.
               </div>
               <div>
-                <label htmlFor="stripe_publishable_key" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="stripe_publishable_key"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Publishable Key
                 </label>
                 <input
@@ -1454,7 +1559,10 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label htmlFor="stripe_secret_key" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="stripe_secret_key"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Secret Key
                 </label>
                 <div className="relative">
@@ -1525,7 +1633,10 @@ export default function SettingsPage() {
               )}
 
               <div>
-                <label htmlFor="otp_enable" className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                <label
+                  htmlFor="otp_enable"
+                  className="block text-sm font-medium text-gray-700 mb-2 text-left"
+                >
                   Authentication Code
                 </label>
                 <input
@@ -1535,9 +1646,7 @@ export default function SettingsPage() {
                   placeholder="000 000"
                   className="w-full text-center text-2xl tracking-widest border border-gray-300 rounded-lg p-3 font-mono"
                   value={otp}
-                  onChange={(e) =>
-                    setOtp(e.target.value.replaceAll(/\D/g, ''))
-                  }
+                  onChange={(e) => setOtp(e.target.value.replaceAll(/\D/g, ''))}
                 />
               </div>
 
@@ -1584,9 +1693,12 @@ export default function SettingsPage() {
                 authenticator app:
               </p>
 
-                    <div>
-                      {/* Nav Links JSON format hint */}
-                      <label htmlFor="otp_disable" className="block text-sm font-medium text-gray-700 mb-2">
+              <div>
+                {/* Nav Links JSON format hint */}
+                <label
+                  htmlFor="otp_disable"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Authentication Code
                 </label>
                 <input
@@ -1596,9 +1708,7 @@ export default function SettingsPage() {
                   placeholder="000 000"
                   className="w-full text-center text-2xl tracking-widest border border-gray-300 rounded-lg p-3 font-mono"
                   value={otp}
-                  onChange={(e) =>
-                    setOtp(e.target.value.replaceAll(/\D/g, ''))
-                  }
+                  onChange={(e) => setOtp(e.target.value.replaceAll(/\D/g, ''))}
                 />
               </div>
 
