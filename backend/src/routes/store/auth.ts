@@ -35,7 +35,7 @@ const storeAuthRouter = new Hono();
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: config.server.env === 'production',
-  sameSite: 'lax' as const,
+  sameSite: 'none' as const,
   maxAge: 60 * 60 * 24 * 7, // 7 days
   path: '/',
 };
