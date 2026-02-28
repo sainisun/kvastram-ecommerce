@@ -25,9 +25,7 @@ function VerifyContent() {
 
     const verifyEmail = async () => {
       try {
-        const API_URL =
-          process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-        const res = await fetch(`${API_URL}/store/auth/verify-email`, {
+        const res = await fetch(`/api/store/auth/verify-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token }),

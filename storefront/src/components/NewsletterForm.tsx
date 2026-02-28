@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Loader2, CheckCircle } from 'lucide-react';
 
 interface NewsletterFormProps {
@@ -9,14 +9,14 @@ interface NewsletterFormProps {
 
 export default function NewsletterForm({
   minimal = false,
-}: NewsletterFormProps) {
+}: Readonly<NewsletterFormProps>) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<
     'idle' | 'loading' | 'success' | 'error'
   >('idle');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email) return;
 
@@ -24,9 +24,7 @@ export default function NewsletterForm({
     setMessage('');
 
     try {
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const res = await fetch(`${API_URL}/newsletter/subscribe`, {
+      const res = await fetch(`/api/newsletter/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -42,7 +40,8 @@ export default function NewsletterForm({
         setStatus('error');
         setMessage(data.error || 'Failed to subscribe');
       }
-    } catch (_error) {
+    } catch (error) {
+      console.error('Newsletter subscription failed:', error);
       setStatus('error');
       setMessage('Network error. Please try again.');
     }
@@ -50,14 +49,12 @@ export default function NewsletterForm({
 
   if (status === 'success') {
     return (
-      <div
+      <output
         className={`flex items-center gap-2 ${minimal ? 'text-green-600' : 'text-green-400'}`}
-        role="status"
-        aria-live="polite"
       >
         <CheckCircle size={minimal ? 16 : 20} aria-hidden="true" />
         <span className={minimal ? 'text-sm' : ''}>{message}</span>
-      </div>
+      </output>
     );
   }
 

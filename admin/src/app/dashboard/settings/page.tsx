@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Settings as SettingsIcon,
   Store,
-  Globe,
   Bell,
   Lock,
   Mail,
@@ -76,7 +74,7 @@ export default function SettingsPage() {
 
       // Flatten settings - handle both array and object formats
       const flatSettings: any = {};
-      if (settingsData && settingsData.settings) {
+      if (settingsData?.settings) {
         // Backend returns array: [{ key, value, category }, ...]
         if (Array.isArray(settingsData.settings)) {
           settingsData.settings.forEach((setting: any) => {
@@ -97,7 +95,7 @@ export default function SettingsPage() {
       setSettings(flatSettings);
 
       // Set User Profile
-      if (profileData && profileData?.user) {
+      if (profileData?.user) {
         setUser(profileData.user);
       }
 
@@ -133,7 +131,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveStripe = async (e: React.FormEvent) => {
+  const handleSaveStripe = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -376,10 +374,11 @@ export default function SettingsPage() {
                 </h2>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="store_name" className="block text-sm font-medium text-gray-700 mb-2">
                     Store Name
                   </label>
                   <input
+                    id="store_name"
                     type="text"
                     value={settings.store_name || ''}
                     onChange={(e) => handleChange('store_name', e.target.value)}
@@ -388,10 +387,11 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="store_description" className="block text-sm font-medium text-gray-700 mb-2">
                     Store Description
                   </label>
                   <textarea
+                    id="store_description"
                     rows={4}
                     value={settings.store_description || ''}
                     onChange={(e) =>
@@ -402,10 +402,11 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="contact_email" className="block text-sm font-medium text-gray-700 mb-2">
                     Contact Email
                   </label>
                   <input
+                    id="contact_email"
                     type="email"
                     value={settings.contact_email || ''}
                     onChange={(e) =>
@@ -416,10 +417,11 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-2">
                     Phone Number
                   </label>
                   <input
+                    id="phone_number"
                     type="tel"
                     value={settings.phone_number || ''}
                     onChange={(e) =>
@@ -465,10 +467,11 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="announcement_bar_text" className="block text-sm font-medium text-gray-700 mb-2">
                         Announcement Text
                       </label>
                       <input
+                        id="announcement_bar_text"
                         type="text"
                         value={settings.announcement_bar_text || ''}
                         onChange={(e) =>
@@ -487,10 +490,11 @@ export default function SettingsPage() {
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="hero_title" className="block text-sm font-medium text-gray-700 mb-2">
                         Hero Title
                       </label>
                       <input
+                        id="hero_title"
                         type="text"
                         value={settings.hero_title || ''}
                         onChange={(e) =>
@@ -501,10 +505,11 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="hero_subtitle" className="block text-sm font-medium text-gray-700 mb-2">
                         Hero Subtitle
                       </label>
                       <textarea
+                        id="hero_subtitle"
                         rows={3}
                         value={settings.hero_subtitle || ''}
                         onChange={(e) =>
@@ -516,10 +521,11 @@ export default function SettingsPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="hero_cta_text_1" className="block text-sm font-medium text-gray-700 mb-2">
                           CTA Button Text
                         </label>
                         <input
+                          id="hero_cta_text_1"
                           type="text"
                           value={settings.hero_cta_text || ''}
                           onChange={(e) =>
@@ -531,10 +537,11 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="hero_image" className="block text-sm font-medium text-gray-700 mb-2">
                         Hero Image URL
                       </label>
                       <input
+                        id="hero_image"
                         type="text"
                         value={settings.hero_image || ''}
                         onChange={(e) =>
@@ -549,10 +556,11 @@ export default function SettingsPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="hero_cta_text_2" className="block text-sm font-medium text-gray-700 mb-2">
                           CTA Button Text
                         </label>
                         <input
+                          id="hero_cta_text_2"
                           type="text"
                           value={settings.hero_cta_text || ''}
                           onChange={(e) =>
@@ -563,10 +571,11 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="hero_cta_link" className="block text-sm font-medium text-gray-700 mb-2">
                           CTA Link
                         </label>
                         <input
+                          id="hero_cta_link"
                           type="text"
                           value={settings.hero_cta_link || ''}
                           onChange={(e) =>
@@ -610,10 +619,11 @@ export default function SettingsPage() {
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="newsletter_title" className="block text-sm font-medium text-gray-700 mb-2">
                         Newsletter Title
                       </label>
                       <input
+                        id="newsletter_title"
                         type="text"
                         value={settings.newsletter_title || ''}
                         onChange={(e) =>
@@ -624,10 +634,11 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="newsletter_subtitle" className="block text-sm font-medium text-gray-700 mb-2">
                         Newsletter Subtitle
                       </label>
                       <textarea
+                        id="newsletter_subtitle"
                         rows={3}
                         value={settings.newsletter_subtitle || ''}
                         onChange={(e) =>
@@ -646,10 +657,11 @@ export default function SettingsPage() {
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="brand_story_title" className="block text-sm font-medium text-gray-700 mb-2">
                         Title
                       </label>
                       <input
+                        id="brand_story_title"
                         type="text"
                         value={settings.brand_story_title || ''}
                         onChange={(e) =>
@@ -660,10 +672,11 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="brand_story_content" className="block text-sm font-medium text-gray-700 mb-2">
                         Content
                       </label>
                       <textarea
+                        id="brand_story_content"
                         rows={4}
                         value={settings.brand_story_content || ''}
                         onChange={(e) =>
@@ -674,10 +687,11 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="brand_story_image" className="block text-sm font-medium text-gray-700 mb-2">
                         Image URL
                       </label>
                       <input
+                        id="brand_story_image"
                         type="text"
                         value={settings.brand_story_image || ''}
                         onChange={(e) =>
@@ -700,10 +714,11 @@ export default function SettingsPage() {
                   </p>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="featured_product_ids" className="block text-sm font-medium text-gray-700 mb-2">
                         Featured Product IDs
                       </label>
                       <textarea
+                        id="featured_product_ids"
                         rows={3}
                         value={settings.featured_product_ids || ''}
                         onChange={(e) =>
@@ -739,13 +754,14 @@ export default function SettingsPage() {
                   {/* Force rebuild */}
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nav Links (JSON)
+                      <label htmlFor="nav_links" className="block text-sm font-medium text-gray-700 mb-2">
+                        Nav Links (JSON){' '}
                         <span className="ml-2 text-xs text-gray-400 font-normal">
                           {'Array of (label, url, order, highlight)'}
                         </span>
                       </label>
                       <textarea
+                        id="nav_links"
                         rows={8}
                         value={settings.nav_links || '[]'}
                         onChange={(e) => {
@@ -773,13 +789,14 @@ export default function SettingsPage() {
                       </button>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Quick Links (JSON)
+                      <label htmlFor="quick_links" className="block text-sm font-medium text-gray-700 mb-2">
+                        Quick Links (JSON){' '}
                         <span className="ml-2 text-xs text-gray-400 font-normal">
                           {'Array of {label, url, order, highlight}'}
                         </span>
                       </label>
                       <textarea
+                        id="quick_links"
                         rows={6}
                         value={settings.quick_links || '[]'}
                         onChange={(e) => {
@@ -820,10 +837,11 @@ export default function SettingsPage() {
                   </p>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="store_logo_url" className="block text-sm font-medium text-gray-700 mb-2">
                         Store Logo URL
                       </label>
                       <input
+                        id="store_logo_url"
                         type="text"
                         value={settings.store_logo_url || ''}
                         onChange={(e) =>
@@ -834,10 +852,11 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="store_address" className="block text-sm font-medium text-gray-700 mb-2">
                         Store Address
                       </label>
                       <textarea
+                        id="store_address"
                         rows={2}
                         value={settings.store_address || ''}
                         onChange={(e) =>
@@ -849,10 +868,11 @@ export default function SettingsPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="store_phone" className="block text-sm font-medium text-gray-700 mb-2">
                           Phone Number
                         </label>
                         <input
+                          id="store_phone"
                           type="tel"
                           value={settings.store_phone || ''}
                           onChange={(e) =>
@@ -863,10 +883,11 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="store_email" className="block text-sm font-medium text-gray-700 mb-2">
                           Email
                         </label>
                         <input
+                          id="store_email"
                           type="email"
                           value={settings.store_email || ''}
                           onChange={(e) =>
@@ -997,10 +1018,11 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="wa_phone_number_id" className="block text-sm font-medium text-gray-700 mb-1">
                       Phone Number ID
                     </label>
                     <input
+                      id="wa_phone_number_id"
                       type="text"
                       value={whatsappSettings.phone_number_id}
                       onChange={(e) =>
@@ -1015,10 +1037,11 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="wa_access_token" className="block text-sm font-medium text-gray-700 mb-1">
                       Access Token
                     </label>
                     <input
+                      id="wa_access_token"
                       type="password"
                       value={whatsappSettings.access_token}
                       onChange={(e) =>
@@ -1040,10 +1063,11 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="wa_business_account_id" className="block text-sm font-medium text-gray-700 mb-1">
                       Business Account ID (Optional)
                     </label>
                     <input
+                      id="wa_business_account_id"
                       type="text"
                       value={whatsappSettings.business_account_id}
                       onChange={(e) =>
@@ -1058,10 +1082,11 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="wa_admin_phone" className="block text-sm font-medium text-gray-700 mb-1">
                       Admin Phone Number
                     </label>
                     <input
+                      id="wa_admin_phone"
                       type="text"
                       value={whatsappSettings.admin_phone}
                       onChange={(e) =>
@@ -1227,10 +1252,11 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-1 gap-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="from_name" className="block text-sm font-medium text-gray-700 mb-2">
                         From Name
                       </label>
                       <input
+                        id="from_name"
                         type="text"
                         value={settings.from_name || ''}
                         onChange={(e) =>
@@ -1241,10 +1267,11 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="from_email" className="block text-sm font-medium text-gray-700 mb-2">
                         From Email
                       </label>
                       <input
+                        id="from_email"
                         type="email"
                         value={settings.from_email || ''}
                         onChange={(e) =>
@@ -1262,10 +1289,11 @@ export default function SettingsPage() {
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-2 md:col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="smtp_host" className="block text-sm font-medium text-gray-700 mb-2">
                           SMTP Host
                         </label>
                         <input
+                          id="smtp_host"
                           type="text"
                           value={settings.smtp_host || ''}
                           onChange={(e) =>
@@ -1276,10 +1304,11 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="smtp_port" className="block text-sm font-medium text-gray-700 mb-2">
                           SMTP Port
                         </label>
                         <input
+                          id="smtp_port"
                           type="number"
                           value={settings.smtp_port || ''}
                           onChange={(e) =>
@@ -1290,10 +1319,11 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="smtp_user" className="block text-sm font-medium text-gray-700 mb-2">
                           SMTP User
                         </label>
                         <input
+                          id="smtp_user"
                           type="text"
                           value={settings.smtp_user || ''}
                           onChange={(e) =>
@@ -1304,11 +1334,12 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="smtp_pass" className="block text-sm font-medium text-gray-700 mb-2">
                           SMTP Password
                         </label>
                         <div className="relative">
                           <input
+                            id="smtp_pass"
                             type="password"
                             value={settings.smtp_pass || ''}
                             onChange={(e) =>
@@ -1335,29 +1366,31 @@ export default function SettingsPage() {
                   Shipping Settings
                 </h2>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="shipping_rate" className="block text-sm font-medium text-gray-700 mb-2">
                     Default Shipping Rate
                   </label>
                   <input
+                    id="shipping_rate"
                     type="number"
-                    value={settings.shipping_rate || 10.0}
+                    value={settings.shipping_rate || 10}
                     onChange={(e) =>
-                      handleChange('shipping_rate', parseFloat(e.target.value))
+                      handleChange('shipping_rate', Number.parseFloat(e.target.value))
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="free_shipping_threshold" className="block text-sm font-medium text-gray-700 mb-2">
                     Free Shipping Threshold
                   </label>
                   <input
+                    id="free_shipping_threshold"
                     type="number"
-                    value={settings.free_shipping_threshold || 100.0}
+                    value={settings.free_shipping_threshold || 100}
                     onChange={(e) =>
                       handleChange(
                         'free_shipping_threshold',
-                        parseFloat(e.target.value)
+                        Number.parseFloat(e.target.value)
                       )
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1402,10 +1435,11 @@ export default function SettingsPage() {
                 payment processing.
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="stripe_publishable_key" className="block text-sm font-medium text-gray-700 mb-1">
                   Publishable Key
                 </label>
                 <input
+                  id="stripe_publishable_key"
                   type="text"
                   required
                   placeholder="pk_test_..."
@@ -1420,11 +1454,12 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="stripe_secret_key" className="block text-sm font-medium text-gray-700 mb-1">
                   Secret Key
                 </label>
                 <div className="relative">
                   <input
+                    id="stripe_secret_key"
                     type="password"
                     required
                     placeholder="sk_test_..."
@@ -1490,17 +1525,18 @@ export default function SettingsPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                <label htmlFor="otp_enable" className="block text-sm font-medium text-gray-700 mb-2 text-left">
                   Authentication Code
                 </label>
                 <input
+                  id="otp_enable"
                   type="text"
                   maxLength={6}
                   placeholder="000 000"
                   className="w-full text-center text-2xl tracking-widest border border-gray-300 rounded-lg p-3 font-mono"
                   value={otp}
                   onChange={(e) =>
-                    setOtp(e.target.value.replace(/[^0-9]/g, ''))
+                    setOtp(e.target.value.replaceAll(/\D/g, ''))
                   }
                 />
               </div>
@@ -1550,17 +1586,18 @@ export default function SettingsPage() {
 
                     <div>
                       {/* Nav Links JSON format hint */}
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="otp_disable" className="block text-sm font-medium text-gray-700 mb-2">
                   Authentication Code
                 </label>
                 <input
+                  id="otp_disable"
                   type="text"
                   maxLength={6}
                   placeholder="000 000"
                   className="w-full text-center text-2xl tracking-widest border border-gray-300 rounded-lg p-3 font-mono"
                   value={otp}
                   onChange={(e) =>
-                    setOtp(e.target.value.replace(/[^0-9]/g, ''))
+                    setOtp(e.target.value.replaceAll(/\D/g, ''))
                   }
                 />
               </div>

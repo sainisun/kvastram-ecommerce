@@ -121,8 +121,8 @@ export const api = {
           errorText = await res.text();
           debugLog('Raw error response:', errorText);
           data = JSON.parse(errorText);
-        } catch (e) {
-          debugLog('Failed to parse error response:', errorText);
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError, errorText);
           data = {
             message: errorText || `HTTP ${res.status}: ${res.statusText}`,
           };
@@ -145,7 +145,7 @@ export const api = {
       debugLog('Login API response structure:', response);
 
       // Check if response has the expected structure
-      if (!response.data || !response.data.user) {
+      if (!response.data?.user) {
         debugLog('Invalid response structure:', response);
         throw new Error('Invalid response structure from server');
       }

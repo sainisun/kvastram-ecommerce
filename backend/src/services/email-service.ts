@@ -9,6 +9,23 @@ function escapeHtml(str: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+// Helper to safely escape strings for HTML with fallback
+function safeString(str: string | undefined | null, fallback = ''): string {
+  return escapeHtml(str || fallback);
+}
+
+// Helper to safely format currency (handles cents vs major units)
+function formatCurrency(total: number, currency: string): string {
+  // Assume cents if > 1000, otherwise assume major units already
+  const amount = total > 1000 ? total / 100 : total;
+  return `${amount.toFixed(2)} ${currency.toUpperCase()}`;
+}
+
+// Email validation helper
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 interface EmailOptions {
   to: string;
   subject: string;
@@ -32,7 +49,7 @@ interface InquiryEmailData {
 
 class EmailService {
   private transporter!: nodemailer.Transporter;
-  private ready: Promise<void>;
+  private readonly ready!: Promise<void>;
 
   constructor() {
     // OPT-001 FIX: Use async-ready pattern to prevent race condition
@@ -50,40 +67,46 @@ class EmailService {
         greetingTimeout: 10000,  // 10 seconds
         socketTimeout: 10000,    // 10 seconds
       });
-      this.ready = Promise.resolve();
+      this.ready = this.initTransporter();
     } else {
-      // Development: Create Ethereal account asynchronously
-      // Emails will wait for this to complete before sending
-      this.ready = new Promise<void>((resolve) => {
-        nodemailer.createTestAccount((err, account) => {
-          if (err) {
-            console.error('Failed to create Ethereal account:', err);
-            // Fallback: log-only transporter
-            this.transporter = nodemailer.createTransport({
-              jsonTransport: true,
-            });
-            resolve();
-            return;
-          }
-          this.transporter = nodemailer.createTransport({
-            host: account.smtp.host,
-            port: account.smtp.port,
-            secure: account.smtp.secure,
-            auth: {
-              user: account.user,
-              pass: account.pass,
-            },
-            // Timeout settings
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
-          });
-          console.log('📧 Email Service ready (Ethereal Dev Mode)');
-          console.log(`📧 Preview URL: https://ethereal.email/messages`);
-          resolve();
-        });
-      });
+      this.ready = this.initTransporter();
     }
+  }
+
+  /** Initialize transporter asynchronously (development Ethereal setup) */
+  private initTransporter(): Promise<void> {
+    if (process.env.NODE_ENV === 'production') {
+      return Promise.resolve();
+    }
+    return new Promise<void>((resolve) => {
+      nodemailer.createTestAccount((err, account) => {
+        if (err) {
+          console.error('Failed to create Ethereal account:', err);
+          // Fallback: log-only transporter
+          this.transporter = nodemailer.createTransport({
+            jsonTransport: true,
+          });
+          resolve();
+          return;
+        }
+        this.transporter = nodemailer.createTransport({
+          host: account.smtp.host,
+          port: account.smtp.port,
+          secure: account.smtp.secure,
+          auth: {
+            user: account.user,
+            pass: account.pass,
+          },
+          // Timeout settings
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 10000,
+        });
+        console.log('📧 Email Service ready (Ethereal Dev Mode)');
+        console.log(`📧 Preview URL: https://ethereal.email/messages`);
+        resolve();
+      });
+    });
   }
 
   /** Ensure transporter is ready before any operation */
@@ -119,26 +142,30 @@ class EmailService {
 
   async sendOrderConfirmation(order: OrderEmailData, customerEmail: string) {
     const subject = `Order Confirmation #${order.order_number}`;
-    const text = `Thank you for your order! Your order #${order.order_number} has been placed successfully. Total: ${order.total / 100} ${order.currency_code}.`;
+    // Use safe formatting - handles cents conversion and escaping
+    const formattedTotal = formatCurrency(order.total, order.currency_code);
+    const safeStatus = order.status || 'Processing';
+    
+    const text = `Thank you for your order! Your order #${order.order_number} has been placed successfully. Total: ${formattedTotal}.`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Thank you for your order!</h1>
                 <p>Hi there,</p>
-                <p>Your order <strong>#${order.order_number}</strong> has been placed successfully.</p>
+                <p>Your order <strong>#${safeString(String(order.order_number))}</strong> has been placed successfully.</p>
 
                 <h2>Order Details</h2>
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td style="padding: 8px; border-bottom: 1px solid #ddd;">Order Number</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>${order.order_number}</strong></td>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>${safeString(String(order.order_number))}</strong></td>
                     </tr>
                     <tr>
                         <td style="padding: 8px; border-bottom: 1px solid #ddd;">Total</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>${(order.total / 100).toFixed(2)} ${order.currency_code.toUpperCase()}</strong></td>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>${formattedTotal}</strong></td>
                     </tr>
                      <tr>
                         <td style="padding: 8px; border-bottom: 1px solid #ddd;">Status</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">${order.status}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">${safeString(safeStatus)}</td>
                     </tr>
                 </table>
 
@@ -175,7 +202,7 @@ class EmailService {
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Thank you for your inquiry!</h1>
-                <p>Hi ${escapeHtml(data.contact_name)},</p>
+                <p>Hi ${safeString(data.contact_name)},</p>
                 <p>We have received your wholesale inquiry and will review it shortly.</p>
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
@@ -185,15 +212,15 @@ class EmailService {
 
   async sendNewInquiryAlert(inquiry: InquiryEmailData) {
     const subject = 'New Wholesale Inquiry Received';
-    const text = `A new wholesale inquiry has been submitted by ${inquiry.contact_name} from ${inquiry.company_name}.\n\nPlease review it in the admin dashboard.`;
+    const text = `A new wholesale inquiry has been submitted by ${inquiry.contact_name} from ${inquiry.company_name || 'N/A'}.\n\nPlease review it in the admin dashboard.`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>New Wholesale Inquiry</h1>
                 <p>A new inquiry has been submitted:</p>
                 <ul>
-                    <li><strong>Company:</strong> ${escapeHtml(inquiry.company_name)}</li>
-                    <li><strong>Contact:</strong> ${escapeHtml(inquiry.contact_name)}</li>
-                    <li><strong>Email:</strong> ${escapeHtml(inquiry.email)}</li>
+                    <li><strong>Company:</strong> ${safeString(inquiry.company_name, 'N/A')}</li>
+                    <li><strong>Contact:</strong> ${safeString(inquiry.contact_name)}</li>
+                    <li><strong>Email:</strong> ${safeString(inquiry.email)}</li>
                 </ul>
                 <p>Please review it in the admin dashboard.</p>
             </div>
@@ -214,9 +241,9 @@ class EmailService {
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Congratulations!</h1>
-                <p>Hi ${escapeHtml(data.contact_name)},</p>
-                <p>Your wholesale inquiry for <strong>${escapeHtml(data.company_name)}</strong> has been approved!</p>
-                <p>Your discount tier: <strong>${escapeHtml(data.discount_tier)}</strong></p>
+                <p>Hi ${safeString(data.contact_name)},</p>
+                <p>Your wholesale inquiry for <strong>${safeString(data.company_name)}</strong> has been approved!</p>
+                <p>Your discount tier: <strong>${safeString(data.discount_tier)}</strong></p>
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
@@ -231,17 +258,19 @@ class EmailService {
     token: string;
   }) {
     const setupUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/wholesale/set-password?token=${encodeURIComponent(data.token)}`;
-    const tierDisplay =
-      data.discount_tier.charAt(0).toUpperCase() + data.discount_tier.slice(1);
+    // Handle empty discount_tier safely
+    const tierDisplay = data.discount_tier
+      ? data.discount_tier.charAt(0).toUpperCase() + data.discount_tier.slice(1)
+      : 'Standard';
     const subject = 'Welcome to Kvastram Wholesale - Set Up Your Account';
     const text = `Hi ${data.contact_name},\n\nWelcome to Kvastram Wholesale! Your application for ${data.company_name} has been approved.\n\nYour discount tier: ${tierDisplay}\n\nPlease set up your password by clicking the link below:\n\n${setupUrl}\n\nThis link will expire in 7 days.\n\nBest regards,\nKvastram Team`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
                 <h1>Welcome to Kvastram Wholesale!</h1>
-                <p>Hi ${escapeHtml(data.contact_name)},</p>
-                <p>Congratulations! Your wholesale application for <strong>${escapeHtml(data.company_name)}</strong> has been approved.</p>
+                <p>Hi ${safeString(data.contact_name)},</p>
+                <p>Congratulations! Your wholesale application for <strong>${safeString(data.company_name)}</strong> has been approved.</p>
                 <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                    <p style="margin: 0;"><strong>Your Discount Tier:</strong> ${tierDisplay}</p>
+                    <p style="margin: 0;"><strong>Your Discount Tier:</strong> ${safeString(tierDisplay)}</p>
                 </div>
                 <p>Please set up your password to access your wholesale account:</p>
                 <p style="text-align: center; margin: 30px 0;">
@@ -273,13 +302,14 @@ class EmailService {
     admin_notes?: string;
   }) {
     const subject = 'Wholesale Inquiry Update';
-    const text = `Hi ${data.contact_name},\n\nThank you for your interest in Kvastram wholesale program. After careful review, we are unable to approve your inquiry for ${data.company_name} at this time.\n\n${data.admin_notes ? `Notes: ${data.admin_notes}\n\n` : ''}Best regards,\nKvastram Team`;
+    const adminNotesLine = data.admin_notes ? `Notes: ${data.admin_notes}\n\n` : '';
+    const text = `Hi ${data.contact_name},\n\nThank you for your interest in Kvastram wholesale program. After careful review, we are unable to approve your inquiry for ${data.company_name} at this time.\n\n${adminNotesLine}Best regards,\nKvastram Team`;
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Inquiry Update</h1>
-                <p>Hi ${escapeHtml(data.contact_name)},</p>
-                <p>Thank you for your interest in our wholesale program. After careful review, we are unable to approve your inquiry for <strong>${escapeHtml(data.company_name)}</strong> at this time.</p>
-                ${data.admin_notes ? `<p><strong>Notes:</strong> ${escapeHtml(data.admin_notes)}</p>` : ''}
+                <p>Hi ${safeString(data.contact_name)},</p>
+                <p>Thank you for your interest in our wholesale program. After careful review, we are unable to approve your inquiry for <strong>${safeString(data.company_name)}</strong> at this time.</p>
+                ${data.admin_notes ? `<p><strong>Notes:</strong> ${safeString(data.admin_notes)}</p>` : ''}
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
@@ -298,7 +328,7 @@ class EmailService {
     const html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Welcome to Kvastram!</h1>
-                <p>Hi ${escapeHtml(data.first_name)},</p>
+                <p>Hi ${safeString(data.first_name)},</p>
                 <p>Thank you for creating an account with us. Please verify your email address to get started.</p>
                 <p style="text-align: center; margin: 30px 0;">
                     <a href="${verificationUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
@@ -329,14 +359,14 @@ class EmailService {
     first_name: string;
     token: string;
   }) {
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${encodeURIComponent(data.token)}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/reset-password?token=${encodeURIComponent(data.token)}`;
     const subject = 'Reset Your Password - Kvastram';
     const text = `Hi ${data.first_name},\n\nYou requested to reset your password.\n\nClick the link below to create a new password:\n${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nKvastram Team`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
         <h1>Reset Your Password</h1>
-        <p>Hi ${escapeHtml(data.first_name)},</p>
+        <p>Hi ${safeString(data.first_name)},</p>
         <p>You requested to reset your password. Click the button below to create a new password:</p>
         <p style="text-align: center; margin: 30px 0;">
           <a href="${resetUrl}" style="background-color: #1c1917; color: white; padding: 14px 28px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">

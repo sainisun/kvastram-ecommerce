@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, ArrowLeft, Eye, EyeOff, Check, X } from 'lucide-react';
@@ -32,7 +32,7 @@ function ResetPasswordContent() {
       length: password.length >= 12,
       uppercase: /[A-Z]/.test(password),
       lowercase: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
+      number: /\d/.test(password),
       special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     });
   }, [password]);
@@ -46,7 +46,7 @@ function ResetPasswordContent() {
   const isPasswordValid = Object.values(passwordValid).every(Boolean);
   const passwordsMatch = password === confirmPassword && password !== '';
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
@@ -63,8 +63,7 @@ function ResetPasswordContent() {
     setLoading(true);
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const res = await fetch(`${API_URL}/store/auth/reset-password`, {
+      const res = await fetch(`/api/store/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
@@ -142,11 +141,12 @@ function ResetPasswordContent() {
           )}
 
           <div className="space-y-2">
-            <label className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="reset-password" className="text-xs uppercase font-bold text-stone-500">
               New Password
             </label>
             <div className="relative">
               <input
+                id="reset-password"
                 type={showPassword ? 'text' : 'password'}
                 required
                 className="w-full border-b border-stone-200 py-2 pr-10 focus:outline-none focus:border-stone-900 transition-colors"
@@ -193,11 +193,12 @@ function ResetPasswordContent() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="reset-confirm-password" className="text-xs uppercase font-bold text-stone-500">
               Confirm Password
             </label>
             <div className="relative">
               <input
+                id="reset-confirm-password"
                 type={showConfirmPassword ? 'text' : 'password'}
                 required
                 className="w-full border-b border-stone-200 py-2 pr-10 focus:outline-none focus:border-stone-900 transition-colors"

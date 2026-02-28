@@ -85,9 +85,7 @@ export default function WholesalePage() {
         message: formData.message || undefined,
       };
 
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const response = await fetch(`${API_URL}/wholesale`, {
+      const response = await fetch(`/api/wholesale`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

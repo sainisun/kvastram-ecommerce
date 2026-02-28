@@ -5,6 +5,8 @@ import {
   useContext,
   useState,
   useEffect,
+  useMemo,
+  useCallback,
   ReactNode,
 } from 'react';
 import { api } from '@/lib/api';
@@ -50,7 +52,7 @@ interface ShopContextType {
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
 const defaultSettings: StoreSettings = {
-  free_shipping_threshold: 25000, // $250 default
+  free_shipping_threshold: 250, // $250 default
   currency_code: 'USD',
   store_name: 'Kvastram',
   tax_rates: [
@@ -66,7 +68,7 @@ const defaultSettings: StoreSettings = {
   default_tax_rate: 0.1,
 };
 
-export function ShopProvider({ children }: { children: ReactNode }) {
+export function ShopProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [regions, setRegions] = useState<Region[]>([]);
   const [currentRegion, setCurrentRegion] = useState<Region | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -130,13 +132,13 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     init();
   }, []);
 
-  const setRegion = (region: Region) => {
+  const setRegion = useCallback((region: Region) => {
     setCurrentRegion(region);
     storage.set('kvastram_region', region);
-  };
+  }, []);
 
   // Calculate tax using dynamic settings from backend
-  const calculateTax = (
+  const calculateTax = useCallback((
     countryCode: string,
     subtotal: number
   ): TaxCalculationResult => {
@@ -148,11 +150,12 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     // Find tax rate for the country
     const taxRate = taxRates.find((tr) => tr.country_code === countryCode);
     const rate = taxRate ? taxRate.rate : defaultRate;
-    const taxName = taxRate
-      ? taxRate.name
-      : countryCode === 'US'
-        ? 'Sales Tax'
-        : 'VAT';
+    let taxName: string;
+    if (taxRate) {
+      taxName = taxRate.name;
+    } else {
+      taxName = countryCode === 'US' ? 'Sales Tax' : 'VAT';
+    }
 
     const taxAmount = Math.round(subtotal * rate);
 
@@ -162,19 +165,19 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       tax_name: taxName,
       currency_code: currentSettings.currency_code || 'USD',
     };
-  };
+  }, [settings]);
+
+  const contextValue = useMemo(() => ({
+    currentRegion,
+    regions,
+    setRegion,
+    isLoading,
+    settings,
+    calculateTax,
+  }), [currentRegion, regions, setRegion, isLoading, settings, calculateTax]);
 
   return (
-    <ShopContext.Provider
-      value={{
-        currentRegion,
-        regions,
-        setRegion,
-        isLoading,
-        settings,
-        calculateTax,
-      }}
-    >
+    <ShopContext.Provider value={contextValue}>
       {children}
     </ShopContext.Provider>
   );

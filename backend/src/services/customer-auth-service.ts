@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import { sign, verify } from 'hono/jwt';
 import { z } from 'zod';
 import { config } from '../config';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import {
   validatePassword,
   isCommonPassword,
@@ -99,7 +99,7 @@ export const RegisterCustomerSchema = z.object({
     .min(12, 'Password must be at least 12 characters')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/\d/, 'Password must contain at least one number')
     .regex(
       /[!@#$%^&*(),.?":{}|<>]/,
       'Password must contain at least one special character'
@@ -241,7 +241,7 @@ export const customerAuthService = {
       try {
         const { emailService } = await import('./email-service');
         await emailService.sendVerificationEmail({
-          email: newCustomer.email!,
+          email: newCustomer.email,
           first_name: newCustomer.first_name!,
           token: verificationToken,
         });
@@ -296,7 +296,10 @@ export const customerAuthService = {
     }
 
     // 🔒 FIX-011: Check if email is verified AFTER password validation
+    // Don't count this as a failed attempt — password was correct
     if (!customer.email_verified) {
+      // Reset failed attempts since password was correct
+      await resetFailedAttempts(customer.id);
       throw new Error(
         'Please verify your email before logging in. Check your inbox for the verification link.'
       );
@@ -392,7 +395,7 @@ export const customerAuthService = {
     try {
       const { emailService } = await import('./email-service');
       await emailService.sendVerificationEmail({
-        email: customer.email!,
+        email: customer.email,
         first_name: customer.first_name!,
         token: verificationToken,
       });
@@ -452,6 +455,8 @@ export const customerAuthService = {
 
       return { customer };
     } catch (error: unknown) {
+      // Log original error for debugging, return generic message for security
+      console.error('getCustomer token verification failed:', error);
       throw new Error('Invalid or expired token');
     }
   },
@@ -479,7 +484,17 @@ export const customerAuthService = {
 
     let isNewUser = false;
 
-    if (!customer) {
+    if (customer) {
+      // Update existing customer with social login info
+      await db
+        .update(customers)
+        .set({
+          email_verified: true,
+          has_account: true,
+          updated_at: new Date(),
+        })
+        .where(eq(customers.id, customer.id));
+    } else {
       // Create new customer
       const nameParts = (name || '').split(' ');
       const firstName = nameParts[0] || '';
@@ -494,28 +509,10 @@ export const customerAuthService = {
           password_hash: `social_${provider}_${Date.now()}`,
           email_verified: true, // Social login verifies email
           has_account: true,
-          metadata: {
-            provider,
-            provider_id: providerId,
-            avatar,
-          },
         })
         .returning();
 
       isNewUser = true;
-    } else {
-      // Update existing customer with social login info
-      await db
-        .update(customers)
-        .set({
-          metadata: {
-            ...((customer.metadata as Record<string, any>) || {}),
-            provider,
-            provider_id: providerId,
-            avatar,
-          },
-        })
-        .where(eq(customers.id, customer.id));
     }
 
     // Generate JWT token
@@ -571,7 +568,7 @@ export const customerAuthService = {
     try {
       const { emailService } = await import('./email-service');
       await emailService.sendPasswordResetEmail({
-        email: customer.email!,
+        email: customer.email,
         first_name: customer.first_name || 'Customer',
         token: resetToken,
       });

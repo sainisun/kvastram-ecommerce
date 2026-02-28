@@ -1,25 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-      const res = await fetch(`${API_URL}/store/auth/forgot-password`, {
+      const res = await fetch(`/api/store/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -100,10 +97,11 @@ export default function ForgotPasswordPage() {
           )}
 
           <div className="space-y-2">
-            <label className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="forgot-email" className="text-xs uppercase font-bold text-stone-500">
               Email Address
             </label>
             <input
+              id="forgot-email"
               type="email"
               required
               className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"

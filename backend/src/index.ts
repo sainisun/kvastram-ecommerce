@@ -50,6 +50,7 @@ import wholesaleRoutes from './routes/wholesale';
 import wholesaleCustomersRoutes from './routes/wholesale-customers';
 import wholesalePricingRoutes from './routes/store/wholesale-pricing';
 import wholesaleOrdersRoutes from './routes/store/wholesale-orders';
+import storeSettingsRoutes from './routes/store/settings';
 import adminWholesaleOrdersRoutes from './routes/admin/wholesale-orders';
 import adminTiersRoutes from './routes/admin/tiers';
 import adminNotificationsRoutes from './routes/admin/notifications';
@@ -289,6 +290,7 @@ app.route('/store/checkout', checkoutRoutes);
 app.route('/store/payments', paymentRoutes);
 app.route('/store/wholesale', wholesalePricingRoutes);
 app.route('/store/wholesale', wholesaleOrdersRoutes);
+app.route('/store/settings', storeSettingsRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

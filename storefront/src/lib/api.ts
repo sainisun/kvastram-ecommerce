@@ -1,20 +1,20 @@
 // Use absolute URL for SSR, relative for client (Next.js rewrites)
-const API_URL = typeof window === 'undefined' 
+const API_URL = typeof globalThis.window === 'undefined' 
   ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
   : '/api';
 
 const DEFAULT_API_TIMEOUT_MS = 15000;
-const DEFAULT_CLIENT_TIMEOUT_MS = 5000;
+const DEFAULT_CLIENT_TIMEOUT_MS = 15000;
 
 // Environment-aware timeout: longer for SSR, shorter for client
 // Note: API_TIMEOUT only applies to SSR (server-side). For client-side overrides,
 // use NEXT_PUBLIC_API_TIMEOUT (process.env.NEXT_PUBLIC_API_TIMEOUT)
 function getApiTimeout(): number {
   // Server-side: check API_TIMEOUT environment variable
-  if (typeof window === 'undefined') {
+  if (typeof globalThis.window === 'undefined') {
     const envTimeout = process.env.API_TIMEOUT;
     if (envTimeout) {
-      const parsed = parseInt(envTimeout, 10);
+      const parsed = Number.parseInt(envTimeout, 10);
       if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
         return parsed;
       }
@@ -25,7 +25,7 @@ function getApiTimeout(): number {
   // Client-side: check NEXT_PUBLIC_API_TIMEOUT for runtime configurability
   const publicEnvTimeout = process.env.NEXT_PUBLIC_API_TIMEOUT;
   if (publicEnvTimeout) {
-    const parsed = parseInt(publicEnvTimeout, 10);
+    const parsed = Number.parseInt(publicEnvTimeout, 10);
     if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
       return parsed;
     }
@@ -56,17 +56,21 @@ async function fetchWithTrace(
     const duration = Math.round(now - startTime);
     
     // Log API timing in development only
-    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-      const url = typeof input === 'string' ? input : input.toString();
+    if (process.env.NODE_ENV === 'development' && typeof globalThis.window !== 'undefined') {
+      const url = typeof input === 'string' ? input : String(input);
       console.log(`[API] ${init?.method || 'GET'} ${url} - ${response.status} (${duration}ms)`);
     }
     return response;
   } catch (error) {
     const now = typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
     const duration = Math.round(now - startTime);
-    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-      const url = typeof input === 'string' ? input : input.toString();
+    if (process.env.NODE_ENV === 'development' && typeof globalThis.window !== 'undefined') {
+      const url = typeof input === 'string' ? input : String(input);
       console.error(`[API] ${init?.method || 'GET'} ${url} - Error (${duration}ms)`, error);
+    }
+    // Provide user-friendly timeout message instead of cryptic "signal is aborted"
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection and try again.');
     }
     throw error;
   } finally {
@@ -506,7 +510,7 @@ export const api = {
       if (!res.ok) throw new Error('Failed to fetch product');
       const json = await res.json();
       // Adapter: Backend returns { data: { product: ... } }
-      if (json.data && json.data.product) {
+      if (json.data?.product) {
         return json.data.product;
       }
       return json; // Fallback

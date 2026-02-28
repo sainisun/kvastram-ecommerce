@@ -46,7 +46,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency,
-    }).format(amount);
+    }).format(amount / 100);
   };
 
   if (!isOpen) return null;
