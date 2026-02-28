@@ -378,6 +378,65 @@ export const api = {
     return res.json();
   },
 
+  // Variant endpoints
+  getVariants: async (productId: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/products/${productId}/variants`,
+      {}
+    );
+    if (!res.ok) throw new Error('Failed to fetch variants');
+    const response = await res.json();
+    return response.data;
+  },
+
+  createVariant: async (productId: string, data: any) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/products/${productId}/variants`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to create variant');
+    return res.json();
+  },
+
+  updateVariant: async (productId: string, variantId: string, data: any) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/products/${productId}/variants/${variantId}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update variant');
+    return res.json();
+  },
+
+  deleteVariant: async (productId: string, variantId: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/products/${productId}/variants/${variantId}`,
+      { method: 'DELETE' }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete variant');
+    return res.json();
+  },
+
+  createProductOption: async (productId: string, title: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/products/${productId}/options`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title }),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to create product option');
+    return res.json();
+  },
+
   // Order endpoints
   getOrders: async (
     limit = 20,

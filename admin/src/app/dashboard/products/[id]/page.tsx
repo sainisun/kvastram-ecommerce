@@ -3,7 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { api } from '@/lib/api';
-import { ArrowLeft, Save, Globe, DollarSign, Plus, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Save,
+  Globe,
+  DollarSign,
+  Plus,
+  Trash2,
+  Package,
+} from 'lucide-react';
 import Link from 'next/link';
 import ImageUpload, { ImageItem } from '@/components/ui/ImageUpload';
 
@@ -55,6 +63,15 @@ export default function EditProductPage() {
 
   // Prices State: Map region_id -> amount (string for input)
   const [prices, setPrices] = useState<Record<string, string>>({});
+
+  // Variant State
+  const [variants, setVariants] = useState<any[]>([]);
+  const [showAddVariant, setShowAddVariant] = useState(false);
+  const [newVariant, setNewVariant] = useState({
+    title: '',
+    sku: '',
+    inventory_quantity: '0',
+  });
 
   useEffect(() => {
     init();
@@ -143,6 +160,14 @@ export default function EditProductPage() {
         });
         setPrices(priceMap);
       }
+
+      // Load variants
+      try {
+        const variantData = await api.getVariants(id);
+        setVariants(variantData?.variants || []);
+      } catch (e) {
+        console.error('Failed to load variants', e);
+      }
     } catch (error) {
       console.error('Failed to load data', error);
       showNotification('error', 'Error loading product');
@@ -174,6 +199,75 @@ export default function EditProductPage() {
     setSelectedTagIds((prev) =>
       prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
     );
+  };
+
+  // Variant Handlers
+  const handleAddVariant = async () => {
+    if (!newVariant.title.trim()) return;
+    try {
+      await api.createVariant(id, {
+        title: newVariant.title,
+        sku: newVariant.sku || undefined,
+        inventory_quantity: parseInt(newVariant.inventory_quantity) || 0,
+      });
+      showNotification('success', `Variant "${newVariant.title}" added`);
+      setNewVariant({ title: '', sku: '', inventory_quantity: '0' });
+      setShowAddVariant(false);
+      // Reload variants
+      const data = await api.getVariants(id);
+      setVariants(data?.variants || []);
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to add variant');
+    }
+  };
+
+  const handleDeleteVariant = async (variantId: string, title: string) => {
+    if (!confirm(`Delete size variant "${title}"?`)) return;
+    try {
+      await api.deleteVariant(id, variantId);
+      setVariants((prev) => prev.filter((v) => v.id !== variantId));
+      showNotification('success', `Variant "${title}" deleted`);
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to delete variant');
+    }
+  };
+
+  const handleUpdateVariantInventory = async (
+    variantId: string,
+    qty: number
+  ) => {
+    try {
+      await api.updateVariant(id, variantId, { inventory_quantity: qty });
+      setVariants((prev) =>
+        prev.map((v) =>
+          v.id === variantId ? { ...v, inventory_quantity: qty } : v
+        )
+      );
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to update inventory');
+    }
+  };
+
+  const PRESET_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+
+  const handleAddPresetSize = async (size: string) => {
+    // Check if already exists
+    if (variants.some((v) => v.title === size)) {
+      showNotification('error', `Size ${size} already exists`);
+      return;
+    }
+    try {
+      await api.createVariant(id, {
+        title: size,
+        sku: `${formData.handle}-${size.toLowerCase()}`,
+        inventory_quantity: 0,
+      });
+      showNotification('success', `Size ${size} added`);
+      const data = await api.getVariants(id);
+      setVariants(data?.variants || []);
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to add size');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -385,6 +479,198 @@ export default function EditProductPage() {
                 </p>
               )}
             </div>
+          </div>
+
+          {/* Size Variants */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Package size={20} className="text-purple-600" />
+                <h2 className="text-lg font-bold text-gray-800">
+                  Size Variants
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddVariant(!showAddVariant)}
+                className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+              >
+                <Plus size={16} />
+                Add Size
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-500 mb-4">
+              Add size variants for this product. Each size can have its own
+              inventory count and SKU.
+            </p>
+
+            {/* Quick Add Preset Sizes */}
+            <div className="mb-4">
+              <label className="block text-xs font-medium text-gray-500 mb-2">
+                Quick Add Sizes:
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {PRESET_SIZES.map((size) => {
+                  const exists = variants.some((v) => v.title === size);
+                  return (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => !exists && handleAddPresetSize(size)}
+                      disabled={exists}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                        exists
+                          ? 'bg-green-50 text-green-700 border-green-200 cursor-default'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400 hover:bg-purple-50'
+                      }`}
+                    >
+                      {exists ? `✓ ${size}` : `+ ${size}`}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Add Custom Variant Form */}
+            {showAddVariant && (
+              <div className="mb-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <h3 className="text-sm font-semibold text-purple-800 mb-3">
+                  Add Custom Variant
+                </h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">
+                      Size Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={newVariant.title}
+                      onChange={(e) =>
+                        setNewVariant((p) => ({ ...p, title: e.target.value }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
+                      placeholder="e.g. Free Size"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">
+                      SKU
+                    </label>
+                    <input
+                      type="text"
+                      value={newVariant.sku}
+                      onChange={(e) =>
+                        setNewVariant((p) => ({ ...p, sku: e.target.value }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
+                      placeholder="Auto-generated"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">
+                      Inventory
+                    </label>
+                    <input
+                      type="number"
+                      value={newVariant.inventory_quantity}
+                      onChange={(e) =>
+                        setNewVariant((p) => ({
+                          ...p,
+                          inventory_quantity: e.target.value,
+                        }))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-3">
+                  <button
+                    type="button"
+                    onClick={handleAddVariant}
+                    className="px-4 py-1.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"
+                  >
+                    Add Variant
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddVariant(false)}
+                    className="px-4 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Variants Table */}
+            {variants.length > 0 ? (
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">
+                        Size
+                      </th>
+                      <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">
+                        SKU
+                      </th>
+                      <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">
+                        Inventory
+                      </th>
+                      <th className="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {variants.map((v) => (
+                      <tr key={v.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-semibold bg-purple-100 text-purple-800">
+                            {v.title}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {v.sku || '—'}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <input
+                            type="number"
+                            value={v.inventory_quantity ?? 0}
+                            onChange={(e) =>
+                              handleUpdateVariantInventory(
+                                v.id,
+                                parseInt(e.target.value) || 0
+                              )
+                            }
+                            className="w-20 text-center px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
+                          />
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteVariant(v.id, v.title)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                            title="Delete variant"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-6 text-gray-400 border border-dashed border-gray-300 rounded-lg">
+                <Package size={32} className="mx-auto mb-2 text-gray-300" />
+                <p className="text-sm">No size variants yet</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Use the quick-add buttons above to add standard sizes
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Shipping */}
@@ -607,7 +893,7 @@ export default function EditProductPage() {
               images={images}
               onChange={setImages}
               onUpload={(file) => api.uploadImage(file).then((res) => res.url)}
-              uploading={false} // Edit page doesn't track generic uploading state perfectly yet, might need local state if needed
+              uploading={false}
               maxFiles={10}
             />
           </div>

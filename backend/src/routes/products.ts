@@ -306,7 +306,6 @@ productsRouter.get(
       return successResponse(c, [], 'No valid product IDs provided');
     }
 
-    // Fetch each product by ID
     const products = await Promise.all(
       productIds.map(async (id) => {
         try {
@@ -317,7 +316,6 @@ productsRouter.get(
       })
     );
 
-    // Filter out nulls and inactive products
     const validProducts = products.filter(
       (p): p is NonNullable<typeof p> => p !== null && p.status === 'published'
     );
@@ -330,4 +328,246 @@ productsRouter.get(
   })
 );
 
+import { db } from '../db/client';
+import {
+  product_variants,
+  product_options,
+  product_option_values,
+  money_amounts,
+} from '../db/schema';
+import { eq, inArray } from 'drizzle-orm';
+
+// --- VARIANT MANAGEMENT ---
+
+// GET /products/:id/variants - Get all variants for a product
+productsRouter.get(
+  '/:id/variants',
+  asyncHandler(async (c) => {
+    const productId = c.req.param('id');
+
+    const variants = await db
+      .select()
+      .from(product_variants)
+      .where(eq(product_variants.product_id, productId));
+
+    // Get prices for each variant
+    const variantIds = variants.map((v) => v.id);
+    let prices: any[] = [];
+    if (variantIds.length > 0) {
+      prices = await db
+        .select()
+        .from(money_amounts)
+        .where(inArray(money_amounts.variant_id, variantIds));
+    }
+
+    // Get options for this product
+    const options = await db
+      .select()
+      .from(product_options)
+      .where(eq(product_options.product_id, productId));
+
+    // Get option values for each variant
+    let optionValues: any[] = [];
+    if (variantIds.length > 0) {
+      optionValues = await db
+        .select()
+        .from(product_option_values)
+        .where(inArray(product_option_values.variant_id, variantIds));
+    }
+
+    const variantsWithPrices = variants.map((v) => ({
+      ...v,
+      prices: prices.filter((p) => p.variant_id === v.id),
+      option_values: optionValues.filter((ov) => ov.variant_id === v.id),
+    }));
+
+    return successResponse(
+      c,
+      { variants: variantsWithPrices, options },
+      'Variants retrieved successfully'
+    );
+  })
+);
+
+// POST /products/:id/variants - Create a new variant
+productsRouter.post(
+  '/:id/variants',
+  verifyAdmin,
+  asyncHandler(async (c) => {
+    const productId = c.req.param('id');
+    const body = await c.req.json();
+
+    const {
+      title,
+      sku,
+      inventory_quantity = 0,
+      prices: variantPrices = [],
+      option_values: optValues = [],
+    } = body;
+
+    if (!title) {
+      throw new ValidationError('Variant title is required');
+    }
+
+    const result = await db.transaction(async (tx) => {
+      // Create variant
+      const [newVariant] = await tx
+        .insert(product_variants)
+        .values({
+          product_id: productId,
+          title,
+          sku: sku || undefined,
+          inventory_quantity,
+          manage_inventory: true,
+        })
+        .returning();
+
+      // Create prices
+      if (variantPrices.length > 0) {
+        for (const price of variantPrices) {
+          await tx.insert(money_amounts).values({
+            variant_id: newVariant.id,
+            region_id: price.region_id,
+            currency_code: price.currency_code,
+            amount: price.amount,
+            min_quantity: 1,
+          });
+        }
+      }
+
+      // Create option values (e.g., Size: "XL")
+      if (optValues.length > 0) {
+        for (const ov of optValues) {
+          await tx.insert(product_option_values).values({
+            variant_id: newVariant.id,
+            option_id: ov.option_id,
+            value: ov.value,
+          });
+        }
+      }
+
+      return newVariant;
+    });
+
+    return successResponse(
+      c,
+      { variant: result },
+      'Variant created successfully',
+      HttpStatus.CREATED
+    );
+  })
+);
+
+// PUT /products/:productId/variants/:variantId - Update a variant
+productsRouter.put(
+  '/:productId/variants/:variantId',
+  verifyAdmin,
+  asyncHandler(async (c) => {
+    const variantId = c.req.param('variantId');
+    const body = await c.req.json();
+
+    const { title, sku, inventory_quantity, prices: variantPrices } = body;
+
+    await db.transaction(async (tx) => {
+      // Update variant
+      const updateData: any = {};
+      if (title !== undefined) updateData.title = title;
+      if (sku !== undefined) updateData.sku = sku;
+      if (inventory_quantity !== undefined)
+        updateData.inventory_quantity = inventory_quantity;
+
+      if (Object.keys(updateData).length > 0) {
+        await tx
+          .update(product_variants)
+          .set(updateData)
+          .where(eq(product_variants.id, variantId));
+      }
+
+      // Update prices if provided
+      if (variantPrices) {
+        // Delete existing prices
+        await tx
+          .delete(money_amounts)
+          .where(eq(money_amounts.variant_id, variantId));
+
+        // Insert new prices
+        for (const price of variantPrices) {
+          await tx.insert(money_amounts).values({
+            variant_id: variantId,
+            region_id: price.region_id,
+            currency_code: price.currency_code,
+            amount: price.amount,
+            min_quantity: 1,
+          });
+        }
+      }
+    });
+
+    return successResponse(c, { id: variantId }, 'Variant updated successfully');
+  })
+);
+
+// DELETE /products/:productId/variants/:variantId - Delete a variant
+productsRouter.delete(
+  '/:productId/variants/:variantId',
+  verifyAdmin,
+  asyncHandler(async (c) => {
+    const variantId = c.req.param('variantId');
+
+    await db.transaction(async (tx) => {
+      // Delete option values
+      await tx
+        .delete(product_option_values)
+        .where(eq(product_option_values.variant_id, variantId));
+
+      // Delete prices
+      await tx
+        .delete(money_amounts)
+        .where(eq(money_amounts.variant_id, variantId));
+
+      // Delete variant
+      await tx
+        .delete(product_variants)
+        .where(eq(product_variants.id, variantId));
+    });
+
+    return successResponse(
+      c,
+      { id: variantId, deleted: true },
+      'Variant deleted successfully'
+    );
+  })
+);
+
+// POST /products/:id/options - Create a product option (e.g., "Size")
+productsRouter.post(
+  '/:id/options',
+  verifyAdmin,
+  asyncHandler(async (c) => {
+    const productId = c.req.param('id');
+    const body = await c.req.json();
+    const { title } = body;
+
+    if (!title) {
+      throw new ValidationError('Option title is required');
+    }
+
+    const [option] = await db
+      .insert(product_options)
+      .values({
+        product_id: productId,
+        title,
+      })
+      .returning();
+
+    return successResponse(
+      c,
+      { option },
+      'Option created successfully',
+      HttpStatus.CREATED
+    );
+  })
+);
+
 export default productsRouter;
+

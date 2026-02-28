@@ -21,13 +21,17 @@ export default function OrderDetailsPage() {
   const id = params.id as string;
 
   const [order, setOrder] = useState<any>(null);
+  const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     api
       .getOrder(id)
-      .then((data) => setOrder(data.order))
+      .then((data) => {
+        setOrder(data.order);
+        setItems(data.items || []);
+      })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, [id]);
@@ -89,7 +93,7 @@ export default function OrderDetailsPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              Order #{order.display_id}
+              Order #{order.order_number}
             </h1>
             <p className="text-gray-500 text-sm">
               Placed on {new Date(order.created_at).toLocaleString()}
@@ -133,36 +137,52 @@ export default function OrderDetailsPage() {
               <h2 className="font-semibold text-gray-700">Line Items</h2>
             </div>
             <div className="divide-y divide-gray-200">
-              {order.items?.map((item: any) => (
-                <div key={item.id} className="p-6 flex items-center gap-4">
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg shrink-0 overflow-hidden">
-                    {item.thumbnail && (
-                      <img
-                        src={item.thumbnail}
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">{item.title}</h3>
-                    <p className="text-sm text-gray-500">
-                      Variant ID: {item.variant_id}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium text-gray-900">
-                      {formatCurrency(
-                        item.unit_price * item.quantity,
-                        order.currency_code
-                      )}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {item.quantity} x{' '}
-                      {formatCurrency(item.unit_price, order.currency_code)}
-                    </p>
-                  </div>
+              {items.length === 0 ? (
+                <div className="p-6 text-center text-gray-400">
+                  No items found
                 </div>
-              ))}
+              ) : (
+                items.map((item: any) => (
+                  <div key={item.id} className="p-6 flex items-center gap-4">
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg shrink-0 overflow-hidden">
+                      {item.product_thumbnail ? (
+                        <img
+                          src={item.product_thumbnail}
+                          className="w-full h-full object-cover"
+                          alt={item.product_title || ''}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package size={24} className="text-gray-300" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900">
+                        {item.product_title || item.title || 'Unknown Product'}
+                      </h3>
+                      {item.variant_title &&
+                        item.variant_title !== 'Default' && (
+                          <p className="text-sm text-gray-500">
+                            {item.variant_title}
+                          </p>
+                        )}
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-gray-900">
+                        {formatCurrency(
+                          item.total || item.unit_price * item.quantity,
+                          order.currency_code
+                        )}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {item.quantity} x{' '}
+                        {formatCurrency(item.unit_price, order.currency_code)}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
               <div className="flex justify-between text-sm mb-2">
@@ -195,14 +215,14 @@ export default function OrderDetailsPage() {
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">
                 {(
-                  order.customer?.first_name?.[0] ||
+                  order.customer_first_name?.[0] ||
                   order.email?.[0] ||
                   '?'
                 ).toUpperCase()}
               </div>
               <div>
                 <p className="font-medium text-gray-900">
-                  {order.customer?.first_name} {order.customer?.last_name}
+                  {order.customer_first_name} {order.customer_last_name}
                 </p>
                 <p className="text-sm text-gray-500">{order.email}</p>
               </div>
@@ -212,7 +232,7 @@ export default function OrderDetailsPage() {
                 Contact Info
               </h3>
               <p className="text-sm text-gray-600">
-                {order.customer?.phone || 'No phone provided'}
+                {order.customer_phone || 'No phone provided'}
               </p>
             </div>
           </div>

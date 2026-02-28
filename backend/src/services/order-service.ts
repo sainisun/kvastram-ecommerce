@@ -267,12 +267,32 @@ class OrderService {
       .from(orders)
       .where(sql`${orders.status} NOT IN ('cancelled', 'refunded')`);
 
-    // ... (truncated other stats for brevity, implementing key ones)
+    // Status counts
+    const statusCounts = await db
+      .select({
+        status: orders.status,
+        count: sql<number>`count(*)`,
+      })
+      .from(orders)
+      .groupBy(orders.status);
 
-    // Simplified Logic for brevity in service demonstration
+    const countByStatus: Record<string, number> = {};
+    for (const row of statusCounts) {
+      countByStatus[row.status || 'unknown'] = Number(row.count);
+    }
+
+    const totalOrdersNum = Number(total_orders);
+    const totalRevenueNum = Number(total_revenue);
+
     return {
-      total_orders: Number(total_orders),
-      total_revenue: Number(total_revenue),
+      total_orders: totalOrdersNum,
+      total_revenue: totalRevenueNum,
+      pending_orders: countByStatus['pending'] || 0,
+      processing_orders: countByStatus['processing'] || 0,
+      shipped_orders: countByStatus['shipped'] || 0,
+      delivered_orders: countByStatus['delivered'] || 0,
+      cancelled_orders: countByStatus['cancelled'] || 0,
+      avg_order_value: totalOrdersNum > 0 ? Math.round(totalRevenueNum / totalOrdersNum) : 0,
     };
   }
 
