@@ -155,12 +155,13 @@ class EmailService {
 
   async sendOrderStatusUpdate(order: OrderEmailData, customerEmail: string) {
     const subject = `Order Update #${order.order_number}`;
-    const text = `Your order #${order.order_number} status has been updated to: ${order.status}.`;
+    const statusDisplay = order.status ? order.status.toUpperCase() : 'Unknown';
+    const text = `Your order #${order.order_number} status has been updated to: ${statusDisplay}.`;
     const html = `
              <div style="font-family: Arial, sans-serif; color: #333;">
                 <h1>Order Update</h1>
                 <p>Your order <strong>#${order.order_number}</strong> has been updated.</p>
-                <p>New Status: <strong>${order.status.toUpperCase()}</strong></p>
+                <p>New Status: <strong>${escapeHtml(statusDisplay)}</strong></p>
                 <p>Best regards,<br>Kvastram Team</p>
             </div>
         `;
