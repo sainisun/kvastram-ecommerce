@@ -178,6 +178,8 @@ export class ProductQueryService {
       collectionId: filters.collectionId,
     });
 
+    let totalCount = 0;
+
     // Early return if no products match filters
     if (conditions.length > 0) {
       const [{ count }] = await db
@@ -185,7 +187,9 @@ export class ProductQueryService {
         .from(products)
         .where(and(...conditions));
 
-      if (Number(count) === 0) {
+      totalCount = Number(count);
+
+      if (totalCount === 0) {
         return { products: [], total: 0, limit: limitNum, offset: offsetNum };
       }
     }
@@ -241,15 +245,17 @@ export class ProductQueryService {
       imagesData
     );
 
-    // Get total count
-    const [{ count }] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(products)
-      .where(whereClause);
+    // Use cached count from early return, or compute if no filters
+    if (conditions.length === 0 && totalCount === 0) {
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(products);
+      totalCount = Number(count);
+    }
 
     return {
       products: productsWithStats,
-      total: Number(count),
+      total: totalCount,
       limit: limitNum,
       offset: offsetNum,
     };
