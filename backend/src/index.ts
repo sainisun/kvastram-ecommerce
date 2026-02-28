@@ -103,6 +103,8 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
   'http://127.0.0.1:3001',
   'http://127.0.0.1:3002',
   'http://127.0.0.1:4000',
+  'https://kvastram-ecommerce.vercel.app',
+  'https://kvastram-ecommerce-panal.vercel.app',
 ];
 app.use(
   '*',

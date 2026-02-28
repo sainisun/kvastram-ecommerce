@@ -45,6 +45,10 @@ class EmailService {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
+        // Timeout settings to prevent hanging
+        connectionTimeout: 10000, // 10 seconds
+        greetingTimeout: 10000,  // 10 seconds
+        socketTimeout: 10000,    // 10 seconds
       });
       this.ready = Promise.resolve();
     } else {
@@ -69,6 +73,10 @@ class EmailService {
               user: account.user,
               pass: account.pass,
             },
+            // Timeout settings
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
           });
           console.log('📧 Email Service ready (Ethereal Dev Mode)');
           console.log(`📧 Preview URL: https://ethereal.email/messages`);
