@@ -94,7 +94,7 @@ authRouter.post(
       path: '/',
       httpOnly: true,
       secure: config.server.env === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
     });
     return successResponse(c, null, 'Logout successful');
   })
