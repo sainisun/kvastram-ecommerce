@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE_URL = 'https://kvastram-backend-production.up.railway.app';
 
 // Debug logging helper
 const debugLog = (message: string, data?: unknown) => {
