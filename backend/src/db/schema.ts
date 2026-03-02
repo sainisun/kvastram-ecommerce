@@ -540,6 +540,10 @@ export const settings = pgTable('settings', {
   ...createdUpdated,
 });
 
+// Alias for checkout.ts which imports store_settings
+// (same table as settings — stores shipping rates, tax, etc.)
+export const store_settings = settings;
+
 // --- MARKETING CAMPAIGNS ---
 export const campaigns = pgTable('campaigns', {
   id: uuid('id').defaultRandom().primaryKey(),
