@@ -367,6 +367,61 @@ class OrderService {
 
     return { order, items };
   }
+
+  // Revenue + Order count chart data (for admin dashboard)
+  async getChartData(days: number) {
+    const result = await db.execute(
+      sql`
+        SELECT
+          TO_CHAR(created_at, 'YYYY-MM-DD') AS date,
+          COUNT(*)::int AS order_count,
+          COALESCE(SUM(total), 0)::int AS revenue
+        FROM orders
+        WHERE created_at >= NOW() - (${days} || ' days')::interval
+          AND status NOT IN ('cancelled', 'refunded')
+        GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
+        ORDER BY date ASC
+      `
+    );
+    return result.rows;
+  }
+
+  // Export orders data for CSV
+  async getExportData(filters: { search?: string; status?: string }) {
+    const conditions = [];
+    if (filters.search) {
+      const s = filters.search.replace(/[%_]/g, '\\$&');
+      conditions.push(
+        sql`(CAST(${orders.display_id} AS TEXT) LIKE ${`%${s}%`} OR ${orders.email} LIKE ${`%${s}%`})`
+      );
+    }
+    if (filters.status && filters.status !== 'all') {
+      conditions.push(eq(orders.status, filters.status));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    return db
+      .select({
+        order_number: orders.display_id,
+        created_at: orders.created_at,
+        status: orders.status,
+        email: orders.email,
+        currency_code: orders.currency_code,
+        subtotal: orders.subtotal,
+        tax_total: orders.tax_total,
+        shipping_total: orders.shipping_total,
+        total: orders.total,
+        customer_first_name: customers.first_name,
+        customer_last_name: customers.last_name,
+      })
+      .from(orders)
+      .leftJoin(customers, eq(orders.customer_id, customers.id))
+      .where(whereClause)
+      .orderBy(desc(orders.created_at))
+      .limit(10000); // Safety cap
+  }
 }
 
 export const orderService = new OrderService();
+

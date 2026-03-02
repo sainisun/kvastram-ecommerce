@@ -5,18 +5,29 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 /**
  * HeroCarousel Component
  *
- * Implements a full-screen or high-height carousel using Embla Carousel to mimic the Spell.co aesthetic.
- * Features 3 slides with immersive imagery, text overlays, and call-to-action buttons.
- * Optimized for mobile with touch swipe support.
+ * Implements a full-screen carousel using Embla Carousel.
+ * Slides come from admin-managed banners (section='hero') via API.
+ * Falls back to STATIC_SLIDES if no banners are configured.
  */
 
-const SLIDES = [
+interface Banner {
+  id: string;
+  title: string;
+  image_url: string;
+  link?: string;
+  button_text?: string;
+  section?: string;
+}
+
+// Static fallback slides (shown when no hero banners in admin)
+const STATIC_SLIDES = [
   {
-    id: 1,
+    id: 'static-1',
     image: '/images/home/hero-main.jpg',
     subtitle: 'Artisan Crafted Since 1985',
     title: 'Where Tradition \nMeets Modern',
@@ -24,33 +35,34 @@ const SLIDES = [
       'Discover handcrafted elegance from master artisans in India and Italy. Each piece tells a story of generations of expertise.',
     ctaText: 'Shop New Arrivals',
     ctaLink: '/products',
-    position: 'center', // text alignment
   },
   {
-    id: 2,
-    image: '/images/home/category-sarees.jpg', // Fallback or reuse
+    id: 'static-2',
+    image: '/images/home/category-sarees.jpg',
     subtitle: 'The Silk Road Collection',
     title: 'Timeless \nElegance',
     description:
       'Exquisite silk sarees hand-woven in Varanasi. A tribute to the golden era of craftsmanship.',
     ctaText: 'View Collection',
     ctaLink: '/products?category_id=sarees',
-    position: 'left',
   },
   {
-    id: 3,
-    image: '/images/home/collection-bridal.jpg', // Fallback or reuse
+    id: 'static-3',
+    image: '/images/home/collection-bridal.jpg',
     subtitle: 'Bridal Edit 2025',
     title: 'Your Moment \nIn History',
     description:
       'Intricate embroidery and luxurious fabrics for the most important day of your life.',
     ctaText: 'Explore Bridal',
     ctaLink: '/collections/bridal',
-    position: 'right',
   },
 ];
 
-export default function HeroCarousel() {
+interface HeroCarouselProps {
+  banners?: Banner[];
+}
+
+export default function HeroCarousel({ banners }: HeroCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 60 }, [
     Autoplay({ delay: 6000, stopOnInteraction: false }),
   ]);
@@ -63,12 +75,26 @@ export default function HeroCarousel() {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
+  // Use admin banners if available, otherwise fallback to static
+  const slides =
+    banners && banners.length > 0
+      ? banners.map((b) => ({
+          id: b.id,
+          image: b.image_url,
+          subtitle: 'Kvastram Collection',
+          title: b.title,
+          description: '',
+          ctaText: b.button_text || 'Shop Now',
+          ctaLink: b.link || '/products',
+        }))
+      : STATIC_SLIDES;
+
   return (
     <div className="relative group overflow-hidden bg-stone-900 border-b border-stone-800">
       {/* Carousel Viewport */}
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex touch-pan-y">
-          {SLIDES.map((slide, index) => (
+          {slides.map((slide, index) => (
             <div
               className="relative flex-[0_0_100%] min-w-0 h-[85vh] min-h-[600px] flex flex-col md:flex-row"
               key={slide.id}
@@ -84,9 +110,11 @@ export default function HeroCarousel() {
                     {slide.title}
                   </h1>
 
-                  <p className="text-stone-300 text-base md:text-lg mb-8 md:mb-12 font-light max-w-md leading-relaxed">
-                    {slide.description}
-                  </p>
+                  {slide.description && (
+                    <p className="text-stone-300 text-base md:text-lg mb-8 md:mb-12 font-light max-w-md leading-relaxed">
+                      {slide.description}
+                    </p>
+                  )}
 
                   <div className="flex flex-wrap items-center gap-4">
                     <Link
@@ -99,7 +127,7 @@ export default function HeroCarousel() {
                       href="/collections"
                       className="bg-transparent text-white border border-stone-600 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
                     >
-                      Secondary Action
+                      View Collections
                     </Link>
                   </div>
                 </div>
@@ -114,7 +142,7 @@ export default function HeroCarousel() {
                   className="object-cover transition-transform duration-[10000ms] ease-linear hover:scale-105"
                   priority={index === 0}
                 />
-                {/* Subtle gradient overlay to merge image with center split on desktop */}
+                {/* Subtle gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#1a1614]/40 via-transparent to-transparent hidden md:block" />
               </div>
             </div>
@@ -122,7 +150,7 @@ export default function HeroCarousel() {
         </div>
       </div>
 
-      {/* Navigation Buttons (Hidden on mobile, visible on hover/desktop) */}
+      {/* Navigation Buttons */}
       <button
         className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm flex items-center justify-center hover:bg-white hover:text-black transition-all opacity-0 group-hover:opacity-100 duration-300 hidden md:flex"
         onClick={scrollPrev}

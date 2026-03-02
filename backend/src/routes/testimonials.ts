@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
 import { testimonials } from '../db/schema';
 import { eq, desc, asc } from 'drizzle-orm';
@@ -33,7 +33,7 @@ testimonialsRouter.get('/store', async (c) => {
 });
 
 // Admin: Get all testimonials
-testimonialsRouter.get('/', verifyAuth, async (c) => {
+testimonialsRouter.get('/', verifyAdmin, async (c) => {
   try {
     const list = await db
       .select()
@@ -46,7 +46,7 @@ testimonialsRouter.get('/', verifyAuth, async (c) => {
 });
 
 // Admin: Get single testimonial
-testimonialsRouter.get('/:id', verifyAuth, async (c) => {
+testimonialsRouter.get('/:id', verifyAdmin, async (c) => {
   const id = c.req.param('id');
   try {
     const testimonial = await db.query.testimonials.findFirst({
@@ -67,7 +67,7 @@ testimonialsRouter.get('/:id', verifyAuth, async (c) => {
 // Admin: Create testimonial
 testimonialsRouter.post(
   '/',
-  verifyAuth,
+  verifyAdmin,
   zValidator('json', TestimonialSchema),
   async (c) => {
     const data = c.req.valid('json');
@@ -98,7 +98,7 @@ testimonialsRouter.post(
 // Admin: Update testimonial
 testimonialsRouter.put(
   '/:id',
-  verifyAuth,
+  verifyAdmin,
   zValidator('json', TestimonialSchema.partial()),
   async (c) => {
     const id = c.req.param('id');
@@ -124,7 +124,7 @@ testimonialsRouter.put(
 );
 
 // Admin: Delete testimonial
-testimonialsRouter.delete('/:id', verifyAuth, async (c) => {
+testimonialsRouter.delete('/:id', verifyAdmin, async (c) => {
   const id = c.req.param('id');
   try {
     await db.delete(testimonials).where(eq(testimonials.id, id));

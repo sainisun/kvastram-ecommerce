@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
 import { product_collections } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -58,7 +58,7 @@ collectionsRouter.get('/:id', async (c) => {
 // POST /collections
 collectionsRouter.post(
   '/',
-  verifyAuth,
+  verifyAdmin,
   zValidator('json', CollectionSchema),
   async (c) => {
     const data = c.req.valid('json');
@@ -86,7 +86,7 @@ collectionsRouter.post(
 // PUT /collections/:id
 collectionsRouter.put(
   '/:id',
-  verifyAuth,
+  verifyAdmin,
   zValidator('json', CollectionSchema.partial()),
   async (c) => {
     const id = c.req.param('id');
@@ -112,7 +112,7 @@ collectionsRouter.put(
 );
 
 // DELETE /collections/:id
-collectionsRouter.delete('/:id', verifyAuth, async (c) => {
+collectionsRouter.delete('/:id', verifyAdmin, async (c) => {
   const id = c.req.param('id');
   try {
     await db.delete(product_collections).where(eq(product_collections.id, id));

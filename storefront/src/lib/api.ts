@@ -1070,7 +1070,120 @@ export const api = {
     }
     return res.json();
   },
+
+  // ─── CART PERSISTENCE ───────────────────────────────────────────────────────
+
+  async saveCart(items: CartItem[]) {
+    try {
+      await fetchWithTrace(`${API_URL}/store/cart/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items }),
+        credentials: 'include',
+      });
+    } catch {
+      // Silent fail — cart is also in localStorage, so no UX impact
+    }
+  },
+
+  async getSavedCart(): Promise<{ items: CartItem[] }> {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/store/cart`, {
+        credentials: 'include',
+      });
+      if (!res.ok) return { items: [] };
+      return res.json();
+    } catch {
+      return { items: [] };
+    }
+  },
+
+  async clearSavedCart() {
+    try {
+      await fetchWithTrace(`${API_URL}/store/cart/clear`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // Silent fail
+    }
+  },
+
+  // ─── BACK-IN-STOCK NOTIFICATIONS ────────────────────────────────────────────
+
+  async subscribeBackInStock(data: {
+    product_id: string;
+    variant_id?: string;
+    email: string;
+  }) {
+    const res = await fetchWithTrace(`${API_URL}/store/back-in-stock`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to subscribe');
+    }
+    return res.json();
+  },
+
+  // ─── WISHLIST ────────────────────────────────────────────────────────────────
+
+  async getWishlist() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/store/wishlist`, {
+        credentials: 'include',
+      });
+      if (!res.ok) return { wishlist: [] };
+      return res.json();
+    } catch {
+      return { wishlist: [] };
+    }
+  },
+
+  async addToWishlist(product_id: string, variant_id?: string) {
+    const res = await fetchWithTrace(`${API_URL}/store/wishlist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id, variant_id }),
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to add to wishlist');
+    }
+    return res.json();
+  },
+
+  async removeFromWishlist(product_id: string) {
+    const res = await fetchWithTrace(`${API_URL}/store/wishlist/${product_id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to remove from wishlist');
+    }
+    return res.json();
+  },
+
+  // ─── CAMPAIGNS ────────────────────────────────────────────────────────────────
+
+  async getActiveCampaigns() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/marketing/campaigns/active`, {
+        next: { revalidate: 300 }, // 5 min cache
+      });
+      if (!res.ok) return { campaigns: [] };
+      return res.json();
+    } catch {
+      return { campaigns: [] };
+    }
+  },
 };
+
 
 // Default shipping options fallback (PHASE 1.3)
 function getDefaultShippingOptions(countryCode: string) {

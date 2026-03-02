@@ -828,3 +828,66 @@ export const whatsapp_settings = pgTable('whatsapp_settings', {
   is_active: boolean('is_active').default(false),
   ...createdUpdated,
 });
+
+// --- CART PERSISTENCE (Cart Abandonment Recovery) ---
+export const saved_carts = pgTable(
+  'saved_carts',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    customer_id: uuid('customer_id').references(() => customers.id, {
+      onDelete: 'cascade',
+    }),
+    session_id: text('session_id'), // Guest carts ke liye
+    items: jsonb('items').notNull().default('[]'), // CartItem[] JSON array
+    ...createdUpdated,
+  },
+  (table) => ({
+    customerIdx: index('idx_saved_carts_customer_id').on(table.customer_id),
+    sessionIdx: index('idx_saved_carts_session_id').on(table.session_id),
+  })
+);
+
+// --- BACK IN STOCK SUBSCRIPTIONS ---
+export const back_in_stock_subscriptions = pgTable(
+  'back_in_stock_subscriptions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    product_id: uuid('product_id')
+      .references(() => products.id, { onDelete: 'cascade' })
+      .notNull(),
+    variant_id: uuid('variant_id').references(() => product_variants.id, {
+      onDelete: 'cascade',
+    }),
+    email: text('email').notNull(),
+    notified: boolean('notified').default(false),
+    notified_at: timestamp('notified_at'),
+    created_at: timestamp('created_at').defaultNow(),
+  },
+  (table) => ({
+    productIdx: index('idx_bis_product_id').on(table.product_id),
+    emailIdx: index('idx_bis_email').on(table.email),
+    notifiedIdx: index('idx_bis_notified').on(table.notified),
+  })
+);
+
+// --- WISHLISTS ---
+export const wishlists = pgTable(
+  'wishlists',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    customer_id: uuid('customer_id')
+      .references(() => customers.id, { onDelete: 'cascade' })
+      .notNull(),
+    product_id: uuid('product_id')
+      .references(() => products.id, { onDelete: 'cascade' })
+      .notNull(),
+    variant_id: uuid('variant_id').references(() => product_variants.id, {
+      onDelete: 'set null',
+    }),
+    created_at: timestamp('created_at').defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.customer_id, t.product_id] }),
+    customerIdx: index('idx_wishlists_customer_id').on(t.customer_id),
+  })
+);

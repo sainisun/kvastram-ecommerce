@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { db } from '../db';
 import { posts } from '../db/schema';
 import { eq, desc, and } from 'drizzle-orm';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdmin } from '../middleware/auth';
 import { z } from 'zod';
 
 const app = new Hono();
@@ -54,7 +54,7 @@ app.get('/storefront/:slug', async (c) => {
 });
 
 // Admin: Get all posts
-app.get('/', verifyAuth, async (c) => {
+app.get('/', verifyAdmin, async (c) => {
   try {
     const allPosts = await db
       .select()
@@ -67,7 +67,7 @@ app.get('/', verifyAuth, async (c) => {
 });
 
 // Admin: Get single post
-app.get('/:id', verifyAuth, async (c) => {
+app.get('/:id', verifyAdmin, async (c) => {
   try {
     const id = c.req.param('id');
     const [post] = await db.select().from(posts).where(eq(posts.id, id));
@@ -79,7 +79,7 @@ app.get('/:id', verifyAuth, async (c) => {
 });
 
 // Admin: Create post
-app.post('/', verifyAuth, async (c) => {
+app.post('/', verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const validated = postSchema.parse(body);
@@ -103,7 +103,7 @@ app.post('/', verifyAuth, async (c) => {
 });
 
 // Admin: Update post
-app.put('/:id', verifyAuth, async (c) => {
+app.put('/:id', verifyAdmin, async (c) => {
   try {
     const id = c.req.param('id');
     const body = await c.req.json();
@@ -135,7 +135,7 @@ app.put('/:id', verifyAuth, async (c) => {
 });
 
 // Admin: Delete post
-app.delete('/:id', verifyAuth, async (c) => {
+app.delete('/:id', verifyAdmin, async (c) => {
   try {
     const id = c.req.param('id');
     await db.delete(posts).where(eq(posts.id, id));

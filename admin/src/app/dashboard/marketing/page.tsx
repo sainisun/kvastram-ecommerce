@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Megaphone,
   Mail,
@@ -10,16 +9,13 @@ import {
   Calendar,
   DollarSign,
   Target,
-  BarChart3,
   Plus,
-  X,
   Trash2,
   Edit2,
+  Bell,
 } from 'lucide-react';
 import { api } from '@/lib/api';
-
 export default function MarketingPage() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState('campaigns');
   const [loading, setLoading] = useState(true);
   const [campaigns, setCampaigns] = useState<any[]>([]);
@@ -54,7 +50,7 @@ export default function MarketingPage() {
     }
   };
 
-  const handleCreateCampaign = async (e: React.FormEvent) => {
+  const handleCreateCampaign = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -84,7 +80,7 @@ export default function MarketingPage() {
     }
   };
 
-  const handleUpdateCampaign = async (e: React.FormEvent) => {
+  const handleUpdateCampaign = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingCampaign) return;
 
@@ -104,7 +100,7 @@ export default function MarketingPage() {
     }
   };
 
-  const handleUpdateDiscount = async (e: React.FormEvent) => {
+  const handleUpdateDiscount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingDiscount) return;
 
@@ -112,10 +108,10 @@ export default function MarketingPage() {
       await api.updateDiscount(editingDiscount.id, {
         code: editingDiscount.code,
         type: editingDiscount.type,
-        value: parseInt(editingDiscount.value),
+        value: Number.parseInt(editingDiscount.value),
         is_active: editingDiscount.is_active,
         usage_limit: editingDiscount.usage_limit
-          ? parseInt(editingDiscount.usage_limit)
+          ? Number.parseInt(editingDiscount.usage_limit)
           : null,
         starts_at: editingDiscount.starts_at
           ? new Date(editingDiscount.starts_at).toISOString()
@@ -137,15 +133,15 @@ export default function MarketingPage() {
     }
   };
 
-  const handleCreateDiscount = async (e: React.FormEvent) => {
+  const handleCreateDiscount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       await api.createDiscount({
         ...formData,
-        value: parseInt(formData.value),
+        value: Number.parseInt(formData.value),
         usage_limit: formData.usage_limit
-          ? parseInt(formData.usage_limit)
+          ? Number.parseInt(formData.usage_limit)
           : null,
         is_active: true,
         starts_at: formData.starts_at
@@ -184,11 +180,13 @@ export default function MarketingPage() {
   const tabs = [
     { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
     { id: 'discounts', label: 'Discounts', icon: Tag },
-    // TODO: Enable when email marketing feature is implemented
+    
     // { id: 'email', label: 'Email Marketing', icon: Mail },
-    // TODO: Enable when marketing analytics feature is implemented
+    
     // { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   ];
+
+  
 
   if (loading) {
     return (
@@ -247,6 +245,29 @@ export default function MarketingPage() {
               0
             )}
           </p>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mb-6">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          Quick Actions
+        </h2>
+        <div className="flex gap-3">
+          <a
+            href="/dashboard/marketing/back-in-stock"
+            className="flex items-center gap-3 px-5 py-3 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+          >
+            <Bell size={18} className="text-amber-600" />
+            <div>
+              <p className="text-sm font-semibold text-amber-900">
+                Back-in-Stock Alerts
+              </p>
+              <p className="text-xs text-amber-600">
+                View & manage restock subscribers
+              </p>
+            </div>
+          </a>
         </div>
       </div>
 
@@ -508,35 +529,9 @@ export default function MarketingPage() {
           </div>
         )}
 
-        {/* TODO: Enable when email marketing feature is implemented
-                {activeTab === 'email' && (
-                    <div className="lg:col-span-3">
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Email Marketing</h2>
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                                <Mail className="mx-auto mb-4 text-blue-600" size={48} />
-                                <p className="text-gray-700 mb-2">Email marketing integration</p>
-                                <p className="text-sm text-gray-600">This feature requires a third-party provider configuration via Settings.</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                */}
+        
 
-        {/* TODO: Enable when marketing analytics feature is implemented
-                {activeTab === 'analytics' && (
-                    <div className="lg:col-span-3">
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-4">Marketing Analytics</h2>
-                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 text-center">
-                                <BarChart3 className="mx-auto mb-4 text-purple-600" size={48} />
-                                <p className="text-gray-700 mb-2">Analytics Dashboard</p>
-                                <p className="text-sm text-gray-600">Collecting data from active campaigns...</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                */}
+        
       </div>
 
       {/* Edit Campaign Modal */}
@@ -548,10 +543,10 @@ export default function MarketingPage() {
             </h2>
             <form onSubmit={handleUpdateCampaign} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-1" className="block text-sm font-medium text-gray-700 mb-1">
                   Campaign Name
                 </label>
-                <input
+                <input id="field-1"
                   type="text"
                   required
                   value={editingCampaign.name || ''}
@@ -565,10 +560,10 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-2" className="block text-sm font-medium text-gray-700 mb-1">
                   Description
                 </label>
-                <textarea
+                <textarea id="field-2"
                   value={editingCampaign.description || ''}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -580,10 +575,10 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-3" className="block text-sm font-medium text-gray-700 mb-1">
                   Status
                 </label>
-                <select
+                <select id="field-3"
                   value={editingCampaign.status || 'draft'}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -600,10 +595,10 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-4" className="block text-sm font-medium text-gray-700 mb-1">
                   Type
                 </label>
-                <select
+                <select id="field-4"
                   value={editingCampaign.type || 'promotion'}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -650,10 +645,10 @@ export default function MarketingPage() {
             </h2>
             <form onSubmit={handleUpdateDiscount} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-5" className="block text-sm font-medium text-gray-700 mb-1">
                   Code
                 </label>
-                <input
+                <input id="field-5"
                   type="text"
                   required
                   value={editingDiscount.code || ''}
@@ -667,10 +662,10 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-6" className="block text-sm font-medium text-gray-700 mb-1">
                   Type
                 </label>
-                <select
+                <select id="field-6"
                   value={editingDiscount.type || 'percentage'}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -686,10 +681,10 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-7" className="block text-sm font-medium text-gray-700 mb-1">
                   Value
                 </label>
-                <input
+                <input id="field-7"
                   type="number"
                   required
                   value={editingDiscount.value || ''}
@@ -703,10 +698,10 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-8" className="block text-sm font-medium text-gray-700 mb-1">
                   Status
                 </label>
-                <select
+                <select id="field-8"
                   value={editingDiscount.is_active ? 'true' : 'false'}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -721,10 +716,10 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-9" className="block text-sm font-medium text-gray-700 mb-1">
                   Usage Limit (Optional)
                 </label>
-                <input
+                <input id="field-9"
                   type="number"
                   value={editingDiscount.usage_limit || ''}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
@@ -738,10 +733,10 @@ export default function MarketingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="field-10" className="block text-sm font-medium text-gray-700 mb-1">
                     Start Date
                   </label>
-                  <input
+                  <input id="field-10"
                     type="datetime-local"
                     value={
                       editingDiscount.starts_at
@@ -760,10 +755,10 @@ export default function MarketingPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="field-11" className="block text-sm font-medium text-gray-700 mb-1">
                     End Date
                   </label>
-                  <input
+                  <input id="field-11"
                     type="datetime-local"
                     value={
                       editingDiscount.ends_at
@@ -814,10 +809,10 @@ export default function MarketingPage() {
             </h2>
             <form onSubmit={handleCreateCampaign} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-12" className="block text-sm font-medium text-gray-700 mb-1">
                   Campaign Name
                 </label>
-                <input
+                <input id="field-12"
                   type="text"
                   required
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
@@ -827,10 +822,10 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-13" className="block text-sm font-medium text-gray-700 mb-1">
                   Description
                 </label>
-                <textarea
+                <textarea id="field-13"
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
@@ -865,10 +860,10 @@ export default function MarketingPage() {
             </h2>
             <form onSubmit={handleCreateDiscount} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-14" className="block text-sm font-medium text-gray-700 mb-1">
                   Code
                 </label>
-                <input
+                <input id="field-14"
                   type="text"
                   required
                   placeholder="SUMMER2026"
@@ -879,10 +874,10 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-15" className="block text-sm font-medium text-gray-700 mb-1">
                   Campaign (Optional)
                 </label>
-                <select
+                <select id="field-15"
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
                     setFormData({ ...formData, campaign_id: e.target.value })
@@ -897,10 +892,10 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-16" className="block text-sm font-medium text-gray-700 mb-1">
                   Type
                 </label>
-                <select
+                <select id="field-16"
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
                     setFormData({ ...formData, type: e.target.value })
@@ -913,10 +908,10 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-17" className="block text-sm font-medium text-gray-700 mb-1">
                   Value
                 </label>
-                <input
+                <input id="field-17"
                   type="number"
                   required
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
@@ -926,10 +921,10 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="field-18" className="block text-sm font-medium text-gray-700 mb-1">
                   Usage Limit (Optional)
                 </label>
-                <input
+                <input id="field-18"
                   type="number"
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -939,10 +934,10 @@ export default function MarketingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="field-19" className="block text-sm font-medium text-gray-700 mb-1">
                     Start Date
                   </label>
-                  <input
+                  <input id="field-19"
                     type="datetime-local"
                     className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                     onChange={(e) =>
@@ -951,10 +946,10 @@ export default function MarketingPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="field-20" className="block text-sm font-medium text-gray-700 mb-1">
                     End Date
                   </label>
-                  <input
+                  <input id="field-20"
                     type="datetime-local"
                     className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                     onChange={(e) =>

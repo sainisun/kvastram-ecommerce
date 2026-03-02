@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
 import { categories } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -75,7 +75,7 @@ categoriesRouter.get('/:id', async (c) => {
 // POST /categories
 categoriesRouter.post(
   '/',
-  verifyAuth,
+  verifyAdmin,
   zValidator('json', CategorySchema),
   async (c) => {
     const data = c.req.valid('json');
@@ -105,7 +105,7 @@ categoriesRouter.post(
 // PUT /categories/:id
 categoriesRouter.put(
   '/:id',
-  verifyAuth,
+  verifyAdmin,
   zValidator('json', CategorySchema.partial()),
   async (c) => {
     const id = c.req.param('id');
@@ -131,7 +131,7 @@ categoriesRouter.put(
 );
 
 // DELETE /categories/:id
-categoriesRouter.delete('/:id', verifyAuth, async (c) => {
+categoriesRouter.delete('/:id', verifyAdmin, async (c) => {
   const id = c.req.param('id');
   try {
     await db.delete(categories).where(eq(categories.id, id));

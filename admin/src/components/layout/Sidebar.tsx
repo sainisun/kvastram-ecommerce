@@ -17,6 +17,7 @@ import {
   Tag,
   Star,
   FileText,
+  Bell,
 } from 'lucide-react';
 
 const menuItems = [
@@ -76,6 +77,23 @@ export default function Sidebar() {
             </Link>
           );
         })}
+
+        {/* Marketing sub-items (show when in marketing section) */}
+        {pathname.startsWith('/dashboard/marketing') && (
+          <div className="ml-4 mt-1 space-y-1">
+            <Link
+              href="/dashboard/marketing/back-in-stock"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
+                pathname === '/dashboard/marketing/back-in-stock'
+                  ? 'bg-amber-600/20 text-amber-400'
+                  : 'text-gray-500 hover:bg-[#2b2b40] hover:text-gray-300'
+              }`}
+            >
+              <Bell size={14} />
+              Back-in-Stock
+            </Link>
+          </div>
+        )}
 
         <div className="mt-8 mb-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
           International

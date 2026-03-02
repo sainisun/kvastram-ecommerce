@@ -58,6 +58,10 @@ import whatsappRoutes from './routes/admin/whatsapp';
 import reviewsRoutes from './routes/reviews';
 import contactRoutes from './routes/contact';
 import newsletterRoutes from './routes/newsletter';
+import cartRoutes from './routes/store/cart';
+import backInStockRoutes from './routes/store/back-in-stock';
+import wishlistRoutes from './routes/store/wishlist';
+import adminBisRoutes from './routes/admin/back-in-stock';
 
 import docsApp from './docs';
 
@@ -291,6 +295,10 @@ app.route('/store/payments', paymentRoutes);
 app.route('/store/wholesale', wholesalePricingRoutes);
 app.route('/store/wholesale', wholesaleOrdersRoutes);
 app.route('/store/settings', storeSettingsRoutes);
+app.route('/store/cart', cartRoutes);
+app.route('/store/back-in-stock', backInStockRoutes);
+app.route('/store/wishlist', wishlistRoutes);
+app.route('/admin/back-in-stock', adminBisRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

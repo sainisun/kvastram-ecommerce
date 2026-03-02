@@ -26,10 +26,18 @@ export function BackInStock({
     setError('');
 
     try {
-      await api.subscribeBackInStock(productId, email, variantId);
+      await api.subscribeBackInStock({
+        product_id: productId,
+        email,
+        variant_id: variantId,
+      });
+
       setSubscribed(true);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to subscribe. Please try again.';
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Failed to subscribe. Please try again.';
       setError(message);
     } finally {
       setLoading(false);

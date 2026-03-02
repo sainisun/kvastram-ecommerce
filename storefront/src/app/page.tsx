@@ -50,14 +50,22 @@ export default async function Home() {
     productsData = await api.getProducts({ limit: 8, sort: 'newest' });
   }
 
-  const [categoriesData, collectionsData, testimonialsData] = await Promise.all(
-    [api.getCategories(), api.getCollections(), api.getTestimonials()]
-  );
+  const [categoriesData, collectionsData, testimonialsData, bannersData] =
+    await Promise.all([
+      api.getCategories(),
+      api.getCollections(),
+      api.getTestimonials(),
+      api.getBanners(),
+    ]);
 
   const products = productsData.products || [];
   const categories = (categoriesData.categories || []).slice(0, 3);
   const collections = (collectionsData.collections || []).slice(0, 2);
   const testimonialsList = testimonialsData.testimonials || [];
+  // Hero banners: only 'hero' section banners passed to HeroCarousel
+  const heroBanners = (bannersData.banners || []).filter(
+    (b: any) => b.section === 'hero' && b.is_active
+  );
 
   const categoryImages: Record<string, string> = {
     sarees: '/images/home/category-sarees.jpg',
@@ -80,12 +88,24 @@ export default async function Home() {
     'Exclusive Artisan Collections',
   ];
 
-  // Stats data
+  // Stats data — admin se configurable, defaults as fallback
   const statsData = [
-    { num: '4.9★', label: 'Customer Rating' },
-    { num: '15,000+', label: 'Happy Customers' },
-    { num: '150+', label: 'Countries Served' },
-    { num: '30-Day', label: 'Free Returns' },
+    {
+      num: homepageSettings.stat_customer_rating || '4.9★',
+      label: 'Customer Rating',
+    },
+    {
+      num: homepageSettings.stat_happy_customers || '15,000+',
+      label: 'Happy Customers',
+    },
+    {
+      num: homepageSettings.stat_countries_served || '150+',
+      label: 'Countries Served',
+    },
+    {
+      num: homepageSettings.stat_return_policy || '30-Day',
+      label: 'Free Returns',
+    },
   ];
 
   return (
@@ -144,7 +164,7 @@ export default async function Home() {
           )}
 
           {/* ═══ 2. HERO ═══ */}
-          <HeroCarousel />
+          <HeroCarousel banners={heroBanners} />
 
           {/* ═══ 3. STATS BAR ═══ */}
           <div className="stats-bar-prem">

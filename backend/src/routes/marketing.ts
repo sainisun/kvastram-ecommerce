@@ -12,7 +12,25 @@ const app = new Hono();
 
 // --- CAMPAIGNS ---
 
-// Get all campaigns
+// PUBLIC: Get active campaigns for storefront (no auth)
+app.get('/campaigns/active', async (c) => {
+  try {
+    const allCampaigns = await marketingService.getAllCampaigns();
+    const now = new Date();
+    // Filter to active campaigns within date range
+    const activeCampaigns = allCampaigns.filter((campaign: any) => {
+      if (!campaign.is_active) return false;
+      if (campaign.start_date && new Date(campaign.start_date) > now) return false;
+      if (campaign.end_date && new Date(campaign.end_date) < now) return false;
+      return true;
+    });
+    return c.json({ campaigns: activeCampaigns });
+  } catch (error: any) {
+    return c.json({ campaigns: [] }); // Silent fail for storefront
+  }
+});
+
+// Get all campaigns (admin)
 app.get('/campaigns', verifyAdmin, async (c) => {
   try {
     const allCampaigns = await marketingService.getAllCampaigns();

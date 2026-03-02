@@ -60,6 +60,54 @@ ordersRouter.get(
   })
 );
 
+// GET /orders/stats/chart - Revenue chart data for dashboard
+ordersRouter.get(
+  '/stats/chart',
+  asyncHandler(async (c) => {
+    const rangeMap: Record<string, number> = { '7d': 7, '30d': 30, '90d': 90, '1y': 365 };
+    const range = c.req.query('range') || '30d';
+    const days = rangeMap[range] || 30;
+    const data = await orderService.getChartData(days);
+    return successResponse(c, data, 'Chart data retrieved successfully');
+  })
+);
+
+// GET /orders/export - Export orders to CSV
+ordersRouter.get(
+  '/export',
+  asyncHandler(async (c) => {
+    const { search = '', status = '' } = c.req.query();
+    const rows = await orderService.getExportData({ search, status });
+
+    const header = 'Order#,Date,Customer Name,Email,Status,Currency,Subtotal,Tax,Shipping,Total';
+    const lines = rows.map((o: any) => {
+      const name = [o.customer_first_name, o.customer_last_name].filter(Boolean).join(' ') || 'Guest';
+      const date = o.created_at ? new Date(o.created_at).toISOString().split('T')[0] : '';
+      const fmt = (v: number) => ((v || 0) / 100).toFixed(2);
+      return [
+        o.order_number,
+        date,
+        `"${name}"`,
+        o.email,
+        o.status,
+        o.currency_code,
+        fmt(o.subtotal),
+        fmt(o.tax_total),
+        fmt(o.shipping_total),
+        fmt(o.total),
+      ].join(',');
+    });
+
+    const csv = [header, ...lines].join('\n');
+    const filename = `orders-export-${new Date().toISOString().split('T')[0]}.csv`;
+
+    return c.body(csv as any, 200, {
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+    });
+  })
+);
+
 // GET /orders/:id/invoice - Download invoice PDF
 ordersRouter.get(
   '/:id/invoice',

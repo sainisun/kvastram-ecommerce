@@ -64,7 +64,13 @@ settingsRouter.get('/homepage', async (c) => {
       'featured_product_ids',
       'nav_links',
       'quick_links',
+      // Homepage stats (admin-configurable)
+      'stat_customer_rating',
+      'stat_happy_customers',
+      'stat_countries_served',
+      'stat_return_policy',
     ];
+
     const homepageSettings = allSettings.filter((s: any) =>
       homepageKeys.includes(s.key)
     );

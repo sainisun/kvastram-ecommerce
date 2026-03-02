@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { db } from '../db';
 import { pages } from '../db/schema';
 import { eq, desc, and } from 'drizzle-orm';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdmin } from '../middleware/auth';
 import { z } from 'zod';
 
 const app = new Hono();
@@ -51,7 +51,7 @@ app.get('/storefront/:slug', async (c) => {
 });
 
 // Admin: Get all pages
-app.get('/', verifyAuth, async (c) => {
+app.get('/', verifyAdmin, async (c) => {
   try {
     const allPages = await db.select().from(pages).orderBy(pages.title);
     return c.json({ pages: allPages });
@@ -61,7 +61,7 @@ app.get('/', verifyAuth, async (c) => {
 });
 
 // Admin: Get single page
-app.get('/:id', verifyAuth, async (c) => {
+app.get('/:id', verifyAdmin, async (c) => {
   try {
     const id = c.req.param('id');
     const [page] = await db.select().from(pages).where(eq(pages.id, id));
@@ -73,7 +73,7 @@ app.get('/:id', verifyAuth, async (c) => {
 });
 
 // Admin: Create page
-app.post('/', verifyAuth, async (c) => {
+app.post('/', verifyAdmin, async (c) => {
   try {
     const body = await c.req.json();
     const validated = pageSchema.parse(body);
@@ -95,7 +95,7 @@ app.post('/', verifyAuth, async (c) => {
 });
 
 // Admin: Update page
-app.put('/:id', verifyAuth, async (c) => {
+app.put('/:id', verifyAdmin, async (c) => {
   try {
     const id = c.req.param('id');
     const body = await c.req.json();
@@ -125,7 +125,7 @@ app.put('/:id', verifyAuth, async (c) => {
 });
 
 // Admin: Delete page
-app.delete('/:id', verifyAuth, async (c) => {
+app.delete('/:id', verifyAdmin, async (c) => {
   try {
     const id = c.req.param('id');
     await db.delete(pages).where(eq(pages.id, id));

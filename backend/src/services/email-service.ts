@@ -387,7 +387,58 @@ class EmailService {
 
     return this.sendEmail({ to: data.email, subject, text, html });
   }
+
+  // 🔔 Back-in-Stock Notification Email
+  async sendBackInStockNotification(data: {
+    email: string;
+    product_title: string;
+    product_url: string;
+  }) {
+    const subject = `"${data.product_title}" is back in stock! 🎉`;
+    const safeTitle = safeString(data.product_title);
+    const storeUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const productUrl = data.product_url.startsWith('http')
+      ? data.product_url
+      : `${storeUrl}${data.product_url}`;
+
+    const text = `Great news! "${data.product_title}" is back in stock. Shop now before it sells out: ${productUrl}`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a1614; padding: 24px; text-align: center;">
+          <h2 style="color: #f5c842; margin: 0; font-size: 22px; letter-spacing: 2px;">KVASTRAM</h2>
+        </div>
+        <div style="padding: 32px 24px;">
+          <h1 style="font-size: 24px; color: #1a1614;">It's back! 🎉</h1>
+          <p>An item on your wishlist is now back in stock.</p>
+          <div style="background: #f9f7f5; border-left: 4px solid #f5c842; padding: 16px; margin: 24px 0; border-radius: 4px;">
+            <p style="margin: 0; font-weight: bold; font-size: 18px;">${safeTitle}</p>
+          </div>
+          <p>Hurry — popular items often sell out quickly!</p>
+          <p style="text-align: center; margin: 32px 0;">
+            <a href="${productUrl}"
+               style="background-color: #1a1614; color: white; padding: 14px 32px; text-decoration: none; border-radius: 2px; display: inline-block; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 13px;">
+              Shop Now
+            </a>
+          </p>
+          <p style="color: #888; font-size: 12px; margin-top: 40px; border-top: 1px solid #eee; padding-top: 16px;">
+            You subscribed to restock alerts for this product. If you no longer wish to receive these emails, simply ignore future ones.
+          </p>
+        </div>
+      </div>
+    `;
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('\n📧 BACK-IN-STOCK NOTIFICATION (DEV MODE)');
+      console.log('   To:', data.email);
+      console.log('   Product:', data.product_title);
+      console.log('   URL:', productUrl);
+      console.log('');
+    }
+
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
 }
+
 
 // Lazy singleton: initialized once on first use
 let _emailServiceInstance: EmailService | null = null;
