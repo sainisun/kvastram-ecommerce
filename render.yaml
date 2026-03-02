@@ -10,7 +10,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: postgresql://postgres.qsnradlhidpbeopahztr:WUaXy0ENSM59wCiS@aws-1-us-east-1.pooler.supabase.com:6543/postgres
+        value: # Set DATABASE_URL in Render dashboard as a secret env var
       - key: JWT_SECRET
         generateValue: true
       - key: ALLOWED_ORIGINS
@@ -20,7 +20,7 @@ services:
       - key: SMTP_HOST
         value: smtp.mailtrap.io
       - key: SMTP_PORT
-        value: "587"
+        value: '587'
       - key: SMTP_USER
         value: your_mailtrap_username
       - key: SMTP_PASS

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense, useEffect, type FormEvent } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, ArrowLeft, Eye, EyeOff, Check, X } from 'lucide-react';
@@ -46,7 +46,7 @@ function ResetPasswordContent() {
   const isPasswordValid = Object.values(passwordValid).every(Boolean);
   const passwordsMatch = password === confirmPassword && password !== '';
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
@@ -77,7 +77,11 @@ function ResetPasswordContent() {
 
       setSuccess(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Something went wrong. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -106,9 +110,13 @@ function ResetPasswordContent() {
             Password Reset Successfully
           </h1>
           <p className="text-stone-500">
-            Your password has been reset. You can now log in with your new password.
+            Your password has been reset. You can now log in with your new
+            password.
           </p>
-          <Link href="/login" className="inline-block bg-stone-900 text-white px-8 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors">
+          <Link
+            href="/login"
+            className="inline-block bg-stone-900 text-white px-8 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors"
+          >
             Go to Login
           </Link>
         </div>
@@ -141,7 +149,10 @@ function ResetPasswordContent() {
           )}
 
           <div className="space-y-2">
-            <label htmlFor="reset-password" className="text-xs uppercase font-bold text-stone-500">
+            <label
+              htmlFor="reset-password"
+              className="text-xs uppercase font-bold text-stone-500"
+            >
               New Password
             </label>
             <div className="relative">
@@ -163,29 +174,53 @@ function ResetPasswordContent() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            
+
             {/* Password requirements */}
             <div className="space-y-1 mt-2">
-              <p className="text-xs text-stone-500 mb-2">Password must contain:</p>
+              <p className="text-xs text-stone-500 mb-2">
+                Password must contain:
+              </p>
               <div className="grid grid-cols-2 gap-1 text-xs">
-                <div className={`flex items-center gap-1 ${passwordValid.length ? 'text-green-600' : 'text-stone-400'}`}>
+                <div
+                  className={`flex items-center gap-1 ${passwordValid.length ? 'text-green-600' : 'text-stone-400'}`}
+                >
                   {passwordValid.length ? <Check size={12} /> : <X size={12} />}
                   At least 12 characters
                 </div>
-                <div className={`flex items-center gap-1 ${passwordValid.uppercase ? 'text-green-600' : 'text-stone-400'}`}>
-                  {passwordValid.uppercase ? <Check size={12} /> : <X size={12} />}
+                <div
+                  className={`flex items-center gap-1 ${passwordValid.uppercase ? 'text-green-600' : 'text-stone-400'}`}
+                >
+                  {passwordValid.uppercase ? (
+                    <Check size={12} />
+                  ) : (
+                    <X size={12} />
+                  )}
                   One uppercase letter
                 </div>
-                <div className={`flex items-center gap-1 ${passwordValid.lowercase ? 'text-green-600' : 'text-stone-400'}`}>
-                  {passwordValid.lowercase ? <Check size={12} /> : <X size={12} />}
+                <div
+                  className={`flex items-center gap-1 ${passwordValid.lowercase ? 'text-green-600' : 'text-stone-400'}`}
+                >
+                  {passwordValid.lowercase ? (
+                    <Check size={12} />
+                  ) : (
+                    <X size={12} />
+                  )}
                   One lowercase letter
                 </div>
-                <div className={`flex items-center gap-1 ${passwordValid.number ? 'text-green-600' : 'text-stone-400'}`}>
+                <div
+                  className={`flex items-center gap-1 ${passwordValid.number ? 'text-green-600' : 'text-stone-400'}`}
+                >
                   {passwordValid.number ? <Check size={12} /> : <X size={12} />}
                   One number
                 </div>
-                <div className={`flex items-center gap-1 ${passwordValid.special ? 'text-green-600' : 'text-stone-400'}`}>
-                  {passwordValid.special ? <Check size={12} /> : <X size={12} />}
+                <div
+                  className={`flex items-center gap-1 ${passwordValid.special ? 'text-green-600' : 'text-stone-400'}`}
+                >
+                  {passwordValid.special ? (
+                    <Check size={12} />
+                  ) : (
+                    <X size={12} />
+                  )}
                   One special character
                 </div>
               </div>
@@ -193,7 +228,10 @@ function ResetPasswordContent() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="reset-confirm-password" className="text-xs uppercase font-bold text-stone-500">
+            <label
+              htmlFor="reset-confirm-password"
+              className="text-xs uppercase font-bold text-stone-500"
+            >
               Confirm Password
             </label>
             <div className="relative">

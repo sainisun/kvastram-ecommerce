@@ -14,8 +14,10 @@ function getToken(c: Context): string | null {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return authHeader.split(' ')[1];
   }
+  
   // Fall back to cookie
-  return getCookie(c, 'admin_token') || null;
+  const cookieToken = getCookie(c, 'admin_token');
+  return cookieToken || null;
 }
 
 /**

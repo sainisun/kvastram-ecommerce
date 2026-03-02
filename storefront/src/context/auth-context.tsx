@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import type { Customer, LoginData, RegisterData } from '@/types';
@@ -32,7 +32,9 @@ function eraseCookie(name: string) {
   document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -43,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setCustomer(data.customer);
     } catch {
       eraseCookie('auth_token');
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         localStorage.removeItem('auth_token');
       }
       setCustomer(null);
@@ -57,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let token = getCookie('auth_token');
 
     // Also check localStorage for wholesale login (fallback)
-    if (!token && typeof window !== 'undefined') {
+    if (!token && globalThis.window !== undefined) {
       token = localStorage.getItem('auth_token');
       if (token && typeof document !== 'undefined') {
         // Sync to cookie for consistency
@@ -77,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for auth changes (e.g., from wholesale login)
     const handleAuthChange = () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         const newToken = localStorage.getItem('auth_token');
         if (newToken) {
           fetchCustomer(newToken);
@@ -85,9 +87,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('auth-change', handleAuthChange);
-      return () => window.removeEventListener('auth-change', handleAuthChange);
+    if (globalThis.window !== undefined) {
+      globalThis.window.addEventListener('auth-change', handleAuthChange);
+      return () =>
+        globalThis.window.removeEventListener('auth-change', handleAuthChange);
     }
   }, []);
 
@@ -111,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     eraseCookie('auth_token');
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       localStorage.removeItem('auth_token');
     }
     setCustomer(null);
@@ -122,12 +125,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCustomer(customer);
   };
 
+  // useMemo prevents a new object being created on every render, avoiding unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({ customer, loading, login, register, logout, setUser }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [customer, loading]
+  );
+
   return (
-    <AuthContext.Provider
-      value={{ customer, loading, login, register, logout, setUser }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 

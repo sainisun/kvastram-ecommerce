@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
@@ -10,7 +10,7 @@ export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -30,7 +30,11 @@ export default function ForgotPasswordPage() {
 
       setSubmitted(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Something went wrong. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -59,12 +63,17 @@ export default function ForgotPasswordPage() {
             Check Your Email
           </h1>
           <p className="text-stone-500">
-            If an account exists with <strong>{email}</strong>, you will receive a password reset link.
+            If an account exists with <strong>{email}</strong>, you will receive
+            a password reset link.
           </p>
           <p className="text-stone-400 text-sm">
-            Check your spam folder if you don&apos;t receive the email within a few minutes.
+            Check your spam folder if you don&apos;t receive the email within a
+            few minutes.
           </p>
-          <Link href="/login" className="inline-block text-stone-900 font-medium underline">
+          <Link
+            href="/login"
+            className="inline-block text-stone-900 font-medium underline"
+          >
             Back to Login
           </Link>
         </div>
@@ -83,9 +92,12 @@ export default function ForgotPasswordPage() {
             <ArrowLeft size={16} className="mr-1" />
             Back to Login
           </Link>
-          <h1 className="text-3xl font-serif text-stone-900">Forgot Password?</h1>
+          <h1 className="text-3xl font-serif text-stone-900">
+            Forgot Password?
+          </h1>
           <p className="mt-2 text-stone-500 font-light">
-            Enter your email address and we&apos;ll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password.
           </p>
         </div>
 
@@ -97,7 +109,10 @@ export default function ForgotPasswordPage() {
           )}
 
           <div className="space-y-2">
-            <label htmlFor="forgot-email" className="text-xs uppercase font-bold text-stone-500">
+            <label
+              htmlFor="forgot-email"
+              className="text-xs uppercase font-bold text-stone-500"
+            >
               Email Address
             </label>
             <input

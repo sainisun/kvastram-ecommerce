@@ -7,6 +7,25 @@ const debugLog = (message: string, data?: unknown) => {
   }
 };
 
+// Debug: Log cookie state before requests
+const debugCookieState = async (endpoint: string) => {
+  if (typeof window === 'undefined') return;
+  
+  // Log all cookies (for debugging)
+  const cookies = document.cookie;
+  debugLog(`Cookie state before ${endpoint}:`, {
+    hasCookies: !!cookies,
+    cookieString: cookies,
+    hasAdminToken: cookies.includes('admin_token=')
+  });
+  
+  // Check if we're using proxy or direct
+  debugLog(`Request target: ${endpoint}`, {
+    apiBaseUrl: API_BASE_URL,
+    fullUrl: API_BASE_URL + endpoint
+  });
+};
+
 // Type Definitions
 export interface User {
   id: string;
@@ -69,15 +88,31 @@ async function fetchWithTimeout(
   const id = setTimeout(() => controller.abort(), timeout);
 
   try {
+    debugLog('Fetch request:', {
+      url: typeof resource === 'string' ? resource : resource.url,
+      method: fetchOptions.method || 'GET',
+      hasCredentials: true,
+      credentials: fetchOptions.credentials || 'include'
+    });
+    
     const response = await fetch(resource, {
       ...fetchOptions,
       credentials: 'include', // Important: send cookies with request
       signal: controller.signal,
     });
     clearTimeout(id);
+    
+    debugLog('Fetch response:', {
+      url: typeof resource === 'string' ? resource : resource.url,
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
+    
     return response;
   } catch (error: unknown) {
     clearTimeout(id);
+    debugLog('Fetch error:', { error, url: typeof resource === 'string' ? resource : resource.url });
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
         throw new Error(
@@ -151,6 +186,17 @@ export const api = {
       }
 
       // Token is now in httpOnly cookie, only user data returned
+      debugLog('Login successful - checking cookie state');
+      
+      // Debug: Check cookies after login
+      if (typeof window !== 'undefined') {
+        const cookies = document.cookie;
+        debugLog('Cookies after login:', {
+          cookieString: cookies,
+          hasAdminToken: cookies.includes('admin_token=')
+        });
+      }
+      
       return response.data as AuthResponse;
     } catch (error) {
       console.error('Login error:', error);
@@ -199,13 +245,19 @@ export const api = {
   },
 
   getProductStats: async () => {
+    await debugCookieState('/products/stats/overview');
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/products/stats/overview`,
       {
         // No Authorization header needed - cookie is sent automatically
       }
     );
-    if (!res.ok) throw new Error('Failed to fetch product stats');
+    debugLog('getProductStats response:', { status: res.status, ok: res.ok });
+    if (!res.ok) {
+      const errorText = await res.text();
+      debugLog('getProductStats error:', errorText);
+      throw new Error('Failed to fetch product stats');
+    }
     const response = await res.json();
     return response.data;
   },

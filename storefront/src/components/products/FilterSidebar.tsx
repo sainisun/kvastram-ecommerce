@@ -32,7 +32,7 @@ export default function FilterSidebar({
   tags,
   collections = [],
   className = '',
-}: FilterSidebarProps) {
+}: Readonly<FilterSidebarProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [expandedCats, setExpandedCats] = useState<string[]>([]);

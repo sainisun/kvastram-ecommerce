@@ -32,10 +32,13 @@ import { emailLimiter } from '../../middleware/rate-limiter';
 const storeAuthRouter = new Hono();
 
 // 🔒 FIX-010: Cookie configuration
+// Production (Vercel→Railway): sameSite:'none' required for cross-domain HTTPS cookies
+// Development (localhost HTTP): sameSite:'lax' required — 'none' needs HTTPS which dev lacks
+const isProduction = config.server.env === 'production';
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: config.server.env === 'production',
-  sameSite: 'none' as const,
+  secure: isProduction,
+  sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax' | 'strict',
   maxAge: 60 * 60 * 24 * 7, // 7 days
   path: '/',
 };
@@ -47,7 +50,12 @@ function setAuthCookie(c: Context, token: string) {
 
 // Helper function to clear auth cookie
 function clearAuthCookie(c: Context) {
-  deleteCookie(c, 'auth_token', { path: '/' });
+  deleteCookie(c, 'auth_token', {
+    path: '/',
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+  });
 }
 
 // Validation schemas for verification routes

@@ -11,7 +11,6 @@ import {
   index,
   primaryKey,
 } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
 import { relations } from 'drizzle-orm';
 
 // --- UTILS ---
@@ -689,7 +688,7 @@ export const newsletter_subscribers = pgTable('newsletter_subscribers', {
 });
 
 // --- RELATIONS ---
-export const settingsRelations = relations(settings, ({}) => ({}));
+export const settingsRelations = relations(settings, () => ({}));
 
 export const campaignsRelations = relations(campaigns, ({ many }) => ({
   discounts: many(discounts),

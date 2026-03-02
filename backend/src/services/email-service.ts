@@ -51,10 +51,18 @@ class EmailService {
   private transporter!: nodemailer.Transporter;
   private readonly ready!: Promise<void>;
 
-  constructor() {
-    // OPT-001 FIX: Use async-ready pattern to prevent race condition
+  private constructor(ready: Promise<void>) {
+    this.ready = ready;
+  }
+
+  /** Factory: initialize transporter async, then return instance */
+  static async create(): Promise<EmailService> {
+    const instance = new EmailService(
+      // Assign a placeholder — `ready` will be resolved by initTransporter
+      Promise.resolve()
+    );
     if (process.env.NODE_ENV === 'production') {
-      this.transporter = nodemailer.createTransport({
+      instance.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: Number(process.env.SMTP_PORT),
         secure: true,
@@ -62,30 +70,23 @@ class EmailService {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
-        // Timeout settings to prevent hanging
-        connectionTimeout: 10000, // 10 seconds
-        greetingTimeout: 10000,  // 10 seconds
-        socketTimeout: 10000,    // 10 seconds
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
       });
-      this.ready = this.initTransporter();
     } else {
-      this.ready = this.initTransporter();
+      await instance.initTransporter();
     }
+    return instance;
   }
 
   /** Initialize transporter asynchronously (development Ethereal setup) */
   private initTransporter(): Promise<void> {
-    if (process.env.NODE_ENV === 'production') {
-      return Promise.resolve();
-    }
     return new Promise<void>((resolve) => {
       nodemailer.createTestAccount((err, account) => {
         if (err) {
           console.error('Failed to create Ethereal account:', err);
-          // Fallback: log-only transporter
-          this.transporter = nodemailer.createTransport({
-            jsonTransport: true,
-          });
+          this.transporter = nodemailer.createTransport({ jsonTransport: true });
           resolve();
           return;
         }
@@ -93,17 +94,13 @@ class EmailService {
           host: account.smtp.host,
           port: account.smtp.port,
           secure: account.smtp.secure,
-          auth: {
-            user: account.user,
-            pass: account.pass,
-          },
-          // Timeout settings
+          auth: { user: account.user, pass: account.pass },
           connectionTimeout: 10000,
           greetingTimeout: 10000,
           socketTimeout: 10000,
         });
         console.log('📧 Email Service ready (Ethereal Dev Mode)');
-        console.log(`📧 Preview URL: https://ethereal.email/messages`);
+        console.log('📧 Preview URL: https://ethereal.email/messages');
         resolve();
       });
     });
@@ -392,4 +389,26 @@ class EmailService {
   }
 }
 
-export const emailService = new EmailService();
+// Lazy singleton: initialized once on first use
+let _emailServiceInstance: EmailService | null = null;
+let _emailServiceInit: Promise<EmailService> | null = null;
+
+function getEmailService(): Promise<EmailService> {
+  if (_emailServiceInstance) return Promise.resolve(_emailServiceInstance);
+  _emailServiceInit ??= EmailService.create().then((svc) => {
+    _emailServiceInstance = svc;
+    return svc;
+  });
+  return _emailServiceInit;
+}
+
+// Proxy object that forwards all async method calls to the lazily initialized instance
+export const emailService = new Proxy({} as EmailService, {
+  get(_target, prop) {
+    return async (...args: unknown[]) => {
+      const svc = await getEmailService();
+      return (svc as unknown as Record<string, (...a: unknown[]) => unknown>)[prop as string](...args);
+    };
+  },
+});
+

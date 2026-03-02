@@ -22,10 +22,13 @@ import { serializeUser } from '../utils/safe-user';
 const authRouter = new Hono<{ Variables: AuthContextVariables }>();
 
 // Cookie configuration for httpOnly JWT storage
+// Production (Vercel→Railway): sameSite:'none' required for cross-domain HTTPS cookies
+// Development (localhost HTTP): sameSite:'lax' required — 'none' needs HTTPS which dev lacks
+const isProduction = config.server.env === 'production';
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: config.server.env === 'production',
-  sameSite: 'none' as const,
+  secure: isProduction,
+  sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax' | 'strict',
   maxAge: 60 * 60 * 24 * 7, // 7 days
   path: '/',
 };
@@ -93,8 +96,8 @@ authRouter.post(
     deleteCookie(c, 'admin_token', {
       path: '/',
       httpOnly: true,
-      secure: config.server.env === 'production',
-      sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
     });
     return successResponse(c, null, 'Logout successful');
   })
