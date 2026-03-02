@@ -302,6 +302,8 @@ export const customers = pgTable(
     reset_token: text('reset_token'),
     reset_token_expires_at: timestamp('reset_token_expires_at'),
     reset_attempts: integer('reset_attempts').default(0),
+    // Wholesale / general metadata (discount_tier, wholesale_customer flag, etc.)
+    metadata: jsonb('metadata'),
     ...createdUpdated,
   },
   (table) => ({

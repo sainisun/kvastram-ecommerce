@@ -4,6 +4,9 @@ import { config } from '../../config';
 import { wholesalePriceService } from '../../services/wholesale-price-service';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import { db } from '../../db/client';
+import { wholesale_tiers, customers } from '../../db/schema';
+import { eq } from 'drizzle-orm';
 
 const app = new Hono();
 
@@ -296,16 +299,12 @@ app.post('/tier/auto-assign', async (c) => {
 // Admin endpoint to manually assign tier
 app.post('/admin/tier/assign/:customerId', async (c) => {
   try {
-    // This would need admin verification middleware
     const { customerId } = c.req.param();
     const { tierSlug } = await c.req.json();
 
     if (!tierSlug) {
       return c.json({ error: 'tierSlug is required' }, 400);
     }
-
-    const { wholesale_tiers, customers } = await import('../../db/schema');
-    const { eq } = await import('drizzle-orm');
 
     // Verify tier exists
     const [tier] = await db
@@ -318,7 +317,7 @@ app.post('/admin/tier/assign/:customerId', async (c) => {
       return c.json({ error: 'Tier not found' }, 404);
     }
 
-    // Update customer
+    // Update customer metadata
     const [customer] = await db
       .select()
       .from(customers)
@@ -329,13 +328,13 @@ app.post('/admin/tier/assign/:customerId', async (c) => {
       return c.json({ error: 'Customer not found' }, 404);
     }
 
-    const metadata = (customer.metadata as Record<string, any>) || {};
+    const existingMeta = (customer.metadata as Record<string, unknown>) || {};
 
     await db
       .update(customers)
       .set({
         metadata: {
-          ...metadata,
+          ...existingMeta,
           discount_tier: tierSlug,
           wholesale_customer: true,
         },
