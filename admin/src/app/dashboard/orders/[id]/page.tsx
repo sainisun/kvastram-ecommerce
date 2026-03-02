@@ -29,8 +29,9 @@ export default function OrderDetailsPage() {
     api
       .getOrder(id)
       .then((data) => {
-        setOrder(data.order);
-        setItems(data.items || []);
+        const orderData = data?.order || data;
+        setOrder(orderData);
+        setItems(data?.items || orderData?.items || []);
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -93,10 +94,16 @@ export default function OrderDetailsPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              Order #{order.order_number}
+              Order #
+              {order.order_number ||
+                order.display_id ||
+                (order.id ? order.id.split('-')[0] : 'Unknown')}
             </h1>
             <p className="text-gray-500 text-sm">
-              Placed on {new Date(order.created_at).toLocaleString()}
+              Placed on{' '}
+              {order.created_at
+                ? new Date(order.created_at).toLocaleString()
+                : 'Recent'}
             </p>
           </div>
         </div>
@@ -270,6 +277,133 @@ export default function OrderDetailsPage() {
               </address>
             ) : (
               <p className="text-sm text-gray-400">No address details</p>
+            )}
+          </div>
+
+          {/* Fulfillment & Tracking */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Package size={18} className="text-gray-500" />
+              <h2 className="font-semibold text-gray-700">Fulfillment</h2>
+            </div>
+
+            {order.tracking_number ? (
+              <div className="space-y-3">
+                <div>
+                  <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
+                    Tracking Number
+                  </span>
+                  <div className="font-mono bg-gray-50 px-3 py-2 rounded text-sm text-gray-800 border border-gray-200 flex justify-between items-center">
+                    {order.tracking_number}
+                    <button
+                      className="text-blue-500 hover:text-blue-700 text-xs"
+                      onClick={() =>
+                        navigator.clipboard.writeText(order.tracking_number)
+                      }
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                {order.shipping_carrier && (
+                  <div>
+                    <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">
+                      Carrier
+                    </span>
+                    <p className="text-sm text-gray-800">
+                      {order.shipping_carrier}
+                    </p>
+                  </div>
+                )}
+                {order.tracking_link && (
+                  <div>
+                    <a
+                      href={order.tracking_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline text-sm font-medium"
+                    >
+                      Track Shipment ↗
+                    </a>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const trackingData = {
+                    tracking_number: formData.get('tracking_number') as string,
+                    shipping_carrier:
+                      (formData.get('shipping_carrier') as string) || undefined,
+                    tracking_link:
+                      (formData.get('tracking_link') as string) || undefined,
+                  };
+                  if (!trackingData.tracking_number) return;
+
+                  try {
+                    setUpdating(true);
+                    await api.addOrderTracking(id, trackingData);
+                    setOrder((prev: any) => ({
+                      ...prev,
+                      ...trackingData,
+                      status: 'shipped',
+                    }));
+                    showNotification('success', 'Tracking information added');
+                  } catch (error: any) {
+                    showNotification(
+                      'error',
+                      error.message || 'Failed to add tracking'
+                    );
+                  } finally {
+                    setUpdating(false);
+                  }
+                }}
+                className="space-y-3"
+              >
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Tracking Number *
+                  </label>
+                  <input
+                    required
+                    name="tracking_number"
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none text-sm"
+                    placeholder="e.g. 1Z9999999999999999"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Shipping Carrier
+                  </label>
+                  <input
+                    name="shipping_carrier"
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none text-sm"
+                    placeholder="e.g. UPS, FedEx, DHL"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Tracking Link URL
+                  </label>
+                  <input
+                    name="tracking_link"
+                    type="url"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none text-sm"
+                    placeholder="https://"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-medium transition-colors text-sm disabled:opacity-50"
+                >
+                  {updating ? 'Saving...' : 'Add Tracking'}
+                </button>
+              </form>
             )}
           </div>
         </div>

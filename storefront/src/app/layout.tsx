@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Cormorant_Garamond, Archivo } from 'next/font/google';
+
 import './globals.css';
 import { ShopProvider } from '@/context/shop-context';
 import { AuthProvider } from '@/context/auth-context';
@@ -18,13 +19,30 @@ const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
   display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: '--font-cormorant',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+});
+
+const archivo = Archivo({
+  variable: '--font-archivo',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['300', '400', '500'],
 });
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
 
 export const metadata: Metadata = {
-  title: 'Kvastram | Modern International Fashion',
-  description: 'Premium clothing for the global citizen.',
+  title: 'Kvastram — Artisanal Fashion from the Heart of India',
+  description:
+    'Discover handcrafted luxury fashion — premium shawls, kurtis, sarees, and more, shipped worldwide. Free returns, 30-day guarantee.',
   metadataBase: new URL(baseUrl),
   alternates: {
     canonical: '/',
@@ -95,17 +113,16 @@ export default function RootLayout({
         )}
 
         {/* Preload critical fonts - use Google Fonts URL */}
-        <link
-          rel="preconnect"
-          href="https://fonts.googleapis.com"
-        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
       </head>
-      <body className={`${inter.variable} antialiased bg-white text-stone-900`}>
+      <body
+        className={`${inter.variable} ${cormorant.variable} ${archivo.variable} antialiased`}
+      >
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"

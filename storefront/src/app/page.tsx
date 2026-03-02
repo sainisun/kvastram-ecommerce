@@ -1,20 +1,21 @@
-import ProductGrid from '@/components/ProductGrid';
 import ProductCarousel from '@/components/ProductCarousel';
 import HeroCarousel from '@/components/hero/HeroCarousel';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
-import { Star, Globe, ShieldCheck, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import NewsletterForm from '@/components/NewsletterForm';
 import { api } from '@/lib/api';
 import type { Metadata } from 'next';
+import { MarqueeStrip } from '@/components/ui/MarqueeStrip';
+import { RevealOnScroll, StatReveal } from '@/components/ui/RevealOnScroll';
 
 export const dynamic = 'force-dynamic';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
 
 export const metadata: Metadata = {
-  title: 'Kvastram | Modern International Fashion',
+  title: 'Kvastram | Artisanal Luxury Fashion',
   description:
     'Premium clothing for the global citizen. Discover artisan-crafted fashion with worldwide shipping.',
   alternates: {
@@ -25,17 +26,16 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: baseUrl,
     siteName: 'Kvastram',
-    title: 'Kvastram | Modern International Fashion',
+    title: 'Kvastram | Artisanal Luxury Fashion',
     description: 'Premium clothing for the global citizen.',
   },
 };
 
 export default async function Home() {
-  // First fetch homepage settings to check for featured products
+  // ─── All existing API calls preserved exactly ───
   const homepageData = await api.getHomepageSettings();
   const homepageSettings = homepageData.settings || {};
 
-  // Check if featured products are configured
   const featuredProductIds = homepageSettings.featured_product_ids
     ? homepageSettings.featured_product_ids
         .split(',')
@@ -43,7 +43,6 @@ export default async function Home() {
         .filter(Boolean)
     : [];
 
-  // Fetch featured products if IDs are configured, otherwise fetch newest
   let productsData;
   if (featuredProductIds.length > 0) {
     productsData = await api.getFeaturedProducts(featuredProductIds);
@@ -51,17 +50,15 @@ export default async function Home() {
     productsData = await api.getProducts({ limit: 8, sort: 'newest' });
   }
 
-  // Fetch other data in parallel
   const [categoriesData, collectionsData, testimonialsData] = await Promise.all(
     [api.getCategories(), api.getCollections(), api.getTestimonials()]
   );
 
   const products = productsData.products || [];
-  const categories = (categoriesData.categories || []).slice(0, 4);
-  const collections = (collectionsData.collections || []).slice(0, 3);
+  const categories = (categoriesData.categories || []).slice(0, 3);
+  const collections = (collectionsData.collections || []).slice(0, 2);
   const testimonialsList = testimonialsData.testimonials || [];
 
-  // Fallback images if not set
   const categoryImages: Record<string, string> = {
     sarees: '/images/home/category-sarees.jpg',
     lehengas: '/images/home/category-lehengas.jpg',
@@ -69,94 +66,123 @@ export default async function Home() {
     accessories: '/images/home/category-accessories.jpg',
   };
 
-  // Normalize announcement bar settings to handle both string and boolean
-  const isAnnouncementEnabled = Boolean(homepageSettings.announcement_bar_enabled);
+  const isAnnouncementEnabled = Boolean(
+    homepageSettings.announcement_bar_enabled
+  );
   const announcementText = homepageSettings.announcement_bar_text || '';
+
+  // Ticker items for marquee
+  const tickerItems = [
+    announcementText ||
+      'Complimentary Worldwide Shipping on Orders Over ₹10,000',
+    'Handcrafted by Artisans Since 1987',
+    '30-Day Returns & Exchanges',
+    'Exclusive Artisan Collections',
+  ];
+
+  // Stats data
+  const statsData = [
+    { num: '4.9★', label: 'Customer Rating' },
+    { num: '15,000+', label: 'Happy Customers' },
+    { num: '150+', label: 'Countries Served' },
+    { num: '30-Day', label: 'Free Returns' },
+  ];
 
   return (
     <>
-      <div className="min-h-screen bg-white">
-        {/* 1. Announcement Bar */}
-        {isAnnouncementEnabled && announcementText ? (
-          <div className="bg-stone-900 text-white text-[10px] md:text-xs tracking-widest text-center py-3 uppercase font-medium">
-            {announcementText}
-          </div>
-        ) : (
-          <div className="bg-stone-900 text-white text-[10px] md:text-xs tracking-widest text-center py-3 uppercase font-medium">
-            Complimentary Worldwide Shipping on Orders Over $250
-          </div>
-        )}
-
-        {/* 2. Hero Section */}
-        {/* 2. Hero Section */}
-        <HeroCarousel />
-
-        {/* 3. Value Props - Desktop style on all screens */}
-        <section className="py-8 md:py-16 border-b border-stone-100 bg-stone-50/30">
-          <div className="max-w-7xl mx-auto px-4 md:px-6">
-            <div className="flex flex-row justify-center items-stretch gap-4 md:gap-8 text-center divide-x divide-stone-200 overflow-x-auto">
-              <div className="flex-1 min-w-[100px] flex flex-col items-center gap-2 md:gap-3 py-2 px-2 md:px-4 hover:scale-105 transition-transform duration-300">
-                <Globe size={24} strokeWidth={1} className="text-stone-800" />
-                <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-stone-900">
-                  Global Shipping
-                </span>
-                <p className="text-[10px] md:text-sm text-stone-500 font-light hidden sm:block">
-                  To over 150+ countries worldwide
-                </p>
-              </div>
-              <div className="flex-1 min-w-[100px] flex flex-col items-center gap-2 md:gap-3 py-2 px-2 md:px-4 hover:scale-105 transition-transform duration-300">
-                <Star size={24} strokeWidth={1} className="text-stone-800" />
-                <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-stone-900">
-                  Premium Quality
-                </span>
-                <p className="text-[10px] md:text-sm text-stone-500 font-light hidden sm:block">
-                  Handcrafted by master artisans
-                </p>
-              </div>
-              <div className="flex-1 min-w-[100px] flex flex-col items-center gap-2 md:gap-3 py-2 px-2 md:px-4 hover:scale-105 transition-transform duration-300">
-                <ShieldCheck
-                  size={24}
-                  strokeWidth={1}
-                  className="text-stone-800"
-                />
-                <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-stone-900">
-                  Authenticity Guaranteed
-                </span>
-                <p className="text-[10px] md:text-sm text-stone-500 font-light hidden sm:block">
-                  Every piece is verified original
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 4. Shop by Category */}
-        <section className="py-24 max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex items-end justify-between mb-16 px-2">
-            <div>
-              <span className="text-stone-500 text-xs font-bold uppercase tracking-[0.2em] mb-2 block">
-                Curated For You
-              </span>
-              <h2 className="text-4xl md:text-5xl font-serif text-stone-900">
-                Shop by Category
-              </h2>
-            </div>
-            <Link
-              href="/products"
-              className="hidden md:flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-stone-900 hover:text-stone-600 transition-colors border-b border-stone-900 pb-1 hover:border-stone-600"
+      {/* Reveal observer — client component wrapper */}
+      <RevealOnScroll>
+        <div className="min-h-screen" style={{ background: 'var(--white)' }}>
+          {/* ═══ 1. ANNOUNCEMENT TICKER ═══ */}
+          {(isAnnouncementEnabled || true) && (
+            <div
+              style={{
+                background: 'var(--black)',
+                color: 'var(--white)',
+                overflow: 'hidden',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+              }}
             >
-              View All Categories <ArrowRight size={16} />
-            </Link>
+              <div
+                style={{
+                  display: 'flex',
+                  animation: 'ticker 35s linear infinite',
+                  whiteSpace: 'nowrap',
+                  gap: 0,
+                }}
+              >
+                {[...tickerItems, ...tickerItems].map((item, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      fontSize: '10px',
+                      letterSpacing: '0.2em',
+                      textTransform: 'uppercase',
+                      padding: '0 48px',
+                      opacity: 0.9,
+                      display: 'inline-block',
+                    }}
+                  >
+                    {item}
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '4px',
+                        height: '4px',
+                        background: 'rgba(248,246,243,0.3)',
+                        borderRadius: '50%',
+                        marginLeft: '48px',
+                        verticalAlign: 'middle',
+                      }}
+                    />
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ═══ 2. HERO ═══ */}
+          <HeroCarousel />
+
+          {/* ═══ 3. STATS BAR ═══ */}
+          <div className="stats-bar-prem">
+            <StatReveal />
+            {statsData.map((stat, i) => (
+              <div
+                key={i}
+                className="stat-item-prem"
+                style={{ transitionDelay: `${i * 0.1}s` }}
+              >
+                <span className="stat-num-prem">{stat.num}</span>
+                <span className="stat-label-prem">{stat.label}</span>
+              </div>
+            ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {categories.length > 0
-              ? categories.map((category: any, index: number) => (
+          {/* ═══ 4. SHOP BY CATEGORY ═══ */}
+          <section style={{ padding: '96px 64px' }}>
+            <div className="section-header-prem reveal">
+              <div>
+                <p className="section-eyebrow-prem">Curated For You</p>
+                <h2 className="section-title-prem">
+                  Shop by <em>Category</em>
+                </h2>
+              </div>
+              <Link href="/products" className="link-all-prem">
+                View All
+              </Link>
+            </div>
+
+            {categories.length > 0 && (
+              <div className="category-grid-prem reveal reveal-delay-1">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {categories.map((category: any, index: number) => (
                   <Link
                     key={category.id}
                     href={`/products?category_id=${category.id}`}
-                    className="group relative aspect-[3/4] overflow-hidden rounded-sm shadow-sm hover:shadow-xl transition-all duration-500"
+                    className="cat-card-prem"
                   >
                     <OptimizedImage
                       src={
@@ -166,119 +192,165 @@ export default async function Home() {
                       }
                       alt={category.name}
                       fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
+                      className="cat-img object-cover"
+                      sizes="(max-width: 900px) 100vw, 33vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
-                    <div className="absolute inset-0 flex flex-col justify-end p-8">
-                      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <h3 className="text-white text-2xl font-serif italic mb-2">
-                          {category.name}
-                        </h3>
-                        <span className="inline-flex items-center text-white/90 text-xs font-bold uppercase tracking-widest border-b border-white/50 pb-1 group-hover:border-white transition-colors">
-                          Explore Collection{' '}
-                          <ArrowRight
-                            size={14}
-                            className="ml-2 group-hover:translate-x-1 transition-transform"
-                          />
-                        </span>
-                      </div>
+                    <div className="cat-overlay-prem" />
+                    <div className="cat-info-prem">
+                      <span className="cat-name-prem">{category.name}</span>
+                      <span className="cat-count-prem">Explore Collection</span>
+                    </div>
+                    <div className="cat-arrow-prem">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      >
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
                     </div>
                   </Link>
-                ))
-              : null}
-          </div>
-        </section>
+                ))}
+              </div>
+            )}
+          </section>
 
-        {/* 5. Featured Collections */}
-        <section className="py-24 bg-stone-50 relative">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-            <div className="text-center mb-16 max-w-2xl mx-auto">
-              <span className="text-stone-500 text-xs font-bold uppercase tracking-[0.2em] mb-3 block">
-                Discover
-              </span>
-              <h2 className="text-4xl md:text-5xl font-serif text-stone-900 mb-6">
-                Featured Collections
-              </h2>
-              <p className="text-stone-600 font-light text-lg">
-                Curated selections for the modern connoisseur, blending heritage
-                with contemporary style.
-              </p>
+          {/* ═══ 5. MARQUEE STRIP ═══ */}
+          <MarqueeStrip
+            items={[
+              'Kashmiri Weaves',
+              'Artisanal Luxury',
+              'Hand Embroidered',
+              'Slow Fashion',
+              'Florentine Leather',
+              'Silk Road Heritage',
+            ]}
+            speed="22s"
+          />
+
+          {/* ═══ 6. NEW ARRIVALS / FEATURED ═══ */}
+          <section
+            style={{ padding: '96px 64px', background: 'var(--off-white)' }}
+          >
+            <div className="section-header-prem reveal">
+              <div>
+                <p className="section-eyebrow-prem">
+                  {homepageSettings.featured_product_ids
+                    ? 'Featured Collection'
+                    : 'Just Landed'}
+                </p>
+                <h2 className="section-title-prem">
+                  {homepageSettings.featured_product_ids ? (
+                    <>
+                      Curated <em>For You</em>
+                    </>
+                  ) : (
+                    <>
+                      New <em>Arrivals</em>
+                    </>
+                  )}
+                </h2>
+              </div>
+              <Link href="/products" className="link-all-prem">
+                Shop All
+              </Link>
             </div>
+            <ProductCarousel products={products} showNavigation={true} />
+          </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              {collections.length > 0
-                ? collections.map((collection: any) => (
+          {/* ═══ 7. BESTSELLERS (Dark) ═══ */}
+          {products.length > 0 && (
+            <section
+              style={{ padding: '96px 64px', background: 'var(--black)' }}
+            >
+              <div className="section-header-prem reveal">
+                <div>
+                  <p
+                    className="section-eyebrow-prem"
+                    style={{ color: 'rgba(248,246,243,0.4)' }}
+                  >
+                    Our Top Picks
+                  </p>
+                  <h2
+                    className="section-title-prem"
+                    style={{ color: 'var(--white)' }}
+                  >
+                    Best <em>Sellers</em>
+                  </h2>
+                </div>
+                <Link
+                  href="/products"
+                  className="link-all-prem"
+                  style={{ color: 'var(--white)' }}
+                >
+                  View All
+                </Link>
+              </div>
+
+              <div className="product-grid-prem">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {products.slice(0, 4).map((product: any) => {
+                  const priceObj = product.variants?.[0]?.prices?.[0];
+                  const price = priceObj
+                    ? new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency:
+                          priceObj.currency_code?.toUpperCase() || 'USD',
+                      }).format(priceObj.amount / 100)
+                    : '';
+
+                  return (
                     <Link
-                      key={collection.id}
-                      href={`/collections/${collection.handle}`}
-                      className="group relative aspect-[4/5] overflow-hidden rounded-sm shadow-md hover:shadow-2xl transition-all duration-500"
+                      key={product.id}
+                      href={`/products/${product.handle || product.id}`}
+                      className="prod-card-prem group"
                     >
-                      <OptimizedImage
-                        src={
-                          collection.image ||
-                          '/images/home/collection-bridal.jpg'
-                        }
-                        alt={collection.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                      />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-500" />
-
-                      {/* Floating Content Card */}
-                      <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500 shadow-lg border border-white/20">
-                        <span className="text-stone-500 text-[10px] uppercase tracking-widest mb-1 block">
-                          Collection
-                        </span>
-                        <h3 className="text-stone-900 text-2xl font-serif italic mb-4">
-                          {collection.title}
-                        </h3>
-                        <div className="flex items-center justify-between border-t border-stone-200 pt-3">
-                          <span className="text-xs font-bold uppercase tracking-wider text-stone-900 group-hover:text-stone-600 transition-colors">
-                            View Collection
-                          </span>
-                          <ArrowRight
-                            size={16}
-                            className="text-stone-900 transform group-hover:translate-x-1 transition-transform"
+                      <div className="prod-img-wrap-prem">
+                        {product.thumbnail ? (
+                          <OptimizedImage
+                            src={product.thumbnail}
+                            alt={product.title}
+                            fill
+                            sizes="(max-width: 640px) 50vw, 25vw"
+                            className="object-cover"
                           />
-                        </div>
+                        ) : (
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              background: 'var(--off-white)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          />
+                        )}
+                        <span className="prod-tag-prem">Bestseller</span>
+                        <button className="prod-quick-add-prem" tabIndex={-1}>
+                          Quick Add
+                        </button>
+                      </div>
+                      <div className="prod-info-prem">
+                        <p className="prod-collection-prem">
+                          {product.collection?.title || 'Kvastram'}
+                        </p>
+                        <h3 className="prod-name-prem">{product.title}</h3>
+                        {price && <p className="prod-price-prem">{price}</p>}
                       </div>
                     </Link>
-                  ))
-                : null}
-            </div>
-          </div>
-        </section>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
-        {/* 6. Featured Products / New Arrivals - Carousel */}
-        <section className="py-24 max-w-7xl mx-auto px-6 md:px-12 bg-white">
-          <div className="flex flex-col md:flex-row items-center justify-between mb-16 text-center md:text-left gap-6 px-2">
-            <div>
-              <span className="text-stone-500 text-xs font-bold uppercase tracking-[0.2em] mb-2 block">
-                {homepageSettings.featured_product_ids
-                  ? 'Featured Collection'
-                  : 'Just Landed'}
-              </span>
-              <h2 className="text-4xl md:text-5xl font-serif text-stone-900">
-                {homepageSettings.featured_product_ids
-                  ? 'Curated For You'
-                  : 'New Arrivals'}
-              </h2>
-            </div>
-            <Link
-              href="/products"
-              className="px-8 py-3 border border-stone-200 text-sm font-bold uppercase tracking-widest hover:border-stone-900 hover:bg-stone-900 hover:text-white transition-all duration-300"
-            >
-              Shop All Products
-            </Link>
-          </div>
-          <ProductCarousel products={products} showNavigation={true} />
-        </section>
-
-        {/* 7. Brand Story */}
-        <section className="py-32 overflow-hidden bg-stone-50">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="relative aspect-[4/5] md:aspect-square overflow-hidden rounded-sm shadow-2xl group">
+          {/* ═══ 8. EDITORIAL SPLIT (Brand Story) ═══ */}
+          <div className="editorial-prem reveal">
+            <div className="editorial-img-prem">
               <OptimizedImage
                 src={
                   homepageSettings.brand_story_image ||
@@ -286,108 +358,309 @@ export default async function Home() {
                 }
                 alt="Kvastram Artisan Workshop"
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                className="object-cover"
               />
-              <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
             </div>
-            <div className="space-y-8 lg:pr-12">
-              <div className="inline-block border-b border-stone-300 pb-2">
-                <span className="text-stone-500 text-xs font-bold uppercase tracking-[0.2em]">
-                  Our Heritage
-                </span>
-              </div>
-              <h2 className="text-5xl md:text-6xl font-serif text-stone-900 leading-[1.1]">
-                {homepageSettings.brand_story_title ||
-                  'Crafted with Soul & Purpose'}
+            <div className="editorial-content-prem">
+              <p className="editorial-eyebrow-prem">Our Heritage</p>
+              <h2 className="editorial-title-prem">
+                Crafted with
+                <br />
+                Soul & <em>Purpose</em>
               </h2>
-              <div className="space-y-6 text-lg text-stone-600 font-light leading-relaxed">
-                <p>
-                  {homepageSettings.brand_story_content ||
-                    'Every Kvastram piece begins its journey in the workshops of master artisans in Varanasi, India, and Florence, Italy. Our artisans have inherited skills passed down through generations, creating garments that are not just clothing, but heirlooms.'}
-                </p>
-              </div>
-              <div className="pt-6">
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-3 text-stone-900 font-bold uppercase tracking-widest border-b-2 border-stone-900 pb-2 hover:text-stone-600 hover:border-stone-600 transition-all text-sm group"
+              <p className="editorial-body-prem">
+                {homepageSettings.brand_story_content ||
+                  'Every Kvastram piece begins its journey in the workshops of master artisans in Varanasi, India. Our artisans have inherited skills passed down through generations, creating garments that are not just clothing, but heirlooms.'}
+              </p>
+              <Link href="/about" className="btn-outline-prem">
+                Meet Our Artisans
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
                 >
-                  Meet Our Artisans{' '}
-                  <ArrowRight
-                    size={18}
-                    className="group-hover:translate-x-1 transition-transform"
-                  />
-                </Link>
-              </div>
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
           </div>
-        </section>
 
-        {/* 8. Customer Love / Testimonials */}
-        <section className="py-32 bg-stone-900 text-white relative overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-
-          <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
+          {/* ═══ 9. TESTIMONIALS ═══ */}
+          <section
+            className="testimonial-section-prem"
+            style={{ background: 'var(--white)' }}
+          >
             {testimonialsList.length > 0 ? (
               <TestimonialsCarousel testimonials={testimonialsList} />
             ) : (
-              // Default testimonial when none in database
               <>
-                <div className="mb-10 flex justify-center gap-1 animate-fade-in">
+                {/* Stars */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '4px',
+                    marginBottom: '40px',
+                  }}
+                >
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star
+                    <svg
                       key={i}
-                      size={24}
-                      fill="currentColor"
-                      className="text-amber-400"
-                    />
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="#080808"
+                    >
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
                   ))}
                 </div>
-                <h2 className="text-3xl md:text-5xl font-serif italic leading-tight mb-12 max-w-4xl mx-auto">
-                  &quot;The craftsmanship is unlike anything I&apos;ve seen in
-                  Europe. The pashmina shawl is incredibly soft yet warm—a true
-                  heirloom piece.&quot;
-                </h2>
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-16 h-16 bg-stone-700/50 backdrop-blur-sm rounded-full mb-2 overflow-hidden relative flex items-center justify-center border border-stone-600">
-                    <span className="text-stone-300 font-serif text-xl italic">
-                      ER
-                    </span>
+                <p className="testimonial-text-prem reveal">
+                  &ldquo;The craftsmanship is unlike anything I&apos;ve
+                  encountered in Europe. The pashmina shawl is incredibly soft
+                  yet warm — a true heirloom piece.&rdquo;
+                </p>
+                <div className="testimonial-author-prem reveal reveal-delay-1">
+                  <span className="author-line-prem" />
+                  <div>
+                    <p className="author-name-prem">Elena Rossi</p>
+                    <p className="author-loc-prem">Milan, Italy</p>
                   </div>
-                  <p className="font-bold text-sm tracking-widest uppercase">
-                    Elena Rossi
-                  </p>
-                  <p className="text-stone-400 text-sm font-serif italic">
-                    Milan, Italy
-                  </p>
+                  <span className="author-line-prem" />
                 </div>
               </>
             )}
-          </div>
-        </section>
+          </section>
 
-        {/* 9. Newsletter */}
-        <section className="py-32 bg-white relative">
-          <div className="max-w-2xl mx-auto px-6 text-center">
-            <span className="text-stone-500 text-xs font-bold uppercase tracking-[0.2em] block mb-6">
-              Join the Family
-            </span>
-            <h2 className="text-4xl md:text-5xl font-serif text-stone-900 mb-6">
-              {homepageSettings.newsletter_title || 'Unlock 10% Off'}
+          {/* ═══ 10. FEATURED COLLECTIONS ═══ */}
+          {collections.length > 0 && (
+            <section
+              style={{ padding: '96px 64px', background: 'var(--off-white)' }}
+            >
+              <div className="section-header-prem reveal">
+                <div>
+                  <p className="section-eyebrow-prem">Exclusive</p>
+                  <h2 className="section-title-prem">
+                    Featured <em>Collections</em>
+                  </h2>
+                </div>
+              </div>
+              <div className="collections-grid-prem reveal reveal-delay-1">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {collections.map((collection: any) => (
+                  <Link
+                    key={collection.id}
+                    href={`/collections/${collection.handle}`}
+                    className="coll-card-prem group"
+                  >
+                    <OptimizedImage
+                      src={
+                        collection.image || '/images/home/collection-bridal.jpg'
+                      }
+                      alt={collection.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 900px) 100vw, 50vw"
+                    />
+                    <div className="coll-content-prem">
+                      <p className="coll-label-prem">Exclusively For</p>
+                      <h3 className="coll-name-prem">{collection.title}</h3>
+                      <span className="coll-cta-prem">View Collection</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ═══ DIVIDER ═══ */}
+          <div className="divider-text-prem">
+            <span>The Community</span>
+          </div>
+
+          {/* ═══ 11. UGC / Community Section ═══ */}
+          <section style={{ padding: '80px 64px', background: 'var(--white)' }}>
+            <div
+              className="section-header-prem reveal"
+              style={{ marginBottom: '48px' }}
+            >
+              <div>
+                <p className="section-eyebrow-prem">#WearKvastram</p>
+                <h2 className="section-title-prem">
+                  Styled by Our <em>Community</em>
+                </h2>
+              </div>
+              <p
+                style={{
+                  fontSize: '13px',
+                  color: 'var(--mid)',
+                  maxWidth: '280px',
+                  textAlign: 'right',
+                  lineHeight: 1.7,
+                }}
+                className="hidden md:block"
+              >
+                Real people. Real style. Tag us to be featured.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '2px',
+                marginBottom: '40px',
+              }}
+              className="grid-cols-2 md:grid-cols-3"
+            >
+              {[
+                {
+                  gradient: 'from-stone-200 to-stone-300',
+                  user: '@aria.styles',
+                  caption: 'This pashmina is everything ❤️✨',
+                  tag: 'New Arrival',
+                },
+                {
+                  gradient: 'from-amber-100 to-amber-200',
+                  user: '@luxe.by.nina',
+                  caption: "Wearing the silk kurta to my sister's wedding 💛",
+                  tag: 'Wedding Season',
+                },
+                {
+                  gradient: 'from-rose-100 to-rose-200',
+                  user: '@mira.edits',
+                  caption: 'The quality is unmatched — worth every penny',
+                  tag: null,
+                },
+                {
+                  gradient: 'from-stone-300 to-stone-400',
+                  user: '@fatima.looks',
+                  caption: 'So soft, so elegant. My new favourite piece!',
+                  tag: 'Bestseller',
+                },
+                {
+                  gradient: 'from-teal-100 to-teal-200',
+                  user: '@style.by.aisha',
+                  caption: 'Gifted this to my mum — she cried happy tears 😭',
+                  tag: null,
+                },
+                {
+                  gradient: 'from-purple-100 to-purple-200',
+                  user: '@priya.ootd',
+                  caption: 'The cashmere cardigan is pure luxury, obsessed!',
+                  tag: 'Most Loved',
+                },
+              ].map(({ gradient, user, caption, tag }, idx) => (
+                <div
+                  key={idx}
+                  className="group relative overflow-hidden"
+                  style={{ aspectRatio: '1/1' }}
+                >
+                  <div
+                    className={`w-full h-full bg-gradient-to-br ${gradient} flex items-end`}
+                  >
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span style={{ fontSize: '40px', opacity: 0.3 }}>👗</span>
+                    </div>
+                    {tag && (
+                      <span
+                        className="absolute top-3 left-3"
+                        style={{
+                          background: 'rgba(248,246,243,0.9)',
+                          fontSize: '9px',
+                          fontWeight: 700,
+                          letterSpacing: '0.15em',
+                          textTransform: 'uppercase',
+                          padding: '5px 10px',
+                          color: 'var(--black)',
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    )}
+                    <div className="absolute inset-0 bg-[var(--black)] bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-500" />
+                    <div
+                      className="absolute inset-x-0 bottom-0 p-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300"
+                      style={{
+                        background:
+                          'linear-gradient(to top, rgba(8,8,8,0.8), transparent)',
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          color: 'var(--white)',
+                          marginBottom: '4px',
+                        }}
+                      >
+                        {user}
+                      </p>
+                      <p
+                        style={{
+                          fontSize: '10px',
+                          color: 'rgba(248,246,243,0.8)',
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {caption}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ textAlign: 'center' }}>
+              <a
+                href="https://instagram.com/kvastram"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary-prem"
+              >
+                📸 Follow Us @kvastram
+              </a>
+            </div>
+          </section>
+
+          {/* ═══ MARQUEE 2 ═══ */}
+          <MarqueeStrip
+            items={[
+              'Authentic Craftsmanship',
+              'Sustainably Made',
+              'Worldwide Shipping',
+              'Premium Materials',
+              'Artisan Heritage',
+            ]}
+            speed="25s"
+          />
+
+          {/* ═══ 12. NEWSLETTER ═══ */}
+          <section className="newsletter-prem">
+            <p className="newsletter-eyebrow-prem">Join the Inner Circle</p>
+            <h2 className="newsletter-title-prem">
+              {homepageSettings.newsletter_title || (
+                <>
+                  Be First <em>to Know</em>
+                </>
+              )}
             </h2>
-            <p className="text-stone-600 mb-10 font-light text-lg">
+            <p className="newsletter-sub-prem">
               {homepageSettings.newsletter_subtitle ||
-                'Be the first to know about new collections, exclusive offers, and stories from our workshops.'}
+                'Exclusive offers, new artisan collections, early access to limited pieces. No spam — ever.'}
             </p>
-            <div className="bg-stone-50 p-8 rounded-sm">
+            <div className="newsletter-form-prem">
               <NewsletterForm />
             </div>
-            <p className="text-xs text-stone-400 mt-6">
-              By subscribing you agree to our Terms & Privacy Policy.
+            <p className="newsletter-note-prem">
+              15,000+ subscribers · Unsubscribe anytime
             </p>
-          </div>
-        </section>
-      </div>
+          </section>
+        </div>
+      </RevealOnScroll>
     </>
   );
 }

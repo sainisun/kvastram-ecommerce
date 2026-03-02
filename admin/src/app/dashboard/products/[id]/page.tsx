@@ -57,6 +57,10 @@ export default function EditProductPage() {
     origin_country: '',
     material: '',
     thumbnail: '',
+    size_guide: '',
+    care_instructions: '',
+    seo_title: '',
+    seo_description: '',
   });
 
   const [images, setImages] = useState<ImageItem[]>([]);
@@ -66,11 +70,15 @@ export default function EditProductPage() {
 
   // Variant State
   const [variants, setVariants] = useState<any[]>([]);
+  const [options, setOptions] = useState<any[]>([]);
+  const [showAddOption, setShowAddOption] = useState(false);
+  const [newOptionTitle, setNewOptionTitle] = useState('');
   const [showAddVariant, setShowAddVariant] = useState(false);
   const [newVariant, setNewVariant] = useState({
     title: '',
     sku: '',
     inventory_quantity: '0',
+    compare_at_price: '',
   });
 
   useEffect(() => {
@@ -121,6 +129,10 @@ export default function EditProductPage() {
         origin_country: product.origin_country || '',
         material: product.material || '',
         thumbnail: product.thumbnail || '',
+        size_guide: product.size_guide || '',
+        care_instructions: product.care_instructions || '',
+        seo_title: product.seo_title || '',
+        seo_description: product.seo_description || '',
       });
 
       // Populate Images
@@ -161,12 +173,13 @@ export default function EditProductPage() {
         setPrices(priceMap);
       }
 
-      // Load variants
+      // Load variants and options
       try {
         const variantData = await api.getVariants(id);
         setVariants(variantData?.variants || []);
+        setOptions(variantData?.options || []);
       } catch (e) {
-        console.error('Failed to load variants', e);
+        console.error('Failed to load variants/options', e);
       }
     } catch (error) {
       console.error('Failed to load data', error);
@@ -209,9 +222,18 @@ export default function EditProductPage() {
         title: newVariant.title,
         sku: newVariant.sku || undefined,
         inventory_quantity: parseInt(newVariant.inventory_quantity) || 0,
+        compare_at_price: newVariant.compare_at_price
+          ? Math.round(parseFloat(newVariant.compare_at_price) * 100)
+          : undefined,
+        option_values: (newVariant as any).option_values || [],
       });
       showNotification('success', `Variant "${newVariant.title}" added`);
-      setNewVariant({ title: '', sku: '', inventory_quantity: '0' });
+      setNewVariant({
+        title: '',
+        sku: '',
+        inventory_quantity: '0',
+        compare_at_price: '',
+      });
       setShowAddVariant(false);
       // Reload variants
       const data = await api.getVariants(id);
@@ -248,6 +270,26 @@ export default function EditProductPage() {
     }
   };
 
+  const handleUpdateVariantCompareAtPrice = async (
+    variantId: string,
+    val: string
+  ) => {
+    const cents = val ? Math.round(parseFloat(val) * 100) : null;
+    try {
+      await api.updateVariant(id, variantId, { compare_at_price: cents });
+      setVariants((prev) =>
+        prev.map((v) =>
+          v.id === variantId ? { ...v, compare_at_price: cents } : v
+        )
+      );
+    } catch (err: any) {
+      showNotification(
+        'error',
+        err.message || 'Failed to update compare price'
+      );
+    }
+  };
+
   const PRESET_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
   const handleAddPresetSize = async (size: string) => {
@@ -256,17 +298,50 @@ export default function EditProductPage() {
       showNotification('error', `Size ${size} already exists`);
       return;
     }
+
+    // First ensure "Size" option exists
+    let sizeOptionId = options.find(
+      (o) => o.title.toLowerCase() === 'size'
+    )?.id;
+    if (!sizeOptionId) {
+      try {
+        const optRes = await api.createOption(id, { title: 'Size' });
+        sizeOptionId = optRes.option.id;
+        const data = await api.getVariants(id);
+        setOptions(data?.options || []);
+      } catch (e) {
+        console.error('Failed to auto-create size option', e);
+      }
+    }
+
     try {
       await api.createVariant(id, {
         title: size,
         sku: `${formData.handle}-${size.toLowerCase()}`,
         inventory_quantity: 0,
+        option_values: sizeOptionId
+          ? [{ option_id: sizeOptionId, value: size }]
+          : [],
       });
       showNotification('success', `Size ${size} added`);
       const data = await api.getVariants(id);
       setVariants(data?.variants || []);
     } catch (err: any) {
       showNotification('error', err.message || 'Failed to add size');
+    }
+  };
+
+  const handleCreateOption = async () => {
+    if (!newOptionTitle.trim()) return;
+    try {
+      await api.createOption(id, { title: newOptionTitle });
+      showNotification('success', `Option "${newOptionTitle}" created`);
+      setNewOptionTitle('');
+      setShowAddOption(false);
+      const data = await api.getVariants(id);
+      setOptions(data?.options || []);
+    } catch (err: any) {
+      showNotification('error', err.message || 'Failed to create option');
     }
   };
 
@@ -421,6 +496,32 @@ export default function EditProductPage() {
                   placeholder="Detailed product description..."
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Size Guide
+                </label>
+                <textarea
+                  name="size_guide"
+                  value={formData.size_guide || ''}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="e.g. Model is 5'9 and wearing a size M. Fits true to size."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Care Instructions
+                </label>
+                <textarea
+                  name="care_instructions"
+                  value={formData.care_instructions || ''}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="e.g. Machine wash cold, dry flat."
+                />
+              </div>
             </div>
           </div>
 
@@ -532,16 +633,100 @@ export default function EditProductPage() {
               </div>
             </div>
 
+            {/* Options Management */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-800">
+                  Product Options
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowAddOption(!showAddOption)}
+                  className="text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                >
+                  <Plus size={14} /> Add Option
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-3">
+                {options.map((opt) => (
+                  <span
+                    key={opt.id}
+                    className="inline-flex items-center px-2.5 py-1 rounded bg-white border border-gray-300 text-sm font-medium text-gray-700"
+                  >
+                    {opt.title}
+                  </span>
+                ))}
+                {options.length === 0 && (
+                  <span className="text-xs text-gray-500 italic">
+                    No options defined (e.g. Size, Color)
+                  </span>
+                )}
+              </div>
+
+              {showAddOption && (
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="text"
+                    value={newOptionTitle}
+                    onChange={(e) => setNewOptionTitle(e.target.value)}
+                    placeholder="e.g. Color"
+                    className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCreateOption}
+                    className="px-3 py-1.5 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900"
+                  >
+                    Save Option
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Add Custom Variant Form */}
             {showAddVariant && (
               <div className="mb-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
                 <h3 className="text-sm font-semibold text-purple-800 mb-3">
                   Add Custom Variant
                 </h3>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                  {options.map((opt) => (
+                    <div key={opt.id}>
+                      <label className="block text-xs text-gray-600 mb-1">
+                        {opt.title}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={`e.g. ${opt.title === 'Size' ? 'XL' : opt.title === 'Color' ? 'Red' : 'Value'}`}
+                        onChange={(e) => {
+                          const currentValues =
+                            (newVariant as any).option_values || [];
+                          const existing = currentValues.findIndex(
+                            (v: any) => v.option_id === opt.id
+                          );
+                          if (existing >= 0) {
+                            currentValues[existing].value = e.target.value;
+                          } else {
+                            currentValues.push({
+                              option_id: opt.id,
+                              value: e.target.value,
+                            });
+                          }
+                          setNewVariant((p) => ({
+                            ...p,
+                            option_values: currentValues,
+                          }));
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-4 gap-3">
                   <div>
                     <label className="block text-xs text-gray-600 mb-1">
-                      Size Name *
+                      Variant Title *
                     </label>
                     <input
                       type="text"
@@ -583,6 +768,23 @@ export default function EditProductPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
                     />
                   </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">
+                      Compare Price
+                    </label>
+                    <input
+                      type="number"
+                      value={newVariant.compare_at_price}
+                      onChange={(e) =>
+                        setNewVariant((p) => ({
+                          ...p,
+                          compare_at_price: e.target.value,
+                        }))
+                      }
+                      placeholder="0.00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
+                    />
+                  </div>
                 </div>
                 <div className="flex gap-2 mt-3">
                   <button
@@ -618,6 +820,9 @@ export default function EditProductPage() {
                       <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">
                         Inventory
                       </th>
+                      <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">
+                        Compare at Price
+                      </th>
                       <th className="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">
                         Actions
                       </th>
@@ -646,6 +851,29 @@ export default function EditProductPage() {
                             }
                             className="w-20 text-center px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
                           />
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="relative inline-block">
+                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+                              $
+                            </span>
+                            <input
+                              type="number"
+                              value={
+                                v.compare_at_price
+                                  ? v.compare_at_price / 100
+                                  : ''
+                              }
+                              onChange={(e) =>
+                                handleUpdateVariantCompareAtPrice(
+                                  v.id,
+                                  e.target.value
+                                )
+                              }
+                              placeholder="0.00"
+                              className="w-24 pl-5 pr-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
+                            />
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <button
@@ -765,6 +993,44 @@ export default function EditProductPage() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                 />
+              </div>
+            </div>
+          </div>
+          {/* Search Engine Optimization */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <h2 className="text-lg font-bold text-gray-800 mb-4">
+              Search Engine Optimization
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Page Title (SEO)
+                </label>
+                <input
+                  type="text"
+                  name="seo_title"
+                  value={formData.seo_title || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="e.g. Elegant Summer Linen Shirt | Kvastram"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Meta Description
+                </label>
+                <textarea
+                  name="seo_description"
+                  value={formData.seo_description || ''}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="Detailed description for search engine results..."
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Recommended length: 150-160 characters. Provide a compelling
+                  summary to encourage clicks.
+                </p>
               </div>
             </div>
           </div>

@@ -145,6 +145,9 @@ class OrderService {
         customer_id: orders.customer_id,
         created_at: orders.created_at,
         updated_at: orders.updated_at,
+        tracking_number: orders.tracking_number,
+        shipping_carrier: orders.shipping_carrier,
+        tracking_link: orders.tracking_link,
         customer_first_name: customers.first_name,
         customer_last_name: customers.last_name,
         customer_email: customers.email,
@@ -170,6 +173,8 @@ class OrderService {
         product_title: products.title,
         product_thumbnail: products.thumbnail,
         variant_title: product_variants.title,
+        title: line_items.title,
+        thumbnail: line_items.thumbnail,
       })
       .from(line_items)
       .leftJoin(
@@ -242,6 +247,30 @@ class OrderService {
       .where(inArray(orders.id, orderIds));
 
     return targets.length;
+  }
+
+  async addTracking(id: string, data: { tracking_number: string; shipping_carrier?: string; tracking_link?: string; }) {
+    const [existingOrder] = await db
+      .select({ id: orders.id, email: orders.email })
+      .from(orders)
+      .where(eq(orders.id, id));
+      
+    if (!existingOrder) throw new Error('Order not found');
+
+    const [updated] = await db
+      .update(orders)
+      .set({ 
+        tracking_number: data.tracking_number,
+        shipping_carrier: data.shipping_carrier,
+        tracking_link: data.tracking_link,
+        status: 'shipped', // Auto-transition to shipped when tracking is added
+        updated_at: new Date() 
+      })
+      .where(eq(orders.id, id))
+      .returning();
+
+    // In a real app we would Trigger email notification to existingOrder.email here.
+    return updated;
   }
 
   async deleteOrder(id: string) {

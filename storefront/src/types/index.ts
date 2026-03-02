@@ -28,7 +28,12 @@ export interface Product {
   videos?: ProductVideo[]; // PHASE 2.3: Video support
   material?: string;
   origin_country?: string;
-  size_guide?: SizeGuide; // Product-specific size guide
+  size_guide?: SizeGuide | string; // Can be structured object or plain text
+  care_instructions?: string;
+  seo_title?: string;
+  seo_description?: string;
+  avg_rating?: number;
+  review_count?: number;
   created_at: string;
   collection?: {
     id: string;
@@ -63,6 +68,7 @@ export interface ProductVariant {
   sku?: string | null;
   inventory_quantity: number;
   prices?: MoneyAmount[];
+  compare_at_price?: number | null;
 }
 
 export interface MoneyAmount {

@@ -118,16 +118,40 @@ export default function ProductCarousel({
 
   if (loading) {
     return (
-      <div className="relative">
-        <div className="flex gap-8 overflow-hidden">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex-shrink-0 w-64 animate-pulse">
-              <div className="aspect-[3/4] bg-stone-100 mb-4 rounded-sm"></div>
-              <div className="h-4 bg-stone-100 w-2/3 mb-2 mx-auto"></div>
-              <div className="h-4 bg-stone-100 w-1/3 mx-auto"></div>
+      <div className="product-grid-prem">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="prod-card-prem animate-pulse">
+            <div
+              className="prod-img-wrap-prem"
+              style={{ background: 'var(--off-white)' }}
+            />
+            <div className="prod-info-prem">
+              <div
+                style={{
+                  height: '8px',
+                  background: 'var(--off-white)',
+                  width: '40%',
+                  marginBottom: '8px',
+                }}
+              />
+              <div
+                style={{
+                  height: '14px',
+                  background: 'var(--off-white)',
+                  width: '70%',
+                  marginBottom: '6px',
+                }}
+              />
+              <div
+                style={{
+                  height: '12px',
+                  background: 'var(--off-white)',
+                  width: '30%',
+                }}
+              />
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -141,131 +165,72 @@ export default function ProductCarousel({
   }
 
   return (
-    <div className="relative group">
-      {/* Navigation Buttons */}
-      {showNavigation && products.length > 4 && (
-        <>
-          <button
-            onClick={handlePrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm shadow-lg rounded-full flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
-            aria-label="Previous products"
+    <div className="product-grid-prem">
+      {products.map((product) => (
+        <div key={product.id} className="prod-card-prem">
+          {/* Image + Quick Add + wishlist */}
+          <Link
+            href={`/products/${product.handle || product.id}`}
+            style={{ display: 'block' }}
           >
-            <ChevronLeft size={24} />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm shadow-lg rounded-full flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
-            aria-label="Next products"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </>
-      )}
-
-      {/* Carousel Container */}
-      <div
-        ref={carouselRef}
-        className="flex gap-8 overflow-x-auto scrollbar-hide scroll-smooth pb-4 -mx-4 px-4 md:mx-0 md:px-0"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="group flex flex-col flex-shrink-0 w-64 md:w-72"
-          >
-            <Link
-              href={`/products/${product.handle || product.id}`}
-              className="block relative aspect-[3/4] bg-stone-100 overflow-hidden mb-6 rounded-sm shadow-sm hover:shadow-xl transition-shadow duration-500"
-            >
+            <div className="prod-img-wrap-prem">
               {product.thumbnail ? (
                 <OptimizedImage
                   src={product.thumbnail}
                   alt={product.title}
                   fill
-                  sizes="(max-width: 768px) 256px, 288px"
-                  className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
+                  sizes="(max-width: 640px) 50vw, 25vw"
+                  className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-stone-400 bg-stone-100 font-serif italic">
-                  No Image
-                </div>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'var(--off-white)',
+                  }}
+                />
               )}
-
-              {/* Hover Overlay */}
-              <div className="absolute inset-x-0 bottom-0 top-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-              {/* Quick Actions Bar - Slide Up */}
-              <div className="absolute inset-x-0 bottom-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10 flex gap-2 justify-center pb-6">
-                <button
-                  onClick={(e) => handleAddToCart(e, product)}
-                  className={`flex-1 py-3 px-4 text-xs font-bold uppercase tracking-widest transition-all shadow-lg ${
-                    addedId === product.id
-                      ? 'bg-green-600 text-white border-green-600'
-                      : 'bg-white text-stone-900 hover:bg-stone-900 hover:text-white border border-white hover:border-stone-900'
-                  }`}
-                >
-                  {addedId === product.id ? 'Added' : 'Add to Cart'}
-                </button>
-              </div>
-
-              {/* Top Right Icons */}
-              <div className="absolute top-4 right-4 flex flex-col gap-3 translate-x-12 group-hover:translate-x-0 transition-transform duration-300 z-20">
-                <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 hover:bg-white shadow-sm hover:shadow-md transition-all text-stone-600 hover:text-red-500">
-                  <WishlistButton
-                    productId={product.id}
-                    title={product.title}
-                    price={product.variants?.[0]?.prices?.[0]?.amount || 0}
-                    currency={
-                      currentRegion?.currency_code?.toUpperCase() || 'USD'
-                    }
-                    thumbnail={product.thumbnail || undefined}
-                    handle={product.handle || product.id}
-                    variantId={product.variants?.[0]?.id}
-                    size="sm"
-                  />
-                </div>
-              </div>
-            </Link>
-
-            {/* Product Info */}
-            <Link
-              href={`/products/${product.handle || product.id}`}
-              className="space-y-2 text-center mt-auto"
-            >
-              <p className="text-[10px] text-stone-500 font-bold tracking-[0.2em] uppercase">
-                {product.subtitle ||
-                  product.collection?.title ||
-                  'Kvastram Collection'}
-              </p>
-              <h3 className="font-serif text-lg text-stone-900 leading-tight group-hover:text-stone-600 transition-colors line-clamp-2">
-                {product.title}
-              </h3>
-              <p className="text-sm font-medium text-stone-900">
-                {getPrice(product)}
-              </p>
-            </Link>
-          </div>
-        ))}
-      </div>
-
-      {/* Dots Indicator for Mobile */}
-      {products.length > 1 && (
-        <div className="flex justify-center gap-2 mt-6 md:hidden">
-          {products.slice(0, Math.min(products.length, 6)).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setCurrentIndex(index);
-                scrollToIndex(index);
-              }}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentIndex ? 'bg-stone-900 w-4' : 'bg-stone-300'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
+              <span className="prod-tag-prem">New</span>
+              <button
+                className="prod-quick-add-prem"
+                tabIndex={-1}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleAddToCart(e as unknown as React.MouseEvent, product);
+                }}
+              >
+                {addedId === product.id ? '✓ Added' : 'Add to Bag'}
+              </button>
+            </div>
+          </Link>
+          {/* Wishlist absolute */}
+          <div className="prod-wishlist-prem">
+            <WishlistButton
+              productId={product.id}
+              title={product.title}
+              price={product.variants?.[0]?.prices?.[0]?.amount || 0}
+              currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
+              thumbnail={product.thumbnail || undefined}
+              handle={product.handle || product.id}
+              variantId={product.variants?.[0]?.id}
+              size="sm"
             />
-          ))}
+          </div>
+          {/* Info */}
+          <Link
+            href={`/products/${product.handle || product.id}`}
+            className="prod-info-prem"
+            style={{ display: 'block' }}
+          >
+            <p className="prod-collection-prem">
+              {product.subtitle || product.collection?.title || 'Kvastram'}
+            </p>
+            <h3 className="prod-name-prem">{product.title}</h3>
+            <p className="prod-price-prem">{getPrice(product)}</p>
+          </Link>
         </div>
-      )}
+      ))}
     </div>
   );
 }

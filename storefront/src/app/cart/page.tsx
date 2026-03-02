@@ -14,7 +14,9 @@ import {
   ArrowRight,
   ShoppingBag,
   AlertCircle,
+  Sparkles,
 } from 'lucide-react';
+import type { Product } from '@/types';
 
 interface ShippingOption {
   id: string;
@@ -26,7 +28,8 @@ interface ShippingOption {
 }
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, cartTotal, clearCart } = useCart();
+  const { items, addItem, removeItem, updateQuantity, cartTotal, clearCart } =
+    useCart();
   const { currentRegion, settings } = useShop();
   const { showNotification } = useNotification();
   const [promoCode, setPromoCode] = useState('');
@@ -42,8 +45,10 @@ export default function CartPage() {
   // Dynamic shipping state
   const [countryCode, setCountryCode] = useState('');
   const [_shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
-  const [selectedShippingOption, setSelectedShippingOption] = useState<string>('');
+  const [selectedShipping, setSelectedShipping] =
+    useState<ShippingOption | null>(null);
+  const [selectedShippingOption, setSelectedShippingOption] =
+    useState<string>('');
   const [shippingLoading, setShippingLoading] = useState(false);
 
   // Fetch shipping options when country changes
@@ -58,7 +63,10 @@ export default function CartPage() {
 
       setShippingLoading(true);
       try {
-        const data = await api.getShippingOptions(countryCode, currentRegion.id);
+        const data = await api.getShippingOptions(
+          countryCode,
+          currentRegion.id
+        );
         if (data.options && data.options.length > 0) {
           setShippingOptions(data.options);
           // Auto-select first option
@@ -82,7 +90,7 @@ export default function CartPage() {
   // Handle shipping option selection
   const handleShippingOptionChange = (optionId: string) => {
     setSelectedShippingOption(optionId);
-    const option = _shippingOptions.find(o => o.id === optionId);
+    const option = _shippingOptions.find((o) => o.id === optionId);
     setSelectedShipping(option || null);
   };
 
@@ -116,7 +124,7 @@ export default function CartPage() {
 
   const subtotal = cartTotal;
   const discountAmount = discount ? discount.amount : 0;
-  
+
   // Calculate dynamic shipping cost - null represents "no shipping option selected"
   let shippingCost: number | null = null;
   if (selectedShipping && subtotal < freeShippingThreshold) {
@@ -126,30 +134,153 @@ export default function CartPage() {
   } else if (!selectedShipping && subtotal >= freeShippingThreshold) {
     shippingCost = 0; // No option but qualifies for free shipping
   }
-  
+
   // Use 0 for math when shippingCost is null, but track presence for display
   const shippingCostForMath = shippingCost ?? 0;
   const total = Math.max(0, subtotal - discountAmount + shippingCostForMath);
 
+  // A4: Recommended products for empty cart state
+  const [recommendations, setRecommendations] = useState<Product[]>([]);
+  const [addingRec, setAddingRec] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (items.length === 0) {
+      api
+        .getProducts({ limit: 4, sort: 'newest' })
+        .then((data) => setRecommendations(data.products || []))
+        .catch(() => {});
+    }
+  }, [items.length]);
+
+  const handleAddRecommendation = (product: Product) => {
+    const variant = product.variants?.[0];
+    if (!variant) return;
+    const prices = variant.prices || [];
+    const priceObj =
+      prices.find(
+        (p) =>
+          p.currency_code ===
+          (currentRegion?.currency_code || 'usd').toLowerCase()
+      ) || prices[0];
+    if (!priceObj) return;
+    addItem({
+      id: variant.id,
+      variantId: variant.id,
+      quantity: 1,
+      title: product.title,
+      price: priceObj.amount,
+      currency: priceObj.currency_code,
+      thumbnail: product.thumbnail || undefined,
+      handle: product.handle || product.id,
+    });
+    setAddingRec(product.id);
+    setTimeout(() => setAddingRec(null), 1200);
+    showNotification('success', `${product.title} added to cart!`);
+  };
+
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-stone-50">
+      <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <ShoppingBag className="mx-auto h-16 w-16 text-stone-300" />
-            <h2 className="mt-4 text-2xl font-serif text-stone-900">
-              Your cart is empty
-            </h2>
-            <p className="mt-2 text-stone-500">
-              Looks like you haven&apos;t added anything to your cart yet.
+          {/* Hero empty message */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-stone-100 mb-6">
+              <ShoppingBag className="h-10 w-10 text-stone-400" />
+            </div>
+            <h1 className="text-4xl font-serif text-stone-900 mb-3">
+              Your Bag Is Empty
+            </h1>
+            <p className="text-stone-500 font-light text-lg mb-8">
+              Looks like you haven&apos;t added anything yet. Let us inspire
+              you.
             </p>
             <Link
               href="/products"
-              className="mt-6 inline-block bg-stone-900 text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+              className="inline-flex items-center gap-2 bg-stone-900 text-white px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
             >
-              Continue Shopping
+              Explore Collection <ArrowRight size={16} />
             </Link>
           </div>
+
+          {/* You Might Love section */}
+          {recommendations.length > 0 && (
+            <div>
+              <div className="flex items-center gap-3 mb-8">
+                <Sparkles size={18} className="text-amber-500" />
+                <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-stone-700">
+                  You Might Love
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+                {recommendations.map((product) => {
+                  const variant = product.variants?.[0];
+                  const prices = variant?.prices || [];
+                  const priceObj =
+                    prices.find(
+                      (p) =>
+                        p.currency_code ===
+                        (currentRegion?.currency_code || 'usd').toLowerCase()
+                    ) || prices[0];
+                  const price = priceObj
+                    ? new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency:
+                          priceObj.currency_code?.toUpperCase() || 'USD',
+                      }).format(priceObj.amount / 100)
+                    : '';
+
+                  return (
+                    <div key={product.id} className="group flex flex-col">
+                      <Link
+                        href={`/products/${product.handle || product.id}`}
+                        className="block relative aspect-[3/4] bg-stone-100 overflow-hidden mb-4 rounded-sm"
+                      >
+                        {product.thumbnail ? (
+                          <OptimizedImage
+                            src={product.thumbnail}
+                            alt={product.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-stone-400">
+                            <ShoppingBag size={32} />
+                          </div>
+                        )}
+                      </Link>
+                      <Link
+                        href={`/products/${product.handle || product.id}`}
+                        className="space-y-1 mb-3"
+                      >
+                        <p className="text-xs text-stone-500 font-bold tracking-widest uppercase">
+                          {product.collection?.title || 'Kvastram'}
+                        </p>
+                        <h3 className="font-serif text-base text-stone-900 leading-tight group-hover:text-stone-600 transition-colors">
+                          {product.title}
+                        </h3>
+                        {price && (
+                          <p className="text-sm font-medium text-stone-800">
+                            {price}
+                          </p>
+                        )}
+                      </Link>
+                      <button
+                        onClick={() => handleAddRecommendation(product)}
+                        disabled={addingRec === product.id || !variant}
+                        className={`w-full py-2.5 text-xs font-bold uppercase tracking-widest border transition-all ${
+                          addingRec === product.id
+                            ? 'bg-green-600 text-white border-green-600'
+                            : 'border-stone-200 text-stone-700 hover:border-stone-900 hover:bg-stone-900 hover:text-white'
+                        }`}
+                      >
+                        {addingRec === product.id ? '✓ Added!' : 'Quick Add'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -359,13 +490,58 @@ export default function CartPage() {
                   <option value="GB">United Kingdom</option>
                   <option value="CA">Canada</option>
                   <option value="AU">Australia</option>
+                  <option value="NZ">New Zealand</option>
+                  <option value="IN">India</option>
+                  <option value="AE">United Arab Emirates</option>
+                  <option value="SA">Saudi Arabia</option>
+                  <option value="QA">Qatar</option>
+                  <option value="KW">Kuwait</option>
+                  <option value="BH">Bahrain</option>
+                  <option value="OM">Oman</option>
                   <option value="DE">Germany</option>
                   <option value="FR">France</option>
-                  <option value="IN">India</option>
+                  <option value="IT">Italy</option>
+                  <option value="ES">Spain</option>
+                  <option value="NL">Netherlands</option>
+                  <option value="BE">Belgium</option>
+                  <option value="SE">Sweden</option>
+                  <option value="NO">Norway</option>
+                  <option value="DK">Denmark</option>
+                  <option value="FI">Finland</option>
+                  <option value="PT">Portugal</option>
+                  <option value="CH">Switzerland</option>
+                  <option value="AT">Austria</option>
+                  <option value="PL">Poland</option>
                   <option value="JP">Japan</option>
+                  <option value="KR">South Korea</option>
+                  <option value="SG">Singapore</option>
+                  <option value="HK">Hong Kong</option>
+                  <option value="TW">Taiwan</option>
+                  <option value="MY">Malaysia</option>
+                  <option value="TH">Thailand</option>
+                  <option value="PH">Philippines</option>
+                  <option value="ID">Indonesia</option>
+                  <option value="VN">Vietnam</option>
+                  <option value="MX">Mexico</option>
+                  <option value="BR">Brazil</option>
+                  <option value="AR">Argentina</option>
+                  <option value="CL">Chile</option>
+                  <option value="CO">Colombia</option>
+                  <option value="ZA">South Africa</option>
+                  <option value="EG">Egypt</option>
+                  <option value="NG">Nigeria</option>
+                  <option value="KE">Kenya</option>
+                  <option value="IL">Israel</option>
+                  <option value="TR">Turkey</option>
+                  <option value="PK">Pakistan</option>
+                  <option value="BD">Bangladesh</option>
+                  <option value="LK">Sri Lanka</option>
+                  <option value="NP">Nepal</option>
                 </select>
                 {shippingLoading && (
-                  <p className="text-xs text-stone-500 mt-1">Loading shipping options...</p>
+                  <p className="text-xs text-stone-500 mt-1">
+                    Loading shipping options...
+                  </p>
                 )}
 
                 {/* Shipping Options Radio Group */}
@@ -389,7 +565,9 @@ export default function CartPage() {
                             name="shipping-option"
                             value={option.id}
                             checked={selectedShippingOption === option.id}
-                            onChange={() => handleShippingOptionChange(option.id)}
+                            onChange={() =>
+                              handleShippingOptionChange(option.id)
+                            }
                             className="h-4 w-4 text-stone-900 focus:ring-stone-900"
                           />
                           <div className="ml-3">
@@ -397,7 +575,11 @@ export default function CartPage() {
                               {option.name}
                             </p>
                             <p className="text-xs text-stone-500">
-                              {option.description}{option.estimated_days && option.estimated_days.trim() !== '' ? ` (${option.estimated_days})` : null}
+                              {option.description}
+                              {option.estimated_days &&
+                              option.estimated_days.trim() !== ''
+                                ? ` (${option.estimated_days})`
+                                : null}
                             </p>
                           </div>
                         </div>
@@ -432,19 +614,26 @@ export default function CartPage() {
                   <div className="flex items-center justify-between py-4">
                     <dt className="text-stone-600">
                       Shipping
-                      {shippingCost === 0 && subtotal >= freeShippingThreshold && (
-                        <span className="ml-2 text-xs text-green-600">
-                          (Free over {formatCartPrice(freeShippingThreshold)})
-                        </span>
-                      )}
+                      {shippingCost === 0 &&
+                        subtotal >= freeShippingThreshold && (
+                          <span className="ml-2 text-xs text-green-600">
+                            (Free over {formatCartPrice(freeShippingThreshold)})
+                          </span>
+                        )}
                     </dt>
                     <dd className="font-medium text-stone-900">
                       {!countryCode ? (
-                        <span className="text-stone-400 text-sm">Calculated at checkout</span>
+                        <span className="text-stone-400 text-sm">
+                          Calculated at checkout
+                        </span>
                       ) : countryCode && _shippingOptions.length === 0 ? (
-                        <span className="text-stone-400 text-sm">Shipping unavailable</span>
+                        <span className="text-stone-400 text-sm">
+                          Shipping unavailable
+                        </span>
                       ) : !selectedShipping ? (
-                        <span className="text-stone-400 text-sm">Not available</span>
+                        <span className="text-stone-400 text-sm">
+                          Not available
+                        </span>
                       ) : shippingCost === 0 ? (
                         'Free'
                       ) : (
@@ -464,15 +653,16 @@ export default function CartPage() {
               </div>
 
               {/* Free Shipping Notice */}
-              {(shippingCost === null || shippingCost > 0) && subtotal < freeShippingThreshold && (
-                <div className="mt-4 flex items-center gap-2 text-sm text-stone-500 bg-stone-50 p-3 rounded-md">
-                  <AlertCircle size={16} />
-                  <span>
-                    Add {formatCartPrice(freeShippingThreshold - subtotal)} more
-                    for free shipping!
-                  </span>
-                </div>
-              )}
+              {(shippingCost === null || shippingCost > 0) &&
+                subtotal < freeShippingThreshold && (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-stone-500 bg-stone-50 p-3 rounded-md">
+                    <AlertCircle size={16} />
+                    <span>
+                      Add {formatCartPrice(freeShippingThreshold - subtotal)}{' '}
+                      more for free shipping!
+                    </span>
+                  </div>
+                )}
 
               {/* Checkout Button */}
               <Link

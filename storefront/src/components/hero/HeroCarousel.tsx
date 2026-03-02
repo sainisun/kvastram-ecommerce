@@ -70,90 +70,52 @@ export default function HeroCarousel() {
         <div className="flex touch-pan-y">
           {SLIDES.map((slide, index) => (
             <div
-              className="relative flex-[0_0_100%] min-w-0 h-[85vh] min-h-[600px]"
+              className="relative flex-[0_0_100%] min-w-0 h-[85vh] min-h-[600px] flex flex-col md:flex-row"
               key={slide.id}
             >
-              {/* Background Image */}
-              <OptimizedImage
-                src={slide.image}
-                alt={slide.title.replace('\n', ' ')}
-                fill
-                className="object-cover transition-transform duration-[10000ms] ease-linear hover:scale-105"
-                priority={index === 0}
-              />
+              {/* Left Content Half (Dark Editorial) */}
+              <div className="w-full md:w-1/2 h-1/2 md:h-full bg-[#1a1614] flex items-center justify-center p-8 md:p-16 lg:p-24 z-10">
+                <div className="max-w-xl w-full animate-fade-in-up">
+                  <span className="text-amber-500 text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4 md:mb-6 block">
+                    {slide.subtitle}
+                  </span>
 
-              {/* Overlay Gradient - Stronger for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
-              <div className="absolute inset-0 bg-black/10" />
+                  <h1 className="text-4xl md:text-6xl lg:text-[5.5rem] font-serif text-white mb-6 leading-[1.05] whitespace-pre-line">
+                    {slide.title}
+                  </h1>
 
-              {/* Content */}
-              <div
-                className={`absolute inset-0 flex items-center ${
-                  slide.position === 'left'
-                    ? 'justify-start md:pl-24'
-                    : slide.position === 'right'
-                      ? 'justify-end md:pr-24'
-                      : 'justify-center'
-                }`}
-              >
-                <div
-                  className={`max-w-7xl w-full px-6 md:px-12 ${
-                    slide.position === 'right'
-                      ? 'text-right items-end'
-                      : slide.position === 'center'
-                        ? 'text-center items-center'
-                        : 'text-left items-start'
-                  } flex flex-col`}
-                >
-                  <div className="max-w-xl animate-fade-in-up">
-                    <span
-                      className={`text-white/90 text-xs md:text-sm font-bold tracking-[0.3em] uppercase mb-6 block ${
-                        slide.position === 'center'
-                          ? ''
-                          : 'border-l-2 border-white pl-4'
-                      }`}
+                  <p className="text-stone-300 text-base md:text-lg mb-8 md:mb-12 font-light max-w-md leading-relaxed">
+                    {slide.description}
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-4">
+                    <Link
+                      href={slide.ctaLink}
+                      className="bg-white text-stone-900 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-200 transition-colors shadow-xl"
                     >
-                      {slide.subtitle}
-                    </span>
-
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white mb-8 leading-[1.1] whitespace-pre-line">
-                      {slide.title}
-                    </h1>
-
-                    <p
-                      className={`text-white/90 text-lg md:text-xl mb-10 font-light max-w-md leading-relaxed ${
-                        slide.position === 'center'
-                          ? 'mx-auto'
-                          : slide.position === 'right'
-                            ? 'ml-auto'
-                            : ''
-                      }`}
+                      {slide.ctaText}
+                    </Link>
+                    <Link
+                      href="/collections"
+                      className="bg-transparent text-white border border-stone-600 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
                     >
-                      {slide.description}
-                    </p>
-
-                    <div
-                      className={`flex flex-wrap gap-4 ${
-                        slide.position === 'center'
-                          ? 'justify-center'
-                          : slide.position === 'right'
-                            ? 'justify-end'
-                            : ''
-                      }`}
-                    >
-                      <Link
-                        href={slide.ctaLink}
-                        className="bg-white text-stone-900 px-10 py-4 text-sm font-bold uppercase tracking-widest hover:bg-stone-100 transition-all hover:-translate-y-1 shadow-xl inline-flex items-center gap-2 group"
-                      >
-                        {slide.ctaText}
-                        <ArrowRight
-                          size={16}
-                          className="group-hover:translate-x-1 transition-transform"
-                        />
-                      </Link>
-                    </div>
+                      Secondary Action
+                    </Link>
                   </div>
                 </div>
+              </div>
+
+              {/* Right Image Half */}
+              <div className="w-full md:w-1/2 h-1/2 md:h-full relative bg-stone-100 overflow-hidden">
+                <OptimizedImage
+                  src={slide.image}
+                  alt={slide.title.replace('\n', ' ')}
+                  fill
+                  className="object-cover transition-transform duration-[10000ms] ease-linear hover:scale-105"
+                  priority={index === 0}
+                />
+                {/* Subtle gradient overlay to merge image with center split on desktop */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#1a1614]/40 via-transparent to-transparent hidden md:block" />
               </div>
             </div>
           ))}

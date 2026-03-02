@@ -39,6 +39,10 @@ export const CreateProductSchema = z.object({
   origin_country: z.string().optional(),
   mid_code: z.string().optional(),
   material: z.string().optional(),
+  size_guide: z.string().optional(),
+  care_instructions: z.string().optional(),
+  seo_title: z.string().optional(),
+  seo_description: z.string().optional(),
   inventory_quantity: z.number().int().optional().default(0),
   thumbnail: z.string().url().optional(),
   sku: z.string().optional(),
@@ -88,7 +92,7 @@ export const ProductSearchSchema = z.object({
 
 // --- Bulk Update Schema ---
 export const ProductBulkUpdateSchema = z.object({
-  status: z.enum(['draft', 'published', 'proposed', 'rejected']).optional(),
+  status: z.enum(['draft', 'published', 'proposed', 'rejected', 'archived']).optional(),
 });
 
 // --- Type Exports ---

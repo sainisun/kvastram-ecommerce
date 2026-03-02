@@ -176,11 +176,11 @@ export default function ProductGallery({
             {/* Zoomed Image Overlay */}
             {isHovering && (
               <div
-                className="absolute inset-0 pointer-events-none hidden md:block"
+                className="absolute inset-0 pointer-events-none hidden md:block transition-opacity duration-150"
                 style={{
                   backgroundImage: `url(${validImages[selectedIndex]})`,
                   backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
-                  backgroundSize: '200%',
+                  backgroundSize: '280%',
                   backgroundRepeat: 'no-repeat',
                 }}
               />
@@ -188,7 +188,20 @@ export default function ProductGallery({
           </>
         )}
 
-        {/* Hover Controls (Desktop) - Only for images */}
+        {/* Zoom hint badge */}
+        {!isCurrentVideo && (
+          <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <ZoomIn size={13} />
+            <span>Zoom</span>
+          </div>
+        )}
+
+        {/* Lightbox hint on click */}
+        {!isCurrentVideo && (
+          <div className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <ZoomIn size={14} />
+          </div>
+        )}
         {!isCurrentVideo && validImages.length > 1 && (
           <>
             <button
@@ -205,10 +218,6 @@ export default function ProductGallery({
             </button>
           </>
         )}
-
-        <div className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          <ZoomIn size={16} />
-        </div>
 
         {/* Video Indicator */}
         {isCurrentVideo && (

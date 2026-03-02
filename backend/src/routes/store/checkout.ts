@@ -14,6 +14,7 @@ import {
   campaigns,
   regions,
   discount_usage,
+  store_settings,
 } from '../../db/schema';
 import { eq, and, gte, lte, sql, inArray } from 'drizzle-orm';
 import { config } from '../../config';
@@ -224,7 +225,14 @@ checkoutRouter.post(
         );
       }
 
-      // Fetch region for tax rate
+      // Fetch store settings for shipping and tax
+      const allSettings = await db.select().from(store_settings);
+      const settingsMap = allSettings.reduce((acc, curr) => {
+        acc[curr.key] = curr.value;
+        return acc;
+      }, {} as Record<string, any>);
+
+      // Fetch region for baseline tax
       const [region] = await db
         .select({ tax_rate: regions.tax_rate })
         .from(regions)
@@ -235,8 +243,21 @@ checkoutRouter.post(
         return c.json({ error: 'Region not found' }, 400);
       }
 
-      const taxRate =
-        parseFloat(region.tax_rate as string) || config.tax.defaultRate;
+      // Merge dynamic settings or fallback
+      const globalTaxRate = typeof settingsMap['tax_rate'] !== 'undefined' ? Number(settingsMap['tax_rate']) : config.tax.defaultRate;
+      const taxRate = globalTaxRate || parseFloat(region.tax_rate as string) || 0;
+      
+      const domesticRate = Number(settingsMap['domestic_shipping_rate'] || 10) * 100; // in cents
+      const intlRate = Number(settingsMap['international_shipping_rate'] || 30) * 100;
+      const freeThreshold = Number(settingsMap['free_shipping_threshold'] || 100) * 100;
+      
+      // Determine shipping country
+      const destCountry = body.shipping_address.country_code.toUpperCase();
+      const allowedCountries: string[] = (settingsMap['shipping_countries'] || 'US, CA').split(',').map((c: string) => c.trim().toUpperCase());
+      
+      if (!allowedCountries.includes(destCountry)) {
+         return c.json({ error: `Shipping is not available to ${destCountry}` }, 400);
+      }
 
       // 1. Validate Items & Calculate Subtotal
       let subtotal = 0;
@@ -348,7 +369,11 @@ checkoutRouter.post(
       }
 
       // 3. Calculate Totals
-      const shippingTotal = 0;
+      let shippingTotal = 0;
+      if (subtotal < freeThreshold) {
+         shippingTotal = (destCountry === 'US') ? domesticRate : intlRate;
+      }
+      
       // FIX-005: Use dedicated tax calculator for GST (CGST + SGST)
       const taxBreakdown: TaxBreakdown = calculateTax(subtotal, taxRate);
       const taxTotal = taxBreakdown.total;

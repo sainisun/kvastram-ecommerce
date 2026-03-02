@@ -31,10 +31,16 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
   { label: 'Home', url: '/', order: 1 },
   { label: 'New Arrivals', url: '/products?sort=newest', order: 2 },
   { label: 'Shop', url: '/products', order: 3 },
-  { label: 'Collections', url: '/collections', order: 4 },
-  { label: 'Sale', url: '/sale', order: 5, highlight: true },
-  { label: 'About', url: '/about', order: 6 },
-  { label: 'Contact', url: '/contact', order: 7 },
+  {
+    label: 'Plus Size',
+    url: '/products?tag_id=plus-size',
+    order: 4,
+    highlight: true,
+  },
+  { label: 'Collections', url: '/collections', order: 5 },
+  { label: 'Sale', url: '/sale', order: 6, highlight: true },
+  { label: 'About', url: '/about', order: 7 },
+  { label: 'Contact', url: '/contact', order: 8 },
 ];
 
 const DEFAULT_QUICK_LINKS: NavLink[] = [
@@ -132,8 +138,15 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-100">
       {/* Announcement Strip */}
       {announcementEnabled && announcementText && (
-        <div className="bg-black text-white text-[10px] uppercase tracking-widest text-center py-2 h-8 flex items-center justify-center gap-2">
-          <span>{announcementText}</span>
+        <div className="bg-stone-900 text-white text-[10px] uppercase tracking-widest overflow-hidden h-8 flex items-center">
+          <div className="animate-marquee">
+            {[...Array(4)].map((_, i) => (
+              <span key={i} className="px-12 whitespace-nowrap">
+                {announcementText}
+                <span className="mx-8 opacity-40">✦</span>
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
@@ -152,7 +165,7 @@ export function Header() {
           {/* Center: Logo */}
           <Link
             href="/"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-bold tracking-tighter text-stone-900"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-xl tracking-[0.2em] font-light text-stone-900"
           >
             KVASTRAM
           </Link>
@@ -175,7 +188,7 @@ export function Header() {
             >
               <ShoppingBag size={22} />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-stone-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
@@ -188,7 +201,7 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="text-2xl font-bold tracking-tighter text-stone-900"
+            className="font-serif text-2xl tracking-[0.25em] font-light text-stone-900 hover:text-stone-600 transition-colors"
           >
             KVASTRAM
           </Link>
@@ -236,8 +249,8 @@ export function Header() {
                               <div className="aspect-[3/4] bg-stone-100 relative overflow-hidden mb-3 rounded-sm">
                                 {categories[0]?.image ? (
                                   <>
-                                    <OptimizedImage 
-                                      src={categories[0].image} 
+                                    <OptimizedImage
+                                      src={categories[0].image}
                                       alt={categories[0].name || 'Featured'}
                                       fill
                                       className="object-cover"
@@ -426,10 +439,7 @@ export function Header() {
       </div>
 
       {/* SearchOverlay - Rendered outside mobile/desktop layouts for both views */}
-      <SearchOverlay
-        isOpen={showSearch}
-        onClose={() => setShowSearch(false)}
-      />
+      <SearchOverlay isOpen={showSearch} onClose={() => setShowSearch(false)} />
 
       {/* Mobile Menu */}
       <MobileMenu

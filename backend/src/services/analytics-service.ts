@@ -12,20 +12,20 @@ export class AnalyticsService {
           db
             .select({ value: sql<number>`sum(${orders.total})` })
             .from(orders)
-            .where(eq(orders.payment_status, 'captured')),
+            .where(sql`${orders.status} NOT IN ('cancelled', 'refunded')`),
           // Total Orders
           db.select({ value: sql<number>`count(*)` }).from(orders),
           // Average Order Value (AOV)
           db
             .select({ value: sql<number>`avg(${orders.total})` })
             .from(orders)
-            .where(eq(orders.payment_status, 'captured')),
+            .where(sql`${orders.status} NOT IN ('cancelled', 'refunded')`),
         ]);
 
       return {
-        total_sales: totalSalesResult[0]?.value || 0,
-        total_orders: totalOrdersResult[0]?.value || 0,
-        average_order_value: Math.round(averageOrderValueResult[0]?.value || 0),
+        total_sales: Number(totalSalesResult[0]?.value) || 0,
+        total_orders: Number(totalOrdersResult[0]?.value) || 0,
+        average_order_value: Math.round(Number(averageOrderValueResult[0]?.value) || 0),
       };
     } catch (error: unknown) {
       console.error('[AnalyticsService] Error in getOverview:', error);
@@ -49,7 +49,7 @@ export class AnalyticsService {
                     COUNT(*) as orders
                 FROM orders
                 WHERE created_at >= NOW() - ${validatedDays} * INTERVAL '1 day'
-                AND payment_status = 'captured'
+                AND status NOT IN ('cancelled', 'refunded')
                 GROUP BY date_trunc('day', created_at)
                 ORDER BY date_trunc('day', created_at) ASC
             `);
@@ -75,7 +75,10 @@ export class AnalyticsService {
         .from(orders)
         .groupBy(orders.status);
 
-      return result;
+      return result.map((r) => ({
+        status: r.status,
+        count: Number(r.count),
+      }));
     } catch (error: unknown) {
       console.error('[AnalyticsService] Error in getOrdersByStatus:', error);
       throw new Error('Failed to fetch orders by status');

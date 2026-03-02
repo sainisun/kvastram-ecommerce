@@ -195,7 +195,8 @@ export default function CheckoutPage() {
 
   // PHASE 1.3: Shipping Options State
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
+  const [selectedShipping, setSelectedShipping] =
+    useState<ShippingOption | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(25000);
 
@@ -206,6 +207,10 @@ export default function CheckoutPage() {
 
   // PHASE 1.5: Terms Acceptance State
   const [acceptTerms, setAcceptTerms] = useState(false);
+
+  // D3: Gift Wrapping State
+  const [giftWrapping, setGiftWrapping] = useState(false);
+  const [giftMessage, setGiftMessage] = useState('');
 
   // Form data hook moved BEFORE conditional return
   const [formData, setFormData] = useState({
@@ -353,24 +358,58 @@ export default function CheckoutPage() {
 
   if (step === 'success') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center bg-white">
-        <div className="w-20 h-20 bg-stone-100 text-stone-900 rounded-full flex items-center justify-center mb-8">
-          <CheckCircle size={32} strokeWidth={1.5} />
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-white">
+        {/* Animated check */}
+        <div className="relative w-24 h-24 mb-8">
+          <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center animate-scale-in">
+            <CheckCircle
+              size={48}
+              strokeWidth={1.5}
+              className="text-green-600"
+            />
+          </div>
         </div>
-        <h1 className="text-4xl font-serif mb-4 text-stone-900">
-          Order Confirmed
-        </h1>
-        <p className="text-stone-500 mb-8 max-w-md font-light">
-          Thank you for choosing Kvastram. Your order #{orderId} has been
-          confirmed and payment received. We will begin preparing it for
-          shipment.
+        <span className="text-xs text-stone-500 font-bold uppercase tracking-[0.2em] mb-3 block">
+          Order Placed Successfully
+        </span>
+        <h1 className="text-4xl font-serif mb-3 text-stone-900">Thank You!</h1>
+        <p className="text-stone-500 mb-2 max-w-md font-light text-lg">
+          Your order{' '}
+          <span className="font-semibold text-stone-900">#{orderId}</span> has
+          been confirmed.
         </p>
-        <Link
-          href="/"
-          className="bg-stone-900 text-white px-8 py-3 rounded-none uppercase tracking-widest text-xs font-bold hover:bg-stone-800 transition-colors"
-        >
-          Continue Shopping
-        </Link>
+        <p className="text-stone-400 text-sm mb-10 max-w-md font-light">
+          We&apos;re preparing your order for shipment. You&apos;ll receive an
+          email confirmation shortly.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 mb-10">
+          <Link
+            href="/"
+            className="bg-stone-900 text-white px-8 py-3 uppercase tracking-widest text-xs font-bold hover:bg-stone-800 transition-colors"
+          >
+            Continue Shopping
+          </Link>
+          <Link
+            href="/account"
+            className="border border-stone-300 text-stone-900 px-8 py-3 uppercase tracking-widest text-xs font-bold hover:bg-stone-50 transition-colors"
+          >
+            Track My Order
+          </Link>
+        </div>
+        {/* WhatsApp support */}
+        <div className="mt-4 pt-6 border-t border-stone-100 w-full max-w-md">
+          <p className="text-xs text-stone-500 mb-3">
+            Need help with your order?
+          </p>
+          <a
+            href="https://wa.me/message/kvastram"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-xs text-green-700 font-bold hover:text-green-800 transition-colors"
+          >
+            <span className="text-base">💬</span> Chat with us on WhatsApp
+          </a>
+        </div>
       </div>
     );
   }
@@ -437,6 +476,8 @@ export default function CheckoutPage() {
         },
         shipping_method: selectedShipping.id,
         discount_code: discount?.code,
+        gift_wrapping: giftWrapping,
+        gift_message: giftWrapping && giftMessage ? giftMessage : undefined,
       };
 
       // Create order
@@ -453,7 +494,9 @@ export default function CheckoutPage() {
     } catch (err) {
       console.error('Order creation error:', err);
       const errorMsg =
-        err instanceof Error ? err.message : 'Failed to create order. Please try again.';
+        err instanceof Error
+          ? err.message
+          : 'Failed to create order. Please try again.';
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -476,9 +519,16 @@ export default function CheckoutPage() {
       : selectedShipping.price || 0
     : 0;
 
-  // PHASE 1.4: Final total includes subtotal - discount + shipping + tax
+  // D3: Gift wrapping cost = $2.99 = 299 cents
+  const giftWrappingCost = giftWrapping ? 299 : 0;
+
+  // PHASE 1.4: Final total includes subtotal - discount + shipping + tax + gift
   const finalTotal =
-    cartTotal - (discount?.amount || 0) + shippingCost + taxAmount;
+    cartTotal -
+    (discount?.amount || 0) +
+    shippingCost +
+    taxAmount +
+    giftWrappingCost;
 
   // Currency for display
   const currency =
@@ -509,24 +559,63 @@ export default function CheckoutPage() {
               </p>
             </div>
 
-            {/* Progress Steps */}
-            <div className="flex items-center gap-4 mb-8">
-              <div
-                className={`flex items-center gap-2 ${step === 'shipping' ? 'text-stone-900' : 'text-stone-400'}`}
-              >
-                <span className="w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold">
-                  1
-                </span>
-                <span className="text-sm font-medium">Shipping</span>
-              </div>
-              <div className="flex-1 h-px bg-stone-200"></div>
-              <div
-                className={`flex items-center gap-2 ${step === 'payment' ? 'text-stone-900' : 'text-stone-400'}`}
-              >
-                <span className="w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold">
-                  2
-                </span>
-                <span className="text-sm font-medium">Payment</span>
+            {/* D1: Premium Progress Bar — 3 steps */}
+            <div className="mb-10">
+              <div className="flex items-center">
+                {/* Step 1: Shipping */}
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                      step === 'shipping'
+                        ? 'border-stone-900 bg-stone-900 text-white'
+                        : 'border-stone-900 bg-stone-900 text-white'
+                    }`}
+                  >
+                    {step === 'payment' ? '✓' : '1'}
+                  </div>
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${
+                      step === 'shipping' ? 'text-stone-900' : 'text-stone-400'
+                    }`}
+                  >
+                    Shipping
+                  </span>
+                </div>
+                {/* Connector 1-2 */}
+                <div
+                  className={`flex-1 h-0.5 mx-2 transition-colors ${
+                    step === 'payment' ? 'bg-stone-900' : 'bg-stone-200'
+                  }`}
+                />
+                {/* Step 2: Payment */}
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                      step === 'payment'
+                        ? 'border-stone-900 bg-stone-900 text-white'
+                        : 'border-stone-200 bg-white text-stone-400'
+                    }`}
+                  >
+                    {'2'}
+                  </div>
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${
+                      step === 'payment' ? 'text-stone-900' : 'text-stone-400'
+                    }`}
+                  >
+                    Payment
+                  </span>
+                </div>
+                <div className={`flex-1 h-0.5 mx-2 bg-stone-200`} />
+                {/* Step 3: Confirmation */}
+                <div className="flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-stone-200 bg-white text-stone-400">
+                    3
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest mt-1 text-stone-400">
+                    Confirm
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -754,6 +843,73 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
+                {/* D3: Gift Wrapping */}
+                <div className="mt-8">
+                  <h3 className="text-lg font-serif text-stone-900 mb-4 border-b border-stone-100 pb-2">
+                    Gift Options
+                  </h3>
+                  <label
+                    className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${
+                      giftWrapping
+                        ? 'border-stone-900 bg-stone-50'
+                        : 'border-stone-200 hover:border-stone-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="text-2xl">🎁</div>
+                      <div>
+                        <p className="font-medium text-stone-900 text-sm">
+                          Premium Gift Wrapping
+                        </p>
+                        <p className="text-xs text-stone-500 font-light">
+                          Signature Kvastram box with ribbon &amp; message card
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-stone-600">
+                        +$2.99
+                      </span>
+                      <div
+                        className={`relative w-11 h-6 rounded-full transition-colors ${
+                          giftWrapping ? 'bg-stone-900' : 'bg-stone-200'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={giftWrapping}
+                          onChange={(e) => setGiftWrapping(e.target.checked)}
+                          className="sr-only"
+                          id="gift-wrapping-toggle"
+                        />
+                        <span
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                            giftWrapping ? 'translate-x-5' : 'translate-x-0'
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  </label>
+                  {giftWrapping && (
+                    <div className="mt-3 animate-fade-in">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">
+                        Gift Message (Optional)
+                      </label>
+                      <textarea
+                        value={giftMessage}
+                        onChange={(e) => setGiftMessage(e.target.value)}
+                        placeholder="Write a personal message for the recipient..."
+                        maxLength={200}
+                        rows={3}
+                        className="w-full border border-stone-200 rounded-sm px-4 py-3 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:border-stone-900 resize-none transition-colors font-light"
+                      />
+                      <p className="text-[10px] text-stone-400 text-right mt-1">
+                        {giftMessage.length}/200
+                      </p>
+                    </div>
+                  )}
+                </div>
+
                 {/* PHASE 1.5: Terms Acceptance */}
                 <div className="mt-8 pt-6 border-t border-stone-100">
                   <label className="flex items-start gap-3 cursor-pointer group">
@@ -943,7 +1099,6 @@ export default function CheckoutPage() {
                   }).format(cartTotal / 100)}
                 </span>
               </div>
-
               {discount && (
                 <div className="flex justify-between text-green-600">
                   <div className="flex items-center gap-2">
@@ -961,7 +1116,6 @@ export default function CheckoutPage() {
                   </span>
                 </div>
               )}
-
               {/* PHASE 1.3: Shipping Cost Display */}
               {step === 'payment' || selectedShipping ? (
                 <div className="flex justify-between text-stone-600">
@@ -984,7 +1138,6 @@ export default function CheckoutPage() {
                   <span>Calculated at next step</span>
                 </div>
               )}
-
               {/* PHASE 1.4: Tax Display */}
               {(taxLoading || taxAmount > 0) && (
                 <div className="flex justify-between text-stone-600">
@@ -1001,7 +1154,20 @@ export default function CheckoutPage() {
                   </span>
                 </div>
               )}
-
+              \n\n {/* D3: Gift Wrapping line */}
+              {giftWrapping && (
+                <div className="flex justify-between text-stone-600">
+                  <span className="flex items-center gap-1.5">
+                    <span>🎁</span> Gift Wrapping
+                  </span>
+                  <span>
+                    {new Intl.NumberFormat(undefined, {
+                      style: 'currency',
+                      currency,
+                    }).format(giftWrappingCost / 100)}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between text-lg font-serif text-stone-900 pt-4 border-t border-stone-200">
                 <span>Total</span>
                 <span>

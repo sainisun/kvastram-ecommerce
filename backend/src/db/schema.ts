@@ -68,6 +68,10 @@ export const products = pgTable(
     collection_id: uuid('collection_id'),
     type_id: uuid('type_id'),
     discountable: boolean('discountable').default(true),
+    size_guide: text('size_guide'),
+    care_instructions: text('care_instructions'),
+    seo_title: text('seo_title'),
+    seo_description: text('seo_description'),
     metadata: jsonb('metadata'),
     ...createdUpdated,
   },
@@ -102,6 +106,7 @@ export const product_variants = pgTable(
     height: integer('height'),
     width: integer('width'),
     wholesale_price: integer('wholesale_price'), // Price in cents for wholesale customers
+    compare_at_price: integer('compare_at_price'), // Original price before discount in cents
     moq: integer('moq'), // Minimum Order Quantity for wholesale customers
     metadata: jsonb('metadata'),
     ...createdUpdated,
@@ -356,6 +361,9 @@ export const orders = pgTable(
     total: integer('total').default(0), // Final amount to charge
 
     email: text('email').notNull(), // Snapshot in case customer changes
+    tracking_number: text('tracking_number'),
+    shipping_carrier: text('shipping_carrier'),
+    tracking_link: text('tracking_link'),
     metadata: jsonb('metadata'),
     ...createdUpdated,
   },

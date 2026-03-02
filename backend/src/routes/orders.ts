@@ -122,6 +122,30 @@ ordersRouter.put(
   })
 );
 
+// POST /orders/:id/tracking - Add tracking details
+const AddTrackingSchema = z.object({
+  tracking_number: z.string().min(1, 'Tracking number is required'),
+  shipping_carrier: z.string().optional(),
+  tracking_link: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+});
+
+ordersRouter.post(
+  '/:id/tracking',
+  zValidator('json', AddTrackingSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+
+    const updated = await orderService.addTracking(id, data);
+
+    return successResponse(
+      c,
+      { order: updated },
+      'Tracking information added successfully'
+    );
+  })
+);
+
 // POST /orders/bulk-update-status - Bulk update order status
 const BulkUpdateStatusSchema = z.object({
   order_ids: z.array(z.string()),

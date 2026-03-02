@@ -243,7 +243,7 @@ export default function OrdersPage() {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {formatCurrency(stats.total_revenue)}
+                  {formatCurrency(stats.total_revenue || 0)}
                 </p>
               </div>
               <CheckCircle className="text-green-500" size={32} />
@@ -255,7 +255,7 @@ export default function OrdersPage() {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Pending</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {stats.pending_orders}
+                  {stats.pending_orders || 0}
                 </p>
               </div>
               <Clock className="text-yellow-500" size={32} />
@@ -267,7 +267,7 @@ export default function OrdersPage() {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Processing</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {stats.processing_orders}
+                  {stats.processing_orders || 0}
                 </p>
               </div>
               <Package className="text-blue-500" size={32} />
@@ -279,7 +279,11 @@ export default function OrdersPage() {
               <div>
                 <p className="text-sm text-gray-600 mb-1">Avg Order Value</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {formatCurrency(stats.avg_order_value)}
+                  {formatCurrency(
+                    Number.isNaN(stats.avg_order_value)
+                      ? 0
+                      : stats.avg_order_value || 0
+                  )}
                 </p>
               </div>
               <CheckCircle className="text-purple-500" size={32} />

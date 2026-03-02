@@ -50,6 +50,7 @@ productsRouter.get(
       if (sort === 'created_at' || sort === 'newest') sortBy = 'newest';
 
       const results = await productService.search(search, {
+        query: search,
         minPrice: min_price ? Number(min_price) : undefined,
         maxPrice: max_price ? Number(max_price) : undefined,
         status: status || undefined,
@@ -199,7 +200,7 @@ const BulkUpdateSchema = z.object({
     .array(z.string())
     .min(1, 'At least one product ID is required'),
   updates: z.object({
-    status: z.enum(['draft', 'published', 'archived']).optional(),
+    status: z.enum(['draft', 'published', 'proposed', 'rejected', 'archived']).optional(),
     collection_id: z.string().optional(),
   }),
 });
@@ -401,6 +402,7 @@ productsRouter.post(
       title,
       sku,
       inventory_quantity = 0,
+      compare_at_price,
       prices: variantPrices = [],
       option_values: optValues = [],
     } = body;
@@ -418,6 +420,7 @@ productsRouter.post(
           title,
           sku: sku || undefined,
           inventory_quantity,
+          compare_at_price: compare_at_price ? parseInt(compare_at_price) : undefined,
           manage_inventory: true,
         })
         .returning();
@@ -466,7 +469,7 @@ productsRouter.put(
     const variantId = c.req.param('variantId');
     const body = await c.req.json();
 
-    const { title, sku, inventory_quantity, prices: variantPrices } = body;
+    const { title, sku, inventory_quantity, compare_at_price, prices: variantPrices } = body;
 
     await db.transaction(async (tx) => {
       // Update variant
@@ -475,6 +478,8 @@ productsRouter.put(
       if (sku !== undefined) updateData.sku = sku;
       if (inventory_quantity !== undefined)
         updateData.inventory_quantity = inventory_quantity;
+      if (compare_at_price !== undefined)
+        updateData.compare_at_price = compare_at_price === '' ? null : parseInt(compare_at_price);
 
       if (Object.keys(updateData).length > 0) {
         await tx

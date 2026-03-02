@@ -23,6 +23,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     Array<{ id: string; title: string; handle: string }>
   >([]);
   const [loading, setLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -67,32 +68,53 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     [onClose]
   );
 
+  // Load recent searches from localStorage
   useEffect(() => {
     if (isOpen) {
-      // Store trigger element for focus restoration
+      try {
+        const stored = JSON.parse(
+          localStorage.getItem('kv_recent_searches') || '[]'
+        );
+        setRecentSearches(Array.isArray(stored) ? stored.slice(0, 5) : []);
+      } catch {
+        setRecentSearches([]);
+      }
       triggerRef.current = document.activeElement as HTMLElement;
-
-      // Focus input after animation
       setTimeout(() => inputRef.current?.focus(), 100);
       document.body.style.overflow = 'hidden';
-
-      // Add keyboard listeners
       document.addEventListener('keydown', handleKeyDown);
     } else {
       document.body.style.overflow = '';
       document.removeEventListener('keydown', handleKeyDown);
-
-      // Restore focus to trigger element when closing
-      if (triggerRef.current) {
+      if (triggerRef.current)
         setTimeout(() => triggerRef.current?.focus(), 100);
-      }
     }
-
     return () => {
       document.body.style.overflow = '';
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, handleKeyDown]);
+
+  const saveRecentSearch = (term: string) => {
+    try {
+      const current = JSON.parse(
+        localStorage.getItem('kv_recent_searches') || '[]'
+      );
+      const updated = [
+        term,
+        ...current.filter((s: string) => s !== term),
+      ].slice(0, 5);
+      localStorage.setItem('kv_recent_searches', JSON.stringify(updated));
+      setRecentSearches(updated);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const clearRecentSearches = () => {
+    localStorage.removeItem('kv_recent_searches');
+    setRecentSearches([]);
+  };
 
   // Fetch Suggestions/Results
   useEffect(() => {
@@ -126,11 +148,13 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     fetchResults();
   }, [debouncedQuery]);
 
-  const handleSearch = (e?: React.FormEvent) => {
+  const handleSearch = (e?: React.FormEvent, term?: string) => {
     e?.preventDefault();
-    if (query.trim()) {
+    const searchTerm = term || query.trim();
+    if (searchTerm) {
+      saveRecentSearch(searchTerm);
       onClose();
-      router.push(`/search?q=${encodeURIComponent(query)}`);
+      router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
     }
   };
 
@@ -208,27 +232,105 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               aria-label="Search results"
             >
               {!query && (
-                <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="max-w-4xl mx-auto space-y-10">
+                  {/* Recent Searches */}
+                  {recentSearches.length > 0 && (
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest">
+                          Recent Searches
+                        </h3>
+                        <button
+                          onClick={clearRecentSearches}
+                          className="text-[10px] text-stone-400 hover:text-red-500 transition-colors uppercase tracking-wider"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {recentSearches.map((term) => (
+                          <button
+                            key={term}
+                            onClick={() => handleSearch(undefined, term)}
+                            className="flex items-center gap-2 px-4 py-2 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full text-sm transition-colors border border-stone-200 hover:border-stone-900 text-stone-700"
+                          >
+                            <Search size={12} className="opacity-50" />
+                            {term}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Trending Now */}
                   <div>
                     <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <Sparkles size={12} /> Popular Searches
+                      <Sparkles size={12} /> Trending Now
+                    </h3>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                      {[
+                        {
+                          label: 'Shawls',
+                          emoji: '🧣',
+                          href: '/products?category=shawls',
+                        },
+                        {
+                          label: 'Kurtis',
+                          emoji: '👘',
+                          href: '/products?category=kurtis',
+                        },
+                        {
+                          label: 'Sarees',
+                          emoji: '🥻',
+                          href: '/products?category=sarees',
+                        },
+                        {
+                          label: 'Accessories',
+                          emoji: '💍',
+                          href: '/products?tag=accessories',
+                        },
+                        {
+                          label: 'Wedding',
+                          emoji: '💛',
+                          href: '/products?tag=wedding',
+                        },
+                        { label: 'Sale', emoji: '🔖', href: '/sale' },
+                      ].map(({ label, emoji, href }) => (
+                        <button
+                          key={label}
+                          onClick={() => {
+                            onClose();
+                            router.push(href);
+                          }}
+                          className="flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-xl transition-all duration-200 group border border-stone-100 hover:border-stone-900"
+                        >
+                          <span className="text-2xl group-hover:scale-110 transition-transform">
+                            {emoji}
+                          </span>
+                          <span className="text-xs font-medium">{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Popular Searches */}
+                  <div>
+                    <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+                      Popular Searches
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {[
-                        'Summer Collection',
+                        'Pashmina Shawl',
+                        'Anarkali Suit',
                         'Silk Saree',
-                        'Lehenga',
-                        'Gift Cards',
                         'New Arrivals',
+                        'Gift Cards',
+                        'Wedding Collection',
                       ].map((term) => (
                         <button
                           key={term}
-                          onClick={() => {
-                            setQuery(term);
-                            // router.push(`/search?q=${term}`);
-                            // onClose();
-                          }}
-                          className="px-4 py-2 bg-stone-50 hover:bg-black hover:text-white rounded-full text-sm transition-colors border border-transparent hover:border-black"
+                          onClick={() => setQuery(term)}
+                          className="px-4 py-2 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full text-sm transition-colors border border-stone-200 hover:border-stone-900 text-stone-600"
                         >
                           {term}
                         </button>
@@ -332,10 +434,21 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               )}
             </div>
 
-            {/* Footer (Quick Links or Promo) */}
-            <div className="bg-stone-50 px-8 py-4 text-xs text-stone-400 flex justify-between items-center border-t border-stone-100">
-              <span>Press generic Enter to search</span>
-              <span className="hidden md:inline">KVASTRAM SEARCH</span>
+            {/* Footer */}
+            <div className="bg-stone-50 px-8 py-3.5 text-xs text-stone-400 flex justify-between items-center border-t border-stone-100">
+              <span>
+                Press{' '}
+                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-[10px] font-mono">
+                  Enter
+                </kbd>{' '}
+                to search
+              </span>
+              <span className="hidden md:flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-[10px] font-mono">
+                  Esc
+                </kbd>{' '}
+                to close
+              </span>
             </div>
           </motion.div>
         </>

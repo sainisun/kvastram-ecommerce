@@ -33,6 +33,7 @@ export interface ProductVariant {
   sku?: string | null;
   inventory_quantity: number;
   prices?: MoneyAmount[];
+  compare_at_price?: number | null;
 }
 
 export interface MoneyAmount {

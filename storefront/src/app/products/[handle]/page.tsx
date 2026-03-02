@@ -75,10 +75,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const jsonLdData = generateProductJsonLd(product, handle);
 
     return {
-      title: `${product.title} | Kvastram`,
-      description: product.description,
+      title: product.seo_title || `${product.title} | Kvastram`,
+      description: product.seo_description || product.description,
       openGraph: {
         images: product.thumbnail ? [product.thumbnail] : [],
+        title: product.seo_title || `${product.title} | Kvastram`,
+        description: product.seo_description || product.description || '',
       },
     };
   } catch (_e) {
@@ -106,9 +108,13 @@ export default async function ProductPage({ params }: Props) {
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData).replace(/</g, '\\u003C').replace(/>/g, '\\u003E') }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLdData)
+            .replace(/</g, '\\u003C')
+            .replace(/>/g, '\\u003E'),
+        }}
       />
-      
+
       <ProductView product={product!} />
 
       {/* Related Products */}
@@ -118,11 +124,7 @@ export default async function ProductPage({ params }: Props) {
         </h2>
         <Suspense fallback={<div>Loading...</div>}>
           <RelatedProducts
-            categoryIds={
-              product.categories?.map(
-                (c) => c.id
-              ) || []
-            }
+            categoryIds={product.categories?.map((c) => c.id) || []}
             currentId={product.id}
           />
         </Suspense>

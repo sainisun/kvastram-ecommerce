@@ -47,6 +47,10 @@ export default function NewProductPage() {
     hs_code: '',
     origin_country: '',
     material: '',
+    size_guide: '',
+    care_instructions: '',
+    seo_title: '',
+    seo_description: '',
     thumbnail: '',
     sku: '',
   });
@@ -259,6 +263,32 @@ export default function NewProductPage() {
                   placeholder="Detailed product description..."
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Size Guide
+                </label>
+                <textarea
+                  name="size_guide"
+                  value={formData.size_guide || ''}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="e.g. Model is 5'9 and wearing a size M. Fits true to size."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Care Instructions
+                </label>
+                <textarea
+                  name="care_instructions"
+                  value={formData.care_instructions || ''}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="e.g. Machine wash cold, dry flat."
+                />
+              </div>
             </div>
           </div>
 
@@ -411,6 +441,45 @@ export default function NewProductPage() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Search Engine Optimization */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <h2 className="text-lg font-bold text-gray-800 mb-4">
+              Search Engine Optimization
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Page Title (SEO)
+                </label>
+                <input
+                  type="text"
+                  name="seo_title"
+                  value={formData.seo_title || ''}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="e.g. Elegant Summer Linen Shirt | Kvastram"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Meta Description
+                </label>
+                <textarea
+                  name="seo_description"
+                  value={formData.seo_description || ''}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="Detailed description for search engine results..."
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Recommended length: 150-160 characters. Provide a compelling
+                  summary to encourage clicks.
+                </p>
               </div>
             </div>
           </div>

@@ -1,12 +1,14 @@
 'use client';
 
 import { X } from 'lucide-react';
-import type { SizeGuide as SizeGuideType } from '@/types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { SizeGuide as SizeGuideType, SizeMeasurement } from '@/types';
 
 interface SizeGuideProps {
   isOpen: boolean;
   onClose: () => void;
-  sizeGuide?: SizeGuideType;
+  sizeGuide?: SizeGuideType | string;
 }
 
 export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
@@ -42,7 +44,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100 text-stone-600">
-            {guide.measurements.map((m, i) => (
+            {guide.measurements.map((m: SizeMeasurement, i: number) => (
               <tr key={i}>
                 <td className="py-3 font-medium">{m.size}</td>
                 {m.chest && <td>{m.chest}</td>}
@@ -89,8 +91,19 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
         </p>
 
         <div className="space-y-8">
-          {/* Product-specific size chart if available */}
-          {sizeGuide && renderCustomSizeChart(sizeGuide)}
+          {/* Product-specific size chart — string or structured */}
+          {sizeGuide && typeof sizeGuide === 'string' ? (
+            <div className="prose prose-stone prose-sm max-w-none mb-6 border-b border-stone-100 pb-6">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-stone-900 mb-4">
+                Product Size Guide
+              </h3>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {sizeGuide}
+              </ReactMarkdown>
+            </div>
+          ) : sizeGuide && typeof sizeGuide === 'object' ? (
+            renderCustomSizeChart(sizeGuide)
+          ) : null}
 
           {/* Womenswear Size Chart */}
           <div>
@@ -227,8 +240,8 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               <div>
                 <p className="font-bold text-stone-900 mb-1">Hip</p>
                 <p>
-                  Measure around the fullest part of your hips, about 8&quot; below
-                  your waistline.
+                  Measure around the fullest part of your hips, about 8&quot;
+                  below your waistline.
                 </p>
               </div>
             </div>

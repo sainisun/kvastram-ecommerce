@@ -415,6 +415,21 @@ export const api = {
     return res.json();
   },
 
+  createOption: async (productId: string, data: any) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/products/${productId}/options`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to create option');
+    return res.json();
+  },
+
   deleteVariant: async (productId: string, variantId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/products/${productId}/variants/${variantId}`,
@@ -469,12 +484,23 @@ export const api = {
   },
 
   getOrder: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}`, {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/orders/${id}`, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch order');
-    const response = await res.json();
-    return response.data;
+    if (!res.ok) throw new Error('Failed to fetch order details');
+    return res.json();
+  },
+
+  addOrderTracking: async (id: string, data: { tracking_number: string, shipping_carrier?: string, tracking_link?: string }) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/orders/${id}/tracking`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to add tracking information');
+    return res.json();
   },
 
   updateOrderStatus: async (id: string, status: string) => {

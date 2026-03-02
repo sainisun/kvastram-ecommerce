@@ -1456,47 +1456,139 @@ export default function SettingsPage() {
             {activeTab === 'shipping' && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold text-gray-900">
-                  Shipping Settings
+                  Shipping & Tax Settings
                 </h2>
-                <div>
-                  <label
-                    htmlFor="shipping_rate"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Default Shipping Rate
-                  </label>
-                  <input
-                    id="shipping_rate"
-                    type="number"
-                    value={settings.shipping_rate || 10}
-                    onChange={(e) =>
-                      handleChange(
-                        'shipping_rate',
-                        Number.parseFloat(e.target.value)
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-blue-800">
+                    Configure regions where you ship and customize taxes.
+                  </p>
                 </div>
-                <div>
-                  <label
-                    htmlFor="free_shipping_threshold"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Free Shipping Threshold
-                  </label>
-                  <input
-                    id="free_shipping_threshold"
-                    type="number"
-                    value={settings.free_shipping_threshold || 100}
-                    onChange={(e) =>
-                      handleChange(
-                        'free_shipping_threshold',
-                        Number.parseFloat(e.target.value)
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+
+                <div className="border-b border-gray-200 pb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Tax Configuration
+                  </h3>
+                  <div>
+                    <label
+                      htmlFor="tax_rate"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Default Tax Rate (%)
+                    </label>
+                    <input
+                      id="tax_rate"
+                      type="number"
+                      step="0.01"
+                      value={settings.tax_rate || 0}
+                      onChange={(e) =>
+                        handleChange(
+                          'tax_rate',
+                          Number.parseFloat(e.target.value)
+                        )
+                      }
+                      className="w-full lg:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      This tax rate will be applied to all orders.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Shipping Zones
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        htmlFor="domestic_shipping_rate"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        Domestic Shipping Rate (USD)
+                      </label>
+                      <input
+                        id="domestic_shipping_rate"
+                        type="number"
+                        value={settings.domestic_shipping_rate || 10}
+                        onChange={(e) =>
+                          handleChange(
+                            'domestic_shipping_rate',
+                            Number.parseFloat(e.target.value)
+                          )
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="international_shipping_rate"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        International Shipping Rate (USD)
+                      </label>
+                      <input
+                        id="international_shipping_rate"
+                        type="number"
+                        value={settings.international_shipping_rate || 30}
+                        onChange={(e) =>
+                          handleChange(
+                            'international_shipping_rate',
+                            Number.parseFloat(e.target.value)
+                          )
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label
+                      htmlFor="free_shipping_threshold"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Free Shipping Threshold (USD)
+                    </label>
+                    <input
+                      id="free_shipping_threshold"
+                      type="number"
+                      value={settings.free_shipping_threshold || 100}
+                      onChange={(e) =>
+                        handleChange(
+                          'free_shipping_threshold',
+                          Number.parseFloat(e.target.value)
+                        )
+                      }
+                      className="w-full lg:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Orders above this amount will get free shipping
+                      automatically.
+                    </p>
+                  </div>
+
+                  <div className="mt-4">
+                    <label
+                      htmlFor="shipping_countries"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Allowed Shipping Countries
+                    </label>
+                    <input
+                      id="shipping_countries"
+                      type="text"
+                      value={settings.shipping_countries || 'US, CA'}
+                      onChange={(e) =>
+                        handleChange('shipping_countries', e.target.value)
+                      }
+                      placeholder="US, CA, GB, AU"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Comma-separated two-letter ISO country codes.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}

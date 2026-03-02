@@ -31,6 +31,10 @@ interface ProductWithStats {
   title: string;
   handle: string;
   description: string | null;
+  size_guide: string | null;
+  care_instructions: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
   status: string;
   thumbnail: string | null;
   created_at: Date;
@@ -151,6 +155,10 @@ export class ProductQueryService {
         title: String(product.title),
         handle: String(product.handle),
         description: product.description as string | null,
+        size_guide: product.size_guide as string | null,
+        care_instructions: product.care_instructions as string | null,
+        seo_title: product.seo_title as string | null,
+        seo_description: product.seo_description as string | null,
         status: String(product.status),
         thumbnail: product.thumbnail as string | null,
         created_at: product.created_at as Date,
@@ -220,6 +228,10 @@ export class ProductQueryService {
         title: products.title,
         handle: products.handle,
         description: products.description,
+        size_guide: products.size_guide,
+        care_instructions: products.care_instructions,
+        seo_title: products.seo_title,
+        seo_description: products.seo_description,
         status: products.status,
         thumbnail: products.thumbnail,
         created_at: products.created_at,

@@ -1,0 +1,328 @@
+# 🚀 Kvastram Storefront UX — Execution Plan
+
+**Start Date:** 2026-03-01  
+**Stack:** Next.js 16 (Turbopack) · Tailwind CSS · TypeScript
+
+---
+
+## Phase A — Quick Wins ⚡
+> **Goal:** High-impact changes jinhe ek hi din mein deploy kiya ja sake.
+
+---
+
+### A1 · Sticky "Add to Cart" — Mobile Footer CTA
+**File:** [storefront/src/components/product/ProductView.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/components/product/ProductView.tsx)  
+**Why:** Mobile users ko scroll up karna padta hai Add to Cart ke liye — direct conversion loss.
+
+**Changes:**
+- `return` ke andar, last `</div>` se pehle ek `<div className="fixed bottom-0 ...">` add karo sirf `md:hidden` condition ke saath
+- Sticky bar mein: price + "Add to Cart" button (same handler [handleAddToCart](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/components/ProductGrid.tsx#51-90))
+- Out-of-stock state bhi handle karo (disabled state)
+- Scroll position detect karo — sirf tab dikhao jab original button viewport se bahar ho
+
+```tsx
+{/* Mobile Sticky ATC */}
+<div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white border-t border-stone-200 px-4 py-3 flex items-center gap-3 shadow-lg">
+  <div className="flex-1">
+    <p className="text-xs text-stone-500 font-medium">{product.title}</p>
+    <p className="text-base font-bold text-stone-900">{formattedPrice}</p>
+  </div>
+  <button onClick={handleAddToCart} disabled={!selectedVariant || addedToCart || outOfStock}
+    className="px-6 py-3 bg-stone-900 text-white text-xs font-bold uppercase tracking-widest ...">
+    {addedToCart ? 'Added!' : 'Add to Cart'}
+  </button>
+</div>
+```
+
+---
+
+### A2 · Product Info Accordions
+**File:** [storefront/src/components/product/ProductView.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/components/product/ProductView.tsx)  
+**Why:** `care_instructions`, `size_guide`, `material` ab DB mein hain — storefront par visible nahi.
+
+**Changes:**  
+"Accordions / Info" section (`line 572`) ko expandable accordion mein convert karo:
+
+| Accordion Tab | Content |
+|---|---|
+| **Description** | `product.description` (already markdown rendered) |
+| **Materials & Care** | `product.material` + `product.care_instructions` |
+| **Shipping & Returns** | Free shipping threshold, 30-day returns, dispatch time |
+| **Size Guide** | `product.size_guide` text content inline (optional: modal bhi rakh sakte hain) |
+
+**Component:** `useState<string>` se `activeAccordion` track karo, `+` / `−` icon ke saath.
+
+---
+
+### A3 · SEO Fields Wire Karo
+**File:** [storefront/src/app/products/[handle]/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/products/%5Bhandle%5D/page.tsx)  
+**Why:** Admin mein `seo_title` aur `seo_description` add kiye — lekin [generateMetadata](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/products/%5Bhandle%5D/page.tsx#69-90) unhe use nahi karta.
+
+**Change (line 78):**
+```ts
+// Before
+title: `${product.title} | Kvastram`,
+description: product.description,
+
+// After
+title: product.seo_title || `${product.title} | Kvastram`,
+description: product.seo_description || product.description,
+```
+
+---
+
+### A4 · Cart Empty State — Recommendations Add Karo
+**File:** [storefront/src/app/cart/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/cart/page.tsx)  
+**Why:** Khali cart se user bounce ho jata hai — "You might like" section retention improve karega.
+
+**Changes:**
+- Empty state mein `api.getProducts({ limit: 4, sort: 'newest' })` call karo (client-side `useEffect`)
+- `ProductCarousel` component render karo neeche
+- "Continue Shopping →" CTA bada aur prominent banao
+
+---
+
+### A5 · Full Countries List — Cart Shipping Dropdown
+**File:** [storefront/src/app/cart/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/cart/page.tsx) (line 357–365)  
+**Why:** Sirf 8 countries hain — international customers ke liye useless.
+
+**Change:** Hardcoded `<option>` tags ko ek countries config array se replace karo:
+
+```ts
+// src/config/countries.ts (new file)
+export const SHIPPING_COUNTRIES = [
+  { code: 'US', name: 'United States' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'IN', name: 'India' },
+  { code: 'AE', name: 'United Arab Emirates' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'FR', name: 'France' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'JP', name: 'Japan' },
+  { code: 'SG', name: 'Singapore' },
+  { code: 'NZ', name: 'New Zealand' },
+  { code: 'ZA', name: 'South Africa' },
+  // ... 30+ more
+];
+```
+
+---
+
+## Phase B — Product Card Enhancement 🎨
+> **Goal:** ProductGrid cards ko premium, conversion-optimized banao.
+
+---
+
+### B1 · "New" / "Sale" Badge on Cards
+**File:** [storefront/src/components/ProductGrid.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/components/ProductGrid.tsx)  
+**Why:** Etsy mein har card pe sale badge, new tag hota hai — important conversion signal.
+
+**Changes:**
+- "New" badge: `product.created_at` check karo — agar 14 din se kam prana ho
+- "Sale" badge: `compare_at_price > 0` check karo
+- Badge position: `absolute top-3 left-3` on the image container
+- "Low Stock" badge: `inventory_quantity <= 5` pe amber warning
+
+```tsx
+{/* Badges */}
+<div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+  {isNew && <span className="bg-stone-900 text-white text-[9px] font-bold px-2 py-1 uppercase tracking-widest">New</span>}
+  {isOnSale && <span className="bg-red-600 text-white text-[9px] font-bold px-2 py-1 uppercase tracking-widest">Sale</span>}
+  {isLowStock && <span className="bg-amber-500 text-white text-[9px] font-bold px-2 py-1 uppercase tracking-widest">Almost Gone</span>}
+</div>
+```
+
+---
+
+### B2 · Hover Alternate Image
+**File:** [storefront/src/components/ProductGrid.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/components/ProductGrid.tsx)  
+**Why:** Fashion e-commerce mein hover image swap standard UX hai.
+
+**Changes:**
+- `product.images[1]` check karo (second image)
+- CSS `opacity-0 group-hover:opacity-100` transition use karo
+- Dono images ek saath render karo, second ko initially hide karo
+
+```tsx
+{product.images?.[1] && (
+  <OptimizedImage
+    src={product.images[1].url}
+    alt={`${product.title} alternate view`}
+    fill
+    className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700 absolute inset-0"
+  />
+)}
+```
+
+> [!NOTE]
+> `product.images` type mein pehle se `ProductImage[]` hai — TypeScript safe hai.
+
+---
+
+### B3 · Star Rating Mini Display on Cards
+**File:** [storefront/src/components/ProductGrid.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/components/ProductGrid.tsx)  
+**Why:** Social proof — reviews star rating card pe dikhne se trust badhta hai.
+
+**Changes:**
+- `product` type mein `review_count` aur `avg_rating` fields add karo (backend already returns these from [ProductQueryService](file:///e:/Kvastram%20projects/kvastram-platform/backend/src/services/product/product-query-service.ts#47-483))
+- Card ke product info section mein rating add karo:
+
+```tsx
+{product.avg_rating > 0 && (
+  <div className="flex items-center justify-center gap-1 mt-1">
+    <div className="flex">
+      {[1,2,3,4,5].map(i => (
+        <Star key={i} size={10} fill={i <= Math.round(product.avg_rating) ? 'currentColor' : 'none'} className="text-amber-400" />
+      ))}
+    </div>
+    <span className="text-[10px] text-stone-400">({product.review_count})</span>
+  </div>
+)}
+```
+
+---
+
+### B4 · Quick Add Button Redesign
+**File:** [storefront/src/components/ProductGrid.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/components/ProductGrid.tsx)  
+**Why:** Current "Add to Cart" button sirf hover pe slide up hota hai — mobile pe dikhai nahi deta.
+
+**Changes:**
+- Mobile pe always-visible small "+ Add" button below price
+- Desktop pe existing hover behavior rakhein
+- Agar multiple variants hain, button click se Quick View open karo
+
+---
+
+## Phase C — Homepage UX Lift 🏠
+> **Goal:** Homepage ko trust-building, conversion-optimized experience banao.
+
+---
+
+### C1 · Trust Bar Redesign
+**File:** [storefront/src/app/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/page.tsx) (line 94–131)  
+**Why:** Current trust bar mein sirf 3 generic icons hain — koi numbers/proof nahi.
+
+**New Design:**
+```
+[★ 4.9/5] [15,000+ Happy Customers] [🌍 150+ Countries] [🔒 Secure Checkout] [↩ 30-Day Returns]
+```
+
+- Animated counter jo 0 se count up kare (IntersectionObserver ke saath)
+- 5-column layout on desktop, 2-col on mobile
+
+---
+
+### C2 · "Bestsellers" Section Add Karo
+**File:** [storefront/src/app/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/page.tsx)  
+**Why:** Featured collections ke baad ek bestsellers section hona chahiye.
+
+**Changes:**
+- `api.getProducts({ tag: 'bestseller', limit: 6 })` call karo
+- Naya distinct section add karo — dark background (`bg-stone-900 text-white`) for visual break
+- Horizontal scrollable carousel on mobile
+
+---
+
+### C3 · Newsletter Section Redesign
+**File:** [storefront/src/app/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/page.tsx) (line 369–389)  
+**Why:** Current newsletter section plain white box hai — boring.
+
+**New Design:**
+- Split layout: left side image, right side form
+- Incentive clearly dikhao: "10% off your first order"
+- Email input design premium look ke saath
+
+---
+
+### C4 · UGC / Instagram Feed Placeholder
+**File:** [storefront/src/app/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/page.tsx)  
+**Why:** Social proof — "As seen on Instagram" section conversion ke liye powerful hai.
+
+**Changes:**
+- Static 6-image grid (admin se configurable ban sakta hai baad mein)
+- "Follow us @kvastram" CTA with Instagram icon
+- Hover overlay with heart count
+
+---
+
+## Phase D — Checkout Flow 🛒
+> **Goal:** Checkout experience ko smoother aur more trustworthy banao.
+
+---
+
+### D1 · Checkout Progress Bar
+**File:** [storefront/src/app/checkout/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/checkout/page.tsx)  
+**Why:** Users ko progress visibility nahi milti — causes anxiety and abandonment.
+
+**Design:**
+```
+[1. Cart] ──●── [2. Shipping] ──○── [3. Payment] ──○── [4. Confirm]
+```
+- 4-step progress indicator top par
+- Current step highlight karo
+- Previous steps clickable (backtrack allow karo)
+
+---
+
+### D2 · Full Countries List — Checkout Form
+**File:** [storefront/src/app/checkout/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/checkout/page.tsx)  
+**Why:** Checkout mein bhi country dropdown limited hai.
+
+**Change:** `src/config/countries.ts` (Phase A5 mein banaya) se import karo.
+
+---
+
+### D3 · Gift Wrapping Option
+**File:** [storefront/src/app/checkout/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/checkout/page.tsx)  
+**Why:** AOV (Average Order Value) increase karta hai — easy upsell.
+
+**Changes:**
+- Shipping form ke baad "Gift Options" section add karo
+- Checkbox: "Add gift wrapping (+$5)"
+- Textarea: "Gift message (optional)"
+- Backend mein order creation pe `gift_wrapping: true` aur `gift_message` field pass karo
+
+---
+
+### D4 · Order Confirmation Page Redesign
+**File:** [storefront/src/app/checkout/success/page.tsx](file:///e:/Kvastram%20projects/kvastram-platform/storefront/src/app/checkout/success/page.tsx) (verify path)  
+**Why:** Post-purchase experience brand perception ke liye critical hai.
+
+**New Elements:**
+- Animated checkmark (CSS animation)
+- Order summary card (items, total)
+- "Track your order" CTA
+- "You may also like" product recommendations
+- Social share: "I just ordered from @Kvastram!"
+- WhatsApp support button
+
+---
+
+## 📅 Sprint Schedule
+
+| Sprint | Days | Tasks | Output |
+|---|---|---|---|
+| **Sprint 1** | Day 1–2 | A1, A2, A3 | Sticky CTA + Accordions + SEO |
+| **Sprint 2** | Day 3–4 | A4, A5, B1 | Cart + Countries + Badges |
+| **Sprint 3** | Day 5–6 | B2, B3, B4 | Product card overhaul |
+| **Sprint 4** | Day 7–8 | C1, C2 | Homepage trust + bestsellers |
+| **Sprint 5** | Day 9–10 | C3, C4 | Newsletter + UGC section |
+| **Sprint 6** | Day 11–12 | D1, D2 | Checkout progress + countries |
+| **Sprint 7** | Day 13–14 | D3, D4 | Gift wrap + Confirmation page |
+
+---
+
+## ✅ Definition of Done (Har Task Ke Liye)
+
+- [ ] TypeScript errors zero (`npx tsc --noEmit`)
+- [ ] Mobile responsive (375px to 1440px)
+- [ ] Build pass (`npm run build`)
+- [ ] Visually verified in browser
+- [ ] Accessibility: keyboard navigable, aria labels present
+
+---
+
+> [!IMPORTANT]
+> **Sabse pehle A1 (Sticky CTA) karo** — yeh directly revenue impact karta hai. Mobile users ka conversion rate dramatically improve hoga.

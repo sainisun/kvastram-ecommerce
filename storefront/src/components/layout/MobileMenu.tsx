@@ -99,7 +99,7 @@ export default function MobileMenu({
   }, [isOpen]);
 
   const isFirstOpen = useRef(true);
-  
+
   useEffect(() => {
     if (isOpen) {
       if (isFirstOpen.current) {
@@ -115,9 +115,10 @@ export default function MobileMenu({
     }
   }, [pathname, isOpen, handleClose]);
 
-  const reducedMotion = typeof window !== 'undefined' 
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
-    : false;
+  const reducedMotion =
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false;
 
   const handleLinkClick = () => {
     handleClose();
@@ -132,8 +133,16 @@ export default function MobileMenu({
   };
 
   const socialLinks = [
-    { icon: Instagram, href: 'https://instagram.com/kvastram', label: 'Instagram' },
-    { icon: Facebook, href: 'https://facebook.com/kvastram', label: 'Facebook' },
+    {
+      icon: Instagram,
+      href: 'https://instagram.com/kvastram',
+      label: 'Instagram',
+    },
+    {
+      icon: Facebook,
+      href: 'https://facebook.com/kvastram',
+      label: 'Facebook',
+    },
     { icon: Twitter, href: 'https://twitter.com/kvastram', label: 'Twitter' },
   ];
 
@@ -159,10 +168,10 @@ export default function MobileMenu({
           initial={{ x: '-100%' }}
           animate={{ x: 0 }}
           exit={{ x: '-100%' }}
-          transition={{ 
-            type: 'tween', 
-            duration: 0.3, 
-            ease: 'easeOut' 
+          transition={{
+            type: 'tween',
+            duration: 0.3,
+            ease: 'easeOut',
           }}
           className="fixed top-0 left-0 h-full w-full max-w-[400px] bg-white z-50 md:hidden shadow-2xl flex flex-col"
           role="dialog"
@@ -200,9 +209,9 @@ export default function MobileMenu({
                   placeholder="Search products..."
                   className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm text-black placeholder:text-gray-400 transition-colors"
                 />
-                <Search 
-                  size={18} 
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" 
+                <Search
+                  size={18}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"
                 />
                 {searchQuery && (
                   <button
@@ -224,7 +233,7 @@ export default function MobileMenu({
               <h3 className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500">
                 Categories
               </h3>
-              
+
               {categories.length > 0 ? (
                 <div className="space-y-1">
                   {categories.map((category) => (
@@ -258,6 +267,14 @@ export default function MobileMenu({
                   label="New Arrivals"
                   pathname={pathname}
                   onClick={handleLinkClick}
+                />
+                <MobileNavLink
+                  href="/products?tag_id=plus-size"
+                  icon={<Tag size={18} />}
+                  label="Plus Size"
+                  pathname={pathname}
+                  onClick={handleLinkClick}
+                  highlight
                 />
                 <MobileNavLink
                   href="/products?tag=bestseller"
@@ -403,7 +420,7 @@ export default function MobileMenu({
                   }`}
                 />
               </button>
-              
+
               {showRegionMenu && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
@@ -499,9 +516,7 @@ function MobileNavLink({
             : 'text-gray-700 hover:bg-gray-50 hover:text-black'
       }`}
     >
-      <span className={isActive ? 'text-black' : 'text-gray-400'}>
-        {icon}
-      </span>
+      <span className={isActive ? 'text-black' : 'text-gray-400'}>{icon}</span>
       {label}
     </Link>
   );
