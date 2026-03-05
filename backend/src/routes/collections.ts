@@ -6,6 +6,11 @@ import { product_collections } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
 
+const isUuid = (val: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(val);
+};
+
 const collectionsRouter = new Hono();
 
 const CollectionSchema = z.object({
@@ -36,13 +41,21 @@ collectionsRouter.get('/', async (c) => {
   }
 });
 
-// GET /collections/:id
+// GET /collections/:id - accepts UUID or handle
 collectionsRouter.get('/:id', async (c) => {
-  const id = c.req.param('id');
+  const idOrHandle = c.req.param('id');
   try {
-    const collection = await db.query.product_collections.findFirst({
-      where: eq(product_collections.id, id),
-    });
+    let collection;
+    
+    if (isUuid(idOrHandle)) {
+      collection = await db.query.product_collections.findFirst({
+        where: eq(product_collections.id, idOrHandle),
+      });
+    } else {
+      collection = await db.query.product_collections.findFirst({
+        where: eq(product_collections.handle, idOrHandle),
+      });
+    }
 
     if (!collection) {
       return c.json({ error: 'Collection not found' }, 404);
