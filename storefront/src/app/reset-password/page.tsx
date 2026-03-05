@@ -5,6 +5,82 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, ArrowLeft, Eye, EyeOff, Check, X } from 'lucide-react';
 
+function usePasswordValidation(password: string) {
+  const [valid, setValid] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false,
+  });
+
+  useEffect(() => {
+    setValid({
+      length: password.length >= 12,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    });
+  }, [password]);
+
+  return valid;
+}
+
+function SuccessView() {
+  return (
+    <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
+      <div className="max-w-md w-full space-y-8 text-center">
+        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+          <svg
+            className="w-8 h-8 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-serif text-stone-900">
+          Password Reset Successfully
+        </h1>
+        <p className="text-stone-500">
+          Your password has been reset. You can now log in with your new
+          password.
+        </p>
+        <Link
+          href="/login"
+          className="inline-block bg-stone-900 text-white px-8 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors"
+        >
+          Go to Login
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function PasswordRequirement({
+  label,
+  isValid,
+}: {
+  label: string;
+  isValid: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-stone-400'}`}
+    >
+      {isValid ? <Check size={12} /> : <X size={12} />}
+      {label}
+    </div>
+  );
+}
+
 function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -18,24 +94,7 @@ function ResetPasswordContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Password validation
-  const [passwordValid, setPasswordValid] = useState({
-    length: false,
-    uppercase: false,
-    lowercase: false,
-    number: false,
-    special: false,
-  });
-
-  useEffect(() => {
-    setPasswordValid({
-      length: password.length >= 12,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      number: /\d/.test(password),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-    });
-  }, [password]);
+  const passwordValid = usePasswordValidation(password);
 
   useEffect(() => {
     if (!token) {
@@ -46,7 +105,7 @@ function ResetPasswordContent() {
   const isPasswordValid = Object.values(passwordValid).every(Boolean);
   const passwordsMatch = password === confirmPassword && password !== '';
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setError('');
 
@@ -87,42 +146,7 @@ function ResetPasswordContent() {
     }
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
-        <div className="max-w-md w-full space-y-8 text-center">
-          <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-serif text-stone-900">
-            Password Reset Successfully
-          </h1>
-          <p className="text-stone-500">
-            Your password has been reset. You can now log in with your new
-            password.
-          </p>
-          <Link
-            href="/login"
-            className="inline-block bg-stone-900 text-white px-8 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (success) return <SuccessView />;
 
   return (
     <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
@@ -181,48 +205,26 @@ function ResetPasswordContent() {
                 Password must contain:
               </p>
               <div className="grid grid-cols-2 gap-1 text-xs">
-                <div
-                  className={`flex items-center gap-1 ${passwordValid.length ? 'text-green-600' : 'text-stone-400'}`}
-                >
-                  {passwordValid.length ? <Check size={12} /> : <X size={12} />}
-                  At least 12 characters
-                </div>
-                <div
-                  className={`flex items-center gap-1 ${passwordValid.uppercase ? 'text-green-600' : 'text-stone-400'}`}
-                >
-                  {passwordValid.uppercase ? (
-                    <Check size={12} />
-                  ) : (
-                    <X size={12} />
-                  )}
-                  One uppercase letter
-                </div>
-                <div
-                  className={`flex items-center gap-1 ${passwordValid.lowercase ? 'text-green-600' : 'text-stone-400'}`}
-                >
-                  {passwordValid.lowercase ? (
-                    <Check size={12} />
-                  ) : (
-                    <X size={12} />
-                  )}
-                  One lowercase letter
-                </div>
-                <div
-                  className={`flex items-center gap-1 ${passwordValid.number ? 'text-green-600' : 'text-stone-400'}`}
-                >
-                  {passwordValid.number ? <Check size={12} /> : <X size={12} />}
-                  One number
-                </div>
-                <div
-                  className={`flex items-center gap-1 ${passwordValid.special ? 'text-green-600' : 'text-stone-400'}`}
-                >
-                  {passwordValid.special ? (
-                    <Check size={12} />
-                  ) : (
-                    <X size={12} />
-                  )}
-                  One special character
-                </div>
+                <PasswordRequirement
+                  label="At least 12 characters"
+                  isValid={passwordValid.length}
+                />
+                <PasswordRequirement
+                  label="One uppercase letter"
+                  isValid={passwordValid.uppercase}
+                />
+                <PasswordRequirement
+                  label="One lowercase letter"
+                  isValid={passwordValid.lowercase}
+                />
+                <PasswordRequirement
+                  label="One number"
+                  isValid={passwordValid.number}
+                />
+                <PasswordRequirement
+                  label="One special character"
+                  isValid={passwordValid.special}
+                />
               </div>
             </div>
           </div>

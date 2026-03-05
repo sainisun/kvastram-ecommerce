@@ -18,6 +18,7 @@ import {
   Star,
   FileText,
   Bell,
+  RotateCcw,
 } from 'lucide-react';
 
 const menuItems = [
@@ -27,6 +28,7 @@ const menuItems = [
   { name: 'Categories', icon: Folder, path: '/dashboard/categories' },
   { name: 'Tags', icon: Tag, path: '/dashboard/tags' },
   { name: 'Orders', icon: Box, path: '/dashboard/orders' },
+  { name: 'Returns', icon: RotateCcw, path: '/dashboard/returns' },
   { name: 'Customers', icon: Users, path: '/dashboard/customers' },
   { name: 'Reviews', icon: Star, path: '/dashboard/reviews' },
   { name: 'Analytics', icon: BarChart3, path: '/dashboard/analytics' },

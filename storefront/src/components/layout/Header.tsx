@@ -8,6 +8,7 @@ import {
   User,
   Menu,
   Heart,
+  X,
 } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { useShop } from '@/context/shop-context';
@@ -18,6 +19,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import SearchOverlay from '@/components/search/SearchOverlay';
 import MobileMenu from '@/components/layout/MobileMenu';
+import CartDrawer from '@/components/layout/CartDrawer';
 
 interface NavLink {
   label: string;
@@ -56,6 +58,9 @@ export function Header() {
   const [showRegionMenu, setShowRegionMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showCartDrawer, setShowCartDrawer] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -73,13 +78,41 @@ export function Header() {
   }, [menuRef]);
 
   const [categories, setCategories] = useState<
-    Array<{ id: string; name: string; slug: string; image?: string }>
+    Array<{
+      id: string;
+      name: string;
+      slug: string;
+      image?: string;
+      children?: Array<{
+        id: string;
+        name: string;
+        slug: string;
+        image?: string;
+      }>;
+    }>
   >([]);
   const [showShopMenu, setShowShopMenu] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [announcementText, setAnnouncementText] = useState('');
   const [announcementEnabled, setAnnouncementEnabled] = useState(false);
+  const [announcementDismissed, setAnnouncementDismissed] = useState(false);
   const [navLinks, setNavLinks] = useState<NavLink[]>(DEFAULT_NAV_LINKS);
   const [quickLinks, setQuickLinks] = useState<NavLink[]>(DEFAULT_QUICK_LINKS);
+
+  // Check localStorage for dismissed announcement
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const dismissed = localStorage.getItem('kvastram_announcement_dismissed');
+      if (dismissed === 'true') {
+        setAnnouncementDismissed(true);
+      }
+    }
+  }, []);
+
+  const handleDismissAnnouncement = () => {
+    setAnnouncementDismissed(true);
+    localStorage.setItem('kvastram_announcement_dismissed', 'true');
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -134,310 +167,418 @@ export function Header() {
     fetchData();
   }, []);
 
+  // Scroll listener for smart sticky header & shrinking
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+
+          setIsScrolled(currentScrollY > 50);
+
+          if (currentScrollY > lastScrollY && currentScrollY > 150) {
+            setScrollDirection('down');
+          } else if (currentScrollY < lastScrollY) {
+            setScrollDirection('up');
+          }
+
+          lastScrollY = currentScrollY > 0 ? currentScrollY : 0;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-100">
-      {/* Announcement Strip */}
-      {announcementEnabled && announcementText && (
-        <div className="bg-stone-900 text-white text-[10px] uppercase tracking-widest overflow-hidden h-8 flex items-center">
-          <div className="animate-marquee">
-            {[...Array(4)].map((_, i) => (
-              <span key={i} className="px-12 whitespace-nowrap">
-                {announcementText}
-                <span className="mx-8 opacity-40">✦</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Mobile Header Layout */}
-        <div className="flex items-center justify-between w-full md:hidden relative px-2">
-          {/* Left: Hamburger Menu */}
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors rounded flex items-center justify-center"
-            aria-label="Open menu"
-          >
-            <Menu size={24} />
-          </button>
-
-          {/* Center: Logo */}
-          <Link
-            href="/"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-xl tracking-[0.2em] font-light text-stone-900"
-          >
-            KVASTRAM
-          </Link>
-
-          {/* Right: Search & Cart */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowSearch(true)}
-              className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors flex items-center justify-center"
-              aria-label="Search"
-              style={{ touchAction: 'manipulation' }}
-            >
-              <Search size={22} />
-            </button>
-            <Link
-              href="/cart"
-              className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors relative flex items-center justify-center"
-              aria-label="Cart"
-            >
-              <ShoppingBag size={22} />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-stone-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {totalItems}
+    <>
+      <header
+        className={`sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-stone-100 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
+        }`}
+      >
+        {/* Announcement Strip — Premium with shimmer & dismiss */}
+        {announcementEnabled && announcementText && !announcementDismissed && (
+          <div className="announcement-bar text-white text-[10px] uppercase tracking-widest overflow-hidden h-8 flex items-center">
+            <div className="animate-marquee">
+              {[...Array(4)].map((_, i) => (
+                <span key={i} className="px-8 whitespace-nowrap">
+                  <span className="ticker-shimmer font-medium">
+                    {announcementText}
+                  </span>
+                  <span className="ticker-gem">✦</span>
                 </span>
-              )}
-            </Link>
+              ))}
+            </div>
+            <button
+              onClick={handleDismissAnnouncement}
+              className="announcement-dismiss"
+              aria-label="Dismiss announcement"
+            >
+              <X size={14} />
+            </button>
           </div>
-        </div>
+        )}
 
-        {/* Desktop Header Layout */}
-        <div className="hidden md:flex items-center justify-between w-full">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="font-serif text-2xl tracking-[0.25em] font-light text-stone-900 hover:text-stone-600 transition-colors"
-          >
-            KVASTRAM
-          </Link>
+        <div
+          className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 ${
+            isScrolled ? 'h-14' : 'h-[72px]'
+          }`}
+        >
+          {/* Mobile Header Layout */}
+          <div className="flex items-center justify-between w-full md:hidden relative px-2">
+            {/* Left: Hamburger Menu */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors rounded flex items-center justify-center"
+              aria-label="Open menu"
+            >
+              <Menu size={24} />
+            </button>
 
-          {/* Nav - Desktop */}
-          <nav className="flex items-center gap-8 text-sm font-medium text-stone-600">
-            {navLinks.map((link) => {
-              if (link.label === 'Shop') {
-                return (
-                  <div
-                    key={link.label}
-                    className="relative group"
-                    onMouseEnter={() => setShowShopMenu(true)}
-                    onMouseLeave={() => setShowShopMenu(false)}
-                    onFocus={() => setShowShopMenu(true)}
-                  >
-                    <button
-                      className="flex items-center gap-1 hover:text-black transition-colors py-2 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded"
-                      aria-label="Shop menu"
-                      aria-expanded={showShopMenu}
-                      aria-haspopup="true"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          setShowShopMenu(false);
-                        }
-                      }}
+            {/* Center: Logo */}
+            <Link
+              href="/"
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-xl tracking-[0.2em] font-light text-stone-900"
+            >
+              KVASTRAM
+            </Link>
+
+            {/* Right: Search & Cart */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowSearch(true)}
+                className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors flex items-center justify-center"
+                aria-label="Search"
+                style={{ touchAction: 'manipulation' }}
+              >
+                <Search size={22} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCartDrawer(true)}
+                className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors relative flex items-center justify-center"
+                aria-label="Open cart"
+              >
+                <ShoppingBag size={22} />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-stone-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Header Layout */}
+          <div className="hidden md:flex items-center justify-between w-full">
+            {/* Logo — Premium with motif */}
+            <Link href="/" className="nav-logo-premium">
+              <span className="logo-motif">◆</span>
+              KVASTRAM
+            </Link>
+
+            {/* Nav - Desktop */}
+            <nav className="flex items-center gap-6 text-sm font-medium text-stone-600">
+              {navLinks.map((link, index) => {
+                const isActive =
+                  pathname === link.url ||
+                  (link.url !== '/' &&
+                    pathname.startsWith(link.url.split('?')[0]));
+
+                if (link.label === 'Shop') {
+                  return (
+                    <div
+                      key={link.label}
+                      className="relative group"
+                      onMouseEnter={() => setShowShopMenu(true)}
+                      onMouseLeave={() => setShowShopMenu(false)}
+                      onFocus={() => setShowShopMenu(true)}
                     >
-                      {link.label}
-                      <ChevronDown
-                        size={14}
-                        className={`transition-transform duration-200 ${showShopMenu ? 'rotate-180' : ''}`}
-                      />
-                    </button>
+                      <button
+                        className={`nav-link-premium nav-link-stagger flex items-center gap-1 py-2 focus:outline-none rounded ${isActive ? 'active text-stone-900' : ''}`}
+                        style={{ animationDelay: `${index * 60}ms` }}
+                        aria-label="Shop menu"
+                        aria-expanded={showShopMenu}
+                        aria-haspopup="true"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            setShowShopMenu(false);
+                          }
+                        }}
+                      >
+                        {link.label}
+                        <ChevronDown
+                          size={14}
+                          className={`transition-transform duration-200 ${showShopMenu ? 'rotate-180' : ''}`}
+                        />
+                      </button>
 
-                    {showShopMenu && (
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-[800px] max-w-[90vw] bg-white shadow-2xl border border-stone-100 py-6 px-6 animate-in fade-in slide-in-from-top-2 duration-200">
-                        <div className="grid grid-cols-4 gap-6">
-                          {/* Featured Category */}
-                          <div className="col-span-1">
-                            <Link
-                              href="/products"
-                              className="block group/menu"
-                              onClick={() => setShowShopMenu(false)}
-                            >
-                              <div className="aspect-[3/4] bg-stone-100 relative overflow-hidden mb-3 rounded-sm">
-                                {categories[0]?.image ? (
+                      {showShopMenu && (
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-[900px] max-w-[92vw] bg-white shadow-2xl border border-stone-100 rounded-sm overflow-hidden mega-menu-enter">
+                          <div className="grid grid-cols-12 min-h-[340px]">
+                            {/* Left: Categories with Subcategories */}
+                            <div className="col-span-5 py-6 px-6 border-r border-stone-100">
+                              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-4">
+                                Categories
+                              </p>
+                              <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                                {categories.slice(0, 8).map((cat, idx) => (
+                                  <div
+                                    key={cat.id}
+                                    className="mega-col-stagger"
+                                    style={{ animationDelay: `${idx * 40}ms` }}
+                                  >
+                                    <Link
+                                      href={`/products?category_id=${cat.id}`}
+                                      className="text-sm font-semibold text-stone-800 hover:text-black transition-colors py-1.5 block border-l-2 border-transparent hover:border-amber-500 pl-2 -ml-2"
+                                      onClick={() => setShowShopMenu(false)}
+                                      onMouseEnter={() =>
+                                        setHoveredCategory(cat.id)
+                                      }
+                                    >
+                                      {cat.name}
+                                    </Link>
+                                    {/* Subcategories */}
+                                    {cat.children &&
+                                      cat.children.length > 0 && (
+                                        <ul className="mb-2">
+                                          {cat.children
+                                            .slice(0, 4)
+                                            .map((child) => (
+                                              <li key={child.id}>
+                                                <Link
+                                                  href={`/products?category_id=${child.id}`}
+                                                  className="text-xs text-stone-500 hover:text-black transition-colors py-0.5 block pl-2"
+                                                  onClick={() =>
+                                                    setShowShopMenu(false)
+                                                  }
+                                                >
+                                                  {child.name}
+                                                </Link>
+                                              </li>
+                                            ))}
+                                        </ul>
+                                      )}
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="h-px bg-stone-100 my-3" />
+                              <Link
+                                href="/products"
+                                className="text-xs font-bold uppercase tracking-[0.15em] text-stone-900 hover:text-amber-700 transition-colors flex items-center gap-1.5"
+                                onClick={() => setShowShopMenu(false)}
+                              >
+                                Shop All Products →
+                              </Link>
+                            </div>
+
+                            {/* Center: Featured Image (changes on category hover) */}
+                            <div className="col-span-4 relative overflow-hidden bg-stone-100">
+                              {(() => {
+                                const featured = hoveredCategory
+                                  ? categories.find(
+                                      (c) => c.id === hoveredCategory
+                                    )
+                                  : categories[0];
+                                return featured ? (
                                   <>
-                                    <OptimizedImage
-                                      src={categories[0].image}
-                                      alt={categories[0].name || 'Featured'}
-                                      fill
-                                      className="object-cover"
-                                      sizes="200px"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                                  </>
-                                ) : (
-                                  <>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                      <span className="text-white/30 text-4xl font-bold">
-                                        {categories[0]?.name?.charAt(0) || '?'}
+                                    <div className="absolute inset-0">
+                                      {featured.image ? (
+                                        <OptimizedImage
+                                          src={featured.image}
+                                          alt={featured.name}
+                                          fill
+                                          className="object-cover transition-opacity duration-300"
+                                          sizes="300px"
+                                        />
+                                      ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
+                                          <span className="text-stone-300 text-6xl font-serif">
+                                            {featured.name?.charAt(0)}
+                                          </span>
+                                        </div>
+                                      )}
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                                    </div>
+                                    <div className="absolute bottom-0 left-0 right-0 p-5">
+                                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 block mb-1">
+                                        Featured
+                                      </span>
+                                      <span className="text-lg font-serif text-white font-light">
+                                        {featured.name}
                                       </span>
                                     </div>
                                   </>
-                                )}
-                                <div className="absolute bottom-4 left-4 right-4">
-                                  <span className="text-white text-xs font-bold uppercase tracking-wider">
-                                    {categories[0]?.name || 'Shop All'}
-                                  </span>
-                                </div>
+                                ) : null;
+                              })()}
+                            </div>
+
+                            {/* Right: Quick Links + Promo */}
+                            <div className="col-span-3 py-6 px-5 bg-stone-50/70">
+                              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-4">
+                                Shop By
+                              </p>
+                              <div className="space-y-2.5">
+                                {quickLinks.map((qLink) => (
+                                  <Link
+                                    key={qLink.label}
+                                    href={qLink.url}
+                                    className={`block text-sm transition-colors ${qLink.highlight ? 'text-amber-600 font-semibold hover:text-amber-700' : 'text-stone-700 hover:text-black font-medium'}`}
+                                    onClick={() => setShowShopMenu(false)}
+                                  >
+                                    {qLink.label}
+                                  </Link>
+                                ))}
                               </div>
-                              <span className="text-sm font-medium text-stone-900 group-hover/menu:text-stone-600">
-                                Shop All
-                              </span>
-                            </Link>
-                          </div>
-
-                          {/* Categories */}
-                          <div className="col-span-2 grid grid-cols-2 gap-x-8 gap-y-3">
-                            {categories.slice(0, 6).map((cat) => (
+                              <div className="h-px bg-stone-200/60 my-4" />
                               <Link
-                                key={cat.id}
-                                href={`/products?category_id=${cat.id}`}
-                                className="text-sm text-stone-600 hover:text-black transition-colors py-1"
+                                href="/collections"
+                                className="block text-sm font-medium text-stone-700 hover:text-black transition-colors"
                                 onClick={() => setShowShopMenu(false)}
                               >
-                                {cat.name}
+                                All Collections
                               </Link>
-                            ))}
-                            <div className="col-span-2 h-px bg-stone-100 my-2" />
-                            <Link
-                              href="/products?sort=newest"
-                              className="text-sm font-medium text-stone-900 hover:text-stone-600"
-                              onClick={() => setShowShopMenu(false)}
-                            >
-                              View All Categories →
-                            </Link>
-                          </div>
-
-                          {/* Quick Links */}
-                          <div className="col-span-1 space-y-3 bg-stone-50 p-4 rounded-sm">
-                            <p className="text-xs font-bold uppercase tracking-wider text-stone-500">
-                              Shop By
-                            </p>
-                            {quickLinks.map((qLink) => (
                               <Link
-                                key={qLink.label}
-                                href={qLink.url}
-                                className={`block text-sm hover:text-black ${qLink.highlight ? 'text-amber-600 font-medium hover:text-amber-700' : 'text-stone-700'}`}
+                                href="/products?sort=newest"
+                                className="block text-sm font-medium text-stone-700 hover:text-black transition-colors mt-2.5"
                                 onClick={() => setShowShopMenu(false)}
                               >
-                                {qLink.label}
+                                New Arrivals ✦
                               </Link>
-                            ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.url}
+                    className={`nav-link-premium nav-link-stagger ${isActive ? 'active text-stone-900' : ''} ${link.highlight ? 'text-amber-600 font-medium' : ''}`}
+                    style={{ animationDelay: `${index * 60}ms` }}
+                  >
+                    {link.label}
+                  </Link>
                 );
-              }
+              })}
+            </nav>
 
-              return (
-                <Link
-                  key={link.label}
-                  href={link.url}
-                  className={`hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded px-2 py-1 ${link.highlight ? 'text-amber-600 font-medium' : ''}`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Actions */}
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => setShowSearch(true)}
-              className="text-stone-600 hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="Search products"
-              title="Search"
-            >
-              <Search size={20} />
-            </button>
-
-            <Link
-              href="/account"
-              className="text-stone-600 hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="My Account"
-              title="My Account"
-            >
-              <User size={20} />
-            </Link>
-
-            {/* Wishlist Icon */}
-            <Link
-              href="/wishlist"
-              className="text-stone-600 hover:text-black transition-colors relative focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label={`Wishlist with ${wishlistCount} items`}
-              title="Wishlist"
-            >
-              <Heart size={20} />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
-
-            {/* Region Selector */}
-            <div className="relative" ref={menuRef}>
+            {/* Actions */}
+            {/* Actions — Premium icon bar with tooltips & glow */}
+            <div className="flex items-center gap-5">
               <button
-                onClick={() => setShowRegionMenu(!showRegionMenu)}
-                className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-black transition-colors px-3 py-1.5 rounded-full hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                aria-label="Select region and currency"
-                aria-expanded={showRegionMenu}
-                aria-haspopup="true"
-                title="Select Region"
+                type="button"
+                onClick={() => setShowSearch(true)}
+                className="header-icon-wrap text-stone-600 hover:text-black p-1 min-h-[44px] min-w-[44px]"
+                aria-label="Search products"
+                data-tooltip="Search"
               >
-                <Globe size={20} />
-                <span className="uppercase">
-                  {currentRegion?.currency_code || 'USD'}
-                </span>
-                <ChevronDown size={14} />
+                <Search size={20} />
               </button>
 
-              {showRegionMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-stone-100 py-1 overflow-hidden">
-                  <div className="px-4 py-2 bg-stone-50 border-b border-stone-100 text-xs font-semibold text-stone-500 uppercase">
-                    Select Region
-                  </div>
-                  {regions.map((region) => (
-                    <button
-                      key={region.id}
-                      onClick={() => {
-                        setRegion(region);
-                        setShowRegionMenu(false);
-                      }}
-                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-stone-50 flex items-center justify-between group focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ${
-                        currentRegion?.id === region.id
-                          ? 'text-blue-600 font-medium'
-                          : 'text-stone-600'
-                      }`}
-                    >
-                      <span>{region.name}</span>
-                      <span className="text-xs font-mono text-stone-400 group-hover:text-stone-600 uppercase">
-                        {region.currency_code}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+              <Link
+                href="/account"
+                className="header-icon-wrap text-stone-600 hover:text-black p-1 min-h-[44px] min-w-[44px]"
+                aria-label="My Account"
+                data-tooltip="Account"
+              >
+                <User size={20} />
+              </Link>
 
-            <Link
-              href="/cart"
-              className="text-stone-600 hover:text-black transition-colors relative focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 rounded p-1"
-              aria-label={`Shopping cart with ${totalItems} items`}
-              title="Shopping Cart"
-            >
-              <ShoppingBag size={20} />
-              {totalItems > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 w-4 h-4 bg-black text-white text-[10px] font-bold rounded-full flex items-center justify-center"
-                  aria-label={`${totalItems} items in cart`}
+              {/* Wishlist Icon */}
+              <Link
+                href="/wishlist"
+                className="header-icon-wrap text-stone-600 hover:text-black relative p-1 min-h-[44px] min-w-[44px]"
+                aria-label={`Wishlist with ${wishlistCount} items`}
+                data-tooltip="Wishlist"
+              >
+                <Heart size={20} />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Region Selector */}
+              <div className="relative" ref={menuRef}>
+                <button
+                  onClick={() => setShowRegionMenu(!showRegionMenu)}
+                  className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-black transition-colors px-3 py-1.5 rounded-full hover:bg-stone-100 focus:outline-none"
+                  aria-label="Select region and currency"
+                  aria-expanded={showRegionMenu}
+                  aria-haspopup="true"
+                  title="Select Region"
                 >
-                  {totalItems}
-                </span>
-              )}
-            </Link>
+                  <Globe size={20} />
+                  <span className="uppercase">
+                    {currentRegion?.currency_code || 'USD'}
+                  </span>
+                  <ChevronDown size={14} />
+                </button>
+
+                {showRegionMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-stone-100 py-1 overflow-hidden">
+                    <div className="px-4 py-2 bg-stone-50 border-b border-stone-100 text-xs font-semibold text-stone-500 uppercase">
+                      Select Region
+                    </div>
+                    {regions.map((region) => (
+                      <button
+                        key={region.id}
+                        onClick={() => {
+                          setRegion(region);
+                          setShowRegionMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-stone-50 flex items-center justify-between group focus:outline-none ${
+                          currentRegion?.id === region.id
+                            ? 'text-blue-600 font-medium'
+                            : 'text-stone-600'
+                        }`}
+                      >
+                        <span>{region.name}</span>
+                        <span className="text-xs font-mono text-stone-400 group-hover:text-stone-600 uppercase">
+                          {region.currency_code}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowCartDrawer(true)}
+                className="header-icon-wrap text-stone-600 hover:text-black relative p-1"
+                aria-label={`Shopping cart with ${totalItems} items`}
+                data-tooltip="Cart"
+              >
+                <ShoppingBag size={20} />
+                {totalItems > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-black text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+                    aria-label={`${totalItems} items in cart`}
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
+      {/* Overlays - Rendered outside header to escape transform containing block */}
       {/* SearchOverlay - Rendered outside mobile/desktop layouts for both views */}
       <SearchOverlay isOpen={showSearch} onClose={() => setShowSearch(false)} />
 
@@ -450,6 +591,12 @@ export function Header() {
         currentRegion={currentRegion}
         onRegionChange={setRegion}
       />
-    </header>
+
+      {/* Cart Drawer */}
+      <CartDrawer
+        isOpen={showCartDrawer}
+        onClose={() => setShowCartDrawer(false)}
+      />
+    </>
   );
 }

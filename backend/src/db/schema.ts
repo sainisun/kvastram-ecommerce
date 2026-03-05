@@ -891,3 +891,65 @@ export const wishlists = pgTable(
     customerIdx: index('idx_wishlists_customer_id').on(t.customer_id),
   })
 );
+
+// --- RETURNS & REFUNDS ---
+export const returns = pgTable(
+  'returns',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    order_id: uuid('order_id')
+      .references(() => orders.id, { onDelete: 'cascade' })
+      .notNull(),
+    customer_id: uuid('customer_id').references(() => customers.id),
+    reason: text('reason').notNull(),
+    // pending → approved → refunded | rejected
+    status: text('status').default('pending'),
+    refund_amount: integer('refund_amount').default(0), // in cents
+    admin_notes: text('admin_notes'),
+    ...createdUpdated,
+  },
+  (table) => ({
+    orderIdx: index('idx_returns_order_id').on(table.order_id),
+    statusIdx: index('idx_returns_status').on(table.status),
+  })
+);
+
+export const return_items = pgTable(
+  'return_items',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    return_id: uuid('return_id')
+      .references(() => returns.id, { onDelete: 'cascade' })
+      .notNull(),
+    line_item_id: uuid('line_item_id').references(() => line_items.id),
+    quantity: integer('quantity').notNull(),
+    restock: boolean('restock').default(true), // auto-restock inventory?
+    created_at: timestamp('created_at').defaultNow(),
+  },
+  (table) => ({
+    returnIdx: index('idx_return_items_return_id').on(table.return_id),
+  })
+);
+
+export const returnsRelations = relations(returns, ({ one, many }) => ({
+  order: one(orders, {
+    fields: [returns.order_id],
+    references: [orders.id],
+  }),
+  customer: one(customers, {
+    fields: [returns.customer_id],
+    references: [customers.id],
+  }),
+  items: many(return_items),
+}));
+
+export const returnItemsRelations = relations(return_items, ({ one }) => ({
+  return_request: one(returns, {
+    fields: [return_items.return_id],
+    references: [returns.id],
+  }),
+  line_item: one(line_items, {
+    fields: [return_items.line_item_id],
+    references: [line_items.id],
+  }),
+}));

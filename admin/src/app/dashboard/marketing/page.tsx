@@ -30,6 +30,19 @@ export default function MarketingPage() {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
   const [editingDiscount, setEditingDiscount] = useState<any>(null);
 
+  // Blast Modal
+  const [showBlastModal, setShowBlastModal] = useState(false);
+  const [blastLoading, setBlastLoading] = useState(false);
+  const [selectedBlastCampaign, setSelectedBlastCampaign] = useState<any>(null);
+  const [blastMsg, setBlastMsg] = useState<string | null>(null);
+  const [blastForm, setBlastForm] = useState({
+    subject: '',
+    headline: '',
+    body_text: '',
+    cta_text: 'Shop Now',
+    cta_url: '/',
+  });
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -177,16 +190,32 @@ export default function MarketingPage() {
     }
   };
 
+  const handleSendBlast = async () => {
+    if (!selectedBlastCampaign) return;
+    setBlastLoading(true);
+    setBlastMsg(null);
+    try {
+      const res = await api.post(
+        `/marketing/campaigns/${selectedBlastCampaign.id}/send`,
+        blastForm
+      );
+      setBlastMsg((res as any).message || 'Blast sent successfully!');
+      fetchData();
+    } catch (err: any) {
+      setBlastMsg(`Error: ${err.message}`);
+    } finally {
+      setBlastLoading(false);
+    }
+  };
+
   const tabs = [
     { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
     { id: 'discounts', label: 'Discounts', icon: Tag },
-    
+
     // { id: 'email', label: 'Email Marketing', icon: Mail },
-    
+
     // { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   ];
-
-  
 
   if (loading) {
     return (
@@ -386,6 +415,26 @@ export default function MarketingPage() {
                             >
                               <Edit2 size={16} />
                             </button>
+                            {campaign.status === 'active' && (
+                              <button
+                                onClick={() => {
+                                  setSelectedBlastCampaign(campaign);
+                                  setBlastForm({
+                                    subject: campaign.name + ' — Kvastram',
+                                    headline: campaign.name,
+                                    body_text: campaign.description || '',
+                                    cta_text: 'Shop Now',
+                                    cta_url: '/',
+                                  });
+                                  setBlastMsg(null);
+                                  setShowBlastModal(true);
+                                }}
+                                className="text-purple-500 hover:text-purple-700 p-1"
+                                title="Send Email Blast"
+                              >
+                                <Mail size={16} />
+                              </button>
+                            )}
                             <button
                               onClick={() =>
                                 handleDeleteCampaign(campaign.id, campaign.name)
@@ -528,10 +577,6 @@ export default function MarketingPage() {
             </div>
           </div>
         )}
-
-        
-
-        
       </div>
 
       {/* Edit Campaign Modal */}
@@ -543,10 +588,14 @@ export default function MarketingPage() {
             </h2>
             <form onSubmit={handleUpdateCampaign} className="space-y-4">
               <div>
-                <label htmlFor="field-1" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-1"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Campaign Name
                 </label>
-                <input id="field-1"
+                <input
+                  id="field-1"
                   type="text"
                   required
                   value={editingCampaign.name || ''}
@@ -560,10 +609,14 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label htmlFor="field-2" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-2"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description
                 </label>
-                <textarea id="field-2"
+                <textarea
+                  id="field-2"
                   value={editingCampaign.description || ''}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -575,10 +628,14 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label htmlFor="field-3" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-3"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Status
                 </label>
-                <select id="field-3"
+                <select
+                  id="field-3"
                   value={editingCampaign.status || 'draft'}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -595,10 +652,14 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="field-4" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-4"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Type
                 </label>
-                <select id="field-4"
+                <select
+                  id="field-4"
                   value={editingCampaign.type || 'promotion'}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -645,10 +706,14 @@ export default function MarketingPage() {
             </h2>
             <form onSubmit={handleUpdateDiscount} className="space-y-4">
               <div>
-                <label htmlFor="field-5" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-5"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Code
                 </label>
-                <input id="field-5"
+                <input
+                  id="field-5"
                   type="text"
                   required
                   value={editingDiscount.code || ''}
@@ -662,10 +727,14 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label htmlFor="field-6" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-6"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Type
                 </label>
-                <select id="field-6"
+                <select
+                  id="field-6"
                   value={editingDiscount.type || 'percentage'}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -681,10 +750,14 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="field-7" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-7"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Value
                 </label>
-                <input id="field-7"
+                <input
+                  id="field-7"
                   type="number"
                   required
                   value={editingDiscount.value || ''}
@@ -698,10 +771,14 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label htmlFor="field-8" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-8"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Status
                 </label>
-                <select id="field-8"
+                <select
+                  id="field-8"
                   value={editingDiscount.is_active ? 'true' : 'false'}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -716,10 +793,14 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="field-9" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-9"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Usage Limit (Optional)
                 </label>
-                <input id="field-9"
+                <input
+                  id="field-9"
                   type="number"
                   value={editingDiscount.usage_limit || ''}
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
@@ -733,10 +814,14 @@ export default function MarketingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="field-10" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="field-10"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Start Date
                   </label>
-                  <input id="field-10"
+                  <input
+                    id="field-10"
                     type="datetime-local"
                     value={
                       editingDiscount.starts_at
@@ -755,10 +840,14 @@ export default function MarketingPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="field-11" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="field-11"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     End Date
                   </label>
-                  <input id="field-11"
+                  <input
+                    id="field-11"
                     type="datetime-local"
                     value={
                       editingDiscount.ends_at
@@ -809,10 +898,14 @@ export default function MarketingPage() {
             </h2>
             <form onSubmit={handleCreateCampaign} className="space-y-4">
               <div>
-                <label htmlFor="field-12" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-12"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Campaign Name
                 </label>
-                <input id="field-12"
+                <input
+                  id="field-12"
                   type="text"
                   required
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
@@ -822,10 +915,14 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label htmlFor="field-13" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-13"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description
                 </label>
-                <textarea id="field-13"
+                <textarea
+                  id="field-13"
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
@@ -860,10 +957,14 @@ export default function MarketingPage() {
             </h2>
             <form onSubmit={handleCreateDiscount} className="space-y-4">
               <div>
-                <label htmlFor="field-14" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-14"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Code
                 </label>
-                <input id="field-14"
+                <input
+                  id="field-14"
                   type="text"
                   required
                   placeholder="SUMMER2026"
@@ -874,10 +975,14 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label htmlFor="field-15" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-15"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Campaign (Optional)
                 </label>
-                <select id="field-15"
+                <select
+                  id="field-15"
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
                     setFormData({ ...formData, campaign_id: e.target.value })
@@ -892,10 +997,14 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="field-16" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-16"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Type
                 </label>
-                <select id="field-16"
+                <select
+                  id="field-16"
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
                     setFormData({ ...formData, type: e.target.value })
@@ -908,10 +1017,14 @@ export default function MarketingPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="field-17" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-17"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Value
                 </label>
-                <input id="field-17"
+                <input
+                  id="field-17"
                   type="number"
                   required
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
@@ -921,10 +1034,14 @@ export default function MarketingPage() {
                 />
               </div>
               <div>
-                <label htmlFor="field-18" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="field-18"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Usage Limit (Optional)
                 </label>
-                <input id="field-18"
+                <input
+                  id="field-18"
                   type="number"
                   className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                   onChange={(e) =>
@@ -934,10 +1051,14 @@ export default function MarketingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="field-19" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="field-19"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Start Date
                   </label>
-                  <input id="field-19"
+                  <input
+                    id="field-19"
                     type="datetime-local"
                     className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                     onChange={(e) =>
@@ -946,10 +1067,14 @@ export default function MarketingPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="field-20" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="field-20"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     End Date
                   </label>
-                  <input id="field-20"
+                  <input
+                    id="field-20"
                     type="datetime-local"
                     className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
                     onChange={(e) =>
@@ -974,6 +1099,121 @@ export default function MarketingPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Send Blast Modal */}
+      {showBlastModal && selectedBlastCampaign && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl">
+            <h2 className="text-lg font-bold text-gray-900 mb-1">
+              Send Email Blast
+            </h2>
+            <p className="text-sm text-gray-500 mb-5">
+              Campaign: <strong>{selectedBlastCampaign.name}</strong> — will
+              send to all active newsletter subscribers
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Email Subject
+                </label>
+                <input
+                  type="text"
+                  value={blastForm.subject}
+                  onChange={(e) =>
+                    setBlastForm({ ...blastForm, subject: e.target.value })
+                  }
+                  className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Subject line..."
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Headline
+                </label>
+                <input
+                  type="text"
+                  value={blastForm.headline}
+                  onChange={(e) =>
+                    setBlastForm({ ...blastForm, headline: e.target.value })
+                  }
+                  className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Main heading in email..."
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Body Text
+                </label>
+                <textarea
+                  value={blastForm.body_text}
+                  onChange={(e) =>
+                    setBlastForm({ ...blastForm, body_text: e.target.value })
+                  }
+                  rows={3}
+                  className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Email body message..."
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    CTA Button Text
+                  </label>
+                  <input
+                    type="text"
+                    value={blastForm.cta_text}
+                    onChange={(e) =>
+                      setBlastForm({ ...blastForm, cta_text: e.target.value })
+                    }
+                    className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Shop Now"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    CTA URL
+                  </label>
+                  <input
+                    type="text"
+                    value={blastForm.cta_url}
+                    onChange={(e) =>
+                      setBlastForm({ ...blastForm, cta_url: e.target.value })
+                    }
+                    className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="/collections"
+                  />
+                </div>
+              </div>
+            </div>
+            {blastMsg && (
+              <div
+                className={`mt-4 p-3 rounded-lg text-sm ${blastMsg.startsWith('Error') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}
+              >
+                {blastMsg}
+              </div>
+            )}
+            <div className="flex gap-3 justify-end mt-6">
+              <button
+                onClick={() => {
+                  setShowBlastModal(false);
+                  setBlastMsg(null);
+                }}
+                className="px-4 py-2 text-sm text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSendBlast}
+                disabled={blastLoading}
+                className="px-5 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                <Mail size={14} />
+                {blastLoading ? 'Sending...' : 'Send Blast'}
+              </button>
+            </div>
           </div>
         </div>
       )}

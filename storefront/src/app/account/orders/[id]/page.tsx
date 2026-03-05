@@ -61,6 +61,14 @@ export default function OrderDetailsPage() {
   const [reordering, setReordering] = useState(false);
   const [reorderError, setReorderError] = useState<string | null>(null);
 
+  // Return Request state
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [returnLoading, setReturnLoading] = useState(false);
+  const [returnSuccess, setReturnSuccess] = useState<string | null>(null);
+  const [returnError, setReturnError] = useState<string | null>(null);
+  const [returnReason, setReturnReason] = useState('');
+  const [returnItems, setReturnItems] = useState<Record<string, number>>({});
+
   // Handle reorder functionality
   const handleReorder = async () => {
     if (!order || !order.items || order.items.length === 0) {
@@ -157,6 +165,42 @@ export default function OrderDetailsPage() {
       setReorderError('Failed to reorder items. Please try again.');
     } finally {
       setReordering(false);
+    }
+  };
+
+  const handleRequestReturn = async () => {
+    if (!order) return;
+    const selectedItems = Object.entries(returnItems)
+      .filter(([, qty]) => qty > 0)
+      .map(([id, quantity]) => ({ line_item_id: id, quantity, restock: true }));
+
+    if (selectedItems.length === 0) {
+      setReturnError('Please select at least one item to return.');
+      return;
+    }
+    if (returnReason.trim().length < 10) {
+      setReturnError(
+        'Please describe your reason for returning (min 10 characters).'
+      );
+      return;
+    }
+
+    setReturnLoading(true);
+    setReturnError(null);
+    try {
+      await api.requestReturn({
+        order_id: order.id,
+        reason: returnReason.trim(),
+        items: selectedItems,
+      });
+      setReturnSuccess(
+        'Your return request has been submitted. Our team will review it within 2-3 business days.'
+      );
+      setShowReturnModal(false);
+    } catch (err: any) {
+      setReturnError(err.message || 'Failed to submit return request.');
+    } finally {
+      setReturnLoading(false);
     }
   };
 
@@ -420,6 +464,11 @@ export default function OrderDetailsPage() {
                     {reorderError}
                   </div>
                 )}
+                {returnSuccess && (
+                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded text-sm">
+                    {returnSuccess}
+                  </div>
+                )}
                 <button
                   onClick={handleReorder}
                   disabled={
@@ -429,8 +478,8 @@ export default function OrderDetailsPage() {
                 >
                   {reordering ? (
                     <>
-                      <Loader2 size={14} className="animate-spin" /> Adding to
-                      Cart...
+                      <Loader2 size={14} className="animate-spin" />
+                      Adding to Cart...
                     </>
                   ) : (
                     <>
@@ -438,6 +487,20 @@ export default function OrderDetailsPage() {
                     </>
                   )}
                 </button>
+                {order.status === 'completed' && (
+                  <button
+                    onClick={() => {
+                      setShowReturnModal(true);
+                      setReturnError(null);
+                      setReturnSuccess(null);
+                      setReturnReason('');
+                      setReturnItems({});
+                    }}
+                    className="w-full bg-white border border-stone-300 text-stone-700 py-3 text-xs font-bold uppercase tracking-widest hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <RotateCcw size={14} /> Request Return
+                  </button>
+                )}
                 <button className="w-full bg-white border border-stone-300 text-stone-900 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors">
                   Need Help?
                 </button>
@@ -446,6 +509,98 @@ export default function OrderDetailsPage() {
           </div>
         </div>
       </div>
+      {/* Return Request Modal */}
+      {showReturnModal && order && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-auto max-h-[90vh]">
+            <div className="p-6 border-b border-stone-100">
+              <h2 className="text-lg font-serif text-stone-900">
+                Request Return
+              </h2>
+              <p className="text-xs text-stone-500 mt-1">
+                Order #{order.display_id}
+              </p>
+            </div>
+            <div className="p-6 space-y-5">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3">
+                  Select Items to Return
+                </p>
+                <div className="space-y-2">
+                  {(order.items || []).map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between py-2 border-b border-stone-50"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-stone-900 truncate">
+                          {item.title}
+                        </p>
+                        <p className="text-xs text-stone-400">
+                          Qty ordered: {item.quantity}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 ml-4">
+                        <label className="text-xs text-stone-500">
+                          Return qty:
+                        </label>
+                        <select
+                          value={returnItems[item.id] || 0}
+                          onChange={(e) =>
+                            setReturnItems((prev) => ({
+                              ...prev,
+                              [item.id]: Number(e.target.value),
+                            }))
+                          }
+                          className="border border-stone-200 rounded text-sm p-1 w-16"
+                        >
+                          {Array.from({ length: item.quantity + 1 }, (_, i) => (
+                            <option key={i} value={i}>
+                              {i}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold uppercase tracking-widest text-stone-500 block mb-2">
+                  Reason for Return
+                </label>
+                <textarea
+                  value={returnReason}
+                  onChange={(e) => setReturnReason(e.target.value)}
+                  rows={3}
+                  placeholder="Please describe why you are returning this item(s)..."
+                  className="w-full border border-stone-200 rounded p-3 text-sm focus:outline-none focus:border-stone-900"
+                />
+              </div>
+              {returnError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded text-sm">
+                  {returnError}
+                </div>
+              )}
+            </div>
+            <div className="p-6 border-t border-stone-100 flex gap-3">
+              <button
+                onClick={() => setShowReturnModal(false)}
+                className="flex-1 border border-stone-300 text-stone-700 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRequestReturn}
+                disabled={returnLoading}
+                className="flex-1 bg-stone-900 text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors disabled:opacity-50"
+              >
+                {returnLoading ? 'Submitting...' : 'Submit Return'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

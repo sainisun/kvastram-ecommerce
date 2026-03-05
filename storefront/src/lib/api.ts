@@ -1,5 +1,5 @@
 // Use absolute URL for SSR, relative for client (Next.js rewrites)
-const API_URL = typeof globalThis.window === 'undefined' 
+const API_URL = globalThis.window === undefined
   ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
   : '/api';
 
@@ -11,7 +11,7 @@ const DEFAULT_CLIENT_TIMEOUT_MS = 15000;
 // use NEXT_PUBLIC_API_TIMEOUT (process.env.NEXT_PUBLIC_API_TIMEOUT)
 function getApiTimeout(): number {
   // Server-side: check API_TIMEOUT environment variable
-  if (typeof globalThis.window === 'undefined') {
+  if (globalThis.window === undefined) {
     const envTimeout = process.env.API_TIMEOUT;
     if (envTimeout) {
       const parsed = Number.parseInt(envTimeout, 10);
@@ -34,39 +34,38 @@ function getApiTimeout(): number {
 }
 const API_TIMEOUT = getApiTimeout();
 
+function getTime(): number {
+  return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+}
+
+function getUrlString(input: RequestInfo | URL): string {
+  if (typeof input === 'string') return input;
+  if (input instanceof URL) return input.href;
+  if (input instanceof Request) return input.url;
+  return String(input);
+}
+
 // Helper function for API requests with basic timing and timeout
 async function fetchWithTrace(
   input: RequestInfo | URL,
-  init?: RequestInit & { next?: any }
+  init?: RequestInit & { next?: object }
 ) {
-  const startTime = typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
-  
-  // Create abort controller for timeout
+  const startTime = getTime();
   const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
   const timeoutId = controller ? setTimeout(() => controller.abort(), API_TIMEOUT) : null;
   
   try {
-    const fetchOptions: RequestInit = {
-      ...init,
-      signal: controller?.signal,
-    };
+    const response = await fetch(input, { ...init, signal: controller?.signal });
+    const duration = Math.round(getTime() - startTime);
     
-    const response = await fetch(input, fetchOptions);
-    const now = typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
-    const duration = Math.round(now - startTime);
-    
-    // Log API timing in development only
-    if (process.env.NODE_ENV === 'development' && typeof globalThis.window !== 'undefined') {
-      const url = typeof input === 'string' ? input : String(input);
-      console.log(`[API] ${init?.method || 'GET'} ${url} - ${response.status} (${duration}ms)`);
+    if (process.env.NODE_ENV === 'development' && globalThis.window !== undefined) {
+      console.log(`[API ${response.status}] ${getUrlString(input)} (${duration}ms)`);
     }
     return response;
   } catch (error) {
-    const now = typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
-    const duration = Math.round(now - startTime);
-    if (process.env.NODE_ENV === 'development' && typeof globalThis.window !== 'undefined') {
-      const url = typeof input === 'string' ? input : String(input);
-      console.error(`[API] ${init?.method || 'GET'} ${url} - Error (${duration}ms)`, error);
+    const duration = Math.round(getTime() - startTime);
+    if (process.env.NODE_ENV === 'development' && globalThis.window !== undefined) {
+      console.error(`[API ERROR] ${getUrlString(input)} (${duration}ms):`, error);
     }
     // Provide user-friendly timeout message instead of cryptic "signal is aborted"
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -173,8 +172,8 @@ export const api = {
       const data = await res.json().catch(() => ({}));
       const message = data.message || data.error || 'Request failed';
       const error = new Error(message) as Error & { status: number; data: unknown };
-      (error as any).status = res.status;
-      (error as any).data = data;
+      error.status = res.status;
+      error.data = data;
       throw error;
     }
     return res.json();
@@ -196,8 +195,8 @@ export const api = {
       const data = await res.json().catch(() => ({}));
       const message = data.message || data.error || 'Request failed';
       const error = new Error(message) as Error & { status: number; data: unknown };
-      (error as any).status = res.status;
-      (error as any).data = data;
+      error.status = res.status;
+      error.data = data;
       throw error;
     }
     return res.json() as Promise<T>;
@@ -218,8 +217,8 @@ export const api = {
       const data = await res.json().catch(() => ({}));
       const message = data.message || data.error || 'Request failed';
       const error = new Error(message) as Error & { status: number; data: unknown };
-      (error as any).status = res.status;
-      (error as any).data = data;
+      error.status = res.status;
+      error.data = data;
       throw error;
     }
     return res.json() as Promise<T>;
@@ -241,8 +240,8 @@ export const api = {
       const data = await res.json().catch(() => ({}));
       const message = data.message || data.error || 'Request failed';
       const error = new Error(message) as Error & { status: number; data: unknown };
-      (error as any).status = res.status;
-      (error as any).data = data;
+      error.status = res.status;
+      error.data = data;
       throw error;
     }
     return res.json();
@@ -442,23 +441,13 @@ export const api = {
     } = {}
   ) {
     const searchParams = new URLSearchParams();
-    searchParams.set('status', 'published'); // Only show published products
-    if (params.search) searchParams.set('search', params.search);
-    if (params.min_price != null)
-      searchParams.set('min_price', params.min_price.toString());
-    if (params.max_price != null)
-      searchParams.set('max_price', params.max_price.toString());
-    if (params.sort) searchParams.set('sort', params.sort);
-    if (params.limit != null && params.limit > 0)
-      searchParams.set('limit', params.limit.toString());
-    if (params.offset != null)
-      searchParams.set('offset', params.offset.toString());
-    if (params.category_id)
-      searchParams.set('category_id', params.category_id);
-    if (params.tag_id) searchParams.set('tag_id', params.tag_id);
-    if (params.collection_id)
-      searchParams.set('collection_id', params.collection_id);
-    if (params.region_id) searchParams.set('region_id', params.region_id);
+    searchParams.set('status', 'published');
+    
+    Object.entries(params).forEach(([key, value]) => {
+      if (value != null && key !== 'cache') {
+        searchParams.set(key, value.toString());
+      }
+    });
 
     const url = `${API_URL}/products?${searchParams.toString()}`;
 
@@ -664,7 +653,7 @@ export const api = {
         // Response body was empty or not JSON, keep the default errorMessage
       }
 
-      const error: any = new Error(errorMessage);
+      const error = new Error(errorMessage) as Error & { status?: number };
       error.status = res.status;
       throw error;
     }
@@ -917,11 +906,11 @@ export const api = {
   },
 
   // --- Back in Stock Notifications ---
-  async subscribeBackInStock(
-    productId: string,
-    email: string,
-    variantId?: string
-  ) {
+  async subscribeBackInStock(data: {
+    product_id: string;
+    email: string;
+    variant_id?: string;
+  }) {
     const csrfHeader = await getCsrfHeader();
     const res = await fetchWithTrace(`${API_URL}/store/back-in-stock`, {
       method: 'POST',
@@ -930,13 +919,36 @@ export const api = {
         ...csrfHeader,
       },
       body: JSON.stringify({
-        product_id: productId,
-        variant_id: variantId,
-        email,
+        product_id: data.product_id,
+        variant_id: data.variant_id,
+        email: data.email,
       }),
       credentials: 'include',
     });
     if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  // --- Returns (Customer-initiated) ---
+  async requestReturn(data: {
+    order_id: string;
+    reason: string;
+    items: Array<{ line_item_id: string; quantity: number; restock?: boolean }>;
+  }) {
+    const csrfHeader = await getCsrfHeader();
+    const res = await fetchWithTrace(`${API_URL}/store/returns`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...csrfHeader,
+      },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.message || error.error || 'Failed to submit return request');
+    }
     return res.json();
   },
 
@@ -1071,66 +1083,7 @@ export const api = {
     return res.json();
   },
 
-  // ─── CART PERSISTENCE ───────────────────────────────────────────────────────
-
-  async saveCart(items: CartItem[]) {
-    try {
-      await fetchWithTrace(`${API_URL}/store/cart/save`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items }),
-        credentials: 'include',
-      });
-    } catch {
-      // Silent fail — cart is also in localStorage, so no UX impact
-    }
-  },
-
-  async getSavedCart(): Promise<{ items: CartItem[] }> {
-    try {
-      const res = await fetchWithTrace(`${API_URL}/store/cart`, {
-        credentials: 'include',
-      });
-      if (!res.ok) return { items: [] };
-      return res.json();
-    } catch {
-      return { items: [] };
-    }
-  },
-
-  async clearSavedCart() {
-    try {
-      await fetchWithTrace(`${API_URL}/store/cart/clear`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch {
-      // Silent fail
-    }
-  },
-
-  // ─── BACK-IN-STOCK NOTIFICATIONS ────────────────────────────────────────────
-
-  async subscribeBackInStock(data: {
-    product_id: string;
-    variant_id?: string;
-    email: string;
-  }) {
-    const res = await fetchWithTrace(`${API_URL}/store/back-in-stock`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-      credentials: 'include',
-    });
-    if (!res.ok) {
-      const error = await res.json().catch(() => ({}));
-      throw new Error(error.error || 'Failed to subscribe');
-    }
-    return res.json();
-  },
-
-  // ─── WISHLIST ────────────────────────────────────────────────────────────────
-
+  // --- Wishlist ---
   async getWishlist() {
     try {
       const res = await fetchWithTrace(`${API_URL}/store/wishlist`, {
@@ -1169,12 +1122,11 @@ export const api = {
     return res.json();
   },
 
-  // ─── CAMPAIGNS ────────────────────────────────────────────────────────────────
-
+  // --- Campaigns ---
   async getActiveCampaigns() {
     try {
       const res = await fetchWithTrace(`${API_URL}/marketing/campaigns/active`, {
-        next: { revalidate: 300 }, // 5 min cache
+        next: { revalidate: 300 },
       });
       if (!res.ok) return { campaigns: [] };
       return res.json();

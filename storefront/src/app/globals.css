@@ -1084,6 +1084,206 @@ a { color: inherit; }
   transform: translateX(-50%) translateY(0);
 }
 
+/* ═══ SPRINT 1 — HEADER VISUAL ENHANCEMENTS ═══ */
+
+/* ─── 1.1 Announcement Bar Upgrade ─── */
+.announcement-bar {
+  position: relative;
+  background: linear-gradient(90deg, #0f0d0b, #1a1714, #0f0d0b);
+}
+.ticker-shimmer {
+  background: linear-gradient(90deg, #b8965a 0%, #d4b88a 40%, #f5e6c8 50%, #d4b88a 60%, #b8965a 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 3s linear infinite;
+}
+@keyframes goldShimmer {
+  to { background-position: 200% center; }
+}
+.ticker-gem {
+  display: inline-block;
+  color: #b8965a;
+  font-size: 8px;
+  opacity: 0.5;
+  margin: 0 16px;
+  animation: gemPulse 2.5s ease-in-out infinite;
+}
+@keyframes gemPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+.announcement-dismiss {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  color: rgba(255, 255, 255, 0.4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: color 0.25s, background 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.announcement-dismiss:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ─── 1.2 Logo Evolution ─── */
+.nav-logo-premium {
+  position: relative;
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-size: 1.5rem;
+  letter-spacing: 0.25em;
+  font-weight: 300;
+  color: var(--black);
+  transition: letter-spacing 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 0.4s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.nav-logo-premium:hover {
+  letter-spacing: 0.38em;
+  color: #1a1714;
+}
+.logo-motif {
+  display: inline-block;
+  font-size: 7px;
+  opacity: 0.3;
+  margin-right: 10px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  color: #b8965a;
+}
+.nav-logo-premium:hover .logo-motif {
+  opacity: 0.85;
+  transform: rotate(45deg);
+}
+
+/* ─── 1.3 Nav Links Premium ─── */
+.nav-link-premium {
+  position: relative;
+  padding: 6px 10px;
+  transition: color 0.3s ease;
+}
+.nav-link-premium::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: #b8965a;
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.3s ease;
+  opacity: 0;
+}
+.nav-link-premium.active::after {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+.nav-link-premium:hover {
+  color: var(--black) !important;
+}
+.nav-link-premium:hover::after {
+  transform: translateX(-50%) scale(0.7);
+  opacity: 0.5;
+}
+.nav-link-premium.active:hover::after {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+/* Stagger animation on page load */
+.nav-link-stagger {
+  opacity: 0;
+  transform: translateY(-8px);
+  animation: navLinkEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes navLinkEntrance {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── 1.4 Icon Bar Enhancement ─── */
+.header-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+.header-icon-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+.header-icon-wrap:hover::before {
+  border-color: rgba(184, 150, 90, 0.35);
+  box-shadow: 0 0 12px rgba(184, 150, 90, 0.12);
+  transform: scale(1.08);
+}
+.header-icon-wrap::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  color: var(--mid);
+  font-family: var(--font-body);
+}
+.header-icon-wrap:hover::after {
+  opacity: 0.7;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ─── 3.1 Mega Menu Animations ─── */
+.mega-menu-enter {
+  animation: megaMenuSlideIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes megaMenuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.mega-col-stagger {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: megaColEntrance 0.3s ease-out forwards;
+}
+@keyframes megaColEntrance {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ═══ ANIMATIONS (KEYFRAMES) ═══ */
 @keyframes pageFadeIn {
   from {

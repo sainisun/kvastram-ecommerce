@@ -3,11 +3,11 @@ import nodemailer from 'nodemailer';
 // PHASE-2 FIX: HTML escape utility to prevent XSS in email templates
 function escapeHtml(str: string): string {
   return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
 // Helper to safely escape strings for HTML with fallback
@@ -436,6 +436,77 @@ class EmailService {
     }
 
     return this.sendEmail({ to: data.email, subject, text, html });
+  }
+
+  // 💌 Bulk Marketing Blast Email
+  async sendMarketingBlast(data: {
+    to: string[];
+    campaign_name: string;
+    subject: string;
+    headline: string;
+    body_text: string;
+    cta_text: string;
+    cta_url: string;
+  }): Promise<{ sent: number; failed: number }> {
+    const storeUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const ctaUrl = data.cta_url.startsWith('http')
+      ? data.cta_url
+      : `${storeUrl}${data.cta_url}`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a1614; padding: 24px; text-align: center;">
+          <h2 style="color: #f5c842; margin: 0; font-size: 22px; letter-spacing: 2px;">KVASTRAM</h2>
+        </div>
+        <div style="padding: 40px 32px;">
+          <h1 style="font-size: 28px; color: #1a1614; margin-bottom: 16px;">${safeString(data.headline)}</h1>
+          <p style="font-size: 16px; line-height: 1.6; color: #555;">${safeString(data.body_text)}</p>
+          <p style="text-align: center; margin: 36px 0;">
+            <a href="${ctaUrl}"
+               style="background-color: #1a1614; color: white; padding: 16px 40px; text-decoration: none;
+                      border-radius: 2px; display: inline-block; font-weight: bold;
+                      letter-spacing: 2px; text-transform: uppercase; font-size: 13px;">
+              ${safeString(data.cta_text)}
+            </a>
+          </p>
+        </div>
+        <div style="background: #f5f5f5; padding: 16px; text-align: center;">
+          <p style="color: #999; font-size: 11px; margin: 0;">
+            You are receiving this because you subscribed to Kvastram updates.<br>
+            &copy; ${new Date().getFullYear()} Kvastram. All rights reserved.
+          </p>
+        </div>
+      </div>
+    `;
+
+    const text = `${data.headline}\n\n${data.body_text}\n\n${data.cta_text}: ${ctaUrl}`;
+
+    // Send in chunks of 50 to avoid SMTP blocking
+    const CHUNK_SIZE = 50;
+    let sent = 0;
+    let failed = 0;
+
+    for (let i = 0; i < data.to.length; i += CHUNK_SIZE) {
+      const chunk = data.to.slice(i, i + CHUNK_SIZE);
+      const results = await Promise.allSettled(
+        chunk.map((email) =>
+          this.sendEmail({ to: email, subject: safeString(data.subject), text, html })
+        )
+      );
+      for (const r of results) {
+        if (r.status === 'fulfilled' && r.value !== false) sent++;
+        else failed++;
+      }
+      // Small delay between chunks
+      if (i + CHUNK_SIZE < data.to.length) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`\n💌 MARKETING BLAST (DEV MODE): Sent ${sent}, Failed ${failed}`);
+    }
+    return { sent, failed };
   }
 }
 

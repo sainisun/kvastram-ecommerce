@@ -4,13 +4,52 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
+function SuccessView({ email }: { email: string }) {
+  return (
+    <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
+      <div className="max-w-md w-full space-y-8 text-center">
+        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+          <svg
+            className="w-8 h-8 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-serif text-stone-900">Check Your Email</h1>
+        <p className="text-stone-500">
+          If an account exists with <strong>{email}</strong>, you will receive a
+          password reset link.
+        </p>
+        <p className="text-stone-400 text-sm">
+          Check your spam folder if you don&apos;t receive the email within a
+          few minutes.
+        </p>
+        <Link
+          href="/login"
+          className="inline-block text-stone-900 font-medium underline"
+        >
+          Back to Login
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -40,46 +79,7 @@ export default function ForgotPasswordPage() {
     }
   };
 
-  if (submitted) {
-    return (
-      <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
-        <div className="max-w-md w-full space-y-8 text-center">
-          <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-serif text-stone-900">
-            Check Your Email
-          </h1>
-          <p className="text-stone-500">
-            If an account exists with <strong>{email}</strong>, you will receive
-            a password reset link.
-          </p>
-          <p className="text-stone-400 text-sm">
-            Check your spam folder if you don&apos;t receive the email within a
-            few minutes.
-          </p>
-          <Link
-            href="/login"
-            className="inline-block text-stone-900 font-medium underline"
-          >
-            Back to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (submitted) return <SuccessView email={email} />;
 
   return (
     <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">

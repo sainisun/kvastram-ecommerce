@@ -7,6 +7,10 @@ import {
   DiscountSchema,
   BaseDiscountSchema,
 } from '../services/marketing-service';
+import { db } from '../db/client';
+import { campaigns, newsletter_subscribers } from '../db/schema';
+import { eq } from 'drizzle-orm';
+import { emailService } from '../services/email-service';
 
 const app = new Hono();
 
@@ -134,6 +138,66 @@ app.delete('/discounts/:id', verifyAdmin, async (c) => {
     const id = c.req.param('id');
     await marketingService.deleteDiscount(id);
     return c.json({ message: 'Discount deleted' });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// POST /marketing/campaigns/:id/send — Bulk Marketing Blast
+app.post('/campaigns/:id/send', verifyAdmin, async (c) => {
+  try {
+    const id = c.req.param('id');
+    const body = await c.req.json().catch(() => ({}));
+
+    // Get campaign details
+    const [campaign] = await db
+      .select()
+      .from(campaigns)
+      .where(eq(campaigns.id, id))
+      .limit(1);
+
+    if (!campaign) return c.json({ error: 'Campaign not found' }, 404);
+    if (campaign.status !== 'active')
+      return c.json({ error: 'Campaign must be active to send' }, 400);
+
+    // Fetch target subscribers (newsletter list)
+    const subscribers = await db
+      .select({ email: newsletter_subscribers.email })
+      .from(newsletter_subscribers)
+      .where(eq(newsletter_subscribers.status, 'active'));
+
+    if (subscribers.length === 0)
+      return c.json({ error: 'No active subscribers found' }, 400);
+
+    const emails = subscribers.map((s) => s.email);
+
+    // Send blast
+    const { sent, failed } = await emailService.sendMarketingBlast({
+      to: emails,
+      campaign_name: campaign.name,
+      subject: body.subject || `${campaign.name} — Kvastram`,
+      headline: body.headline || campaign.name,
+      body_text: body.body_text || campaign.description || 'Discover our latest collection.',
+      cta_text: body.cta_text || 'Shop Now',
+      cta_url: body.cta_url || '/',
+    });
+
+    // Update campaign stats
+    await db
+      .update(campaigns)
+      .set({
+        customers_reached: (campaign.customers_reached || 0) + sent,
+        updated_at: new Date(),
+      })
+      .where(eq(campaigns.id, id));
+
+    return c.json({
+      success: true,
+      sent,
+      failed,
+      total_subscribers: emails.length,
+      message: `Blast sent to ${sent} subscribers (${failed} failed)`,
+    });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
   }

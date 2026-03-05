@@ -30,101 +30,124 @@ export class ProductMutationService {
    */
   async create(data: CreateProductInput) {
     return await db.transaction(async (tx) => {
-      // 1. Create Product
       const { prices, ...productData } = data;
 
-      const newProductResult = await tx
-        .insert(products)
-        .values({
-          ...productData,
-          options: undefined,
-        } as typeof products.$inferInsert)
-        .returning();
-      const newProduct = newProductResult[0];
+      // 1. Create Product
+      const newProduct = await this.createBaseProduct(tx, productData);
 
-      // 2. Create Default Variant (Use Product Title/Handle as default)
-      const newVariantResult = await tx
-        .insert(product_variants)
-        .values({
-          product_id: newProduct.id,
-          title: 'Default Variant',
-          sku: data.sku || `${data.handle}-default`,
-          inventory_quantity: data.inventory_quantity || 0,
-          manage_inventory: true,
-          hs_code: data.hs_code,
-          origin_country: data.origin_country,
-          material: data.material,
-          weight: data.weight,
-          length: data.length,
-          height: data.height,
-          width: data.width,
-        })
-        .returning();
-      const newVariant = newVariantResult[0];
+      // 2. Create Default Variant
+      const newVariant = await this.createDefaultVariantForProduct(tx, newProduct.id, data);
 
       // 3. Create Prices (Money Amounts)
-      if (prices && prices.length > 0) {
-        for (const price of prices) {
-          await tx.insert(money_amounts).values({
-            variant_id: newVariant.id,
-            region_id: price.region_id,
-            currency_code: price.currency_code,
-            amount: price.amount,
-            min_quantity: 1,
-          });
-        }
-      }
+      await this.assignPricesToVariant(tx, newVariant.id, prices);
 
-      // 4. Create Options (if any - though for simple products usually empty)
-      if (data.options && data.options.length > 0) {
-        for (const opt of data.options) {
-          await tx.insert(product_options).values({
-            product_id: newProduct.id,
-            title: opt.title,
-            metadata: null,
-          });
-        }
-      }
+      // 4. Create Options
+      await this.assignOptionsToProduct(tx, newProduct.id, data.options);
 
       // 5. Create Images
-      if (data.images && data.images.length > 0) {
-        const imageValues = data.images
-          .filter((img) => img.url) // Filter out images without URL
-          .map((img) => ({
-            product_id: newProduct.id,
-            url: img.url,
-            alt_text: img.alt_text,
-            position: img.position ?? 0,
-            is_thumbnail: img.is_thumbnail ?? false,
-          }));
-
-        if (imageValues.length > 0) {
-          await tx.insert(product_images).values(imageValues);
-        }
-      }
+      await this.assignImagesToProduct(tx, newProduct.id, data.images);
 
       // 6. Assign Categories
-      if (data.category_ids && data.category_ids.length > 0) {
-        await tx.insert(product_categories).values(
-          data.category_ids.map((catId) => ({
-            product_id: newProduct.id,
-            category_id: catId,
-          }))
-        );
-      }
+      await this.assignCategoriesToProduct(tx, newProduct.id, data.category_ids);
 
       // 7. Assign Tags
-      if (data.tag_ids && data.tag_ids.length > 0) {
-        await tx.insert(product_tags).values(
-          data.tag_ids.map((tagId) => ({
-            product_id: newProduct.id,
-            tag_id: tagId,
-          }))
-        );
-      }
+      await this.assignTagsToProduct(tx, newProduct.id, data.tag_ids);
 
       return { ...newProduct, default_variant_id: newVariant.id };
     });
+  }
+
+  private async createBaseProduct(tx: any, productData: any) {
+    const result = await tx
+      .insert(products)
+      .values({
+        ...productData,
+        options: undefined,
+      } as typeof products.$inferInsert)
+      .returning();
+    return result[0];
+  }
+
+  private async createDefaultVariantForProduct(tx: any, productId: string, data: CreateProductInput) {
+    const result = await tx
+      .insert(product_variants)
+      .values({
+        product_id: productId,
+        title: 'Default Variant',
+        sku: data.sku || `${data.handle}-default`,
+        inventory_quantity: data.inventory_quantity || 0,
+        manage_inventory: true,
+        hs_code: data.hs_code,
+        origin_country: data.origin_country,
+        material: data.material,
+        weight: data.weight,
+        length: data.length,
+        height: data.height,
+        width: data.width,
+      })
+      .returning();
+    return result[0];
+  }
+
+  private async assignPricesToVariant(tx: any, variantId: string, prices: any[] | undefined) {
+    if (!prices || prices.length === 0) return;
+    for (const price of prices) {
+      await tx.insert(money_amounts).values({
+        variant_id: variantId,
+        region_id: price.region_id,
+        currency_code: price.currency_code,
+        amount: price.amount,
+        min_quantity: 1,
+      });
+    }
+  }
+
+  private async assignOptionsToProduct(tx: any, productId: string, options: any[] | undefined) {
+    if (!options || options.length === 0) return;
+    for (const opt of options) {
+      await tx.insert(product_options).values({
+        product_id: productId,
+        title: opt.title,
+        metadata: null,
+      });
+    }
+  }
+
+  private async assignImagesToProduct(tx: any, productId: string, images: any[] | undefined) {
+    if (!images || images.length === 0) return;
+    const imageValues = images
+      .filter((img) => img.url)
+      .map((img) => ({
+        product_id: productId,
+        url: img.url,
+        alt_text: img.alt_text,
+        position: img.position ?? 0,
+        is_thumbnail: img.is_thumbnail ?? false,
+      }));
+
+    if (imageValues.length > 0) {
+      await tx.insert(product_images).values(imageValues);
+    }
+  }
+
+  private async assignCategoriesToProduct(tx: any, productId: string, categoryIds: string[] | undefined) {
+    if (!categoryIds || categoryIds.length === 0) return;
+    await tx.insert(product_categories).values(
+      categoryIds.map((catId) => ({
+        product_id: productId,
+        category_id: catId,
+      }))
+    );
+  }
+
+  private async assignTagsToProduct(tx: any, productId: string, tagIds: string[] | undefined) {
+    if (!tagIds || tagIds.length === 0) return;
+    await tx.insert(product_tags).values(
+      tagIds.map((tagId) => ({
+        product_id: productId,
+        tag_id: tagId,
+      }))
+    );
   }
 
   /**
@@ -132,100 +155,25 @@ export class ProductMutationService {
    */
   async update(id: string, data: UpdateProductInput) {
     const result = await db.transaction(async (tx) => {
+      // 1. Update Product Base
+      const updatedProduct = await this.updateBaseProductDetails(tx, id, data);
 
-      const updateData = {
-        ...data,
-        updated_at: new Date(),
-        options: undefined,
-        prices: undefined,
-        images: undefined,
-        category_ids: undefined,
-        tag_ids: undefined,
-      };
+      // 2. Update default variant if exists
+      await this.updateDefaultVariant(tx, id, data);
 
-      const updatedProductResult = await tx
-        .update(products)
-        .set(updateData as typeof products.$inferInsert)
-        .where(eq(products.id, id))
-        .returning();
-
-      if (updatedProductResult.length === 0) {
-        throw new Error(`Product with id ${id} not found`);
-      }
-
-      const updatedProduct = updatedProductResult[0];
-
-      // Update default variant if exists
-      const variants = await tx
-        .select()
-        .from(product_variants)
-        .where(eq(product_variants.product_id, id));
-      if (variants.length > 0) {
-        await tx
-          .update(product_variants)
-          .set({
-            hs_code: data.hs_code,
-            origin_country: data.origin_country,
-            material: data.material,
-            weight: data.weight,
-            length: data.length,
-            height: data.height,
-            width: data.width,
-            inventory_quantity: data.inventory_quantity,
-            updated_at: new Date(),
-          })
-          .where(eq(product_variants.id, variants[0].id));
-      }
-
-      // Handle images if provided
+      // 3. Handle images if provided
       if (data.images) {
-        await tx
-          .delete(product_images)
-          .where(eq(product_images.product_id, id));
-
-        if (data.images.length > 0) {
-          const imageValues = data.images
-            .filter((img) => img.url)
-            .map((img) => ({
-              product_id: id,
-              url: img.url,
-              alt_text: img.alt_text,
-              position: img.position ?? 0,
-              is_thumbnail: img.is_thumbnail ?? false,
-            }));
-
-          if (imageValues.length > 0) {
-            await tx.insert(product_images).values(imageValues);
-          }
-        }
+        await this.syncProductImages(tx, id, data.images);
       }
 
-      // Handle Categories
+      // 4. Handle Categories
       if (data.category_ids) {
-        await tx
-          .delete(product_categories)
-          .where(eq(product_categories.product_id, id));
-        if (data.category_ids.length > 0) {
-          await tx.insert(product_categories).values(
-            data.category_ids.map((catId) => ({
-              product_id: id,
-              category_id: catId,
-            }))
-          );
-        }
+        await this.syncProductCategories(tx, id, data.category_ids);
       }
 
-      // Handle Tags
+      // 5. Handle Tags
       if (data.tag_ids) {
-        await tx.delete(product_tags).where(eq(product_tags.product_id, id));
-        if (data.tag_ids.length > 0) {
-          await tx.insert(product_tags).values(
-            data.tag_ids.map((tagId) => ({
-              product_id: id,
-              tag_id: tagId,
-            }))
-          );
-        }
+        await this.syncProductTags(tx, id, data.tag_ids);
       }
 
       return updatedProduct;
@@ -240,6 +188,103 @@ export class ProductMutationService {
     }
 
     return result;
+  }
+
+  private async updateBaseProductDetails(tx: any, id: string, data: UpdateProductInput) {
+    const updateData = {
+      ...data,
+      updated_at: new Date(),
+      options: undefined,
+      prices: undefined,
+      images: undefined,
+      category_ids: undefined,
+      tag_ids: undefined,
+    };
+
+    const result = await tx
+      .update(products)
+      .set(updateData as typeof products.$inferInsert)
+      .where(eq(products.id, id))
+      .returning();
+
+    if (result.length === 0) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+    return result[0];
+  }
+
+  private async updateDefaultVariant(tx: any, productId: string, data: UpdateProductInput) {
+    const variants = await tx
+      .select()
+      .from(product_variants)
+      .where(eq(product_variants.product_id, productId));
+
+    if (variants.length > 0) {
+      await tx
+        .update(product_variants)
+        .set({
+          hs_code: data.hs_code,
+          origin_country: data.origin_country,
+          material: data.material,
+          weight: data.weight,
+          length: data.length,
+          height: data.height,
+          width: data.width,
+          inventory_quantity: data.inventory_quantity,
+          updated_at: new Date(),
+        })
+        .where(eq(product_variants.id, variants[0].id));
+    }
+  }
+
+  private async syncProductImages(tx: any, productId: string, images: any[]) {
+    await tx
+      .delete(product_images)
+      .where(eq(product_images.product_id, productId));
+
+    if (images.length > 0) {
+      const imageValues = images
+        .filter((img) => img.url)
+        .map((img) => ({
+          product_id: productId,
+          url: img.url,
+          alt_text: img.alt_text,
+          position: img.position ?? 0,
+          is_thumbnail: img.is_thumbnail ?? false,
+        }));
+
+      if (imageValues.length > 0) {
+        await tx.insert(product_images).values(imageValues);
+      }
+    }
+  }
+
+  private async syncProductCategories(tx: any, productId: string, categoryIds: string[]) {
+    await tx
+      .delete(product_categories)
+      .where(eq(product_categories.product_id, productId));
+
+    if (categoryIds.length > 0) {
+      await tx.insert(product_categories).values(
+        categoryIds.map((catId) => ({
+          product_id: productId,
+          category_id: catId,
+        }))
+      );
+    }
+  }
+
+  private async syncProductTags(tx: any, productId: string, tagIds: string[]) {
+    await tx.delete(product_tags).where(eq(product_tags.product_id, productId));
+
+    if (tagIds.length > 0) {
+      await tx.insert(product_tags).values(
+        tagIds.map((tagId) => ({
+          product_id: productId,
+          tag_id: tagId,
+        }))
+      );
+    }
   }
 
   /** Send back-in-stock emails to all pending subscribers for a product */

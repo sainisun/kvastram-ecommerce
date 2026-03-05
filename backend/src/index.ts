@@ -62,6 +62,8 @@ import cartRoutes from './routes/store/cart';
 import backInStockRoutes from './routes/store/back-in-stock';
 import wishlistRoutes from './routes/store/wishlist';
 import adminBisRoutes from './routes/admin/back-in-stock';
+import adminReturnsRoutes from './routes/admin/returns';
+import storeReturnsRoutes from './routes/store/returns';
 
 import docsApp from './docs';
 
@@ -299,6 +301,8 @@ app.route('/store/cart', cartRoutes);
 app.route('/store/back-in-stock', backInStockRoutes);
 app.route('/store/wishlist', wishlistRoutes);
 app.route('/admin/back-in-stock', adminBisRoutes);
+app.route('/admin/returns', adminReturnsRoutes);
+app.route('/store/returns', storeReturnsRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

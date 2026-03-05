@@ -10,6 +10,44 @@ import type { Metadata } from 'next';
 import { MarqueeStrip } from '@/components/ui/MarqueeStrip';
 import { RevealOnScroll, StatReveal } from '@/components/ui/RevealOnScroll';
 
+interface Banner {
+  id: string;
+  section: string;
+  is_active: boolean;
+  image?: string;
+  title?: string;
+  subtitle?: string;
+  link?: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  image?: string;
+}
+
+interface Product {
+  id: string;
+  title: string;
+  handle?: string;
+  thumbnail?: string;
+  collection?: { title: string };
+  variants?: Array<{
+    prices?: Array<{
+      amount: number;
+      currency_code: string;
+    }>;
+  }>;
+}
+
+interface Collection {
+  id: string;
+  title: string;
+  handle: string;
+  image?: string;
+}
+
 export const dynamic = 'force-dynamic';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
@@ -64,7 +102,7 @@ export default async function Home() {
   const testimonialsList = testimonialsData.testimonials || [];
   // Hero banners: only 'hero' section banners passed to HeroCarousel
   const heroBanners = (bannersData.banners || []).filter(
-    (b: any) => b.section === 'hero' && b.is_active
+    (b: Banner) => b.section === 'hero' && b.is_active
   );
 
   const categoryImages: Record<string, string> = {
@@ -197,8 +235,7 @@ export default async function Home() {
 
             {categories.length > 0 && (
               <div className="category-grid-prem reveal reveal-delay-1">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {categories.map((category: any, index: number) => (
+                {categories.map((category: Category) => (
                   <Link
                     key={category.id}
                     href={`/products?category_id=${category.id}`}
@@ -311,8 +348,7 @@ export default async function Home() {
               </div>
 
               <div className="product-grid-prem">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {products.slice(0, 4).map((product: any) => {
+                {products.slice(0, 4).map((product: Product) => {
                   const priceObj = product.variants?.[0]?.prices?.[0];
                   const price = priceObj
                     ? new Intl.NumberFormat('en-US', {
@@ -469,8 +505,7 @@ export default async function Home() {
                 </div>
               </div>
               <div className="collections-grid-prem reveal reveal-delay-1">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {collections.map((collection: any) => (
+                {collections.map((collection: Collection) => (
                   <Link
                     key={collection.id}
                     href={`/collections/${collection.handle}`}

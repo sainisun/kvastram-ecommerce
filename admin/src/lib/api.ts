@@ -771,6 +771,82 @@ export const api = {
     return res.json();
   },
 
+  sendCampaignBlast: async (id: string, data: { subject: string; headline: string; body_text: string; cta_text: string; cta_url: string }) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/marketing/campaigns/${id}/send`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to send campaign blast');
+    return res.json();
+  },
+
+  // Returns & Refunds
+  getReturns: async (status?: string) => {
+    let url = `${API_BASE_URL}/admin/returns`;
+    if (status) url += `?status=${status}`;
+    const res = await fetchWithTimeout(url, {});
+    if (!res.ok) throw new Error('Failed to fetch returns');
+    return res.json();
+  },
+
+  updateReturnStatus: async (id: string, action: 'approve' | 'reject' | 'process-refund', admin_notes?: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/returns/${id}/${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ admin_notes }),
+    });
+    if (!res.ok) return handleApiError(res, `Failed to ${action} return`);
+    return res.json();
+  },
+
+  // Reviews
+  getReviews: async (limit = 50, offset = 0, status?: string) => {
+    let url = `${API_BASE_URL}/reviews?limit=${limit}&offset=${offset}`;
+    if (status) url += `&status=${status}`;
+    const res = await fetchWithTimeout(url, {});
+    if (!res.ok) throw new Error('Failed to fetch reviews');
+    return res.json();
+  },
+
+  updateReviewStatus: async (id: string, status: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/reviews/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update review status');
+    return res.json();
+  },
+
+  deleteReview: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/reviews/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to delete review');
+    return res.json();
+  },
+
+  // Generic POST helper for admin
+  post: async (path: string, data?: any) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data || {}),
+    });
+    if (!res.ok) return handleApiError(res, `POST ${path} failed`);
+    return res.json();
+  },
+
+  get: async (path: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {});
+    if (!res.ok) return handleApiError(res, `GET ${path} failed`);
+    return res.json();
+  },
+
   // Analytics endpoints
   getGrowth: async (period: string) => {
     const res = await fetchWithTimeout(
@@ -1368,38 +1444,6 @@ export const api = {
       method: 'DELETE',
     });
     if (!res.ok) return handleApiError(res, 'Failed to delete tag');
-    return res.json();
-  },
-
-  // Reviews
-  getReviews: async (limit = 50, offset = 0, status?: string) => {
-    let url = `${API_BASE_URL}/reviews?limit=${limit}&offset=${offset}`;
-    if (status) url += `&status=${status}`;
-
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch reviews');
-    return res.json();
-  },
-
-  updateReviewStatus: async (id: string, status: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/reviews/${id}/status`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ status }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update review status');
-    return res.json();
-  },
-
-  deleteReview: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/reviews/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete review');
     return res.json();
   },
 
