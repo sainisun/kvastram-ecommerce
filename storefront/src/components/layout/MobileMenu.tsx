@@ -33,6 +33,7 @@ interface Category {
   name: string;
   slug: string;
   image?: string;
+  children?: Category[];
 }
 
 interface Region {
@@ -100,19 +101,13 @@ export default function MobileMenu({
 
   const isFirstOpen = useRef(true);
 
+  const prevPathname = useRef(pathname);
+
   useEffect(() => {
-    if (isOpen) {
-      if (isFirstOpen.current) {
-        isFirstOpen.current = false;
-        return;
-      }
-      if (pathname) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        handleClose();
-      }
-    } else {
-      isFirstOpen.current = true;
+    if (isOpen && pathname !== prevPathname.current) {
+      handleClose();
     }
+    prevPathname.current = pathname;
   }, [pathname, isOpen, handleClose]);
 
   const reducedMotion =
@@ -237,14 +232,61 @@ export default function MobileMenu({
               {categories.length > 0 ? (
                 <div className="space-y-1">
                   {categories.map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/products?category_id=${category.id}`}
-                      onClick={handleLinkClick}
-                      className="flex items-center gap-3 px-4 py-3.5 text-[15px] text-gray-700 hover:bg-gray-50 hover:text-black transition-colors min-h-[44px]"
-                    >
-                      {category.name}
-                    </Link>
+                    <div key={category.id}>
+                      <div className="flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <Link
+                          href={`/products?category_id=${category.id}`}
+                          onClick={handleLinkClick}
+                          className="flex-1 flex items-center gap-3 px-4 py-3.5 text-[15px] text-gray-700 hover:text-black min-h-[44px]"
+                        >
+                          {category.name}
+                        </Link>
+                        {category.children && category.children.length > 0 && (
+                          <button
+                            onClick={(e) => {
+                              const target = e.currentTarget
+                                .nextElementSibling as HTMLElement;
+                              const icon = e.currentTarget
+                                .firstElementChild as HTMLElement;
+                              if (target.style.maxHeight) {
+                                target.style.maxHeight = '';
+                                icon.style.transform = '';
+                              } else {
+                                target.style.maxHeight =
+                                  target.scrollHeight + 'px';
+                                icon.style.transform = 'rotate(180deg)';
+                              }
+                            }}
+                            className="p-3 text-gray-400 hover:text-black transition-colors"
+                            aria-label={`Toggle ${category.name} subcategories`}
+                          >
+                            <ChevronDown
+                              size={18}
+                              className="transition-transform duration-300"
+                            />
+                          </button>
+                        )}
+                      </div>
+                      {category.children && category.children.length > 0 && (
+                        <div
+                          className="overflow-hidden transition-all duration-300 ease-out max-h-0 bg-gray-50/50"
+                          style={{ maxHeight: '' }}
+                        >
+                          <div className="pl-8 py-1 pb-2 space-y-1">
+                            {category.children.map((child) => (
+                              <Link
+                                key={child.id}
+                                href={`/products?category_id=${child.id}`}
+                                onClick={handleLinkClick}
+                                className="block py-2.5 text-sm text-gray-600 hover:text-black transition-colors"
+                              >
+                                {child.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               ) : (
