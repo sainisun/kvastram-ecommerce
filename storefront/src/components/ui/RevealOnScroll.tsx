@@ -9,7 +9,10 @@ import { useEffect } from 'react';
  */
 export function RevealOnScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const revealEls = document.querySelectorAll('.reveal');
+    const observeElements = () => {
+      const revealEls = document.querySelectorAll('.reveal');
+      revealEls.forEach((el) => observer.observe(el));
+    };
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -20,14 +23,21 @@ export function RevealOnScroll({ children }: { children: React.ReactNode }) {
         });
       },
       {
-        threshold: 0.1,
-        rootMargin: '0px 0px -40px 0px',
+        threshold: 0.05,
+        rootMargin: '0px 0px -20px 0px',
       }
     );
 
-    revealEls.forEach((el) => observer.observe(el));
+    // Initial observation
+    observeElements();
 
-    return () => observer.disconnect();
+    // Re-check after a brief delay for any late-mounting components
+    const timer = setTimeout(observeElements, 1000);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
   }, []);
 
   return <>{children}</>;
