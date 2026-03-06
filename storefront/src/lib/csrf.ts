@@ -29,3 +29,59 @@ export async function getCsrfToken(): Promise<string> {
 export function clearCsrfToken() {
   csrfToken = null;
 }
+
+/**
+ * CsrfManager - helper class for working with CSRF tokens across the app.
+ *
+ * Usage examples:
+ *   // server component
+ *   const token = await CsrfManager.getServerToken();
+ *
+ *   // client component
+ *   const token = CsrfManager.getTokenFromDOM();
+ *   CsrfManager.addToHeaders(headers);
+ */
+export class CsrfManager {
+  /**
+   * Generates or returns the current token; safe to call on server or client.
+   */
+  static async generateToken(): Promise<string> {
+    return await getCsrfToken();
+  }
+
+  /**
+   * Reads token from meta tag (client-side only).
+   */
+  static getTokenFromDOM(): string | null {
+    if (typeof document === 'undefined') return null;
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return (meta?.getAttribute('content') as string) || null;
+  }
+
+  /**
+   * Adds CSRF header to provided Headers object.
+   */
+  static addToHeaders(headers: Headers): void {
+    const token = CsrfManager.getTokenFromDOM();
+    if (token) {
+      headers.set('X-CSRF-Token', token);
+    }
+  }
+
+  /**
+   * Appends token to FormData (for non-fetch POST forms).
+   */
+  static addToFormData(fd: FormData): void {
+    const token = CsrfManager.getTokenFromDOM();
+    if (token) {
+      fd.append('csrf_token', token);
+    }
+  }
+
+  /**
+   * Convenience wrapper for server components to get token directly.
+   */
+  static async getServerToken(): Promise<string> {
+    return await getCsrfToken();
+  }
+}

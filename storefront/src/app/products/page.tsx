@@ -1,5 +1,6 @@
 import CatalogClient from '@/components/products/CatalogClient';
 import { api } from '@/lib/api';
+import type { Product } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,7 @@ export default async function CatalogPage({
   const collection_id = params.collection_id as string;
   const sort = params.sort as string;
 
-  let productsData = { products: [], total: 0 };
+  let productsData: { products: Product[]; total: number; limit?: number; offset?: number } = { products: [], total: 0 };
   let categoriesData = { categories: [] };
   let tagsData = { tags: [] };
   let collectionsData = { collections: [] };

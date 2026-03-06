@@ -3,36 +3,34 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { X, Cookie } from 'lucide-react';
-
-const COOKIE_KEY = 'kv_cookie_consent';
+import { ConsentManager } from '@/lib/consent-manager';
 
 export function CookieConsent() {
-  const [visible, setVisible] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
-    // Delay so it doesn't flash on first render
-    const timer = setTimeout(() => {
-      try {
-        const consent = localStorage.getItem(COOKIE_KEY);
-        if (!consent) setVisible(true);
-      } catch {
-        /* SSR safe */
-      }
-    }, 1500);
-    return () => clearTimeout(timer);
+    // only show banner when there is no stored consent
+    const existing = ConsentManager.getConsent();
+    if (!existing) {
+      // delay a bit so it doesn't flash on first render
+      const timer = setTimeout(() => setShowBanner(true), 1500);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
-  const accept = () => {
-    localStorage.setItem(COOKIE_KEY, 'accepted');
-    setVisible(false);
+  const handleAcceptAll = () => {
+    ConsentManager.acceptAll();
+    setShowBanner(false);
+    // reload page so any scripts depending on consent can initialize
+    window.location.reload();
   };
 
-  const decline = () => {
-    localStorage.setItem(COOKIE_KEY, 'declined');
-    setVisible(false);
+  const handleRejectAll = () => {
+    ConsentManager.rejectAll();
+    setShowBanner(false);
   };
 
-  if (!visible) return null;
+  if (!showBanner) return null;
 
   return (
     <div
@@ -48,13 +46,12 @@ export function CookieConsent() {
             <Cookie size={20} className="text-amber-500 shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold text-stone-900 text-sm">
-                We use cookies 🍪
+                We value your privacy
               </p>
               <p className="text-xs text-stone-500 font-light mt-0.5 leading-relaxed">
-                We use cookies to enhance your browsing experience, serve
-                personalized ads, and analyse our traffic.{' '}
+                Choose which categories of cookies & tracking you allow.{' '}
                 <Link
-                  href="/pages/cookie-policy"
+                  href="/privacy-policy"
                   className="text-stone-900 underline underline-offset-2 hover:text-amber-600 transition-colors"
                 >
                   Learn more
@@ -63,7 +60,7 @@ export function CookieConsent() {
             </div>
           </div>
           <button
-            onClick={decline}
+            onClick={handleRejectAll}
             aria-label="Dismiss"
             className="text-stone-400 hover:text-stone-700 transition-colors p-1 -mt-1 -mr-1 shrink-0"
           >
@@ -74,17 +71,23 @@ export function CookieConsent() {
         {/* Actions */}
         <div className="flex items-center gap-2">
           <button
-            onClick={accept}
+            onClick={handleAcceptAll}
             className="flex-1 bg-stone-900 text-white text-xs font-bold uppercase tracking-widest py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
           >
             Accept All
           </button>
           <button
-            onClick={decline}
+            onClick={handleRejectAll}
             className="flex-1 border border-stone-200 text-stone-600 text-xs font-bold uppercase tracking-widest py-2.5 rounded-xl hover:bg-stone-50 hover:border-stone-400 transition-colors"
           >
-            Decline
+            Reject All
           </button>
+          <Link
+            href="/cookie-settings"
+            className="flex-1 text-center text-stone-900 underline text-xs font-bold uppercase tracking-widest py-2.5 rounded-xl hover:text-amber-600 transition-colors"
+          >
+            Customize
+          </Link>
         </div>
       </div>
     </div>

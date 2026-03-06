@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useShop } from '@/context/shop-context';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
@@ -19,7 +19,7 @@ interface ProductCarouselProps {
   autoPlayInterval?: number;
 }
 
-export default function ProductCarousel({
+function ProductCarousel({
   products = [],
   loading: externalLoading,
   showNavigation = true,
@@ -234,3 +234,5 @@ export default function ProductCarousel({
     </div>
   );
 }
+
+export default React.memo(ProductCarousel);

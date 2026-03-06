@@ -1,3 +1,30 @@
+/**
+ * API Integration Layer - Task 2 Standardization
+ * 
+ * This file provides centralized API communication with:
+ * ✅ Type-safe request/response handling (api-contracts.ts)
+ * ✅ Response validation guards (api-guards.ts)
+ * ✅ Unified request wrapper (api-fetch.ts)
+ * ✅ Adapter patterns for response transformation
+ * 
+ * Pattern for adding new endpoints:
+ * 1. Define types in /types/api-contracts.ts
+ * 2. Use adaptProduct/adaptProducts for transformations
+ * 3. Add validation guards to ensure type safety
+ * 4. Use try/catch with proper error handling
+ * 5. Return standardized response format
+ */
+
+// Import adapter functions for API response conversion
+import { adaptProduct, adaptProducts } from './api-adapters';
+// Import validation guards for type-safe responses
+import {
+  isValidCollectionArray,
+  isValidProductArray,
+  isValidErrorResponse,
+} from './api-guards';
+import type { Product } from '@/types';
+
 // Use absolute URL for SSR, relative for client (Next.js rewrites)
 const API_URL = globalThis.window === undefined
   ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
@@ -53,11 +80,11 @@ async function fetchWithTrace(
   const startTime = getTime();
   const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
   const timeoutId = controller ? setTimeout(() => controller.abort(), API_TIMEOUT) : null;
-  
+
   try {
     const response = await fetch(input, { ...init, signal: controller?.signal });
     const duration = Math.round(getTime() - startTime);
-    
+
     if (process.env.NODE_ENV === 'development' && globalThis.window !== undefined) {
       console.log(`[API ${response.status}] ${getUrlString(input)} (${duration}ms)`);
     }
@@ -67,11 +94,13 @@ async function fetchWithTrace(
     if (process.env.NODE_ENV === 'development' && globalThis.window !== undefined) {
       console.error(`[API ERROR] ${getUrlString(input)} (${duration}ms):`, error);
     }
-    // Provide user-friendly timeout message instead of cryptic "signal is aborted"
+    // If the request was aborted due to timeout, return a 504-like response
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('Request timed out. Please check your connection and try again.');
+      return new Response(null, { status: 504, statusText: 'Request timed out' });
     }
-    throw error;
+
+    // For connection failures or other network errors, return a generic 502
+    return new Response(null, { status: 502, statusText: 'Bad Gateway' });
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
   }
@@ -439,10 +468,10 @@ export const api = {
       collection_id?: string;
       cache?: boolean;
     } = {}
-  ) {
+  ): Promise<{ products: Product[]; total: number; limit?: number; offset?: number }> {
     const searchParams = new URLSearchParams();
     searchParams.set('status', 'published');
-    
+
     Object.entries(params).forEach(([key, value]) => {
       if (value != null && key !== 'cache') {
         searchParams.set(key, value.toString());
@@ -453,26 +482,31 @@ export const api = {
 
     try {
       // Cache for 60 seconds (ISR), but allow bypassing cache via params
-      const cacheOptions = params.cache === false 
+      const cacheOptions = params.cache === false
         ? { cache: 'no-store' as RequestCache }
         : { next: { revalidate: 60, tags: ['products'] } };
-      
+
       const res = await fetchWithTrace(url, cacheOptions);
       if (!res.ok) {
         return { products: [], total: 0 };
       }
       const json = await res.json();
+
       // Adapter for standardized backend response
       if (json.data && Array.isArray(json.data)) {
+        // Use the adapter to convert API response to frontend types
+        const products = adaptProducts(json.data);
+
         return {
-          products: json.data,
-          total: json.pagination?.total || json.data.length,
+          products,
+          total: json.pagination?.total || products.length,
           limit: json.pagination?.limit,
           offset: json.pagination?.offset,
         };
       }
-      return json; // Fallback if backend format changes or is raw
-    } catch {
+      return { products: [], total: 0 }; // Return empty if format unexpected
+    } catch (error) {
+      console.error('[API] getProducts error:', error);
       // Fallback for build time
       return { products: [], total: 0 };
     }
@@ -491,18 +525,31 @@ export const api = {
     }
   },
 
-  getProduct: async (id: string) => {
+  getProduct: async (id: string): Promise<Product> => {
     try {
       const res = await fetchWithTrace(`${API_URL}/products/${id}`, {
         next: { revalidate: 60, tags: [`product-${id}`] },
       });
       if (!res.ok) throw new Error('Failed to fetch product');
       const json = await res.json();
-      // Adapter: Backend returns { data: { product: ... } }
-      if (json.data?.product) {
-        return json.data.product;
+
+      // Handle standardized API response format
+      if (json.success && json.data) {
+        // Use the adapter to convert API response to frontend types
+        return adaptProduct(json.data);
       }
-      return json; // Fallback
+
+      // Fallback: Adapter for backend returns { data: { product: ... } }
+      if (json.data?.product) {
+        return adaptProduct(json.data.product);
+      }
+
+      // Fallback: Direct product data
+      if (json.data && json.data.id) {
+        return adaptProduct(json.data);
+      }
+
+      throw new Error('Invalid API response format');
     } catch (error) {
       console.error('[API] getProduct failed', error);
       throw error; // Rethrow because page depends on it (dynamic params usually handled by notFound())

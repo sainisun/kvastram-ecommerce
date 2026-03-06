@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import LogRocket from 'logrocket';
 import { useAuth } from '@/context/auth-context';
+import { ConsentManager } from '@/lib/consent-manager';
 
 const LOGROCKET_APP_ID = process.env.NEXT_PUBLIC_LOGROCKET_APP_ID;
 
@@ -22,9 +23,20 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
     consentGranted.current = true;
   };
 
+  // helper to query consent; guard against SSR
+  const hasSessionConsent = () =>
+    typeof window !== 'undefined' &&
+    ConsentManager.hasConsentFor('session_recording');
+
   useEffect(() => {
-    // Only initialize once, if app ID is provided, and user has consented
-    if (!LOGROCKET_APP_ID || initialized.current || !consentGranted.current)
+    // Only initialize once, if app ID is provided, user has granted consent,
+    // and the consent manager is also okay.
+    if (
+      !LOGROCKET_APP_ID ||
+      initialized.current ||
+      !consentGranted.current ||
+      !hasSessionConsent()
+    )
       return;
 
     // Don't initialize in development unless explicitly enabled

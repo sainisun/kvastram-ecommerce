@@ -6,9 +6,9 @@ import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 interface Testimonial {
   id: string;
   name: string;
-  location: string;
-  avatar_url: string | null;
-  rating: number;
+  location?: string;
+  avatar_url?: string | null;
+  rating?: number;
   content: string;
 }
 
@@ -41,6 +41,8 @@ export default function TestimonialsCarousel({
     .toUpperCase()
     .slice(0, 2);
 
+  const rating = currentTestimonial.rating ?? 5;
+
   return (
     <div className="relative">
       {/* Navigation Arrows */}
@@ -71,12 +73,8 @@ export default function TestimonialsCarousel({
             <Star
               key={i}
               size={24}
-              fill={i < currentTestimonial.rating ? 'currentColor' : 'none'}
-              className={
-                i < currentTestimonial.rating
-                  ? 'text-amber-400'
-                  : 'text-stone-600'
-              }
+              fill={i < rating ? 'currentColor' : 'none'}
+              className={i < rating ? 'text-amber-400' : 'text-stone-600'}
             />
           ))}
         </div>

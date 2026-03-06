@@ -1,0 +1,4925 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KVASTRAM â€” Artisanal Luxury</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Archivo:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #080808;
+        --cream: #f8f6f3;
+        --parch: #f0ede8;
+        --ash: #e8e4de;
+        --mist: #888;
+        --rule: rgba(8, 8, 8, 0.1);
+        --rule-l: rgba(248, 246, 243, 0.12);
+        --D: 'Cormorant Garamond', Georgia, serif;
+        --B: 'Archivo', sans-serif;
+        --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --silk: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        --swift: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--cream);
+        color: var(--ink);
+        font-family: var(--B);
+        font-size: 14px;
+        overflow-x: hidden;
+        cursor: none;
+      }
+      body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.035'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 9990;
+        mix-blend-mode: multiply;
+      }
+
+      /* CURSOR */
+      #cd {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        background: var(--ink);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.3s,
+          height 0.3s,
+          opacity 0.3s;
+        mix-blend-mode: multiply;
+      }
+      #cr {
+        position: fixed;
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        opacity: 0.3;
+        transition:
+          width 0.5s var(--swift),
+          height 0.5s var(--swift),
+          opacity 0.3s;
+      }
+      body.cxl #cd {
+        width: 60px;
+        height: 60px;
+        opacity: 0.07;
+      }
+      body.cxl #cr {
+        width: 76px;
+        height: 76px;
+        opacity: 0.1;
+      }
+      body.cview #cd {
+        width: 50px;
+        height: 50px;
+        background: var(--ink);
+        opacity: 0.92;
+        mix-blend-mode: normal;
+      }
+      body.cview #cr {
+        opacity: 0;
+      }
+
+      /* LOADER */
+      #ldr {
+        position: fixed;
+        inset: 0;
+        background: var(--ink);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 28px;
+        transition:
+          clip-path 1.1s var(--swift) 0.2s,
+          opacity 0.6s 0.1s;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+      #ldr.done {
+        clip-path: polygon(0 0, 100% 0, 100% 0%, 0 0%);
+        opacity: 0;
+        pointer-events: none;
+      }
+      .lw {
+        font-family: var(--D);
+        font-size: 36px;
+        font-weight: 300;
+        letter-spacing: 0.55em;
+        text-transform: uppercase;
+        color: var(--cream);
+        overflow: hidden;
+        display: flex;
+      }
+      .lw span {
+        display: inline-block;
+        animation: lch 0.8s var(--spring) both;
+      }
+      .lw span:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+      .lw span:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .lw span:nth-child(3) {
+        animation-delay: 0.15s;
+      }
+      .lw span:nth-child(4) {
+        animation-delay: 0.2s;
+      }
+      .lw span:nth-child(5) {
+        animation-delay: 0.25s;
+      }
+      .lw span:nth-child(6) {
+        animation-delay: 0.3s;
+      }
+      .lw span:nth-child(7) {
+        animation-delay: 0.35s;
+      }
+      .lw span:nth-child(8) {
+        animation-delay: 0.4s;
+      }
+      @keyframes lch {
+        from {
+          opacity: 0;
+          transform: translateY(110%) rotate(5deg);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .ll {
+        width: 0;
+        height: 1px;
+        background: rgba(248, 246, 243, 0.2);
+        animation: llg 1.6s var(--silk) 0.5s forwards;
+      }
+      @keyframes llg {
+        to {
+          width: 180px;
+        }
+      }
+      .lp {
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        color: rgba(248, 246, 243, 0.3);
+        animation: fi 0.6s 0.4s both;
+      }
+      @keyframes fi {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* SCROLL PROGRESS */
+      #sp {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        background: var(--ink);
+        z-index: 9995;
+        width: 0%;
+        transition: width 0.06s linear;
+      }
+
+      /* TOAST */
+      #toast {
+        position: fixed;
+        bottom: 36px;
+        left: 50%;
+        background: var(--ink);
+        color: var(--cream);
+        padding: 14px 32px;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        z-index: 900;
+        pointer-events: none;
+        transform: translateX(-50%) translateY(70px);
+        transition: transform 0.4s var(--swift);
+        white-space: nowrap;
+      }
+      #toast.on {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* NAV */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 300;
+        padding: 0 52px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid transparent;
+        transition:
+          background 0.5s,
+          border-color 0.5s;
+      }
+      nav.sc {
+        background: rgba(248, 246, 243, 0.84);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-bottom-color: var(--rule);
+      }
+      .nl {
+        font-family: var(--D);
+        font-size: 19px;
+        font-weight: 300;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--ink);
+      }
+      .nls {
+        display: flex;
+        gap: 40px;
+        list-style: none;
+      }
+      .nls a {
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--ink);
+        opacity: 0.5;
+        transition: opacity 0.25s;
+        position: relative;
+      }
+      .nls a::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--ink);
+        transition: width 0.3s var(--silk);
+      }
+      .nls a:hover,
+      .nls a.ac {
+        opacity: 1;
+      }
+      .nls a:hover::after,
+      .nls a.ac::after {
+        width: 100%;
+      }
+      .nls a.sale {
+        opacity: 1;
+        font-weight: 500;
+      }
+      .nr {
+        display: flex;
+        gap: 22px;
+        align-items: center;
+      }
+      .nr button {
+        background: none;
+        border: none;
+        cursor: none;
+        padding: 6px;
+        opacity: 0.6;
+        transition:
+          opacity 0.25s,
+          transform 0.2s;
+        color: var(--ink);
+      }
+      .nr button:hover {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+      .cw {
+        position: relative;
+      }
+      .cb {
+        position: absolute;
+        top: -3px;
+        right: -5px;
+        width: 16px;
+        height: 16px;
+        background: var(--ink);
+        color: var(--cream);
+        border-radius: 50%;
+        font-size: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+
+      /* PAGE NAV */
+      .pnav {
+        position: fixed;
+        top: 68px;
+        width: 100%;
+        background: var(--ink);
+        z-index: 299;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        padding: 0 52px;
+        gap: 1px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .pnav::-webkit-scrollbar {
+        display: none;
+      }
+      .pb {
+        background: none;
+        border: none;
+        cursor: none;
+        padding: 6px 18px;
+        font-size: 8.5px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(248, 246, 243, 0.4);
+        transition:
+          color 0.25s,
+          background 0.25s;
+        white-space: nowrap;
+        font-family: var(--B);
+      }
+      .pb:hover {
+        color: rgba(248, 246, 243, 0.8);
+      }
+      .pb.ac {
+        color: var(--cream);
+        background: rgba(248, 246, 243, 0.12);
+      }
+
+      /* VIEWS */
+      .vw {
+        display: none;
+      }
+      .vw.ac {
+        display: block;
+        animation: vin 0.5s var(--swift) both;
+      }
+      @keyframes vin {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* SECTION */
+      section {
+        padding: 100px 68px;
+      }
+      section.alt {
+        background: var(--parch);
+      }
+      section.dark {
+        background: var(--ink);
+        color: var(--cream);
+      }
+
+      /* PAGE HERO */
+      .ph {
+        position: relative;
+        height: 520px;
+        display: flex;
+        align-items: flex-end;
+        padding: 68px;
+        overflow: hidden;
+        margin-top: 106px;
+      }
+      .phbg {
+        position: absolute;
+        inset: -8%;
+        background-size: cover;
+        background-position: center;
+        filter: brightness(0.38) grayscale(0.2);
+        transition: transform 12s ease;
+        will-change: transform;
+      }
+      .ph:hover .phbg {
+        transform: scale(1.04);
+      }
+      .phvg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at 30% 100%,
+          rgba(8, 8, 8, 0.65) 0%,
+          transparent 70%
+        );
+      }
+      .phc {
+        position: relative;
+        z-index: 2;
+      }
+      .phe {
+        font-size: 9px;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: rgba(248, 246, 243, 0.5);
+        margin-bottom: 18px;
+        animation: su 0.7s var(--swift) 0.1s both;
+      }
+      .phh {
+        font-family: var(--D);
+        font-size: clamp(52px, 7vw, 112px);
+        font-weight: 300;
+        line-height: 0.9;
+        letter-spacing: -0.025em;
+        color: var(--cream);
+        animation: su 0.9s var(--swift) 0.25s both;
+      }
+      .phh em {
+        font-style: italic;
+      }
+      .phd {
+        font-size: 13px;
+        line-height: 1.85;
+        color: rgba(248, 246, 243, 0.55);
+        max-width: 480px;
+        margin-top: 22px;
+        animation: su 0.9s var(--swift) 0.4s both;
+      }
+      .shint {
+        position: absolute;
+        bottom: 40px;
+        right: 68px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: su 0.9s var(--swift) 0.7s both;
+      }
+      .sl {
+        width: 40px;
+        height: 1px;
+        background: rgba(248, 246, 243, 0.3);
+        overflow: hidden;
+        position: relative;
+      }
+      .sl::after {
+        content: '';
+        position: absolute;
+        left: -100%;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(248, 246, 243, 0.8);
+        animation: sa 2.2s ease 1.5s infinite;
+      }
+      @keyframes sa {
+        0% {
+          left: -100%;
+        }
+        50% {
+          left: 0;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+      .hint-text {
+        font-size: 9px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: rgba(248, 246, 243, 0.4);
+      }
+      @keyframes su {
+        from {
+          opacity: 0;
+          transform: translateY(32px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* TYPOGRAPHY */
+      .ey {
+        font-size: 9px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--mist);
+        margin-bottom: 14px;
+        display: block;
+      }
+      .ey.lt {
+        color: rgba(248, 246, 243, 0.38);
+      }
+      .dp {
+        font-family: var(--D);
+        font-size: clamp(38px, 4vw, 64px);
+        font-weight: 300;
+        line-height: 1;
+        letter-spacing: -0.015em;
+      }
+      .dp em {
+        font-style: italic;
+      }
+      .dp.lt {
+        color: var(--cream);
+      }
+      .dp.xl {
+        font-size: clamp(52px, 6.5vw, 100px);
+        letter-spacing: -0.025em;
+      }
+      .bt {
+        font-size: 14px;
+        line-height: 1.95;
+        color: var(--mist);
+      }
+      .bt.lt {
+        color: rgba(248, 246, 243, 0.52);
+      }
+      .sh {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 56px;
+      }
+      .la {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--ink);
+        opacity: 0.45;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: opacity 0.25s;
+        flex-shrink: 0;
+      }
+      .la::after {
+        content: '';
+        width: 18px;
+        height: 1px;
+        background: currentColor;
+        transition: width 0.3s var(--silk);
+      }
+      .la:hover {
+        opacity: 1;
+      }
+      .la:hover::after {
+        width: 36px;
+      }
+      .la.lt {
+        color: var(--cream);
+      }
+
+      /* BUTTONS */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 17px 40px;
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        font-family: var(--B);
+        text-decoration: none;
+        cursor: none;
+        border: none;
+        transition:
+          transform 0.3s var(--swift),
+          box-shadow 0.3s,
+          background 0.25s,
+          color 0.25s;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(-101%);
+        transition: transform 0.4s var(--silk);
+      }
+      .btn:hover::before {
+        transform: translateX(0);
+      }
+      .btn-k {
+        background: var(--ink);
+        color: var(--cream);
+      }
+      .btn-k:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 48px rgba(8, 8, 8, 0.22);
+      }
+      .btn-c {
+        background: var(--cream);
+        color: var(--ink);
+      }
+      .btn-c:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 48px rgba(248, 246, 243, 0.25);
+      }
+      .btn-g {
+        background: none;
+        color: var(--ink);
+        border: 1px solid rgba(8, 8, 8, 0.2);
+      }
+      .btn-g:hover {
+        background: var(--ink);
+        color: var(--cream);
+        border-color: var(--ink);
+        transform: translateY(-3px);
+      }
+      .btn-gl {
+        background: none;
+        color: var(--cream);
+        border: 1px solid rgba(248, 246, 243, 0.25);
+      }
+      .btn-gl:hover {
+        background: var(--cream);
+        color: var(--ink);
+        transform: translateY(-3px);
+      }
+      .btn-sm {
+        padding: 12px 28px;
+        font-size: 9px;
+      }
+
+      /* REVEAL */
+      .rv {
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 0.85s var(--silk),
+          transform 0.85s var(--silk);
+      }
+      .rv.v {
+        opacity: 1;
+        transform: none;
+      }
+      .d1 {
+        transition-delay: 0.1s;
+      }
+      .d2 {
+        transition-delay: 0.2s;
+      }
+      .d3 {
+        transition-delay: 0.3s;
+      }
+      .d4 {
+        transition-delay: 0.4s;
+      }
+      .d5 {
+        transition-delay: 0.5s;
+      }
+      .d6 {
+        transition-delay: 0.6s;
+      }
+
+      /* MARQUEE */
+      .mq {
+        background: var(--ink);
+        height: 76px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        padding: 0 !important;
+      }
+      .mqt {
+        display: flex;
+        white-space: nowrap;
+        animation: mqr 28s linear infinite;
+      }
+      .mqt:hover {
+        animation-play-state: paused;
+      }
+      .mqi {
+        font-family: var(--D);
+        font-size: 28px;
+        font-weight: 300;
+        font-style: italic;
+        color: var(--cream);
+        padding: 0 52px;
+        opacity: 0.85;
+      }
+      .mqs {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: rgba(248, 246, 243, 0.2);
+        border-radius: 50%;
+        vertical-align: middle;
+      }
+      @keyframes mqr {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      /* STATS */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        padding: 0 68px;
+      }
+      .stat-card {
+        padding: 40px 0;
+        text-align: center;
+        border-right: 1px solid var(--rule);
+        opacity: 0;
+        transform: translateY(14px);
+        transition:
+          opacity 0.6s var(--silk),
+          transform 0.6s var(--silk);
+      }
+      .stat-card:last-child {
+        border-right: none;
+      }
+      .stat-card.v {
+        opacity: 1;
+        transform: none;
+      }
+      .stn {
+        font-family: var(--D);
+        font-size: 44px;
+        font-weight: 300;
+        display: block;
+        margin-bottom: 6px;
+        letter-spacing: -0.02em;
+      }
+      .stn em {
+        font-style: italic;
+      }
+      .stl {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--mist);
+      }
+
+      /* ACCORDION */
+      .ac {
+        border-top: 1px solid var(--rule);
+      }
+      .ac:last-child {
+        border-bottom: 1px solid var(--rule);
+      }
+      .ach {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 22px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        cursor: none;
+        font-family: var(--B);
+        color: var(--ink);
+        transition: opacity 0.25s;
+      }
+      .ach:hover {
+        opacity: 0.55;
+      }
+      .aci {
+        width: 28px;
+        height: 28px;
+        border: 1px solid var(--rule);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 300;
+        flex-shrink: 0;
+        transition:
+          transform 0.35s var(--silk),
+          background 0.25s,
+          color 0.25s;
+      }
+      .ac.op .aci {
+        transform: rotate(45deg);
+        background: var(--ink);
+        color: var(--cream);
+      }
+      .acb {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.45s var(--silk);
+      }
+      .ac.op .acb {
+        max-height: 400px;
+      }
+      .acb p {
+        padding: 0 0 22px;
+        font-size: 13px;
+        line-height: 1.95;
+        color: var(--mist);
+        max-width: 680px;
+      }
+
+      /* FLOAT FIELD */
+      .ff {
+        position: relative;
+        border-bottom: 1px solid var(--rule);
+        padding-bottom: 1px;
+        margin-bottom: 32px;
+      }
+      .ff input,
+      .ff textarea,
+      .ff select {
+        width: 100%;
+        background: none;
+        border: none;
+        outline: none;
+        padding: 26px 0 10px;
+        font-size: 14px;
+        font-family: var(--B);
+        color: var(--ink);
+      }
+      .ff textarea {
+        resize: none;
+        height: 130px;
+      }
+      .ff select {
+        cursor: none;
+        appearance: none;
+      }
+      .ff label {
+        position: absolute;
+        top: 22px;
+        left: 0;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mist);
+        pointer-events: none;
+        transition:
+          top 0.25s,
+          font-size 0.25s,
+          color 0.25s;
+      }
+      .ff input:focus ~ label,
+      .ff input:not(:placeholder-shown) ~ label,
+      .ff textarea:focus ~ label,
+      .ff textarea:not(:placeholder-shown) ~ label {
+        top: 5px;
+        font-size: 8.5px;
+        letter-spacing: 0.22em;
+        color: var(--ink);
+      }
+      .ff::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--ink);
+        transition: width 0.45s var(--silk);
+      }
+      .ff:focus-within::after {
+        width: 100%;
+      }
+
+      /* FOOTER */
+      footer {
+        background: var(--ink);
+        color: var(--cream);
+        padding: 0 68px 48px;
+      }
+      .fwm {
+        font-family: var(--D);
+        font-size: clamp(72px, 12vw, 160px);
+        font-weight: 300;
+        letter-spacing: -0.025em;
+        line-height: 0.82;
+        color: rgba(248, 246, 243, 0.035);
+        overflow: hidden;
+        user-select: none;
+        margin-bottom: -24px;
+        padding-top: 60px;
+      }
+      .fg {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr 1.6fr;
+        gap: 60px;
+        padding-top: 52px;
+        border-top: 1px solid rgba(248, 246, 243, 0.07);
+      }
+      .flog {
+        font-family: var(--D);
+        font-size: 20px;
+        font-weight: 300;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--cream);
+        text-decoration: none;
+        display: block;
+        margin-bottom: 16px;
+      }
+      .ftag {
+        font-size: 12px;
+        line-height: 1.75;
+        color: rgba(248, 246, 243, 0.38);
+        max-width: 240px;
+        margin-bottom: 28px;
+      }
+      .fsoc {
+        display: flex;
+        gap: 10px;
+      }
+      .fsoc a {
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(248, 246, 243, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cream);
+        text-decoration: none;
+        font-size: 11px;
+        opacity: 0.45;
+        transition:
+          opacity 0.25s,
+          border-color 0.25s,
+          transform 0.2s;
+      }
+      .fsoc a:hover {
+        opacity: 1;
+        border-color: rgba(248, 246, 243, 0.5);
+        transform: translateY(-2px);
+      }
+      .fc h4 {
+        font-size: 9px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(248, 246, 243, 0.3);
+        margin-bottom: 20px;
+        font-weight: 400;
+      }
+      .fc ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+      .fc ul li a {
+        font-size: 13px;
+        color: rgba(248, 246, 243, 0.55);
+        text-decoration: none;
+        transition:
+          color 0.25s,
+          transform 0.2s;
+        display: inline-block;
+        cursor: none;
+      }
+      .fc ul li a:hover {
+        color: var(--cream);
+        transform: translateX(4px);
+      }
+      .fbot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 60px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(248, 246, 243, 0.07);
+      }
+      .fcp {
+        font-size: 10px;
+        color: rgba(248, 246, 243, 0.25);
+      }
+      .pays {
+        display: flex;
+        gap: 8px;
+      }
+      .pay {
+        height: 20px;
+        padding: 3px 9px;
+        border: 1px solid rgba(248, 246, 243, 0.14);
+        font-size: 8.5px;
+        color: rgba(248, 246, 243, 0.4);
+        display: flex;
+        align-items: center;
+      }
+
+      ::-webkit-scrollbar {
+        width: 3px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--parch);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(8, 8, 8, 0.18);
+      }
+
+      /* â•â•â• ABOUT â•â•â• */
+      .absplit {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 100vh;
+        padding-top: 106px;
+      }
+      .absl {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 88px 72px;
+        position: relative;
+      }
+      .absr {
+        position: relative;
+        overflow: hidden;
+      }
+      .absr img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scale(1.05);
+        transition: transform 10s ease;
+        filter: grayscale(12%);
+      }
+      .absr:hover img {
+        transform: scale(1);
+      }
+      .absr::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(to right, var(--cream) 0%, transparent 28%);
+      }
+      .absr::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(
+          to bottom,
+          var(--cream) 0%,
+          transparent 18%
+        );
+      }
+      .abig {
+        font-family: var(--D);
+        font-size: clamp(60px, 7vw, 116px);
+        font-weight: 300;
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+        margin-bottom: 40px;
+      }
+      .abig em {
+        font-style: italic;
+        display: block;
+      }
+      .abbg {
+        position: absolute;
+        bottom: 64px;
+        right: -28px;
+        z-index: 5;
+        width: 120px;
+        height: 120px;
+        background: var(--ink);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        animation: spinb 20s linear infinite;
+      }
+      .abbgn {
+        font-family: var(--D);
+        font-size: 28px;
+        font-weight: 300;
+        color: var(--cream);
+      }
+      .abbgl {
+        font-size: 7px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(248, 246, 243, 0.5);
+      }
+      @keyframes spinb {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .plrs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+      }
+      .plr {
+        padding: 60px 52px;
+        background: var(--parch);
+        position: relative;
+        overflow: hidden;
+        transition:
+          background 0.45s var(--silk),
+          transform 0.35s var(--swift);
+        cursor: none;
+      }
+      .plr:hover {
+        background: var(--ink);
+        transform: translateY(-5px);
+      }
+      .plr::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--ink);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s var(--silk);
+      }
+      .plr:hover::after {
+        transform: scaleX(1);
+        background: var(--cream);
+      }
+      .plrn {
+        font-family: var(--D);
+        font-size: 72px;
+        font-weight: 300;
+        opacity: 0.08;
+        line-height: 1;
+        margin-bottom: 20px;
+        display: block;
+        transition: color 0.45s;
+      }
+      .plr:hover .plrn {
+        color: var(--cream);
+      }
+      .plrh {
+        font-family: var(--D);
+        font-size: 30px;
+        font-weight: 300;
+        margin-bottom: 18px;
+        transition: color 0.45s;
+      }
+      .plr:hover .plrh {
+        color: var(--cream);
+      }
+      .plrd {
+        font-size: 13px;
+        line-height: 1.9;
+        color: var(--mist);
+        transition: color 0.45s;
+      }
+      .plr:hover .plrd {
+        color: rgba(248, 246, 243, 0.55);
+      }
+
+      .tls {
+        display: flex;
+        flex-direction: column;
+      }
+      .tl {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 52px;
+        padding: 44px 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      .tl:first-child {
+        padding-top: 0;
+      }
+      .tly {
+        font-family: var(--D);
+        font-size: 36px;
+        font-weight: 300;
+        color: rgba(8, 8, 8, 0.2);
+        letter-spacing: -0.015em;
+        padding-top: 4px;
+        line-height: 1;
+      }
+      .tlbh {
+        font-family: var(--D);
+        font-size: 24px;
+        font-weight: 300;
+        margin-bottom: 10px;
+      }
+      .tlbp {
+        font-size: 13px;
+        line-height: 1.9;
+        color: var(--mist);
+      }
+
+      .fndw {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px;
+      }
+      .fndi {
+        position: relative;
+        overflow: hidden;
+        min-height: 560px;
+      }
+      .fndi img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(15%);
+        transition:
+          filter 0.5s,
+          transform 0.7s var(--silk);
+      }
+      .fndi:hover img {
+        filter: grayscale(0%);
+        transform: scale(1.03);
+      }
+      .fndc {
+        padding: 88px 72px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: var(--parch);
+      }
+      .fndq {
+        font-family: var(--D);
+        font-size: clamp(22px, 2.2vw, 34px);
+        font-style: italic;
+        font-weight: 300;
+        line-height: 1.45;
+        margin-bottom: 40px;
+        letter-spacing: -0.015em;
+        position: relative;
+        padding-left: 28px;
+      }
+      .fndq::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 2px;
+        height: 80%;
+        background: var(--ink);
+        opacity: 0.18;
+      }
+      .fnds {
+        font-family: var(--D);
+        font-size: 24px;
+        font-weight: 300;
+        font-style: italic;
+        margin-bottom: 4px;
+      }
+      .fndr {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--mist);
+      }
+
+      .prsr {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 2px;
+      }
+      .prs {
+        padding: 36px 28px;
+        background: var(--parch);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.35s;
+        cursor: none;
+      }
+      .prs:hover {
+        background: var(--ink);
+      }
+      .prsh {
+        font-family: var(--D);
+        font-size: 18px;
+        font-weight: 300;
+        font-style: italic;
+        color: rgba(8, 8, 8, 0.35);
+        transition: color 0.35s;
+      }
+      .prs:hover .prsh {
+        color: rgba(248, 246, 243, 0.7);
+      }
+
+      /* â•â•â• ARTISANS â•â•â• */
+      .aig {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+      .aibn {
+        font-family: var(--D);
+        font-size: clamp(88px, 12vw, 152px);
+        font-weight: 300;
+        line-height: 0.85;
+        letter-spacing: -0.04em;
+        margin-bottom: 18px;
+      }
+      .aibn span {
+        font-style: italic;
+      }
+      .agrd {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+      }
+      .acd {
+        position: relative;
+        overflow: hidden;
+        cursor: none;
+      }
+      .acdi {
+        position: relative;
+        aspect-ratio: 4/5;
+        overflow: hidden;
+      }
+      .acdi img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(25%);
+        transition:
+          transform 0.8s var(--silk),
+          filter 0.5s;
+      }
+      .acd:hover .acdi img {
+        transform: scale(1.08);
+        filter: grayscale(0%);
+      }
+      .acdo {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(8, 8, 8, 0.85) 0%,
+          rgba(8, 8, 8, 0) 50%
+        );
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+      .acd:hover .acdo {
+        opacity: 1;
+      }
+      .acdh {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 28px;
+        color: var(--cream);
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+          opacity 0.45s var(--silk),
+          transform 0.45s var(--silk);
+      }
+      .acd:hover .acdh {
+        opacity: 1;
+        transform: none;
+      }
+      .acdhn {
+        font-family: var(--D);
+        font-size: 26px;
+        font-weight: 300;
+        margin-bottom: 6px;
+      }
+      .acdhc {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        opacity: 0.6;
+      }
+      .acdm {
+        padding: 22px 22px 30px;
+        border-top: 1px solid var(--rule);
+      }
+      .acdn {
+        font-family: var(--D);
+        font-size: 22px;
+        font-weight: 300;
+        margin-bottom: 4px;
+      }
+      .acdc {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--mist);
+        margin-bottom: 6px;
+      }
+      .acdl {
+        font-size: 11px;
+        color: rgba(8, 8, 8, 0.4);
+      }
+
+      .crfg {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
+      }
+      .crfi {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 420px;
+      }
+      .crfi.fl {
+        direction: rtl;
+      }
+      .crfi.fl > * {
+        direction: ltr;
+      }
+      .crfim {
+        overflow: hidden;
+      }
+      .crfim img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(18%);
+        transition:
+          filter 0.55s,
+          transform 0.7s var(--silk);
+      }
+      .crfi:hover .crfim img {
+        filter: grayscale(0%);
+        transform: scale(1.05);
+      }
+      .crft {
+        padding: 52px 44px;
+        background: var(--parch);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .crfn {
+        font-family: var(--D);
+        font-size: 60px;
+        font-weight: 300;
+        opacity: 0.08;
+        line-height: 1;
+        margin-bottom: 14px;
+      }
+      .crfh {
+        font-family: var(--D);
+        font-size: 28px;
+        font-weight: 300;
+        margin-bottom: 16px;
+        letter-spacing: -0.01em;
+      }
+      .crfd {
+        font-size: 13px;
+        line-height: 1.95;
+        color: var(--mist);
+      }
+
+      .impst {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: rgba(248, 246, 243, 0.06);
+      }
+      .impi {
+        padding: 52px 36px;
+        text-align: center;
+        background: var(--ink);
+      }
+      .impn {
+        font-family: var(--D);
+        font-size: 60px;
+        font-weight: 300;
+        display: block;
+        margin-bottom: 10px;
+        letter-spacing: -0.03em;
+        color: var(--cream);
+      }
+      .impn em {
+        font-style: italic;
+      }
+      .impl {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(248, 246, 243, 0.35);
+      }
+
+      /* â•â•â• SUSTAINABILITY â•â•â• */
+      .susman {
+        text-align: center;
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      .susbig {
+        font-family: var(--D);
+        font-size: clamp(40px, 5.5vw, 80px);
+        font-weight: 300;
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        margin-bottom: 30px;
+      }
+      .susbig em {
+        font-style: italic;
+        color: rgba(8, 8, 8, 0.4);
+      }
+      .susg {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+      }
+      .susc {
+        padding: 60px 48px;
+        background: var(--parch);
+        position: relative;
+        overflow: hidden;
+        transition: background 0.4s var(--silk);
+        cursor: none;
+      }
+      .susc::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background: var(--ink);
+        transition: width 0.45s var(--swift);
+      }
+      .susc:hover::before {
+        width: 4px;
+      }
+      .susc:hover {
+        background: var(--ash);
+      }
+      .susci {
+        font-size: 34px;
+        margin-bottom: 26px;
+        display: block;
+      }
+      .suscn {
+        font-family: var(--D);
+        font-size: 26px;
+        font-weight: 300;
+        margin-bottom: 14px;
+      }
+      .suscd {
+        font-size: 13px;
+        line-height: 1.95;
+        color: var(--mist);
+      }
+
+      .spf {
+        display: flex;
+        align-items: stretch;
+      }
+      .sps {
+        flex: 1;
+        padding: 52px 28px;
+        text-align: center;
+        background: var(--parch);
+        position: relative;
+        transition:
+          background 0.4s,
+          color 0.4s;
+        cursor: none;
+      }
+      .sps:not(:last-child)::after {
+        content: 'â†’';
+        position: absolute;
+        right: -12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: var(--mist);
+        z-index: 2;
+        background: var(--parch);
+        padding: 4px;
+        transition:
+          background 0.4s,
+          color 0.4s;
+      }
+      .sps:hover {
+        background: var(--ink);
+        color: var(--cream);
+      }
+      .sps:hover::after {
+        background: var(--ink);
+        color: rgba(248, 246, 243, 0.3);
+      }
+      .sps:hover .spsd {
+        color: rgba(248, 246, 243, 0.5);
+      }
+      .spsn {
+        font-family: var(--D);
+        font-size: 50px;
+        font-weight: 300;
+        opacity: 0.1;
+        margin-bottom: 14px;
+        display: block;
+        line-height: 1;
+      }
+      .spsh {
+        font-family: var(--D);
+        font-size: 20px;
+        font-weight: 300;
+        margin-bottom: 12px;
+      }
+      .spsd {
+        font-size: 12px;
+        line-height: 1.8;
+        color: var(--mist);
+        transition: color 0.4s;
+      }
+
+      .crtr {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+      }
+      .crtc {
+        padding: 44px 36px;
+        background: var(--parch);
+        text-align: center;
+        transition:
+          background 0.35s,
+          transform 0.3s var(--swift);
+        cursor: none;
+      }
+      .crtc:hover {
+        background: var(--ink);
+        transform: translateY(-4px);
+      }
+      .crtci {
+        font-size: 30px;
+        margin-bottom: 18px;
+        display: block;
+      }
+      .crtcn {
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        font-weight: 500;
+        transition: color 0.35s;
+      }
+      .crtc:hover .crtcn {
+        color: var(--cream);
+      }
+      .crtcd {
+        font-size: 11px;
+        line-height: 1.7;
+        color: var(--mist);
+        transition: color 0.35s;
+      }
+      .crtc:hover .crtcd {
+        color: rgba(248, 246, 243, 0.45);
+      }
+
+      /* â•â•â• JOURNAL â•â•â• */
+      .jflt {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 52px;
+        flex-wrap: wrap;
+      }
+      .jfb {
+        background: none;
+        border: 1px solid var(--rule);
+        padding: 11px 26px;
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        cursor: none;
+        font-family: var(--B);
+        transition:
+          background 0.25s,
+          color 0.25s,
+          border-color 0.25s;
+      }
+      .jfb.ac,
+      .jfb:hover {
+        background: var(--ink);
+        color: var(--cream);
+        border-color: var(--ink);
+      }
+      .jft {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 2px;
+        margin-bottom: 2px;
+        min-height: 540px;
+      }
+      .jfti {
+        position: relative;
+        overflow: hidden;
+      }
+      .jfti img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(12%);
+        transition:
+          transform 0.8s var(--silk),
+          filter 0.5s;
+      }
+      .jft:hover .jfti img {
+        transform: scale(1.05);
+        filter: grayscale(0%);
+      }
+      .jftc {
+        padding: 68px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        background: var(--parch);
+      }
+      .jftcat {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--mist);
+        margin-bottom: 16px;
+      }
+      .jfttt {
+        font-family: var(--D);
+        font-size: clamp(28px, 3.2vw, 48px);
+        font-weight: 300;
+        line-height: 1.08;
+        letter-spacing: -0.015em;
+        margin-bottom: 20px;
+      }
+      .jfttt em {
+        font-style: italic;
+      }
+      .jftex {
+        font-size: 13px;
+        line-height: 1.85;
+        color: var(--mist);
+        margin-bottom: 32px;
+      }
+      .jftm {
+        font-size: 9px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(8, 8, 8, 0.35);
+      }
+      .jgrd {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+      }
+      .jc {
+        overflow: hidden;
+        cursor: none;
+        position: relative;
+      }
+      .jci {
+        position: relative;
+        aspect-ratio: 4/3;
+        overflow: hidden;
+      }
+      .jci img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(18%);
+        transition:
+          transform 0.75s var(--silk),
+          filter 0.5s;
+      }
+      .jc:hover .jci img {
+        transform: scale(1.08);
+        filter: grayscale(0%);
+      }
+      .jcar {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 36px;
+        height: 36px;
+        background: var(--ink);
+        color: var(--cream);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        opacity: 0;
+        transform: scale(0.7);
+        transition:
+          opacity 0.35s,
+          transform 0.35s var(--spring);
+      }
+      .jc:hover .jcar {
+        opacity: 1;
+        transform: scale(1);
+      }
+      .jcb {
+        padding: 26px 26px 34px;
+        border-top: 1px solid var(--rule);
+      }
+      .jccat {
+        font-size: 8.5px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--mist);
+        margin-bottom: 12px;
+      }
+      .jctt {
+        font-family: var(--D);
+        font-size: 22px;
+        font-weight: 300;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+        margin-bottom: 10px;
+      }
+      .jcex {
+        font-size: 12px;
+        line-height: 1.75;
+        color: var(--mist);
+        margin-bottom: 16px;
+      }
+      .jcm {
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(8, 8, 8, 0.3);
+      }
+
+      /* ARTICLE */
+      .arth {
+        position: relative;
+        height: 680px;
+        display: flex;
+        align-items: flex-end;
+        padding: 80px 68px;
+        margin-top: 106px;
+        overflow: hidden;
+      }
+      .arth img {
+        position: absolute;
+        inset: -5%;
+        width: 110%;
+        height: 110%;
+        object-fit: cover;
+        filter: brightness(0.38);
+        transition: transform 12s ease;
+      }
+      .arth:hover img {
+        transform: translateY(-4%);
+      }
+      .arthvg {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(8, 8, 8, 0.75) 0%,
+          transparent 55%
+        );
+      }
+      .arthc {
+        position: relative;
+        z-index: 2;
+        color: var(--cream);
+        max-width: 760px;
+      }
+      .artw {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 80px 68px;
+      }
+      .artby {
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--mist);
+        margin-bottom: 52px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--rule);
+      }
+      .artb p {
+        font-size: 16px;
+        line-height: 2.05;
+        color: #2a2a2a;
+        margin-bottom: 30px;
+      }
+      .artb h2 {
+        font-family: var(--D);
+        font-size: 38px;
+        font-weight: 300;
+        margin: 54px 0 22px;
+        letter-spacing: -0.01em;
+      }
+      .artb blockquote {
+        border-left: 2px solid rgba(8, 8, 8, 0.15);
+        padding: 28px 36px;
+        margin: 44px 0;
+        font-family: var(--D);
+        font-size: 26px;
+        font-weight: 300;
+        font-style: italic;
+        line-height: 1.45;
+        letter-spacing: -0.01em;
+        color: rgba(8, 8, 8, 0.7);
+      }
+      .artb img {
+        width: 100%;
+        margin: 44px 0;
+      }
+
+      /* â•â•â• COLLECTIONS â•â•â• */
+      .cog {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px;
+      }
+      .csk {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .cc {
+        position: relative;
+        overflow: hidden;
+        cursor: none;
+      }
+      .cclg {
+        height: 660px;
+      }
+      .ccsm {
+        height: 328px;
+      }
+      .cc img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.68) grayscale(0.18);
+        transition:
+          transform 0.8s var(--silk),
+          filter 0.5s;
+      }
+      .cc:hover img {
+        transform: scale(1.06);
+        filter: brightness(0.58) grayscale(0%);
+      }
+      .ccc {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 52px;
+        color: var(--cream);
+      }
+      .cce {
+        font-size: 9px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        opacity: 0.5;
+        margin-bottom: 12px;
+      }
+      .ccn {
+        font-family: var(--D);
+        font-size: clamp(28px, 3.5vw, 52px);
+        font-weight: 300;
+        letter-spacing: -0.015em;
+        margin-bottom: 22px;
+      }
+      .ccta {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+          opacity 0.4s var(--silk),
+          transform 0.4s var(--silk);
+      }
+      .ccta::after {
+        content: '';
+        width: 24px;
+        height: 1px;
+        background: var(--cream);
+        transition: width 0.35s var(--silk);
+      }
+      .cc:hover .ccta {
+        opacity: 1;
+        transform: none;
+      }
+      .cc:hover .ccta::after {
+        width: 48px;
+      }
+
+      /* â•â•â• SIZE GUIDE â•â•â• */
+      .sgt {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 52px;
+      }
+      .sgb {
+        background: none;
+        border: 1px solid var(--rule);
+        padding: 13px 32px;
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        cursor: none;
+        font-family: var(--B);
+        transition:
+          background 0.25s,
+          color 0.25s,
+          border-color 0.25s;
+      }
+      .sgb.ac,
+      .sgb:hover {
+        background: var(--ink);
+        color: var(--cream);
+        border-color: var(--ink);
+      }
+      .sgtbl {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .sgtbl th {
+        font-size: 9px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        padding: 18px 28px;
+        border-bottom: 2px solid var(--ink);
+        text-align: left;
+        font-weight: 400;
+      }
+      .sgtbl td {
+        padding: 18px 28px;
+        border-bottom: 1px solid var(--rule);
+        font-size: 13px;
+        transition: background 0.2s;
+      }
+      .sgtbl tr:hover td {
+        background: var(--parch);
+      }
+      .sgtbl td:first-child {
+        font-family: var(--D);
+        font-size: 20px;
+        font-weight: 300;
+      }
+      .mgg {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 52px;
+      }
+      .mgi {
+        text-align: center;
+      }
+      .mgic {
+        width: 84px;
+        height: 84px;
+        margin: 0 auto 18px;
+        border: 1px solid var(--rule);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        transition:
+          background 0.3s,
+          border-color 0.3s;
+      }
+      .mgi:hover .mgic {
+        background: var(--ink);
+        border-color: var(--ink);
+      }
+      .mgin {
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .mgid {
+        font-size: 12px;
+        line-height: 1.8;
+        color: var(--mist);
+      }
+      .ftr {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+      }
+      .ftrc {
+        padding: 36px;
+        background: var(--parch);
+        transition:
+          background 0.35s,
+          transform 0.3s var(--swift);
+        cursor: none;
+      }
+      .ftrc:hover {
+        background: var(--ink);
+        transform: translateY(-4px);
+      }
+      .ftrcn {
+        font-family: var(--D);
+        font-size: 24px;
+        font-weight: 300;
+        margin-bottom: 10px;
+        transition: color 0.35s;
+      }
+      .ftrc:hover .ftrcn {
+        color: var(--cream);
+      }
+      .ftrcd {
+        font-size: 12px;
+        line-height: 1.8;
+        color: var(--mist);
+        transition: color 0.35s;
+      }
+      .ftrc:hover .ftrcd {
+        color: rgba(248, 246, 243, 0.5);
+      }
+
+      /* â•â•â• FAQ â•â•â• */
+      .fqcg {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 2px;
+        margin-bottom: 68px;
+      }
+      .fqcb {
+        padding: 28px 20px;
+        background: var(--parch);
+        border: none;
+        cursor: none;
+        text-align: center;
+        transition:
+          background 0.35s,
+          transform 0.3s var(--swift);
+        font-family: var(--B);
+      }
+      .fqcb.ac,
+      .fqcb:hover {
+        background: var(--ink);
+        transform: translateY(-3px);
+      }
+      .fqcbi {
+        font-size: 26px;
+        display: block;
+        margin-bottom: 12px;
+      }
+      .fqcbl {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--mist);
+        transition: color 0.35s;
+      }
+      .fqcb.ac .fqcbl,
+      .fqcb:hover .fqcbl {
+        color: rgba(248, 246, 243, 0.6);
+      }
+      .fqlo {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 72px;
+      }
+      .fqnv {
+        position: sticky;
+        top: 160px;
+        height: fit-content;
+      }
+      .fqnvt {
+        font-size: 9px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--mist);
+        margin-bottom: 20px;
+      }
+      .fqnv ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .fqnv ul li a {
+        display: block;
+        padding: 12px 18px;
+        font-size: 12px;
+        text-decoration: none;
+        color: var(--ink);
+        opacity: 0.45;
+        transition:
+          opacity 0.25s,
+          background 0.25s,
+          padding-left 0.25s;
+      }
+      .fqnv ul li a:hover,
+      .fqnv ul li a.ac {
+        opacity: 1;
+        background: var(--parch);
+        padding-left: 24px;
+      }
+      .fqncta {
+        margin-top: 44px;
+        padding: 28px;
+        background: var(--ink);
+      }
+      .fqncta p {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(248, 246, 243, 0.4);
+        margin-bottom: 16px;
+      }
+
+      /* â•â•â• CONTACT â•â•â• */
+      .ctsp {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 640px;
+      }
+      .ctdk {
+        padding: 88px 72px;
+        background: var(--ink);
+        color: var(--cream);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+      }
+      .ctdk::before {
+        content: '';
+        position: absolute;
+        bottom: -60px;
+        right: -60px;
+        width: 320px;
+        height: 320px;
+        border: 1px solid rgba(248, 246, 243, 0.05);
+        border-radius: 50%;
+      }
+      .ctdk::after {
+        content: '';
+        position: absolute;
+        bottom: -120px;
+        right: -120px;
+        width: 480px;
+        height: 480px;
+        border: 1px solid rgba(248, 246, 243, 0.03);
+        border-radius: 50%;
+      }
+      .ctdkh {
+        font-family: var(--D);
+        font-size: clamp(32px, 3.5vw, 52px);
+        font-weight: 300;
+        color: var(--cream);
+        letter-spacing: -0.015em;
+        margin: 24px 0 44px;
+        line-height: 1.1;
+      }
+      .ctdkh em {
+        font-style: italic;
+      }
+      .ctci {
+        margin-bottom: 28px;
+      }
+      .ctcil {
+        font-size: 9px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: rgba(248, 246, 243, 0.35);
+        margin-bottom: 8px;
+      }
+      .ctciv {
+        font-family: var(--D);
+        font-size: 22px;
+        font-weight: 300;
+        color: var(--cream);
+      }
+      .ctcis {
+        font-size: 11px;
+        color: rgba(248, 246, 243, 0.38);
+        margin-top: 4px;
+      }
+      .ctsoc {
+        display: flex;
+        gap: 10px;
+      }
+      .ctsoc a {
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(248, 246, 243, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cream);
+        text-decoration: none;
+        font-size: 11px;
+        opacity: 0.4;
+        transition:
+          opacity 0.25s,
+          border-color 0.25s,
+          transform 0.2s;
+      }
+      .ctsoc a:hover {
+        opacity: 1;
+        border-color: rgba(248, 246, 243, 0.5);
+        transform: translateY(-2px);
+      }
+      .ctfm {
+        padding: 88px 72px;
+        background: var(--parch);
+      }
+      .ct2c {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 32px;
+      }
+      .ctofc {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+      }
+      .ctof {
+        padding: 44px;
+        background: var(--parch);
+        position: relative;
+        overflow: hidden;
+        transition:
+          background 0.4s,
+          transform 0.3s var(--swift);
+        cursor: none;
+      }
+      .ctof::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--ink);
+        transform: scaleX(0);
+        transition: transform 0.4s var(--silk);
+      }
+      .ctof:hover {
+        background: var(--ash);
+        transform: translateY(-4px);
+      }
+      .ctof:hover::after {
+        transform: scaleX(1);
+      }
+      .ctoff {
+        font-size: 22px;
+        margin-bottom: 16px;
+        display: block;
+      }
+      .ctofc2 {
+        font-family: var(--D);
+        font-size: 30px;
+        font-weight: 300;
+        margin-bottom: 14px;
+        letter-spacing: -0.01em;
+      }
+      .ctofad {
+        font-size: 12px;
+        line-height: 1.85;
+        color: var(--mist);
+      }
+
+      /* â•â•â• WHOLESALE â•â•â• */
+      .wssp {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 100vh;
+        padding-top: 106px;
+      }
+      .wssl {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 88px 72px;
+      }
+      .wssr {
+        position: relative;
+        overflow: hidden;
+      }
+      .wssr img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(12%);
+        transition: transform 10s ease;
+      }
+      .wssr:hover img {
+        transform: scale(1.04);
+      }
+      .wssr::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, var(--cream) 0%, transparent 28%);
+        z-index: 1;
+      }
+      .whog {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+      }
+      .whoc {
+        padding: 52px 36px;
+        background: var(--parch);
+        text-align: center;
+        transition:
+          background 0.4s var(--silk),
+          transform 0.3s var(--swift);
+        cursor: none;
+        position: relative;
+        overflow: hidden;
+      }
+      .whoc::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--ink);
+        transform: translateY(101%);
+        transition: transform 0.4s var(--silk);
+      }
+      .whoc:hover::before {
+        transform: translateY(0);
+      }
+      .whoc:hover {
+        transform: translateY(-4px);
+      }
+      .whoc > * {
+        position: relative;
+        z-index: 1;
+      }
+      .whoci {
+        font-size: 34px;
+        margin-bottom: 18px;
+        display: block;
+      }
+      .whocn {
+        font-family: var(--D);
+        font-size: 24px;
+        font-weight: 300;
+        margin-bottom: 12px;
+        transition: color 0.4s;
+      }
+      .whoc:hover .whocn {
+        color: var(--cream);
+      }
+      .whocd {
+        font-size: 12px;
+        line-height: 1.85;
+        color: var(--mist);
+        transition: color 0.4s;
+      }
+      .whoc:hover .whocd {
+        color: rgba(248, 246, 243, 0.55);
+      }
+      .trg {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+      }
+      .tr {
+        padding: 60px 44px;
+        background: var(--parch);
+        position: relative;
+        transition: transform 0.3s var(--swift);
+      }
+      .tr:hover {
+        transform: translateY(-6px);
+      }
+      .tr.hot {
+        background: var(--ink);
+        color: var(--cream);
+        transform: translateY(-6px);
+      }
+      .trbg {
+        position: absolute;
+        top: 22px;
+        right: 22px;
+        font-size: 8.5px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        background: var(--cream);
+        color: var(--ink);
+        padding: 5px 12px;
+      }
+      .trlv {
+        font-size: 9px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--mist);
+        margin-bottom: 16px;
+      }
+      .tr.hot .trlv {
+        color: rgba(248, 246, 243, 0.38);
+      }
+      .trvl {
+        font-family: var(--D);
+        font-size: 60px;
+        font-weight: 300;
+        line-height: 0.9;
+        margin-bottom: 8px;
+        letter-spacing: -0.025em;
+      }
+      .trsb {
+        font-size: 10px;
+        color: var(--mist);
+        display: block;
+        margin-bottom: 32px;
+      }
+      .tr.hot .trsb {
+        color: rgba(248, 246, 243, 0.38);
+      }
+      .trfl {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+        margin-bottom: 40px;
+      }
+      .trfl li {
+        font-size: 13px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .trfl li::before {
+        content: 'âœ¦';
+        font-size: 7px;
+        opacity: 0.4;
+        margin-top: 4px;
+        flex-shrink: 0;
+      }
+      .tr.hot .trfl li {
+        color: rgba(248, 246, 243, 0.8);
+      }
+
+      @media (max-width: 1024px) {
+        .plrs,
+        .susg,
+        .whog {
+          grid-template-columns: 1fr 1fr;
+        }
+        .prsr {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .impst {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .fg {
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 40px;
+        }
+        .trg {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 900px) {
+        nav {
+          padding: 0 24px;
+        }
+        .nls {
+          display: none;
+        }
+        .pnav {
+          padding: 0 16px;
+        }
+        section {
+          padding: 64px 24px !important;
+        }
+        .absplit,
+        .fndw,
+        .ctsp,
+        .wssp,
+        .jft,
+        .crfi {
+          grid-template-columns: 1fr;
+        }
+        .absl,
+        .wssl,
+        .ctdk,
+        .ctfm {
+          padding: 52px 28px;
+        }
+        .absr,
+        .wssr,
+        .crfim {
+          height: 60vw;
+        }
+        .absr::before {
+          display: none;
+        }
+        .abbg {
+          display: none;
+        }
+        .ph {
+          height: 320px;
+          padding: 40px 24px;
+          margin-top: 106px;
+        }
+        .phh {
+          font-size: clamp(44px, 10vw, 72px);
+        }
+        .aig {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .agrd,
+        .jgrd,
+        .cog {
+          grid-template-columns: 1fr 1fr;
+        }
+        .crfg {
+          grid-template-columns: 1fr;
+        }
+        .crfi.fl {
+          direction: ltr;
+        }
+        .spf {
+          flex-direction: column;
+        }
+        .sps:not(:last-child)::after {
+          display: none;
+        }
+        .strow {
+          grid-template-columns: 1fr 1fr;
+        }
+        .crtr {
+          grid-template-columns: 1fr 1fr;
+        }
+        .fqlo {
+          grid-template-columns: 1fr;
+        }
+        .fqnv {
+          display: none;
+        }
+        .fqcg {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .ctofc {
+          grid-template-columns: 1fr;
+        }
+        .ftr {
+          grid-template-columns: 1fr 1fr;
+        }
+        .mgg {
+          grid-template-columns: 1fr 1fr;
+        }
+        .whog {
+          grid-template-columns: 1fr 1fr;
+        }
+        .cog {
+          grid-template-columns: 1fr;
+        }
+        .cclg {
+          height: 80vw;
+        }
+        .ccsm {
+          height: 60vw;
+        }
+        .arth {
+          height: 60vw;
+          padding: 40px 24px;
+          margin-top: 106px;
+        }
+        .artw {
+          padding: 52px 24px;
+        }
+        .sgt,
+        .jflt {
+          flex-wrap: wrap;
+        }
+        .prsr {
+          grid-template-columns: 1fr 1fr;
+        }
+        .fg {
+          grid-template-columns: 1fr 1fr;
+          gap: 32px;
+        }
+        .fbot {
+          flex-direction: column;
+          gap: 16px;
+          text-align: center;
+        }
+        .ct2c {
+          grid-template-columns: 1fr;
+        }
+        .ctdk::before,
+        .ctdk::after {
+          display: none;
+        }
+        .trg {
+          grid-template-columns: 1fr;
+        }
+        .tr.hot {
+          transform: none;
+        }
+        .jft {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 520px) {
+        .agrd,
+        .jgrd {
+          grid-template-columns: 1fr;
+        }
+        .plrs,
+        .susg,
+        .whog,
+        .crtr,
+        .strow,
+        .impst {
+          grid-template-columns: 1fr;
+        }
+        .fqcg {
+          grid-template-columns: 1fr 1fr;
+        }
+        .fg {
+          grid-template-columns: 1fr;
+        }
+        .prsr {
+          grid-template-columns: 1fr;
+        }
+        .mgg,
+        .ftr {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (pointer: coarse) {
+        body {
+          cursor: auto !important;
+        }
+        #cd,
+        #cr {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ldr">
+      <div class="lw">
+        <span>K</span><span>V</span><span>A</span><span>S</span><span>T</span
+        ><span>R</span><span>A</span><span>M</span>
+      </div>
+      <div class="ll"></div>
+      <p class="lp" id="lp">0%</p>
+    </div>
+    <div id="sp"></div>
+    <div id="cd"></div>
+    <div id="cr"></div>
+    <div id="toast"></div>
+
+    <nav id="nav">
+      <a href="#" class="nl">Kvastram</a>
+      <ul class="nls">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">New Arrivals</a></li>
+        <li><a href="#">Shop</a></li>
+        <li><a href="#">Collections</a></li>
+        <li><a href="#" class="sale">Sale</a></li>
+        <li><a href="#" class="ac">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="nr">
+        <button>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+        </button>
+        <button>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </button>
+        <button>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+            />
+          </svg>
+        </button>
+        <button class="cw" onclick="toast('2 items in your bag âœ¦')">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" /></svg
+          ><span class="cb">2</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="pnav">
+      <button class="pb ac" onclick="go('about', this)">About</button>
+      <button class="pb" onclick="go('artisans', this)">Artisans</button>
+      <button class="pb" onclick="go('sustainability', this)">
+        Sustainability
+      </button>
+      <button class="pb" onclick="go('journal', this)">Journal</button>
+      <button class="pb" onclick="go('article', this)">Article</button>
+      <button class="pb" onclick="go('collections', this)">Collections</button>
+      <button class="pb" onclick="go('sizeguide', this)">Size Guide</button>
+      <button class="pb" onclick="go('faq', this)">FAQ</button>
+      <button class="pb" onclick="go('contact', this)">Contact</button>
+      <button class="pb" onclick="go('wholesale', this)">Wholesale</button>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="vw ac" id="v-about">
+      <div class="absplit">
+        <div class="absl">
+          <span
+            class="ey"
+            style="animation: su 0.7s var(--swift) 0.2s both; opacity: 0"
+            >Our Story Â· Est. 2018</span
+          >
+          <h1
+            class="abig"
+            style="animation: su 0.9s var(--swift) 0.35s both; opacity: 0"
+          >
+            Where<br />Craft<br /><em>Meets Soul</em>
+          </h1>
+          <p
+            class="bt"
+            style="
+              max-width: 420px;
+              margin-bottom: 48px;
+              animation: su 0.9s var(--swift) 0.5s both;
+              opacity: 0;
+            "
+          >
+            Founded in Varanasi, Kvastram is the bridge between ancient Indian
+            craft traditions and the modern global wardrobe. Every thread tells
+            a story of a family, a village, a generation.
+          </p>
+          <div
+            style="
+              display: flex;
+              gap: 14px;
+              animation: su 0.9s var(--swift) 0.65s both;
+              opacity: 0;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="btn btn-k" onclick="go('artisans', null)">
+              Meet Our Artisans â†’
+            </button>
+            <button class="btn btn-g">Our Values</button>
+          </div>
+        </div>
+        <div class="absr">
+          <img
+            src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&auto=format&fit=crop&q=85"
+            alt=""
+          />
+          <div class="abbg">
+            <span class="abbgn">150</span><span class="abbgl">Artisans</span>
+          </div>
+        </div>
+      </div>
+      <div class="stats-row" id="abst">
+        <div class="stat-card">
+          <span class="stn">2018</span><span class="stl">Year Founded</span>
+        </div>
+        <div class="stat-card">
+          <span class="stn">150<em>+</em></span
+          ><span class="stl">Artisan Families</span>
+        </div>
+        <div class="stat-card">
+          <span class="stn">12k<em>+</em></span
+          ><span class="stl">Global Customers</span>
+        </div>
+        <div class="stat-card">
+          <span class="stn">40<em>+</em></span
+          ><span class="stl">Countries</span>
+        </div>
+      </div>
+      <section class="alt">
+        <div class="sh rv">
+          <div>
+            <span class="ey">What We Stand For</span>
+            <h2 class="dp">Our Three <em>Pillars</em></h2>
+          </div>
+        </div>
+        <div class="plrs">
+          <div class="plr rv">
+            <span class="plrn">01</span>
+            <h3 class="plrh">Craft</h3>
+            <p class="plrd">
+              Every Kvastram piece is handmade by master artisans who have
+              perfected their techniques over generations. We do not use
+              machines for anything human hands can do better.
+            </p>
+          </div>
+          <div class="plr rv d1">
+            <span class="plrn">02</span>
+            <h3 class="plrh">Heritage</h3>
+            <p class="plrd">
+              We draw from the rich textile traditions of Kashmir, Varanasi, and
+              Rajasthan â€” bringing ancient techniques into a contemporary
+              context without losing their soul.
+            </p>
+          </div>
+          <div class="plr rv d2">
+            <span class="plrn">03</span>
+            <h3 class="plrh">Sustainability</h3>
+            <p class="plrd">
+              Natural dyes, organic fibers, fair wages, and minimal packaging.
+              Luxury and responsibility are not opposites â€” they are inseparable
+              companions.
+            </p>
+          </div>
+        </div>
+      </section>
+      <div class="mq">
+        <div class="mqt" id="mq1">
+          <span class="mqi">Handcrafted Since 2018</span
+          ><span class="mqs"></span
+          ><span class="mqi">150+ Artisan Families</span
+          ><span class="mqs"></span
+          ><span class="mqi">12,000+ Happy Customers</span
+          ><span class="mqs"></span><span class="mqi">40+ Countries Served</span
+          ><span class="mqs"></span
+          ><span class="mqi">Zero Compromise on Craft</span
+          ><span class="mqs"></span
+          ><span class="mqi">Slow Fashion. Real Luxury.</span
+          ><span class="mqs"></span>
+        </div>
+      </div>
+      <div class="fndw rv">
+        <div class="fndi">
+          <img
+            src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&auto=format&fit=crop&q=85"
+            alt=""
+          />
+        </div>
+        <div class="fndc">
+          <span class="ey">Founder's Note</span>
+          <blockquote class="fndq">
+            "I started Kvastram because I watched master craftspeople struggle
+            to reach a global audience. Their work deserves a place in every
+            wardrobe in the world â€” and they deserve to be paid like the artists
+            they are."
+          </blockquote>
+          <p class="fnds">Arjun Sharma</p>
+          <p class="fndr">Founder & Creative Director</p>
+        </div>
+      </div>
+      <section>
+        <div class="sh rv">
+          <div>
+            <span class="ey">Our Journey</span>
+            <h2 class="dp">From <em>Idea</em> to Movement</h2>
+          </div>
+        </div>
+        <div class="tls">
+          <div class="tl rv">
+            <div class="tly">2018</div>
+            <div>
+              <h3 class="tlbh">The Beginning</h3>
+              <p class="tlbp">
+                Founded in a small workshop in Varanasi with 3 artisan families
+                and a vision to bring Indian craft to the global stage. First
+                collection: 12 hand-embroidered pieces.
+              </p>
+            </div>
+          </div>
+          <div class="tl rv d1">
+            <div class="tly">2019</div>
+            <div>
+              <h3 class="tlbh">First International Orders</h3>
+              <p class="tlbp">
+                Shipped to 8 countries. Featured in Vogue India as "The Brand
+                Redefining Indian Luxury." Partnership expanded to 20 artisan
+                families.
+              </p>
+            </div>
+          </div>
+          <div class="tl rv d2">
+            <div class="tly">2021</div>
+            <div>
+              <h3 class="tlbh">Expansion & Recognition</h3>
+              <p class="tlbp">
+                Launched the Silk Road Collection. Won the PETA-Approved Brand
+                award. Reached 5,000 customers across 25 countries. Expanded to
+                Kashmir.
+              </p>
+            </div>
+          </div>
+          <div class="tl rv d3">
+            <div class="tly">2023</div>
+            <div>
+              <h3 class="tlbh">The Kvastram Foundation</h3>
+              <p class="tlbp">
+                Established the Artisan Education Fund. 150+ families, 40+
+                countries, 12,000+ customers. Launched zero-plastic packaging
+                initiative.
+              </p>
+            </div>
+          </div>
+          <div class="tl rv d4">
+            <div class="tly">Today</div>
+            <div>
+              <h3 class="tlbh">Still Growing, Never Rushing</h3>
+              <p class="tlbp">
+                Every collection still takes months. Every piece still made by
+                hand. Every artisan still paid fairly. The mission hasn't
+                changed â€” only the scale.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="alt">
+        <div class="sh rv">
+          <div>
+            <span class="ey">As Seen In</span>
+            <h2 class="dp">The <em>Press</em></h2>
+          </div>
+        </div>
+        <div class="prsr rv">
+          <div class="prs"><p class="prsh">Vogue India</p></div>
+          <div class="prs"><p class="prsh">Harper's Bazaar</p></div>
+          <div class="prs"><p class="prsh">Elle Magazine</p></div>
+          <div class="prs"><p class="prsh">CondÃ© Nast</p></div>
+          <div class="prs"><p class="prsh">Monocle</p></div>
+        </div>
+      </section>
+      <section
+        class="dark"
+        style="text-align: center; padding: 130px 68px !important"
+      >
+        <span class="ey lt rv" style="display: block; text-align: center"
+          >Begin Your Journey</span
+        >
+        <h2 class="dp xl lt rv d1" style="margin: 16px 0 52px">
+          Discover the <em>Collection</em>
+        </h2>
+        <a class="btn btn-c rv d2">Shop Now â†’</a>
+      </section>
+    </div>
+
+    <!-- ARTISANS -->
+    <div class="vw" id="v-artisans">
+      <div class="ph">
+        <div
+          class="phbg"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=1600&auto=format&fit=crop&q=85');
+          "
+        ></div>
+        <div class="phvg"></div>
+        <div class="phc">
+          <p class="phe">The People Behind</p>
+          <h1 class="phh">Our <em>Artisans</em></h1>
+          <p class="phd">
+            150+ families. Generations of mastery. Every thread placed with
+            intention.
+          </p>
+        </div>
+        <div class="shint">
+          <div class="sl"></div>
+          <p class="hint-text">Scroll</p>
+        </div>
+      </div>
+      <section>
+        <div class="aig rv">
+          <div>
+            <div class="aibn">150<span>+</span></div>
+            <span class="ey">Artisan Families</span>
+            <p class="bt" style="max-width: 440px; margin-top: 16px">
+              Each family brings a distinct heritage craft. Together they form
+              the soul of every Kvastram piece ever made.
+            </p>
+          </div>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            "
+          >
+            <span class="ey">Our Commitment</span>
+            <h2 class="dp" style="margin-bottom: 22px">
+              Fair Wages.<br /><em>Real Impact.</em>
+            </h2>
+            <p class="bt" style="margin-bottom: 28px">
+              We pay 40% above market rate, provide health coverage, and fund
+              children's education. When you buy from us, you invest in a
+              family's future.
+            </p>
+            <a class="la">Learn About Our Foundation</a>
+          </div>
+        </div>
+      </section>
+      <section class="alt">
+        <div class="sh rv">
+          <div>
+            <span class="ey">Meet the Makers</span>
+            <h2 class="dp">The <em>Faces</em> Behind Your Piece</h2>
+          </div>
+          <a class="la">All Artisans</a>
+        </div>
+        <div class="agrd">
+          <div class="acd rv">
+            <div class="acdi">
+              <img
+                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="acdo"></div>
+              <div class="acdh">
+                <p class="acdhn">Razia Begum</p>
+                <p class="acdhc">Master Weaver Â· Kashmir</p>
+              </div>
+            </div>
+            <div class="acdm">
+              <p class="acdn">Razia Begum</p>
+              <p class="acdc">Pashmina Weaving</p>
+              <p class="acdl">Srinagar, Kashmir Â· 28 yrs</p>
+            </div>
+          </div>
+          <div class="acd rv d1">
+            <div class="acdi">
+              <img
+                src="https://images.unsplash.com/photo-1490707967831-b787eb3d23fe?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="acdo"></div>
+              <div class="acdh">
+                <p class="acdhn">Ramesh Verma</p>
+                <p class="acdhc">Silk Embroidery Â· Varanasi</p>
+              </div>
+            </div>
+            <div class="acdm">
+              <p class="acdn">Ramesh Verma</p>
+              <p class="acdc">Silk Embroidery</p>
+              <p class="acdl">Varanasi, UP Â· 35 yrs</p>
+            </div>
+          </div>
+          <div class="acd rv d2">
+            <div class="acdi">
+              <img
+                src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="acdo"></div>
+              <div class="acdh">
+                <p class="acdhn">Fatima Sheikh</p>
+                <p class="acdhc">Block Printing Â· Jaipur</p>
+              </div>
+            </div>
+            <div class="acdm">
+              <p class="acdn">Fatima Sheikh</p>
+              <p class="acdc">Hand Block Printing</p>
+              <p class="acdl">Jaipur, Rajasthan Â· 22 yrs</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="sh rv">
+          <div>
+            <span class="ey">Ancient Techniques</span>
+            <h2 class="dp">The Art of <em>Making</em></h2>
+          </div>
+        </div>
+        <div class="crfg">
+          <div class="crfi rv">
+            <div class="crfim">
+              <img
+                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+            </div>
+            <div class="crft">
+              <span class="crfn">01</span>
+              <h3 class="crfh">Pashmina Weaving</h3>
+              <p class="crfd">
+                Sourced from Changthangi goats at 14,000 feet. Each fiber
+                hand-sorted, cleaned, and spun. A single shawl takes 3â€“6 months
+                to complete.
+              </p>
+            </div>
+          </div>
+          <div class="crfi fl rv d1">
+            <div class="crfim">
+              <img
+                src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+            </div>
+            <div class="crft">
+              <span class="crfn">02</span>
+              <h3 class="crfh">Zari Embroidery</h3>
+              <p class="crfd">
+                Gold and silver threads woven into silk. The Banarasi tradition
+                of Zari dates back to the Mughal era. Each motif contains
+                thousands of individual stitches.
+              </p>
+            </div>
+          </div>
+          <div class="crfi rv d2">
+            <div class="crfim">
+              <img
+                src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+            </div>
+            <div class="crft">
+              <span class="crfn">03</span>
+              <h3 class="crfh">Hand Block Printing</h3>
+              <p class="crfd">
+                Intricately carved wooden blocks, dipped in natural dyes,
+                pressed one by one. Every variation is proof of the human hand.
+                No two pieces ever alike.
+              </p>
+            </div>
+          </div>
+          <div class="crfi fl rv d3">
+            <div class="crfim">
+              <img
+                src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+            </div>
+            <div class="crft">
+              <span class="crfn">04</span>
+              <h3 class="crfh">Florentine Leather</h3>
+              <p class="crfd">
+                Vegetable-tanned leather from sustainable tanneries.
+                Hand-stitched with waxed linen thread. Every bag develops a
+                unique patina over decades of use.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="dark" style="padding: 0 !important">
+        <div class="impst">
+          <div class="impi rv">
+            <span class="impn">150<em>+</em></span
+            ><span class="impl">Artisan Families</span>
+          </div>
+          <div class="impi rv d1">
+            <span class="impn">40<em>%</em></span
+            ><span class="impl">Above Market Wages</span>
+          </div>
+          <div class="impi rv d2">
+            <span class="impn">320</span
+            ><span class="impl">Children in School</span>
+          </div>
+          <div class="impi rv d3">
+            <span class="impn">6</span><span class="impl">States of India</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SUSTAINABILITY -->
+    <div class="vw" id="v-sustainability">
+      <div class="ph">
+        <div
+          class="phbg"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=1600&auto=format&fit=crop&q=85');
+          "
+        ></div>
+        <div class="phvg"></div>
+        <div class="phc">
+          <p class="phe">Our Responsibility</p>
+          <h1 class="phh">Slow.<br /><em>Conscious.</em><br />Luxury.</h1>
+        </div>
+        <div class="shint">
+          <div class="sl"></div>
+          <p class="hint-text">Scroll</p>
+        </div>
+      </div>
+      <section style="text-align: center">
+        <div class="susman rv">
+          <span class="ey" style="display: block; text-align: center"
+            >Our Manifesto</span
+          >
+          <h2 class="susbig">
+            We believe the most sustainable garment is one you keep
+            <em>forever.</em>
+          </h2>
+          <p
+            class="bt"
+            style="font-size: 16px; max-width: 640px; margin: 0 auto"
+          >
+            Fast fashion produces 20% of global wastewater. We are building the
+            opposite â€” garments made to last generations, crafted by people paid
+            to thrive.
+          </p>
+        </div>
+      </section>
+      <section class="alt">
+        <div class="sh rv">
+          <div>
+            <span class="ey">How We Do It</span>
+            <h2 class="dp">Our <em>Commitments</em></h2>
+          </div>
+        </div>
+        <div class="susg">
+          <div class="susc rv">
+            <span class="susci">ðŸŒ¿</span>
+            <h3 class="suscn">Natural Materials</h3>
+            <p class="suscd">
+              100% natural fibers â€” silk, pashmina, organic cotton, and
+              vegetable-tanned leather. No synthetics. No microplastics. Every
+              material biodegrades naturally.
+            </p>
+          </div>
+          <div class="susc rv d1">
+            <span class="susci">ðŸŽ¨</span>
+            <h3 class="suscn">Natural Dyes</h3>
+            <p class="suscd">
+              Plant-based dyes from indigo, turmeric, pomegranate rind, and
+              madder root. Zero chemical waste discharged into local waterways.
+            </p>
+          </div>
+          <div class="susc rv d2">
+            <span class="susci">âš–ï¸</span>
+            <h3 class="suscn">Fair Trade</h3>
+            <p class="suscd">
+              Every artisan earns 40% above local market rate. We provide health
+              insurance, maternity leave, and fund 320 children's education
+              annually.
+            </p>
+          </div>
+          <div class="susc rv d3">
+            <span class="susci">ðŸ“¦</span>
+            <h3 class="suscn">Zero Plastic Packaging</h3>
+            <p class="suscd">
+              All packaging is recycled paper, organic cotton dust bags, and
+              plant-based inks. No bubble wrap. No plastic tape. Ever.
+            </p>
+          </div>
+          <div class="susc rv d4">
+            <span class="susci">ðŸ”„</span>
+            <h3 class="suscn">Lifetime Repair</h3>
+            <p class="suscd">
+              Every Kvastram piece comes with a lifetime repair guarantee. The
+              most sustainable piece is the one repaired, not replaced.
+            </p>
+          </div>
+          <div class="susc rv d5">
+            <span class="susci">ðŸŒ</span>
+            <h3 class="suscn">Carbon Offset</h3>
+            <p class="suscd">
+              We offset 110% of our shipping carbon through verified
+              reforestation in the Himalayan foothills. 45,000 trees planted
+              since 2021.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="sh rv">
+          <div>
+            <span class="ey">Full Transparency</span>
+            <h2 class="dp">From <em>Source</em> to Your Door</h2>
+          </div>
+        </div>
+        <div class="spf rv">
+          <div class="sps">
+            <span class="spsn">01</span>
+            <h3 class="spsh">Raw Material</h3>
+            <p class="spsd">
+              Pashmina from Ladakhi goats. Silk from Karnataka. Organic cotton
+              from Gujarat.
+            </p>
+          </div>
+          <div class="sps">
+            <span class="spsn">02</span>
+            <h3 class="spsh">Natural Dyeing</h3>
+            <p class="spsd">
+              Plant-based dyes. Zero chemical discharge. Certified by Control
+              Union.
+            </p>
+          </div>
+          <div class="sps">
+            <span class="spsn">03</span>
+            <h3 class="spsh">Artisan Workshop</h3>
+            <p class="spsd">
+              Handcrafted by certified artisans. Fair wages. Safe conditions.
+              Documented.
+            </p>
+          </div>
+          <div class="sps">
+            <span class="spsn">04</span>
+            <h3 class="spsh">Quality Check</h3>
+            <p class="spsd">
+              Every piece hand-inspected. Rejected pieces recycled into new
+              material.
+            </p>
+          </div>
+          <div class="sps">
+            <span class="spsn">05</span>
+            <h3 class="spsh">Your Door</h3>
+            <p class="spsd">
+              Zero-plastic packaging. Carbon-offset shipping. 30-day free
+              returns.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="alt">
+        <div class="sh rv">
+          <div>
+            <span class="ey">Verified By</span>
+            <h2 class="dp">Our <em>Certifications</em></h2>
+          </div>
+        </div>
+        <div class="crtr rv">
+          <div class="crtc">
+            <span class="crtci">ðŸŒ±</span>
+            <p class="crtcn">GOTS Certified</p>
+            <p class="crtcd">
+              Global Organic Textile Standard for all cotton garments.
+            </p>
+          </div>
+          <div class="crtc">
+            <span class="crtci">âœŠ</span>
+            <p class="crtcn">Fair Trade</p>
+            <p class="crtcd">
+              Verified fair wages and safe conditions across all workshops.
+            </p>
+          </div>
+          <div class="crtc">
+            <span class="crtci">ðŸ¾</span>
+            <p class="crtcn">PETA Approved</p>
+            <p class="crtcd">
+              Cruelty-free practices throughout our entire supply chain.
+            </p>
+          </div>
+          <div class="crtc">
+            <span class="crtci">â™»ï¸</span>
+            <p class="crtcn">1% for the Planet</p>
+            <p class="crtcd">
+              1% of all revenue donated to environmental non-profits.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="vw" id="v-journal">
+      <div class="ph" style="height: 360px">
+        <div
+          class="phbg"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=1600&auto=format&fit=crop&q=85');
+          "
+        ></div>
+        <div class="phvg"></div>
+        <div class="phc">
+          <p class="phe">Stories & Craft</p>
+          <h1 class="phh">The <em>Journal</em></h1>
+        </div>
+      </div>
+      <section>
+        <div class="jflt rv">
+          <button class="jfb ac">All</button><button class="jfb">Craft</button
+          ><button class="jfb">Style</button
+          ><button class="jfb">Heritage</button
+          ><button class="jfb">Sustainability</button
+          ><button class="jfb">Travel</button>
+        </div>
+        <div class="jft rv">
+          <div class="jfti">
+            <img
+              src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=900&auto=format&fit=crop&q=85"
+              alt=""
+            />
+          </div>
+          <div class="jftc">
+            <p class="jftcat">Craft Â· 8 min read</p>
+            <h2 class="jfttt">
+              The 40-Hour Jacket: What It Takes to Make a Kvastram
+              <em>Piece</em>
+            </h2>
+            <p class="jftex">
+              From Changthangi goat to your wardrobe â€” the journey of our most
+              beloved embroidered jacket, told by the artisans who make it.
+            </p>
+            <p class="jftm">By Arjun Sharma Â· March 2024</p>
+            <a
+              class="btn btn-k btn-sm"
+              style="margin-top: 28px"
+              onclick="go('article', null)"
+              >Read Story â†’</a
+            >
+          </div>
+        </div>
+        <div class="jgrd" style="margin-top: 2px">
+          <div class="jc rv">
+            <div class="jci">
+              <img
+                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="jcar">â†’</div>
+            </div>
+            <div class="jcb">
+              <p class="jccat">Heritage Â· 5 min</p>
+              <h3 class="jctt">Varanasi: The City That Weaves the World</h3>
+              <p class="jcex">
+                A journey through the ancient silk-weaving city where every
+                alley holds a loom.
+              </p>
+              <p class="jcm">Feb 2024</p>
+            </div>
+          </div>
+          <div class="jc rv d1">
+            <div class="jci">
+              <img
+                src="https://images.unsplash.com/photo-1490707967831-b787eb3d23fe?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="jcar">â†’</div>
+            </div>
+            <div class="jcb">
+              <p class="jccat">Style Â· 4 min</p>
+              <h3 class="jctt">How to Style a Kimono Jacket: 5 Ways</h3>
+              <p class="jcex">
+                From boardroom to beach â€” our styling guide for the piece that
+                does everything.
+              </p>
+              <p class="jcm">Jan 2024</p>
+            </div>
+          </div>
+          <div class="jc rv d2">
+            <div class="jci">
+              <img
+                src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="jcar">â†’</div>
+            </div>
+            <div class="jcb">
+              <p class="jccat">Sustainability Â· 6 min</p>
+              <h3 class="jctt">
+                The Slow Fashion Manifesto: Why We Refuse to Rush
+              </h3>
+              <p class="jcex">
+                We make the case for patience, craft, and clothing that outlives
+                trends.
+              </p>
+              <p class="jcm">Dec 2023</p>
+            </div>
+          </div>
+          <div class="jc rv d3">
+            <div class="jci">
+              <img
+                src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="jcar">â†’</div>
+            </div>
+            <div class="jcb">
+              <p class="jccat">Craft Â· 7 min</p>
+              <h3 class="jctt">
+                Natural Dyes: The Alchemy of Color Without Chemicals
+              </h3>
+              <p class="jcex">
+                How our dye masters use indigo, turmeric, and pomegranate rind
+                to create lasting colors.
+              </p>
+              <p class="jcm">Nov 2023</p>
+            </div>
+          </div>
+          <div class="jc rv d4">
+            <div class="jci">
+              <img
+                src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="jcar">â†’</div>
+            </div>
+            <div class="jcb">
+              <p class="jccat">Travel Â· 5 min</p>
+              <h3 class="jctt">
+                Kashmir in Winter: Where Every Household is a Workshop
+              </h3>
+              <p class="jcex">
+                A photographic journey through snow-covered valleys where our
+                Pashmina comes to life.
+              </p>
+              <p class="jcm">Oct 2023</p>
+            </div>
+          </div>
+          <div class="jc rv d5">
+            <div class="jci">
+              <img
+                src="https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=500&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="jcar">â†’</div>
+            </div>
+            <div class="jcb">
+              <p class="jccat">Heritage Â· 6 min</p>
+              <h3 class="jctt">Zari: The Art of Weaving Gold Into Silk</h3>
+              <p class="jcex">
+                A 500-year-old Mughal technique, still practiced in Varanasi's
+                hidden workshops.
+              </p>
+              <p class="jcm">Sep 2023</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ARTICLE -->
+    <div class="vw" id="v-article">
+      <div class="arth">
+        <img
+          src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=1600&auto=format&fit=crop&q=85"
+          alt=""
+        />
+        <div class="arthvg"></div>
+        <div class="arthc">
+          <p
+            style="
+              font-size: 9px;
+              letter-spacing: 0.28em;
+              text-transform: uppercase;
+              opacity: 0.5;
+              margin-bottom: 16px;
+              animation: su 0.7s var(--swift) 0.2s both;
+            "
+          >
+            Craft Â· 8 min read Â· March 2024
+          </p>
+          <h1
+            style="
+              font-family: var(--D);
+              font-size: clamp(38px, 5.5vw, 76px);
+              font-weight: 300;
+              line-height: 0.92;
+              letter-spacing: -0.025em;
+              animation: su 0.9s var(--swift) 0.35s both;
+            "
+          >
+            The 40-Hour Jacket:<br /><em
+              >What It Takes to Make<br />a Kvastram Piece</em
+            >
+          </h1>
+        </div>
+      </div>
+      <div class="artw">
+        <p class="artby">
+          By Arjun Sharma, Founder Â· Photography by Kavya Nair
+        </p>
+        <div class="artb">
+          <p>
+            It begins at 14,000 feet above sea level, in the high-altitude
+            plateau of Ladakh, where the Changthangi goat grazes on sparse
+            winter grass. In spring, when the animal naturally sheds its coat,
+            local herders gently comb the fine undercoat â€” the softest fiber in
+            the world â€” by hand. This is where your Kvastram piece begins.
+          </p>
+          <p>
+            From Ladakh, the raw fiber travels to Kashmir, where it is sorted by
+            hand under natural light. The finest fibers â€” as thin as 12 microns,
+            six times thinner than a human hair â€” are selected for weaving. This
+            sorting alone can take a full day for a single kilogram of material.
+          </p>
+          <blockquote>
+            "I have been weaving for 35 years. My father taught me. His father
+            taught him. When I hold the shuttle, I am not just making a shawl â€”
+            I am continuing a conversation across generations."<br /><br /><em
+              >â€” Ramesh Verma, Master Weaver, Varanasi</em
+            >
+          </blockquote>
+          <h2>The Loom: Where Thread Becomes Fabric</h2>
+          <p>
+            Each piece is woven on a handloom that has not fundamentally changed
+            in 500 years. The weaver works the shuttle by hand with a rhythm
+            built over decades. For the embroidered jacket, this weaving alone
+            takes 80 hours across two weeks.
+          </p>
+          <p>
+            Then comes the embroidery. A single jacket contains approximately
+            40,000 individual stitches. No two are exactly alike.
+          </p>
+          <img
+            src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=900&auto=format&fit=crop&q=85"
+            alt="Artisan at work"
+          />
+          <h2>Why It Costs What It Costs</h2>
+          <p>
+            40 hours of skilled labor at a fair wage. Premium pashmina silk.
+            Hand-embroidery by a craftsperson with 35 years of experience.
+            Natural dyes. Sustainable packaging. Carbon-offset shipping. We are
+            not selling a jacket. We are selling 40 hours of someone's life's
+            work, packaged in a material that will last longer than either of
+            us.
+          </p>
+        </div>
+        <div
+          style="
+            display: flex;
+            gap: 14px;
+            margin-top: 52px;
+            padding-top: 52px;
+            border-top: 1px solid var(--rule);
+            flex-wrap: wrap;
+          "
+        >
+          <a class="btn btn-k" onclick="go('journal', null)"
+            >â† Back to Journal</a
+          ><a class="btn btn-g">Shop This Piece â†’</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLLECTIONS -->
+    <div class="vw" id="v-collections">
+      <div class="ph">
+        <div
+          class="phbg"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&auto=format&fit=crop&q=85');
+          "
+        ></div>
+        <div class="phvg"></div>
+        <div class="phc">
+          <p class="phe">Curated Worlds</p>
+          <h1 class="phh">Our <em>Collections</em></h1>
+          <p class="phd">
+            Each collection is a distinct aesthetic universe, united by a
+            commitment to craft.
+          </p>
+        </div>
+        <div class="shint">
+          <div class="sl"></div>
+          <p class="st">Scroll</p>
+        </div>
+      </div>
+      <section>
+        <div class="sh rv">
+          <div>
+            <span class="ey">All Collections</span>
+            <h2 class="dp">Explore <em>Every World</em></h2>
+          </div>
+        </div>
+        <div class="cog">
+          <div class="cc cclg rv">
+            <img
+              src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&auto=format&fit=crop&q=85"
+              alt=""
+            />
+            <div class="ccc">
+              <p class="cce">New Season</p>
+              <h2 class="ccn">Kimono<br />for Women</h2>
+              <span class="ccta">Explore Collection</span>
+            </div>
+          </div>
+          <div class="csk">
+            <div class="cc ccsm rv d1">
+              <img
+                src="https://images.unsplash.com/photo-1490707967831-b787eb3d23fe?w=700&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="ccc">
+                <p class="cce">Signature</p>
+                <h2 class="ccn">Kimono for Men</h2>
+                <span class="ccta">Explore Collection</span>
+              </div>
+            </div>
+            <div class="cc ccsm rv d2">
+              <img
+                src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=700&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="ccc">
+                <p class="cce">Heritage</p>
+                <h2 class="ccn">The Silk Road</h2>
+                <span class="ccta">Explore Collection</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cog" style="margin-top: 2px">
+          <div class="csk">
+            <div class="cc ccsm rv">
+              <img
+                src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=700&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="ccc">
+                <p class="cce">Accessories</p>
+                <h2 class="ccn">Florentine Leather</h2>
+                <span class="ccta">Explore Collection</span>
+              </div>
+            </div>
+            <div class="cc ccsm rv d1">
+              <img
+                src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=700&auto=format&fit=crop&q=85"
+                alt=""
+              />
+              <div class="ccc">
+                <p class="cce">Just Landed</p>
+                <h2 class="ccn">New Arrivals</h2>
+                <span class="ccta">Shop Now</span>
+              </div>
+            </div>
+          </div>
+          <div class="cc cclg rv d2">
+            <img
+              src="https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=700&auto=format&fit=crop&q=85"
+              alt=""
+            />
+            <div class="ccc">
+              <p class="cce">Limited Time</p>
+              <h2 class="ccn">Archive <em>Sale</em></h2>
+              <span class="ccta">Shop the Sale</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SIZE GUIDE -->
+    <div class="vw" id="v-sizeguide">
+      <div class="ph" style="height: 300px">
+        <div
+          class="phbg"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=1600&auto=format&fit=crop&q=85');
+          "
+        ></div>
+        <div class="phvg"></div>
+        <div class="phc">
+          <p class="phe">Find Your Fit</p>
+          <h1 class="phh">Size <em>Guide</em></h1>
+        </div>
+      </div>
+      <section>
+        <div class="sgt rv">
+          <button class="sgb ac">Women</button><button class="sgb">Men</button
+          ><button class="sgb">Accessories</button
+          ><button class="sgb">Shawls & Wraps</button>
+        </div>
+        <div style="overflow-x: auto">
+          <table class="sgtbl">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>UK</th>
+                <th>EU</th>
+                <th>US</th>
+                <th>Chest (cm)</th>
+                <th>Waist (cm)</th>
+                <th>Hips (cm)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>XS</td>
+                <td>6</td>
+                <td>34</td>
+                <td>2</td>
+                <td>80â€“83</td>
+                <td>60â€“63</td>
+                <td>86â€“89</td>
+              </tr>
+              <tr>
+                <td>S</td>
+                <td>8</td>
+                <td>36</td>
+                <td>4</td>
+                <td>84â€“87</td>
+                <td>64â€“67</td>
+                <td>90â€“93</td>
+              </tr>
+              <tr>
+                <td>M</td>
+                <td>10â€“12</td>
+                <td>38â€“40</td>
+                <td>6â€“8</td>
+                <td>88â€“93</td>
+                <td>68â€“73</td>
+                <td>94â€“99</td>
+              </tr>
+              <tr>
+                <td>L</td>
+                <td>14</td>
+                <td>42</td>
+                <td>10</td>
+                <td>94â€“99</td>
+                <td>74â€“79</td>
+                <td>100â€“105</td>
+              </tr>
+              <tr>
+                <td>XL</td>
+                <td>16</td>
+                <td>44</td>
+                <td>12</td>
+                <td>100â€“107</td>
+                <td>80â€“87</td>
+                <td>106â€“113</td>
+              </tr>
+              <tr>
+                <td>OS</td>
+                <td colspan="6" style="color: var(--mist)">
+                  One Size â€” fits UK 8â€“16 comfortably
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="height: 64px"></div>
+        <div class="sh rv">
+          <div>
+            <span class="ey">Accurate Measurements</span>
+            <h2 class="dp">How to <em>Measure</em></h2>
+          </div>
+        </div>
+        <div class="mgg rv">
+          <div class="mgi">
+            <div class="mgic">âŸº</div>
+            <p class="mgin">Chest</p>
+            <p class="mgid">
+              Measure around the fullest part of your chest, keeping the tape
+              parallel to the ground.
+            </p>
+          </div>
+          <div class="mgi">
+            <div class="mgic">â—‹</div>
+            <p class="mgin">Waist</p>
+            <p class="mgid">
+              Measure around the narrowest part of your natural waistline, just
+              above the navel.
+            </p>
+          </div>
+          <div class="mgi">
+            <div class="mgic">âŠƒ</div>
+            <p class="mgin">Hips</p>
+            <p class="mgid">
+              Measure around the fullest part of your hips and seat, about 20cm
+              below your waist.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="alt">
+        <div class="sh rv">
+          <div>
+            <span class="ey">Fit Philosophy</span>
+            <h2 class="dp">Our <em>Fit Notes</em></h2>
+          </div>
+        </div>
+        <div class="ftr rv">
+          <div class="ftrc">
+            <p class="ftrcn">Relaxed Fit</p>
+            <p class="ftrcd">
+              Generous proportions, drapes away from the body. Best for Kimonos
+              and Wraps. Size down for a closer silhouette.
+            </p>
+          </div>
+          <div class="ftrc">
+            <p class="ftrcn">Regular Fit</p>
+            <p class="ftrcd">
+              True to size, comfortable through the body. Most Kurtis and Tops
+              use this fit.
+            </p>
+          </div>
+          <div class="ftrc">
+            <p class="ftrcn">Slim Fit</p>
+            <p class="ftrcd">
+              Closer to the body, follows natural curves. Consider sizing up for
+              comfort.
+            </p>
+          </div>
+          <div class="ftrc">
+            <p class="ftrcn">One Size</p>
+            <p class="ftrcd">
+              Designed to fit UK 8â€“16. Wrap and tie fastening allows custom
+              adjustment.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section style="text-align: center">
+        <span class="ey rv" style="display: block; text-align: center"
+          >Still Unsure?</span
+        >
+        <h2 class="dp rv d1" style="margin: 14px 0 28px">
+          We'll Help You <em>Find Your Fit</em>
+        </h2>
+        <p class="bt rv d2" style="max-width: 480px; margin: 0 auto 36px">
+          Our styling team responds within 2 hours. Tell us what you're looking
+          for and we'll suggest the perfect size.
+        </p>
+        <a class="btn btn-k rv d3" onclick="go('contact', null)"
+          >Chat With Our Stylists â†’</a
+        >
+      </section>
+    </div>
+
+    <!-- FAQ -->
+    <div class="vw" id="v-faq">
+      <div class="ph" style="height: 300px">
+        <div
+          class="phbg"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1600&auto=format&fit=crop&q=85');
+          "
+        ></div>
+        <div class="phvg"></div>
+        <div class="phc">
+          <p class="phe">Got Questions?</p>
+          <h1 class="phh">We Have <em>Answers</em></h1>
+        </div>
+      </div>
+      <section>
+        <div class="fqcg rv">
+          <button class="fqcb ac">
+            <span class="fqcbi">ðŸšš</span>
+            <p class="fqcbl">Shipping</p></button
+          ><button class="fqcb">
+            <span class="fqcbi">â†©</span>
+            <p class="fqcbl">Returns</p></button
+          ><button class="fqcb">
+            <span class="fqcbi">ðŸ“</span>
+            <p class="fqcbl">Sizing</p></button
+          ><button class="fqcb">
+            <span class="fqcbi">ðŸ§µ</span>
+            <p class="fqcbl">Care</p></button
+          ><button class="fqcb">
+            <span class="fqcbi">ðŸ’³</span>
+            <p class="fqcbl">Payment</p>
+          </button>
+        </div>
+        <div class="fqlo">
+          <div class="fqnv">
+            <p class="fqnvt">Jump to Section</p>
+            <ul>
+              <li><a href="#" class="ac">Shipping & Delivery</a></li>
+              <li><a href="#">Returns & Exchanges</a></li>
+              <li><a href="#">Sizing & Fit</a></li>
+              <li><a href="#">Product Care</a></li>
+              <li><a href="#">Payment & Security</a></li>
+            </ul>
+            <div class="fqncta">
+              <p>Still need help?</p>
+              <a class="btn btn-c btn-sm" onclick="go('contact', null)"
+                >Contact Us â†’</a
+              >
+            </div>
+          </div>
+          <div>
+            <span class="ey" style="display: block; margin-bottom: 22px"
+              >Shipping & Delivery</span
+            >
+            <div class="ac op">
+              <button class="ach" onclick="acfn(this)">
+                How long does international shipping take?<span class="aci"
+                  >+</span
+                >
+              </button>
+              <div class="acb">
+                <p>
+                  Standard international shipping takes 7â€“14 business days.
+                  Express (3â€“5 days) is available at checkout. We ship from
+                  Jaipur via DHL Express and FedEx. Tracking number within 24
+                  hours of dispatch.
+                </p>
+              </div>
+            </div>
+            <div class="ac">
+              <button class="ach" onclick="acfn(this)">
+                Do you offer free shipping?<span class="aci">+</span>
+              </button>
+              <div class="acb">
+                <p>
+                  Complimentary standard shipping on all orders over $150
+                  worldwide. For orders under $150, standard shipping is $12.
+                </p>
+              </div>
+            </div>
+            <div class="ac">
+              <button class="ach" onclick="acfn(this)">
+                Will I have to pay customs duties?<span class="aci">+</span>
+              </button>
+              <div class="acb">
+                <p>
+                  For EU customers, we collect VAT at checkout. For US
+                  customers, orders under $800 are typically duty-free. We
+                  declare all goods at full value as required by law.
+                </p>
+              </div>
+            </div>
+            <div class="ac">
+              <button class="ach" onclick="acfn(this)">
+                Can I track my order?<span class="aci">+</span>
+              </button>
+              <div class="acb">
+                <p>
+                  Yes. Once your order ships, you'll receive a DHL or FedEx
+                  tracking number. Contact support@kvastram.com if your order
+                  hasn't arrived in the expected timeframe.
+                </p>
+              </div>
+            </div>
+            <span class="ey" style="display: block; margin: 44px 0 22px"
+              >Returns & Exchanges</span
+            >
+            <div class="ac">
+              <button class="ach" onclick="acfn(this)">
+                What is your return policy?<span class="aci">+</span>
+              </button>
+              <div class="acb">
+                <p>
+                  We accept returns within 30 days of delivery. Items must be
+                  unworn, unwashed, with all original tags. Email
+                  support@kvastram.com with your order number to initiate.
+                </p>
+              </div>
+            </div>
+            <div class="ac">
+              <button class="ach" onclick="acfn(this)">
+                How do I exchange for a different size?<span class="aci"
+                  >+</span
+                >
+              </button>
+              <div class="acb">
+                <p>
+                  Size exchanges are free within 30 days. Email us with your
+                  order number and desired size. We'll dispatch the replacement
+                  when we receive your return.
+                </p>
+              </div>
+            </div>
+            <span class="ey" style="display: block; margin: 44px 0 22px"
+              >Product Care</span
+            >
+            <div class="ac">
+              <button class="ach" onclick="acfn(this)">
+                How do I care for Pashmina?<span class="aci">+</span>
+              </button>
+              <div class="acb">
+                <p>
+                  Dry clean or hand wash in cold water with a gentle wool
+                  detergent. Never machine wash or tumble dry. Lay flat to dry
+                  away from direct sunlight. Store in the provided cotton dust
+                  bag.
+                </p>
+              </div>
+            </div>
+            <div class="ac">
+              <button class="ach" onclick="acfn(this)">
+                How do I care for silk pieces?<span class="aci">+</span>
+              </button>
+              <div class="acb">
+                <p>
+                  Dry clean or hand wash in cold water. Do not wring. Hang to
+                  dry in shade. Iron on lowest setting with a pressing cloth.
+                  Avoid perfume and deodorant contact.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="vw" id="v-contact">
+      <div class="ph" style="height: 300px">
+        <div
+          class="phbg"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=1600&auto=format&fit=crop&q=85');
+          "
+        ></div>
+        <div class="phvg"></div>
+        <div class="phc">
+          <p class="phe">Get in Touch</p>
+          <h1 class="phh">We'd Love<br />to <em>Hear</em> You</h1>
+        </div>
+      </div>
+      <div class="ctsp">
+        <div class="ctdk">
+          <div>
+            <span class="ey lt" style="display: block"
+              >Contact Information</span
+            >
+            <h2 class="ctdkh">
+              Talk to us.<br /><em>We reply<br />within 2 hours.</em>
+            </h2>
+          </div>
+          <div>
+            <div class="ctci">
+              <p class="ctcil">Email</p>
+              <p class="ctciv">support@kvastram.com</p>
+              <p class="ctcis">General enquiries & styling help</p>
+            </div>
+            <div class="ctci">
+              <p class="ctcil">Wholesale</p>
+              <p class="ctciv">trade@kvastram.com</p>
+              <p class="ctcis">B2B and trade enquiries</p>
+            </div>
+            <div class="ctci">
+              <p class="ctcil">Hours</p>
+              <p class="ctciv">Monâ€“Fri, 9amâ€“6pm IST</p>
+              <p class="ctcis">Same-day replies to all messages</p>
+            </div>
+          </div>
+          <div class="ctsoc">
+            <a href="#">ig</a><a href="#">ð•</a><a href="#">yt</a
+            ><a href="#">in</a>
+          </div>
+        </div>
+        <div class="ctfm">
+          <span class="ey" style="display: block; margin-bottom: 36px"
+            >Send a Message</span
+          >
+          <div class="ct2c">
+            <div class="ff">
+              <input type="text" id="first_name" placeholder=" " /><label
+                for="first_name"
+                >First Name</label
+              >
+            </div>
+            <div class="ff">
+              <input type="text" id="last_name" placeholder=" " /><label
+                for="last_name"
+                >Last Name</label
+              >
+            </div>
+          </div>
+          <div class="ff">
+            <input type="email" id="email_contact" placeholder=" " /><label
+              for="email_contact"
+              >Email Address</label
+            >
+          </div>
+          <div class="ff">
+            <input type="text" id="subject" placeholder=" " /><label
+              for="subject"
+              >Subject</label
+            >
+          </div>
+          <div class="ff">
+            <select id="enquiry_type">
+              <option value="" disabled selected></option>
+              <option>Order / Shipping</option>
+              <option>Size & Styling Help</option>
+              <option>Returns & Exchanges</option>
+              <option>Wholesale / B2B</option>
+              <option>Press & Media</option>
+              <option>Other</option></select
+            ><label for="enquiry_type">Enquiry Type</label>
+          </div>
+          <div class="ff">
+            <textarea id="message" placeholder=" "></textarea
+            ><label for="message">Your Message</label>
+          </div>
+          <button
+            class="btn btn-k"
+            style="width: 100%; justify-content: center; margin-top: 8px"
+            onclick="toast('Message sent! We\'ll reply within 2 hours âœ¦')"
+          >
+            Send Message â†’
+          </button>
+          <p
+            style="
+              font-size: 10px;
+              color: var(--mist);
+              margin-top: 16px;
+              text-align: center;
+            "
+          >
+            We respect your privacy. No spam, ever.
+          </p>
+        </div>
+      </div>
+      <section class="alt">
+        <div class="sh rv">
+          <div>
+            <span class="ey">Find Us</span>
+            <h2 class="dp">Our <em>Offices</em></h2>
+          </div>
+        </div>
+        <div class="ctofc rv">
+          <div class="ctof">
+            <span class="ctoff">ðŸ‡®ðŸ‡³</span>
+            <h3 class="ctofc2">Jaipur</h3>
+            <p class="ctofad">
+              Kvastram HQ<br />Plot 14, Sitabari Industrial Area<br />Jaipur,
+              Rajasthan 302022<br /><br />Main Operations & Warehouse
+            </p>
+          </div>
+          <div class="ctof">
+            <span class="ctoff">ðŸ‡¬ðŸ‡§</span>
+            <h3 class="ctofc2">London</h3>
+            <p class="ctofad">
+              Kvastram Europe Ltd<br />12 Bermondsey Square<br />London, SE1
+              3UN<br /><br />EU Sales & Press Office
+            </p>
+          </div>
+          <div class="ctof">
+            <span class="ctoff">ðŸ‡ºðŸ‡¸</span>
+            <h3 class="ctofc2">New York</h3>
+            <p class="ctofad">
+              Kvastram Americas<br />350 West Broadway, Suite 4<br />New York,
+              NY 10013<br /><br />US Sales & Wholesale
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- WHOLESALE -->
+    <div class="vw" id="v-wholesale">
+      <div class="wssp">
+        <div class="wssl">
+          <span
+            class="ey"
+            style="animation: su 0.7s var(--swift) 0.2s both; opacity: 0"
+            >Trade & B2B</span
+          >
+          <h1
+            style="
+              font-family: var(--D);
+              font-size: clamp(60px, 7.5vw, 120px);
+              font-weight: 300;
+              line-height: 0.88;
+              letter-spacing: -0.03em;
+              margin-bottom: 36px;
+              animation: su 0.9s var(--swift) 0.35s both;
+              opacity: 0;
+            "
+          >
+            Partner<br />With <em>Us</em>
+          </h1>
+          <p
+            class="bt"
+            style="
+              max-width: 440px;
+              margin-bottom: 48px;
+              animation: su 0.9s var(--swift) 0.5s both;
+              opacity: 0;
+            "
+          >
+            We partner with boutiques, hotels, interior designers, and corporate
+            gifting teams who share our values. Premium artisanal products,
+            reliable supply, dedicated account management.
+          </p>
+          <div
+            style="
+              display: flex;
+              gap: 14px;
+              flex-wrap: wrap;
+              animation: su 0.9s var(--swift) 0.65s both;
+              opacity: 0;
+            "
+          >
+            <a
+              class="btn btn-k"
+              onclick="toast('Opening trade application... âœ¦')"
+              >Apply for Trade Account</a
+            ><a class="btn btn-g">Download Catalogue</a>
+          </div>
+        </div>
+        <div class="wssr">
+          <img
+            src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=900&auto=format&fit=crop&q=85"
+            alt=""
+          />
+        </div>
+      </div>
+      <section class="alt">
+        <div class="sh rv">
+          <div>
+            <span class="ey">Who We Work With</span>
+            <h2 class="dp">Perfect <em>Partners</em></h2>
+          </div>
+        </div>
+        <div class="whog">
+          <div class="whoc rv">
+            <span class="whoci">ðŸª</span>
+            <h3 class="whocn">Boutiques</h3>
+            <p class="whocd">
+              Independent fashion boutiques globally. Minimum order 10 pieces
+              per style.
+            </p>
+          </div>
+          <div class="whoc rv d1">
+            <span class="whoci">ðŸ¨</span>
+            <h3 class="whocn">Hotels & Resorts</h3>
+            <p class="whocd">
+              Luxury properties offering gift shops, spa collections, or branded
+              amenities.
+            </p>
+          </div>
+          <div class="whoc rv d2">
+            <span class="whoci">âœ‚ï¸</span>
+            <h3 class="whocn">Stylists & Designers</h3>
+            <p class="whocd">
+              Personal stylists, fashion designers, and wardrobe consultants
+              seeking unique pieces.
+            </p>
+          </div>
+          <div class="whoc rv d3">
+            <span class="whoci">ðŸŽ</span>
+            <h3 class="whocn">Corporate Gifting</h3>
+            <p class="whocd">
+              Companies seeking premium, meaningful gifts for clients,
+              employees, and events.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="sh rv">
+          <div>
+            <span class="ey">Pricing Tiers</span>
+            <h2 class="dp">Choose Your <em>Partnership</em></h2>
+          </div>
+        </div>
+        <div class="trg">
+          <div class="tr rv">
+            <p class="trlv">Starter</p>
+            <h3 class="trvl">â‚¹50K</h3>
+            <span class="trsb">Minimum Order Value</span>
+            <ul class="trfl">
+              <li>10% off retail price</li>
+              <li>Standard shipping rates</li>
+              <li>30-day payment terms</li>
+              <li>Digital catalogue access</li>
+            </ul>
+            <a class="btn btn-g btn-sm">Apply Now â†’</a>
+          </div>
+          <div class="tr hot rv d1">
+            <span class="trbg">Most Popular</span>
+            <p class="trlv">Partner</p>
+            <h3 class="trvl">â‚¹2L</h3>
+            <span class="trsb">Minimum Order Value</span>
+            <ul class="trfl">
+              <li>20% off retail price</li>
+              <li>Free shipping on all orders</li>
+              <li>60-day payment terms</li>
+              <li>Dedicated account manager</li>
+              <li>Custom swing tags available</li>
+              <li>Early collection access</li>
+            </ul>
+            <a class="btn btn-c btn-sm">Apply Now â†’</a>
+          </div>
+          <div class="tr rv d2">
+            <p class="trlv">Premium</p>
+            <h3 class="trvl">â‚¹5L+</h3>
+            <span class="trsb">Minimum Order Value</span>
+            <ul class="trfl">
+              <li>30% off retail price</li>
+              <li>Priority shipping included</li>
+              <li>90-day payment terms</li>
+              <li>Custom & made-to-order</li>
+              <li>White-label option</li>
+              <li>Co-marketing opportunities</li>
+            </ul>
+            <a class="btn btn-g btn-sm">Apply Now â†’</a>
+          </div>
+        </div>
+      </section>
+      <section
+        class="dark"
+        style="text-align: center; padding: 130px 68px !important"
+      >
+        <span class="ey lt rv" style="display: block; text-align: center"
+          >Ready to Partner?</span
+        >
+        <h2 class="dp xl lt rv d1" style="margin: 16px 0 20px">
+          Let's Build<br /><em>Something Together</em>
+        </h2>
+        <p
+          style="
+            color: rgba(248, 246, 243, 0.42);
+            font-size: 13px;
+            margin-bottom: 52px;
+          "
+          class="rv d2"
+        >
+          Email trade@kvastram.com or fill out the application form.
+        </p>
+        <a
+          class="btn btn-c rv d3"
+          onclick="toast('Opening trade application âœ¦')"
+          >Apply for Trade Account â†’</a
+        >
+      </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="fwm">KVASTRAM</div>
+      <div class="fg">
+        <div>
+          <a href="#" class="flog">Kvastram</a>
+          <p class="ftag">
+            Handcrafted luxury connecting global citizens with the finest
+            artisanal craftsmanship from India and beyond.
+          </p>
+          <div class="fsoc">
+            <a href="#">ig</a><a href="#">ð•</a><a href="#">yt</a
+            ><a href="#">fb</a><a href="#">in</a>
+          </div>
+        </div>
+        <div class="fc">
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="#">New Arrivals</a></li>
+            <li><a href="#">Best Sellers</a></li>
+            <li><a href="#">Collections</a></li>
+            <li><a href="#">Shawls & Wraps</a></li>
+            <li><a href="#">Sale</a></li>
+          </ul>
+        </div>
+        <div class="fc">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Track Order</a></li>
+            <li><a href="#">Shipping & Returns</a></li>
+            <li><a onclick="go('faq', null)">FAQ</a></li>
+            <li><a onclick="go('sizeguide', null)">Size Guide</a></li>
+            <li><a onclick="go('contact', null)">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="fc">
+          <h4>Company</h4>
+          <ul>
+            <li><a onclick="go('about', null)">About</a></li>
+            <li><a onclick="go('artisans', null)">Our Artisans</a></li>
+            <li><a onclick="go('sustainability', null)">Sustainability</a></li>
+            <li><a onclick="go('journal', null)">Journal</a></li>
+            <li><a onclick="go('wholesale', null)">Wholesale</a></li>
+          </ul>
+        </div>
+        <div class="fc">
+          <h4>Stay Updated</h4>
+          <p
+            style="
+              font-size: 11px;
+              color: rgba(248, 246, 243, 0.35);
+              line-height: 1.75;
+              margin-bottom: 16px;
+            "
+          >
+            Get 10% off your first order + early collection access.
+          </p>
+          <div
+            style="display: flex; border: 1px solid rgba(248, 246, 243, 0.15)"
+          >
+            <input
+              type="email"
+              placeholder="Email address"
+              style="
+                flex: 1;
+                background: none;
+                border: none;
+                padding: 14px 16px;
+                color: var(--cream);
+                font-size: 12px;
+                font-family: var(--B);
+                outline: none;
+              "
+            /><button
+              style="
+                background: var(--cream);
+                color: var(--ink);
+                border: none;
+                padding: 14px 18px;
+                cursor: none;
+                font-size: 12px;
+              "
+              onclick="toast('Welcome to the Inner Circle âœ¦')"
+            >
+              â†’
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="fbot">
+        <p class="fcp">Â© 2026 Kvastram. All rights reserved.</p>
+        <div class="pays">
+          <span class="pay">VISA</span><span class="pay">MC</span
+          ><span class="pay">AMEX</span><span class="pay">PayPal</span
+          ><span class="pay">âŸPay</span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // LOADER
+      let p = 0;
+      const lp = document.getElementById('lp');
+      const li = setInterval(() => {
+        p = Math.min(p + Math.random() * 18, 95);
+        if (lp) lp.textContent = Math.round(p) + '%';
+      }, 80);
+      window.addEventListener('load', () => {
+        clearInterval(li);
+        if (lp) lp.textContent = '100%';
+        setTimeout(
+          () => document.getElementById('ldr').classList.add('done'),
+          1800
+        );
+      });
+
+      // CURSOR
+      const cd = document.getElementById('cd'),
+        cr = document.getElementById('cr');
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+      document.addEventListener('mousemove', (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+      });
+      (function loop() {
+        cd.style.left = mx + 'px';
+        cd.style.top = my + 'px';
+        rx += (mx - rx) * 0.1;
+        ry += (my - ry) * 0.1;
+        cr.style.left = rx + 'px';
+        cr.style.top = ry + 'px';
+        requestAnimationFrame(loop);
+      })();
+      document
+        .querySelectorAll(
+          'a,button,.plr,.susc,.whoc,.crtc,.prs,.acd,.jc,.cc,.ctof,.ftrc'
+        )
+        .forEach((el) => {
+          el.addEventListener('mouseenter', () =>
+            document.body.classList.add('cxl')
+          );
+          el.addEventListener('mouseleave', () =>
+            document.body.classList.remove('cxl')
+          );
+        });
+
+      // SCROLL
+      window.addEventListener(
+        'scroll',
+        () => {
+          document.getElementById('sp').style.width =
+            (window.scrollY /
+              (document.body.scrollHeight - window.innerHeight)) *
+              100 +
+            '%';
+          document
+            .getElementById('nav')
+            .classList.toggle('sc', window.scrollY > 50);
+        },
+        { passive: true }
+      );
+
+      // TOAST
+      function toast(m) {
+        const t = document.getElementById('toast');
+        t.textContent = m;
+        t.classList.add('on');
+        setTimeout(() => t.classList.remove('on'), 2800);
+      }
+
+      // PAGE SWITCH
+      function go(id, btn) {
+        document
+          .querySelectorAll('.vw')
+          .forEach((v) => v.classList.remove('ac'));
+        document
+          .querySelectorAll('.pb')
+          .forEach((b) => b.classList.remove('ac'));
+        document.getElementById('v-' + id).classList.add('ac');
+        if (btn) btn.classList.add('ac');
+        else
+          document.querySelectorAll('.pb').forEach((b) => {
+            if (b.getAttribute('onclick')?.includes("'" + id + "'"))
+              b.classList.add('ac');
+          });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(initRv, 100);
+      }
+
+      // REVEAL
+      function initRv() {
+        const o = new IntersectionObserver(
+          (e) =>
+            e.forEach((x) => {
+              if (x.isIntersecting) x.target.classList.add('v');
+            }),
+          { threshold: 0.08, rootMargin: '0px 0px -20px 0px' }
+        );
+        document.querySelectorAll('.rv:not(.v)').forEach((el) => o.observe(el));
+        const so = new IntersectionObserver(
+          (e) =>
+            e.forEach((x) => {
+              if (x.isIntersecting)
+                x.currentTarget
+                  .querySelectorAll('.stat-card')
+                  .forEach((s, i) =>
+                    setTimeout(() => s.classList.add('v'), i * 130)
+                  );
+            }),
+          { threshold: 0.4 }
+        );
+        document.querySelectorAll('.stats-row').forEach((el) => so.observe(el));
+      }
+      initRv();
+
+      // ACCORDION
+      function acfn(btn) {
+        const i = btn.parentElement;
+        document.querySelectorAll('.ac.op').forEach((a) => {
+          if (a !== i) a.classList.remove('op');
+        });
+        i.classList.toggle('op');
+      }
+
+      // FILTERS
+      document.querySelectorAll('.jfb').forEach((b) =>
+        b.addEventListener('click', function () {
+          document
+            .querySelectorAll('.jfb')
+            .forEach((x) => x.classList.remove('ac'));
+          this.classList.add('ac');
+        })
+      );
+      document.querySelectorAll('.fqcb').forEach((b) =>
+        b.addEventListener('click', function () {
+          document
+            .querySelectorAll('.fqcb')
+            .forEach((x) => x.classList.remove('ac'));
+          this.classList.add('ac');
+        })
+      );
+      document.querySelectorAll('.sgb').forEach((b) =>
+        b.addEventListener('click', function () {
+          document
+            .querySelectorAll('.sgb')
+            .forEach((x) => x.classList.remove('ac'));
+          this.classList.add('ac');
+        })
+      );
+
+      // MARQUEE
+      document.querySelectorAll('.mqt').forEach((t) => {
+        t.innerHTML += t.innerHTML;
+      });
+
+      // PARALLAX
+      window.addEventListener(
+        'scroll',
+        () => {
+          document.querySelectorAll('.phbg').forEach((bg) => {
+            const r = bg.closest('.ph').getBoundingClientRect();
+            if (r.bottom > 0 && r.top < window.innerHeight)
+              bg.style.transform = `translateY(${r.top * 0.12}px)`;
+          });
+        },
+        { passive: true }
+      );
+
+      // TILT on cards
+      document.querySelectorAll('.acd,.jc,.plr').forEach((c) => {
+        c.addEventListener('mousemove', function (e) {
+          const r = this.getBoundingClientRect(),
+            x = (e.clientX - r.left) / r.width - 0.5,
+            y = (e.clientY - r.top) / r.height - 0.5;
+          this.style.transform = `perspective(700px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg) translateY(-4px)`;
+          this.style.transition = 'transform .08s';
+        });
+        c.addEventListener('mouseleave', function () {
+          this.style.transform = '';
+          this.style.transition = 'transform .4s var(--silk)';
+        });
+      });
+
+      // MAGNETIC BUTTONS
+      document.querySelectorAll('.btn').forEach((b) => {
+        b.addEventListener('mousemove', function (e) {
+          const r = this.getBoundingClientRect(),
+            x = (e.clientX - r.left - r.width / 2) * 0.22,
+            y = (e.clientY - r.top - r.height / 2) * 0.22;
+          this.style.transform = `translate(${x}px,${y}px) translateY(-3px)`;
+          this.style.transition = 'transform .12s';
+        });
+        b.addEventListener('mouseleave', function () {
+          this.style.transform = '';
+          this.style.transition = 'transform .4s var(--spring)';
+        });
+      });
+
+      // COUNT UP
+      function countUp(el, target, sfx = '') {
+        const dur = 1800,
+          st = performance.now();
+        (function fr(now) {
+          const pc = Math.min((now - st) / dur, 1),
+            ease = 1 - Math.pow(1 - pc, 3);
+          el.textContent = Math.round(target * ease) + sfx;
+          if (pc < 1) requestAnimationFrame(fr);
+        })(st);
+      }
+      const cuo = new IntersectionObserver(
+        (e) =>
+          e.forEach((x) => {
+            if (x.isIntersecting && !x.target.dataset.counted) {
+              x.target.dataset.counted = 1;
+              const n = x.target.querySelector('.stn');
+              if (n) {
+                const t = n.textContent,
+                  num = parseFloat(t.replace(/[^0-9.]/g, '')),
+                  sfx = t.replace(/[0-9.]/g, '');
+                if (!isNaN(num)) countUp(n, num, sfx);
+              }
+            }
+          }),
+        { threshold: 0.8 }
+      );
+      document.querySelectorAll('.st').forEach((s) => cuo.observe(s));
+    </script>
+  </body>
+</html>

@@ -16,6 +16,8 @@ const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID || '';
 
+import { ConsentManager } from '@/lib/consent-manager';
+
 function AnalyticsInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -42,6 +44,12 @@ function AnalyticsInner() {
 }
 
 export function Analytics() {
+  // Prevent loading if user has not consented to analytics
+  if (!ConsentManager.hasConsentFor('analytics')) {
+    console.log('[Analytics] skip due to consent');
+    return null;
+  }
+
   return (
     <>
       {/* Google Analytics 4 */}

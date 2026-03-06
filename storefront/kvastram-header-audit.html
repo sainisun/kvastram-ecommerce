@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KVASTRAM — Header Audit vs Shopify Standards</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&family=Archivo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0a0a;
+  --cream: #f8f6f3;
+  --parch: #f0ede8;
+  --gold: #b8965a;
+  --green: #2d6a4f;
+  --red: #c0392b;
+  --orange: #e67e22;
+  --blue: #1a6fa8;
+  --rule: rgba(10,10,10,0.09);
+  --D: 'Cormorant Garamond', serif;
+  --B: 'Archivo', sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:var(--B);font-size:14px;line-height:1.6;}
+
+/* ─── HERO ─── */
+.hero{
+  background:var(--ink);
+  padding:80px 64px 72px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'AUDIT';
+  position:absolute;right:-20px;top:50%;transform:translateY(-50%);
+  font-family:var(--D);font-size:clamp(100px,15vw,220px);font-weight:300;
+  color:rgba(248,246,243,0.04);letter-spacing:-.03em;line-height:1;
+  pointer-events:none;white-space:nowrap;
+}
+.hero-eyebrow{
+  font-size:9px;letter-spacing:.35em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px;display:block;
+}
+.hero-h1{
+  font-family:var(--D);font-size:clamp(38px,5vw,72px);font-weight:300;
+  line-height:.92;letter-spacing:-.02em;color:var(--cream);
+  margin-bottom:28px;
+}
+.hero-h1 em{font-style:italic;}
+.hero-sub{
+  font-size:13px;line-height:1.85;color:rgba(248,246,243,.45);
+  max-width:560px;
+}
+.hero-verdict{
+  display:inline-flex;align-items:center;gap:12px;
+  margin-top:36px;padding:14px 24px;
+  border:1px solid rgba(248,246,243,.15);
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+}
+.verdict-score{
+  font-family:var(--D);font-size:42px;font-weight:300;
+  color:var(--gold);line-height:1;
+}
+
+/* ─── LAYOUT ─── */
+.container{max-width:1100px;margin:0 auto;padding:0 48px;}
+section{padding:72px 0;}
+.section-label{
+  font-size:9px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;display:block;
+}
+.section-title{
+  font-family:var(--D);font-size:clamp(30px,3.5vw,52px);
+  font-weight:300;letter-spacing:-.015em;margin-bottom:8px;
+}
+.section-title em{font-style:italic;}
+.section-sub{
+  font-size:13px;color:rgba(10,10,10,.5);
+  max-width:600px;margin-bottom:52px;line-height:1.85;
+}
+
+/* ─── SCORE CARDS ─── */
+.score-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
+  margin-bottom:64px;
+}
+.score-card{padding:36px 28px;background:var(--parch);text-align:center;}
+.score-card.win{background:var(--ink);}
+.score-num{
+  font-family:var(--D);font-size:56px;font-weight:300;
+  line-height:1;margin-bottom:8px;
+}
+.score-card.win .score-num{color:var(--gold);}
+.score-card:not(.win) .score-num{color:rgba(10,10,10,.18);}
+.score-label{font-size:9px;letter-spacing:.22em;text-transform:uppercase;}
+.score-card.win .score-label{color:rgba(248,246,243,.4);}
+.score-card:not(.win) .score-label{color:rgba(10,10,10,.4);}
+
+/* ─── COMPARISON TABLE ─── */
+.cmp-table{
+  width:100%;border-collapse:collapse;
+  margin-bottom:8px;
+}
+.cmp-table thead tr{background:var(--ink);}
+.cmp-table th{
+  padding:16px 20px;text-align:left;
+  font-size:9px;letter-spacing:.25em;text-transform:uppercase;
+  font-weight:400;color:rgba(248,246,243,.5);
+}
+.cmp-table th:first-child{width:34%;}
+.cmp-table th:not(:first-child){text-align:center;width:16.5%;}
+.cmp-table tbody tr{border-bottom:1px solid var(--rule);}
+.cmp-table tbody tr:hover{background:var(--parch);}
+.cmp-table td{padding:14px 20px;font-size:13px;vertical-align:middle;}
+.cmp-table td:not(:first-child){text-align:center;}
+
+/* feature name */
+.feat-name{font-weight:500;display:block;margin-bottom:2px;}
+.feat-desc{font-size:11px;color:rgba(10,10,10,.4);display:block;}
+
+/* status badges */
+.s{display:inline-flex;align-items:center;justify-content:center;gap:5px;
+   font-size:9px;letter-spacing:.1em;padding:4px 10px;font-weight:500;}
+.s-yes{color:#2d6a4f;background:rgba(45,106,79,.1);}
+.s-no{color:#c0392b;background:rgba(192,57,43,.08);}
+.s-partial{color:#e67e22;background:rgba(230,126,34,.1);}
+.s-plus{color:var(--blue);background:rgba(26,111,168,.1);}
+
+/* ─── CATEGORY HEADERS ─── */
+.cat-row td{
+  padding:22px 20px 10px;
+  font-size:9px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);border-bottom:1px solid rgba(184,150,90,.2)!important;
+  background:rgba(184,150,90,.04);
+  font-weight:600;
+}
+
+/* ─── WHAT WE HAVE / DON'T ─── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:64px;}
+.col-card{padding:44px 40px;}
+.col-card.dark{background:var(--ink);}
+.col-card.light{background:var(--parch);}
+.col-title{
+  font-size:9px;letter-spacing:.28em;text-transform:uppercase;
+  margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--rule);
+}
+.col-card.dark .col-title{color:rgba(248,246,243,.35);border-bottom-color:var(--rule-l);}
+.col-card.light .col-title{color:var(--mist);}
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.feature-list li{
+  display:flex;align-items:flex-start;gap:12px;
+  font-size:13px;line-height:1.5;
+}
+.col-card.dark .feature-list li{color:rgba(248,246,243,.65);}
+.fi{font-size:13px;flex-shrink:0;margin-top:1px;}
+
+/* ─── MISSING FEATURES PRIORITY ─── */
+.priority-list{display:flex;flex-direction:column;gap:2px;margin-bottom:48px;}
+.pri-item{
+  display:grid;grid-template-columns:48px 1fr auto auto;
+  align-items:center;gap:20px;
+  padding:20px 24px;background:var(--parch);
+  transition:background .2s;
+}
+.pri-item:hover{background:rgba(184,150,90,.08);}
+.pri-num{
+  font-family:var(--D);font-size:36px;font-weight:300;
+  color:rgba(10,10,10,.12);line-height:1;
+}
+.pri-text .pri-name{font-weight:500;margin-bottom:3px;}
+.pri-text .pri-why{font-size:12px;color:rgba(10,10,10,.45);}
+.pri-impact{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;}
+.impact-h{color:#c0392b;background:rgba(192,57,43,.08);}
+.impact-m{color:var(--orange);background:rgba(230,126,34,.08);}
+.impact-l{color:var(--green);background:rgba(45,106,79,.08);}
+.pri-effort{font-size:9px;color:rgba(10,10,10,.35);}
+
+/* ─── VERDICT SECTION ─── */
+.verdict-big{
+  background:var(--ink);
+  padding:80px 64px;
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;
+  align-items:center;
+}
+.vb-left .vb-score{
+  font-family:var(--D);font-size:120px;font-weight:300;
+  color:var(--gold);line-height:1;letter-spacing:-.04em;margin-bottom:8px;
+}
+.vb-left .vb-label{
+  font-size:9px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(248,246,243,.3);
+}
+.vb-right .vb-title{
+  font-family:var(--D);font-size:40px;font-weight:300;
+  color:var(--cream);margin-bottom:20px;line-height:1.08;
+}
+.vb-right .vb-title em{font-style:italic;}
+.vb-right p{font-size:13px;line-height:1.95;color:rgba(248,246,243,.5);margin-bottom:16px;}
+.vb-right .vb-note{
+  margin-top:28px;padding:20px;
+  border:1px solid rgba(248,246,243,.1);
+  font-size:11px;letter-spacing:.06em;color:rgba(248,246,243,.35);
+  line-height:1.8;
+}
+
+/* ─── BARS ─── */
+.bar-row{margin-bottom:20px;}
+.bar-label{
+  display:flex;justify-content:space-between;
+  font-size:12px;margin-bottom:7px;
+}
+.bar-label span:last-child{font-weight:500;}
+.bar-track{height:5px;background:rgba(248,246,243,.1);position:relative;}
+.bar-fill{height:100%;background:var(--gold);transition:width 1s cubic-bezier(.16,1,.3,1);}
+.bar-shopify .bar-fill{background:rgba(248,246,243,.25);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .hero,.container{padding-left:28px;padding-right:28px;}
+  .score-grid{grid-template-columns:1fr 1fr;}
+  .two-col{grid-template-columns:1fr;}
+  .verdict-big{grid-template-columns:1fr;padding:52px 28px;}
+  .pri-item{grid-template-columns:40px 1fr;gap:14px;}
+  .pri-impact,.pri-effort{display:none;}
+  .cmp-table{font-size:12px;}
+  .cmp-table td,.cmp-table th{padding:12px 14px;}
+}
+@media(max-width:640px){
+  .score-grid{grid-template-columns:1fr 1fr;}
+  .cmp-table th:nth-child(3),.cmp-table td:nth-child(3),
+  .cmp-table th:nth-child(4),.cmp-table td:nth-child(4){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="container">
+    <span class="hero-eyebrow">Header Audit Report · March 2026</span>
+    <h1 class="hero-h1">Kvastram Header<br>vs. <em>Shopify Standards</em></h1>
+    <p class="hero-sub">
+      Detailed comparison against Prestige ($400), Impulse ($380), and Dawn (free) —
+      the three industry benchmarks for luxury ecommerce headers. Every feature rated, every gap identified.
+    </p>
+    <div class="hero-verdict">
+      <div>
+        <span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(248,246,243,.35);display:block;margin-bottom:4px;">Overall Score</span>
+        <span class="verdict-score">8.2</span>
+        <span style="font-size:9px;color:rgba(248,246,243,.3);"> / 10</span>
+      </div>
+      <div style="width:1px;height:48px;background:rgba(248,246,243,.1);"></div>
+      <div>
+        <span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(248,246,243,.35);display:block;margin-bottom:4px;">vs Best Shopify Theme</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:rgba(248,246,243,.8);">Better in Design</span>
+      </div>
+      <div style="width:1px;height:48px;background:rgba(248,246,243,.1);"></div>
+      <div>
+        <span style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(248,246,243,.35);display:block;margin-bottom:4px;">Missing Features</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#e67e22;">5 Key Items</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCORE OVERVIEW ═══ -->
+<section style="background:var(--ink);padding:52px 0;">
+  <div class="container">
+    <div class="score-grid">
+      <div class="score-card win">
+        <div class="score-num">9.5</div>
+        <div class="score-label">Visual Design</div>
+      </div>
+      <div class="score-card win">
+        <div class="score-num">9.0</div>
+        <div class="score-label">Animation & UX</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num" style="color:rgba(248,246,243,.25)">6.5</div>
+        <div class="score-label">E-commerce Features</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num" style="color:rgba(248,246,243,.25)">7.0</div>
+        <div class="score-label">Conversion Tools</div>
+      </div>
+    </div>
+
+    <!-- bars -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;">
+      <div>
+        <p style="font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(248,246,243,.3);margin-bottom:28px;">KVASTRAM HEADER</p>
+        <div class="bar-row">
+          <div class="bar-label" style="color:rgba(248,246,243,.6)"><span>Visual Design</span><span>9.5/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label" style="color:rgba(248,246,243,.6)"><span>Animations & Motion</span><span>9.2/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:92%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label" style="color:rgba(248,246,243,.6)"><span>Mobile Experience</span><span>8.5/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:85%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label" style="color:rgba(248,246,243,.6)"><span>E-commerce Features</span><span>6.5/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:65%"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label" style="color:rgba(248,246,243,.6)"><span>Search UX</span><span>7.5/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:75%"></div></div>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(248,246,243,.3);margin-bottom:28px;">SHOPIFY PRESTIGE (Best Competitor)</p>
+        <div class="bar-row bar-shopify">
+          <div class="bar-label" style="color:rgba(248,246,243,.4)"><span>Visual Design</span><span>7.5/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:75%"></div></div>
+        </div>
+        <div class="bar-row bar-shopify">
+          <div class="bar-label" style="color:rgba(248,246,243,.4)"><span>Animations & Motion</span><span>6.0/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+        </div>
+        <div class="bar-row bar-shopify">
+          <div class="bar-label" style="color:rgba(248,246,243,.4)"><span>Mobile Experience</span><span>8.0/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+        </div>
+        <div class="bar-row bar-shopify">
+          <div class="bar-label" style="color:rgba(248,246,243,.4)"><span>E-commerce Features</span><span>9.5/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
+        </div>
+        <div class="bar-row bar-shopify">
+          <div class="bar-label" style="color:rgba(248,246,243,.4)"><span>Search UX</span><span>9.0/10</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FULL COMPARISON TABLE ═══ -->
+<section>
+  <div class="container">
+    <span class="section-label">Feature-by-Feature</span>
+    <h2 class="section-title">Complete <em>Comparison Table</em></h2>
+    <p class="section-sub">Every header feature compared against Prestige, Impulse, and Dawn — the top 3 Shopify themes used by luxury fashion brands.</p>
+
+    <div style="overflow-x:auto;">
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Kvastram</th>
+          <th>Prestige</th>
+          <th>Impulse</th>
+          <th>Dawn</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- ANNOUNCEMENT BAR -->
+        <tr class="cat-row"><td colspan="5">📢 Announcement Bar</td></tr>
+        <tr>
+          <td><span class="feat-name">Scrolling ticker animation</span><span class="feat-desc">Infinite scroll with pause on hover</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ Static</span></td>
+          <td><span class="s s-no">✗ Static</span></td>
+          <td><span class="s s-no">✗ Static</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Gold highlight accents</span><span class="feat-desc">Brand color emphasis in ticker</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Multiple messages rotation</span><span class="feat-desc">5+ promo messages visible</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Dismissible / close button</span><span class="feat-desc">User can close the bar</span></td>
+          <td><span class="s s-no">✗ Missing</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+
+        <!-- LOGO & BRANDING -->
+        <tr class="cat-row"><td colspan="5">🏷 Logo & Branding</td></tr>
+        <tr>
+          <td><span class="feat-name">Animated logo hover</span><span class="feat-desc">Letter-spacing expands on hover</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Transparent → frosted glass on scroll</span><span class="feat-desc">Backdrop blur transition</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Auto color switch on dark/light hero</span><span class="feat-desc">White text on dark, black on light</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Logo image support</span><span class="feat-desc">Upload custom .png/.svg logo</span></td>
+          <td><span class="s s-partial">~ Text only</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+
+        <!-- NAVIGATION -->
+        <tr class="cat-row"><td colspan="5">🗂 Navigation Links</td></tr>
+        <tr>
+          <td><span class="feat-name">Staggered entrance animation</span><span class="feat-desc">Nav links animate in on load</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Animated underline on hover</span><span class="feat-desc">Width grows from 0 → 100%</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Sticky on scroll</span><span class="feat-desc">Always visible when scrolling</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Active page indicator</span><span class="feat-desc">Current page link is marked</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Scroll progress bar in nav</span><span class="feat-desc">Thin line shows page scroll %</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+
+        <!-- MEGA MENU -->
+        <tr class="cat-row"><td colspan="5">📂 Mega Menu (Shop Dropdown)</td></tr>
+        <tr>
+          <td><span class="feat-name">Animated slide-in</span><span class="feat-desc">Opacity + translateY entrance</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-partial">~ Basic fade</span></td>
+          <td><span class="s s-partial">~ Basic fade</span></td>
+          <td><span class="s s-no">✗ No mega</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Featured image in dropdown</span><span class="feat-desc">Product/collection photo in menu</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Featured image hover zoom</span><span class="feat-desc">Image scales on hover</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Large serif category links</span><span class="feat-desc">30px+ display font for categories</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-partial">~ Small text</span></td>
+          <td><span class="s s-partial">~ Small text</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Trending/popular links row</span><span class="feat-desc">Quick access to hot searches in footer</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Promo/in-menu images</span><span class="feat-desc">Promotional content inside menu</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Blurred overlay behind menu</span><span class="feat-desc">Rest of page blurs when open</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-partial">~ Dim only</span></td>
+          <td><span class="s s-partial">~ Dim only</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+
+        <!-- SEARCH -->
+        <tr class="cat-row"><td colspan="5">🔍 Search Experience</td></tr>
+        <tr>
+          <td><span class="feat-name">Predictive / live search results</span><span class="feat-desc">Results appear as you type</span></td>
+          <td><span class="s s-no">✗ MISSING</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Full-screen overlay search</span><span class="feat-desc">Cinematic search experience</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-partial">~ Dropdown</span></td>
+          <td><span class="s s-partial">~ Dropdown</span></td>
+          <td><span class="s s-partial">~ Dropdown</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Large italic serif input</span><span class="feat-desc">50px+ search input with italic placeholder</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Trending categories chips</span><span class="feat-desc">Visual category shortcuts in search</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-partial">~ Text list</span></td>
+          <td><span class="s s-partial">~ Text list</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Popular search tags</span><span class="feat-desc">Clickable suggested searches</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Product image results in search</span><span class="feat-desc">Products with images appear as you type</span></td>
+          <td><span class="s s-no">✗ MISSING</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Keyboard navigation (Esc/Enter)</span><span class="feat-desc">Keyboard accessible search</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+
+        <!-- CART -->
+        <tr class="cat-row"><td colspan="5">🛒 Cart Experience</td></tr>
+        <tr>
+          <td><span class="feat-name">Slide-out cart drawer</span><span class="feat-desc">Cart opens from right side, no page change</span></td>
+          <td><span class="s s-no">✗ MISSING</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-partial">~ Optional</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Cart badge with item count</span><span class="feat-desc">Number of items shown on icon</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Badge pop animation on add</span><span class="feat-desc">Badge bounces when item added</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Quick buy / Add to cart from nav</span><span class="feat-desc">Add products without going to product page</span></td>
+          <td><span class="s s-no">✗ Missing</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Free shipping progress bar</span><span class="feat-desc">"₹X more for free shipping" in cart</span></td>
+          <td><span class="s s-no">✗ MISSING</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+
+        <!-- ICONS & RIGHT SIDE -->
+        <tr class="cat-row"><td colspan="5">⚙️ Right-Side Icons</td></tr>
+        <tr>
+          <td><span class="feat-name">Wishlist icon in header</span><span class="feat-desc">Heart icon with saved item count</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-partial">~ Via app</span></td>
+          <td><span class="s s-partial">~ Via app</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Currency selector</span><span class="feat-desc">Change display currency</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Language selector</span><span class="feat-desc">Switch store language</span></td>
+          <td><span class="s s-no">✗ Missing</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Magnetic button effect</span><span class="feat-desc">Icons follow cursor magnetically</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Custom cursor system</span><span class="feat-desc">Branded dot + ring cursor</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+
+        <!-- MOBILE -->
+        <tr class="cat-row"><td colspan="5">📱 Mobile Header</td></tr>
+        <tr>
+          <td><span class="feat-name">Animated hamburger</span><span class="feat-desc">3 lines animate to X</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Circle-wipe menu animation</span><span class="feat-desc">Clip-path circle reveal from corner</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ Slide</span></td>
+          <td><span class="s s-no">✗ Slide</span></td>
+          <td><span class="s s-no">✗ Slide</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Staggered link entrance in mobile menu</span><span class="feat-desc">Links appear one by one</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Bottom tab bar (mobile)</span><span class="feat-desc">Home/Shop/Cart/Wishlist/Account tabs</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+          <td><span class="s s-partial">~ Optional</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Search in mobile menu</span><span class="feat-desc">Search bar inside the mobile drawer</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Sub-menu expandable in mobile</span><span class="feat-desc">Tap to expand sub-categories</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Sign In / Register in mobile menu</span><span class="feat-desc">Account actions inside mobile drawer</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+          <td><span class="s s-yes">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td><span class="feat-name">Frosted glass nav on scroll (mobile)</span><span class="feat-desc">Backdrop blur when scrolled</span></td>
+          <td><span class="s s-plus">✦ Better</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+          <td><span class="s s-partial">~ Basic</span></td>
+          <td><span class="s s-no">✗ No</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+    </div>
+
+    <p style="font-size:11px;color:rgba(10,10,10,.35);margin-top:12px;letter-spacing:.04em;">
+      ✦ Better = Kvastram exceeds Shopify standard &nbsp;|&nbsp;
+      ✓ Yes = Feature present &nbsp;|&nbsp;
+      ~ Partial = Feature present but basic &nbsp;|&nbsp;
+      ✗ Missing = Feature not present
+    </p>
+  </div>
+</section>
+
+<!-- ═══ WHAT'S GOOD VS MISSING ═══ -->
+<section style="background:var(--parch);padding:72px 0;">
+  <div class="container">
+    <span class="section-label">The Reality Check</span>
+    <h2 class="section-title">Where We <em>Win</em> & What We <em>Need</em></h2>
+    <p class="section-sub">Honest assessment — where Kvastram header beats Shopify, and the 5 gaps that affect conversions.</p>
+
+    <div class="two-col">
+      <!-- WINS -->
+      <div class="col-card dark">
+        <p class="col-title">✦ Where Kvastram BEATS Shopify Prestige</p>
+        <ul class="feature-list">
+          <li><span class="fi">🎬</span><div><strong style="color:var(--cream)">Cinematic animations</strong><br>Spring physics, staggered entrances, clip-path reveals — Prestige has basic fades. We have motion design.</div></li>
+          <li><span class="fi">🖱️</span><div><strong style="color:var(--cream)">Custom cursor system</strong><br>Branded dot + ring cursor with blend-mode. Zero Shopify themes have this. Instantly feels premium.</div></li>
+          <li><span class="fi">🧲</span><div><strong style="color:var(--cream)">Magnetic button interactions</strong><br>Icons follow your cursor. Feels alive. Shopify themes feel static in comparison.</div></li>
+          <li><span class="fi">🔍</span><div><strong style="color:var(--cream)">Full-screen cinematic search</strong><br>52px serif italic input, trending chips, category visuals. Prestige uses a boring dropdown box.</div></li>
+          <li><span class="fi">📱</span><div><strong style="color:var(--cream)">Circle-wipe mobile menu</strong><br>Clip-path animation from hamburger position. No Shopify theme has this. It's the first thing users notice.</div></li>
+          <li><span class="fi">📊</span><div><strong style="color:var(--cream)">Scroll progress line in nav</strong><br>Subtle reading indicator. Prestige/Impulse/Dawn — none of them have this.</div></li>
+          <li><span class="fi">📱</span><div><strong style="color:var(--cream)">Bottom tab bar on mobile</strong><br>Thumb-friendly navigation. Only Impulse has a partial version. We built it from scratch.</div></li>
+          <li><span class="fi">🏷</span><div><strong style="color:var(--cream)">Animated ticker (not static)</strong><br>Scrolling announcement bar with pause on hover. Every Shopify theme has static bars.</div></li>
+        </ul>
+      </div>
+      <!-- MISSING -->
+      <div class="col-card light">
+        <p class="col-title" style="color:#c0392b;">✗ What's Missing (Affects Conversions)</p>
+        <ul class="feature-list">
+          <li><span class="fi">🛒</span><div><strong>Slide-out cart drawer</strong><br>This is the #1 conversion feature. Users add to cart without leaving the page. Every premium Shopify theme has this. We send users to a cart page — that's 1 extra step = lost sales.</div></li>
+          <li><span class="fi">🔍</span><div><strong>Predictive search with product images</strong><br>As you type "pashmina", actual products appear with images and prices. Prestige & Impulse both have this. We show trending tags but no live results.</div></li>
+          <li><span class="fi">🚢</span><div><strong>Free shipping progress bar</strong><br>"Add ₹450 more for free shipping" inside the cart. This is a proven AOV booster. Prestige & Impulse both have it built-in.</div></li>
+          <li><span class="fi">🌐</span><div><strong>Language selector</strong><br>For international customers. Prestige & Impulse have native multi-language support. Missing from our header.</div></li>
+          <li><span class="fi">🖼</span><div><strong>Logo image (not text)</strong><br>Currently Kvastram wordmark is CSS text. Real Shopify stores use an image/SVG logo so it's consistent across all fonts and devices.</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRIORITY FIX LIST ═══ -->
+<section>
+  <div class="container">
+    <span class="section-label">Action Plan</span>
+    <h2 class="section-title">5 Things to Build <em>Next</em></h2>
+    <p class="section-sub">Ranked by conversion impact. Build these and Kvastram header will be genuinely better than any paid Shopify theme.</p>
+
+    <div class="priority-list">
+      <div class="pri-item">
+        <div class="pri-num">01</div>
+        <div class="pri-text">
+          <div class="pri-name">🛒 Slide-Out Cart Drawer</div>
+          <div class="pri-why">Right-side drawer with product list, quantity controls, subtotal, free shipping bar, and checkout button. No page reload. #1 conversion feature in all ecommerce.</div>
+        </div>
+        <span class="pri-impact impact-h">🔥 High Impact</span>
+        <span class="pri-effort">~6 hrs dev</span>
+      </div>
+      <div class="pri-item">
+        <div class="pri-num">02</div>
+        <div class="pri-text">
+          <div class="pri-name">🔍 Predictive Search Results</div>
+          <div class="pri-why">As user types, show matching products with image + name + price. Reduces search abandonment by 40%. Connect to your product API.</div>
+        </div>
+        <span class="pri-impact impact-h">🔥 High Impact</span>
+        <span class="pri-effort">~4 hrs dev</span>
+      </div>
+      <div class="pri-item">
+        <div class="pri-num">03</div>
+        <div class="pri-text">
+          <div class="pri-name">🚢 Free Shipping Progress Bar</div>
+          <div class="pri-why">Inside cart drawer: "₹850 more for free shipping → [████░░] 65%". Increases average order value by 15-20%. Easy to implement once cart drawer exists.</div>
+        </div>
+        <span class="pri-impact impact-m">⚡ Med Impact</span>
+        <span class="pri-effort">~2 hrs dev</span>
+      </div>
+      <div class="pri-item">
+        <div class="pri-num">04</div>
+        <div class="pri-text">
+          <div class="pri-name">❌ Dismissible Ticker Bar</div>
+          <div class="pri-why">Let users close the announcement bar. Store preference in localStorage. Small UX touch that reduces friction on repeat visits.</div>
+        </div>
+        <span class="pri-impact impact-l">✓ Low Impact</span>
+        <span class="pri-effort">~30 min dev</span>
+      </div>
+      <div class="pri-item">
+        <div class="pri-num">05</div>
+        <div class="pri-text">
+          <div class="pri-name">🌐 Language / Region Selector</div>
+          <div class="pri-why">Dropdown with IN / UK / US flags + currency. Important for Kvastram's international customers. Integrates with your existing currency selector.</div>
+        </div>
+        <span class="pri-impact impact-l">✓ Low Impact</span>
+        <span class="pri-effort">~2 hrs dev</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL VERDICT ═══ -->
+<div class="verdict-big">
+  <div class="vb-left">
+    <div class="vb-score">8.2</div>
+    <div class="vb-label">Out of 10 vs Shopify Standards</div>
+    <div style="margin-top:36px;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(248,246,243,.08);">
+        <span style="font-size:11px;color:rgba(248,246,243,.4);letter-spacing:.1em;">Design & Motion</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--gold);">9.5 / 10</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(248,246,243,.08);">
+        <span style="font-size:11px;color:rgba(248,246,243,.4);letter-spacing:.1em;">Mobile Experience</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--gold);">8.5 / 10</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(248,246,243,.08);">
+        <span style="font-size:11px;color:rgba(248,246,243,.4);letter-spacing:.1em;">E-commerce Features</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:#e67e22;">6.5 / 10</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+        <span style="font-size:11px;color:rgba(248,246,243,.4);letter-spacing:.1em;">Search UX</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:#e67e22;">7.5 / 10</span>
+      </div>
+    </div>
+  </div>
+  <div class="vb-right">
+    <h2 class="vb-title">Design mein<br><em>Shopify se aage</em> —<br>features mein thoda peeche</h2>
+    <p>Kvastram header ka visual design, animation system, aur mobile experience — yeh sab Prestige aur Impulse se genuinely better hain. Custom cursor, circle-wipe menu, magnetic buttons, cinematic search — $400 Shopify themes mein se kisi mein bhi yeh nahi hai.</p>
+    <p>Lekin ecommerce ke 3 core features missing hain: <strong style="color:var(--cream)">cart drawer</strong>, <strong style="color:var(--cream)">predictive search</strong>, aur <strong style="color:var(--cream)">free shipping bar</strong>. Yeh sirf design nahi — yeh conversion tools hain. Inhe build karo aur Kvastram 9.5/10 ho jayega.</p>
+    <div class="vb-note">
+      <strong style="color:rgba(248,246,243,.6);">Bottom line:</strong> Agar koi customer site dekhe sirf design ke basis pe — Kvastram wins. Agar wohi customer add-to-cart click kare — abhi friction hai. Cart drawer pehle banao. Baaki sab baad mein.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

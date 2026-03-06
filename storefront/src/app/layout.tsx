@@ -14,6 +14,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Analytics } from '@/components/Analytics';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
+import { CookieConsent } from '@/components/ui/CookieConsent';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -73,11 +74,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // generate CSRF token on server and embed in meta
+  const csrfToken = await import('@/lib/csrf').then(m => m.CsrfManager.getServerToken());
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -86,6 +89,8 @@ export default function RootLayout({
           rel="preconnect"
           href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}
         />
+        {/* CSRF token for client-side requests */}
+        {csrfToken && <meta name="csrf-token" content={csrfToken} />}
         <link
           rel="preconnect"
           href="https://res.cloudinary.com"
@@ -153,6 +158,8 @@ export default function RootLayout({
           </NotificationProvider>
         </ErrorBoundary>
         <Analytics />
+        {/* consent banner shown client-side */}
+        <CookieConsent />
       </body>
     </html>
   );

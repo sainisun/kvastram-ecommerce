@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShop } from '@/context/shop-context';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
@@ -16,7 +16,7 @@ interface ProductGridProps {
   loading?: boolean;
 }
 
-export default function ProductGrid({
+function ProductGrid({
   initialProducts = [],
   loading: externalLoading,
 }: ProductGridProps) {
@@ -396,3 +396,5 @@ export default function ProductGrid({
     </div>
   );
 }
+
+export default React.memo(ProductGrid);
