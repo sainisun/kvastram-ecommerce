@@ -26,6 +26,10 @@ export default function HomeSectionsClient({
 }: Props) {
   return (
     <>
+      <div style={{ color: 'red', textAlign: 'center', padding: '20px' }}>
+        DEBUG: Products: {products?.length}, Collections: {collections?.length},
+        Testimonials: {testimonialsList?.length}
+      </div>
       <FeaturedProductsSection
         products={products}
         featuredProductIds={featuredProductIds}
