@@ -108,6 +108,13 @@ export default function CollectionsPage() {
         </button>
       </div>
 
+      {/* Clarification Banner */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+        <p className="text-sm text-amber-900">
+          <strong>What are Collections?</strong> Collections are editorial or seasonal groupings of products created for marketing campaigns and storytelling. They don't affect navigation but help you organize and promote curated product selections.
+        </p>
+      </div>
+
       {showForm && (
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
           <h2 className="text-lg font-bold text-gray-800 mb-4">

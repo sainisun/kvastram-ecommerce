@@ -61,18 +61,18 @@ class EmailService {
       // Assign a placeholder — `ready` will be resolved by initTransporter
       Promise.resolve()
     );
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.SMTP_HOST) {
       instance.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-        secure: true,
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: process.env.SMTP_PORT === '465',
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 10000,
+        connectionTimeout: 5000,
+        greetingTimeout: 5000,
+        socketTimeout: 5000,
       });
     } else {
       await instance.initTransporter();

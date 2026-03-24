@@ -70,6 +70,7 @@ export default function NewProductPage() {
       setRegions(data.regions || []);
     } catch (error) {
       console.error('Failed to load regions');
+      // No rethrow needed since the component handles empty state gracefully
     }
   };
 
@@ -103,20 +104,40 @@ export default function NewProductPage() {
     );
   };
 
+  const toSlug = (text: string) =>
+    text
+      .toLowerCase()
+      .trim()
+      .replaceAll(/[^\w\s-]/g, '') // remove special chars
+      .replaceAll(/[\s_]+/g, '-') // spaces/underscores → hyphens
+      .replaceAll(/-+/g, '-') // collapse multiple hyphens
+      .replaceAll(/(?:^\-+|\-+$)/g, ''); // trim leading/trailing hyphens
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      // Auto-generate handle from title (only if handle is empty or was auto-generated)
+      if (name === 'title') {
+        const currentHandleIsAutoOrEmpty =
+          prev.handle === '' || prev.handle === toSlug(prev.title);
+        if (currentHandleIsAutoOrEmpty) {
+          updated.handle = toSlug(value);
+        }
+      }
+      return updated;
+    });
   };
 
   const handlePriceChange = (regionId: string, value: string) => {
     setPrices((prev) => ({ ...prev, [regionId]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
 
@@ -127,17 +148,17 @@ export default function NewProductPage() {
         .map((r) => ({
           region_id: r.id,
           currency_code: r.currency_code,
-          amount: Math.round(parseFloat(prices[r.id]) * 100), // Convert to cents
+          amount: Math.round(Number.parseFloat(prices[r.id]) * 100), // Convert to cents
         }));
 
       const payload = {
         ...formData,
-        weight: formData.weight ? parseInt(formData.weight) : undefined,
-        length: formData.length ? parseInt(formData.length) : undefined,
-        height: formData.height ? parseInt(formData.height) : undefined,
-        width: formData.width ? parseInt(formData.width) : undefined,
+        weight: formData.weight ? Number.parseInt(formData.weight) : undefined,
+        length: formData.length ? Number.parseInt(formData.length) : undefined,
+        height: formData.height ? Number.parseInt(formData.height) : undefined,
+        width: formData.width ? Number.parseInt(formData.width) : undefined,
         inventory_quantity: formData.inventory_quantity
-          ? parseInt(formData.inventory_quantity)
+          ? Number.parseInt(formData.inventory_quantity)
           : 0,
         prices: formattedPrices,
         images: images.map((img, idx) => ({
@@ -211,10 +232,14 @@ export default function NewProductPage() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Product Title
                 </label>
                 <input
+                  id="title"
                   type="text"
                   name="title"
                   value={formData.title}
@@ -225,10 +250,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="subtitle"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Subtitle
                 </label>
                 <input
+                  id="subtitle"
                   type="text"
                   name="subtitle"
                   value={formData.subtitle}
@@ -238,10 +267,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="inventory_quantity"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Inventory Quantity
                 </label>
                 <input
+                  id="inventory_quantity"
                   type="number"
                   name="inventory_quantity"
                   value={formData.inventory_quantity}
@@ -251,10 +284,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description
                 </label>
                 <textarea
+                  id="description"
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
@@ -264,10 +301,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="size_guide"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Size Guide
                 </label>
                 <textarea
+                  id="size_guide"
                   name="size_guide"
                   value={formData.size_guide || ''}
                   onChange={handleChange}
@@ -277,10 +318,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="care_instructions"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Care Instructions
                 </label>
                 <textarea
+                  id="care_instructions"
                   name="care_instructions"
                   value={formData.care_instructions || ''}
                   onChange={handleChange}
@@ -321,13 +366,18 @@ export default function NewProductPage() {
                   </div>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">
-                      {region.currency_code === 'usd'
-                        ? '$'
-                        : region.currency_code === 'eur'
-                          ? '€'
-                          : region.currency_code === 'inr'
-                            ? '₹'
-                            : region.currency_code.toUpperCase()}
+                      {(() => {
+                        switch (region.currency_code) {
+                          case 'usd':
+                            return '$';
+                          case 'eur':
+                            return '€';
+                          case 'inr':
+                            return '₹';
+                          default:
+                            return region.currency_code.toUpperCase();
+                        }
+                      })()}
                     </span>
                     <input
                       type="number"
@@ -356,10 +406,14 @@ export default function NewProductPage() {
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label
+                  htmlFor="weight"
+                  className="block text-xs font-medium text-gray-500 mb-1"
+                >
                   Weight (g)
                 </label>
                 <input
+                  id="weight"
                   type="number"
                   name="weight"
                   value={formData.weight}
@@ -368,10 +422,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label
+                  htmlFor="length"
+                  className="block text-xs font-medium text-gray-500 mb-1"
+                >
                   Length (cm)
                 </label>
                 <input
+                  id="length"
                   type="number"
                   name="length"
                   value={formData.length}
@@ -380,10 +438,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label
+                  htmlFor="width"
+                  className="block text-xs font-medium text-gray-500 mb-1"
+                >
                   Width (cm)
                 </label>
                 <input
+                  id="width"
                   type="number"
                   name="width"
                   value={formData.width}
@@ -392,10 +454,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label
+                  htmlFor="height"
+                  className="block text-xs font-medium text-gray-500 mb-1"
+                >
                   Height (cm)
                 </label>
                 <input
+                  id="height"
                   type="number"
                   name="height"
                   value={formData.height}
@@ -406,10 +472,14 @@ export default function NewProductPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="hs_code"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   HS Code
                 </label>
                 <input
+                  id="hs_code"
                   type="text"
                   name="hs_code"
                   value={formData.hs_code}
@@ -418,10 +488,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="origin_country"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Origin Country
                 </label>
                 <input
+                  id="origin_country"
                   type="text"
                   name="origin_country"
                   value={formData.origin_country}
@@ -431,10 +505,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="material"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Material
                 </label>
                 <input
+                  id="material"
                   type="text"
                   name="material"
                   value={formData.material}
@@ -452,10 +530,14 @@ export default function NewProductPage() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="seo_title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Page Title (SEO)
                 </label>
                 <input
+                  id="seo_title"
                   type="text"
                   name="seo_title"
                   value={formData.seo_title || ''}
@@ -465,10 +547,14 @@ export default function NewProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="seo_description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Meta Description
                 </label>
                 <textarea
+                  id="seo_description"
                   name="seo_description"
                   value={formData.seo_description || ''}
                   onChange={handleChange}
@@ -495,10 +581,14 @@ export default function NewProductPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Status
                 </label>
                 <select
+                  id="status"
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
@@ -512,10 +602,14 @@ export default function NewProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="sku"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   SKU
                 </label>
                 <input
+                  id="sku"
                   type="text"
                   name="sku"
                   value={formData.sku}
@@ -529,10 +623,14 @@ export default function NewProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="collection"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Collection
                 </label>
                 <select
+                  id="collection"
                   value={selectedCollectionId}
                   onChange={(e) => setSelectedCollectionId(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
@@ -547,7 +645,10 @@ export default function NewProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="handle"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   URL Handle
                 </label>
                 <div className="flex">
@@ -555,6 +656,7 @@ export default function NewProductPage() {
                     /products/
                   </span>
                   <input
+                    id="handle"
                     type="text"
                     name="handle"
                     value={formData.handle}
@@ -576,10 +678,16 @@ export default function NewProductPage() {
 
             {/* Categories */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="categories-list"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Categories
               </label>
-              <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
+              <div
+                id="categories-list"
+                className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2"
+              >
                 {categories.length === 0 ? (
                   <p className="text-sm text-gray-500">No categories found.</p>
                 ) : (
@@ -606,10 +714,13 @@ export default function NewProductPage() {
 
             {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="tags-list"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Tags
               </label>
-              <div className="flex flex-wrap gap-2">
+              <div id="tags-list" className="flex flex-wrap gap-2">
                 {tags.length === 0 ? (
                   <p className="text-sm text-gray-500">No tags found.</p>
                 ) : (

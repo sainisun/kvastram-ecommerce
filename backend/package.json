@@ -12,7 +12,8 @@
     "start:prod": "NODE_ENV=production node dist/index.js",
     "generate": "drizzle-kit generate:pg",
     "migrate": "tsx src/db/migrate.ts",
-    "migrate:prod": "NODE_ENV=production tsx src/db/migrate.ts"
+    "migrate:prod": "NODE_ENV=production tsx src/db/migrate.ts",
+    "seed:tags": "tsx scripts/seed-default-tags.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",

@@ -16,8 +16,8 @@ import {
 } from 'lucide-react';
 
 interface CartDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
 }
 
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
@@ -77,8 +77,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   return (
     <>
       {/* Backdrop */}
-      <div
-        className={`fixed inset-0 z-[60] transition-all duration-300 ${
+      <button
+        type="button"
+        className={`fixed inset-0 z-[60] transition-all duration-300 border-none outline-none p-0 cursor-default ${
           isOpen
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
@@ -87,7 +88,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         onKeyDown={(e) => {
           if (e.key === 'Escape') onClose();
         }}
-        role="button"
         tabIndex={isOpen ? 0 : -1}
         style={{
           backgroundColor: 'rgba(8, 8, 8, 0.4)',
@@ -99,13 +99,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       />
 
       {/* Drawer Panel */}
-      <div
+      <aside
         ref={drawerRef}
         className={`fixed top-0 right-0 h-full w-full sm:w-[400px] z-[61] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
-        role="dialog"
-        aria-modal="true"
         aria-label="Shopping cart"
       >
         {/* Header */}
@@ -339,7 +337,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
           </div>
         )}
-      </div>
+      </aside>
     </>
   );
 }

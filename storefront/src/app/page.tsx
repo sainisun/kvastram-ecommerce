@@ -187,8 +187,6 @@ export default async function Home() {
             homepageSettings={homepageSettings}
             testimonialsList={testimonialsList}
             collections={collections}
-            categories={categories}
-            categoryImages={categoryImages}
           />
 
           {/* ═══ DIVIDER ═══ */}

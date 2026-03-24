@@ -6,7 +6,6 @@ import { api } from '@/lib/api';
 import {
   ArrowLeft,
   Save,
-  Globe,
   DollarSign,
   Plus,
   Trash2,
@@ -189,13 +188,35 @@ export default function EditProductPage() {
     }
   };
 
+  const toSlug = (text: string) =>
+    text
+      .toLowerCase()
+      .trim()
+      .replaceAll(/[^\w\s-]/g, '')
+      .replaceAll(/[\s_]+/g, '-')
+      .replaceAll(/-+/g, '-')
+      .replaceAll(/(?:^\-+|\-+$)/g, '');
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+
+      // Auto-update handle if title changes, but only if it wasn't manually customized
+      if (name === 'title') {
+        const currentHandleIsAutoOrEmpty =
+          prev.handle === '' || prev.handle === toSlug(prev.title);
+        if (currentHandleIsAutoOrEmpty) {
+          updated.handle = toSlug(value);
+        }
+      }
+
+      return updated;
+    });
   };
 
   const handlePriceChange = (regionId: string, value: string) => {
@@ -221,9 +242,9 @@ export default function EditProductPage() {
       await api.createVariant(id, {
         title: newVariant.title,
         sku: newVariant.sku || undefined,
-        inventory_quantity: parseInt(newVariant.inventory_quantity) || 0,
+        inventory_quantity: Number.parseInt(newVariant.inventory_quantity) || 0,
         compare_at_price: newVariant.compare_at_price
-          ? Math.round(parseFloat(newVariant.compare_at_price) * 100)
+          ? Math.round(Number.parseFloat(newVariant.compare_at_price) * 100)
           : undefined,
         option_values: (newVariant as any).option_values || [],
       });
@@ -274,7 +295,7 @@ export default function EditProductPage() {
     variantId: string,
     val: string
   ) => {
-    const cents = val ? Math.round(parseFloat(val) * 100) : null;
+    const cents = val ? Math.round(Number.parseFloat(val) * 100) : null;
     try {
       await api.updateVariant(id, variantId, { compare_at_price: cents });
       setVariants((prev) =>
@@ -345,7 +366,7 @@ export default function EditProductPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
 
@@ -356,24 +377,16 @@ export default function EditProductPage() {
         .map((r) => ({
           region_id: r.id,
           currency_code: r.currency_code,
-          amount: Math.round(parseFloat(prices[r.id]) * 100), // Convert to cents
+          amount: Math.round(Number.parseFloat(prices[r.id]) * 100), // Convert to cents
         }));
 
       const payload = {
         ...formData,
-        weight: formData.weight
-          ? parseInt(formData.weight as string)
-          : undefined,
-        length: formData.length
-          ? parseInt(formData.length as string)
-          : undefined,
-        height: formData.height
-          ? parseInt(formData.height as string)
-          : undefined,
-        width: formData.width ? parseInt(formData.width as string) : undefined,
-        inventory_quantity: formData.inventory_quantity
-          ? parseInt(formData.inventory_quantity as string)
-          : 0,
+        weight: formData.weight ? Number.parseInt(formData.weight) : undefined,
+        length: formData.length ? Number.parseInt(formData.length) : undefined,
+        height: formData.height ? Number.parseInt(formData.height) : undefined,
+        width: formData.width ? Number.parseInt(formData.width) : undefined,
+        inventory_quantity: Number.parseInt(formData.inventory_quantity || '0'),
         prices: formattedPrices,
         images: images.map((img, idx) => ({
           url: img.url,
@@ -444,10 +457,14 @@ export default function EditProductPage() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Product Title
                 </label>
                 <input
+                  id="title"
                   type="text"
                   name="title"
                   value={formData.title}
@@ -458,10 +475,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="subtitle"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Subtitle
                 </label>
                 <input
+                  id="subtitle"
                   type="text"
                   name="subtitle"
                   value={formData.subtitle}
@@ -471,10 +492,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="inventory_quantity"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Inventory Quantity
                 </label>
                 <input
+                  id="inventory_quantity"
                   type="number"
                   name="inventory_quantity"
                   value={formData.inventory_quantity}
@@ -484,10 +509,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Description
                 </label>
                 <textarea
+                  id="description"
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
@@ -497,10 +526,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="size_guide"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Size Guide
                 </label>
                 <textarea
+                  id="size_guide"
                   name="size_guide"
                   value={formData.size_guide || ''}
                   onChange={handleChange}
@@ -510,10 +543,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="care_instructions"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Care Instructions
                 </label>
                 <textarea
+                  id="care_instructions"
                   name="care_instructions"
                   value={formData.care_instructions || ''}
                   onChange={handleChange}
@@ -554,13 +591,18 @@ export default function EditProductPage() {
                   </div>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">
-                      {region.currency_code === 'usd'
-                        ? '$'
-                        : region.currency_code === 'eur'
-                          ? '€'
-                          : region.currency_code === 'inr'
-                            ? '₹'
-                            : region.currency_code.toUpperCase()}
+                      {(() => {
+                        switch (region.currency_code) {
+                          case 'usd':
+                            return '$';
+                          case 'eur':
+                            return '€';
+                          case 'inr':
+                            return '₹';
+                          default:
+                            return region.currency_code.toUpperCase();
+                        }
+                      })()}
                     </span>
                     <input
                       type="number"
@@ -608,10 +650,13 @@ export default function EditProductPage() {
 
             {/* Quick Add Preset Sizes */}
             <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label
+                htmlFor="quick-add"
+                className="block text-xs font-medium text-gray-500 mb-2"
+              >
                 Quick Add Sizes:
               </label>
-              <div className="flex flex-wrap gap-2">
+              <div id="quick-add" className="flex flex-wrap gap-2">
                 {PRESET_SIZES.map((size) => {
                   const exists = variants.some((v) => v.title === size);
                   return (
@@ -693,12 +738,22 @@ export default function EditProductPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                   {options.map((opt) => (
                     <div key={opt.id}>
-                      <label className="block text-xs text-gray-600 mb-1">
+                      <label
+                        htmlFor={`opt-${opt.id}`}
+                        className="block text-xs text-gray-600 mb-1"
+                      >
                         {opt.title}
                       </label>
                       <input
+                        id={`opt-${opt.id}`}
                         type="text"
-                        placeholder={`e.g. ${opt.title === 'Size' ? 'XL' : opt.title === 'Color' ? 'Red' : 'Value'}`}
+                        placeholder={`e.g. ${
+                          opt.title === 'Size'
+                            ? 'XL'
+                            : opt.title === 'Color'
+                              ? 'Red'
+                              : 'Value'
+                        }`}
                         onChange={(e) => {
                           const currentValues =
                             (newVariant as any).option_values || [];
@@ -725,10 +780,14 @@ export default function EditProductPage() {
                 </div>
                 <div className="grid grid-cols-4 gap-3">
                   <div>
-                    <label className="block text-xs text-gray-600 mb-1">
+                    <label
+                      htmlFor="new_variant_title"
+                      className="block text-xs text-gray-600 mb-1"
+                    >
                       Variant Title *
                     </label>
                     <input
+                      id="new_variant_title"
                       type="text"
                       value={newVariant.title}
                       onChange={(e) =>
@@ -739,10 +798,14 @@ export default function EditProductPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 mb-1">
+                    <label
+                      htmlFor="new_variant_sku"
+                      className="block text-xs text-gray-600 mb-1"
+                    >
                       SKU
                     </label>
                     <input
+                      id="new_variant_sku"
                       type="text"
                       value={newVariant.sku}
                       onChange={(e) =>
@@ -753,10 +816,14 @@ export default function EditProductPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 mb-1">
+                    <label
+                      htmlFor="new_variant_inventory"
+                      className="block text-xs text-gray-600 mb-1"
+                    >
                       Inventory
                     </label>
                     <input
+                      id="new_variant_inventory"
                       type="number"
                       value={newVariant.inventory_quantity}
                       onChange={(e) =>
@@ -769,10 +836,14 @@ export default function EditProductPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 mb-1">
+                    <label
+                      htmlFor="new_variant_compare_price"
+                      className="block text-xs text-gray-600 mb-1"
+                    >
                       Compare Price
                     </label>
                     <input
+                      id="new_variant_compare_price"
                       type="number"
                       value={newVariant.compare_at_price}
                       onChange={(e) =>
@@ -846,7 +917,7 @@ export default function EditProductPage() {
                             onChange={(e) =>
                               handleUpdateVariantInventory(
                                 v.id,
-                                parseInt(e.target.value) || 0
+                                Number.parseInt(e.target.value) || 0
                               )
                             }
                             className="w-20 text-center px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none"
@@ -908,10 +979,14 @@ export default function EditProductPage() {
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label
+                  htmlFor="weight"
+                  className="block text-xs font-medium text-gray-500 mb-1"
+                >
                   Weight (g)
                 </label>
                 <input
+                  id="weight"
                   type="number"
                   name="weight"
                   value={formData.weight}
@@ -920,10 +995,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label
+                  htmlFor="length"
+                  className="block text-xs font-medium text-gray-500 mb-1"
+                >
                   Length (cm)
                 </label>
                 <input
+                  id="length"
                   type="number"
                   name="length"
                   value={formData.length}
@@ -932,10 +1011,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label
+                  htmlFor="width"
+                  className="block text-xs font-medium text-gray-500 mb-1"
+                >
                   Width (cm)
                 </label>
                 <input
+                  id="width"
                   type="number"
                   name="width"
                   value={formData.width}
@@ -944,10 +1027,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
+                <label
+                  htmlFor="height"
+                  className="block text-xs font-medium text-gray-500 mb-1"
+                >
                   Height (cm)
                 </label>
                 <input
+                  id="height"
                   type="number"
                   name="height"
                   value={formData.height}
@@ -958,10 +1045,14 @@ export default function EditProductPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="hs_code"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   HS Code
                 </label>
                 <input
+                  id="hs_code"
                   type="text"
                   name="hs_code"
                   value={formData.hs_code}
@@ -970,10 +1061,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="origin_country"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Origin Country
                 </label>
                 <input
+                  id="origin_country"
                   type="text"
                   name="origin_country"
                   value={formData.origin_country}
@@ -983,10 +1078,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="material"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Material
                 </label>
                 <input
+                  id="material"
                   type="text"
                   name="material"
                   value={formData.material}
@@ -1003,10 +1102,14 @@ export default function EditProductPage() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="seo_title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Page Title (SEO)
                 </label>
                 <input
+                  id="seo_title"
                   type="text"
                   name="seo_title"
                   value={formData.seo_title || ''}
@@ -1016,10 +1119,14 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="seo_description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Meta Description
                 </label>
                 <textarea
+                  id="seo_description"
                   name="seo_description"
                   value={formData.seo_description || ''}
                   onChange={handleChange}
@@ -1046,10 +1153,14 @@ export default function EditProductPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Status
                 </label>
                 <select
+                  id="status"
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
@@ -1063,7 +1174,10 @@ export default function EditProductPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="handle"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   URL Handle
                 </label>
                 <div className="flex">
@@ -1071,6 +1185,7 @@ export default function EditProductPage() {
                     /products/
                   </span>
                   <input
+                    id="handle"
                     type="text"
                     name="handle"
                     value={formData.handle}
@@ -1092,10 +1207,16 @@ export default function EditProductPage() {
 
             {/* Categories */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="categories-list"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Categories
               </label>
-              <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2">
+              <div
+                id="categories-list"
+                className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 space-y-2"
+              >
                 {categories.length === 0 ? (
                   <p className="text-sm text-gray-500">No categories found.</p>
                 ) : (
@@ -1122,10 +1243,13 @@ export default function EditProductPage() {
 
             {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="tags-list"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Tags
               </label>
-              <div className="flex flex-wrap gap-2">
+              <div id="tags-list" className="flex flex-wrap gap-2">
                 {tags.length === 0 ? (
                   <p className="text-sm text-gray-500">No tags found.</p>
                 ) : (

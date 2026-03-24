@@ -15,6 +15,10 @@ import {
   X,
   Home,
   MessageCircle,
+  Layers,
+  Edit,
+  Trash2,
+  Plus,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -35,6 +39,23 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<any>({});
   const [user, setUser] = useState<any>(null);
+
+  // Tiers State
+  const [tiers, setTiers] = useState<any[]>([]);
+  const [tiersLoading, setTiersLoading] = useState(false);
+  const [showTierForm, setShowTierForm] = useState(false);
+  const [editingTierId, setEditingTierId] = useState<string | null>(null);
+  const [tierFormData, setTierFormData] = useState({
+    name: '',
+    slug: '',
+    discount_percent: 0,
+    min_order_value: 0,
+    min_order_quantity: 0,
+    payment_terms: '',
+    color: '#3B82F6',
+    priority: 0,
+    is_active: true,
+  });
 
   // Stripe Modal State
   const [showStripeModal, setShowStripeModal] = useState(false);
@@ -313,6 +334,7 @@ export default function SettingsPage() {
     { id: 'payment', label: 'Payment', icon: CreditCard },
     { id: 'email', label: 'Email', icon: Mail },
     { id: 'shipping', label: 'Shipping', icon: Truck },
+    { id: 'tiers', label: 'Tiers', icon: Layers },
   ];
 
   if (loading) {
@@ -1364,6 +1386,29 @@ export default function SettingsPage() {
                     </div>
                   </div>
 
+                  {/* Reply-To Email */}
+                  <div>
+                    <label
+                      htmlFor="email_reply_to"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Reply-To Email
+                    </label>
+                    <input
+                      id="email_reply_to"
+                      type="email"
+                      value={settings.email_reply_to || ''}
+                      onChange={(e) =>
+                        handleChange('email_reply_to', e.target.value)
+                      }
+                      placeholder="hello@kvastram.com"
+                      className="w-full lg:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Customer replies will be sent to this address
+                    </p>
+                  </div>
+
                   <div className="border-t border-gray-200 pt-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">
                       SMTP Configuration
@@ -1449,6 +1494,196 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Email Notification Toggles */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      Email Notifications
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Choose which emails are sent automatically to customers
+                    </p>
+
+                    <div className="space-y-3">
+                      {[
+                        {
+                          key: 'email_notify_order_confirm',
+                          label: 'Order Confirmation',
+                          desc: 'Send email when a new order is placed',
+                        },
+                        {
+                          key: 'email_notify_payment',
+                          label: 'Payment Received',
+                          desc: 'Send email when payment is confirmed',
+                        },
+                        {
+                          key: 'email_notify_shipping',
+                          label: 'Shipping Update',
+                          desc: 'Send email when order is shipped with tracking info',
+                        },
+                        {
+                          key: 'email_notify_delivery',
+                          label: 'Delivery Confirmed',
+                          desc: 'Send email when order is marked as delivered',
+                        },
+                      ].map((item) => (
+                        <div
+                          key={item.key}
+                          className="flex items-center justify-between bg-gray-50 rounded-lg p-4"
+                        >
+                          <div>
+                            <p className="font-medium text-gray-800">
+                              {item.label}
+                            </p>
+                            <p className="text-sm text-gray-500">{item.desc}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleChange(
+                                item.key,
+                                !(settings as any)[item.key]
+                              )
+                            }
+                            className={`relative w-12 h-6 rounded-full transition-colors ${
+                              (settings as any)[item.key]
+                                ? 'bg-blue-500'
+                                : 'bg-gray-300'
+                            }`}
+                          >
+                            <span
+                              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${
+                                (settings as any)[item.key]
+                                  ? 'translate-x-6'
+                                  : ''
+                              }`}
+                            />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Review Request */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      Review Request
+                    </h3>
+                    <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-3">
+                      <div>
+                        <p className="font-medium text-gray-800">
+                          Send Review Request Email
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Automatically ask customers to review purchased
+                          products
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleChange(
+                            'email_review_request',
+                            !settings.email_review_request
+                          )
+                        }
+                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                          settings.email_review_request
+                            ? 'bg-blue-500'
+                            : 'bg-gray-300'
+                        }`}
+                      >
+                        <span
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${
+                            settings.email_review_request ? 'translate-x-6' : ''
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    {settings.email_review_request && (
+                      <div className="pl-4 border-l-2 border-blue-200">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Send after how many days of delivery?
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={settings.email_review_request_days || 7}
+                          onChange={(e) =>
+                            handleChange(
+                              'email_review_request_days',
+                              parseInt(e.target.value)
+                            )
+                          }
+                          className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Days after delivery confirmation
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Abandoned Cart Recovery */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      Abandoned Cart Recovery
+                    </h3>
+                    <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-3">
+                      <div>
+                        <p className="font-medium text-gray-800">
+                          Send Recovery Email
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Automatically email customers who abandon their cart
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleChange(
+                            'email_abandoned_cart',
+                            !settings.email_abandoned_cart
+                          )
+                        }
+                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                          settings.email_abandoned_cart
+                            ? 'bg-blue-500'
+                            : 'bg-gray-300'
+                        }`}
+                      >
+                        <span
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${
+                            settings.email_abandoned_cart ? 'translate-x-6' : ''
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    {settings.email_abandoned_cart && (
+                      <div className="pl-4 border-l-2 border-blue-200">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Send after how many hours of abandonment?
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="72"
+                          value={settings.email_abandoned_cart_hours || 2}
+                          onChange={(e) =>
+                            handleChange(
+                              'email_abandoned_cart_hours',
+                              parseInt(e.target.value)
+                            )
+                          }
+                          className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Hours after cart was last updated
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -1461,10 +1696,128 @@ export default function SettingsPage() {
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                   <p className="text-sm text-blue-800">
-                    Configure regions where you ship and customize taxes.
+                    Configure shipping origin, rates, free shipping rules, and
+                    shipping zones.
                   </p>
                 </div>
 
+                {/* Shipping Origin Address */}
+                <div className="border-b border-gray-200 pb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Shipping Origin Address
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    The address from which your orders are shipped. Used for
+                    shipping rate calculations.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Street Address
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          (settings.shipping_origin_address as any)?.address ||
+                          ''
+                        }
+                        onChange={(e) =>
+                          handleChange('shipping_origin_address', {
+                            ...((settings.shipping_origin_address as any) ||
+                              {}),
+                            address: e.target.value,
+                          })
+                        }
+                        placeholder="123 Main Street"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        City
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          (settings.shipping_origin_address as any)?.city || ''
+                        }
+                        onChange={(e) =>
+                          handleChange('shipping_origin_address', {
+                            ...((settings.shipping_origin_address as any) ||
+                              {}),
+                            city: e.target.value,
+                          })
+                        }
+                        placeholder="Mumbai"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        State / Province
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          (settings.shipping_origin_address as any)?.state || ''
+                        }
+                        onChange={(e) =>
+                          handleChange('shipping_origin_address', {
+                            ...((settings.shipping_origin_address as any) ||
+                              {}),
+                            state: e.target.value,
+                          })
+                        }
+                        placeholder="Maharashtra"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Country
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          (settings.shipping_origin_address as any)?.country ||
+                          ''
+                        }
+                        onChange={(e) =>
+                          handleChange('shipping_origin_address', {
+                            ...((settings.shipping_origin_address as any) ||
+                              {}),
+                            country: e.target.value,
+                          })
+                        }
+                        placeholder="India"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        PIN / ZIP Code
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          (settings.shipping_origin_address as any)?.pincode ||
+                          ''
+                        }
+                        onChange={(e) =>
+                          handleChange('shipping_origin_address', {
+                            ...((settings.shipping_origin_address as any) ||
+                              {}),
+                            pincode: e.target.value,
+                          })
+                        }
+                        placeholder="400001"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tax Configuration */}
                 <div className="border-b border-gray-200 pb-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">
                     Tax Configuration
@@ -1495,11 +1848,92 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="pt-2">
+                {/* Free Shipping */}
+                <div className="border-b border-gray-200 pb-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    Shipping Zones
+                    Free Shipping
                   </h3>
+                  <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-4">
+                    <div>
+                      <p className="font-medium text-gray-800">
+                        Enable Free Shipping
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Offer free shipping for qualifying orders
+                      </p>
+                    </div>
+                    <button
+                      onClick={() =>
+                        handleChange(
+                          'shipping_free_enabled',
+                          !settings.shipping_free_enabled
+                        )
+                      }
+                      className={`relative w-12 h-6 rounded-full transition-colors ${
+                        settings.shipping_free_enabled
+                          ? 'bg-blue-500'
+                          : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${
+                          settings.shipping_free_enabled ? 'translate-x-6' : ''
+                        }`}
+                      />
+                    </button>
+                  </div>
 
+                  {settings.shipping_free_enabled && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 border-l-2 border-blue-200">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Minimum Order Value (USD)
+                        </label>
+                        <input
+                          type="number"
+                          value={settings.shipping_free_min_value || 100}
+                          onChange={(e) =>
+                            handleChange(
+                              'shipping_free_min_value',
+                              Number.parseFloat(e.target.value)
+                            )
+                          }
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Orders above this amount qualify for free shipping
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Applies To
+                        </label>
+                        <select
+                          value={settings.shipping_free_applies_to || 'all'}
+                          onChange={(e) =>
+                            handleChange(
+                              'shipping_free_applies_to',
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="all">All Orders</option>
+                          <option value="domestic">Domestic Only</option>
+                          <option value="international">
+                            International Only
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Shipping Rates */}
+                <div className="border-b border-gray-200 pb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Default Shipping Rates
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label
@@ -1542,55 +1976,214 @@ export default function SettingsPage() {
                       />
                     </div>
                   </div>
+                </div>
 
-                  <div className="mt-4">
-                    <label
-                      htmlFor="free_shipping_threshold"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                {/* Shipping Zones Table */}
+                <div className="pt-2">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        Shipping Zones
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Define custom zones with specific rates for different
+                        regions
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const zones = Array.isArray(settings.shipping_zones)
+                          ? [...(settings.shipping_zones as any[])]
+                          : [];
+                        zones.push({
+                          id: Date.now().toString(),
+                          name: '',
+                          countries: '',
+                          standard_rate: 0,
+                          express_rate: 0,
+                        });
+                        handleChange('shipping_zones', zones);
+                      }}
+                      className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
                     >
-                      Free Shipping Threshold (USD)
-                    </label>
-                    <input
-                      id="free_shipping_threshold"
-                      type="number"
-                      value={settings.free_shipping_threshold || 100}
-                      onChange={(e) =>
-                        handleChange(
-                          'free_shipping_threshold',
-                          Number.parseFloat(e.target.value)
-                        )
-                      }
-                      className="w-full lg:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Orders above this amount will get free shipping
-                      automatically.
-                    </p>
+                      + Add Zone
+                    </button>
                   </div>
 
-                  <div className="mt-4">
-                    <label
-                      htmlFor="shipping_countries"
-                      className="block text-sm font-medium text-gray-700 mb-2"
-                    >
-                      Allowed Shipping Countries
-                    </label>
-                    <input
-                      id="shipping_countries"
-                      type="text"
-                      value={settings.shipping_countries || 'US, CA'}
-                      onChange={(e) =>
-                        handleChange('shipping_countries', e.target.value)
-                      }
-                      placeholder="US, CA, GB, AU"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Comma-separated two-letter ISO country codes.
-                    </p>
-                  </div>
+                  {Array.isArray(settings.shipping_zones) &&
+                  (settings.shipping_zones as any[]).length > 0 ? (
+                    <div className="border border-gray-200 rounded-lg overflow-hidden">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Zone Name
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Countries
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Standard Rate
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Express Rate
+                            </th>
+                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {(settings.shipping_zones as any[]).map(
+                            (zone: any, index: number) => (
+                              <tr key={zone.id || index}>
+                                <td className="px-4 py-2">
+                                  <input
+                                    type="text"
+                                    value={zone.name || ''}
+                                    onChange={(e) => {
+                                      const zones = [
+                                        ...(settings.shipping_zones as any[]),
+                                      ];
+                                      zones[index] = {
+                                        ...zones[index],
+                                        name: e.target.value,
+                                      };
+                                      handleChange('shipping_zones', zones);
+                                    }}
+                                    placeholder="e.g. South Asia"
+                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  />
+                                </td>
+                                <td className="px-4 py-2">
+                                  <input
+                                    type="text"
+                                    value={zone.countries || ''}
+                                    onChange={(e) => {
+                                      const zones = [
+                                        ...(settings.shipping_zones as any[]),
+                                      ];
+                                      zones[index] = {
+                                        ...zones[index],
+                                        countries: e.target.value,
+                                      };
+                                      handleChange('shipping_zones', zones);
+                                    }}
+                                    placeholder="IN, LK, BD"
+                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  />
+                                </td>
+                                <td className="px-4 py-2">
+                                  <input
+                                    type="number"
+                                    value={zone.standard_rate || 0}
+                                    onChange={(e) => {
+                                      const zones = [
+                                        ...(settings.shipping_zones as any[]),
+                                      ];
+                                      zones[index] = {
+                                        ...zones[index],
+                                        standard_rate: Number.parseFloat(
+                                          e.target.value
+                                        ),
+                                      };
+                                      handleChange('shipping_zones', zones);
+                                    }}
+                                    className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  />
+                                </td>
+                                <td className="px-4 py-2">
+                                  <input
+                                    type="number"
+                                    value={zone.express_rate || 0}
+                                    onChange={(e) => {
+                                      const zones = [
+                                        ...(settings.shipping_zones as any[]),
+                                      ];
+                                      zones[index] = {
+                                        ...zones[index],
+                                        express_rate: Number.parseFloat(
+                                          e.target.value
+                                        ),
+                                      };
+                                      handleChange('shipping_zones', zones);
+                                    }}
+                                    className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  />
+                                </td>
+                                <td className="px-4 py-2 text-center">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const zones = (
+                                        settings.shipping_zones as any[]
+                                      ).filter(
+                                        (_: any, i: number) => i !== index
+                                      );
+                                      handleChange('shipping_zones', zones);
+                                    }}
+                                    className="text-red-500 hover:text-red-700 text-sm"
+                                  >
+                                    Remove
+                                  </button>
+                                </td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+                      <p className="mb-2">No shipping zones configured yet.</p>
+                      <p className="text-sm">
+                        Click &quot;+ Add Zone&quot; to create custom shipping
+                        zones with specific rates.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Allowed Countries */}
+                <div className="pt-2">
+                  <label
+                    htmlFor="shipping_countries"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Allowed Shipping Countries
+                  </label>
+                  <input
+                    id="shipping_countries"
+                    type="text"
+                    value={settings.shipping_countries || 'US, CA'}
+                    onChange={(e) =>
+                      handleChange('shipping_countries', e.target.value)
+                    }
+                    placeholder="US, CA, GB, AU"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Comma-separated two-letter ISO country codes.
+                  </p>
                 </div>
               </div>
+            )}
+
+            {activeTab === 'tiers' && (
+              <TiersTabContent
+                tiers={tiers}
+                setTiers={setTiers}
+                tiersLoading={tiersLoading}
+                setTiersLoading={setTiersLoading}
+                showTierForm={showTierForm}
+                setShowTierForm={setShowTierForm}
+                editingTierId={editingTierId}
+                setEditingTierId={setEditingTierId}
+                tierFormData={tierFormData}
+                setTierFormData={setTierFormData}
+                showNotification={showNotification}
+              />
             )}
 
             <div className="mt-8 pt-6 border-t border-gray-200">
@@ -1821,6 +2414,429 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Tiers Tab Component ---
+function TiersTabContent({
+  tiers,
+  setTiers,
+  tiersLoading,
+  setTiersLoading,
+  showTierForm,
+  setShowTierForm,
+  editingTierId,
+  setEditingTierId,
+  tierFormData,
+  setTierFormData,
+  showNotification,
+}: any) {
+  const defaultFormData = {
+    name: '',
+    slug: '',
+    discount_percent: 0,
+    min_order_value: 0,
+    min_order_quantity: 0,
+    payment_terms: '',
+    color: '#3B82F6',
+    priority: 0,
+    is_active: true,
+  };
+
+  const fetchTiers = async () => {
+    try {
+      setTiersLoading(true);
+      const data = await api.getTiers();
+      setTiers(data.data || data.tiers || []);
+    } catch (error) {
+      console.error('Error fetching tiers:', error);
+    } finally {
+      setTiersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTiers();
+  }, []);
+
+  const handleTierSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingTierId) {
+        await api.updateTier(editingTierId, tierFormData);
+        showNotification('success', 'Tier updated successfully');
+      } else {
+        await api.createTier(tierFormData);
+        showNotification('success', 'Tier created successfully');
+      }
+      setShowTierForm(false);
+      setEditingTierId(null);
+      setTierFormData(defaultFormData);
+      fetchTiers();
+    } catch (error: any) {
+      showNotification('error', error.message || 'Failed to save tier');
+    }
+  };
+
+  const handleEditTier = (tier: any) => {
+    setTierFormData({
+      name: tier.name || '',
+      slug: tier.slug || '',
+      discount_percent: tier.discount_percent || 0,
+      min_order_value: tier.min_order_value || 0,
+      min_order_quantity: tier.min_order_quantity || 0,
+      payment_terms: tier.payment_terms || '',
+      color: tier.color || '#3B82F6',
+      priority: tier.priority || 0,
+      is_active: tier.is_active !== false,
+    });
+    setEditingTierId(tier.id);
+    setShowTierForm(true);
+  };
+
+  const handleDeleteTier = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this tier?')) return;
+    try {
+      await api.deleteTier(id);
+      showNotification('success', 'Tier deleted');
+      fetchTiers();
+    } catch (error: any) {
+      showNotification('error', error.message || 'Failed to delete tier');
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Wholesale Tiers</h2>
+          <p className="text-gray-600 mt-1">
+            Manage wholesale pricing tiers for bulk buyers
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setEditingTierId(null);
+            setTierFormData(defaultFormData);
+            setShowTierForm(!showTierForm);
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+        >
+          <Plus size={18} />
+          Add Tier
+        </button>
+      </div>
+
+      {/* Create/Edit Form */}
+      {showTierForm && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-4">
+            {editingTierId ? 'Edit Tier' : 'Create Tier'}
+          </h3>
+          <form onSubmit={handleTierSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tier Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={tierFormData.name}
+                  onChange={(e) =>
+                    setTierFormData({ ...tierFormData, name: e.target.value })
+                  }
+                  placeholder="e.g. Gold"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={tierFormData.slug}
+                  onChange={(e) =>
+                    setTierFormData({
+                      ...tierFormData,
+                      slug: e.target.value.toLowerCase().replace(/\s+/g, '-'),
+                    })
+                  }
+                  placeholder="e.g. gold"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Discount %
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={tierFormData.discount_percent}
+                  onChange={(e) =>
+                    setTierFormData({
+                      ...tierFormData,
+                      discount_percent: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Min Order Value
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={tierFormData.min_order_value}
+                  onChange={(e) =>
+                    setTierFormData({
+                      ...tierFormData,
+                      min_order_value: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Min Order Quantity
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={tierFormData.min_order_quantity}
+                  onChange={(e) =>
+                    setTierFormData({
+                      ...tierFormData,
+                      min_order_quantity: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Payment Terms
+                </label>
+                <input
+                  type="text"
+                  value={tierFormData.payment_terms}
+                  onChange={(e) =>
+                    setTierFormData({
+                      ...tierFormData,
+                      payment_terms: e.target.value,
+                    })
+                  }
+                  placeholder="e.g. Net 30"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Color
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={tierFormData.color}
+                    onChange={(e) =>
+                      setTierFormData({
+                        ...tierFormData,
+                        color: e.target.value,
+                      })
+                    }
+                    className="w-12 h-10 rounded border border-gray-300 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={tierFormData.color}
+                    onChange={(e) =>
+                      setTierFormData({
+                        ...tierFormData,
+                        color: e.target.value,
+                      })
+                    }
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Priority
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={tierFormData.priority}
+                  onChange={(e) =>
+                    setTierFormData({
+                      ...tierFormData,
+                      priority: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={tierFormData.is_active}
+                  onChange={(e) =>
+                    setTierFormData({
+                      ...tierFormData,
+                      is_active: e.target.checked,
+                    })
+                  }
+                  className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Active
+                </span>
+              </label>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              >
+                {editingTierId ? 'Update Tier' : 'Create Tier'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowTierForm(false);
+                  setEditingTierId(null);
+                  setTierFormData(defaultFormData);
+                }}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Tiers Table */}
+      {tiersLoading ? (
+        <div className="text-center py-8 text-gray-500">Loading tiers...</div>
+      ) : tiers.length === 0 ? (
+        <div className="text-center py-12 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+          <Layers size={48} className="mx-auto mb-4 text-gray-300" />
+          <p className="text-lg font-medium text-gray-900 mb-1">
+            No tiers configured
+          </p>
+          <p className="text-sm mb-4">
+            Create wholesale tiers to offer volume-based pricing to your buyers.
+          </p>
+          <button
+            onClick={() => setShowTierForm(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            <Plus size={18} />
+            Create First Tier
+          </button>
+        </div>
+      ) : (
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Name
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Slug
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  Discount %
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  Min Order
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Payment Terms
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  Active
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {tiers.map((tier: any) => (
+                <tr key={tier.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: tier.color || '#3B82F6' }}
+                      />
+                      <span className="font-medium text-gray-900">
+                        {tier.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-500">
+                    {tier.slug}
+                  </td>
+                  <td className="px-4 py-3 text-center text-sm font-medium">
+                    {tier.discount_percent}%
+                  </td>
+                  <td className="px-4 py-3 text-center text-sm text-gray-500">
+                    ${tier.min_order_value || 0}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-500">
+                    {tier.payment_terms || '—'}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
+                        tier.is_active
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-500'
+                      }`}
+                    >
+                      {tier.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleEditTier(tier)}
+                        className="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded"
+                        title="Edit"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTier(tier.id)}
+                        className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
+                        title="Delete"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

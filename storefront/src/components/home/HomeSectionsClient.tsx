@@ -8,13 +8,11 @@ import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
 
 interface Props {
-  products: any[];
-  featuredProductIds: string[];
-  homepageSettings: any;
-  testimonialsList: any[];
-  collections: any[];
-  categories: any[];
-  categoryImages: Record<string, string>;
+  readonly products: any[];
+  readonly featuredProductIds: string[];
+  readonly homepageSettings: any;
+  readonly testimonialsList: any[];
+  readonly collections: any[];
 }
 
 export default function HomeSectionsClient({
@@ -32,45 +30,58 @@ export default function HomeSectionsClient({
   useEffect(() => {
     // If SSR returned empty products (backend unreachable on server), fetch from browser
     // The browser uses /api proxy which correctly routes to the backend
-    const fetchIfEmpty = async () => {
+
+    const fetchProducts = async () => {
+      if (initialProducts.length > 0) return;
       try {
-        if (initialProducts.length === 0) {
-          const url =
-            featuredProductIds.length > 0
-              ? `/api/products/featured?ids=${featuredProductIds.join(',')}`
-              : '/api/products?limit=8&sort=newest&status=published';
-          const res = await fetch(url);
-          if (res.ok) {
-            const json = await res.json();
-            // Handle both {data:[]} and {products:[]} formats
-            const fetched = json.data || json.products || [];
-            if (fetched.length > 0) setProducts(fetched);
-          }
-        }
-
-        if (initialTestimonials.length === 0) {
-          const res = await fetch('/api/testimonials/store');
-          if (res.ok) {
-            const json = await res.json();
-            setTestimonialsList(json.testimonials || []);
-          }
-        }
-
-        if (initialCollections.length === 0) {
-          const res = await fetch('/api/collections');
-          if (res.ok) {
-            const json = await res.json();
-            const fetched = (json.collections || []).slice(0, 2);
-            if (fetched.length > 0) setCollections(fetched);
-          }
-        }
-      } catch (e) {
-        // Silently fail — sections will show loading state
+        const url =
+          featuredProductIds.length > 0
+            ? `/api/products/featured?ids=${featuredProductIds.join(',')}`
+            : '/api/products?limit=8&sort=newest&status=published';
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const json = await res.json();
+        const fetched = json.data || json.products || [];
+        if (fetched.length > 0) setProducts(fetched);
+      } catch (e: unknown) {
+        console.error('[Home] Failed to fetch products:', e);
       }
     };
 
-    fetchIfEmpty();
-  }, []);
+    const fetchTestimonials = async () => {
+      if (initialTestimonials.length > 0) return;
+      try {
+        const res = await fetch('/api/testimonials/store');
+        if (!res.ok) return;
+        const json = await res.json();
+        setTestimonialsList(json.testimonials || []);
+      } catch (e: unknown) {
+        console.error('[Home] Failed to fetch testimonials:', e);
+      }
+    };
+
+    const fetchCollections = async () => {
+      if (initialCollections.length > 0) return;
+      try {
+        const res = await fetch('/api/collections');
+        if (!res.ok) return;
+        const json = await res.json();
+        const fetched = (json.collections || []).slice(0, 2);
+        if (fetched.length > 0) setCollections(fetched);
+      } catch (e: unknown) {
+        console.error('[Home] Failed to fetch collections:', e);
+      }
+    };
+
+    fetchProducts();
+    fetchTestimonials();
+    fetchCollections();
+  }, [
+    initialProducts,
+    initialTestimonials,
+    initialCollections,
+    featuredProductIds,
+  ]);
 
   return (
     <>

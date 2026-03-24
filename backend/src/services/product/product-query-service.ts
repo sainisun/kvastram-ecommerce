@@ -42,6 +42,17 @@ interface ProductWithStats {
   variant_count: number;
   total_inventory: number;
   images: (typeof product_images.$inferSelect)[];
+  variants: Array<{
+    id: string;
+    title: string;
+    sku: string | null;
+    inventory_quantity: number;
+    prices: Array<{
+      id: string;
+      amount: number;
+      currency_code: string;
+    }>;
+  }>;
 }
 
 export class ProductQueryService {
@@ -126,6 +137,78 @@ export class ProductQueryService {
   }
 
   /**
+   * Fetch full variant details with prices for products
+   */
+  private async fetchVariantDetails(
+    productIds: string[]
+  ): Promise<
+    Record<
+      string,
+      Array<{
+        id: string;
+        title: string;
+        sku: string | null;
+        inventory_quantity: number;
+        prices: Array<{
+          id: string;
+          amount: number;
+          currency_code: string;
+        }>;
+      }>
+    >
+  > {
+    if (productIds.length === 0) return {};
+
+    const variants = await db.query.product_variants.findMany({
+      where: inArray(product_variants.product_id, productIds),
+      with: {
+        prices: {
+          columns: {
+            id: true,
+            amount: true,
+            currency_code: true,
+          },
+        },
+      },
+    });
+
+    // Group variants by product_id
+    const variantsByProduct: Record<
+      string,
+      Array<{
+        id: string;
+        title: string;
+        sku: string | null;
+        inventory_quantity: number;
+        prices: Array<{
+          id: string;
+          amount: number;
+          currency_code: string;
+        }>;
+      }>
+    > = {};
+
+    variants.forEach((variant) => {
+      if (!variantsByProduct[variant.product_id]) {
+        variantsByProduct[variant.product_id] = [];
+      }
+      variantsByProduct[variant.product_id].push({
+        id: variant.id,
+        title: variant.title,
+        sku: variant.sku,
+        inventory_quantity: variant.inventory_quantity,
+        prices: variant.prices as Array<{
+          id: string;
+          amount: number;
+          currency_code: string;
+        }>,
+      });
+    });
+
+    return variantsByProduct;
+  }
+
+  /**
    * Fetch images for products
    */
   private async fetchProductImages(
@@ -145,11 +228,26 @@ export class ProductQueryService {
   private mergeProductData(
     productsList: Array<Record<string, unknown>>,
     variantData: VariantStats[],
-    imagesData: (typeof product_images.$inferSelect)[]
+    imagesData: (typeof product_images.$inferSelect)[],
+    variantDetails?: Record<
+      string,
+      Array<{
+        id: string;
+        title: string;
+        sku: string | null;
+        inventory_quantity: number;
+        prices: Array<{
+          id: string;
+          amount: number;
+          currency_code: string;
+        }>;
+      }>
+    >
   ): ProductWithStats[] {
     return productsList.map((product) => {
       const stats = variantData.find((v) => v.product_id === product.id);
       const pImages = imagesData.filter((img) => img.product_id === product.id);
+      const pVariants = variantDetails?.[product.id as string] || [];
       return {
         id: String(product.id),
         title: String(product.title),
@@ -166,6 +264,7 @@ export class ProductQueryService {
         variant_count: stats?.variant_count || 0,
         total_inventory: stats?.total_inventory || 0,
         images: pImages,
+        variants: pVariants,
       };
     });
   }
@@ -245,16 +344,18 @@ export class ProductQueryService {
 
     // Fetch related data
     const productIds = productsList.map((p) => p.id);
-    const [variantData, imagesData] = await Promise.all([
+    const [variantData, imagesData, variantDetailsData] = await Promise.all([
       this.fetchVariantStats(productIds),
       this.fetchProductImages(productIds),
+      this.fetchVariantDetails(productIds),
     ]);
 
     // Merge data
     const productsWithStats = this.mergeProductData(
       productsList,
       variantData,
-      imagesData
+      imagesData,
+      variantDetailsData
     );
 
     // Use cached count from early return, or compute if no filters

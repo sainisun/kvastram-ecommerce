@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Inter, Cormorant_Garamond, Archivo } from 'next/font/google';
 
 import './globals.css';
 import { ShopProvider } from '@/context/shop-context';
@@ -16,27 +15,9 @@ import { Analytics } from '@/components/Analytics';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
-});
-
-const cormorant = Cormorant_Garamond({
-  variable: '--font-cormorant',
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-});
-
-const archivo = Archivo({
-  variable: '--font-archivo',
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['300', '400', '500'],
-});
+// Fonts disabled due to Turbopack compatibility issue
+// Using system fonts as fallback for now
+// TODO: Re-enable next/font/google after Turbopack fix
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
 
@@ -125,9 +106,7 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body
-        className={`${inter.variable} ${cormorant.variable} ${archivo.variable} antialiased`}
-      >
+      <body className="antialiased">
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"

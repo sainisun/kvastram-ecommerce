@@ -7,7 +7,11 @@ import { useEffect } from 'react';
  * when they enter/leave viewport. Works with the .reveal CSS class in globals.css.
  * Must be 'use client' since it uses IntersectionObserver.
  */
-export function RevealOnScroll({ children }: { children: React.ReactNode }) {
+export function RevealOnScroll({
+  children,
+}: {
+  readonly children: React.ReactNode;
+}) {
   useEffect(() => {
     const observeElements = () => {
       const revealEls = document.querySelectorAll('.reveal');
@@ -50,18 +54,19 @@ export function StatReveal() {
   useEffect(() => {
     const statItems = document.querySelectorAll('.stat-item-prem');
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, i) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => {
-              entry.target.classList.add('visible');
-            }, i * 100);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, i * 100);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, {
+      threshold: 0.2,
+    });
 
     statItems.forEach((el) => observer.observe(el));
     return () => observer.disconnect();

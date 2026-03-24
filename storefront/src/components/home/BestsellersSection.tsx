@@ -23,9 +23,7 @@ export function BestsellersSection({ products }: BestsellersSectionProps) {
   if (products.length === 0) return null;
 
   return (
-    <section
-      style={{ padding: '96px 64px', background: 'var(--black)' }}
-    >
+    <section className="section-prem" style={{ background: 'var(--black)' }}>
       <div className="section-header-prem reveal">
         <div>
           <p
@@ -34,10 +32,7 @@ export function BestsellersSection({ products }: BestsellersSectionProps) {
           >
             Our Top Picks
           </p>
-          <h2
-            className="section-title-prem"
-            style={{ color: 'var(--white)' }}
-          >
+          <h2 className="section-title-prem" style={{ color: 'var(--white)' }}>
             Best <em>Sellers</em>
           </h2>
         </div>

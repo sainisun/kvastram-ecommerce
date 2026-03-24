@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
-function SuccessView({ email }: { email: string }) {
+function SuccessView({ email }: { readonly email: string }) {
   return (
     <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
       <div className="max-w-md w-full space-y-8 text-center">

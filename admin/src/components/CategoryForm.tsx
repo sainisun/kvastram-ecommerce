@@ -30,9 +30,13 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
     name: initialData?.name || '',
     slug: initialData?.slug || '',
     description: initialData?.description || '',
-    parent_id: initialData?.parent_id || '', // Empty string for no parent
+    parent_id: initialData?.parent_id || '',
     image: initialData?.image || '',
     is_active: initialData?.is_active ?? true,
+    emoji: (initialData as any)?.emoji || '',
+    display_order: (initialData as any)?.display_order ?? 0,
+    show_in_header: (initialData as any)?.show_in_header ?? true,
+    header_image_url: (initialData as any)?.header_image_url || '',
   });
 
   useEffect(() => {
@@ -85,7 +89,9 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
     try {
       const payload = {
         ...formData,
-        parent_id: formData.parent_id === '' ? null : formData.parent_id, // Convert empty string to null
+        parent_id: formData.parent_id === '' ? null : formData.parent_id,
+        emoji: (formData as any).emoji === '' ? null : (formData as any).emoji,
+        header_image_url: (formData as any).header_image_url === '' ? null : (formData as any).header_image_url,
       };
 
       if (initialData) {
@@ -204,6 +210,78 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
           <p className="text-xs text-gray-500">
             Enter full URL to category image for homepage display
           </p>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700 block">
+            Emoji (Optional)
+          </label>
+          <input
+            type="text"
+            name="emoji"
+            value={(formData as any).emoji}
+            onChange={handleChange}
+            maxLength={2}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+            placeholder="e.g. 🛏"
+          />
+          <p className="text-xs text-gray-500">
+            Copy-paste emoji from: <a href="https://emojipedia.org" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Emojipedia</a>
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 block">
+              Display Order
+            </label>
+            <input
+              type="number"
+              name="display_order"
+              value={(formData as any).display_order}
+              onChange={handleChange}
+              min="0"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+              placeholder="0"
+            />
+            <p className="text-xs text-gray-500">
+              Lower = appears first in header
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700 block">
+            Header Image URL (Optional)
+          </label>
+          <input
+            type="text"
+            name="header_image_url"
+            value={(formData as any).header_image_url}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+            placeholder="https://example.com/header-image.jpg"
+          />
+          <p className="text-xs text-gray-500">
+            Shows in storefront mega menu dropdown. Use Cloudinary or any image host.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="show_in_header"
+            name="show_in_header"
+            checked={(formData as any).show_in_header}
+            onChange={handleCheckboxChange}
+            className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black"
+          />
+          <label
+            htmlFor="show_in_header"
+            className="text-sm font-medium text-gray-700 cursor-pointer"
+          >
+            Show in Header Navigation?
+          </label>
         </div>
 
         <div className="flex items-center gap-2">

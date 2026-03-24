@@ -15,6 +15,10 @@ const CategorySchema = z.object({
   parent_id: z.string().optional().nullable(),
   image: z.string().optional(),
   is_active: z.boolean().optional(),
+  display_order: z.number().optional().default(0),
+  show_in_header: z.boolean().optional().default(true),
+  header_image_url: z.string().optional().nullable(),
+  emoji: z.string().optional().nullable(),
 });
 
 // GET /categories
@@ -89,6 +93,10 @@ categoriesRouter.post(
           parent_id: data.parent_id || null,
           image: data.image,
           is_active: data.is_active ?? true,
+          display_order: data.display_order ?? 0,
+          show_in_header: data.show_in_header ?? true,
+          header_image_url: data.header_image_url || null,
+          emoji: data.emoji || null,
         })
         .returning();
 
@@ -140,5 +148,45 @@ categoriesRouter.delete('/:id', verifyAdmin, async (c) => {
     return c.json({ error: error.message || 'Failed to delete category' }, 500);
   }
 });
+
+// PUT /categories/reorder - Bulk update display_order for multiple categories
+const ReorderSchema = z.object({
+  updates: z.array(
+    z.object({
+      id: z.string().uuid(),
+      display_order: z.number().min(0),
+    })
+  ),
+});
+
+categoriesRouter.put(
+  '/reorder',
+  verifyAdmin,
+  zValidator('json', ReorderSchema),
+  async (c) => {
+    const data = c.req.valid('json');
+    try {
+      const updates = await Promise.all(
+        data.updates.map((update) =>
+          db
+            .update(categories)
+            .set({
+              display_order: update.display_order,
+              updated_at: new Date(),
+            })
+            .where(eq(categories.id, update.id))
+            .returning()
+        )
+      );
+
+      return c.json({ categories: updates.map((u) => u[0]) });
+    } catch (error: any) {
+      return c.json(
+        { error: error.message || 'Failed to reorder categories' },
+        500
+      );
+    }
+  }
+);
 
 export default categoriesRouter;

@@ -17,12 +17,7 @@
 
 // Import adapter functions for API response conversion
 import { adaptProduct, adaptProducts } from './api-adapters';
-// Import validation guards for type-safe responses
-import {
-  isValidCollectionArray,
-  isValidProductArray,
-  isValidErrorResponse,
-} from './api-guards';
+
 import type { Product } from '@/types';
 
 // Use absolute URL for SSR, relative for client (Next.js rewrites)
@@ -78,7 +73,7 @@ async function fetchWithTrace(
   init?: RequestInit & { next?: object }
 ) {
   const startTime = getTime();
-  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const controller = typeof AbortController === 'undefined' ? null : new AbortController();
   const timeoutId = controller ? setTimeout(() => controller.abort(), API_TIMEOUT) : null;
 
   try {
@@ -533,19 +528,18 @@ export const api = {
       if (!res.ok) throw new Error('Failed to fetch product');
       const json = await res.json();
 
-      // Handle standardized API response format
-      if (json.success && json.data) {
-        // Use the adapter to convert API response to frontend types
-        return adaptProduct(json.data);
-      }
-
-      // Fallback: Adapter for backend returns { data: { product: ... } }
+      // Check most specific format first: { data: { product: {...} } }
       if (json.data?.product) {
         return adaptProduct(json.data.product);
       }
 
-      // Fallback: Direct product data
-      if (json.data && json.data.id) {
+      // Handle direct data with id: { data: {...with id field...} }
+      if (json.data?.id) {
+        return adaptProduct(json.data);
+      }
+
+      // Fallback: Direct product response (legacy)
+      if (json.success && json.data) {
         return adaptProduct(json.data);
       }
 

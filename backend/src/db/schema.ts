@@ -186,10 +186,16 @@ export const categories = pgTable(
     is_active: boolean('is_active').default(true),
     parent_id: uuid('parent_id'),
     metadata: jsonb('metadata'),
+    display_order: integer('display_order').default(0),
+    show_in_header: boolean('show_in_header').default(true),
+    header_image_url: text('header_image_url'),
+    emoji: text('emoji'),
     ...createdUpdated,
   },
   (table) => ({
     parentIdx: index('idx_categories_parent_id').on(table.parent_id),
+    displayOrderIdx: index('idx_categories_display_order').on(table.display_order),
+    showInHeaderIdx: index('idx_categories_show_in_header').on(table.show_in_header),
   })
 );
 
@@ -839,11 +845,15 @@ export const saved_carts = pgTable(
     }),
     session_id: text('session_id'), // Guest carts ke liye
     items: jsonb('items').notNull().default('[]'), // CartItem[] JSON array
+    recovery_sent: boolean('recovery_sent').default(false),
+    recovery_sent_at: timestamp('recovery_sent_at'),
     ...createdUpdated,
   },
   (table) => ({
     customerIdx: index('idx_saved_carts_customer_id').on(table.customer_id),
     sessionIdx: index('idx_saved_carts_session_id').on(table.session_id),
+    recoverySentIdx: index('idx_saved_carts_recovery_sent').on(table.recovery_sent),
+    updatedAtIdx: index('idx_saved_carts_updated_at').on(table.updated_at),
   })
 );
 

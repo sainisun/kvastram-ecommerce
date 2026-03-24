@@ -19,23 +19,66 @@ import {
   FileText,
   Bell,
   RotateCcw,
+  Menu,
+  ShoppingCart,
 } from 'lucide-react';
 
-const menuItems = [
-  { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-  { name: 'Products', icon: ShoppingBag, path: '/dashboard/products' },
-  { name: 'Collections', icon: Layers, path: '/dashboard/collections' },
-  { name: 'Categories', icon: Folder, path: '/dashboard/categories' },
-  { name: 'Tags', icon: Tag, path: '/dashboard/tags' },
-  { name: 'Orders', icon: Box, path: '/dashboard/orders' },
-  { name: 'Returns', icon: RotateCcw, path: '/dashboard/returns' },
-  { name: 'Customers', icon: Users, path: '/dashboard/customers' },
-  { name: 'Reviews', icon: Star, path: '/dashboard/reviews' },
-  { name: 'Analytics', icon: BarChart3, path: '/dashboard/analytics' },
-  { name: 'Marketing', icon: Palette, path: '/dashboard/marketing' },
-  { name: 'Wholesale', icon: Building2, path: '/dashboard/wholesale' },
-  { name: 'Content', icon: FileText, path: '/dashboard/content' },
-  { name: 'Settings', icon: Settings, path: '/dashboard/settings' },
+// Sidebar structure per PRD — reorganized into logical sections
+const sections = [
+  {
+    title: 'MAIN',
+    items: [{ name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' }],
+  },
+  {
+    title: 'CATALOG',
+    items: [
+      { name: 'Products', icon: ShoppingBag, path: '/dashboard/products' },
+      { name: 'Collections', icon: Layers, path: '/dashboard/collections' },
+      { name: 'Categories', icon: Folder, path: '/dashboard/categories' },
+      { name: 'Tags', icon: Tag, path: '/dashboard/tags' },
+    ],
+  },
+  {
+    title: 'STOREFRONT',
+    items: [
+      {
+        name: 'Header Navigation',
+        icon: Menu,
+        path: '/dashboard/header-navigation',
+      },
+    ],
+  },
+  {
+    title: 'OPERATIONS',
+    items: [
+      { name: 'Orders', icon: Box, path: '/dashboard/orders' },
+      { name: 'Returns', icon: RotateCcw, path: '/dashboard/returns' },
+      { name: 'Customers', icon: Users, path: '/dashboard/customers' },
+      { name: 'Wholesale', icon: Building2, path: '/dashboard/wholesale' },
+      { name: 'Regions & Currencies', icon: Globe, path: '/dashboard/regions' },
+    ],
+  },
+  {
+    title: 'GROWTH',
+    items: [
+      { name: 'Analytics', icon: BarChart3, path: '/dashboard/analytics' },
+      { name: 'Marketing', icon: Palette, path: '/dashboard/marketing' },
+      {
+        name: 'Abandoned Carts',
+        icon: ShoppingCart,
+        path: '/dashboard/abandoned-carts',
+      },
+      { name: 'Reviews', icon: Star, path: '/dashboard/reviews' },
+    ],
+  },
+  {
+    title: 'CONTENT',
+    items: [{ name: 'Content', icon: FileText, path: '/dashboard/content' }],
+  },
+  {
+    title: 'SETTINGS',
+    items: [{ name: 'Settings', icon: Settings, path: '/dashboard/settings' }],
+  },
 ];
 
 export default function Sidebar() {
@@ -55,63 +98,52 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-64px)]">
-        <div className="mb-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          Main Menu
-        </div>
+        {sections.map((section) => (
+          <div key={section.title}>
+            <div className="mb-2 mt-5 first:mt-0 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              {section.title}
+            </div>
 
-        {menuItems.map((item) => {
-          const isActive =
-            pathname === item.path || pathname.startsWith(item.path + '/');
-          const Icon = item.icon;
+            {section.items.map((item) => {
+              const isActive =
+                pathname === item.path || pathname.startsWith(item.path + '/');
+              const Icon = item.icon;
 
-          return (
-            <Link
-              key={item.path}
-              href={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:bg-[#2b2b40] hover:text-white'
-              }`}
-            >
-              <Icon size={18} />
-              {item.name}
-            </Link>
-          );
-        })}
+              return (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-400 hover:bg-[#2b2b40] hover:text-white'
+                  }`}
+                >
+                  <Icon size={18} />
+                  {item.name}
+                </Link>
+              );
+            })}
 
-        {/* Marketing sub-items (show when in marketing section) */}
-        {pathname.startsWith('/dashboard/marketing') && (
-          <div className="ml-4 mt-1 space-y-1">
-            <Link
-              href="/dashboard/marketing/back-in-stock"
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
-                pathname === '/dashboard/marketing/back-in-stock'
-                  ? 'bg-amber-600/20 text-amber-400'
-                  : 'text-gray-500 hover:bg-[#2b2b40] hover:text-gray-300'
-              }`}
-            >
-              <Bell size={14} />
-              Back-in-Stock
-            </Link>
+            {/* Marketing sub-items (show when in marketing section) */}
+            {section.title === 'GROWTH' &&
+              pathname.startsWith('/dashboard/marketing') && (
+                <div className="ml-4 mt-1 space-y-1">
+                  <Link
+                    href="/dashboard/marketing/back-in-stock"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
+                      pathname === '/dashboard/marketing/back-in-stock'
+                        ? 'bg-amber-600/20 text-amber-400'
+                        : 'text-gray-500 hover:bg-[#2b2b40] hover:text-gray-300'
+                    }`}
+                  >
+                    <Bell size={14} />
+                    Back-in-Stock
+                  </Link>
+                </div>
+              )}
           </div>
-        )}
-
-        <div className="mt-8 mb-4 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          International
-        </div>
-
-        <Link
-          href="/dashboard/regions"
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-            pathname === '/dashboard/regions'
-              ? 'bg-blue-600 text-white'
-              : 'text-gray-400 hover:bg-[#2b2b40] hover:text-white'
-          }`}
-        >
-          <Globe size={18} />
-          Regions & Currencies
-        </Link>
+        ))}
       </nav>
     </aside>
   );

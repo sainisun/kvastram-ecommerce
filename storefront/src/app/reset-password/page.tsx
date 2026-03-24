@@ -68,8 +68,8 @@ function PasswordRequirement({
   label,
   isValid,
 }: {
-  label: string;
-  isValid: boolean;
+  readonly label: string;
+  readonly isValid: boolean;
 }) {
   return (
     <div

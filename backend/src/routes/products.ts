@@ -141,8 +141,13 @@ productsRouter.get(
       if (!product) throw new NotFoundError('Product not found');
       return successResponse(c, { product }, 'Product retrieved successfully');
     } catch (error: unknown) {
+      // Only throw NotFoundError if it's actually a "not found" error
+      if (error instanceof Error && error.message.includes('not found')) {
+        throw new NotFoundError('Product not found');
+      }
+      // Re-throw other errors for proper error handling
       console.error('Error fetching product:', error);
-      throw new NotFoundError('Product not found');
+      throw error;
     }
   })
 );

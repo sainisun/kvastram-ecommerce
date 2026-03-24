@@ -20,6 +20,7 @@ export default function RegionsPage() {
   const [regions, setRegions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
   // Form State
@@ -46,7 +47,7 @@ export default function RegionsPage() {
     }
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
@@ -56,13 +57,20 @@ export default function RegionsPage() {
         .map((c) => c.trim().toUpperCase())
         .filter((c) => c.length === 2); // Only valid ISO codes
 
-      await api.createRegion({
+      const payload = {
         ...formData,
         tax_rate: parseFloat(formData.tax_rate),
         countries: countriesArray,
-      });
+      };
+
+      if (editingId) {
+        await api.updateRegion(editingId, payload);
+      } else {
+        await api.createRegion(payload);
+      }
 
       setShowModal(false);
+      setEditingId(null);
       setFormData({
         name: '',
         currency_code: '',
@@ -71,9 +79,22 @@ export default function RegionsPage() {
       });
       fetchRegions();
     } catch (error) {
-      console.error('Error creating region:', error);
-      alert('Failed to create region');
+      console.error('Error saving region:', error);
+      alert(editingId ? 'Failed to update region' : 'Failed to create region');
     }
+  };
+
+  const handleEdit = (region: any) => {
+    setFormData({
+      name: region.name || '',
+      currency_code: region.currency_code || '',
+      tax_rate: String(region.tax_rate || 0),
+      countries: Array.isArray(region.countries)
+        ? region.countries.join(', ')
+        : region.countries || '',
+    });
+    setEditingId(region.id);
+    setShowModal(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -116,7 +137,16 @@ export default function RegionsPage() {
             </p>
           </div>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setEditingId(null);
+              setFormData({
+                name: '',
+                currency_code: '',
+                tax_rate: '0',
+                countries: '',
+              });
+              setShowModal(true);
+            }}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
           >
             <Plus size={18} />
@@ -242,18 +272,27 @@ export default function RegionsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleDelete(region.id)}
-                        disabled={deleting === region.id}
-                        className="text-red-600 hover:text-red-900 p-1 disabled:opacity-50"
-                        title="Delete"
-                      >
-                        {deleting === region.id ? (
-                          <Loader2 className="animate-spin" size={18} />
-                        ) : (
-                          <Trash2 size={18} />
-                        )}
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleEdit(region)}
+                          className="text-blue-600 hover:text-blue-900 p-1"
+                          title="Edit"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(region.id)}
+                          disabled={deleting === region.id}
+                          className="text-red-600 hover:text-red-900 p-1 disabled:opacity-50"
+                          title="Delete"
+                        >
+                          {deleting === region.id ? (
+                            <Loader2 className="animate-spin" size={18} />
+                          ) : (
+                            <Trash2 size={18} />
+                          )}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -268,16 +307,21 @@ export default function RegionsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Add Region</h2>
+              <h2 className="text-xl font-bold">
+                {editingId ? 'Edit Region' : 'Add Region'}
+              </h2>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingId(null);
+                }}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <XIcon size={24} />
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Region Name
@@ -360,7 +404,7 @@ export default function RegionsPage() {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                  Create Region
+                  {editingId ? 'Update Region' : 'Create Region'}
                 </button>
               </div>
             </form>

@@ -64,6 +64,8 @@ import wishlistRoutes from './routes/store/wishlist';
 import adminBisRoutes from './routes/admin/back-in-stock';
 import adminReturnsRoutes from './routes/admin/returns';
 import storeReturnsRoutes from './routes/store/returns';
+import abandonedCartsRoutes from './routes/admin/abandoned-carts';
+import bulkDiscountsRoutes from './routes/admin/bulk-discounts';
 
 import docsApp from './docs';
 
@@ -172,6 +174,8 @@ csrfForStateChanging([
   '/testimonials/*',
   '/upload/*',
   '/auth/2fa/*',
+  '/admin/abandoned-carts/*',
+  '/admin/bulk-discounts/*',
 ]);
 
 // Health Check Endpoint
@@ -249,6 +253,8 @@ const generalApiRoutes = [
   '/reviews/*',
   '/testimonials/*',
   '/store/customers/*', // OPT-007: Added missing store customer route
+  '/admin/abandoned-carts/*',
+  '/admin/bulk-discounts/*',
 ];
 
 for (const route of generalApiRoutes) {
@@ -303,6 +309,8 @@ app.route('/store/wishlist', wishlistRoutes);
 app.route('/admin/back-in-stock', adminBisRoutes);
 app.route('/admin/returns', adminReturnsRoutes);
 app.route('/store/returns', storeReturnsRoutes);
+app.route('/admin/abandoned-carts', abandonedCartsRoutes);
+app.route('/admin/bulk-discounts', bulkDiscountsRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

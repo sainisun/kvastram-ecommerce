@@ -1,19 +1,12 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import { AuthProvider } from '@/context/auth-context';
 import { NotificationProvider } from '@/context/notification-context';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+// Fonts disabled due to Turbopack compatibility issue
+// Using system fonts as fallback for now
+// TODO: Re-enable next/font/google after Turbopack fix
 
 export const metadata: Metadata = {
   title: 'Kvastram Admin',
@@ -45,7 +38,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className="antialiased"
       >
         <ErrorBoundary>
           <AuthProvider>

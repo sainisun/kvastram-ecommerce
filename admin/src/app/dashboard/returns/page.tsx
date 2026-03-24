@@ -68,7 +68,7 @@ export default function ReturnsPage() {
   const fetchReturns = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await api.get('/admin/returns');
+      const data = await api.getReturns();
       setReturns(data.returns || []);
     } catch {
       setError('Failed to load returns');

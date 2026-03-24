@@ -37,7 +37,11 @@ function ScrollToTop() {
   );
 }
 
-export function MainLayout({ children }: { children: React.ReactNode }) {
+export function MainLayout({
+  children,
+}: {
+  readonly children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const isWholesalePage = pathname?.startsWith('/wholesale');
   const isCheckoutPage = pathname?.startsWith('/checkout');

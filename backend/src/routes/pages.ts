@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../db';
 import { pages } from '../db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { verifyAdmin } from '../middleware/auth';
 import { z } from 'zod';
 

@@ -22,7 +22,6 @@ const ReturnSchema = z.object({
 // POST /store/returns — Customer submits a return request
 router.post('/', verifyAuth, async (c) => {
   try {
-    const user = c.get('user') as any;
     const body = await c.req.json();
     const data = ReturnSchema.parse(body);
 

@@ -5,9 +5,9 @@ import { Mail, Bell, CheckCircle, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 
 interface BackInStockProps {
-  productId: string;
-  variantId?: string;
-  productTitle: string;
+  readonly productId: string;
+  readonly variantId?: string;
+  readonly productTitle: string;
 }
 
 export function BackInStock({
@@ -20,7 +20,7 @@ export function BackInStock({
   const [subscribed, setSubscribed] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');

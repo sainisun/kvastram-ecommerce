@@ -10,7 +10,7 @@ const debugLog = (message: string, data?: unknown) => {
 // Debug: Log cookie state before requests
 const debugCookieState = async (endpoint: string) => {
   if (typeof window === 'undefined') return;
-  
+
   // Log all cookies (for debugging)
   const cookies = document.cookie;
   debugLog(`Cookie state before ${endpoint}:`, {
@@ -18,7 +18,7 @@ const debugCookieState = async (endpoint: string) => {
     cookieString: cookies,
     hasAdminToken: cookies.includes('admin_token=')
   });
-  
+
   // Check if we're using proxy or direct
   debugLog(`Request target: ${endpoint}`, {
     apiBaseUrl: API_BASE_URL,
@@ -94,21 +94,21 @@ async function fetchWithTimeout(
       hasCredentials: true,
       credentials: fetchOptions.credentials || 'include'
     });
-    
+
     const response = await fetch(resource, {
       ...fetchOptions,
       credentials: 'include', // Important: send cookies with request
       signal: controller.signal,
     });
     clearTimeout(id);
-    
+
     debugLog('Fetch response:', {
       url: typeof resource === 'string' ? resource : resource.url,
       status: response.status,
       statusText: response.statusText,
       headers: Object.fromEntries(response.headers.entries())
     });
-    
+
     return response;
   } catch (error: unknown) {
     clearTimeout(id);
@@ -187,7 +187,7 @@ export const api = {
 
       // Token is now in httpOnly cookie, only user data returned
       debugLog('Login successful - checking cookie state');
-      
+
       // Debug: Check cookies after login
       if (typeof window !== 'undefined') {
         const cookies = document.cookie;
@@ -196,7 +196,7 @@ export const api = {
           hasAdminToken: cookies.includes('admin_token=')
         });
       }
-      
+
       return response.data as AuthResponse;
     } catch (error) {
       console.error('Login error:', error);
@@ -235,7 +235,7 @@ export const api = {
     if (status && status !== 'all') url += `&status=${status}`;
     if (categoryId && categoryId !== 'all') url += `&category_id=${categoryId}`;
     if (collectionId && collectionId !== 'all') url += `&collection_id=${collectionId}`;
-    
+
     const res = await fetchWithTimeout(url, {
       // No Authorization header needed - cookie is sent automatically
     });
@@ -427,6 +427,18 @@ export const api = {
       method: 'DELETE',
     });
     if (!res.ok) return handleApiError(res, 'Failed to delete region');
+    return res.json();
+  },
+
+  updateRegion: async (id: string, data: any) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/regions/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update region');
     return res.json();
   },
 
@@ -1447,6 +1459,93 @@ export const api = {
     return res.json();
   },
 
+  // Category Order Management
+  updateCategoriesOrder: async (updates: Array<{ id: string; display_order: number }>) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/reorder`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ updates }),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update category order');
+    return res.json();
+  },
+
+  // Email Templates
+  getEmailTemplates: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/email-templates`, {
+      // No Authorization header needed - cookie is sent automatically
+    });
+    if (!res.ok) throw new Error('Failed to fetch email templates');
+    return res.json();
+  },
+
+  updateEmailTemplate: async (id: string, data: any) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/email-templates/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update email template');
+    return res.json();
+  },
+
+  // File Manager
+  getFiles: async (params?: { path?: string }) => {
+    let url = `${API_BASE_URL}/files`;
+    if (params?.path) {
+      url += `?path=${encodeURIComponent(params.path)}`;
+    }
+    const res = await fetchWithTimeout(url, {
+      // No Authorization header needed - cookie is sent automatically
+    });
+    if (!res.ok) throw new Error('Failed to fetch files');
+    return res.json();
+  },
+
+  uploadFile: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/files/upload`, {
+      method: 'POST',
+      body: formData,
+      // Don't set Content-Type - let the browser set it for FormData
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to upload file');
+    return res.json();
+  },
+
+  deleteFile: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/files/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to delete file');
+    return res.json();
+  },
+
+  // Analytics
+  getAnalytics: async (params?: { range?: string }) => {
+    let url = `${API_BASE_URL}/analytics`;
+    if (params?.range) {
+      url += `?range=${params.range}`;
+    }
+    const res = await fetchWithTimeout(url, {
+      // No Authorization header needed - cookie is sent automatically
+    });
+    if (!res.ok) throw new Error('Failed to fetch analytics');
+    return res.json();
+  },
+
+  // System Status
+  getSystemStatus: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/system/status`, {
+      // No Authorization header needed - cookie is sent automatically
+    });
+    if (!res.ok) throw new Error('Failed to fetch system status');
+    return res.json();
+  },
+
   // Analytics - These endpoints return DIRECT responses (not wrapped)
   getAnalyticsOverview: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/analytics/overview`, {
@@ -1593,6 +1692,128 @@ export const api = {
       }
     );
     if (!res.ok) return handleApiError(res, 'Failed to delete notification');
+    return res.json();
+  },
+
+  // Abandoned Carts endpoints
+  getAbandonedCarts: async (period = '30d') => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/abandoned-carts?period=${period}`,
+      {}
+    );
+    if (!res.ok) throw new Error('Failed to fetch abandoned carts');
+    return res.json();
+  },
+
+  recoverAbandonedCart: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/abandoned-carts/${id}/recover`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to send recovery email');
+    return res.json();
+  },
+
+  deleteAbandonedCart: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/abandoned-carts/${id}`,
+      { method: 'DELETE' }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete abandoned cart');
+    return res.json();
+  },
+
+  // Bulk Discounts endpoints
+  getBulkDiscounts: async () => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/bulk-discounts`,
+      {}
+    );
+    if (!res.ok) throw new Error('Failed to fetch bulk discounts');
+    return res.json();
+  },
+
+  createBulkDiscount: async (data: any) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/bulk-discounts`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to create bulk discount');
+    return res.json();
+  },
+
+  updateBulkDiscount: async (id: string, data: any) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/bulk-discounts/${id}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update bulk discount');
+    return res.json();
+  },
+
+  deleteBulkDiscount: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/bulk-discounts/${id}`,
+      { method: 'DELETE' }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete bulk discount');
+    return res.json();
+  },
+
+  // Wholesale Tiers endpoints (Admin CRUD)
+  // Path: /admin/tiers/tiers — verified from index.ts line 282 + tiers.ts sub-routes
+  getTiers: async () => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/tiers/tiers`,
+      {}
+    );
+    if (!res.ok) throw new Error('Failed to fetch tiers');
+    return res.json();
+  },
+
+  createTier: async (data: any) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/tiers/tiers`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to create tier');
+    return res.json();
+  },
+
+  updateTier: async (id: string, data: any) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/tiers/tiers/${id}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update tier');
+    return res.json();
+  },
+
+  deleteTier: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/tiers/tiers/${id}`,
+      { method: 'DELETE' }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete tier');
     return res.json();
   },
 };

@@ -13,12 +13,15 @@ export function FeaturedProductsSection({
 }: FeaturedProductsSectionProps) {
   return (
     <section
-      style={{ padding: '96px 64px', background: 'var(--off-white)' }}
+      className="section-prem"
+      style={{ background: 'var(--off-white)' }}
     >
       <div className="section-header-prem reveal">
         <div>
           <p className="section-eyebrow-prem">
-            {featuredProductIds.length > 0 ? 'Featured Collection' : 'Just Landed'}
+            {featuredProductIds.length > 0
+              ? 'Featured Collection'
+              : 'Just Landed'}
           </p>
           <h2 className="section-title-prem">
             {featuredProductIds.length > 0 ? (

@@ -193,10 +193,16 @@ export const customerAuthService = {
     if (existing.length > 0) {
       const customer = existing[0];
       if (customer.has_account) {
+        if (!customer.email_verified) {
+          throw new Error('An account with this email exists but is not verified. Please check your inbox or use the "Resend Verification" page.');
+        }
         throw new Error('Customer already has an account');
       }
 
       // Upgrade guest to account
+      const verificationToken = generateVerificationToken();
+      const verificationExpires = getVerificationExpiry();
+
       const updated = await db
         .update(customers)
         .set({
@@ -208,11 +214,28 @@ export const customerAuthService = {
           updated_at: new Date(),
           failed_login_attempts: 0,
           locked_until: null,
+          verification_token: verificationToken,
+          verification_expires_at: verificationExpires,
+          email_verified: false,
         })
         .where(eq(customers.id, customer.id))
         .returning();
 
-      return updated[0];
+      const newCustomer = updated[0];
+
+      // Send verification email in background to avoid 504 timeouts
+      try {
+        const { emailService } = await import('./email-service');
+        emailService.sendVerificationEmail({
+          email: newCustomer.email,
+          first_name: newCustomer.first_name!,
+          token: verificationToken,
+        }).catch(emailError => console.error('Failed to send email:', emailError));
+      } catch (err) {
+        console.error('Failed to load email service:', err);
+      }
+
+      return newCustomer;
     } else {
       // Create new customer
       const verificationToken = generateVerificationToken();
@@ -237,16 +260,16 @@ export const customerAuthService = {
 
       const newCustomer = created[0];
 
-      // Send verification email
+      // Send verification email asynchronously
       try {
         const { emailService } = await import('./email-service');
-        await emailService.sendVerificationEmail({
+        emailService.sendVerificationEmail({
           email: newCustomer.email,
           first_name: newCustomer.first_name!,
           token: verificationToken,
-        });
+        }).catch(emailError => console.error('Failed to send verification email:', emailError));
       } catch (emailError: unknown) {
-        console.error('Failed to send verification email:', emailError);
+        console.error('Failed to load email service:', emailError);
       }
 
       return newCustomer;
@@ -391,17 +414,17 @@ export const customerAuthService = {
       })
       .where(eq(customers.id, customer.id));
 
-    // Send verification email
+    // Send verification email asynchronously
     try {
       const { emailService } = await import('./email-service');
-      await emailService.sendVerificationEmail({
+      emailService.sendVerificationEmail({
         email: customer.email,
         first_name: customer.first_name!,
         token: verificationToken,
-      });
+      }).catch(emailError => console.error('Failed to send verification email:', emailError));
     } catch (emailError: unknown) {
-      console.error('Failed to send verification email:', emailError);
-      throw new Error('Failed to send verification email');
+      console.error('Failed to load email service:', emailError);
+      throw new Error('Failed to trigger verification email');
     }
 
     return { message: 'Verification email sent' };

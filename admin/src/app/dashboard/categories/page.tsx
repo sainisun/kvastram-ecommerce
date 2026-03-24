@@ -23,6 +23,9 @@ interface Category {
   parent_id?: string;
   children?: Category[];
   is_active?: boolean;
+  emoji?: string;
+  display_order?: number;
+  show_in_header?: boolean;
   _count?: {
     products: number;
   };
@@ -78,10 +81,27 @@ function CategoryItem({
             </span>
           )}
 
+          {category.emoji && (
+            <span className="text-lg mr-2">{category.emoji}</span>
+          )}
+
           <span className="font-medium text-gray-900">{category.name}</span>
+          
+          {category.display_order !== undefined && category.display_order !== 0 && (
+            <span className="ml-2 text-xs text-gray-500">
+              (order: {category.display_order})
+            </span>
+          )}
+          
           <span className="ml-2 text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
             {category.slug}
           </span>
+
+          {category.show_in_header && (
+            <span className="ml-2 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+              IN HEADER
+            </span>
+          )}
 
           {!category.is_active && (
             <span className="ml-2 text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
@@ -180,6 +200,13 @@ export default function CategoriesPage() {
           <Plus size={20} />
           Add Category
         </Link>
+      </div>
+
+      {/* Clarification Banner */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <p className="text-sm text-blue-900">
+          <strong>What are Categories?</strong> Categories form the product taxonomy and appear in the storefront header navigation. Customers use them to browse by product type. Use emojis and header images to make them visually appealing.
+        </p>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

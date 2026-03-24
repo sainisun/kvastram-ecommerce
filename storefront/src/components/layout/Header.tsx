@@ -20,6 +20,7 @@ import { usePathname } from 'next/navigation';
 import SearchOverlay from '@/components/search/SearchOverlay';
 import MobileMenu from '@/components/layout/MobileMenu';
 import CartDrawer from '@/components/layout/CartDrawer';
+import MegaMenu from '@/components/layout/MegaMenu';
 
 interface NavLink {
   label: string;
@@ -66,7 +67,7 @@ export function Header() {
 
   // Close menu when clicking outside
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (globalThis.window === undefined) return;
 
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -101,7 +102,7 @@ export function Header() {
 
   // Check localStorage for dismissed announcement
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       const dismissed = localStorage.getItem('kvastram_announcement_dismissed');
       if (dismissed === 'true') {
         setAnnouncementDismissed(true);
@@ -114,14 +115,20 @@ export function Header() {
     localStorage.setItem('kvastram_announcement_dismissed', 'true');
   };
 
+  const closeShopMenu = () => setShowShopMenu(false);
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const [{ api: apiModule }] = await Promise.all([import('@/lib/api')]);
+        const { api: apiModule } = await import('@/lib/api');
 
-        // Fetch categories
-        const categoriesData = await apiModule.getCategories();
-        setCategories(categoriesData.categories || []);
+        // Fetch category tree (with parent-child relationships)
+        const categoriesData = await apiModule.getCategoriesTree();
+        // Filter only categories with show_in_header = true, sorted by display_order
+        const headerCategories = (categoriesData.categories || [])
+          .filter((cat: any) => cat.show_in_header)
+          .sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0));
+        setCategories(headerCategories);
 
         // Fetch homepage settings (includes nav_links and quick_links)
         const settingsData = await apiModule.getHomepageSettings();
@@ -136,7 +143,7 @@ export function Header() {
             const parsed = JSON.parse(settings.nav_links);
             if (Array.isArray(parsed) && parsed.length > 0) {
               setNavLinks(
-                parsed.sort((a: NavLink, b: NavLink) => a.order - b.order)
+                parsed.toSorted((a: NavLink, b: NavLink) => a.order - b.order)
               );
             }
           } catch (e) {
@@ -151,7 +158,7 @@ export function Header() {
             const parsed = JSON.parse(settings.quick_links);
             if (Array.isArray(parsed) && parsed.length > 0) {
               setQuickLinks(
-                parsed.sort((a: NavLink, b: NavLink) => a.order - b.order)
+                parsed.toSorted((a: NavLink, b: NavLink) => a.order - b.order)
               );
             }
           } catch (e) {
@@ -169,13 +176,13 @@ export function Header() {
 
   // Scroll listener for smart sticky header & shrinking
   useEffect(() => {
-    let lastScrollY = window.scrollY;
+    let lastScrollY = globalThis.scrollY || 0;
     let ticking = false;
 
     const handleScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY;
+        globalThis.requestAnimationFrame(() => {
+          const currentScrollY = globalThis.scrollY;
 
           setIsScrolled(currentScrollY > 50);
 
@@ -185,15 +192,15 @@ export function Header() {
             setScrollDirection('up');
           }
 
-          lastScrollY = currentScrollY > 0 ? currentScrollY : 0;
+          lastScrollY = Math.max(0, currentScrollY);
           ticking = false;
         });
         ticking = true;
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    globalThis.addEventListener('scroll', handleScroll, { passive: true });
+    return () => globalThis.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
@@ -207,8 +214,8 @@ export function Header() {
         {announcementEnabled && announcementText && !announcementDismissed && (
           <div className="announcement-bar text-white text-[10px] uppercase tracking-widest overflow-hidden h-8 flex items-center">
             <div className="animate-marquee">
-              {[...Array(4)].map((_, i) => (
-                <span key={i} className="px-8 whitespace-nowrap">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <span key={`ticker-${i}`} className="px-8 whitespace-nowrap">
                   <span className="ticker-shimmer font-medium">
                     {announcementText}
                   </span>
@@ -281,8 +288,7 @@ export function Header() {
           <div className="hidden md:flex items-center justify-between w-full">
             {/* Logo — Premium with motif */}
             <Link href="/" className="nav-logo-premium">
-              <span className="logo-motif">◆</span>
-              KVASTRAM
+              <span className="logo-motif">◆</span> KVASTRAM
             </Link>
 
             {/* Nav - Desktop */}
@@ -298,9 +304,11 @@ export function Header() {
                     <div
                       key={link.label}
                       className="relative group"
+                      role="presentation"
                       onMouseEnter={() => setShowShopMenu(true)}
-                      onMouseLeave={() => setShowShopMenu(false)}
+                      onMouseLeave={closeShopMenu}
                       onFocus={() => setShowShopMenu(true)}
+                      onBlur={closeShopMenu}
                     >
                       <button
                         className={`nav-link-premium nav-link-stagger flex items-center gap-1 py-2 focus:outline-none rounded ${isActive ? 'active text-stone-900' : ''}`}
@@ -310,7 +318,7 @@ export function Header() {
                         aria-haspopup="true"
                         onKeyDown={(e) => {
                           if (e.key === 'Escape') {
-                            setShowShopMenu(false);
+                            closeShopMenu();
                           }
                         }}
                       >
@@ -339,11 +347,16 @@ export function Header() {
                                     <Link
                                       href={`/products?category_id=${cat.id}`}
                                       className="text-sm font-semibold text-stone-800 hover:text-black transition-colors py-1.5 block border-l-2 border-transparent hover:border-amber-500 pl-2 -ml-2"
-                                      onClick={() => setShowShopMenu(false)}
+                                      onClick={closeShopMenu}
                                       onMouseEnter={() =>
                                         setHoveredCategory(cat.id)
                                       }
                                     >
+                                      {(cat as any).emoji && (
+                                        <span className="mr-2">
+                                          {(cat as any).emoji}
+                                        </span>
+                                      )}
                                       {cat.name}
                                     </Link>
                                     {/* Subcategories */}
@@ -357,9 +370,7 @@ export function Header() {
                                                 <Link
                                                   href={`/products?category_id=${child.id}`}
                                                   className="text-xs text-stone-500 hover:text-black transition-colors py-0.5 block pl-2"
-                                                  onClick={() =>
-                                                    setShowShopMenu(false)
-                                                  }
+                                                  onClick={closeShopMenu}
                                                 >
                                                   {child.name}
                                                 </Link>
@@ -374,7 +385,7 @@ export function Header() {
                               <Link
                                 href="/products"
                                 className="text-xs font-bold uppercase tracking-[0.15em] text-stone-900 hover:text-amber-700 transition-colors flex items-center gap-1.5"
-                                onClick={() => setShowShopMenu(false)}
+                                onClick={closeShopMenu}
                               >
                                 Shop All Products →
                               </Link>
@@ -391,9 +402,14 @@ export function Header() {
                                 return featured ? (
                                   <>
                                     <div className="absolute inset-0">
-                                      {featured.image ? (
+                                      {(featured as any).header_image_url ||
+                                      featured.image ? (
                                         <OptimizedImage
-                                          src={featured.image}
+                                          src={
+                                            (featured as any)
+                                              .header_image_url ||
+                                            featured.image
+                                          }
                                           alt={featured.name}
                                           fill
                                           className="object-cover transition-opacity duration-300"
@@ -402,7 +418,8 @@ export function Header() {
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
                                           <span className="text-stone-300 text-6xl font-serif">
-                                            {featured.name?.charAt(0)}
+                                            {(featured as any).emoji ||
+                                              featured.name?.charAt(0)}
                                           </span>
                                         </div>
                                       )}
@@ -413,6 +430,11 @@ export function Header() {
                                         Featured
                                       </span>
                                       <span className="text-lg font-serif text-white font-light">
+                                        {(featured as any).emoji && (
+                                          <span className="mr-2">
+                                            {(featured as any).emoji}
+                                          </span>
+                                        )}
                                         {featured.name}
                                       </span>
                                     </div>
@@ -432,7 +454,7 @@ export function Header() {
                                     key={qLink.label}
                                     href={qLink.url}
                                     className={`block text-sm transition-colors ${qLink.highlight ? 'text-amber-600 font-semibold hover:text-amber-700' : 'text-stone-700 hover:text-black font-medium'}`}
-                                    onClick={() => setShowShopMenu(false)}
+                                    onClick={closeShopMenu}
                                   >
                                     {qLink.label}
                                   </Link>
@@ -442,14 +464,14 @@ export function Header() {
                               <Link
                                 href="/collections"
                                 className="block text-sm font-medium text-stone-700 hover:text-black transition-colors"
-                                onClick={() => setShowShopMenu(false)}
+                                onClick={closeShopMenu}
                               >
                                 All Collections
                               </Link>
                               <Link
                                 href="/products?sort=newest"
                                 className="block text-sm font-medium text-stone-700 hover:text-black transition-colors mt-2.5"
-                                onClick={() => setShowShopMenu(false)}
+                                onClick={closeShopMenu}
                               >
                                 New Arrivals ✦
                               </Link>

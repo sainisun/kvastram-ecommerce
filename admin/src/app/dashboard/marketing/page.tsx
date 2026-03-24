@@ -13,6 +13,8 @@ import {
   Trash2,
   Edit2,
   Bell,
+  Package,
+  Loader2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 export default function MarketingPage() {
@@ -29,6 +31,20 @@ export default function MarketingPage() {
   const [formData, setFormData] = useState<any>({});
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
   const [editingDiscount, setEditingDiscount] = useState<any>(null);
+
+  // Bulk Discounts state
+  const [bulkDiscounts, setBulkDiscounts] = useState<any[]>([]);
+  const [bulkDiscountsLoading, setBulkDiscountsLoading] = useState(false);
+  const [showBulkDiscountForm, setShowBulkDiscountForm] = useState(false);
+  const [editingBulkDiscount, setEditingBulkDiscount] = useState<any>(null);
+  const [products, setProducts] = useState<any[]>([]);
+  const [bulkDiscountForm, setBulkDiscountForm] = useState({
+    product_id: '' as string | null,
+    min_quantity: 1,
+    discount_percent: 5,
+    description: '',
+    active: true,
+  });
 
   // Blast Modal
   const [showBlastModal, setShowBlastModal] = useState(false);
@@ -211,6 +227,7 @@ export default function MarketingPage() {
   const tabs = [
     { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
     { id: 'discounts', label: 'Discounts', icon: Tag },
+    { id: 'bulk_discounts', label: 'Bulk Discounts', icon: Package },
 
     // { id: 'email', label: 'Email Marketing', icon: Mail },
 
@@ -576,6 +593,23 @@ export default function MarketingPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === 'bulk_discounts' && (
+          <BulkDiscountsTabContent
+            bulkDiscounts={bulkDiscounts}
+            setBulkDiscounts={setBulkDiscounts}
+            bulkDiscountsLoading={bulkDiscountsLoading}
+            setBulkDiscountsLoading={setBulkDiscountsLoading}
+            showBulkDiscountForm={showBulkDiscountForm}
+            setShowBulkDiscountForm={setShowBulkDiscountForm}
+            editingBulkDiscount={editingBulkDiscount}
+            setEditingBulkDiscount={setEditingBulkDiscount}
+            products={products}
+            setProducts={setProducts}
+            bulkDiscountForm={bulkDiscountForm}
+            setBulkDiscountForm={setBulkDiscountForm}
+          />
         )}
       </div>
 
@@ -1217,6 +1251,353 @@ export default function MarketingPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// --- Bulk Discounts Tab Component ---
+function BulkDiscountsTabContent({
+  bulkDiscounts,
+  setBulkDiscounts,
+  bulkDiscountsLoading,
+  setBulkDiscountsLoading,
+  showBulkDiscountForm,
+  setShowBulkDiscountForm,
+  editingBulkDiscount,
+  setEditingBulkDiscount,
+  products,
+  setProducts,
+  bulkDiscountForm,
+  setBulkDiscountForm,
+}: any) {
+  const defaultForm = {
+    product_id: '' as string | null,
+    min_quantity: 1,
+    discount_percent: 5,
+    description: '',
+    active: true,
+  };
+
+  const fetchBulkDiscounts = async () => {
+    try {
+      setBulkDiscountsLoading(true);
+      const data = await api.getBulkDiscounts();
+      setBulkDiscounts(data.bulk_discounts || []);
+    } catch (error) {
+      console.error('Error fetching bulk discounts:', error);
+    } finally {
+      setBulkDiscountsLoading(false);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      // ⚠️ api.getProducts() already exists — use with limit=100
+      const data = await api.getProducts(100, 0);
+      setProducts(data.products || data.data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBulkDiscounts();
+    fetchProducts();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...bulkDiscountForm,
+        product_id: bulkDiscountForm.product_id || null,
+      };
+
+      if (editingBulkDiscount) {
+        await api.updateBulkDiscount(editingBulkDiscount.id, payload);
+      } else {
+        await api.createBulkDiscount(payload);
+      }
+      setShowBulkDiscountForm(false);
+      setEditingBulkDiscount(null);
+      setBulkDiscountForm(defaultForm);
+      fetchBulkDiscounts();
+    } catch (error: any) {
+      alert(error.message || 'Failed to save bulk discount');
+    }
+  };
+
+  const handleEdit = (discount: any) => {
+    setBulkDiscountForm({
+      product_id: discount.product_id || '',
+      min_quantity: discount.min_quantity || 1,
+      discount_percent: discount.discount_percent || 5,
+      description: discount.description || '',
+      active: discount.active !== false,
+    });
+    setEditingBulkDiscount(discount);
+    setShowBulkDiscountForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this bulk discount rule?'))
+      return;
+    try {
+      await api.deleteBulkDiscount(id);
+      fetchBulkDiscounts();
+    } catch (error: any) {
+      alert(error.message || 'Failed to delete bulk discount');
+    }
+  };
+
+  return (
+    <div className="lg:col-span-3">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Bulk Discount Rules
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Define quantity-based discount rules for products
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setEditingBulkDiscount(null);
+              setBulkDiscountForm(defaultForm);
+              setShowBulkDiscountForm(!showBulkDiscountForm);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
+          >
+            <Plus size={16} />
+            Add Rule
+          </button>
+        </div>
+
+        {/* Create/Edit Form */}
+        {showBulkDiscountForm && (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
+            <h3 className="text-base font-semibold text-gray-900 mb-4">
+              {editingBulkDiscount ? 'Edit Rule' : 'Create Rule'}
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Product (optional)
+                  </label>
+                  <select
+                    value={bulkDiscountForm.product_id || ''}
+                    onChange={(e) =>
+                      setBulkDiscountForm({
+                        ...bulkDiscountForm,
+                        product_id: e.target.value || null,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  >
+                    <option value="">All Products</option>
+                    {products.map((p: any) => (
+                      <option key={p.id} value={p.id}>
+                        {p.title}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Leave blank to apply to all products
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Minimum Quantity
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={bulkDiscountForm.min_quantity}
+                    onChange={(e) =>
+                      setBulkDiscountForm({
+                        ...bulkDiscountForm,
+                        min_quantity: parseInt(e.target.value) || 1,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Discount %
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    required
+                    value={bulkDiscountForm.discount_percent}
+                    onChange={(e) =>
+                      setBulkDiscountForm({
+                        ...bulkDiscountForm,
+                        discount_percent: parseInt(e.target.value) || 5,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    value={bulkDiscountForm.description}
+                    onChange={(e) =>
+                      setBulkDiscountForm({
+                        ...bulkDiscountForm,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. Buy 10+ get 15% off"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={bulkDiscountForm.active}
+                    onChange={(e) =>
+                      setBulkDiscountForm({
+                        ...bulkDiscountForm,
+                        active: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    Active
+                  </span>
+                </label>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+                >
+                  {editingBulkDiscount ? 'Update Rule' : 'Create Rule'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowBulkDiscountForm(false);
+                    setEditingBulkDiscount(null);
+                    setBulkDiscountForm(defaultForm);
+                  }}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Table */}
+        {bulkDiscountsLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="animate-spin text-gray-400" size={24} />
+            <span className="ml-2 text-gray-500">Loading...</span>
+          </div>
+        ) : bulkDiscounts.length === 0 ? (
+          <div className="text-center py-12 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+            <Package size={48} className="mx-auto mb-4 text-gray-300" />
+            <p className="text-lg font-medium text-gray-900 mb-1">
+              No bulk discount rules
+            </p>
+            <p className="text-sm mb-4">
+              Create rules to offer quantity-based discounts to your customers.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Product
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Min Qty
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Discount %
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Description
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Active
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {bulkDiscounts.map((discount: any) => (
+                  <tr key={discount.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {discount.product_title || 'All Products'}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm font-medium">
+                      {discount.min_quantity}+
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm font-medium text-green-600">
+                      {discount.discount_percent}%
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500">
+                      {discount.description || '—'}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span
+                        className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
+                          discount.active
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-gray-100 text-gray-500'
+                        }`}
+                      >
+                        {discount.active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleEdit(discount)}
+                          className="text-blue-500 hover:text-blue-700 p-1"
+                          title="Edit"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(discount.id)}
+                          className="text-red-500 hover:text-red-700 p-1"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

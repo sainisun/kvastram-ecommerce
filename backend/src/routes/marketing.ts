@@ -29,7 +29,8 @@ app.get('/campaigns/active', async (c) => {
       return true;
     });
     return c.json({ campaigns: activeCampaigns });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    console.error('[Marketing] Error fetching active campaigns:', error);
     return c.json({ campaigns: [] }); // Silent fail for storefront
   }
 });
