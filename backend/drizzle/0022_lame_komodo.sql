@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS "saved_carts" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "wishlists" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" uuid DEFAULT gen_random_uuid() NOT NULL,
 	"customer_id" uuid NOT NULL,
 	"product_id" uuid NOT NULL,
 	"variant_id" uuid,
