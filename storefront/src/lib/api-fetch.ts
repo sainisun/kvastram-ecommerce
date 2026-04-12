@@ -14,16 +14,15 @@
  */
 
 import type { ApiResponse } from '@/types/api-contracts';
-import { 
+import {
   isValidProductResponse, 
   isValidProductArray,
   isValidOrderResponse,
   isValidCustomerResponse,
 } from './api-guards';
+import { getApiBaseUrl } from './api-base-url';
 
-const API_URL = globalThis.window === undefined
-  ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-  : '/api';
+const API_URL = getApiBaseUrl();
 
 const DEFAULT_TIMEOUT_MS = 15000;
 

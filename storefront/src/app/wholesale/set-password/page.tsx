@@ -6,20 +6,6 @@ import Link from 'next/link';
 import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react';
 import { api } from '@/lib/api';
 
-function setAuthToken(token: string) {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem('auth_token', token);
-  document.cookie = `auth_token=${encodeURIComponent(token)}; Secure; SameSite=Strict; path=/; max-age=${60 * 60 * 24 * 7}`;
-  window.dispatchEvent(new Event('auth-change'));
-}
-
-function clearAuthToken() {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem('auth_token');
-  document.cookie = 'auth_token=; Secure; SameSite=Strict; path=/; max-age=0';
-  window.dispatchEvent(new Event('auth-change'));
-}
-
 function SetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -74,9 +60,7 @@ function SetPasswordContent() {
       }) as { success?: boolean; token?: string };
 
       if (response.success || response.token) {
-        if (response.token) {
-          setAuthToken(response.token);
-        }
+        window.dispatchEvent(new Event('auth-change'));
         setSuccess(true);
         setTimeout(() => {
           router.push('/wholesale');

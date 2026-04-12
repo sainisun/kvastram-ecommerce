@@ -5,6 +5,10 @@ node_modules/
 .env
 .env.local
 .env.*.local
+.env.hostinger
+backend/.env.production
+storefront/.env.production
+admin/.env.production
 
 # Build outputs
 .next/

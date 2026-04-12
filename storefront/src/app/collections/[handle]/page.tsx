@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { getServerApiUrl } from '@/lib/api-base-url';
 import { notFound } from 'next/navigation';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import PageHero from '@/components/hero/PageHero';
@@ -11,9 +12,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
+  const apiUrl = getServerApiUrl();
   
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/collections/${handle}`, {
+    const res = await fetch(`${apiUrl}/collections/${handle}`, {
       next: { revalidate: 60 }
     });
     
@@ -34,10 +36,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CollectionPage({ params }: Props) {
   const { handle } = await params;
+  const apiUrl = getServerApiUrl();
   
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/collections/${handle}`,
+      `${apiUrl}/collections/${handle}`,
       { next: { revalidate: 60 } }
     );
     

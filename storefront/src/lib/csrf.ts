@@ -2,7 +2,9 @@
 // Note: In production, ensure your backend validates the Origin/Referer header
 // for cross-site request forgery protection.
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+import { getApiBaseUrl } from './api-base-url';
+
+const API_URL = getApiBaseUrl();
 
 let csrfToken: string | null = null;
 

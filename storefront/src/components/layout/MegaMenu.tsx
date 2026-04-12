@@ -21,9 +21,9 @@ interface MegaMenuProps {
 export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
   if (!isOpen) return null;
 
-  const hasChildren = category.children && category.children.length > 0;
-  const hasHeaderImage =
-    category.header_image_url || category.image;
+  const children = category.children ?? [];
+  const hasChildren = children.length > 0;
+  const hasHeaderImage = category.header_image_url || category.image;
 
   return (
     <div
@@ -44,7 +44,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                 Shop {category.name}
               </h3>
               <div className="space-y-2">
-                {category.children.map((child) => (
+                {children.map((child) => (
                   <Link
                     key={child.id}
                     href={`/categories/${child.slug}`}
@@ -93,7 +93,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
           {/* No Image - Show more subcategories in grid */}
           {!hasHeaderImage && hasChildren && (
             <div className="col-span-2 grid grid-cols-2 gap-6">
-              {category.children.slice(3).map((child) => (
+              {children.slice(3).map((child) => (
                 <Link
                   key={child.id}
                   href={`/categories/${child.slug}`}

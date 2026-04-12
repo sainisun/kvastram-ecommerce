@@ -22,12 +22,11 @@ export default function WholesaleLoginPage() {
     try {
       const response = await api.login(formData);
 
-      if (response.token) {
-        // Store token in localStorage for auth context to pick up
-        localStorage.setItem('auth_token', response.token);
-        // Also trigger a custom event to notify auth context
+      if (response.customer || response.data?.customer) {
         window.dispatchEvent(new Event('auth-change'));
         router.push('/wholesale');
+      } else {
+        setError('Login failed. Please try again.');
       }
     } catch (err: any) {
       console.error('Login error:', err);

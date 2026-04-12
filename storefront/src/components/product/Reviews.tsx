@@ -116,17 +116,10 @@ export function Reviews({ productId }: ReviewsProps) {
     });
 
     try {
-      // Get auth token from localStorage or cookie
-      const token =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('auth_token')
-          : null;
-
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/reviews/upload`,
+        '/api/reviews/upload',
         {
           method: 'POST',
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
           body: formData,
           credentials: 'include',
         }

@@ -103,18 +103,22 @@ app.use('/upload/*', uploadTimeout);
 app.use('/store/payments/webhook', webhookTimeout);
 
 // CORS Configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:3002',
-  'http://localhost:4000',
-  'http://127.0.0.1:3000',
-  'http://127.0.0.1:3001',
-  'http://127.0.0.1:3002',
-  'http://127.0.0.1:4000',
-  'https://kvastram-ecommerce.vercel.app',
-  'https://kvastram-ecommerce-panal.vercel.app',
-];
+const allowedOrigins =
+  process.env.ALLOWED_ORIGINS
+    ?.split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean) || [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:4000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:3002',
+    'http://127.0.0.1:4000',
+    'https://kvastram-ecommerce.vercel.app',
+    'https://kvastram-ecommerce-panal.vercel.app',
+  ];
 app.use(
   '*',
   cors({

@@ -55,6 +55,18 @@ class EmailService {
     this.ready = ready;
   }
 
+  private getStorefrontUrl(): string {
+    return (
+      process.env.STOREFRONT_URL ||
+      process.env.FRONTEND_URL ||
+      'http://localhost:3000'
+    );
+  }
+
+  private getWholesaleUrl(): string {
+    return `${this.getStorefrontUrl()}/wholesale`;
+  }
+
   /** Factory: initialize transporter async, then return instance */
   static async create(): Promise<EmailService> {
     const instance = new EmailService(
@@ -254,7 +266,7 @@ class EmailService {
     discount_tier: string;
     token: string;
   }) {
-    const setupUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/wholesale/set-password?token=${encodeURIComponent(data.token)}`;
+    const setupUrl = `${this.getWholesaleUrl()}/set-password?token=${encodeURIComponent(data.token)}`;
     // Handle empty discount_tier safely
     const tierDisplay = data.discount_tier
       ? data.discount_tier.charAt(0).toUpperCase() + data.discount_tier.slice(1)
@@ -319,7 +331,7 @@ class EmailService {
     first_name: string;
     token: string;
   }) {
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/verify-email?token=${encodeURIComponent(data.token)}`;
+    const verificationUrl = `${this.getStorefrontUrl()}/verify-email?token=${encodeURIComponent(data.token)}`;
     const subject = 'Verify Your Email Address';
     const text = `Hi ${data.first_name},\n\nWelcome to Kvastram! Please verify your email address by clicking the link below:\n\n${verificationUrl}\n\nThis link will expire in 24 hours.\n\nBest regards,\nKvastram Team`;
     const html = `
@@ -356,7 +368,7 @@ class EmailService {
     first_name: string;
     token: string;
   }) {
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3001'}/reset-password?token=${encodeURIComponent(data.token)}`;
+    const resetUrl = `${this.getStorefrontUrl()}/reset-password?token=${encodeURIComponent(data.token)}`;
     const subject = 'Reset Your Password - Kvastram';
     const text = `Hi ${data.first_name},\n\nYou requested to reset your password.\n\nClick the link below to create a new password:\n${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nKvastram Team`;
 
@@ -396,7 +408,7 @@ class EmailService {
   }) {
     const subject = `"${data.product_title}" is back in stock! 🎉`;
     const safeTitle = safeString(data.product_title);
-    const storeUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const storeUrl = this.getStorefrontUrl();
     const productUrl = data.product_url.startsWith('http')
       ? data.product_url
       : `${storeUrl}${data.product_url}`;
@@ -448,7 +460,7 @@ class EmailService {
     cta_text: string;
     cta_url: string;
   }): Promise<{ sent: number; failed: number }> {
-    const storeUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const storeUrl = this.getStorefrontUrl();
     const ctaUrl = data.cta_url.startsWith('http')
       ? data.cta_url
       : `${storeUrl}${data.cta_url}`;
@@ -533,4 +545,3 @@ export const emailService = new Proxy({} as EmailService, {
     };
   },
 });
-

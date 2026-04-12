@@ -67,6 +67,123 @@ const ResendVerificationSchema = z.object({
   email: z.string().email('Invalid email address'),
 });
 
+const GoogleSocialLoginSchema = z.object({
+  id_token: z.string().min(1, 'Google token is required'),
+  email: z.string().email().optional(),
+  name: z.string().optional(),
+  avatar: z.string().url().optional(),
+});
+
+const FacebookSocialLoginSchema = z.object({
+  access_token: z.string().min(1, 'Facebook access token is required'),
+  email: z.string().email().optional(),
+  name: z.string().optional(),
+  avatar: z.string().url().optional(),
+});
+
+interface GoogleTokenInfo {
+  aud?: string;
+  sub?: string;
+  email?: string;
+  email_verified?: boolean | string;
+  name?: string;
+  picture?: string;
+}
+
+interface FacebookProfileResponse {
+  id?: string;
+  email?: string;
+  name?: string;
+  picture?: {
+    data?: {
+      url?: string;
+    };
+  };
+  error?: {
+    message?: string;
+  };
+}
+
+async function verifyGoogleIdentity(idToken: string, claimedEmail?: string) {
+  const response = await fetch(
+    `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`
+  );
+
+  if (!response.ok) {
+    throw new Error('Google authentication could not be verified');
+  }
+
+  const tokenInfo = (await response.json()) as GoogleTokenInfo;
+  const expectedAudience =
+    process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  if (expectedAudience && tokenInfo.aud !== expectedAudience) {
+    throw new Error('Google token audience mismatch');
+  }
+
+  const emailVerified =
+    tokenInfo.email_verified === true || tokenInfo.email_verified === 'true';
+
+  if (!tokenInfo.sub || !tokenInfo.email || !emailVerified) {
+    throw new Error('Google account email is not verified');
+  }
+
+  if (
+    claimedEmail &&
+    tokenInfo.email.toLowerCase() !== claimedEmail.toLowerCase()
+  ) {
+    throw new Error('Google account email mismatch');
+  }
+
+  return {
+    providerId: tokenInfo.sub,
+    email: tokenInfo.email.toLowerCase(),
+    name: tokenInfo.name,
+    avatar: tokenInfo.picture,
+  };
+}
+
+async function verifyFacebookIdentity(
+  accessToken: string,
+  claimedEmail?: string
+) {
+  const params = new URLSearchParams({
+    fields: 'id,name,email,picture',
+    access_token: accessToken,
+  });
+
+  const response = await fetch(
+    `https://graph.facebook.com/me?${params.toString()}`
+  );
+  const profile = (await response.json()) as FacebookProfileResponse;
+
+  if (!response.ok || profile.error) {
+    throw new Error(
+      profile.error?.message || 'Facebook authentication could not be verified'
+    );
+  }
+
+  if (!profile.id || !profile.email) {
+    throw new Error(
+      'Facebook login requires an email-enabled account permission'
+    );
+  }
+
+  if (
+    claimedEmail &&
+    profile.email.toLowerCase() !== claimedEmail.toLowerCase()
+  ) {
+    throw new Error('Facebook account email mismatch');
+  }
+
+  return {
+    providerId: profile.id,
+    email: profile.email.toLowerCase(),
+    name: profile.name,
+    avatar: profile.picture?.data?.url,
+  };
+}
+
 // 🔒 FIX-008: Legal pages endpoint
 storeAuthRouter.get('/legal', async (c) => {
   const slug = c.req.query('slug');
@@ -264,64 +381,65 @@ storeAuthRouter.get('/me', async (c) => {
 
 
 // Social Login - Google
-storeAuthRouter.post('/social/google', async (c) => {
-  const { id_token, email, name, avatar } = await c.req
-    .json()
-    .catch(() => ({}));
+storeAuthRouter.post(
+  '/social/google',
+  zValidator('json', GoogleSocialLoginSchema),
+  async (c) => {
+    const { id_token, email } = c.req.valid('json');
 
-  if (!id_token && !email) {
-    return c.json({ error: 'Invalid request' }, 400);
+    try {
+      const verifiedIdentity = await verifyGoogleIdentity(id_token, email);
+      const customer = await customerAuthService.socialLogin({
+        provider: 'google',
+        providerId: verifiedIdentity.providerId,
+        email: verifiedIdentity.email,
+        name: verifiedIdentity.name,
+        avatar: verifiedIdentity.avatar,
+      });
+
+      setAuthCookie(c, customer.token);
+      return c.json({
+        success: true,
+        customer: customer.customer,
+        isNewUser: customer.isNewUser,
+      });
+    } catch (error: any) {
+      return c.json({ error: error.message }, 400);
+    }
   }
-
-  try {
-    const customer = await customerAuthService.socialLogin({
-      provider: 'google',
-      providerId: id_token,
-      email: email,
-      name: name,
-      avatar: avatar,
-    });
-
-    setAuthCookie(c, customer.token);
-    return c.json({
-      success: true,
-      customer: customer.customer,
-      isNewUser: customer.isNewUser,
-    });
-  } catch (error: any) {
-    return c.json({ error: error.message }, 400);
-  }
-});
+);
 
 // Social Login - Facebook
-storeAuthRouter.post('/social/facebook', async (c) => {
-  const { access_token, email, name, avatar } = await c.req
-    .json()
-    .catch(() => ({}));
+storeAuthRouter.post(
+  '/social/facebook',
+  zValidator('json', FacebookSocialLoginSchema),
+  async (c) => {
+    const { access_token, email } = c.req.valid('json');
 
-  if (!access_token && !email) {
-    return c.json({ error: 'Invalid request' }, 400);
+    try {
+      const verifiedIdentity = await verifyFacebookIdentity(
+        access_token,
+        email
+      );
+      const customer = await customerAuthService.socialLogin({
+        provider: 'facebook',
+        providerId: verifiedIdentity.providerId,
+        email: verifiedIdentity.email,
+        name: verifiedIdentity.name,
+        avatar: verifiedIdentity.avatar,
+      });
+
+      setAuthCookie(c, customer.token);
+      return c.json({
+        success: true,
+        customer: customer.customer,
+        isNewUser: customer.isNewUser,
+      });
+    } catch (error: any) {
+      return c.json({ error: error.message }, 400);
+    }
   }
-
-  try {
-    const customer = await customerAuthService.socialLogin({
-      provider: 'facebook',
-      providerId: access_token,
-      email: email,
-      name: name,
-      avatar: avatar,
-    });
-
-    setAuthCookie(c, customer.token);
-    return c.json({
-      success: true,
-      customer: customer.customer,
-      isNewUser: customer.isNewUser,
-    });
-  } catch (error: any) {
-    return c.json({ error: error.message }, 400);
-  }
-});
+);
 
 // POST /store/auth/forgot-password - Request password reset
 storeAuthRouter.post('/forgot-password', emailLimiter, async (c) => {

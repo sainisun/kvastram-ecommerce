@@ -17,13 +17,11 @@
 
 // Import adapter functions for API response conversion
 import { adaptProduct, adaptProducts } from './api-adapters';
+import { getApiBaseUrl } from './api-base-url';
 
 import type { Product } from '@/types';
 
-// Use absolute URL for SSR, relative for client (Next.js rewrites)
-const API_URL = globalThis.window === undefined
-  ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-  : '/api';
+const API_URL = getApiBaseUrl();
 
 const DEFAULT_API_TIMEOUT_MS = 15000;
 const DEFAULT_CLIENT_TIMEOUT_MS = 15000;
@@ -297,6 +295,10 @@ export const api = {
       // Silently return fallback when backend not available
       return { categories: [] };
     }
+  },
+
+  async getCategoriesTree() {
+    return this.getCategories();
   },
 
   async getCollections() {

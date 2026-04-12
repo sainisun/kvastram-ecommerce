@@ -16,8 +16,7 @@ async function getCustomerId(c: any): Promise<string | null> {
 
     const token =
       c.req.header('Authorization')?.replace('Bearer ', '') ||
-      getCookie(c, 'admin_token') ||
-      getCookie(c, 'store_token');
+      getCookie(c, 'auth_token');
 
     if (!token) return null;
     const payload = (await verify(token, config.jwt.secret, 'HS256')) as any;

@@ -16,17 +16,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-// 🔒 FIX-010: Cookie helper functions
-function getCookie(name: string): string | null {
-  if (typeof document === 'undefined') return null;
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return parts.pop()?.split(';').shift() || null;
-  }
-  return null;
-}
-
 function eraseCookie(name: string) {
   if (typeof document === 'undefined') return;
   document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -39,7 +28,7 @@ export function AuthProvider({
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const fetchCustomer = async (token: string) => {
+  const refreshCustomer = async () => {
     try {
       const data = await api.getCustomer();
       setCustomer(data.customer);
@@ -55,36 +44,11 @@ export function AuthProvider({
   };
 
   useEffect(() => {
-    // 🔒 FIX-010: Read token from cookie instead of localStorage
-    let token = getCookie('auth_token');
+    void refreshCustomer();
 
-    // Also check localStorage for wholesale login (fallback)
-    if (!token && globalThis.window !== undefined) {
-      token = localStorage.getItem('auth_token');
-      if (token && typeof document !== 'undefined') {
-        // Sync to cookie for consistency
-        document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`;
-      }
-    }
-
-    if (token) {
-      fetchCustomer(token);
-    } else {
-      // Use setTimeout to avoid synchronous setState warning
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-
-    // Listen for auth changes (e.g., from wholesale login)
     const handleAuthChange = () => {
-      if (globalThis.window !== undefined) {
-        const newToken = localStorage.getItem('auth_token');
-        if (newToken) {
-          fetchCustomer(newToken);
-        }
-      }
+      setLoading(true);
+      void refreshCustomer();
     };
 
     if (globalThis.window !== undefined) {
@@ -113,6 +77,7 @@ export function AuthProvider({
   };
 
   const logout = () => {
+    void api.post('/store/auth/logout', {}).catch(() => undefined);
     eraseCookie('auth_token');
     if (globalThis.window !== undefined) {
       localStorage.removeItem('auth_token');

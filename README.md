@@ -83,6 +83,7 @@ npm run dev -- -p 3002
 2. **[PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md)** - Complete project state & history 📚
 3. **[backend/CURRENT_STATUS_AND_FIX.md](./backend/CURRENT_STATUS_AND_FIX.md)** - Latest changes 🔧
 4. **[backend/SETUP_GUIDE.md](./backend/SETUP_GUIDE.md)** - Initial setup 🛠️
+5. **[docs/HOSTINGER_VPS_DEPLOY.md](./docs/HOSTINGER_VPS_DEPLOY.md)** - Production VPS deployment guide
 
 ### Additional Guides
 - **[SUPABASE_SETUP.md](./SUPABASE_SETUP.md)** - Database setup
@@ -91,16 +92,16 @@ npm run dev -- -p 3002
 
 ---
 
-## ✅ Current Status (2026-02-05)
+## ✅ Current Status (2026-04-12)
 
 | Component | Status | Port |
 |-----------|--------|------|
-| Backend API | ✅ Running | 4000 |
-| Admin Panel | ✅ Running | 3001 |
-| Storefront | ✅ Running | 3002 |
-| Database | ✅ Connected | Supabase |
+| Backend API | ✅ Build passing | 4000 |
+| Admin Panel | ✅ Build passing | 3001 |
+| Storefront | ✅ Build passing | 3000 |
+| Database | ✅ Supported | PostgreSQL / Supabase |
 
-**All systems operational!** 🎉
+**Deployment target:** Hostinger VPS via Docker Compose + Nginx.
 
 ---
 
@@ -219,6 +220,6 @@ Private project - All rights reserved
 
 ---
 
-**Last Updated:** 2026-02-05  
-**Status:** Production Ready ✅  
+**Last Updated:** 2026-04-12  
+**Status:** VPS deployment ready, final production rollout requires real env vars and secret rotation  
 **Version:** 1.0.0
