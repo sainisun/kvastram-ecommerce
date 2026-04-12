@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "contacts" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "discount_usage" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" uuid DEFAULT gen_random_uuid() NOT NULL,
 	"discount_id" uuid NOT NULL,
 	"customer_id" uuid NOT NULL,
 	"order_id" uuid NOT NULL,
