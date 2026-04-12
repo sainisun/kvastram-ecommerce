@@ -48,11 +48,8 @@ authRouter.post(
       // Return user data only (token is in cookie)
       return successResponse(c, { user: result.user }, 'Login successful');
     } catch (error: any) {
-      if (error.message === 'Invalid email or password') {
-        throw new AuthError('Invalid credentials');
-      }
+      // 2FA flow — special response shape expected by frontend
       if (error.message === '2FA_REQUIRED') {
-        // Custom response for 2FA flow - adhering to existing contract
         return c.json(
           {
             success: false,
@@ -62,9 +59,25 @@ authRouter.post(
           HttpStatus.FORBIDDEN
         );
       }
+
       if (error.message === 'Invalid 2FA Code') {
         throw new AuthError('Invalid 2FA Code');
       }
+
+      // Any authentication failure (wrong password, account locked, user not found,
+      // too many attempts) → 401. These are expected business-logic errors, NOT
+      // server errors. Previously these fell through to the generic 500 handler.
+      if (
+        error.message?.includes('Invalid') ||
+        error.message?.includes('locked') ||
+        error.message?.includes('attempts remaining') ||
+        error.message?.includes('Try again in')
+      ) {
+        throw new AuthError(error.message);
+      }
+
+      // Anything else (DB connection failure, unexpected crash) → let the
+      // global error handler return 500.
       throw error;
     }
   })

@@ -13,6 +13,7 @@
     "generate": "drizzle-kit generate:pg",
     "migrate": "tsx src/db/migrate.ts",
     "migrate:prod": "NODE_ENV=production tsx src/db/migrate.ts",
+    "unlock-admin": "NODE_ENV=production tsx src/db/unlock-admin.ts",
     "seed:tags": "tsx scripts/seed-default-tags.ts"
   },
   "dependencies": {

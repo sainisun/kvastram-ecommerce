@@ -20,7 +20,6 @@ if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
   throw new Error('FATAL: JWT_SECRET must be set in production environment');
 }
 
-// 🔒 FIX-009: Remove hardcoded fallback - fail if not set
 if (!JWT_SECRET) {
   throw new Error(
     'FATAL: JWT_SECRET environment variable is required. ' +
@@ -30,7 +29,7 @@ if (!JWT_SECRET) {
 
 export const config = {
   jwt: {
-    secret: JWT_SECRET, // 🔒 FIX-009: No fallback - JWT_SECRET validated above
+    secret: JWT_SECRET,
     expiresIn: '7d',
     algorithm: 'HS256' as const,
   },
@@ -49,22 +48,18 @@ export const config = {
   },
   rateLimit: {
     max: Number(getEnvVarWithDefault('RATE_LIMIT_MAX', '100')),
-    windowMs: Number(getEnvVarWithDefault('RATE_LIMIT_WINDOW_MS', '900000')), // 15 minutes
+    windowMs: Number(getEnvVarWithDefault('RATE_LIMIT_WINDOW_MS', '900000')),
   },
-  // 🔒 FIX-005: Default GST tax rate
   tax: {
-    defaultRate: Number(getEnvVarWithDefault('DEFAULT_TAX_RATE', '18')), // 18% GST default
+    defaultRate: Number(getEnvVarWithDefault('DEFAULT_TAX_RATE', '18')),
   },
-  // Database
   database: {
     url: getEnvVar('DATABASE_URL', process.env.NODE_ENV === 'production'),
   },
-  // Stripe
+  // Stripe is OPTIONAL — only validate if STRIPE_SECRET_KEY is set.
+  // If you are using RogerPay / PayPal instead, leave this unset or empty.
   stripe: {
-    secretKey: getEnvVar(
-      'STRIPE_SECRET_KEY',
-      process.env.NODE_ENV === 'production'
-    ),
+    secretKey: getEnvVar('STRIPE_SECRET_KEY', false),
     webhookSecret: getEnvVar('STRIPE_WEBHOOK_SECRET', false),
     publishableKey: getEnvVar('STRIPE_PUBLISHABLE_KEY', false),
   },
@@ -86,8 +81,12 @@ if (process.env.NODE_ENV === 'production') {
     throw new Error('FATAL: DATABASE_URL not configured');
   }
 
+  // Stripe is optional — warn only
   if (!config.stripe.secretKey) {
-    throw new Error('FATAL: STRIPE_SECRET_KEY not configured');
+    console.log(
+      '[CONFIG] ℹ️  STRIPE_SECRET_KEY not set — Stripe payment routes will be disabled. ' +
+        'This is expected if you are using RogerPay / PayPal.'
+    );
   }
 
   console.log('[CONFIG] All critical configuration validated ✓');
