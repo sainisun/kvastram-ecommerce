@@ -32,7 +32,7 @@ import { emailLimiter } from '../../middleware/rate-limiter';
 const storeAuthRouter = new Hono();
 
 // 🔒 FIX-010: Cookie configuration
-// Production (Vercel→Railway): sameSite:'none' required for cross-domain HTTPS cookies
+// Production (Hostinger): sameSite:'none' required for cross-domain HTTPS cookies
 // Development (localhost HTTP): sameSite:'lax' required — 'none' needs HTTPS which dev lacks
 const isProduction = config.server.env === 'production';
 const COOKIE_OPTIONS = {

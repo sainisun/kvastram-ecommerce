@@ -9,6 +9,7 @@ node_modules/
 backend/.env.production
 storefront/.env.production
 admin/.env.production
+deploy/hostinger/.env
 
 # Build outputs
 .next/

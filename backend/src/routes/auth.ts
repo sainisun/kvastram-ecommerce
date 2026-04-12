@@ -22,7 +22,7 @@ import { serializeUser } from '../utils/safe-user';
 const authRouter = new Hono<{ Variables: AuthContextVariables }>();
 
 // Cookie configuration for httpOnly JWT storage
-// Production (Vercel→Railway): sameSite:'none' required for cross-domain HTTPS cookies
+// Production (Hostinger): sameSite:'none' required for cross-domain HTTPS cookies
 // Development (localhost HTTP): sameSite:'lax' required — 'none' needs HTTPS which dev lacks
 const isProduction = config.server.env === 'production';
 const COOKIE_OPTIONS = {

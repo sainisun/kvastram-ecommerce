@@ -1,0 +1,39 @@
+name: Deploy to Hostinger VPS
+
+# Trigger: push to main branch only
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  deploy:
+    name: SSH Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+
+            echo "=== Pulling latest code ==="
+            cd ${{ secrets.VPS_PROJECT_PATH }}
+            git pull origin main
+
+            echo "=== Rebuilding and restarting containers ==="
+            docker compose -f deploy/hostinger/docker-compose.yml up -d --build
+
+            echo "=== Removing unused Docker images ==="
+            docker image prune -f
+
+            echo "=== Deployment complete ==="
+            docker compose -f deploy/hostinger/docker-compose.yml ps
