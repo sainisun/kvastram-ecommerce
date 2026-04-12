@@ -47,6 +47,9 @@ if [ ! -f /etc/apt/keyrings/docker.gpg ]; then
   chmod a+r /etc/apt/keyrings/docker.gpg
 fi
 
+# Normalize any pre-existing Docker apt source definitions to avoid signed-by conflicts
+rm -f /etc/apt/sources.list.d/docker.sources
+
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
