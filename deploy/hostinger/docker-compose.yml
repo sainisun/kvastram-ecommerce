@@ -48,6 +48,11 @@ services:
     restart: unless-stopped
     env_file:
       - ../../admin/.env.production
+    environment:
+      # BACKEND_URL must point to the backend Docker service so Next.js rewrites work inside the container.
+      # This overrides any value (or absence) in admin/.env.production.
+      - BACKEND_URL=http://backend:4000
+      - NODE_ENV=production
     depends_on:
       - backend
     ports:
