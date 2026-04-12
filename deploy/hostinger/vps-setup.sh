@@ -38,7 +38,7 @@ echo ">>> STEP 1 DONE"
 echo ""
 echo ">>> STEP 2: Installing system packages..."
 apt update -y
-apt install -y ca-certificates curl gnupg nginx certbot python3-certbot-nginx git
+apt install -y ca-certificates curl gnupg nginx certbot python3-certbot-nginx git ufw openssl
 
 # Docker GPG key & repo
 install -m 0755 -d /etc/apt/keyrings
@@ -54,6 +54,8 @@ echo \
 
 apt update -y
 apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl enable docker
+systemctl enable nginx
 echo ">>> STEP 2 DONE"
 
 # ----------------------------------------------------------
@@ -80,6 +82,8 @@ echo ">>> STEP 4: Creating environment files..."
 # Generate secure passwords
 DB_PASSWORD=$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | head -c 32)
 JWT_SECRET=$(openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 64)
+STRIPE_SECRET_PLACEHOLDER="sk_live_replace_before_launch"
+STRIPE_PUBLISHABLE_PLACEHOLDER="pk_live_replace_before_launch"
 
 # 4a: .env.hostinger (Postgres config)
 cat > "$APP_DIR/.env.hostinger" << EOF
@@ -103,9 +107,11 @@ JWT_SECRET=${JWT_SECRET}
 ALLOWED_ORIGINS=https://${DOMAIN},https://www.${DOMAIN},https://admin.${DOMAIN}
 STOREFRONT_URL=https://${DOMAIN}
 ADMIN_URL=https://admin.${DOMAIN}
+FRONTEND_URL=https://${DOMAIN}
 
-# Stripe (fill later)
-STRIPE_SECRET_KEY=
+# Stripe (replace before accepting real payments)
+STRIPE_SECRET_KEY=${STRIPE_SECRET_PLACEHOLDER}
+STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_PLACEHOLDER}
 STRIPE_WEBHOOK_SECRET=
 
 # SMTP (fill later)
@@ -122,6 +128,7 @@ NEXT_PUBLIC_API_URL=https://api.${DOMAIN}
 INTERNAL_API_URL=http://backend:4000
 NEXT_PUBLIC_SITE_URL=https://${DOMAIN}
 NEXT_PUBLIC_STORE_URL=https://${DOMAIN}
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_PLACEHOLDER}
 EOF
 
 # 4d: admin/.env.production
@@ -136,6 +143,7 @@ echo "    DB_PASSWORD: ${DB_PASSWORD}"
 echo "    JWT_SECRET:  ${JWT_SECRET}"
 echo ""
 echo "    >>> SAVE THESE PASSWORDS! <<<"
+echo "    Stripe placeholders were written. Replace them before live checkout."
 echo ">>> STEP 4 DONE"
 
 # ----------------------------------------------------------
@@ -230,7 +238,7 @@ echo ">>> STEP 7: Configuring firewall..."
 ufw allow 22/tcp
 ufw allow 80/tcp
 ufw allow 443/tcp
-echo "y" | ufw enable
+ufw --force enable
 ufw status
 echo ">>> STEP 7 DONE"
 
@@ -252,6 +260,9 @@ echo "  1. Set up DNS A records pointing to: $(curl -s ifconfig.me)"
 echo "  2. Wait for DNS propagation (5min - 48hrs)"
 echo "  3. Run SSL setup:"
 echo "     sudo certbot --nginx -d ${DOMAIN} -d www.${DOMAIN} -d admin.${DOMAIN} -d api.${DOMAIN}"
+echo "  4. Replace Stripe placeholders in:"
+echo "     $APP_DIR/backend/.env.production"
+echo "     $APP_DIR/storefront/.env.production"
 echo ""
 echo "  SAVED CREDENTIALS:"
 echo "  DB Password: ${DB_PASSWORD}"

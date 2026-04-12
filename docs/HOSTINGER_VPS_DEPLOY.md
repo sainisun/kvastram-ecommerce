@@ -94,6 +94,14 @@ chmod +x deploy/hostinger/deploy.sh
 ./deploy/hostinger/deploy.sh
 ```
 
+Or use the VPS bootstrap script directly on the server:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/sainisun/kvastram-ecommerce/main/deploy/hostinger/vps-setup.sh | bash
+```
+
+That bootstrap script writes Stripe placeholder keys so the backend can boot. Replace those placeholders before taking real payments.
+
 Check containers:
 
 ```bash
