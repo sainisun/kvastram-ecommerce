@@ -37,6 +37,10 @@ echo ">>> STEP 1 DONE"
 # ----------------------------------------------------------
 echo ""
 echo ">>> STEP 2: Installing system packages..."
+
+# Normalize any pre-existing Docker apt source definitions to avoid signed-by conflicts
+rm -f /etc/apt/sources.list.d/docker.sources
+
 apt update -y
 apt install -y ca-certificates curl gnupg nginx certbot python3-certbot-nginx git ufw openssl
 
@@ -46,9 +50,6 @@ if [ ! -f /etc/apt/keyrings/docker.gpg ]; then
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   chmod a+r /etc/apt/keyrings/docker.gpg
 fi
-
-# Normalize any pre-existing Docker apt source definitions to avoid signed-by conflicts
-rm -f /etc/apt/sources.list.d/docker.sources
 
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
