@@ -66,6 +66,8 @@ import adminReturnsRoutes from './routes/admin/returns';
 import storeReturnsRoutes from './routes/store/returns';
 import abandonedCartsRoutes from './routes/admin/abandoned-carts';
 import bulkDiscountsRoutes from './routes/admin/bulk-discounts';
+import adminHeroBannersRoutes from './routes/admin/hero-banners';
+import heroBannersRoutes from './routes/hero-banners';
 
 import docsApp from './docs';
 
@@ -183,6 +185,8 @@ csrfForStateChanging([
   '/auth/2fa/*',
   '/admin/abandoned-carts/*',
   '/admin/bulk-discounts/*',
+  '/admin/hero-banners',
+  '/admin/hero-banners/*',
 ]);
 
 // Health Check Endpoint
@@ -262,6 +266,10 @@ const generalApiRoutes = [
   '/store/customers/*', // OPT-007: Added missing store customer route
   '/admin/abandoned-carts/*',
   '/admin/bulk-discounts/*',
+  '/admin/hero-banners',
+  '/admin/hero-banners/*',
+  '/hero-banners',
+  '/hero-banners/*',
 ];
 
 for (const route of generalApiRoutes) {
@@ -318,6 +326,8 @@ app.route('/admin/returns', adminReturnsRoutes);
 app.route('/store/returns', storeReturnsRoutes);
 app.route('/admin/abandoned-carts', abandonedCartsRoutes);
 app.route('/admin/bulk-discounts', bulkDiscountsRoutes);
+app.route('/admin/hero-banners', adminHeroBannersRoutes);
+app.route('/hero-banners', heroBannersRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

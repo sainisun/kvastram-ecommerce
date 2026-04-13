@@ -1226,6 +1226,50 @@ export const api = {
     return res.json();
   },
 
+  // Hero Banners
+  getHeroBanners: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/hero-banners`, {});
+    if (!res.ok) throw new Error('Failed to fetch hero banners');
+    return res.json();
+  },
+
+  createHeroBanner: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/hero-banners`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create hero banner');
+    return res.json();
+  },
+
+  updateHeroBanner: async (id: string, formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/hero-banners/${id}`, {
+      method: 'PUT',
+      body: formData,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update hero banner');
+    return res.json();
+  },
+
+  deleteHeroBanner: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/hero-banners/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to delete hero banner');
+    return res.json();
+  },
+
+  toggleHeroBanner: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/hero-banners/${id}/toggle`,
+      {
+        method: 'PATCH',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to toggle hero banner');
+    return res.json();
+  },
+
   // Blog Posts
   getPosts: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/posts`, {

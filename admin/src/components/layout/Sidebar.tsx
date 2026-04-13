@@ -21,6 +21,7 @@ import {
   RotateCcw,
   Menu,
   ShoppingCart,
+  Image,
 } from 'lucide-react';
 
 // Sidebar structure per PRD — reorganized into logical sections
@@ -45,6 +46,11 @@ const sections = [
         name: 'Header Navigation',
         icon: Menu,
         path: '/dashboard/header-navigation',
+      },
+      {
+        name: 'Hero Banners',
+        icon: Image,
+        path: '/dashboard/content/hero-banners',
       },
     ],
   },

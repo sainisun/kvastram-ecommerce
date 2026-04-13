@@ -7,13 +7,13 @@ export default function ContentDashboard() {
       <h1 className="text-2xl font-bold mb-6">Content Management</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Link
-          href="/dashboard/content/banners"
+          href="/dashboard/content/hero-banners"
           className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
         >
           <Layers className="mb-4 text-blue-600" size={32} />
-          <h2 className="text-xl font-bold mb-2">Banners & Sliders</h2>
+          <h2 className="text-xl font-bold mb-2">Hero Banners</h2>
           <p className="text-gray-500">
-            Manage homepage hero sliders and promotional banners.
+            Manage admin-controlled homepage hero slider banners.
           </p>
         </Link>
         <Link

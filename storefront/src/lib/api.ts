@@ -889,6 +889,18 @@ export const api = {
     }
   },
 
+  async getHeroBanners() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/hero-banners`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { banners: [] };
+      return res.json();
+    } catch {
+      return { banners: [] };
+    }
+  },
+
   async getPosts() {
     try {
       // Cache for 60 seconds

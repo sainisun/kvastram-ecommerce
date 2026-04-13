@@ -754,6 +754,25 @@ export const banners = pgTable('banners', {
   ...createdUpdated,
 });
 
+export const hero_banners = pgTable(
+  'hero_banners',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    image_url: text('image_url').notNull(),
+    title: text('title'),
+    subtitle: text('subtitle'),
+    button_text: text('button_text'),
+    button_link: text('button_link'),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    activeIdx: index('idx_hero_banners_is_active').on(table.is_active),
+    sortOrderIdx: index('idx_hero_banners_sort_order').on(table.sort_order),
+  })
+);
+
 // --- BLOG & CONTENT ---
 export const posts = pgTable('posts', {
   id: uuid('id').defaultRandom().primaryKey(),

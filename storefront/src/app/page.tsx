@@ -1,59 +1,14 @@
-import ProductCarousel from '@/components/ProductCarousel';
-import HeroCarousel from '@/components/hero/HeroCarousel';
-import TestimonialsCarousel from '@/components/TestimonialsCarousel';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import NewsletterForm from '@/components/NewsletterForm';
 import { api } from '@/lib/api';
 import type { Metadata } from 'next';
 import { MarqueeStrip } from '@/components/ui/MarqueeStrip';
-import { RevealOnScroll, StatReveal } from '@/components/ui/RevealOnScroll';
-import { HeroSection } from '@/components/home/HeroSection';
+import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
 import { StatsSection } from '@/components/home/StatsSection';
 import { CategorySection } from '@/components/home/CategorySection';
 import HomeSectionsClient from '@/components/home/HomeSectionsClient';
 import { CommunitySection } from '@/components/home/CommunitySection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { CategoryCircles } from '@/components/home/CategoryCircles';
-
-interface Banner {
-  id: string;
-  section: string;
-  is_active: boolean;
-  image?: string;
-  title?: string;
-  subtitle?: string;
-  link?: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  image?: string;
-}
-
-interface Product {
-  id: string;
-  title: string;
-  handle?: string;
-  thumbnail?: string;
-  collection?: { title: string };
-  variants?: Array<{
-    prices?: Array<{
-      amount: number;
-      currency_code: string;
-    }>;
-  }>;
-}
-
-interface Collection {
-  id: string;
-  title: string;
-  handle: string;
-  image?: string;
-}
+import { HeroBanner } from '@/components/home/HeroBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -95,22 +50,16 @@ export default async function Home() {
     productsData = await api.getProducts({ limit: 8, sort: 'newest' });
   }
 
-  const [categoriesData, collectionsData, testimonialsData, bannersData] =
-    await Promise.all([
-      api.getCategories(),
-      api.getCollections(),
-      api.getTestimonials(),
-      api.getBanners(),
-    ]);
+  const [categoriesData, collectionsData, testimonialsData] = await Promise.all([
+    api.getCategories(),
+    api.getCollections(),
+    api.getTestimonials(),
+  ]);
 
   const products = productsData.products || [];
   const categories = (categoriesData.categories || []).slice(0, 3);
   const collections = (collectionsData.collections || []).slice(0, 2);
   const testimonialsList = testimonialsData.testimonials || [];
-  // Hero banners: only 'hero' section banners passed to HeroCarousel
-  const heroBanners = (bannersData.banners || []).filter(
-    (b: Banner) => b.section === 'hero' && b.is_active
-  );
 
   const categoryImages: Record<string, string> = {
     sarees: '/images/home/category-sarees.jpg',
@@ -161,12 +110,56 @@ export default async function Home() {
           <div className="block md:hidden">
             <CategoryCircles />
           </div>
-          <HeroSection
-            isAnnouncementEnabled={isAnnouncementEnabled}
-            announcementText={announcementText}
-            tickerItems={tickerItems}
-            heroBanners={heroBanners}
-          />
+          {isAnnouncementEnabled ? (
+            <div
+              style={{
+                background: 'var(--black)',
+                color: 'var(--white)',
+                overflow: 'hidden',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  animation: 'ticker 35s linear infinite',
+                  whiteSpace: 'nowrap',
+                  gap: 0,
+                }}
+              >
+                {[...tickerItems, ...tickerItems].map((item, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      fontSize: '10px',
+                      letterSpacing: '0.2em',
+                      textTransform: 'uppercase',
+                      padding: '0 48px',
+                      opacity: 0.9,
+                      display: 'inline-block',
+                    }}
+                  >
+                    {item}
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '4px',
+                        height: '4px',
+                        background: 'rgba(248,246,243,0.3)',
+                        borderRadius: '50%',
+                        marginLeft: '48px',
+                        verticalAlign: 'middle',
+                      }}
+                    />
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <HeroBanner />
 
           <StatsSection statsData={statsData} />
 
