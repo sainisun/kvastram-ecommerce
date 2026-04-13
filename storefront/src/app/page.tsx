@@ -15,6 +15,7 @@ import { CategorySection } from '@/components/home/CategorySection';
 import HomeSectionsClient from '@/components/home/HomeSectionsClient';
 import { CommunitySection } from '@/components/home/CommunitySection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
+import { CategoryCircles } from '@/components/home/CategoryCircles';
 
 interface Banner {
   id: string;
@@ -157,6 +158,9 @@ export default async function Home() {
       {/* Reveal observer — client component wrapper */}
       <RevealOnScroll>
         <div className="min-h-screen" style={{ background: 'var(--white)' }}>
+          <div className="block md:hidden">
+            <CategoryCircles />
+          </div>
           <HeroSection
             isAnnouncementEnabled={isAnnouncementEnabled}
             announcementText={announcementText}
