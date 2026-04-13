@@ -1,3 +1,5 @@
+'use client';
+
 import { StatReveal } from '@/components/ui/RevealOnScroll';
 
 interface StatData {
