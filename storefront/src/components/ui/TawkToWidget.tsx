@@ -5,7 +5,9 @@ import Script from 'next/script';
 
 declare global {
   interface Window {
-    Tawk_API?: any;
+    Tawk_API?: {
+      embedded?: string;
+    };
     Tawk_LoadStart?: Date;
   }
 }
