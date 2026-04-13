@@ -1,5 +1,11 @@
 import Link from 'next/link';
-import { Layers, FileText, MessageSquare, Link as LinkIcon } from 'lucide-react';
+import {
+  Layers,
+  FileText,
+  MessageSquare,
+  Link as LinkIcon,
+  Clapperboard,
+} from 'lucide-react';
 
 export default function ContentDashboard() {
   return (
@@ -14,6 +20,16 @@ export default function ContentDashboard() {
           <h2 className="text-xl font-bold mb-2">Hero Banners</h2>
           <p className="text-gray-500">
             Manage admin-controlled homepage hero slider banners.
+          </p>
+        </Link>
+        <Link
+          href="/dashboard/content/trending-reels"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <Clapperboard className="mb-4 text-rose-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Trending Reels</h2>
+          <p className="text-gray-500">
+            Manage vertical video cards shown below the hero banner.
           </p>
         </Link>
         <Link

@@ -68,6 +68,8 @@ import abandonedCartsRoutes from './routes/admin/abandoned-carts';
 import bulkDiscountsRoutes from './routes/admin/bulk-discounts';
 import adminHeroBannersRoutes from './routes/admin/hero-banners';
 import heroBannersRoutes from './routes/hero-banners';
+import adminTrendingReelsRoutes from './routes/admin/trending-reels';
+import trendingReelsRoutes from './routes/trending-reels';
 
 import docsApp from './docs';
 
@@ -187,6 +189,8 @@ csrfForStateChanging([
   '/admin/bulk-discounts/*',
   '/admin/hero-banners',
   '/admin/hero-banners/*',
+  '/admin/trending-reels',
+  '/admin/trending-reels/*',
 ]);
 
 // Health Check Endpoint
@@ -270,6 +274,10 @@ const generalApiRoutes = [
   '/admin/hero-banners/*',
   '/hero-banners',
   '/hero-banners/*',
+  '/admin/trending-reels',
+  '/admin/trending-reels/*',
+  '/trending-reels',
+  '/trending-reels/*',
 ];
 
 for (const route of generalApiRoutes) {
@@ -328,6 +336,8 @@ app.route('/admin/abandoned-carts', abandonedCartsRoutes);
 app.route('/admin/bulk-discounts', bulkDiscountsRoutes);
 app.route('/admin/hero-banners', adminHeroBannersRoutes);
 app.route('/hero-banners', heroBannersRoutes);
+app.route('/admin/trending-reels', adminTrendingReelsRoutes);
+app.route('/trending-reels', trendingReelsRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

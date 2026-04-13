@@ -773,6 +773,25 @@ export const hero_banners = pgTable(
   })
 );
 
+export const trending_reels = pgTable(
+  'trending_reels',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    video_url: text('video_url').notNull(),
+    thumbnail_url: text('thumbnail_url').notNull(),
+    product_name: text('product_name').notNull(),
+    price: text('price').notNull(),
+    link_url: text('link_url').notNull(),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    activeIdx: index('idx_trending_reels_is_active').on(table.is_active),
+    sortOrderIdx: index('idx_trending_reels_sort_order').on(table.sort_order),
+  })
+);
+
 // --- BLOG & CONTENT ---
 export const posts = pgTable('posts', {
   id: uuid('id').defaultRandom().primaryKey(),

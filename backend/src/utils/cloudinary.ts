@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 
 interface CloudinaryUploadOptions {
   folder?: string;
+  resourceType?: 'image' | 'video';
 }
 
 interface CloudinaryUploadResult {
@@ -41,6 +42,7 @@ export async function uploadImageToCloudinary(
   const apiKey = getRequiredEnv('CLOUDINARY_API_KEY');
   const apiSecret = getRequiredEnv('CLOUDINARY_API_SECRET');
   const folder = options.folder || 'kvastram/hero-banners';
+  const resourceType = options.resourceType || 'image';
   const timestamp = Math.floor(Date.now() / 1000);
 
   const signature = createSignature(
@@ -59,7 +61,7 @@ export async function uploadImageToCloudinary(
   formData.append('folder', folder);
 
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
     {
       method: 'POST',
       body: formData,
@@ -80,4 +82,14 @@ export async function uploadImageToCloudinary(
     secureUrl: payload.secure_url,
     publicId: payload.public_id,
   };
+}
+
+export async function uploadVideoToCloudinary(
+  file: File,
+  options: CloudinaryUploadOptions = {}
+): Promise<CloudinaryUploadResult> {
+  return uploadImageToCloudinary(file, {
+    ...options,
+    resourceType: 'video',
+  });
 }

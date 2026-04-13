@@ -901,6 +901,18 @@ export const api = {
     }
   },
 
+  async getTrendingReels() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/trending-reels`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { reels: [] };
+      return res.json();
+    } catch {
+      return { reels: [] };
+    }
+  },
+
   async getPosts() {
     try {
       // Cache for 60 seconds

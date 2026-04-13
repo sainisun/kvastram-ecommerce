@@ -1270,6 +1270,56 @@ export const api = {
     return res.json();
   },
 
+  // Trending Reels
+  getTrendingReels: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/trending-reels`, {});
+    if (!res.ok) throw new Error('Failed to fetch trending reels');
+    return res.json();
+  },
+
+  createTrendingReel: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/trending-reels`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create trending reel');
+    return res.json();
+  },
+
+  updateTrendingReel: async (id: string, formData: FormData) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/trending-reels/${id}`,
+      {
+        method: 'PUT',
+        body: formData,
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update trending reel');
+    return res.json();
+  },
+
+  deleteTrendingReel: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/trending-reels/${id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete trending reel');
+    return res.json();
+  },
+
+  toggleTrendingReel: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/trending-reels/${id}/toggle`,
+      {
+        method: 'PATCH',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to toggle trending reel');
+    return res.json();
+  },
+
   // Blog Posts
   getPosts: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/posts`, {

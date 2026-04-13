@@ -9,6 +9,7 @@ import { CommunitySection } from '@/components/home/CommunitySection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { CategoryCircles } from '@/components/home/CategoryCircles';
 import { HeroBanner } from '@/components/home/HeroBanner';
+import { TrendingReels } from '@/components/home/TrendingReels';
 
 export const dynamic = 'force-dynamic';
 
@@ -160,6 +161,7 @@ export default async function Home() {
           ) : null}
 
           <HeroBanner />
+          <TrendingReels />
 
           <StatsSection statsData={statsData} />
 

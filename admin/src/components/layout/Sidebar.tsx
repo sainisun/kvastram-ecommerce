@@ -22,6 +22,7 @@ import {
   Menu,
   ShoppingCart,
   Image,
+  Clapperboard,
 } from 'lucide-react';
 
 // Sidebar structure per PRD — reorganized into logical sections
@@ -51,6 +52,11 @@ const sections = [
         name: 'Hero Banners',
         icon: Image,
         path: '/dashboard/content/hero-banners',
+      },
+      {
+        name: 'Trending Reels',
+        icon: Clapperboard,
+        path: '/dashboard/content/trending-reels',
       },
     ],
   },
