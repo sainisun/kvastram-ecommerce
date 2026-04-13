@@ -1,0 +1,91 @@
+/**
+ * run-manual-migrations.ts
+ *
+ * Runs the hand-written SQL migration files in src/db/migrations/ in
+ * chronological order.  These are NOT tracked by the Drizzle journal and
+ * must be applied separately after `npm run migrate:prod`.
+ *
+ * All statements use IF NOT EXISTS / ADD COLUMN IF NOT EXISTS, so this
+ * script is safe to re-run.
+ *
+ * Usage (on VPS):
+ *   docker exec -it kvastram-backend-1 npm run migrate:manual
+ *
+ * Or directly:
+ *   NODE_ENV=production tsx src/db/run-manual-migrations.ts
+ */
+
+import fs from 'fs';
+import path from 'path';
+import postgres from 'postgres';
+import 'dotenv/config';
+
+// Migration files in the order they should be applied
+const MIGRATION_FILES = [
+  '20260218_add_review_images.sql',
+  '20260227_add_password_reset_fields.sql',
+  '20260309_add_saved_carts_recovery.sql',
+  'phase4_returns.sql',
+];
+
+const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
+
+async function runManualMigrations() {
+  const connectionString =
+    process.env.DATABASE_URL ||
+    'postgresql://postgres:postgres@localhost:5432/kvastram_dev';
+
+  const isSupabase =
+    connectionString.includes('supabase.com') ||
+    connectionString.includes('aws-0-');
+  const requiresSsl = isSupabase || process.env.DATABASE_SSL === 'true';
+
+  const client = postgres(connectionString, {
+    max: 1,
+    ssl: requiresSsl ? { rejectUnauthorized: false } : false,
+  });
+
+  console.log('🔄 Running manual SQL migrations...\n');
+
+  let applied = 0;
+  let failed = 0;
+
+  for (const file of MIGRATION_FILES) {
+    const filePath = path.join(MIGRATIONS_DIR, file);
+
+    if (!fs.existsSync(filePath)) {
+      console.warn(`⚠️  Skipping ${file} — file not found`);
+      continue;
+    }
+
+    const sql = fs.readFileSync(filePath, 'utf8');
+    console.log(`▶  Applying ${file}...`);
+
+    try {
+      await client.unsafe(sql);
+      console.log(`✅  ${file} applied successfully`);
+      applied++;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`❌  ${file} failed: ${msg}`);
+      failed++;
+      // Continue with remaining migrations — don't abort on a single failure
+    }
+  }
+
+  await client.end();
+
+  console.log(`\n📊 Results: ${applied} applied, ${failed} failed`);
+
+  if (failed > 0) {
+    process.exit(1);
+  } else {
+    console.log('\n✅ All manual migrations complete!');
+    process.exit(0);
+  }
+}
+
+runManualMigrations().catch((err) => {
+  console.error('❌ Migration runner crashed:', err.message);
+  process.exit(1);
+});

@@ -11,8 +11,19 @@ async function runMigration() {
 
   console.log('⏳ Start migrating...');
 
-  // Connection for migration
-  const migrationClient = postgres(connectionString, { max: 1 });
+  // Detect if using Supabase or other cloud PostgreSQL that requires SSL
+  // Must match the SSL logic in db/client.ts
+  const isSupabase =
+    connectionString.includes('supabase.com') ||
+    connectionString.includes('aws-0-');
+  const requiresSsl =
+    isSupabase || process.env.DATABASE_SSL === 'true';
+
+  // Connection for migration — include SSL config for cloud DBs
+  const migrationClient = postgres(connectionString, {
+    max: 1,
+    ssl: requiresSsl ? { rejectUnauthorized: false } : false,
+  });
   const db = drizzle(migrationClient);
 
   await migrate(db, { migrationsFolder: './drizzle' });

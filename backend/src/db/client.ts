@@ -8,10 +8,13 @@ const connectionString =
   process.env.DATABASE_URL ||
   'postgresql://postgres:postgres@localhost:5432/kvastram_dev';
 
-// Determine if using Supabase (pooler connection)
+// Determine if SSL is required for the database connection.
+// Supabase pooler URLs contain 'supabase.com' or 'aws-0-'.
+// Other cloud DBs (Neon, Railway, etc.) can opt-in via DATABASE_SSL=true env var.
 const isSupabase =
   connectionString.includes('supabase.com') ||
   connectionString.includes('aws-0-');
+const requiresSsl = isSupabase || process.env.DATABASE_SSL === 'true';
 
 // Connection type logging removed for security
 
@@ -20,7 +23,7 @@ const client = postgres(connectionString, {
   max: 10, // Always use 10 connections for better performance
   idle_timeout: 20,
   connect_timeout: 60,
-  ssl: isSupabase ? { rejectUnauthorized: false } : false,
+  ssl: requiresSsl ? { rejectUnauthorized: false } : false,
   prepare: false,
   // Add connection debugging
   // Debugging hooks removed

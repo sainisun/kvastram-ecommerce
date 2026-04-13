@@ -103,6 +103,8 @@ app.use('/upload/*', uploadTimeout);
 app.use('/store/payments/webhook', webhookTimeout);
 
 // CORS Configuration
+// In production set ALLOWED_ORIGINS in backend/.env.production, e.g.:
+//   ALLOWED_ORIGINS=https://kvastram.com,https://www.kvastram.com,https://admin.kvastram.com
 const allowedOrigins =
   process.env.ALLOWED_ORIGINS
     ?.split(',')
@@ -116,8 +118,9 @@ const allowedOrigins =
     'http://127.0.0.1:3001',
     'http://127.0.0.1:3002',
     'http://127.0.0.1:4000',
-    'https://kvastram-ecommerce.vercel.app',
-    'https://kvastram-ecommerce-panal.vercel.app',
+    'https://kvastram.com',
+    'https://www.kvastram.com',
+    'https://admin.kvastram.com',
   ];
 app.use(
   '*',

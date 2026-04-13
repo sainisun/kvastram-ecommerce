@@ -1,5 +1,10 @@
 name: kvastram
 
+# ---------------------------------------------------------------------------
+# Variable substitution: create deploy/hostinger/.env from .env.example
+# and fill in your actual domain / credentials before running.
+# ---------------------------------------------------------------------------
+
 services:
   postgres:
     image: postgres:16-bookworm
@@ -33,9 +38,17 @@ services:
     build:
       context: ../../storefront
       dockerfile: Dockerfile
+      args:
+        # Baked into client bundle at build time (WebSocket, direct API refs).
+        # Should be your public API URL, e.g. https://api.kvastram.com
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.kvastram.com}
     restart: unless-stopped
     env_file:
       - ../../storefront/.env.production
+    environment:
+      # Server-side only: Next.js rewrites proxy to this internal Docker URL.
+      - INTERNAL_API_URL=http://backend:4000
+      - NODE_ENV=production
     depends_on:
       - backend
     ports:
@@ -45,9 +58,16 @@ services:
     build:
       context: ../../admin
       dockerfile: Dockerfile
+      args:
+        # Baked into client bundle at build time.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.kvastram.com}
     restart: unless-stopped
     env_file:
       - ../../admin/.env.production
+    environment:
+      # Server-side only: Next.js rewrites proxy to this internal Docker URL.
+      - BACKEND_URL=http://backend:4000
+      - NODE_ENV=production
     depends_on:
       - backend
     ports:
