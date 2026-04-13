@@ -3,14 +3,12 @@
 import { useEffect, useState } from 'react';
 import { FeaturedProductsSection } from '@/components/home/FeaturedProductsSection';
 import { BestsellersSection } from '@/components/home/BestsellersSection';
-import { EditorialSection } from '@/components/home/EditorialSection';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
 
 interface Props {
   readonly products: any[];
   readonly featuredProductIds: string[];
-  readonly homepageSettings: any;
   readonly testimonialsList: any[];
   readonly collections: any[];
 }
@@ -18,7 +16,6 @@ interface Props {
 export default function HomeSectionsClient({
   products: initialProducts,
   featuredProductIds,
-  homepageSettings,
   testimonialsList: initialTestimonials,
   collections: initialCollections,
 }: Props) {
@@ -90,10 +87,6 @@ export default function HomeSectionsClient({
         featuredProductIds={featuredProductIds}
       />
       <BestsellersSection products={products} />
-      <EditorialSection
-        brandStoryImage={homepageSettings.brand_story_image}
-        brandStoryContent={homepageSettings.brand_story_content}
-      />
       <TestimonialsSection testimonials={testimonialsList} />
       <CollectionsSection collections={collections} />
     </>

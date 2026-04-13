@@ -6,7 +6,6 @@ import { StatsSection } from '@/components/home/StatsSection';
 import { CategorySection } from '@/components/home/CategorySection';
 import HomeSectionsClient from '@/components/home/HomeSectionsClient';
 import { CommunitySection } from '@/components/home/CommunitySection';
-import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { CategoryCircles } from '@/components/home/CategoryCircles';
 import { HeroBanner } from '@/components/home/HeroBanner';
 import { TrendingReels } from '@/components/home/TrendingReels';
@@ -178,7 +177,6 @@ export default async function Home() {
           <HomeSectionsClient
             products={products}
             featuredProductIds={featuredProductIds}
-            homepageSettings={homepageSettings}
             testimonialsList={testimonialsList}
             collections={collections}
           />
@@ -239,11 +237,6 @@ export default async function Home() {
               'Artisan Heritage',
             ]}
             speed="25s"
-          />
-
-          <NewsletterSection
-            newsletterTitle={homepageSettings.newsletter_title}
-            newsletterSubtitle={homepageSettings.newsletter_subtitle}
           />
         </div>
       </RevealOnScroll>

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { MessageCircle, X, Minimize2, Send } from 'lucide-react';
+import { useState } from 'react';
+import { MessageCircle, X, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 declare global {
   interface Window {
-    Tawk_API?: any;
+    Tawk_API?: Record<string, unknown>;
     Tawk_LoadStart?: Date;
   }
 }
@@ -117,7 +117,7 @@ export function ChatWidget() {
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-stone-900 text-white rounded-full shadow-xl flex items-center justify-center hover:bg-stone-800 transition-colors z-40"
+          className="fixed bottom-40 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-stone-900 text-white shadow-xl transition-colors hover:bg-stone-800 md:bottom-6 md:right-6"
           onClick={handleOpenChat}
           aria-label="Open chat support"
         >
@@ -132,7 +132,7 @@ export function ChatWidget() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed bottom-6 right-6 w-80 md:w-96 bg-white rounded-2xl shadow-2xl z-50 overflow-hidden ${isMinimized ? 'h-14' : 'h-[500px]'}`}
+            className={`fixed bottom-40 right-4 z-50 w-[calc(100vw-1rem)] max-w-80 overflow-hidden rounded-2xl bg-white shadow-2xl md:bottom-6 md:right-6 md:w-96 ${isMinimized ? 'h-14' : 'h-[500px]'}`}
           >
             {/* Header */}
             <div className="bg-stone-900 text-white p-4 flex items-center justify-between">
