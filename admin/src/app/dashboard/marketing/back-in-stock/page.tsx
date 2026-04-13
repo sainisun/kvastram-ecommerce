@@ -28,8 +28,6 @@ interface Stats {
   notified: number;
 }
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-
 export default function BackInStockPage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [stats, setStats] = useState<Stats>({

@@ -112,18 +112,33 @@ ALLOWED_ORIGINS=https://${DOMAIN},https://www.${DOMAIN},https://admin.${DOMAIN}
 STOREFRONT_URL=https://${DOMAIN}
 ADMIN_URL=https://admin.${DOMAIN}
 FRONTEND_URL=https://${DOMAIN}
+ADMIN_EMAIL=admin@${DOMAIN}
 
-# Stripe (replace before accepting real payments)
-STRIPE_SECRET_KEY=${STRIPE_SECRET_PLACEHOLDER}
-STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_PLACEHOLDER}
+# Stripe (optional — leave blank if using RogerPay/PayPal)
+STRIPE_SECRET_KEY=
+STRIPE_PUBLISHABLE_KEY=
 STRIPE_WEBHOOK_SECRET=
 
-# SMTP (fill later)
-SMTP_HOST=
-SMTP_PORT=587
-SMTP_USER=
-SMTP_PASS=
-SMTP_FROM=noreply@${DOMAIN}
+# Email via Resend SMTP relay (https://resend.com)
+# SMTP_PASS = your Resend API key (starts with re_)
+SMTP_HOST=smtp.resend.com
+SMTP_PORT=465
+SMTP_USER=resend
+SMTP_PASS=re_replace_with_your_resend_api_key
+SMTP_FROM="Kvastram" <noreply@${DOMAIN}>
+RESEND_API_KEY=re_replace_with_your_resend_api_key
+
+# Google OAuth
+GOOGLE_CLIENT_ID=replace_with_google_oauth_client_id
+
+# Cloudinary (image uploads)
+CLOUDINARY_CLOUD_NAME=replace_with_cloud_name
+CLOUDINARY_API_KEY=replace_with_api_key
+CLOUDINARY_API_SECRET=replace_with_api_secret
+
+# File uploads (local fallback if Cloudinary is not set)
+UPLOAD_DIR=/app/uploads
+UPLOAD_URL=https://api.${DOMAIN}/uploads
 EOF
 
 # 4c: storefront/.env.production
@@ -142,6 +157,11 @@ BACKEND_URL=http://backend:4000
 NEXT_PUBLIC_ADMIN_URL=https://admin.${DOMAIN}
 EOF
 
+# 4e: deploy/hostinger/.env (used by docker-compose for NEXT_PUBLIC_API_URL build arg substitution)
+cat > "$APP_DIR/deploy/hostinger/.env" << EOF
+NEXT_PUBLIC_API_URL=https://api.${DOMAIN}
+EOF
+
 echo "    Generated secure passwords."
 echo "    DB_PASSWORD: ${DB_PASSWORD}"
 echo "    JWT_SECRET:  ${JWT_SECRET}"
@@ -156,61 +176,7 @@ echo ">>> STEP 4 DONE"
 echo ""
 echo ">>> STEP 5: Configuring Nginx..."
 
-cat > /etc/nginx/sites-available/kvastram.conf << NGINXEOF
-server {
-    listen 80;
-    server_name ${DOMAIN} www.${DOMAIN};
-
-    client_max_body_size 25m;
-
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
-
-server {
-    listen 80;
-    server_name admin.${DOMAIN};
-
-    client_max_body_size 25m;
-
-    location / {
-        proxy_pass http://127.0.0.1:3001;
-        proxy_http_version 1.1;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
-
-server {
-    listen 80;
-    server_name api.${DOMAIN};
-
-    client_max_body_size 25m;
-
-    location / {
-        proxy_pass http://127.0.0.1:4000;
-        proxy_http_version 1.1;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
-NGINXEOF
+cp "$APP_DIR/deploy/hostinger/nginx/kvastram.conf" /etc/nginx/sites-available/kvastram.conf
 
 # Enable the site
 ln -sf /etc/nginx/sites-available/kvastram.conf /etc/nginx/sites-enabled/kvastram.conf
@@ -264,9 +230,10 @@ echo "  1. Set up DNS A records pointing to: $(curl -s ifconfig.me)"
 echo "  2. Wait for DNS propagation (5min - 48hrs)"
 echo "  3. Run SSL setup:"
 echo "     sudo certbot --nginx -d ${DOMAIN} -d www.${DOMAIN} -d admin.${DOMAIN} -d api.${DOMAIN}"
-echo "  4. Replace Stripe placeholders in:"
-echo "     $APP_DIR/backend/.env.production"
-echo "     $APP_DIR/storefront/.env.production"
+echo "  4. Run manual DB migrations (one-time after first deploy):"
+echo "     docker exec -it kvastram-backend-1 npm run migrate:manual"
+echo "  5. Fill in API secrets in $APP_DIR/backend/.env.production:"
+echo "     RESEND_API_KEY, SMTP_PASS, GOOGLE_CLIENT_ID, CLOUDINARY_*"
 echo ""
 echo "  SAVED CREDENTIALS:"
 echo "  DB Password: ${DB_PASSWORD}"

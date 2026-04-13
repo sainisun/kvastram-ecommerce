@@ -127,7 +127,7 @@ class EmailService {
     try {
       await this.ensureReady(); // OPT-001: Wait for transporter initialization
       const info = await this.transporter.sendMail({
-        from: '"Kvastram Support" <support@kvastram.com>', // sender address
+        from: process.env.SMTP_FROM || '"Kvastram Support" <support@kvastram.com>', // sender address
         to: options.to, // list of receivers
         subject: options.subject, // Subject line
         text: options.text, // plain text body
