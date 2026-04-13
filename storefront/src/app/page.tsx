@@ -77,7 +77,7 @@ export default async function Home() {
   // Stats data — admin se configurable, defaults as fallback
   const statsData = [
     {
-      num: homepageSettings.stat_customer_rating || '4.9★',
+      num: homepageSettings.stat_customer_rating || '4.9 ★',
       label: 'Customer Rating',
     },
     {
@@ -89,8 +89,12 @@ export default async function Home() {
       label: 'Countries Served',
     },
     {
-      num: homepageSettings.stat_return_policy || '30-Day',
-      label: 'Free Returns',
+      num:
+        homepageSettings.stat_return_policy &&
+        homepageSettings.stat_return_policy !== '30-Day'
+          ? homepageSettings.stat_return_policy
+          : '10+',
+      label: 'Years of Crafting',
     },
   ];
 
