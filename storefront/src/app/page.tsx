@@ -51,23 +51,14 @@ export default async function Home() {
     productsData = await api.getProducts({ limit: 8, sort: 'newest' });
   }
 
-  const [categoriesData, collectionsData, testimonialsData] = await Promise.all([
-    api.getCategories(),
+  const [collectionsData, testimonialsData] = await Promise.all([
     api.getCollections(),
     api.getTestimonials(),
   ]);
 
   const products = productsData.products || [];
-  const categories = (categoriesData.categories || []).slice(0, 3);
   const collections = (collectionsData.collections || []).slice(0, 2);
   const testimonialsList = testimonialsData.testimonials || [];
-
-  const categoryImages: Record<string, string> = {
-    sarees: '/images/home/category-sarees.jpg',
-    lehengas: '/images/home/category-lehengas.jpg',
-    kurtas: '/images/home/category-kurtas.jpg',
-    accessories: '/images/home/category-accessories.jpg',
-  };
 
   const isAnnouncementEnabled = Boolean(
     homepageSettings.announcement_bar_enabled
@@ -165,7 +156,7 @@ export default async function Home() {
 
           <StatsSection statsData={statsData} />
 
-          <CategorySection categories={categories} categoryImages={categoryImages} />
+          <CategorySection />
 
           {/* ═══ 5. MARQUEE STRIP ═══ */}
           <MarqueeStrip

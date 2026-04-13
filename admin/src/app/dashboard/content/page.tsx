@@ -5,6 +5,7 @@ import {
   MessageSquare,
   Link as LinkIcon,
   Clapperboard,
+  LayoutGrid,
 } from 'lucide-react';
 
 export default function ContentDashboard() {
@@ -30,6 +31,16 @@ export default function ContentDashboard() {
           <h2 className="text-xl font-bold mb-2">Trending Reels</h2>
           <p className="text-gray-500">
             Manage vertical video cards shown below the hero banner.
+          </p>
+        </Link>
+        <Link
+          href="/dashboard/content/homepage-categories"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <LayoutGrid className="mb-4 text-violet-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Homepage Categories</h2>
+          <p className="text-gray-500">
+            Manage the portrait category slider cards shown on the homepage.
           </p>
         </Link>
         <Link

@@ -1320,6 +1320,56 @@ export const api = {
     return res.json();
   },
 
+  // Homepage Categories
+  getHomepageCategories: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-categories`, {});
+    if (!res.ok) throw new Error('Failed to fetch homepage categories');
+    return res.json();
+  },
+
+  createHomepageCategory: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-categories`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create homepage category');
+    return res.json();
+  },
+
+  updateHomepageCategory: async (id: string, formData: FormData) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-categories/${id}`,
+      {
+        method: 'PUT',
+        body: formData,
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update homepage category');
+    return res.json();
+  },
+
+  deleteHomepageCategory: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-categories/${id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete homepage category');
+    return res.json();
+  },
+
+  toggleHomepageCategory: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-categories/${id}/toggle`,
+      {
+        method: 'PATCH',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to toggle homepage category');
+    return res.json();
+  },
+
   // Blog Posts
   getPosts: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/posts`, {

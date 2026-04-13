@@ -913,6 +913,18 @@ export const api = {
     }
   },
 
+  async getHomepageCategories() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/homepage-categories`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { categories: [] };
+      return res.json();
+    } catch {
+      return { categories: [] };
+    }
+  },
+
   async getPosts() {
     try {
       // Cache for 60 seconds

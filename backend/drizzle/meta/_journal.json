@@ -183,6 +183,13 @@
       "when": 1776087000000,
       "tag": "0025_add_trending_reels",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1776090600000,
+      "tag": "0026_add_homepage_categories",
+      "breakpoints": true
     }
   ]
 }

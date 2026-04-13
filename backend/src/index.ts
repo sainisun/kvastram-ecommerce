@@ -70,6 +70,8 @@ import adminHeroBannersRoutes from './routes/admin/hero-banners';
 import heroBannersRoutes from './routes/hero-banners';
 import adminTrendingReelsRoutes from './routes/admin/trending-reels';
 import trendingReelsRoutes from './routes/trending-reels';
+import adminHomepageCategoriesRoutes from './routes/admin/homepage-categories';
+import homepageCategoriesRoutes from './routes/homepage-categories';
 
 import docsApp from './docs';
 
@@ -191,6 +193,8 @@ csrfForStateChanging([
   '/admin/hero-banners/*',
   '/admin/trending-reels',
   '/admin/trending-reels/*',
+  '/admin/homepage-categories',
+  '/admin/homepage-categories/*',
 ]);
 
 // Health Check Endpoint
@@ -278,6 +282,10 @@ const generalApiRoutes = [
   '/admin/trending-reels/*',
   '/trending-reels',
   '/trending-reels/*',
+  '/admin/homepage-categories',
+  '/admin/homepage-categories/*',
+  '/homepage-categories',
+  '/homepage-categories/*',
 ];
 
 for (const route of generalApiRoutes) {
@@ -338,6 +346,8 @@ app.route('/admin/hero-banners', adminHeroBannersRoutes);
 app.route('/hero-banners', heroBannersRoutes);
 app.route('/admin/trending-reels', adminTrendingReelsRoutes);
 app.route('/trending-reels', trendingReelsRoutes);
+app.route('/admin/homepage-categories', adminHomepageCategoriesRoutes);
+app.route('/homepage-categories', homepageCategoriesRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes
