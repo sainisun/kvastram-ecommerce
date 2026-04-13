@@ -15,7 +15,8 @@
     "migrate:prod": "NODE_ENV=production tsx src/db/migrate.ts",
     "unlock-admin": "NODE_ENV=production tsx src/db/unlock-admin.ts",
     "seed:tags": "tsx scripts/seed-default-tags.ts",
-    "migrate:manual": "NODE_ENV=production tsx src/db/run-manual-migrations.ts"
+    "migrate:manual": "NODE_ENV=production tsx src/db/run-manual-migrations.ts",
+    "seed:admin": "NODE_ENV=production tsx src/db/seed.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
