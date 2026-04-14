@@ -303,7 +303,7 @@ function ProductGrid({
               <p className="prod-collection-prem">
                 {product.collection?.title || 'Kvastram'}
               </p>
-              <h3 className="prod-name-prem">{product.title}</h3>
+              <h3 className="prod-name-prem truncate" title={product.title}>{product.title}</h3>
 
               {/* Star rating */}
               {product.avg_rating != null && product.avg_rating > 0 && (

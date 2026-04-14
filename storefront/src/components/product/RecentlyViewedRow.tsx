@@ -58,7 +58,7 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
                 )}
               </div>
               {/* Info */}
-              <p className="font-serif text-sm text-stone-900 leading-snug group-hover:text-stone-600 transition-colors line-clamp-2 mb-1">{item.title}</p>
+              <p className="font-serif text-sm text-stone-900 leading-snug group-hover:text-stone-600 transition-colors truncate mb-1" title={item.title}>{item.title}</p>
               <p className="text-xs text-stone-500 font-medium">
                 {new Intl.NumberFormat(undefined, {
                   style: 'currency',

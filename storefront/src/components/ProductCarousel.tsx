@@ -226,7 +226,7 @@ function ProductCarousel({
             <p className="prod-collection-prem">
               {product.subtitle || product.collection?.title || 'Kvastram'}
             </p>
-            <h3 className="prod-name-prem">{product.title}</h3>
+            <h3 className="prod-name-prem truncate" title={product.title}>{product.title}</h3>
             <p className="prod-price-prem">{getPrice(product)}</p>
           </Link>
         </div>

@@ -23,23 +23,19 @@ export function BestsellersSection({ products }: BestsellersSectionProps) {
   if (products.length === 0) return null;
 
   return (
-    <section className="section-prem" style={{ background: 'var(--black)' }}>
+    <section className="section-prem" style={{ background: 'var(--white)' }}>
       <div className="section-header-prem reveal">
         <div>
-          <p
-            className="section-eyebrow-prem"
-            style={{ color: 'rgba(248,246,243,0.4)' }}
-          >
+          <p className="section-eyebrow-prem">
             Our Top Picks
           </p>
-          <h2 className="section-title-prem" style={{ color: 'var(--white)' }}>
+          <h2 className="section-title-prem">
             Best <em>Sellers</em>
           </h2>
         </div>
         <Link
           href="/products"
           className="link-all-prem"
-          style={{ color: 'var(--white)' }}
         >
           View All
         </Link>
@@ -91,7 +87,7 @@ export function BestsellersSection({ products }: BestsellersSectionProps) {
                 <p className="prod-collection-prem">
                   {product.collection?.title || 'Kvastram'}
                 </p>
-                <h3 className="prod-name-prem">{product.title}</h3>
+                <h3 className="prod-name-prem truncate" title={product.title}>{product.title}</h3>
                 {price && <p className="prod-price-prem">{price}</p>}
               </div>
             </Link>
