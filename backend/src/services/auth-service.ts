@@ -3,7 +3,7 @@ import { users } from '../db/schema';
 import { eq, and, lt, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { sign } from 'hono/jwt';
 import { config } from '../config';
 import {
   validatePassword,
@@ -13,11 +13,14 @@ import speakeasy from 'speakeasy';
 
 // --- Configuration ---
 const JWT_SECRET = config.jwt.secret;
-const JWT_EXPIRES_IN = config.jwt.expiresIn;
 
-// --- Q9: Account Lockout Configuration ---
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+// --- Q9: Account Lockout Configuration (shared constants) ---
+import {
+  MAX_FAILED_ATTEMPTS,
+  LOCKOUT_DURATION_MS,
+  isAccountLocked,
+  getLockoutMessage,
+} from '../utils/account-lockout';
 
 // --- Types & Schemas ---
 
@@ -38,23 +41,6 @@ export type LoginInput = z.infer<typeof LoginSchema>;
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 
 // --- Helper Functions ---
-
-/**
- * Check if account is locked
- */
-function isAccountLocked(lockedUntil: Date | null | undefined): boolean {
-  if (!lockedUntil) return false;
-  return new Date() < new Date(lockedUntil);
-}
-
-/**
- * Get lockout error message with remaining time
- */
-function getLockoutMessage(lockedUntil: Date): string {
-  const remainingMs = new Date(lockedUntil).getTime() - Date.now();
-  const minutesRemaining = Math.ceil(remainingMs / 60000);
-  return `Account locked. Try again in ${minutesRemaining} minutes.`;
-}
 
 /**
  * Increment failed login attempts
@@ -166,11 +152,10 @@ export class AuthService {
     // 🔒 Q9: Reset failed attempts on successful login
     await resetFailedAttempts(user.id);
 
-    // 4. Generate Token
-    const token = jwt.sign(
-      { sub: user.id, email: user.email, role: user.role },
-      JWT_SECRET as any,
-      { expiresIn: JWT_EXPIRES_IN } as any
+    // 4. Generate Token (hono/jwt uses exp as unix timestamp)
+    const token = await sign(
+      { sub: user.id, email: user.email, role: user.role, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 },
+      JWT_SECRET
     );
 
     // Return user info (excluding password) and token
@@ -229,11 +214,10 @@ export class AuthService {
       .returning();
     const newUser = newUserResult[0];
 
-    // 4. Generate Token
-    const token = jwt.sign(
-      { sub: newUser.id, email: newUser.email, role: newUser.role },
-      JWT_SECRET as any,
-      { expiresIn: JWT_EXPIRES_IN } as any
+    // 4. Generate Token (hono/jwt uses exp as unix timestamp)
+    const token = await sign(
+      { sub: newUser.id, email: newUser.email, role: newUser.role, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 },
+      JWT_SECRET
     );
 
     const { password_hash, failed_login_attempts, locked_until, ...userInfo } =

@@ -16,9 +16,13 @@ const JWT_SECRET = config.jwt.secret;
 // 🔒 FIX-011: Email verification constants
 const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
 
-// 🔒 Q9: Account Lockout Configuration
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+// 🔒 Q9: Account Lockout Configuration (shared constants)
+import {
+  MAX_FAILED_ATTEMPTS,
+  LOCKOUT_DURATION_MS,
+  isAccountLocked,
+  getLockoutMessage,
+} from '../utils/account-lockout';
 
 /**
  * Generate a secure verification token
@@ -34,23 +38,6 @@ export function getVerificationExpiry(): Date {
   const expiry = new Date();
   expiry.setHours(expiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS);
   return expiry;
-}
-
-/**
- * Check if account is locked
- */
-function isAccountLocked(lockedUntil: Date | null | undefined): boolean {
-  if (!lockedUntil) return false;
-  return new Date() < new Date(lockedUntil);
-}
-
-/**
- * Get lockout error message with remaining time
- */
-function getLockoutMessage(lockedUntil: Date): string {
-  const remainingMs = new Date(lockedUntil).getTime() - Date.now();
-  const minutesRemaining = Math.ceil(remainingMs / 60000);
-  return `Account locked. Try again in ${minutesRemaining} minutes.`;
 }
 
 /**

@@ -26,6 +26,7 @@ import {
 import CountrySelect from '@/components/ui/CountrySelect';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 import { CheckoutSkeleton } from '@/components/ui/Skeleton';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // Initialize Stripe
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -960,13 +961,17 @@ export default function CheckoutPage() {
 
                 {/* PHASE 7.3: Express Checkout Buttons */}
                 {clientSecret && (
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <ExpressCheckoutForm
-                      orderId={orderId}
-                      onSuccess={handlePaymentSuccess}
-                      onError={handlePaymentError}
-                    />
-                  </Elements>
+                  <ErrorBoundary fallback={
+                    <p className="text-sm text-stone-500 py-2">Express checkout unavailable. Please use card below.</p>
+                  }>
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <ExpressCheckoutForm
+                        orderId={orderId}
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                      />
+                    </Elements>
+                  </ErrorBoundary>
                 )}
 
                 <div className="relative mb-6">
@@ -981,13 +986,19 @@ export default function CheckoutPage() {
                 </div>
 
                 {clientSecret && (
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <PaymentForm
-                      orderId={orderId}
-                      onSuccess={handlePaymentSuccess}
-                      onError={handlePaymentError}
-                    />
-                  </Elements>
+                  <ErrorBoundary fallback={
+                    <div className="p-4 border border-red-200 bg-red-50 rounded text-sm text-red-700">
+                      Payment form failed to load. Please refresh the page to try again.
+                    </div>
+                  }>
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <PaymentForm
+                        orderId={orderId}
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                      />
+                    </Elements>
+                  </ErrorBoundary>
                 )}
                 <button
                   onClick={() => setStep('shipping')}

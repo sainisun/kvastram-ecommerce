@@ -28,32 +28,30 @@ app.get('/', async (c) => {
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    const allCustomers = await db
+    // PERF-002: Filter wholesale customers in SQL, not in memory
+    const wholesaleCondition = sql`${customers.metadata}->>'wholesale_customer' = 'true'`;
+    const tierCondition = tier && tier !== 'all'
+      ? sql`${customers.metadata}->>'discount_tier' = ${tier}`
+      : undefined;
+
+    const allConditions = [wholesaleCondition, ...(conditions ?? []), ...(tierCondition ? [tierCondition] : [])];
+    const finalWhere = and(...allConditions);
+
+    const [{ count: totalCount }] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(customers)
+      .where(finalWhere);
+
+    const count = Number(totalCount);
+    const totalPages = Math.ceil(count / limitNum);
+
+    const paginatedCustomers = await db
       .select()
       .from(customers)
-      .where(whereClause)
-      .orderBy(desc(customers.created_at));
-
-    const wholesaleCustomers = allCustomers.filter((customer) => {
-      const metadata = customer.metadata as Record<string, any> | null;
-      return metadata?.wholesale_customer === true;
-    });
-
-    let filteredCustomers = wholesaleCustomers;
-
-    if (tier && tier !== 'all') {
-      filteredCustomers = wholesaleCustomers.filter((customer) => {
-        const metadata = customer.metadata as Record<string, any> | null;
-        return metadata?.discount_tier === tier;
-      });
-    }
-
-    const count = filteredCustomers.length;
-    const paginatedCustomers = filteredCustomers.slice(
-      offset,
-      offset + limitNum
-    );
-    const totalPages = Math.ceil(count / limitNum);
+      .where(finalWhere)
+      .orderBy(desc(customers.created_at))
+      .limit(limitNum)
+      .offset(offset);
 
     return c.json({
       customers: paginatedCustomers.map((customer) => {
@@ -86,29 +84,31 @@ app.get('/', async (c) => {
 
 app.get('/stats', async (c) => {
   try {
-    const allCustomers = await db.select().from(customers);
+    // PERF-002: Use SQL aggregation instead of fetching all customers into memory
+    const wholesaleCondition = sql`${customers.metadata}->>'wholesale_customer' = 'true'`;
 
-    const wholesaleCustomers = allCustomers.filter((customer) => {
-      const metadata = customer.metadata as Record<string, any> | null;
-      return metadata?.wholesale_customer === true;
-    });
+    const rows = await db
+      .select({
+        tier: sql<string>`${customers.metadata}->>'discount_tier'`,
+        count: sql<number>`count(*)`,
+      })
+      .from(customers)
+      .where(wholesaleCondition)
+      .groupBy(sql`${customers.metadata}->>'discount_tier'`);
 
-    const tiers: Record<string, number> = {
-      starter: 0,
-      growth: 0,
-      enterprise: 0,
-    };
+    const tiers: Record<string, number> = { starter: 0, growth: 0, enterprise: 0 };
+    let total = 0;
 
-    wholesaleCustomers.forEach((customer) => {
-      const metadata = customer.metadata as Record<string, any> | null;
-      const tier = metadata?.discount_tier;
-      if (tier && tiers[tier] !== undefined) {
-        tiers[tier]++;
+    for (const row of rows) {
+      const n = Number(row.count);
+      total += n;
+      if (row.tier && tiers[row.tier] !== undefined) {
+        tiers[row.tier] = n;
       }
-    });
+    }
 
     return c.json({
-      total: wholesaleCustomers.length,
+      total,
       starter: tiers.starter,
       growth: tiers.growth,
       enterprise: tiers.enterprise,
