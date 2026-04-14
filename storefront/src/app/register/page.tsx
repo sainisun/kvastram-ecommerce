@@ -5,6 +5,7 @@ import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { api } from '@/lib/api';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -21,8 +22,28 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    setError('');
+    setResendSuccess(false);
+    try {
+      await api.resendVerification(formData.email);
+      setResendSuccess(true);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Failed to resend verification link');
+      } else {
+        setError('Failed to resend verification link');
+      }
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -31,7 +52,7 @@ export default function RegisterPage() {
     try {
       await register(formData);
       setSuccess(true);
-      const redirect = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('redirect') : null;
+      const redirect = typeof globalThis.window === 'undefined' ? null : new URLSearchParams(globalThis.window.location.search).get('redirect');
       setTimeout(() => {
         router.push(redirect || '/login');
       }, 2000);
@@ -65,17 +86,33 @@ export default function RegisterPage() {
             </div>
           )}
           {error && (
-            <div className="bg-red-50 text-red-500 p-3 text-sm text-center">
-              {error}
+            <div className="bg-red-50 text-red-500 p-4 text-sm text-center space-y-3">
+              <p>{error}</p>
+              {error.includes('not verified') && (
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={resendLoading}
+                  className="text-stone-900 underline font-medium hover:text-stone-600 disabled:opacity-50"
+                >
+                  {resendLoading ? 'Sending...' : 'Click here to resend verification link'}
+                </button>
+              )}
+            </div>
+          )}
+          {resendSuccess && (
+            <div className="bg-green-50 text-green-600 p-3 text-sm text-center">
+              Verification link sent! Please check your inbox.
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs uppercase font-bold text-stone-500">
+              <label htmlFor="first_name" className="text-xs uppercase font-bold text-stone-500">
                 First Name
               </label>
               <input
+                id="first_name"
                 type="text"
                 required
                 className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
@@ -86,10 +123,11 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs uppercase font-bold text-stone-500">
+              <label htmlFor="last_name" className="text-xs uppercase font-bold text-stone-500">
                 Last Name
               </label>
               <input
+                id="last_name"
                 type="text"
                 required
                 className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
@@ -102,10 +140,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="email" className="text-xs uppercase font-bold text-stone-500">
               Email Address
             </label>
             <input
+              id="email"
               type="email"
               required
               className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
@@ -117,10 +156,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="phone" className="text-xs uppercase font-bold text-stone-500">
               Phone (Optional)
             </label>
             <input
+              id="phone"
               type="tel"
               className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
               value={formData.phone}
@@ -131,11 +171,12 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="password" className="text-xs uppercase font-bold text-stone-500">
               Password
             </label>
             <div className="relative">
               <input
+                id="password"
                 type={showPassword ? 'text' : 'password'}
                 required
                 minLength={12}

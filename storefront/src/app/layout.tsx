@@ -61,7 +61,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // generate CSRF token on server and embed in meta
-  const csrfToken = await import('@/lib/csrf').then(m => m.CsrfManager.getServerToken());
+  const csrfToken = await import('@/lib/csrf').then((m) =>
+    m.CsrfManager.getServerToken()
+  );
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
