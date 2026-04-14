@@ -6,6 +6,7 @@ import {
   Link as LinkIcon,
   Clapperboard,
   LayoutGrid,
+  Sparkles,
 } from 'lucide-react';
 
 export default function ContentDashboard() {
@@ -13,6 +14,36 @@ export default function ContentDashboard() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Content Management</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Link
+          href="/dashboard/content/homepage-banners"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <Layers className="mb-4 text-blue-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Category Banners</h2>
+          <p className="text-gray-500">
+            Manage the mobile hero slider shown on category listing pages.
+          </p>
+        </Link>
+        <Link
+          href="/dashboard/content/category-circles"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <LayoutGrid className="mb-4 text-violet-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Category Circles</h2>
+          <p className="text-gray-500">
+            Manage the circular quick-link row shown under category banners.
+          </p>
+        </Link>
+        <Link
+          href="/dashboard/content/featured-products"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <Sparkles className="mb-4 text-amber-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Spotlight Products</h2>
+          <p className="text-gray-500">
+            Manage injected mobile spotlight cards between product rows.
+          </p>
+        </Link>
         <Link
           href="/dashboard/content/hero-banners"
           className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
@@ -31,16 +62,6 @@ export default function ContentDashboard() {
           <h2 className="text-xl font-bold mb-2">Trending Reels</h2>
           <p className="text-gray-500">
             Manage vertical video cards shown below the hero banner.
-          </p>
-        </Link>
-        <Link
-          href="/dashboard/content/homepage-categories"
-          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
-        >
-          <LayoutGrid className="mb-4 text-violet-600" size={32} />
-          <h2 className="text-xl font-bold mb-2">Homepage Categories</h2>
-          <p className="text-gray-500">
-            Manage the portrait category slider cards shown on the homepage.
           </p>
         </Link>
         <Link

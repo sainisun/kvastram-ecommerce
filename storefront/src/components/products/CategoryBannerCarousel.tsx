@@ -1,0 +1,123 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import OptimizedImage from '@/components/ui/OptimizedImage';
+
+interface CategoryBanner {
+  id: string;
+  image_url: string;
+  headline?: string | null;
+  button_label?: string | null;
+  button_url?: string | null;
+}
+
+interface Props {
+  banners: CategoryBanner[];
+}
+
+export default function CategoryBannerCarousel({ banners }: Props) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (banners.length <= 1) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % banners.length);
+    }, 4500);
+
+    return () => window.clearInterval(timer);
+  }, [banners.length]);
+
+  useEffect(() => {
+    if (activeIndex < banners.length) {
+      return;
+    }
+
+    setActiveIndex(0);
+  }, [activeIndex, banners.length]);
+
+  if (banners.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="relative w-full overflow-hidden bg-stone-100 md:hidden">
+      <div className="relative aspect-[4/5] w-full">
+        {banners.map((banner, index) => {
+          const content = (
+            <>
+              <OptimizedImage
+                src={banner.image_url}
+                alt={banner.headline || `Category banner ${index + 1}`}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className="object-cover object-top"
+              />
+              {(banner.headline || banner.button_label) && (
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent">
+                  <div className="absolute inset-x-0 bottom-0 flex justify-center px-5 pb-8 pt-20 text-center">
+                    <div className="max-w-[18rem] text-white">
+                      {banner.headline ? (
+                        <h2 className="font-heading text-[30px] font-semibold uppercase leading-[1.05] tracking-[0.02em] text-white">
+                          {banner.headline}
+                        </h2>
+                      ) : null}
+                      {banner.button_label ? (
+                        <span className="font-body mt-4 inline-flex items-center rounded-full bg-white px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-stone-900">
+                          {banner.button_label}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          );
+
+          return banner.button_url ? (
+            <Link
+              key={banner.id}
+              href={banner.button_url}
+              className={`absolute inset-0 block transition-opacity duration-700 ${
+                index === activeIndex ? 'opacity-100' : 'pointer-events-none opacity-0'
+              }`}
+            >
+              {content}
+            </Link>
+          ) : (
+            <div
+              key={banner.id}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                index === activeIndex ? 'opacity-100' : 'pointer-events-none opacity-0'
+              }`}
+            >
+              {content}
+            </div>
+          );
+        })}
+      </div>
+
+      {banners.length > 1 ? (
+        <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center gap-2">
+          {banners.map((banner, index) => (
+            <button
+              key={banner.id}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              className={`h-2.5 rounded-full transition-all ${
+                index === activeIndex
+                  ? 'w-7 bg-white'
+                  : 'w-2.5 bg-white/55'
+              }`}
+              aria-label={`Go to category banner ${index + 1}`}
+            />
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}

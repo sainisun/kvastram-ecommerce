@@ -398,6 +398,20 @@ export class ProductQueryService {
   /**
    * Retrieve a single product by ID or handle
    */
+  async retrieveMany(ids: string[]) {
+    if (ids.length === 0) return [];
+    return db.query.products.findMany({
+      where: inArray(products.id, ids),
+      with: {
+        variants: { with: { prices: true } },
+        collection: true,
+        images: true,
+        categories: { with: { category: true } },
+        tags: { with: { tag: true } },
+      },
+    });
+  }
+
   async retrieve(idOrHandle: string) {
     // Check if input is a valid UUID
     const isUuid = z.string().uuid().safeParse(idOrHandle).success;

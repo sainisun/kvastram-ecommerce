@@ -1,356 +1,511 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
-import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, X, ZoomIn, Play } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import type { ProductVideo } from '@/types';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Volume2,
+  VolumeX,
+  X,
+} from 'lucide-react';
+import type { ProductImage, ProductVideo } from '@/types';
 
 interface ProductGalleryProps {
-  images: string[];
+  media: ProductImage[];
   title: string;
   videos?: ProductVideo[];
 }
 
+type GalleryItem = {
+  id: string;
+  type: 'image' | 'video';
+  src: string;
+  thumbnail?: string;
+  alt: string;
+};
+
+function buildGalleryItems(
+  media: ProductImage[],
+  title: string,
+  videos: ProductVideo[] = []
+): GalleryItem[] {
+  const mediaItems: GalleryItem[] = media.map((item, index) => ({
+    id: item.id || `${item.url}-${index}`,
+    type: item.metadata?.media_type === 'video' ? 'video' : 'image',
+    src: item.url,
+    thumbnail: item.metadata?.thumbnail_url,
+    alt: item.alt_text || item.alt || `${title} view ${index + 1}`,
+  }));
+
+  const fallbackVideos: GalleryItem[] = videos
+    .filter(
+      (video) =>
+        !mediaItems.some(
+          (item) => item.type === 'video' && item.src === video.url
+        )
+    )
+    .map((video, index) => ({
+      id: video.id || `legacy-video-${index}`,
+      type: 'video',
+      src: video.url,
+      thumbnail: video.thumbnail,
+      alt: `${title} video ${index + 1}`,
+    }));
+
+  return [...mediaItems, ...fallbackVideos];
+}
+
 export default function ProductGallery({
-  images,
+  media,
   title,
   videos = [],
 }: ProductGalleryProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [selectedMediaType, setSelectedMediaType] = useState<'image' | 'video'>(
-    'image'
+  const items = useMemo(
+    () => buildGalleryItems(media, title, videos),
+    [media, title, videos]
   );
-  const imageRef = useRef<HTMLDivElement>(null);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const slideRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const mobileVideoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+  const desktopVideoRefs = useRef<Array<HTMLVideoElement | null>>([]);
 
-  // Filter out potential empty strings if any
-  const validImages = images.filter((img) => img);
-  const hasVideos = videos && videos.length > 0;
-
-  // Combined media count for navigation
-  const totalMedia = validImages.length + (hasVideos ? videos.length : 0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageRef.current) return;
-    const { left, top, width, height } =
-      imageRef.current.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    setMousePos({ x, y });
-  };
-
-  const handlePrev = useCallback(
-    (e?: React.MouseEvent) => {
-      e?.stopPropagation();
-      setSelectedIndex((prev) => (prev === 0 ? totalMedia - 1 : prev - 1));
-      // Update media type based on index
-      if (selectedIndex < validImages.length) {
-        setSelectedMediaType('image');
-      } else {
-        setSelectedMediaType('video');
-      }
-    },
-    [totalMedia, validImages.length, selectedIndex]
-  );
-
-  const handleNext = useCallback(
-    (e?: React.MouseEvent) => {
-      e?.stopPropagation();
-      setSelectedIndex((prev) => (prev === totalMedia - 1 ? 0 : prev + 1));
-      // Update media type based on index
-      const nextIndex =
-        selectedIndex === totalMedia - 1 ? 0 : selectedIndex + 1;
-      if (nextIndex < validImages.length) {
-        setSelectedMediaType('image');
-      } else {
-        setSelectedMediaType('video');
-      }
-    },
-    [totalMedia, validImages.length, selectedIndex]
-  );
-
-  // Keyboard navigation for lightbox
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    slideRefs.current = slideRefs.current.slice(0, items.length);
+    mobileVideoRefs.current = mobileVideoRefs.current.slice(0, items.length);
+    desktopVideoRefs.current = desktopVideoRefs.current.slice(0, items.length);
+  }, [items.length]);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isLightboxOpen) return;
-      if (e.key === 'ArrowLeft') handlePrev();
-      if (e.key === 'ArrowRight') handleNext();
-      if (e.key === 'Escape') setIsLightboxOpen(false);
+  useEffect(() => {
+    const slides = slideRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (slides.length === 0 || typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visibleEntry) return;
+
+        const nextIndex = Number(
+          (visibleEntry.target as HTMLElement).dataset.index || 0
+        );
+        setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
+      },
+      { threshold: [0.55, 0.75] }
+    );
+
+    slides.forEach((slide) => observer.observe(slide));
+    return () => observer.disconnect();
+  }, [items.length]);
+
+  useEffect(() => {
+    const allRefs = [mobileVideoRefs.current, desktopVideoRefs.current];
+
+    allRefs.forEach((group) => {
+      group.forEach((video, index) => {
+        if (!video || typeof window === 'undefined') return;
+
+        video.muted = isMuted;
+
+        const isVisible =
+          video.offsetParent !== null &&
+          window.getComputedStyle(video).display !== 'none';
+
+        if (
+          index === activeIndex &&
+          items[index]?.type === 'video' &&
+          isVisible
+        ) {
+          const playPromise = video.play();
+          if (playPromise) playPromise.catch(() => undefined);
+          return;
+        }
+
+        video.pause();
+      });
+    });
+  }, [activeIndex, isMuted, items]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setLightboxOpen(false);
+      if (event.key === 'ArrowLeft') {
+        setActiveIndex((current) =>
+          current === 0 ? items.length - 1 : current - 1
+        );
+      }
+      if (event.key === 'ArrowRight') {
+        setActiveIndex((current) =>
+          current === items.length - 1 ? 0 : current + 1
+        );
+      }
     };
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isLightboxOpen, handlePrev, handleNext]);
+  }, [items.length, lightboxOpen]);
 
-  // Early return after all hooks
-  if (validImages.length === 0 && !hasVideos) {
+  if (items.length === 0) {
     return (
-      <div className="aspect-[3/4] bg-stone-100 flex items-center justify-center text-stone-300 font-serif italic text-2xl rounded-sm">
-        No Imagery
+      <div className="flex aspect-[4/5] items-center justify-center rounded-[28px] bg-stone-100 text-stone-400">
+        No media
       </div>
     );
   }
 
-  // Get current media (image or video)
-  const isCurrentVideo = selectedIndex >= validImages.length;
-  const currentVideoIndex = isCurrentVideo
-    ? selectedIndex - validImages.length
-    : -1;
-  const currentVideo =
-    isCurrentVideo && hasVideos ? videos[currentVideoIndex] : null;
+  const goToIndex = (index: number, scrollGallery = false) => {
+    setActiveIndex(index);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
+    if (!scrollGallery) return;
+
+    slideRefs.current[index]?.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'start',
+      block: 'nearest',
+    });
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+  const scrollToIndex = (index: number) => goToIndex(index, true);
+  const showPrev = (scrollGallery = false) =>
+    goToIndex(activeIndex === 0 ? items.length - 1 : activeIndex - 1, scrollGallery);
+  const showNext = (scrollGallery = false) =>
+    goToIndex(activeIndex === items.length - 1 ? 0 : activeIndex + 1, scrollGallery);
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe) {
-      handleNext();
-    } else if (isRightSwipe) {
-      handlePrev();
-    }
-
-    setTouchStart(0);
-    setTouchEnd(0);
-  };
+  const activeItem = items[activeIndex];
 
   return (
-    <div className="space-y-4">
-      {/* Main Media Container (Image or Video) */}
-      <div
-        ref={imageRef}
-        className={cn(
-          'relative aspect-[3/4] bg-stone-100 overflow-hidden rounded-sm group touch-pan-y',
-          !isCurrentVideo && 'cursor-zoom-in' // Only zoom for images
-        )}
-        onMouseEnter={() => !isCurrentVideo && setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-        onMouseMove={!isCurrentVideo ? handleMouseMove : undefined}
-        onClick={() => !isCurrentVideo && setIsLightboxOpen(true)}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* PHASE 2.3: Video Display */}
-        {isCurrentVideo && currentVideo ? (
-          <video
-            src={currentVideo.url}
-            poster={currentVideo.thumbnail}
-            controls
-            className="w-full h-full object-cover"
-            preload="metadata"
-          >
-            Your browser does not support video playback.
-          </video>
-        ) : (
-          /* Image Display */
-          <>
-            <OptimizedImage
-              src={validImages[selectedIndex]}
-              alt={`${title} - View ${selectedIndex + 1}`}
-              fill
-              className={cn(
-                'object-cover transition-opacity duration-300',
-                isHovering ? 'opacity-0' : 'opacity-100'
-              )}
-              priority
-            />
-
-            {/* Zoomed Image Overlay */}
-            {isHovering && (
-              <div
-                className="absolute inset-0 pointer-events-none hidden md:block transition-opacity duration-150"
-                style={{
-                  backgroundImage: `url(${validImages[selectedIndex]})`,
-                  backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
-                  backgroundSize: '280%',
-                  backgroundRepeat: 'no-repeat',
-                }}
-              />
-            )}
-          </>
-        )}
-
-        {/* Zoom hint badge */}
-        {!isCurrentVideo && (
-          <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            <ZoomIn size={13} />
-            <span>Zoom</span>
-          </div>
-        )}
-
-        {/* Lightbox hint on click */}
-        {!isCurrentVideo && (
-          <div className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            <ZoomIn size={14} />
-          </div>
-        )}
-        {!isCurrentVideo && validImages.length > 1 && (
-          <>
-            <button
-              onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 min-h-[44px] min-w-[44px] bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white text-stone-800 flex items-center justify-center"
+    <div className="space-y-4 lg:sticky lg:top-24">
+      <div className="lg:hidden">
+        <div className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {items.map((item, index) => (
+            <div
+              key={item.id}
+              ref={(node) => {
+                slideRefs.current[index] = node;
+              }}
+              data-index={index}
+              className="relative w-full shrink-0 snap-center bg-[#fafafa]"
             >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 min-h-[44px] min-w-[44px] bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white text-stone-800 flex items-center justify-center"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </>
-        )}
+              <div className="relative aspect-[4/5] overflow-hidden">
+                {item.type === 'video' ? (
+                  <>
+                    <video
+                      ref={(node) => {
+                        mobileVideoRefs.current[index] = node;
+                      }}
+                      src={item.src}
+                      poster={item.thumbnail}
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setIsMuted((current) => !current)}
+                      className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm"
+                      aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+                    >
+                      {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveIndex(index);
+                      setLightboxOpen(true);
+                    }}
+                    className="relative block h-full w-full"
+                    aria-label="Open product image in fullscreen"
+                  >
+                    <OptimizedImage
+                      src={item.src}
+                      alt={item.alt}
+                      fill
+                      priority={index === 0}
+                      className="object-cover"
+                      sizes="100vw"
+                    />
+                  </button>
+                )}
 
-        {/* Video Indicator */}
-        {isCurrentVideo && (
-          <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium">
-            <Play size={14} fill="currentColor" />
-            Video
+                {item.type === 'video' && (
+                  <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                    <Play size={12} fill="currentColor" />
+                    Reel
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {items.length > 1 && (
+          <div className="mt-4 space-y-4">
+            <div className="flex justify-center gap-2">
+              {items.map((item, index) => (
+                <button
+                  key={`${item.id}-dot`}
+                  type="button"
+                  onClick={() => scrollToIndex(index)}
+                  className={`h-2.5 rounded-full transition-all ${
+                    activeIndex === index ? 'w-8 bg-stone-900' : 'w-2.5 bg-stone-300'
+                  }`}
+                  aria-label={`View media ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {items.map((item, index) => (
+                <button
+                  key={`${item.id}-thumb`}
+                  type="button"
+                  onClick={() => scrollToIndex(index)}
+                  className={`relative h-20 w-16 shrink-0 overflow-hidden rounded-2xl border bg-stone-100 ${
+                    activeIndex === index
+                      ? 'border-stone-900'
+                      : 'border-transparent opacity-70'
+                  }`}
+                  aria-label={`Select media ${index + 1}`}
+                >
+                  {item.type === 'video' ? (
+                    <>
+                      {item.thumbnail ? (
+                        <img
+                          src={item.thumbnail}
+                          alt={item.alt}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-stone-200 text-stone-500">
+                          <Play size={14} />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white">
+                          <Play size={12} fill="currentColor" />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <OptimizedImage
+                      src={item.src}
+                      alt={item.alt}
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
 
-      {/* Thumbnails - Combined Images and Videos */}
-      {totalMedia > 1 && (
-        <div className="grid grid-cols-5 gap-3">
-          {/* Image Thumbnails */}
-          {validImages.map((img, idx) => (
-            <button
-              key={`img-${idx}`}
-              onClick={() => {
-                setSelectedIndex(idx);
-                setSelectedMediaType('image');
-              }}
-              className={cn(
-                'relative aspect-[3/4] bg-stone-100 overflow-hidden rounded-sm transition-all border',
-                selectedIndex === idx && !isCurrentVideo
-                  ? 'border-stone-900 ring-1 ring-stone-900 opacity-100'
-                  : 'border-transparent opacity-60 hover:opacity-100'
-              )}
-            >
-              <OptimizedImage
-                src={img}
-                alt={`Thumbnail ${idx + 1}`}
-                fill
-                className="object-cover"
-                sizes="100px"
-              />
-            </button>
-          ))}
-          {/* Video Thumbnails */}
-          {hasVideos &&
-            videos.map((video, idx) => {
-              const videoIndex = validImages.length + idx;
-              return (
-                <button
-                  key={`video-${idx}`}
-                  onClick={() => {
-                    setSelectedIndex(videoIndex);
-                    setSelectedMediaType('video');
+      <div className="hidden lg:block">
+        <div className="space-y-4">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] bg-[#fafafa] lg:h-[calc(100vh-8rem)] lg:min-h-[720px] lg:aspect-auto">
+            {activeItem.type === 'video' ? (
+              <>
+                <video
+                  ref={(node) => {
+                    desktopVideoRefs.current[activeIndex] = node;
                   }}
-                  className={cn(
-                    'relative aspect-[3/4] bg-stone-100 overflow-hidden rounded-sm transition-all border',
-                    selectedIndex === videoIndex && isCurrentVideo
-                      ? 'border-stone-900 ring-1 ring-stone-900 opacity-100'
-                      : 'border-transparent opacity-60 hover:opacity-100'
-                  )}
+                  src={activeItem.src}
+                  poster={activeItem.thumbnail}
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="h-full w-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsMuted((current) => !current)}
+                  className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm"
+                  aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                 >
-                  {video.thumbnail ? (
-                    <OptimizedImage
-                      src={video.thumbnail}
-                      alt={`Video ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="100px"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-stone-200">
-                      <Play size={20} className="text-stone-500" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-8 h-8 bg-black/60 rounded-full flex items-center justify-center">
-                      <Play size={14} className="text-white ml-0.5" />
-                    </div>
-                  </div>
+                  {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                 </button>
-              );
-            })}
+                <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                  <Play size={12} fill="currentColor" />
+                  Reel
+                </div>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                className="relative block h-full w-full"
+                aria-label="Open product image in fullscreen"
+              >
+                <OptimizedImage
+                  src={activeItem.src}
+                  alt={activeItem.alt}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(max-width: 1280px) 50vw, 700px"
+                />
+              </button>
+            )}
+
+            {items.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => showPrev()}
+                  className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-900 shadow-sm"
+                  aria-label="Previous media"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => showNext()}
+                  className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-900 shadow-sm"
+                  aria-label="Next media"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </>
+            )}
+          </div>
+
+          {items.length > 1 && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-center gap-2">
+                {items.map((item, index) => (
+                  <button
+                    key={`${item.id}-desktop-dot`}
+                    type="button"
+                    onClick={() => goToIndex(index)}
+                    className={`h-2 rounded-full transition-all ${
+                      activeIndex === index ? 'w-8 bg-stone-900' : 'w-2 bg-stone-300'
+                    }`}
+                    aria-label={`Go to media ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              <div className="grid grid-cols-5 gap-3">
+                {items.map((item, index) => (
+                  <button
+                    key={`${item.id}-desktop-thumb`}
+                    type="button"
+                    onClick={() => goToIndex(index)}
+                    className={`relative aspect-[4/5] overflow-hidden rounded-2xl border ${
+                      activeIndex === index
+                        ? 'border-stone-900'
+                        : 'border-transparent opacity-75'
+                    }`}
+                    aria-label={`Select media ${index + 1}`}
+                  >
+                    {item.type === 'video' ? (
+                      <>
+                        {item.thumbnail ? (
+                          <img
+                            src={item.thumbnail}
+                            alt={item.alt}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-stone-200 text-stone-500">
+                            <Play size={16} />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white">
+                            <Play size={12} fill="currentColor" />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <OptimizedImage
+                        src={item.src}
+                        alt={item.alt}
+                        fill
+                        className="object-cover"
+                        sizes="120px"
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {lightboxOpen && activeItem.type === 'image' && (
+        <div
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/95 p-4"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(false)}
+            className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white"
+            aria-label="Close fullscreen image"
+          >
+            <X size={22} />
+          </button>
+
+          {items.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showPrev();
+                }}
+                className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white"
+                aria-label="Previous image"
+              >
+                <ChevronLeft size={22} />
+              </button>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showNext();
+                }}
+                className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white"
+                aria-label="Next image"
+              >
+                <ChevronRight size={22} />
+              </button>
+            </>
+          )}
+
+          <div
+            className="relative h-full w-full max-w-5xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <OptimizedImage
+              src={activeItem.src}
+              alt={activeItem.alt}
+              fill
+              priority
+              className="object-contain"
+              sizes="100vw"
+            />
+          </div>
         </div>
       )}
-
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {isLightboxOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
-            onClick={() => setIsLightboxOpen(false)}
-          >
-            <button
-              onClick={() => setIsLightboxOpen(false)}
-              className="absolute top-4 right-4 text-white p-2 min-h-[44px] min-w-[44px] hover:bg-white/10 rounded-full transition-colors z-50 flex items-center justify-center"
-            >
-              <X size={32} />
-            </button>
-
-            <button
-              onClick={handlePrev}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 min-h-[44px] min-w-[44px] text-white hover:bg-white/10 rounded-full transition-colors z-50 flex items-center justify-center"
-            >
-              <ChevronLeft size={48} />
-            </button>
-
-            <button
-              onClick={handleNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 min-h-[44px] min-w-[44px] text-white hover:bg-white/10 rounded-full transition-colors z-50 flex items-center justify-center"
-            >
-              <ChevronRight size={48} />
-            </button>
-
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full h-full max-w-5xl max-h-[90vh] flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()} // Prevent clicking image from closing modal
-            >
-              <OptimizedImage
-                src={validImages[selectedIndex]}
-                alt={title}
-                fill
-                className="object-contain" // Contain to show full image without cropping
-                quality={100}
-                priority
-              />
-            </motion.div>
-
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 font-mono text-sm">
-              {selectedIndex + 1} / {validImages.length}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

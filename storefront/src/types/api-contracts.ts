@@ -59,7 +59,20 @@ export interface ApiProductResponse {
   status: 'draft' | 'published' | 'archived';
   variants?: ApiVariantResponse[];
   options?: ApiOptionResponse[];
-  images?: { id: string; url: string; alt?: string; position?: number }[];
+  images?: {
+    id: string;
+    url: string;
+    alt?: string;
+    alt_text?: string;
+    position?: number;
+    is_thumbnail?: boolean | null;
+    metadata?: {
+      media_type?: 'image' | 'video';
+      thumbnail_url?: string;
+      mime_type?: string;
+      file_size?: number;
+    } | null;
+  }[];
   material?: string;
   origin_country?: string;
   size_guide?: Record<string, unknown> | string;
@@ -70,8 +83,19 @@ export interface ApiProductResponse {
   review_count?: number;
   created_at: string;
   updated_at?: string;
-  collection?: { id: string; title: string };
-  categories?: { id: string; name: string; handle: string }[];
+  collection?: { id: string; title: string; handle?: string };
+  categories?: Array<{
+    id?: string;
+    name?: string;
+    handle?: string;
+    slug?: string;
+    category?: {
+      id: string;
+      name: string;
+      handle?: string;
+      slug?: string;
+    };
+  }>;
   // Add other API-specific fields here
 }
 

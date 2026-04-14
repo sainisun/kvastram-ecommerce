@@ -9,12 +9,11 @@
  *   const frontendProduct = adaptProduct(apiProduct);
  */
 
-import type { Product, ProductVariant, Category } from '@/types';
+import type { Product, ProductVariant } from '@/types';
 import type {
   ApiProductResponse,
   ApiVariantResponse,
   ApiPriceResponse,
-  ApiOptionResponse,
   ApiCollectionResponse,
 } from '@/types/api-contracts';
 
@@ -33,7 +32,10 @@ export function adaptProduct(apiProduct: ApiProductResponse): Product {
     status: apiProduct.status,
     variants: apiProduct.variants ? adaptProductVariants(apiProduct.variants) : undefined,
     options: apiProduct.options,
-    images: apiProduct.images,
+    images: apiProduct.images?.map((image) => ({
+      ...image,
+      alt: image.alt ?? image.alt_text,
+    })),
     material: apiProduct.material,
     origin_country: apiProduct.origin_country,
     // size_guide can be a string or object in the API, keep as-is for frontend
@@ -47,9 +49,14 @@ export function adaptProduct(apiProduct: ApiProductResponse): Product {
     collection: apiProduct.collection,
     categories: apiProduct.categories
       ? apiProduct.categories.map(c => ({
-          id: c.id,
-          name: c.name,
-          handle: c.handle,
+          id: c.id || c.category?.id || '',
+          name: c.name || c.category?.name || 'Category',
+          handle:
+            c.handle ||
+            c.slug ||
+            c.category?.handle ||
+            c.category?.slug ||
+            '',
           description: undefined,
         }))
       : undefined,

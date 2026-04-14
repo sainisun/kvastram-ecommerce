@@ -22,6 +22,7 @@ const ReturnSchema = z.object({
 // POST /store/returns — Customer submits a return request
 router.post('/', verifyCustomer, async (c) => {
   try {
+    const user = c.get('customer') as { sub: string };
     const body = await c.req.json();
     const data = ReturnSchema.parse(body);
 
@@ -34,6 +35,11 @@ router.post('/', verifyCustomer, async (c) => {
 
     if (!order) {
       return c.json({ error: 'Order not found' }, 404);
+    }
+
+    // 🔒 SEC: Ensure order belongs to authenticated customer
+    if (!order.customer_id || order.customer_id !== user.sub) {
+      return c.json({ error: 'Forbidden' }, 403);
     }
 
     // Only allow return on completed orders

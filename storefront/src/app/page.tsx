@@ -9,30 +9,20 @@ import { CommunitySection } from '@/components/home/CommunitySection';
 import { CategoryCircles } from '@/components/home/CategoryCircles';
 import { HeroBanner } from '@/components/home/HeroBanner';
 import { TrendingReels } from '@/components/home/TrendingReels';
+import {
+  buildBreadcrumbJsonLd,
+  buildHomepageMetadata,
+  buildOrganizationJsonLd,
+  buildWebsiteJsonLd,
+  serializeJsonLd,
+} from '@/lib/seo';
 
 export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
-
-export const metadata: Metadata = {
-  title: 'Kvastram | Artisanal Luxury Fashion',
-  description:
-    'Premium clothing for the global citizen. Discover artisan-crafted fashion with worldwide shipping.',
-  alternates: {
-    canonical: baseUrl,
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: baseUrl,
-    siteName: 'Kvastram',
-    title: 'Kvastram | Artisanal Luxury Fashion',
-    description: 'Premium clothing for the global citizen.',
-  },
-};
+export const metadata: Metadata = buildHomepageMetadata();
 
 export default async function Home() {
-  // ─── All existing API calls preserved exactly ───
+  // All existing API calls preserved exactly.
   const homepageData = await api.getHomepageSettings();
   const homepageSettings = homepageData.settings || {};
 
@@ -67,16 +57,16 @@ export default async function Home() {
   // Ticker items for marquee
   const tickerItems = [
     announcementText ||
-      'Complimentary Worldwide Shipping on Orders Over ₹10,000',
+      'Complimentary worldwide shipping on orders over Rs. 10,000',
     'Handcrafted by Artisans Since 1987',
     '30-Day Returns & Exchanges',
     'Exclusive Artisan Collections',
   ];
 
-  // Stats data — admin se configurable, defaults as fallback
+  // Stats data, admin-configurable with sensible fallbacks.
   const statsData = [
     {
-      num: homepageSettings.stat_customer_rating || '4.9 ★',
+      num: homepageSettings.stat_customer_rating || '4.9 Star Rating',
       label: 'Customer Rating',
     },
     {
@@ -97,9 +87,21 @@ export default async function Home() {
     },
   ];
 
+  const homepageSchema = [
+    buildOrganizationJsonLd(),
+    buildWebsiteJsonLd(),
+    buildBreadcrumbJsonLd([{ name: 'Home', path: '/' }]),
+  ];
+
   return (
     <>
-      {/* Reveal observer — client component wrapper */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(homepageSchema),
+        }}
+      />
+      {/* Reveal observer client component wrapper */}
       <RevealOnScroll>
         <div className="min-h-screen" style={{ background: 'var(--white)' }}>
           <div className="block md:hidden">
@@ -156,13 +158,23 @@ export default async function Home() {
           ) : null}
 
           <HeroBanner />
+          <section className="mx-auto max-w-5xl px-6 py-10 text-center md:py-14">
+            <h1 className="font-heading text-4xl font-semibold uppercase tracking-[0.02em] text-stone-900 md:text-5xl">
+              Handcrafted Indian Ethnic Wear for Women
+            </h1>
+            <p className="font-body mx-auto mt-4 max-w-3xl text-[15px] font-[300] leading-[1.8] text-stone-600 md:text-lg">
+              Discover artisan-made kurtis, shawls, wraps, sarees, and occasion-ready
+              silhouettes shaped by premium fabrics, timeless Indian craftsmanship,
+              and modern everyday elegance.
+            </p>
+          </section>
           <TrendingReels />
 
           <StatsSection statsData={statsData} />
 
           <CategorySection />
 
-          {/* ═══ 5. MARQUEE STRIP ═══ */}
+          {/* Marquee strip */}
           <MarqueeStrip
             items={[
               'Kashmiri Weaves',
@@ -182,7 +194,7 @@ export default async function Home() {
             collections={collections}
           />
 
-          {/* ═══ DIVIDER ═══ */}
+          {/* Divider */}
           <div className="divider-text-prem">
             <span>The Community</span>
           </div>
@@ -192,19 +204,19 @@ export default async function Home() {
               {
                 gradient: 'from-stone-200 to-stone-300',
                 user: '@aria.styles',
-                caption: 'This pashmina is everything ❤️✨',
+                caption: 'This pashmina is everything.',
                 tag: 'New Arrival',
               },
               {
                 gradient: 'from-amber-100 to-amber-200',
                 user: '@luxe.by.nina',
-                caption: "Wearing the silk kurta to my sister's wedding 💛",
+                caption: "Wearing the silk kurta to my sister's wedding.",
                 tag: 'Wedding Season',
               },
               {
                 gradient: 'from-rose-100 to-rose-200',
                 user: '@mira.edits',
-                caption: 'The quality is unmatched — worth every penny',
+                caption: 'The quality is unmatched and worth every penny.',
                 tag: null,
               },
               {
@@ -216,7 +228,7 @@ export default async function Home() {
               {
                 gradient: 'from-teal-100 to-teal-200',
                 user: '@style.by.aisha',
-                caption: 'Gifted this to my mum — she cried happy tears 😭',
+                caption: 'Gifted this to my mum and she cried happy tears.',
                 tag: null,
               },
               {
@@ -228,7 +240,7 @@ export default async function Home() {
             ]}
           />
 
-          {/* ═══ MARQUEE 2 ═══ */}
+          {/* Marquee strip two */}
           <MarqueeStrip
             items={[
               'Authentic Craftsmanship',

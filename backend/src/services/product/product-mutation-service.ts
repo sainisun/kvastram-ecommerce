@@ -123,6 +123,7 @@ export class ProductMutationService {
         alt_text: img.alt_text,
         position: img.position ?? 0,
         is_thumbnail: img.is_thumbnail ?? false,
+        metadata: img.metadata ?? null,
       }));
 
     if (imageValues.length > 0) {
@@ -251,6 +252,7 @@ export class ProductMutationService {
           alt_text: img.alt_text,
           position: img.position ?? 0,
           is_thumbnail: img.is_thumbnail ?? false,
+          metadata: img.metadata ?? null,
         }));
 
       if (imageValues.length > 0) {

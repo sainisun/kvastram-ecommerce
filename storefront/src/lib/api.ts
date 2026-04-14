@@ -878,9 +878,8 @@ export const api = {
 
   async getBanners() {
     try {
-      // Cache for 60 seconds
-      const res = await fetchWithTrace(`${API_URL}/banners/storefront`, {
-        next: { revalidate: 60 },
+      const res = await fetchWithTrace(`${API_URL}/banners`, {
+        cache: 'no-store',
       });
       if (!res.ok) return { banners: [] }; // Return empty if fails, don't crash
       return res.json();
@@ -922,6 +921,39 @@ export const api = {
       return res.json();
     } catch {
       return { categories: [] };
+    }
+  },
+
+  async getCategoryCircles() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/category-circles`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { circles: [] };
+      return res.json();
+    } catch {
+      return { circles: [] };
+    }
+  },
+
+  async getSpotlightProducts() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/featured-products`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { featuredProducts: [] };
+      const json = await res.json();
+
+      return {
+        featuredProducts: Array.isArray(json.featuredProducts)
+          ? json.featuredProducts.map((item: any) => ({
+              ...item,
+              product: item.product ? adaptProduct(item.product) : null,
+            }))
+          : [],
+      };
+    } catch {
+      return { featuredProducts: [] };
     }
   },
 

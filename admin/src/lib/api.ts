@@ -11,12 +11,11 @@ const debugLog = (message: string, data?: unknown) => {
 const debugCookieState = async (endpoint: string) => {
   if (typeof window === 'undefined') return;
 
-  // Log all cookies (for debugging)
+  // Log cookie presence only — never log raw cookie content to avoid token exposure
   const cookies = document.cookie;
   debugLog(`Cookie state before ${endpoint}:`, {
     hasCookies: !!cookies,
-    cookieString: cookies,
-    hasAdminToken: cookies.includes('admin_token=')
+    hasAdminToken: cookies.includes('admin_token='),
   });
 
   // Check if we're using proxy or direct
@@ -637,6 +636,51 @@ export const api = {
     });
     if (!res.ok) return handleApiError(res, 'Failed to upload image');
     return res.json();
+  },
+
+  uploadMedia: async (
+    file: File,
+    onProgress?: (progress: number) => void
+  ): Promise<{
+    url: string;
+    filename: string;
+    originalName: string;
+    size: number;
+    type: string;
+  }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${API_BASE_URL}/upload`);
+      xhr.withCredentials = true;
+
+      xhr.upload.onprogress = (event) => {
+        if (!event.lengthComputable || !onProgress) return;
+        onProgress(Math.round((event.loaded / event.total) * 100));
+      };
+
+      xhr.onload = () => {
+        try {
+          const json = JSON.parse(xhr.responseText || '{}');
+          if (xhr.status >= 200 && xhr.status < 300) {
+            onProgress?.(100);
+            resolve(json);
+            return;
+          }
+
+          reject(new Error(json.error || json.message || 'Failed to upload file'));
+        } catch {
+          reject(new Error('Failed to upload file'));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error('Failed to upload file'));
+      xhr.ontimeout = () => reject(new Error('Upload timed out'));
+      xhr.timeout = 120000;
+      xhr.send(formData);
+    });
   },
 
   // Settings endpoints
@@ -1270,6 +1314,56 @@ export const api = {
     return res.json();
   },
 
+  // Category Page Banners
+  getHomepageBanners: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-banners`, {});
+    if (!res.ok) throw new Error('Failed to fetch homepage banners');
+    return res.json();
+  },
+
+  createHomepageBanner: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-banners`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create homepage banner');
+    return res.json();
+  },
+
+  updateHomepageBanner: async (id: string, formData: FormData) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-banners/${id}`,
+      {
+        method: 'PUT',
+        body: formData,
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update homepage banner');
+    return res.json();
+  },
+
+  deleteHomepageBanner: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-banners/${id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete homepage banner');
+    return res.json();
+  },
+
+  toggleHomepageBanner: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-banners/${id}/toggle`,
+      {
+        method: 'PATCH',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to toggle homepage banner');
+    return res.json();
+  },
+
   // Trending Reels
   getTrendingReels: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/admin/trending-reels`, {});
@@ -1367,6 +1461,115 @@ export const api = {
       }
     );
     if (!res.ok) return handleApiError(res, 'Failed to toggle homepage category');
+    return res.json();
+  },
+
+  // Category Circles
+  getCategoryCircles: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/category-circles`, {});
+    if (!res.ok) throw new Error('Failed to fetch category circles');
+    return res.json();
+  },
+
+  createCategoryCircle: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/category-circles`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create category circle');
+    return res.json();
+  },
+
+  updateCategoryCircle: async (id: string, formData: FormData) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/category-circles/${id}`,
+      {
+        method: 'PUT',
+        body: formData,
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update category circle');
+    return res.json();
+  },
+
+  deleteCategoryCircle: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/category-circles/${id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete category circle');
+    return res.json();
+  },
+
+  toggleCategoryCircle: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/category-circles/${id}/toggle`,
+      {
+        method: 'PATCH',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to toggle category circle');
+    return res.json();
+  },
+
+  // Featured Products
+  getFeaturedProductsAdmin: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/featured-products`, {});
+    if (!res.ok) throw new Error('Failed to fetch featured products');
+    return res.json();
+  },
+
+  searchFeaturedProductCandidates: async (query: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/featured-products/product-search?q=${encodeURIComponent(query)}`,
+      {}
+    );
+    if (!res.ok) throw new Error('Failed to search products');
+    return res.json();
+  },
+
+  createFeaturedProduct: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/featured-products`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create featured product');
+    return res.json();
+  },
+
+  updateFeaturedProduct: async (id: string, formData: FormData) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/featured-products/${id}`,
+      {
+        method: 'PUT',
+        body: formData,
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update featured product');
+    return res.json();
+  },
+
+  deleteFeaturedProduct: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/featured-products/${id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete featured product');
+    return res.json();
+  },
+
+  toggleFeaturedProduct: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/featured-products/${id}/toggle`,
+      {
+        method: 'PATCH',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to toggle featured product');
     return res.json();
   },
 

@@ -1684,4 +1684,75 @@ a:active,
     transform: translateY(0) !important;
     animation: none !important;
   }
+
+  .hero-banner,
+  .hero-section,
+  .homepage-slider {
+    width: 100%;
+    height: 90vh;
+    max-height: 750px;
+    min-height: 500px;
+  }
+
+  .hero-banner img,
+  .hero-banner .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .product-spotlight-prem {
+    grid-column: 1 / -1;
+    display: block;
+  }
+
+  .scroll-to-top,
+  .back-to-top,
+  button[aria-label='Back to top'],
+  button[aria-label='Scroll to top'],
+  .scroll-top-btn {
+    display: none !important;
+  }
+}
+
+.product-spotlight-prem {
+  grid-column: 1 / -1;
+}
+
+:where(
+    button[class*='bg-stone-900'],
+    button[class*='btn'],
+    button[class*='button'],
+    a[class*='bg-stone-900'],
+    a[class*='btn'],
+    a[class*='button'],
+    input[type='submit'],
+    input[type='button'],
+    .btn-primary-prem,
+    .empty-wishlist-cta,
+    .wishlist-empty .btn,
+    .empty-state button,
+    .wishlist-page button[type='button']
+  ) {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+:where(
+    button[class*='bg-stone-900'],
+    button[class*='btn'],
+    button[class*='button'],
+    a[class*='bg-stone-900'],
+    a[class*='btn'],
+    a[class*='button'],
+    .btn-primary-prem,
+    .empty-wishlist-cta,
+    .wishlist-empty .btn,
+    .empty-state button,
+    .wishlist-page button[type='button']
+  ):hover {
+  background-color: #222222 !important;
+  color: #ffffff !important;
 }

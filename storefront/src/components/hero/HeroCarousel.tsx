@@ -44,7 +44,7 @@ const STATIC_SLIDES = [
     description:
       'Exquisite silk sarees hand-woven in Varanasi. A tribute to the golden era of craftsmanship.',
     ctaText: 'View Collection',
-    ctaLink: '/products?category_id=sarees',
+    ctaLink: '/collections/sarees',
   },
   {
     id: 'static-3',

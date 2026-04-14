@@ -1,8 +1,16 @@
+import type { Metadata } from 'next';
+import { permanentRedirect } from 'next/navigation';
+
 import CatalogClient from '@/components/products/CatalogClient';
 import { api } from '@/lib/api';
+import { buildCatalogMetadata, findCategoryById } from '@/lib/seo';
 import type { Product } from '@/types';
 
-export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
+export const revalidate = 60;
+
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export const metadata: Metadata = buildCatalogMetadata();
 
 async function fetchWithTimeout<T>(
   promise: Promise<T>,
@@ -10,8 +18,12 @@ async function fetchWithTimeout<T>(
 ): Promise<T> {
   let timeoutId: NodeJS.Timeout | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error(`Request timeout after ${ms}ms`)), ms);
+    timeoutId = setTimeout(
+      () => reject(new Error(`Request timeout after ${ms}ms`)),
+      ms
+    );
   });
+
   try {
     return await Promise.race([promise, timeoutPromise]);
   } finally {
@@ -19,63 +31,108 @@ async function fetchWithTimeout<T>(
   }
 }
 
+function appendSort(handle: string, sort?: string) {
+  if (!sort || sort === 'newest') return handle;
+  return `${handle}?sort=${encodeURIComponent(sort)}`;
+}
+
 export default async function CatalogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: SearchParams;
 }) {
   const params = await searchParams;
-  const category_id = params.category_id as string;
-  const tag_id = params.tag_id as string;
-  const collection_id = params.collection_id as string;
-  const sort = params.sort as string;
+  const categoryId = params.category_id as string | undefined;
+  const tagId = params.tag_id as string | undefined;
+  const collectionId = params.collection_id as string | undefined;
+  const sort = params.sort as string | undefined;
 
-  let productsData: { products: Product[]; total: number; limit?: number; offset?: number } = { products: [], total: 0 };
+  if (categoryId || collectionId) {
+    const [categoriesResult, collectionsResult] = await Promise.all([
+      api.getCategories(),
+      api.getCollections(),
+    ]);
+
+    if (categoryId) {
+      const category = findCategoryById(
+        categoriesResult.categories || [],
+        categoryId
+      );
+
+      if (category?.slug || category?.handle) {
+        permanentRedirect(
+          appendSort(
+            `/collections/${category.slug || category.handle}`,
+            sort
+          )
+        );
+      }
+    }
+
+    if (collectionId) {
+      const collection = (collectionsResult.collections || []).find(
+        (item: { id: string; handle?: string }) => item.id === collectionId
+      );
+
+      if (collection?.handle) {
+        permanentRedirect(
+          appendSort(`/collections/${collection.handle}`, sort)
+        );
+      }
+    }
+  }
+
+  let productsData: {
+    products: Product[];
+    total: number;
+    limit?: number;
+    offset?: number;
+  } = { products: [], total: 0 };
   let categoriesData = { categories: [] };
   let tagsData = { tags: [] };
   let collectionsData = { collections: [] };
 
   try {
-    // Fetch products with 15 second timeout and bypass cache
     const productsResult = await fetchWithTimeout(
-      api.getProducts({ limit: 50, category_id, tag_id, collection_id, sort, cache: false }),
+      api.getProducts({
+        limit: 50,
+        tag_id: tagId,
+        sort,
+        cache: false,
+      }),
       15000
     );
     productsData = productsResult || { products: [], total: 0 };
-    
-    // Fetch other data in parallel (with separate error handling)
-    const [categoriesResult, tagsResult, collectionsResult] = await Promise.allSettled([
-      api.getCategories(),
-      api.getTags(),
-      api.getCollections()
-    ]);
-    
+
+    const [categoriesResult, tagsResult, collectionsResult] =
+      await Promise.allSettled([
+        api.getCategories(),
+        api.getTags(),
+        api.getCollections(),
+      ]);
+
     if (categoriesResult.status === 'fulfilled') {
       categoriesData = categoriesResult.value || { categories: [] };
-    } else {
-      console.warn('[CatalogPage] Failed to fetch categories:', categoriesResult.reason);
     }
+
     if (tagsResult.status === 'fulfilled') {
       tagsData = tagsResult.value || { tags: [] };
     }
+
     if (collectionsResult.status === 'fulfilled') {
       collectionsData = collectionsResult.value || { collections: [] };
     }
-  } catch (error) {
-    // Log error for debugging
+  } catch {
+    // Keep resilient empty fallbacks for the catalog page.
   }
-
-  const products = productsData.products || [];
-  const categories = categoriesData.categories || [];
-  const tags = tagsData.tags || [];
-  const collections = collectionsData.collections || [];
 
   return (
     <CatalogClient
-      initialProducts={products}
-      categories={categories}
-      tags={tags}
-      collections={collections}
+      initialProducts={productsData.products || []}
+      categories={categoriesData.categories || []}
+      tags={tagsData.tags || []}
+      collections={collectionsData.collections || []}
+      totalProducts={productsData.total || 0}
     />
   );
 }

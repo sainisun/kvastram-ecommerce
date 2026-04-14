@@ -1,9 +1,16 @@
-import { api } from '@/lib/api';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { ArrowLeft } from 'lucide-react';
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+import { notFound } from 'next/navigation';
+
+import OptimizedImage from '@/components/ui/OptimizedImage';
+import { api } from '@/lib/api';
+import {
+  buildArticleJsonLd,
+  buildArticleMetadata,
+  buildBreadcrumbJsonLd,
+  serializeJsonLd,
+} from '@/lib/seo';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -11,105 +18,118 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+
   try {
     const { post } = await api.getPost(slug);
-
-    const jsonLd = {
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: post.title,
-      image: post.cover_image ? [post.cover_image] : [],
-      datePublished: post.published_at,
-      dateModified: post.updated_at || post.published_at,
-      description: post.seo_description || post.excerpt,
-      author: {
-        '@type': 'Organization',
-        name: 'Kvastram',
-        url: process.env.NEXT_PUBLIC_STORE_URL || 'https://kvastram.com',
-      },
-    };
-
-    return {
+    return buildArticleMetadata({
       title: `${post.seo_title || post.title} | Kvastram Journal`,
-      description: post.seo_description || post.excerpt,
-      keywords: post.seo_keywords,
-      other: {
-        'script:ld+json': JSON.stringify(jsonLd),
-      },
-    };
-  } catch (_e) {
+      description:
+        post.seo_description ||
+        post.excerpt ||
+        `Read ${post.title} on the Kvastram Journal.`,
+      path: `/journal/${slug}`,
+      image: post.cover_image,
+      keywords: post.seo_keywords
+        ? post.seo_keywords.split(',').map((value: string) => value.trim())
+        : [post.title, 'Kvastram Journal'],
+    });
+  } catch {
     return {
       title: 'Article Not Found',
+      robots: { index: false, follow: false },
     };
   }
 }
 
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
+
   let post;
   try {
     const data = await api.getPost(slug);
     post = data.post;
-  } catch (_e) {
+  } catch {
     notFound();
   }
 
+  const schema = [
+    buildArticleJsonLd({
+      title: post.title,
+      path: `/journal/${slug}`,
+      description:
+        post.seo_description ||
+        post.excerpt ||
+        `Read ${post.title} on the Kvastram Journal.`,
+      image: post.cover_image,
+      publishedAt: post.published_at,
+      updatedAt: post.updated_at || post.published_at,
+    }),
+    buildBreadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'Journal', path: '/journal' },
+      { name: post.title, path: `/journal/${slug}` },
+    ]),
+  ];
+
   return (
-    <>
-      <article className="bg-white min-h-screen pb-24">
-        {/* Header */}
-        <div className="h-[60vh] relative text-white">
-          {post.cover_image ? (
-            <div className="absolute inset-0">
-              <OptimizedImage
-                src={post.cover_image}
-                alt={post.title}
-                fill
-                priority
-                className="object-cover brightness-[0.85]"
-                sizes="100vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-            </div>
-          ) : (
-            <div className="absolute inset-0 bg-stone-900"></div>
-          )}
+    <article className="min-h-screen bg-white pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(schema),
+        }}
+      />
 
-          <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-12 max-w-7xl mx-auto w-full">
-            <Link
-              href="/journal"
-              className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-stone-300 w-fit"
-            >
-              <ArrowLeft size={16} /> Back to Journal
-            </Link>
-            <div className="space-y-4 max-w-4xl">
-              <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-[0.2em] opacity-80">
-                <span>{new Date(post.published_at).toLocaleDateString()}</span>
-                <span>•</span>
-                <span>Kvastram Editorial</span>
-              </div>
-              <h1 className="text-4xl md:text-6xl font-serif italic leading-tight">
-                {post.title}
-              </h1>
+      <div className="relative h-[60vh] text-white">
+        {post.cover_image ? (
+          <div className="absolute inset-0">
+            <OptimizedImage
+              src={post.cover_image}
+              alt={`${post.title} - Kvastram Journal`}
+              fill
+              priority
+              className="object-cover brightness-[0.85]"
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-stone-900" />
+        )}
+
+        <div className="absolute inset-0 mx-auto flex w-full max-w-7xl flex-col justify-between p-6 md:p-12">
+          <Link
+            href="/journal"
+            className="flex w-fit items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-stone-300"
+          >
+            <ArrowLeft size={16} />
+            Back to Journal
+          </Link>
+
+          <div className="max-w-4xl space-y-4">
+            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-[0.2em] opacity-80">
+              <span>{new Date(post.published_at).toLocaleDateString()}</span>
+              <span>&bull;</span>
+              <span>Kvastram Editorial</span>
             </div>
+            <h1 className="font-heading text-4xl font-semibold uppercase tracking-[0.02em] md:text-6xl">
+              {post.title}
+            </h1>
           </div>
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="max-w-3xl mx-auto px-6 py-16">
-          {/* Excerpt */}
-          {post.excerpt && (
-            <p className="text-xl md:text-2xl font-serif italic text-stone-600 mb-12 leading-relaxed border-l-4 border-stone-900 pl-6">
-              {post.excerpt}
-            </p>
-          )}
+      <div className="mx-auto max-w-3xl px-6 py-16">
+        {post.excerpt && (
+          <p className="mb-12 border-l-4 border-stone-900 pl-6 font-heading text-2xl font-medium leading-relaxed text-stone-600">
+            {post.excerpt}
+          </p>
+        )}
 
-          {/* Body */}
-          <div className="prose prose-stone prose-lg max-w-none font-light text-stone-800 whitespace-pre-wrap">
-            {post.content}
-          </div>
+        <div className="prose prose-stone prose-lg max-w-none whitespace-pre-wrap font-light text-stone-800">
+          {post.content}
         </div>
-      </article>
-    </>
+      </div>
+    </article>
   );
 }

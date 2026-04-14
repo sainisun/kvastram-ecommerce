@@ -33,6 +33,7 @@ import customersRouter from './routes/customers';
 import settingsRoutes from './routes/settings';
 import marketingRoutes from './routes/marketing';
 import bannerRoutes from './routes/banners';
+import homepageBannersRoutes from './routes/homepage-banners';
 import postRoutes from './routes/posts';
 import pageRoutes from './routes/pages';
 import categoriesRoutes from './routes/categories';
@@ -72,6 +73,11 @@ import adminTrendingReelsRoutes from './routes/admin/trending-reels';
 import trendingReelsRoutes from './routes/trending-reels';
 import adminHomepageCategoriesRoutes from './routes/admin/homepage-categories';
 import homepageCategoriesRoutes from './routes/homepage-categories';
+import adminHomepageBannersRoutes from './routes/admin/homepage-banners';
+import adminCategoryCirclesRoutes from './routes/admin/category-circles';
+import adminFeaturedProductsRoutes from './routes/admin/featured-products';
+import categoryCirclesRoutes from './routes/category-circles';
+import featuredProductsRoutes from './routes/featured-products';
 
 import docsApp from './docs';
 
@@ -195,6 +201,12 @@ csrfForStateChanging([
   '/admin/trending-reels/*',
   '/admin/homepage-categories',
   '/admin/homepage-categories/*',
+  '/admin/homepage-banners',
+  '/admin/homepage-banners/*',
+  '/admin/category-circles',
+  '/admin/category-circles/*',
+  '/admin/featured-products',
+  '/admin/featured-products/*',
 ]);
 
 // Health Check Endpoint
@@ -286,6 +298,18 @@ const generalApiRoutes = [
   '/admin/homepage-categories/*',
   '/homepage-categories',
   '/homepage-categories/*',
+  '/homepage-banners',
+  '/homepage-banners/*',
+  '/category-circles',
+  '/category-circles/*',
+  '/featured-products',
+  '/featured-products/*',
+  '/admin/homepage-banners',
+  '/admin/homepage-banners/*',
+  '/admin/category-circles',
+  '/admin/category-circles/*',
+  '/admin/featured-products',
+  '/admin/featured-products/*',
 ];
 
 for (const route of generalApiRoutes) {
@@ -302,6 +326,7 @@ app.route('/customers', customersRouter);
 app.route('/settings', settingsRoutes);
 app.route('/marketing', marketingRoutes);
 app.route('/banners', bannerRoutes);
+app.route('/homepage-banners', homepageBannersRoutes);
 app.route('/posts', postRoutes);
 app.route('/pages', pageRoutes);
 app.route('/categories', categoriesRoutes);
@@ -348,6 +373,11 @@ app.route('/admin/trending-reels', adminTrendingReelsRoutes);
 app.route('/trending-reels', trendingReelsRoutes);
 app.route('/admin/homepage-categories', adminHomepageCategoriesRoutes);
 app.route('/homepage-categories', homepageCategoriesRoutes);
+app.route('/admin/homepage-banners', adminHomepageBannersRoutes);
+app.route('/admin/category-circles', adminCategoryCirclesRoutes);
+app.route('/admin/featured-products', adminFeaturedProductsRoutes);
+app.route('/category-circles', categoryCirclesRoutes);
+app.route('/featured-products', featuredProductsRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

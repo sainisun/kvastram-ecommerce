@@ -34,16 +34,13 @@ const createWholesaleOrderSchema = z.object({
       z.object({
         variant_id: z.string(),
         quantity: z.number().min(1),
-        unit_price: z.number(),
+        // 🔒 SEC: unit_price removed — calculated server-side from wholesalePriceService
       })
     )
     .min(1),
   is_wholesale: z.boolean(),
   wholesale_tier: z.string().optional(),
-  subtotal: z.number(),
-  tier_discount: z.number(),
-  bulk_discount: z.number(),
-  total: z.number(),
+  // subtotal, tier_discount, bulk_discount, total are calculated server-side
 });
 
 // Middleware to verify wholesale customer
@@ -89,7 +86,19 @@ app.post(
       const wholesaleInfo = c.get('wholesaleInfo');
       const data = c.req.valid('json');
 
-      // Validate all items meet MOQ
+      // Validate all items meet MOQ and calculate prices server-side
+      const tier = wholesaleInfo.tier || data.wholesale_tier || null;
+      interface ResolvedItem {
+        variant_id: string;
+        quantity: number;
+        unit_price: number;
+        line_total: number;
+        tier_discount_amount: number;
+      }
+      const resolvedItems: ResolvedItem[] = [];
+      let subtotal = 0;
+      let totalTierDiscount = 0;
+
       for (const item of data.items) {
         const moq = await wholesalePriceService.getVariantMOQ(item.variant_id);
         if (item.quantity < moq) {
@@ -101,7 +110,30 @@ app.post(
             400
           );
         }
+
+        // 🔒 SEC: Fetch price server-side — never trust client-supplied unit_price
+        const priceResult = await wholesalePriceService.getVariantPrice(item.variant_id, tier);
+        if (!priceResult) {
+          return c.json({ error: `Variant ${item.variant_id} not found or not priced` }, 400);
+        }
+
+        const unitPrice = priceResult.wholesalePrice;
+        const lineTotal = unitPrice * item.quantity;
+        const tierDiscountAmount = (priceResult.retailPrice - unitPrice) * item.quantity;
+
+        subtotal += priceResult.retailPrice * item.quantity;
+        totalTierDiscount += tierDiscountAmount;
+
+        resolvedItems.push({
+          variant_id: item.variant_id,
+          quantity: item.quantity,
+          unit_price: unitPrice,
+          line_total: lineTotal,
+          tier_discount_amount: tierDiscountAmount,
+        });
       }
+
+      const total = subtotal - totalTierDiscount; // shipping + tax can be added later
 
       // Generate order number
       const timestamp = Date.now();
@@ -136,33 +168,33 @@ app.post(
           fulfillment_status: 'not_fulfilled',
           order_number: orderNumber,
           currency_code: 'usd',
-          subtotal: data.subtotal,
-          tax_total: 0, // Calculate tax based on address
-          shipping_total: 0, // Calculate based on address
-          discount_total: data.tier_discount + data.bulk_discount,
-          total: data.total,
+          subtotal,
+          tax_total: 0,
+          shipping_total: 0,
+          discount_total: totalTierDiscount,
+          total,
           shipping_address_id: shippingAddress.id,
           billing_address_id: shippingAddress.id,
           metadata: {
             is_wholesale: true,
-            wholesale_tier: data.wholesale_tier,
+            wholesale_tier: tier,
             po_number: data.po_number,
             payment_terms: data.payment_terms,
-            tier_discount: data.tier_discount,
-            bulk_discount: data.bulk_discount,
+            tier_discount: totalTierDiscount,
+            bulk_discount: 0,
             customer_notes: data.notes,
           },
         })
         .returning();
 
-      // Create line items
-      for (const item of data.items) {
+      // Create line items using server-resolved prices
+      for (const item of resolvedItems) {
         await db.insert(line_items).values({
           order_id: order.id,
           variant_id: item.variant_id,
           quantity: item.quantity,
           unit_price: item.unit_price,
-          total: item.unit_price * item.quantity,
+          total: item.line_total,
         });
       }
 

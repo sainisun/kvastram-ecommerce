@@ -809,6 +809,61 @@ export const homepage_categories = pgTable(
   })
 );
 
+export const homepage_banners = pgTable(
+  'homepage_banners',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    image_url: text('image_url').notNull(),
+    headline: text('headline'),
+    button_label: text('button_label'),
+    button_url: text('button_url'),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    activeIdx: index('idx_homepage_banners_is_active').on(table.is_active),
+    sortOrderIdx: index('idx_homepage_banners_sort_order').on(table.sort_order),
+  })
+);
+
+export const category_circles = pgTable(
+  'category_circles',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    image_url: text('image_url').notNull(),
+    label: text('label').notNull(),
+    link_url: text('link_url').notNull(),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    activeIdx: index('idx_category_circles_is_active').on(table.is_active),
+    sortOrderIdx: index('idx_category_circles_sort_order').on(table.sort_order),
+  })
+);
+
+export const featured_products = pgTable(
+  'featured_products',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    product_id: uuid('product_id')
+      .references(() => products.id, { onDelete: 'cascade' })
+      .notNull(),
+    custom_image_url: text('custom_image_url'),
+    badge_text: text('badge_text'),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    productIdx: index('idx_featured_products_product_id').on(table.product_id),
+    activeIdx: index('idx_featured_products_is_active').on(table.is_active),
+    sortOrderIdx: index('idx_featured_products_sort_order').on(table.sort_order),
+  })
+);
+
 // --- BLOG & CONTENT ---
 export const posts = pgTable('posts', {
   id: uuid('id').defaultRandom().primaryKey(),

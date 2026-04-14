@@ -75,7 +75,7 @@ export function HeroBanner() {
 
   if (loading) {
     return (
-      <div className="relative w-full overflow-hidden bg-gray-200 aspect-[4/3] animate-pulse md:h-[600px] md:aspect-auto">
+      <div className="relative h-[90vh] min-h-[500px] max-h-[750px] w-full overflow-hidden bg-gray-200 animate-pulse md:h-[600px]">
         <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200" />
       </div>
     );
@@ -102,8 +102,8 @@ export function HeroBanner() {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-stone-100">
-      <div className="relative aspect-[4/3] w-full md:h-[600px] md:aspect-auto">
+    <section className="hero-section homepage-slider relative w-full overflow-hidden bg-stone-100">
+      <div className="hero-banner relative h-[90vh] min-h-[500px] max-h-[750px] w-full md:h-[600px]">
         {banners.map((banner, index) => (
           <div
             key={banner.id}
@@ -113,19 +113,23 @@ export function HeroBanner() {
           >
             <OptimizedImage
               src={banner.image_url}
-              alt={banner.title || `Hero banner ${index + 1}`}
+              alt={
+                banner.title
+                  ? `${banner.title} - Kvastram`
+                  : `Kvastram hero banner ${index + 1}`
+              }
               fill
               priority={index === 0}
               sizes="100vw"
-              className="object-cover"
+              className="object-cover object-top"
             />
 
             {(banner.title || banner.subtitle || (banner.button_text && banner.button_link)) ? (
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent">
-                <div className="absolute inset-x-0 bottom-0 mx-auto flex w-full max-w-7xl justify-start px-4 pb-6 pt-24 sm:px-6 md:px-8 md:pb-10">
+                <div className="absolute inset-x-0 bottom-[20%] mx-auto flex w-full max-w-7xl justify-center px-6 text-center md:bottom-0 md:justify-start md:px-8 md:pb-10 md:pt-24 md:text-left">
                   <div className="max-w-xl text-white">
                     {banner.title ? (
-                      <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] leading-[1.1] sm:text-[34px] md:text-[52px]">
+                      <h2 className="font-heading text-[30px] font-semibold uppercase leading-[1.08] tracking-[0.02em] sm:text-[34px] md:text-[52px]">
                         {banner.title}
                       </h2>
                     ) : null}
@@ -154,7 +158,7 @@ export function HeroBanner() {
             <button
               type="button"
               onClick={goToPrevious}
-              className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/50 md:left-5 md:h-12 md:w-12"
+              className="absolute left-5 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/50 md:flex"
               aria-label="Previous hero banner"
             >
               <ChevronLeft size={20} />
@@ -162,13 +166,13 @@ export function HeroBanner() {
             <button
               type="button"
               onClick={goToNext}
-              className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/50 md:right-5 md:h-12 md:w-12"
+              className="absolute right-5 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/50 md:flex"
               aria-label="Next hero banner"
             >
               <ChevronRight size={20} />
             </button>
 
-            <div className="absolute inset-x-0 bottom-4 z-10 flex justify-center gap-2 md:bottom-6">
+            <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center gap-2 md:bottom-6">
               {banners.map((banner, index) => (
                 <button
                   key={banner.id}

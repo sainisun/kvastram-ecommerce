@@ -152,19 +152,9 @@ productsRouter.get(
       return successResponse(c, [], 'No valid product IDs provided');
     }
 
-    const products = await Promise.all(
-      productIds.map(async (id) => {
-        try {
-          return await productService.retrieve(id);
-        } catch {
-          return null;
-        }
-      })
-    );
-
-    const validProducts = products.filter(
-      (p): p is NonNullable<typeof p> => p !== null && p.status === 'published'
-    );
+    // 🔧 PERF: Batch fetch all featured products in ONE query instead of N individual queries
+    const allProducts = await productService.retrieveMany(productIds);
+    const validProducts = allProducts.filter((p) => p.status === 'published');
 
     return successResponse(
       c,

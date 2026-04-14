@@ -21,6 +21,8 @@ const ALLOWED_EXTENSIONS = new Set([
   '.png',
   '.gif',
   '.webp',
+  '.mp4',
+  '.mov',
   '.pdf',
   '.doc',
   '.docx',
@@ -33,6 +35,8 @@ const ALLOWED_MIME_TYPES: Record<string, string[]> = {
   '.png': ['image/png'],
   '.gif': ['image/gif'],
   '.webp': ['image/webp'],
+  '.mp4': ['video/mp4'],
+  '.mov': ['video/quicktime', 'video/mp4'],
   '.pdf': ['application/pdf'],
   '.doc': ['application/msword'],
   '.docx': [
@@ -40,8 +44,25 @@ const ALLOWED_MIME_TYPES: Record<string, string[]> = {
   ],
 };
 
-// Maximum file size (5MB)
-export const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// Maximum file sizes
+export const IMAGE_MAX_FILE_SIZE = 5 * 1024 * 1024;
+export const VIDEO_MAX_FILE_SIZE = 50 * 1024 * 1024;
+export const DEFAULT_MAX_FILE_SIZE = IMAGE_MAX_FILE_SIZE;
+
+export function getMaxFileSize(filename: string, mimeType: string): number {
+  const ext = path.extname(filename).toLowerCase();
+  const normalizedType = mimeType.toLowerCase();
+
+  if (
+    normalizedType.startsWith('video/') ||
+    ext === '.mp4' ||
+    ext === '.mov'
+  ) {
+    return VIDEO_MAX_FILE_SIZE;
+  }
+
+  return DEFAULT_MAX_FILE_SIZE;
+}
 
 /**
  * Generate cryptographically secure random filename
@@ -157,11 +178,13 @@ export function validateFileUpload(
   mimeType: string,
   size: number
 ): FileValidationResult {
+  const maxFileSize = getMaxFileSize(filename, mimeType);
+
   // Check file size
-  if (size > MAX_FILE_SIZE) {
+  if (size > maxFileSize) {
     return {
       valid: false,
-      error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+      error: `File too large. Maximum size is ${maxFileSize / 1024 / 1024}MB`,
     };
   }
 

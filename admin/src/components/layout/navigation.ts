@@ -8,6 +8,7 @@ import {
   Image,
   Landmark,
   LayoutDashboard,
+  Layers,
   ListTree,
   Megaphone,
   MessageSquareQuote,
@@ -68,6 +69,12 @@ export const primaryNavItems: NavItem[] = [
     href: '/dashboard/content/hero-banners',
     icon: Image,
     description: 'Homepage slider',
+  },
+  {
+    label: 'Category Banners',
+    href: '/dashboard/content/homepage-banners',
+    icon: Layers,
+    description: 'Mobile category hero',
   },
   {
     label: 'Trending Reels',

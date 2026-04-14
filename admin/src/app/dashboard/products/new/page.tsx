@@ -6,12 +6,29 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { ArrowLeft, Save, DollarSign } from 'lucide-react';
 import Link from 'next/link';
-import ImageUpload, { ImageItem } from '@/components/ui/ImageUpload';
+import ProductMediaUpload, {
+  type ProductMediaItem,
+} from '@/components/ui/ProductMediaUpload';
 
 interface Region {
   id: string;
   name: string;
   currency_code: string;
+}
+
+function getCoverThumbnail(mediaItems: ProductMediaItem[]) {
+  const coverItem = mediaItems.find((item) => item.is_thumbnail) || mediaItems[0];
+
+  if (!coverItem) return '';
+
+  if (coverItem.metadata?.media_type === 'video') {
+    const firstImage = mediaItems.find(
+      (item) => item.metadata?.media_type !== 'video'
+    );
+    return coverItem.metadata.thumbnail_url || firstImage?.url || coverItem.url;
+  }
+
+  return coverItem.url;
 }
 
 import { useNotification } from '@/context/notification-context';
@@ -20,7 +37,6 @@ export default function NewProductPage() {
   const router = useRouter();
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
   // Data
   const [regions, setRegions] = useState<Region[]>([]);
@@ -56,7 +72,7 @@ export default function NewProductPage() {
     sku: '',
   });
 
-  const [images, setImages] = useState<ImageItem[]>([]);
+  const [mediaItems, setMediaItems] = useState<ProductMediaItem[]>([]);
 
   // Prices State: Map region_id -> amount (string for input)
   const [prices, setPrices] = useState<Record<string, string>>({});
@@ -143,6 +159,10 @@ export default function NewProductPage() {
     setLoading(true);
 
     try {
+      if (mediaItems.length < 3) {
+        throw new Error('Add at least 3 media items before saving this product.');
+      }
+
       // Build Prices Array
       const formattedPrices = regions
         .filter((r) => prices[r.id]) // Only include filled prices
@@ -162,14 +182,14 @@ export default function NewProductPage() {
           ? Number.parseInt(formData.inventory_quantity)
           : 0,
         prices: formattedPrices,
-        images: images.map((img, idx) => ({
-          url: img.url,
-          alt_text: img.alt_text || '',
-          is_thumbnail: img.is_thumbnail,
+        images: mediaItems.map((item, idx) => ({
+          url: item.url,
+          alt_text: item.alt_text || '',
+          is_thumbnail: item.is_thumbnail,
           position: idx,
+          metadata: item.metadata || undefined,
         })),
-        thumbnail:
-          images.find((img) => img.is_thumbnail)?.url || images[0]?.url || '',
+        thumbnail: getCoverThumbnail(mediaItems),
         category_ids: selectedCategoryIds,
         tag_ids: selectedTagIds,
         collection_id: selectedCollectionId || undefined,
@@ -750,26 +770,17 @@ export default function NewProductPage() {
           </div>
 
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Media</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-4">
+              Product Media
+            </h2>
             <p className="text-sm text-gray-500 mb-4">
-              Upload product images. The first image will be used as the
-              thumbnail. Drag to reorder.
+              Build the storefront gallery with portrait images and short videos.
             </p>
 
-            <ImageUpload
-              images={images}
-              onChange={setImages}
-              onUpload={async (file) => {
-                setUploading(true);
-                try {
-                  const res = await api.uploadImage(file);
-                  return res.url;
-                } finally {
-                  setUploading(false);
-                }
-              }}
-              uploading={uploading}
-              maxFiles={10}
+            <ProductMediaUpload
+              items={mediaItems}
+              onChange={setMediaItems}
+              onError={(message) => showNotification('error', message)}
             />
           </div>
         </div>

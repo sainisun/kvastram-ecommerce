@@ -17,14 +17,37 @@ import { ScrollProgress } from '@/components/ui/ScrollProgress';
 
 function ScrollToTop() {
   const [visible, setVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 500);
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+
+    const syncViewport = () => {
+      setIsMobile(mediaQuery.matches);
+      if (mediaQuery.matches) {
+        setVisible(false);
+      } else {
+        setVisible(window.scrollY > 500);
+      }
+    };
+
+    const onScroll = () => {
+      if (!mediaQuery.matches) {
+        setVisible(window.scrollY > 500);
+      }
+    };
+
+    syncViewport();
+    mediaQuery.addEventListener('change', syncViewport);
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+
+    return () => {
+      mediaQuery.removeEventListener('change', syncViewport);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
-  if (!visible) return null;
+  if (isMobile || !visible) return null;
 
   return (
     <button

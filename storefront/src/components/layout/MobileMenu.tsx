@@ -235,7 +235,7 @@ export default function MobileMenu({
                     <div key={category.id}>
                       <div className="flex items-center justify-between hover:bg-gray-50 transition-colors">
                         <Link
-                          href={`/products?category_id=${category.id}`}
+                          href={`/collections/${category.slug}`}
                           onClick={handleLinkClick}
                           className="font-body flex min-h-[44px] flex-1 items-center gap-3 px-4 py-3.5 text-[15px] font-[300] text-gray-700 hover:text-black"
                         >
@@ -276,7 +276,7 @@ export default function MobileMenu({
                             {category.children.map((child) => (
                               <Link
                                 key={child.id}
-                                href={`/products?category_id=${child.id}`}
+                                href={`/collections/${child.slug}`}
                                 onClick={handleLinkClick}
                                 className="font-body block py-2.5 text-[15px] font-[300] text-gray-600 transition-colors hover:text-black"
                               >
@@ -319,7 +319,7 @@ export default function MobileMenu({
                   highlight
                 />
                 <MobileNavLink
-                  href="/products?tag=bestseller"
+                  href="/search?query=bestsellers"
                   icon={<Tag size={18} />}
                   label="Bestsellers"
                   pathname={pathname}

@@ -16,7 +16,7 @@ import {
   discount_usage,
   store_settings,
 } from '../../db/schema';
-import { eq, and, gte, lte, sql, inArray } from 'drizzle-orm';
+import { eq, and, gte, lte, sql, inArray, ne } from 'drizzle-orm';
 import { config } from '../../config';
 import { calculateTax, type TaxBreakdown } from '../../utils/tax-calculator';
 
@@ -243,13 +243,17 @@ checkoutRouter.post(
         return c.json({ error: 'Region not found' }, 400);
       }
 
-      // Merge dynamic settings or fallback
-      const globalTaxRate = typeof settingsMap['tax_rate'] !== 'undefined' ? Number(settingsMap['tax_rate']) : config.tax.defaultRate;
-      const taxRate = globalTaxRate || parseFloat(region.tax_rate as string) || 0;
-      
-      const domesticRate = Number(settingsMap['domestic_shipping_rate'] || 10) * 100; // in cents
-      const intlRate = Number(settingsMap['international_shipping_rate'] || 30) * 100;
-      const freeThreshold = Number(settingsMap['free_shipping_threshold'] || 100) * 100;
+      // Merge dynamic settings with NaN-safe coercion
+      const parsedGlobalTax = parseFloat(settingsMap['tax_rate']);
+      const globalTaxRate = Number.isFinite(parsedGlobalTax) ? parsedGlobalTax : config.tax.defaultRate;
+      const parsedRegionTax = parseFloat(region.tax_rate as string);
+      const taxRate = Number.isFinite(globalTaxRate) && globalTaxRate > 0
+        ? globalTaxRate
+        : (Number.isFinite(parsedRegionTax) ? parsedRegionTax : 0);
+
+      const domesticRate = (Number.isFinite(Number(settingsMap['domestic_shipping_rate'])) ? Number(settingsMap['domestic_shipping_rate']) : 10) * 100;
+      const intlRate = (Number.isFinite(Number(settingsMap['international_shipping_rate'])) ? Number(settingsMap['international_shipping_rate']) : 30) * 100;
+      const freeThreshold = (Number.isFinite(Number(settingsMap['free_shipping_threshold'])) ? Number(settingsMap['free_shipping_threshold']) : 100) * 100;
       
       // Determine shipping country
       const destCountry = body.shipping_address.country_code.toUpperCase();
@@ -348,7 +352,8 @@ checkoutRouter.post(
         });
       }
 
-      // 2. Validate Discount (basic validation - no customer check yet)
+      // 2. Pre-validate Discount (dates, min_purchase, active check — no usage count check here)
+      // Usage limit enforcement is re-checked atomically inside the transaction to prevent race conditions.
       let discountTotal = 0;
       let finalDiscountId = null;
       let discount: typeof discounts.$inferSelect | null = null;
@@ -358,7 +363,7 @@ checkoutRouter.post(
           const result = await validateDiscount(
             body.discount_code,
             subtotal,
-            null // Will check per-customer inside transaction
+            null // Per-customer check done inside transaction
           );
           discount = result.discount;
           discountTotal = result.discountAmount;
@@ -394,7 +399,8 @@ checkoutRouter.post(
         if (existingCustomer) {
           customerId = existingCustomer.id;
         } else {
-          // For guest checkout, create a minimal customer record
+          // For guest checkout, create a minimal customer record.
+          // ON CONFLICT DO NOTHING prevents duplicate inserts in concurrent requests.
           const customerData: Record<string, unknown> = {
             email: body.email,
             has_account: false,
@@ -403,11 +409,23 @@ checkoutRouter.post(
           if (body.last_name) customerData.last_name = body.last_name;
           if (body.phone) customerData.phone = body.phone;
 
-          const [newCust] = await tx
+          const inserted = await tx
             .insert(customers)
             .values(customerData)
+            .onConflictDoNothing()
             .returning();
-          customerId = newCust.id;
+
+          if (inserted.length > 0) {
+            customerId = inserted[0].id;
+          } else {
+            // Another concurrent request inserted the same email — fetch it
+            const [raceCustomer] = await tx
+              .select()
+              .from(customers)
+              .where(eq(customers.email, body.email))
+              .limit(1);
+            customerId = raceCustomer?.id ?? null;
+          }
         }
 
         // Create Address - only include defined values
@@ -488,50 +506,66 @@ checkoutRouter.post(
           await tx.insert(line_items).values(lineItemData);
         }
 
-        // Deduct inventory - use atomic update with inventory check to prevent race conditions
+        // 🔒 RACE-FIX: Deduct inventory atomically — single UPDATE with WHERE inventory >= quantity.
+        // If 0 rows are affected, another concurrent order grabbed the last stock.
         for (const item of validatedItems) {
-          // First check if there's enough inventory
-          const [currentVariant] = await tx
-            .select({
-              id: product_variants.id,
-              inventory_quantity: product_variants.inventory_quantity,
-            })
-            .from(product_variants)
-            .where(eq(product_variants.id, item.id));
-
-          if (!currentVariant) {
-            throw new Error(`Variant ${item.variant_title} not found`);
-          }
-
-          const availableQty = currentVariant.inventory_quantity ?? 0;
-          if (availableQty < item.quantity) {
-            throw new Error(
-              `Insufficient stock for ${item.variant_title}. Available: ${availableQty}`
-            );
-          }
-
-          // Atomic update
-          await tx
+          const updated = await tx
             .update(product_variants)
             .set({
-              inventory_quantity: sql`COALESCE(${product_variants.inventory_quantity}, 0) - ${item.quantity}`,
+              inventory_quantity: sql`${product_variants.inventory_quantity} - ${item.quantity}`,
             })
-            .where(eq(product_variants.id, item.id));
+            .where(
+              and(
+                eq(product_variants.id, item.id),
+                gte(product_variants.inventory_quantity, item.quantity)
+              )
+            )
+            .returning({ id: product_variants.id });
+
+          if (updated.length === 0) {
+            throw new Error(
+              `Insufficient stock for ${item.variant_title}. Please refresh and try again.`
+            );
+          }
         }
 
-        // Handle discount usage
-        if (finalDiscountId && customerId) {
-          await tx.insert(discount_usage).values({
-            discount_id: finalDiscountId,
-            customer_id: customerId,
-            order_id: order.id,
-          });
+        // Handle discount usage — re-validate usage limit inside transaction to prevent race conditions
+        if (finalDiscountId) {
+          // 🔒 RACE-FIX: Atomic increment only if under usage_limit
+          const usageUpdateResult = await tx.execute(sql`
+            UPDATE discounts
+            SET usage_count = COALESCE(usage_count, 0) + 1
+            WHERE id = ${finalDiscountId}
+              AND (usage_limit IS NULL OR COALESCE(usage_count, 0) < usage_limit)
+            RETURNING id
+          `);
 
-          await tx.execute(sql`
-             UPDATE discounts
-             SET usage_count = COALESCE(usage_count, 0) + 1
-             WHERE id = ${finalDiscountId}
-         `);
+          if ((usageUpdateResult.rows?.length ?? 0) === 0) {
+            throw new Error('Discount usage limit reached. Please remove the code and try again.');
+          }
+
+          // Per-customer usage — only track if customer is logged in
+          if (customerId) {
+            // Check customer hasn't already used it (race condition guard)
+            const [alreadyUsed] = await tx
+              .select({ id: discount_usage.discount_id })
+              .from(discount_usage)
+              .where(and(
+                eq(discount_usage.discount_id, finalDiscountId),
+                eq(discount_usage.customer_id, customerId)
+              ))
+              .limit(1);
+
+            if (alreadyUsed) {
+              throw new Error('You have already used this discount code.');
+            }
+
+            await tx.insert(discount_usage).values({
+              discount_id: finalDiscountId,
+              customer_id: customerId,
+              order_id: order.id,
+            });
+          }
         }
       });
 

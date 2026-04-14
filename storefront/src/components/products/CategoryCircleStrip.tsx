@@ -1,0 +1,46 @@
+import Link from 'next/link';
+import OptimizedImage from '@/components/ui/OptimizedImage';
+
+interface CategoryCircle {
+  id: string;
+  image_url: string;
+  label: string;
+  link_url: string;
+}
+
+interface Props {
+  circles: CategoryCircle[];
+}
+
+export default function CategoryCircleStrip({ circles }: Props) {
+  if (circles.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="border-b border-stone-100 bg-white px-4 py-4 md:hidden">
+      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {circles.map((circle) => (
+          <Link
+            key={circle.id}
+            href={circle.link_url}
+            className="flex min-w-[84px] snap-start flex-col items-center gap-2"
+          >
+            <div className="relative h-[78px] w-[78px] overflow-hidden rounded-full bg-stone-100">
+              <OptimizedImage
+                src={circle.image_url}
+                alt={circle.label}
+                fill
+                sizes="78px"
+                className="object-cover"
+              />
+            </div>
+            <span className="font-body text-center text-[11px] font-medium uppercase tracking-[0.08em] text-stone-700">
+              {circle.label}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}

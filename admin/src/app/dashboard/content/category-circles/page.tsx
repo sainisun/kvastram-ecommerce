@@ -1,5 +1,5 @@
 import CategoryCirclesManager from '@/components/CategoryCirclesManager';
 
-export default function HomepageCategoriesPage() {
+export default function CategoryCirclesPage() {
   return <CategoryCirclesManager />;
 }

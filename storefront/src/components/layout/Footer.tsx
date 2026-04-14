@@ -6,19 +6,19 @@ import { PaymentIcons } from '@/components/ui/SecurityBadges';
 import NewsletterForm from '@/components/NewsletterForm';
 
 const shopLinks = [
-  { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Best Sellers', href: '/products?sort=created_at' },
-  { label: 'Collections', href: '/collections' },
-  { label: 'Shawls & Wraps', href: '/products?category=shawls' },
-  { label: 'Kurtis & Tops', href: '/products?category=kurtis' },
-  { label: 'Accessories', href: '/products?tag=accessories' },
-  { label: 'Sale', href: '/sale' },
+  { label: 'Shop New Arrivals', href: '/products?sort=newest' },
+  { label: 'Browse All Collections', href: '/collections' },
+  { label: 'Shop Handcrafted Shawls', href: '/collections/shawls' },
+  { label: 'Shop Kurtis & Tops', href: '/collections/kurtis' },
+  { label: 'Shop Sarees Online', href: '/collections/sarees' },
+  { label: 'Shop Everyday Ethnic Wear', href: '/products' },
+  { label: 'Explore Sale Styles', href: '/sale' },
 ];
 
 const supportLinks = [
   { label: 'Track Order', href: '/track' },
   { label: 'Shipping & Returns', href: '/pages/shipping-returns' },
-  { label: 'Contact Us', href: '/pages/contact' },
+  { label: 'Contact Us', href: '/contact' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Size Guide', href: '/pages/size-guide' },
   { label: 'Privacy Policy', href: '/pages/privacy-policy' },
@@ -34,6 +34,23 @@ const companyLinks = [
   { label: 'Wholesale / B2B', href: '/wholesale', highlight: true },
 ];
 
+const mobileShopLinks = [
+  { label: 'New Arrivals', href: '/products?sort=newest' },
+  { label: 'Best Sellers', href: '/products' },
+  { label: 'Collections', href: '/collections' },
+  { label: 'Shawls & Wraps', href: '/collections/shawls' },
+  { label: 'Kurtis & Tops', href: '/collections/kurtis' },
+  { label: 'Accessories', href: '/collections/accessories' },
+  { label: 'Sale', href: '/sale' },
+];
+
+const mobileHelpLinks = [
+  { label: 'Track Order', href: '/track' },
+  { label: 'Shipping & Returns', href: '/pages/shipping-returns' },
+  { label: 'Contact Us', href: '/contact' },
+  { label: 'FAQ', href: '/faq' },
+];
+
 const socialLinks = [
   {
     label: 'Instagram',
@@ -46,7 +63,7 @@ const socialLinks = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="w-5 h-5"
+        className="h-5 w-5"
       >
         <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
@@ -59,17 +76,17 @@ const socialLinks = [
     label: 'TikTok',
     href: 'https://tiktok.com/@kvastram',
     icon: () => (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.7a4.85 4.85 0 0 1-1.01-.01z" />
       </svg>
     ),
-    color: 'hover:text-white',
+    color: 'hover:text-stone-900',
   },
   {
     label: 'WhatsApp',
     href: 'https://wa.me/message/kvastram',
     icon: MessageCircle,
-    color: 'hover:text-green-400',
+    color: 'hover:text-green-500',
   },
   {
     label: 'YouTube',
@@ -82,13 +99,13 @@ const socialLinks = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="w-5 h-5"
+        className="h-5 w-5"
       >
-        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
+        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4S5.12 4 3.4 4.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19C5.12 19.46 12 19.46 12 19.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
         <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
       </svg>
     ),
-    color: 'hover:text-red-400',
+    color: 'hover:text-red-500',
   },
   {
     label: 'Facebook',
@@ -101,12 +118,12 @@ const socialLinks = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="w-5 h-5"
+        className="h-5 w-5"
       >
         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
       </svg>
     ),
-    color: 'hover:text-blue-400',
+    color: 'hover:text-blue-500',
   },
   {
     label: 'Twitter / X',
@@ -119,20 +136,81 @@ const socialLinks = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="w-5 h-5"
+        className="h-5 w-5"
       >
-        <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
-        <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+        <path d="M4 4l11.733 16H20L8.267 4z" />
+        <path d="M4 20l6.768-6.768m2.46-2.46L20 4" />
       </svg>
     ),
-    color: 'hover:text-sky-400',
+    color: 'hover:text-sky-500',
   },
 ];
 
-export function Footer() {
+function MobileFooter() {
   return (
-    <footer className="bg-[#1a1614] text-white">
-      {/* Watermark — giant ghost text */}
+    <div className="bg-[#f5f0eb] md:hidden">
+      <div className="grid grid-cols-2 gap-8 px-5 py-8">
+        <div>
+          <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-700">
+            Shop
+          </h4>
+          <div className="space-y-1">
+            {mobileShopLinks.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="block text-[15px] font-normal leading-[2] text-stone-900 transition-colors hover:text-stone-600"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-700">
+            Help
+          </h4>
+          <div className="space-y-1">
+            {mobileHelpLinks.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="block text-[15px] font-normal leading-[2] text-stone-900 transition-colors hover:text-stone-600"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-stone-200 px-5 py-5">
+        <div className="flex items-center justify-center gap-4 text-stone-500">
+          {socialLinks.slice(0, 3).map(({ label, href, icon: Icon, color }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              className={`transition-colors ${color}`}
+            >
+              <Icon size={16} />
+            </a>
+          ))}
+        </div>
+        <p className="mt-4 text-center text-[12px] text-stone-500">
+          Copyright {new Date().getFullYear()} Kvastram. All rights reserved.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function DesktopFooter() {
+  return (
+    <div className="hidden bg-[#1a1614] text-white md:block">
       <div
         className="footer-watermark-prem"
         style={{ padding: '40px 48px 0', overflow: 'hidden' }}
@@ -141,11 +219,9 @@ export function Footer() {
         Kvastram
       </div>
 
-      {/* Top section */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-8 pb-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
-          {/* Brand Column */}
-          <div className="lg:col-span-1 space-y-5">
+      <div className="mx-auto max-w-7xl px-6 pb-12 pt-8 lg:px-8">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5 lg:gap-8">
+          <div className="space-y-5 lg:col-span-1">
             <Link href="/" className="block">
               <span className="font-heading text-2xl font-semibold uppercase tracking-[0.2em] text-white">
                 KVASTRAM
@@ -157,9 +233,8 @@ export function Footer() {
             </p>
             <div className="font-body space-y-1 text-[12px] font-[300] text-stone-500">
               <p>support@kvastram.com</p>
-              <p>Mon–Fri, 9am–6pm IST</p>
+              <p>Mon-Fri, 9am-6pm IST</p>
             </div>
-            {/* Social icons */}
             <div className="flex flex-wrap gap-3 pt-2">
               {socialLinks.map(({ label, href, icon: Icon, color }) => (
                 <a
@@ -176,7 +251,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Shop */}
           <div>
             <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Shop
@@ -195,7 +269,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Support */}
           <div>
             <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Support
@@ -214,7 +287,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Company */}
           <div>
             <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Company
@@ -237,45 +309,42 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter mini */}
           <div>
             <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Stay Updated
             </h4>
             <p className="font-body mb-4 text-[15px] font-[300] leading-[1.7] text-stone-500">
-              Get 10% off your first order + early access to new collections.
+              Get 10% off your first order plus early access to new collections.
             </p>
             <NewsletterForm minimal />
-            <div className="font-body mt-4 flex items-center gap-1.5 text-[12px] text-stone-600">
-              <span>🔒</span>
-              <span>No spam. Unsubscribe anytime.</span>
+            <div className="font-body mt-4 text-[12px] text-stone-600">
+              No spam. Unsubscribe anytime.
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom bar */}
       <div className="border-t border-stone-800">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
+        <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
           <PaymentIcons className="mb-4" />
           <div className="font-body flex flex-col items-center justify-between gap-3 text-[12px] text-stone-600 sm:flex-row">
-            <p>© {new Date().getFullYear()} Kvastram. All rights reserved.</p>
+            <p>Copyright {new Date().getFullYear()} Kvastram. All rights reserved.</p>
             <div className="flex gap-4">
               <Link
                 href="/pages/privacy-policy"
-                className="font-body hover:text-stone-400 transition-colors"
+                className="font-body transition-colors hover:text-stone-400"
               >
                 Privacy
               </Link>
               <Link
                 href="/pages/terms-of-service"
-                className="font-body hover:text-stone-400 transition-colors"
+                className="font-body transition-colors hover:text-stone-400"
               >
                 Terms
               </Link>
               <Link
                 href="/pages/cookie-policy"
-                className="font-body hover:text-stone-400 transition-colors"
+                className="font-body transition-colors hover:text-stone-400"
               >
                 Cookies
               </Link>
@@ -283,6 +352,15 @@ export function Footer() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer>
+      <MobileFooter />
+      <DesktopFooter />
     </footer>
   );
 }

@@ -1,0 +1,789 @@
+import type { Metadata } from 'next';
+
+import type { Product } from '@/types';
+
+export const SITE_NAME = 'Kvastram';
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
+export const DEFAULT_OG_IMAGE = '/images/home/hero-main.jpg';
+
+export type TaxonomyNode = {
+  id: string;
+  name?: string;
+  title?: string;
+  slug?: string;
+  handle?: string;
+  description?: string | null;
+  image?: string | null;
+  header_image_url?: string | null;
+  metadata?: Record<string, unknown> | null;
+  children?: TaxonomyNode[];
+};
+
+export type BreadcrumbItem = {
+  name: string;
+  path: string;
+};
+
+type MetadataOptions = {
+  title: string;
+  description: string;
+  path: string;
+  image?: string | null;
+  keywords?: string[];
+  type?: 'website' | 'article';
+  noindex?: boolean;
+};
+
+type CollectionMetadataOptions = {
+  name: string;
+  path: string;
+  description: string;
+  image?: string | null;
+  kind: 'category' | 'collection';
+  keywords?: string[];
+};
+
+type ProductPriceInfo = {
+  amount: number;
+  currencyCode: string;
+  amountInMajor: number;
+  display: string;
+};
+
+const COLOR_KEYWORDS = [
+  'black',
+  'blue',
+  'brown',
+  'green',
+  'grey',
+  'gray',
+  'ivory',
+  'lavender',
+  'maroon',
+  'mustard',
+  'navy',
+  'off white',
+  'olive',
+  'peach',
+  'pink',
+  'purple',
+  'red',
+  'rust',
+  'teal',
+  'white',
+  'yellow',
+];
+
+const CATEGORY_KEYWORD_MAP: Record<
+  string,
+  { primary: string; secondary: string[]; label: string }
+> = {
+  kurti: {
+    primary: 'buy kurtis online india',
+    secondary: [
+      'cotton kurtis for women',
+      'chikankari kurti',
+      'kurti with dupatta set',
+    ],
+    label: 'Kurtis',
+  },
+  shawl: {
+    primary: 'buy shawls and wraps online',
+    secondary: [
+      'pashmina shawl',
+      'embroidered stole',
+      'winter shawl for women',
+    ],
+    label: 'Shawls & Wraps',
+  },
+  saree: {
+    primary: 'buy sarees online india',
+    secondary: ['handcrafted saree', 'festive saree', 'silk saree for women'],
+    label: 'Sarees',
+  },
+  default: {
+    primary: 'ethnic wear for women online india',
+    secondary: [
+      'handcrafted kurti',
+      'indian women clothing',
+      'buy shawls online',
+    ],
+    label: 'Ethnic Wear',
+  },
+};
+
+export function stripMarkdown(value: string | null | undefined): string {
+  if (!value) return '';
+
+  return value
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/[`*_>#-]/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function truncateAtWord(value: string, maxLength: number): string {
+  if (value.length <= maxLength) return value;
+
+  const truncated = value.slice(0, maxLength - 1);
+  const lastSpaceIndex = truncated.lastIndexOf(' ');
+  if (lastSpaceIndex > maxLength * 0.65) {
+    return `${truncated.slice(0, lastSpaceIndex).trim()}...`;
+  }
+
+  return `${truncated.trim()}...`;
+}
+
+export function toAbsoluteUrl(path: string): string {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+
+  return new URL(path, SITE_URL).toString();
+}
+
+export function titleFromHandle(handle: string): string {
+  return handle
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+export function flattenCategories(
+  categories: TaxonomyNode[],
+  parent?: TaxonomyNode
+): Array<TaxonomyNode & { parent?: TaxonomyNode }> {
+  return categories.flatMap((category) => [
+    { ...category, parent },
+    ...flattenCategories(category.children || [], category),
+  ]);
+}
+
+export function findCategoryById(
+  categories: TaxonomyNode[],
+  id: string
+): (TaxonomyNode & { parent?: TaxonomyNode }) | undefined {
+  return flattenCategories(categories).find((category) => category.id === id);
+}
+
+export function findCategoryBySlug(
+  categories: TaxonomyNode[],
+  slug: string
+): (TaxonomyNode & { parent?: TaxonomyNode }) | undefined {
+  return flattenCategories(categories).find(
+    (category) => category.slug === slug || category.handle === slug
+  );
+}
+
+export function getCategoryPath(category: {
+  slug?: string;
+  handle?: string;
+}): string | null {
+  const slug = category.slug || category.handle;
+  return slug ? `/collections/${slug}` : null;
+}
+
+function getCategoryKeywordBundle(label: string) {
+  const normalized = label.toLowerCase();
+
+  if (normalized.includes('kurti') || normalized.includes('top')) {
+    return CATEGORY_KEYWORD_MAP.kurti;
+  }
+
+  if (
+    normalized.includes('shawl') ||
+    normalized.includes('wrap') ||
+    normalized.includes('stole')
+  ) {
+    return CATEGORY_KEYWORD_MAP.shawl;
+  }
+
+  if (normalized.includes('saree') || normalized.includes('sari')) {
+    return CATEGORY_KEYWORD_MAP.saree;
+  }
+
+  return CATEGORY_KEYWORD_MAP.default;
+}
+
+export function getPrimaryCategory(product: Product) {
+  return product.categories?.[0];
+}
+
+export function getPrimaryCollectionOrCategoryLabel(product: Product): string {
+  return (
+    getPrimaryCategory(product)?.name ||
+    product.collection?.title ||
+    'Ethnic Wear'
+  );
+}
+
+export function getProductCategoryLabel(product: Product): string {
+  const directCategory = getPrimaryCategory(product)?.name;
+  if (directCategory) return directCategory;
+
+  const title = product.title.toLowerCase();
+
+  if (title.includes('kurti')) return 'Kurti';
+  if (title.includes('shawl')) return 'Shawl';
+  if (title.includes('wrap')) return 'Wrap';
+  if (title.includes('saree') || title.includes('sari')) return 'Saree';
+  if (title.includes('dupatta')) return 'Dupatta';
+
+  return 'Ethnic Wear';
+}
+
+export function getProductMaterial(product: Product): string {
+  return (
+    product.material ||
+    product.variants?.find((variant) => variant.title)?.title ||
+    'Premium Fabric'
+  );
+}
+
+export function getProductPrice(product: Product): ProductPriceInfo | null {
+  const prices = product.variants?.flatMap((variant) => variant.prices || []);
+  if (!prices || prices.length === 0) return null;
+
+  const preferredPrice =
+    prices.find((price) => price.currency_code.toLowerCase() === 'inr') ||
+    prices[0];
+
+  const currencyCode = preferredPrice.currency_code.toUpperCase();
+  const amountInMajor = preferredPrice.amount / 100;
+
+  return {
+    amount: preferredPrice.amount,
+    currencyCode,
+    amountInMajor,
+    display: new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: currencyCode,
+      maximumFractionDigits: 0,
+    }).format(amountInMajor),
+  };
+}
+
+export function getProductColor(product: Product): string | null {
+  const title = product.title.toLowerCase();
+  return (
+    COLOR_KEYWORDS.find((color) => title.includes(color))?.replace(
+      /\b\w/g,
+      (match) => match.toUpperCase()
+    ) || null
+  );
+}
+
+export function buildProductPrimaryKeyword(product: Product): string {
+  const handlePhrase = titleFromHandle(product.handle);
+  if (handlePhrase) return handlePhrase;
+
+  const color = getProductColor(product);
+  const material = getProductMaterial(product);
+  const category = getProductCategoryLabel(product);
+  return [color, material, category].filter(Boolean).join(' ');
+}
+
+export function buildProductImageAlt(
+  product: Product,
+  index: number,
+  explicitAlt?: string | null
+): string {
+  if (explicitAlt?.trim()) return explicitAlt.trim();
+
+  const color = getProductColor(product);
+  const material = getProductMaterial(product);
+  const category = getProductCategoryLabel(product);
+  const view =
+    index === 0
+      ? 'front view'
+      : index === 1
+        ? 'detail view'
+        : `view ${index + 1}`;
+
+  return [color, material, category, 'for Women', 'Kvastram', view]
+    .filter(Boolean)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function buildProductSeoTitle(product: Product): string {
+  const customTitle = product.seo_title?.trim();
+  if (customTitle) {
+    return truncateAtWord(customTitle, 60);
+  }
+
+  const material = getProductMaterial(product);
+  const category = getProductCategoryLabel(product);
+  return truncateAtWord(
+    `${product.title} | ${material} ${category} - ${SITE_NAME}`,
+    60
+  );
+}
+
+export function buildProductMetaDescription(product: Product): string {
+  const customDescription = product.seo_description?.trim();
+  if (customDescription) {
+    return truncateAtWord(customDescription, 155);
+  }
+
+  const price = getProductPrice(product);
+  const material = getProductMaterial(product);
+  const category = getProductCategoryLabel(product);
+  const sourceDescription = stripMarkdown(product.description);
+  const highlight =
+    sourceDescription.split('. ').find(Boolean) ||
+    `Handcrafted ${category.toLowerCase()} with premium detailing.`;
+  const variantSummary = product.options
+    ?.map((option) => option.title)
+    .filter(Boolean)
+    .join(', ');
+
+  return truncateAtWord(
+    `Buy ${product.title} in ${material}. ${highlight} ${
+      variantSummary ? `Available in ${variantSummary}. ` : ''
+    }${price ? `${price.display}. ` : ''}Free delivery from ${SITE_NAME}.`,
+    155
+  );
+}
+
+export function buildProductKeywords(product: Product): string[] {
+  const categoryLabel = getProductCategoryLabel(product);
+  const keywordBundle = getCategoryKeywordBundle(categoryLabel);
+
+  return [
+    buildProductPrimaryKeyword(product),
+    ...keywordBundle.secondary,
+    `${categoryLabel.toLowerCase()} online`,
+  ];
+}
+
+export function buildCollectionTitle({
+  name,
+  kind,
+}: {
+  name: string;
+  kind: 'category' | 'collection';
+}): string {
+  if (kind === 'category') {
+    return truncateAtWord(`Buy ${name} Online | ${SITE_NAME}`, 60);
+  }
+
+  return truncateAtWord(`${name} Collection | ${SITE_NAME}`, 60);
+}
+
+export function buildCollectionDescription({
+  name,
+  description,
+  productCount,
+}: {
+  name: string;
+  description?: string | null;
+  productCount?: number;
+}): string {
+  const source = stripMarkdown(description);
+  const summary =
+    source || `Handcrafted with premium fabrics for festive and everyday wear.`;
+  const countPart = productCount ? ` Shop ${productCount}+ styles.` : '';
+
+  return truncateAtWord(
+    `Explore ${SITE_NAME}'s ${name} collection - ${summary}${countPart} New arrivals added weekly.`,
+    155
+  );
+}
+
+export function createMetadata({
+  title,
+  description,
+  path,
+  image,
+  keywords = [],
+  type = 'website',
+  noindex = false,
+}: MetadataOptions): Metadata {
+  const canonical = toAbsoluteUrl(path);
+  const imageUrl = toAbsoluteUrl(image || DEFAULT_OG_IMAGE);
+  const trimmedTitle = truncateAtWord(title, 60);
+  const trimmedDescription = truncateAtWord(description, 155);
+
+  return {
+    title: trimmedTitle,
+    description: trimmedDescription,
+    keywords,
+    alternates: {
+      canonical,
+    },
+    robots: noindex
+      ? { index: false, follow: false }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+            'max-video-preview': -1,
+          },
+        },
+    openGraph: {
+      type,
+      url: canonical,
+      title: trimmedTitle,
+      description: trimmedDescription,
+      siteName: SITE_NAME,
+      locale: 'en_IN',
+      images: [
+        {
+          url: imageUrl,
+          alt: trimmedTitle,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: trimmedTitle,
+      description: trimmedDescription,
+      images: [imageUrl],
+    },
+  };
+}
+
+export function buildHomepageMetadata(): Metadata {
+  return createMetadata({
+    title: 'Indian Ethnic Wear, Kurtis & Sarees | Kvastram',
+    description:
+      "Shop Kvastram's handcrafted kurtis, shawls, wraps and sarees with premium fabrics, artisan craftsmanship, and effortless festive dressing.",
+    path: '/',
+    image: DEFAULT_OG_IMAGE,
+    keywords: [
+      'ethnic wear for women online india',
+      'handcrafted kurti',
+      'indian women clothing',
+      'buy shawls online',
+    ],
+  });
+}
+
+export function buildCatalogMetadata(): Metadata {
+  return createMetadata({
+    title: 'Shop Indian Ethnic Wear Online | Kvastram',
+    description:
+      'Browse handcrafted kurtis, shawls, sarees and festive ethnic wear for women. Discover premium fabrics, artisan finishes, and new arrivals at Kvastram.',
+    path: '/products',
+    image: DEFAULT_OG_IMAGE,
+    keywords: [
+      'ethnic wear for women online india',
+      'buy indian ethnic wear online',
+      'handcrafted women clothing',
+    ],
+  });
+}
+
+export function buildCollectionMetadata({
+  name,
+  path,
+  description,
+  image,
+  kind,
+  keywords = [],
+}: CollectionMetadataOptions): Metadata {
+  const keywordBundle = getCategoryKeywordBundle(name);
+
+  return createMetadata({
+    title: buildCollectionTitle({ name, kind }),
+    description,
+    path,
+    image,
+    keywords: keywords.length > 0 ? keywords : [keywordBundle.primary, ...keywordBundle.secondary],
+  });
+}
+
+export function buildBasicPageMetadata({
+  title,
+  description,
+  path,
+  image,
+  keywords = [],
+}: Omit<MetadataOptions, 'type' | 'noindex'>): Metadata {
+  return createMetadata({
+    title,
+    description,
+    path,
+    image,
+    keywords,
+  });
+}
+
+export function buildArticleMetadata({
+  title,
+  description,
+  path,
+  image,
+  keywords = [],
+}: Omit<MetadataOptions, 'type' | 'noindex'>): Metadata {
+  return createMetadata({
+    title,
+    description,
+    path,
+    image,
+    keywords,
+    type: 'article',
+  });
+}
+
+export function buildProductMetadata(product: Product): Metadata {
+  return createMetadata({
+    title: buildProductSeoTitle(product),
+    description: buildProductMetaDescription(product),
+    path: `/products/${product.handle}`,
+    image: product.thumbnail || product.images?.[0]?.url || DEFAULT_OG_IMAGE,
+    keywords: buildProductKeywords(product),
+  });
+}
+
+export function buildOrganizationJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: toAbsoluteUrl('/favicon.ico'),
+    sameAs: [
+      'https://instagram.com/kvastram',
+      'https://facebook.com/kvastram',
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      availableLanguage: ['English', 'Hindi'],
+      email: 'support@kvastram.com',
+    },
+  };
+}
+
+export function buildWebsiteJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE_URL}/search?query={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
+export function buildBreadcrumbJsonLd(items: BreadcrumbItem[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: toAbsoluteUrl(item.path),
+    })),
+  };
+}
+
+export function buildProductJsonLd(product: Product) {
+  const price = getProductPrice(product);
+  const images =
+    product.images?.map((image) => toAbsoluteUrl(image.url)) ||
+    (product.thumbnail ? [toAbsoluteUrl(product.thumbnail)] : []);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    image: images,
+    description: buildProductMetaDescription(product),
+    sku: product.variants?.[0]?.sku || undefined,
+    brand: {
+      '@type': 'Brand',
+      name: SITE_NAME,
+    },
+    category: getProductCategoryLabel(product),
+    offers: {
+      '@type': 'Offer',
+      url: toAbsoluteUrl(`/products/${product.handle}`),
+      priceCurrency: price?.currencyCode || 'INR',
+      price: price?.amountInMajor || 0,
+      availability:
+        (product.variants?.[0]?.inventory_quantity || 0) > 0
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+      seller: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+      },
+    },
+    aggregateRating:
+      product.avg_rating && product.review_count
+        ? {
+            '@type': 'AggregateRating',
+            ratingValue: product.avg_rating,
+            reviewCount: product.review_count,
+          }
+        : undefined,
+  };
+}
+
+export function buildCollectionPageJsonLd({
+  name,
+  path,
+  description,
+  image,
+  items,
+}: {
+  name: string;
+  path: string;
+  description: string;
+  image?: string | null;
+  items?: Array<{ name: string; path: string }>;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name,
+    url: toAbsoluteUrl(path),
+    description,
+    image: image ? toAbsoluteUrl(image) : undefined,
+    mainEntity:
+      items && items.length > 0
+        ? {
+            '@type': 'ItemList',
+            itemListElement: items.map((item, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              name: item.name,
+              url: toAbsoluteUrl(item.path),
+            })),
+          }
+        : undefined,
+  };
+}
+
+export function buildWebPageJsonLd({
+  title,
+  path,
+  description,
+}: {
+  title: string;
+  path: string;
+  description: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    url: toAbsoluteUrl(path),
+    description,
+  };
+}
+
+export function buildArticleJsonLd({
+  title,
+  path,
+  description,
+  image,
+  publishedAt,
+  updatedAt,
+}: {
+  title: string;
+  path: string;
+  description: string;
+  image?: string | null;
+  publishedAt?: string;
+  updatedAt?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    image: image ? [toAbsoluteUrl(image)] : [],
+    author: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      logo: {
+        '@type': 'ImageObject',
+        url: toAbsoluteUrl('/favicon.ico'),
+      },
+    },
+    mainEntityOfPage: toAbsoluteUrl(path),
+    datePublished: publishedAt,
+    dateModified: updatedAt || publishedAt,
+  };
+}
+
+export function serializeJsonLd(
+  payload: Record<string, unknown> | Array<Record<string, unknown>>
+): string {
+  return JSON.stringify(payload)
+    .replace(/</g, '\\u003C')
+    .replace(/>/g, '\\u003E');
+}
+
+export function buildProductSeoContent(product: Product) {
+  const primaryKeyword = buildProductPrimaryKeyword(product);
+  const category = getProductCategoryLabel(product);
+  const material = getProductMaterial(product);
+  const price = getProductPrice(product);
+  const categoryLink = getCategoryPath(getPrimaryCategory(product) || {});
+  const collectionLink = product.collection
+    ? `/collections/${product.collection.handle || product.collection.id}`
+    : null;
+  const cleanDescription = stripMarkdown(product.description);
+  const firstSentence =
+    cleanDescription.split('. ').find(Boolean) ||
+    `${product.title} is designed for women who want handcrafted Indian style with polished everyday versatility.`;
+
+  return {
+    primaryKeyword,
+    intro: `${primaryKeyword} is a signature ${category.toLowerCase()} from ${SITE_NAME}, crafted in ${material.toLowerCase()} for women who value elegant Indian dressing with comfort and longevity. ${firstSentence} This piece works beautifully for festive occasions, office wear, travel, and elevated daily styling thanks to its refined finish, breathable feel, and artisan-led detailing. If you are shopping for ${primaryKeyword.toLowerCase()} online, this design brings together premium fabric, thoughtful craftsmanship, and an easy silhouette that moves effortlessly from day to evening.`,
+    bullets: [
+      { label: 'Fabric', value: material },
+      {
+        label: 'Craft',
+        value:
+          cleanDescription.split('. ').find(Boolean) ||
+          'Handcrafted artisan detailing',
+      },
+      { label: 'Occasion', value: 'Casual, Festive, Office Wear' },
+      {
+        label: 'Fit',
+        value: product.options?.some((option) => option.title === 'Size')
+          ? 'Regular'
+          : 'Relaxed',
+      },
+      {
+        label: 'Care',
+        value: product.care_instructions || 'Dry clean or gentle hand wash',
+      },
+      {
+        label: 'Price',
+        value: price?.display || 'Contact for pricing',
+      },
+    ],
+    styling: `Style this ${category.toLowerCase()} with statement earrings, tonal bottoms, and artisanal layers for a polished ethnic look. ${
+      categoryLink
+        ? `Explore our ${getPrimaryCategory(product)?.name || category} collection for matching separates and complementary silhouettes.`
+        : 'Discover more handcrafted separates and occasion-ready styles across our latest edits.'
+    }`,
+    categoryLink,
+    collectionLink,
+  };
+}

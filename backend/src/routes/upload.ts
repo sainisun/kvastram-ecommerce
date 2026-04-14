@@ -6,7 +6,9 @@ import { z } from 'zod';
 import {
   validateFileUpload,
   isPathWithinUploadDir,
-  MAX_FILE_SIZE,
+  getMaxFileSize,
+  IMAGE_MAX_FILE_SIZE,
+  VIDEO_MAX_FILE_SIZE,
   getUploadDir,
 } from '../utils/safe-file-upload';
 import { writeFile, mkdir } from 'fs/promises';
@@ -20,6 +22,8 @@ const ALLOWED_EXTENSIONS = [
   '.png',
   '.gif',
   '.webp',
+  '.mp4',
+  '.mov',
   '.pdf',
   '.doc',
   '.docx',
@@ -34,7 +38,7 @@ const FileUploadSchema = z.object({
     .number()
     .int()
     .positive()
-    .max(5 * 1024 * 1024), // Max 5MB, matches MAX_FILE_SIZE
+    .max(VIDEO_MAX_FILE_SIZE), // Large enough for video uploads; final limit is type-aware
 });
 
 type FileUploadInput = z.infer<typeof FileUploadSchema>;
@@ -69,10 +73,12 @@ uploadRouter.post('/', async (c) => {
     }
 
     // 🔒 FIX-005: Validate file size first (prevent memory exhaustion)
-    if (file.size > MAX_FILE_SIZE) {
+    const maxFileSize = getMaxFileSize(file.name, file.type);
+
+    if (file.size > maxFileSize) {
       return c.json(
         {
-          error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+          error: `File too large. Maximum size is ${maxFileSize / 1024 / 1024}MB`,
         },
         400
       );
@@ -169,6 +175,10 @@ uploadRouter.post('/', async (c) => {
       size: file.size,
       type: file.type,
       hash: fileHash,
+      limits: {
+        image_max_size: IMAGE_MAX_FILE_SIZE,
+        video_max_size: VIDEO_MAX_FILE_SIZE,
+      },
     });
   } catch (error: any) {
     console.error('❌ Upload error:', error);

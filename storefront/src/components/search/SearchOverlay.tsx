@@ -272,27 +272,27 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         {
                           label: 'Shawls',
                           emoji: '🧣',
-                          href: '/products?category=shawls',
+                          href: '/collections/shawls',
                         },
                         {
                           label: 'Kurtis',
                           emoji: '👘',
-                          href: '/products?category=kurtis',
+                          href: '/collections/kurtis',
                         },
                         {
                           label: 'Sarees',
                           emoji: '🥻',
-                          href: '/products?category=sarees',
+                          href: '/collections/sarees',
                         },
                         {
                           label: 'Accessories',
                           emoji: '💍',
-                          href: '/products?tag=accessories',
+                          href: '/search?query=accessories',
                         },
                         {
                           label: 'Wedding',
                           emoji: '💛',
-                          href: '/products?tag=wedding',
+                          href: '/search?query=wedding',
                         },
                         { label: 'Sale', emoji: '🔖', href: '/sale' },
                       ].map(({ label, emoji, href }) => (

@@ -47,7 +47,7 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
 ];
 
 const DEFAULT_QUICK_LINKS: NavLink[] = [
-  { label: 'Bestsellers', url: '/products?tag=bestseller', order: 1 },
+  { label: 'Bestsellers', url: '/search?query=bestsellers', order: 1 },
   { label: 'Gift Cards', url: '/gift-cards', order: 2 },
   { label: 'New In', url: '/products?sort=newest', order: 3 },
 ];
@@ -345,7 +345,7 @@ export function Header() {
                                     style={{ animationDelay: `${idx * 40}ms` }}
                                   >
                                     <Link
-                                      href={`/products?category_id=${cat.id}`}
+                                      href={`/collections/${cat.slug}`}
                                       className="font-body -ml-2 block border-l-2 border-transparent py-1.5 pl-2 text-[15px] font-medium text-stone-800 transition-colors hover:border-amber-500 hover:text-black"
                                       onClick={closeShopMenu}
                                       onMouseEnter={() =>
@@ -368,7 +368,7 @@ export function Header() {
                                             .map((child) => (
                                               <li key={child.id}>
                                                 <Link
-                                                  href={`/products?category_id=${child.id}`}
+                                                  href={`/collections/${child.slug}`}
                                                   className="font-body block py-0.5 pl-2 text-[15px] font-[300] text-stone-500 transition-colors hover:text-black"
                                                   onClick={closeShopMenu}
                                                 >

@@ -18,6 +18,14 @@ export const ImageSchema = z.object({
   alt_text: z.string().optional(),
   is_thumbnail: z.boolean().default(false),
   position: z.number().int().default(0),
+  metadata: z
+    .object({
+      media_type: z.enum(['image', 'video']).default('image'),
+      thumbnail_url: z.string().url().optional(),
+      mime_type: z.string().optional(),
+      file_size: z.number().int().optional(),
+    })
+    .optional(),
 });
 
 // --- Create Product Schema ---

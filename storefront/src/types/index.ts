@@ -25,7 +25,7 @@ export interface Product {
   variants?: ProductVariant[];
   options?: ProductOption[];
   images?: ProductImage[];
-  videos?: ProductVideo[]; // PHASE 2.3: Video support
+  videos?: ProductVideo[];
   material?: string;
   origin_country?: string;
   size_guide?: SizeGuide | string; // Can be structured object or plain text
@@ -38,6 +38,7 @@ export interface Product {
   collection?: {
     id: string;
     title: string;
+    handle?: string;
   };
   categories?: ProductCategory[];
 }
@@ -60,6 +61,15 @@ export interface ProductVideo {
   url: string;
   thumbnail?: string;
   position?: number;
+}
+
+export type ProductMediaType = 'image' | 'video';
+
+export interface ProductMediaMetadata {
+  media_type?: ProductMediaType;
+  thumbnail_url?: string;
+  mime_type?: string;
+  file_size?: number;
 }
 
 export interface ProductVariant {
@@ -90,7 +100,10 @@ export interface ProductImage {
   id: string;
   url: string;
   alt?: string;
+  alt_text?: string;
   position?: number;
+  is_thumbnail?: boolean | null;
+  metadata?: ProductMediaMetadata | null;
 }
 
 export interface ProductCategory {

@@ -41,7 +41,14 @@ export { customers, addresses, orders, line_items } from '../schema';
 export { users } from '../schema';
 
 // Content
-export { posts, pages, banners } from '../schema';
+export {
+  posts,
+  pages,
+  banners,
+  homepage_banners,
+  category_circles,
+  featured_products,
+} from '../schema';
 
 // Other
 export {

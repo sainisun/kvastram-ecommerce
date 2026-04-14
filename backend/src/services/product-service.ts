@@ -69,6 +69,10 @@ export class ProductService {
     return queryService.retrieve(idOrHandle);
   }
 
+  async retrieveMany(ids: string[]) {
+    return queryService.retrieveMany(ids);
+  }
+
   async search(
     query: string,
     filters?: Parameters<typeof queryService.search>[1]

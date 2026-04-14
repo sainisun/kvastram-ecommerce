@@ -37,7 +37,25 @@ export default function ShareButtons({
     email: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%20${encodedUrl}`,
   };
 
-  const handleShare = (platform: string) => {
+  const handleShare = async (platform: string) => {
+    if (
+      platform === 'native' &&
+      typeof navigator !== 'undefined' &&
+      navigator.share
+    ) {
+      try {
+        await navigator.share({
+          title,
+          text: description || 'Check out this product from Kvastram',
+          url: shareUrl,
+        });
+      } catch {
+        // Native share sheets throw when dismissed; no-op is fine.
+      }
+      setShowDropdown(false);
+      return;
+    }
+
     const link = shareLinks[platform as keyof typeof shareLinks];
     if (link.startsWith('mailto:')) {
       window.location.href = link;
@@ -50,7 +68,19 @@ export default function ShareButtons({
   return (
     <div className={`relative ${className}`}>
       <button
-        onClick={() => setShowDropdown(!showDropdown)}
+        onClick={() => {
+          if (
+            typeof navigator !== 'undefined' &&
+            typeof navigator.share === 'function' &&
+            typeof window !== 'undefined' &&
+            window.innerWidth < 768
+          ) {
+            void handleShare('native');
+            return;
+          }
+
+          setShowDropdown(!showDropdown);
+        }}
         className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-sm"
         aria-label="Share product"
         aria-expanded={showDropdown}

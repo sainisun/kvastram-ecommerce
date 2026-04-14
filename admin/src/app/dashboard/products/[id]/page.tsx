@@ -13,12 +13,29 @@ import {
   Package,
 } from 'lucide-react';
 import Link from 'next/link';
-import ImageUpload, { ImageItem } from '@/components/ui/ImageUpload';
+import ProductMediaUpload, {
+  type ProductMediaItem,
+} from '@/components/ui/ProductMediaUpload';
 
 interface Region {
   id: string;
   name: string;
   currency_code: string;
+}
+
+function getCoverThumbnail(mediaItems: ProductMediaItem[]) {
+  const coverItem = mediaItems.find((item) => item.is_thumbnail) || mediaItems[0];
+
+  if (!coverItem) return '';
+
+  if (coverItem.metadata?.media_type === 'video') {
+    const firstImage = mediaItems.find(
+      (item) => item.metadata?.media_type !== 'video'
+    );
+    return coverItem.metadata.thumbnail_url || firstImage?.url || coverItem.url;
+  }
+
+  return coverItem.url;
 }
 
 import { useNotification } from '@/context/notification-context';
@@ -63,7 +80,7 @@ export default function EditProductPage() {
     seo_description: '',
   });
 
-  const [images, setImages] = useState<ImageItem[]>([]);
+  const [mediaItems, setMediaItems] = useState<ProductMediaItem[]>([]);
 
   // Prices State: Map region_id -> amount (string for input)
   const [prices, setPrices] = useState<Record<string, string>>({});
@@ -133,7 +150,7 @@ export default function EditProductPage() {
 
       // Populate Images
       if (product.images && product.images.length > 0) {
-        setImages(
+        setMediaItems(
           product.images
             .sort((a: any, b: any) => (a.position || 0) - (b.position || 0))
             .map((img: any) => ({
@@ -142,11 +159,12 @@ export default function EditProductPage() {
               is_thumbnail: img.is_thumbnail,
               alt_text: img.alt_text || '',
               position: img.position,
+              metadata: img.metadata || undefined,
             }))
         );
       } else if (product.thumbnail) {
         // Fallback for old products
-        setImages([
+        setMediaItems([
           {
             id: 'legacy-thumb',
             url: product.thumbnail,
@@ -372,6 +390,10 @@ export default function EditProductPage() {
     setLoading(true);
 
     try {
+      if (mediaItems.length < 3) {
+        throw new Error('Add at least 3 media items before saving this product.');
+      }
+
       // Build Prices Array
       const formattedPrices = regions
         .filter((r) => prices[r.id]) // Only include filled prices
@@ -389,14 +411,14 @@ export default function EditProductPage() {
         width: formData.width ? Number.parseInt(formData.width) : undefined,
         inventory_quantity: Number.parseInt(formData.inventory_quantity || '0'),
         prices: formattedPrices,
-        images: images.map((img, idx) => ({
-          url: img.url,
-          alt_text: img.alt_text || '',
-          is_thumbnail: img.is_thumbnail,
+        images: mediaItems.map((item, idx) => ({
+          url: item.url,
+          alt_text: item.alt_text || '',
+          is_thumbnail: item.is_thumbnail,
           position: idx,
+          metadata: item.metadata || undefined,
         })),
-        thumbnail:
-          images.find((img) => img.is_thumbnail)?.url || images[0]?.url || '',
+        thumbnail: getCoverThumbnail(mediaItems),
         category_ids: selectedCategoryIds,
         tag_ids: selectedTagIds,
       };
@@ -1279,18 +1301,17 @@ export default function EditProductPage() {
           </div>
 
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">Media</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-4">
+              Product Media
+            </h2>
             <p className="text-sm text-gray-500 mb-4">
-              Upload product images. The first image will be used as the
-              thumbnail. Drag to reorder.
+              Keep the gallery in the same order customers should swipe through it.
             </p>
 
-            <ImageUpload
-              images={images}
-              onChange={setImages}
-              onUpload={(file) => api.uploadImage(file).then((res) => res.url)}
-              uploading={false}
-              maxFiles={10}
+            <ProductMediaUpload
+              items={mediaItems}
+              onChange={setMediaItems}
+              onError={(message) => showNotification('error', message)}
             />
           </div>
         </div>

@@ -13,6 +13,8 @@ import { api } from '@/lib/api';
 import ProductGrid from '@/components/ProductGrid';
 import FilterSidebar from '@/components/products/FilterSidebar';
 import PageHero from '@/components/hero/PageHero';
+import CategoryBannerCarousel from '@/components/products/CategoryBannerCarousel';
+import CategoryCircleStrip from '@/components/products/CategoryCircleStrip';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface Category {
@@ -37,6 +39,25 @@ interface CatalogClientProps {
   tags: Tag[];
   collections?: Collection[];
   totalProducts?: number;
+  categoryPageBanners?: Array<{
+    id: string;
+    image_url: string;
+    headline?: string | null;
+    button_label?: string | null;
+    button_url?: string | null;
+  }>;
+  categoryCircles?: Array<{
+    id: string;
+    image_url: string;
+    label: string;
+    link_url: string;
+  }>;
+  spotlightProducts?: Array<{
+    id: string;
+    custom_image_url?: string | null;
+    badge_text?: string | null;
+    product: Product | null;
+  }>;
 }
 
 const DEFAULT_LIMIT = 12;
@@ -53,6 +74,9 @@ export default function CatalogClient({
   tags,
   collections = [],
   totalProducts,
+  categoryPageBanners = [],
+  categoryCircles = [],
+  spotlightProducts = [],
 }: CatalogClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -126,16 +150,34 @@ export default function CatalogClient({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Poster */}
-      <PageHero
-        title="All Products"
-        subtitle="The Collection"
-        description="Discover our curated selection of artisanal luxury, from Kashmiri weaves to Florentine leather."
-        image="/images/home/hero-main.jpg"
-      />
+      {categoryPageBanners.length > 0 ? (
+        <CategoryBannerCarousel banners={categoryPageBanners} />
+      ) : (
+        <div className="md:hidden">
+          <PageHero
+            title="All Products"
+            subtitle="The Collection"
+            description="Discover our curated selection of artisanal luxury, from Kashmiri weaves to Florentine leather."
+            image="/images/home/hero-main.jpg"
+          />
+        </div>
+      )}
+
+      {categoryCircles.length > 0 ? (
+        <CategoryCircleStrip circles={categoryCircles} />
+      ) : null}
+
+      <div className="hidden md:block">
+        <PageHero
+          title="All Products"
+          subtitle="The Collection"
+          description="Discover our curated selection of artisanal luxury, from Kashmiri weaves to Florentine leather."
+          image="/images/home/hero-main.jpg"
+        />
+      </div>
 
       {/* Content with Sidebar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col md:flex-row gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col md:flex-row gap-8 md:gap-12">
         {/* Sidebar (Desktop) */}
         <aside className="hidden md:block w-64 shrink-0">
           <FilterSidebar
@@ -242,7 +284,11 @@ export default function CatalogClient({
             </div>
           </div>
 
-          <ProductGrid initialProducts={products} loading={loading} />
+          <ProductGrid
+            initialProducts={products}
+            loading={loading}
+            spotlightProducts={spotlightProducts}
+          />
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
