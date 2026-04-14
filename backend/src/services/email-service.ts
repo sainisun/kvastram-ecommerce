@@ -403,6 +403,52 @@ class EmailService {
     return this.sendEmail({ to: data.email, subject, text, html });
   }
 
+  // 📦 Shipping Notification Email
+  async sendShippingNotification(data: {
+    email: string;
+    order_number: string | number;
+    tracking_number: string;
+    shipping_carrier?: string;
+    tracking_link?: string;
+  }) {
+    const subject = `Your Kvastram order #${data.order_number} has shipped!`;
+    const storeUrl = this.getStorefrontUrl();
+    const trackingLine = data.tracking_link
+      ? `<a href="${data.tracking_link}" style="color:#007bff;">${safeString(data.tracking_number)}</a>`
+      : safeString(data.tracking_number);
+    const carrierLine = data.shipping_carrier
+      ? `<p><strong>Carrier:</strong> ${safeString(data.shipping_carrier)}</p>`
+      : '';
+
+    const text = `Your order #${data.order_number} has been shipped!\n\nTracking Number: ${data.tracking_number}${data.shipping_carrier ? `\nCarrier: ${data.shipping_carrier}` : ''}${data.tracking_link ? `\nTrack your order: ${data.tracking_link}` : ''}\n\nBest regards,\nKvastram Team`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1a1614; padding: 24px; text-align: center;">
+          <h2 style="color: #f5c842; margin: 0; font-size: 22px; letter-spacing: 2px;">KVASTRAM</h2>
+        </div>
+        <div style="padding: 32px 24px;">
+          <h1 style="font-size: 24px; color: #1a1614;">Your order is on its way!</h1>
+          <p>Great news! Your order <strong>#${safeString(String(data.order_number))}</strong> has been shipped and is heading to you.</p>
+          <div style="background: #f9f7f5; border-left: 4px solid #f5c842; padding: 16px; margin: 24px 0; border-radius: 4px;">
+            <p style="margin: 0 0 8px 0;"><strong>Tracking Number:</strong> ${trackingLine}</p>
+            ${carrierLine}
+          </div>
+          ${data.tracking_link ? `
+          <p style="text-align: center; margin: 32px 0;">
+            <a href="${data.tracking_link}" style="background-color: #1a1614; color: white; padding: 14px 32px; text-decoration: none; border-radius: 2px; display: inline-block; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 13px;">
+              Track Your Order
+            </a>
+          </p>` : ''}
+          <p style="margin-top: 24px;">You can also view your order status anytime at <a href="${storeUrl}/account" style="color: #007bff;">${storeUrl}/account</a></p>
+          <p>Best regards,<br>Kvastram Team</p>
+        </div>
+      </div>
+    `;
+
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
+
   // 🔔 Back-in-Stock Notification Email
   async sendBackInStockNotification(data: {
     email: string;

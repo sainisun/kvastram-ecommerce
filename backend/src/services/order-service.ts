@@ -251,25 +251,37 @@ class OrderService {
 
   async addTracking(id: string, data: { tracking_number: string; shipping_carrier?: string; tracking_link?: string; }) {
     const [existingOrder] = await db
-      .select({ id: orders.id, email: orders.email })
+      .select({ id: orders.id, email: orders.email, order_number: orders.order_number })
       .from(orders)
       .where(eq(orders.id, id));
-      
+
     if (!existingOrder) throw new Error('Order not found');
 
     const [updated] = await db
       .update(orders)
-      .set({ 
+      .set({
         tracking_number: data.tracking_number,
         shipping_carrier: data.shipping_carrier,
         tracking_link: data.tracking_link,
-        status: 'shipped', // Auto-transition to shipped when tracking is added
-        updated_at: new Date() 
+        status: 'shipped',
+        updated_at: new Date()
       })
       .where(eq(orders.id, id))
       .returning();
 
-    // In a real app we would Trigger email notification to existingOrder.email here.
+    // Send shipping notification email (fire-and-forget)
+    if (existingOrder.email) {
+      import('./email-service').then(({ emailService }) => {
+        emailService.sendShippingNotification({
+          email: existingOrder.email!,
+          order_number: existingOrder.order_number ?? id.slice(0, 8),
+          tracking_number: data.tracking_number,
+          shipping_carrier: data.shipping_carrier,
+          tracking_link: data.tracking_link,
+        }).catch(err => console.error('[OrderService] Failed to send shipping notification:', err));
+      }).catch(err => console.error('[OrderService] Failed to load email service:', err));
+    }
+
     return updated;
   }
 

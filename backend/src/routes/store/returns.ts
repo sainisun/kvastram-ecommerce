@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from '../../db/client';
 import { returns, return_items, orders } from '../../db/schema';
 import { eq } from 'drizzle-orm';
-import { verifyAuth } from '../../middleware/auth';
+import { verifyCustomer } from '../../middleware/customer-auth';
 
 const router = new Hono();
 
@@ -20,7 +20,7 @@ const ReturnSchema = z.object({
 });
 
 // POST /store/returns — Customer submits a return request
-router.post('/', verifyAuth, async (c) => {
+router.post('/', verifyCustomer, async (c) => {
   try {
     const body = await c.req.json();
     const data = ReturnSchema.parse(body);
@@ -95,9 +95,9 @@ router.post('/', verifyAuth, async (c) => {
 });
 
 // GET /store/returns — Customer views their return requests
-router.get('/', verifyAuth, async (c) => {
+router.get('/', verifyCustomer, async (c) => {
   try {
-    const user = c.get('user') as any;
+    const user = c.get('customer') as { sub: string };
 
     const customerReturns = await db
       .select()

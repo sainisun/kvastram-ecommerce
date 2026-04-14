@@ -21,7 +21,7 @@ import { healthCheck } from './db/client';
 
 // Import error handler
 import { errorHandler } from './middleware/error-handler';
-import { successResponse } from './utils/api-response';
+import { successResponse, errorResponse } from './utils/api-response';
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -355,7 +355,7 @@ app.route('/docs', docsApp);
 
 // 404 Handler
 app.notFound((c) => {
-  return successResponse(c, null, 'Not Found', 404);
+  return errorResponse(c, 'Route not found', null, 404);
 });
 
 // Global Error Handler

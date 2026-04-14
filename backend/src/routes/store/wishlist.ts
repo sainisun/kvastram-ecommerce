@@ -2,18 +2,18 @@ import { Hono } from 'hono';
 import { db } from '../../db/client';
 import { wishlists, products, product_variants } from '../../db/schema';
 import { and, eq } from 'drizzle-orm';
-import { verifyAuth, type AuthContextVariables } from '../../middleware/auth';
+import { verifyCustomer } from '../../middleware/customer-auth';
 
-const wishlistRouter = new Hono<{ Variables: AuthContextVariables }>();
+const wishlistRouter = new Hono();
 
-// All wishlist routes require authentication
-wishlistRouter.use('*', verifyAuth);
+// All wishlist routes require customer authentication
+wishlistRouter.use('*', verifyCustomer);
 
 // GET /store/wishlist — Get customer's wishlist with product details
 wishlistRouter.get('/', async (c) => {
   try {
-    const user = c.get('user');
-    const customerId = user.sub;
+    const customer = c.get('customer') as { sub: string };
+    const customerId = customer.sub;
 
     const items = await db
       .select({
@@ -40,8 +40,8 @@ wishlistRouter.get('/', async (c) => {
 // POST /store/wishlist — Add item to wishlist
 wishlistRouter.post('/', async (c) => {
   try {
-    const user = c.get('user');
-    const customerId = user.sub;
+    const customer = c.get('customer') as { sub: string };
+    const customerId = customer.sub;
     const body = await c.req.json();
     const { product_id, variant_id } = body;
 
@@ -84,8 +84,8 @@ wishlistRouter.post('/', async (c) => {
 // DELETE /store/wishlist/:productId — Remove from wishlist
 wishlistRouter.delete('/:productId', async (c) => {
   try {
-    const user = c.get('user');
-    const customerId = user.sub;
+    const customer = c.get('customer') as { sub: string };
+    const customerId = customer.sub;
     const productId = c.req.param('productId');
 
     await db

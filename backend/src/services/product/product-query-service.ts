@@ -84,15 +84,16 @@ export class ProductQueryService {
         .where(eq(product_categories.category_id, filters.categoryId));
 
       if (catMatches.length === 0) {
-        return conditions; // Return empty conditions (no match)
+        // No products in this category — return a never-true condition
+        conditions.push(sql`FALSE`);
+      } else {
+        conditions.push(
+          inArray(
+            products.id,
+            catMatches.map((c) => c.product_id)
+          )
+        );
       }
-
-      conditions.push(
-        inArray(
-          products.id,
-          catMatches.map((c) => c.product_id)
-        )
-      );
     }
 
     // Tag Filter
@@ -103,15 +104,16 @@ export class ProductQueryService {
         .where(eq(product_tags.tag_id, filters.tagId));
 
       if (tagMatches.length === 0) {
-        return conditions; // Return empty conditions (no match)
+        // No products with this tag — return a never-true condition
+        conditions.push(sql`FALSE`);
+      } else {
+        conditions.push(
+          inArray(
+            products.id,
+            tagMatches.map((t) => t.product_id)
+          )
+        );
       }
-
-      conditions.push(
-        inArray(
-          products.id,
-          tagMatches.map((t) => t.product_id)
-        )
-      );
     }
 
     return conditions;

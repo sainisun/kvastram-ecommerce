@@ -131,6 +131,49 @@ productsRouter.get(
   })
 );
 
+// GET /products/featured - Get featured products by IDs (Public)
+// IMPORTANT: Must be registered BEFORE /:id to avoid being shadowed
+productsRouter.get(
+  '/featured',
+  asyncHandler(async (c) => {
+    const query = c.req.query();
+    const { ids = '' } = query;
+
+    if (!ids) {
+      return successResponse(c, [], 'No featured product IDs provided');
+    }
+
+    const productIds = ids
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
+
+    if (productIds.length === 0) {
+      return successResponse(c, [], 'No valid product IDs provided');
+    }
+
+    const products = await Promise.all(
+      productIds.map(async (id) => {
+        try {
+          return await productService.retrieve(id);
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    const validProducts = products.filter(
+      (p): p is NonNullable<typeof p> => p !== null && p.status === 'published'
+    );
+
+    return successResponse(
+      c,
+      validProducts,
+      'Featured products retrieved successfully'
+    );
+  })
+);
+
 // GET /products/:id - Get single product (Public)
 productsRouter.get(
   '/:id',
@@ -288,48 +331,6 @@ productsRouter.delete(
       c,
       { id, deleted: true },
       'Product deleted successfully'
-    );
-  })
-);
-
-// GET /products/featured - Get featured products by IDs (Public)
-productsRouter.get(
-  '/featured',
-  asyncHandler(async (c) => {
-    const query = c.req.query();
-    const { ids = '' } = query;
-
-    if (!ids) {
-      return successResponse(c, [], 'No featured product IDs provided');
-    }
-
-    const productIds = ids
-      .split(',')
-      .map((id) => id.trim())
-      .filter(Boolean);
-
-    if (productIds.length === 0) {
-      return successResponse(c, [], 'No valid product IDs provided');
-    }
-
-    const products = await Promise.all(
-      productIds.map(async (id) => {
-        try {
-          return await productService.retrieve(id);
-        } catch {
-          return null;
-        }
-      })
-    );
-
-    const validProducts = products.filter(
-      (p): p is NonNullable<typeof p> => p !== null && p.status === 'published'
-    );
-
-    return successResponse(
-      c,
-      validProducts,
-      'Featured products retrieved successfully'
     );
   })
 );

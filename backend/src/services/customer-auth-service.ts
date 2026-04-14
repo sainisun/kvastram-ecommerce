@@ -386,18 +386,18 @@ export const customerAuthService = {
   },
 
   async resendVerificationEmail(email: string) {
+    // Always return generic success to prevent email enumeration
+    const genericResponse = { message: 'If this email exists and is unverified, a verification link has been sent.' };
+
     const [customer] = await db
       .select()
       .from(customers)
       .where(eq(customers.email, email.toLowerCase()))
       .limit(1);
 
-    if (!customer) {
-      throw new Error('Customer not found');
-    }
-
-    if (customer.email_verified) {
-      throw new Error('Email is already verified');
+    // Silently return if customer not found or already verified
+    if (!customer || customer.email_verified) {
+      return genericResponse;
     }
 
     // Generate new verification token
@@ -415,19 +415,14 @@ export const customerAuthService = {
       .where(eq(customers.id, customer.id));
 
     // Send verification email asynchronously
-    try {
-      const { emailService } = await import('./email-service');
-      emailService.sendVerificationEmail({
-        email: customer.email,
-        first_name: customer.first_name!,
-        token: verificationToken,
-      }).catch(emailError => console.error('Failed to send verification email:', emailError));
-    } catch (emailError: unknown) {
-      console.error('Failed to load email service:', emailError);
-      throw new Error('Failed to trigger verification email');
-    }
+    const { emailService } = await import('./email-service');
+    emailService.sendVerificationEmail({
+      email: customer.email,
+      first_name: customer.first_name!,
+      token: verificationToken,
+    }).catch(emailError => console.error('Failed to send verification email:', emailError));
 
-    return { message: 'Verification email sent' };
+    return genericResponse;
   },
 
   async getVerificationStatus(email: string) {
