@@ -714,7 +714,7 @@ export default function ProductsPage() {
         <div className="flex items-center justify-between text-sm">
           <button
             type="button"
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1}
             className="rounded-full border border-[var(--kv-border)] bg-white px-4 py-2 disabled:opacity-50"
           >
@@ -725,7 +725,7 @@ export default function ProductsPage() {
           </span>
           <button
             type="button"
-            onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages}
             className="rounded-full border border-[var(--kv-border)] bg-white px-4 py-2 disabled:opacity-50"
           >
