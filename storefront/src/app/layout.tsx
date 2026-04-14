@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Cormorant_Garamond, Jost } from 'next/font/google';
 
 import './globals.css';
 import { ShopProvider } from '@/context/shop-context';
@@ -15,9 +16,20 @@ import { Analytics } from '@/components/Analytics';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 
-// Fonts disabled due to Turbopack compatibility issue
-// Using system fonts as fallback for now
-// TODO: Re-enable next/font/google after Turbopack fix
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-cormorant',
+  display: 'swap',
+});
+
+const jost = Jost({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-jost',
+  display: 'swap',
+});
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
 
@@ -99,16 +111,10 @@ export default async function RootLayout({
             }}
           />
         )}
-
-        {/* Preload critical fonts - use Google Fonts URL */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
       </head>
-      <body className="antialiased">
+      <body
+        className={`${cormorant.variable} ${jost.variable} font-body antialiased`}
+      >
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"

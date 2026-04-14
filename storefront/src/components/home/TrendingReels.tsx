@@ -72,13 +72,15 @@ function ReelCard({ reel }: { reel: TrendingReelItem }) {
       />
 
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent p-3 text-white">
-        <p className="line-clamp-2 text-sm font-semibold leading-tight md:text-base">
+        <p className="font-body line-clamp-2 text-[14px] font-medium leading-[1.45] tracking-[0.03em] md:text-[14px]">
           {reel.product_name}
         </p>
-        <p className="mt-1 text-sm text-white/90">{reel.price}</p>
+        <p className="font-body mt-1 text-[14px] font-normal text-white/90">
+          {reel.price}
+        </p>
         <Link
           href={reel.link_url}
-          className="mt-3 inline-flex rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-900 transition hover:bg-stone-100"
+          className="font-body mt-3 inline-flex rounded-full bg-white px-4 py-2 text-[12px] font-medium uppercase tracking-[0.1em] text-gray-900 transition hover:bg-stone-100"
         >
           Shop Now
         </Link>
@@ -127,7 +129,7 @@ export function TrendingReels() {
   return (
     <section className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-6 md:px-8 md:py-10">
       <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
+        <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-gray-900 md:text-[36px]">
           Trending Now
         </h2>
       </div>

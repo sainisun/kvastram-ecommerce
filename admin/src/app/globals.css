@@ -1,19 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f9f7f4;
+  --foreground: #1a1a1a;
+  --kv-text: #1a1a1a;
+  --kv-muted: #6b6560;
+  --kv-border: #e8e3dc;
+  --kv-bg: #f9f7f4;
+  --kv-card: #ffffff;
+  --kv-soft: #f3eee7;
+  --kv-accent: #c97d4e;
+  --kv-accent-deep: #9f5e35;
+  --kv-accent-soft: #f6ebe4;
+  --kv-success: #2d7a4f;
+  --kv-warning: #d4860b;
+  --kv-danger: #c0392b;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Jost', 'Segoe UI', sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: 'SFMono-Regular', Consolas, monospace;
+}
+
+html {
+  background: var(--kv-bg);
 }
 
 body {
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+::selection {
+  background: rgba(201, 125, 78, 0.18);
+}
+
+[data-admin-shell] h1,
+[data-admin-shell] h2,
+[data-admin-shell] h3,
+[data-admin-shell] h4 {
+  letter-spacing: -0.02em;
+}
+
+[data-admin-shell] input:not([type='checkbox']):not([type='radio']),
+[data-admin-shell] select,
+[data-admin-shell] textarea {
+  border-color: var(--kv-border);
+  background: #fff;
+  color: var(--kv-text);
+  border-radius: 0.95rem;
+}
+
+[data-admin-shell] input:focus,
+[data-admin-shell] select:focus,
+[data-admin-shell] textarea:focus {
+  outline: none;
+  border-color: rgba(201, 125, 78, 0.7);
+  box-shadow: 0 0 0 4px rgba(201, 125, 78, 0.12);
+}
+
+[data-admin-shell] table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+[data-admin-shell] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+[data-admin-shell] ::-webkit-scrollbar-thumb {
+  background: #d8cec4;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+[data-admin-shell] ::-webkit-scrollbar-track {
+  background: transparent;
 }

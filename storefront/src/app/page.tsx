@@ -128,8 +128,9 @@ export default async function Home() {
                   <span
                     key={i}
                     style={{
-                      fontSize: '10px',
-                      letterSpacing: '0.2em',
+                      fontFamily: 'var(--font-ui)',
+                      fontSize: '12px',
+                      letterSpacing: '0.05em',
                       textTransform: 'uppercase',
                       padding: '0 48px',
                       opacity: 0.9,

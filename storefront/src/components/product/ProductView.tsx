@@ -313,7 +313,7 @@ export default function ProductView({ product }: { product: Product }) {
         {/* W2: Linked Breadcrumb */}
         <nav
           aria-label="Breadcrumb"
-          className="flex items-center gap-1.5 text-xs text-stone-400 mb-8"
+          className="font-body mb-8 flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
         >
           <Link href="/" className="hover:text-stone-900 transition-colors">
             Home
@@ -556,9 +556,9 @@ export default function ProductView({ product }: { product: Product }) {
               product.variants &&
               product.variants.length > 1 && (
                 <div className="mb-8 border-b border-stone-100 pb-8 space-y-4">
-                  <p className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3">
-                    Select Option
-                  </p>
+                    <p className="font-body mb-3 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
+                      Select Option
+                    </p>
                   <div className="flex flex-wrap gap-3">
                     {product.variants.map((v: ProductVariant) => {
                       const isSelected = selectedVariant?.id === v.id;
@@ -594,7 +594,7 @@ export default function ProductView({ product }: { product: Product }) {
               {selectedVariant &&
                 currentInventory > 0 &&
                 currentInventory <= 10 && (
-                  <div className="flex items-center gap-2 text-red-700 text-xs font-medium">
+                  <div className="font-body flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-red-700">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
@@ -726,7 +726,7 @@ export default function ProductView({ product }: { product: Product }) {
               </div>
 
               {/* Stock Status & Size Guide link */}
-              <div className="flex items-center justify-between text-xs text-stone-500 border-b border-stone-100 pb-6">
+              <div className="font-body flex items-center justify-between border-b border-stone-100 pb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
                 <span className="flex items-center gap-1">
                   {selectedVariant && currentInventory > 0 ? (
                     <>
@@ -774,16 +774,18 @@ export default function ProductView({ product }: { product: Product }) {
               </div>
 
               {/* Estimated Delivery */}
-              <div className="bg-stone-50 p-4 text-xs space-y-2">
-                <p className="font-bold text-stone-900">Estimated Delivery</p>
-                <p className="text-stone-600">
+              <div className="font-body space-y-2 bg-stone-50 p-4">
+                <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-stone-900">
+                  Estimated Delivery
+                </p>
+                <p className="text-[15px] font-[300] leading-[1.7] text-stone-600">
                   Order now to receive by{' '}
                   <span className="font-medium text-stone-900">
                     {deliveryDate}
                   </span>
                   .
                 </p>
-                <p className="text-stone-400 text-[10px] mt-1">
+                <p className="text-[12px] text-stone-400">
                   Free express shipping on orders over $250
                 </p>
               </div>
@@ -804,7 +806,7 @@ export default function ProductView({ product }: { product: Product }) {
                     className="accordion-trigger-prem"
                     aria-expanded={activeAccordion === accordion.key}
                   >
-                    <span className="font-bold uppercase tracking-widest text-xs text-stone-800">
+                    <span className="font-body text-[12px] font-medium uppercase tracking-[0.1em] text-stone-800">
                       {accordion.label}
                     </span>
                     <span className="text-stone-400 text-xl leading-none select-none">
@@ -813,9 +815,9 @@ export default function ProductView({ product }: { product: Product }) {
                   </button>
 
                   {activeAccordion === accordion.key && (
-                    <div className="pb-6 text-sm text-stone-600 leading-relaxed animate-fade-in">
+                    <div className="font-body animate-fade-in pb-6 text-[15px] font-[300] leading-[1.7] text-stone-600">
                       {accordion.key === 'description' && (
-                        <div className="prose prose-stone prose-sm font-light max-w-none">
+                        <div className="prose prose-stone prose-sm max-w-none font-[300]">
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {product.description || ''}
                           </ReactMarkdown>
@@ -826,7 +828,7 @@ export default function ProductView({ product }: { product: Product }) {
                         <div className="space-y-4">
                           {product.material && (
                             <div>
-                              <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
+                              <p className="font-body mb-1 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
                                 Material
                               </p>
                               <p className="text-stone-700">
@@ -836,7 +838,7 @@ export default function ProductView({ product }: { product: Product }) {
                           )}
                           {product.origin_country && (
                             <div>
-                              <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
+                              <p className="font-body mb-1 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
                                 Origin
                               </p>
                               <p className="text-stone-700">
@@ -846,10 +848,10 @@ export default function ProductView({ product }: { product: Product }) {
                           )}
                           {product.care_instructions && (
                             <div>
-                              <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
+                              <p className="font-body mb-1 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
                                 Care Instructions
                               </p>
-                              <div className="prose prose-stone prose-sm font-light max-w-none">
+                              <div className="prose prose-stone prose-sm max-w-none font-[300]">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                   {product.care_instructions}
                                 </ReactMarkdown>
@@ -857,7 +859,7 @@ export default function ProductView({ product }: { product: Product }) {
                             </div>
                           )}
                           {product.variants?.[0]?.sku && (
-                            <p className="text-xs text-stone-400 pt-2 border-t border-stone-100">
+                            <p className="font-body border-t border-stone-100 pt-2 text-[12px] text-stone-400">
                               SKU: {product.variants[0].sku}
                             </p>
                           )}
@@ -872,10 +874,10 @@ export default function ProductView({ product }: { product: Product }) {
                               className="text-stone-500 mt-0.5 shrink-0"
                             />
                             <div>
-                              <p className="font-semibold text-stone-800 text-[10px] uppercase tracking-wider mb-1">
+                              <p className="font-body mb-1 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-800">
                                 Free Shipping
                               </p>
-                              <p className="text-stone-500 text-xs">
+                              <p className="text-[15px] font-[300] leading-[1.7] text-stone-500">
                                 Complimentary worldwide shipping on orders over
                                 $250. Delivery in{' '}
                                 {deliveryDate || '5–14 business days'}.
@@ -888,10 +890,10 @@ export default function ProductView({ product }: { product: Product }) {
                               className="text-stone-500 mt-0.5 shrink-0"
                             />
                             <div>
-                              <p className="font-semibold text-stone-800 text-[10px] uppercase tracking-wider mb-1">
+                              <p className="font-body mb-1 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-800">
                                 30-Day Returns
                               </p>
-                              <p className="text-stone-500 text-xs">
+                              <p className="text-[15px] font-[300] leading-[1.7] text-stone-500">
                                 Returns and exchanges accepted within 30 days.
                                 Items must be unworn and in original packaging.
                               </p>
@@ -903,10 +905,10 @@ export default function ProductView({ product }: { product: Product }) {
                               className="text-stone-500 mt-0.5 shrink-0"
                             />
                             <div>
-                              <p className="font-semibold text-stone-800 text-[10px] uppercase tracking-wider mb-1">
+                              <p className="font-body mb-1 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-800">
                                 Authenticity Guarantee
                               </p>
-                              <p className="text-stone-500 text-xs">
+                              <p className="text-[15px] font-[300] leading-[1.7] text-stone-500">
                                 Every piece is handcrafted and verified by our
                                 quality team before dispatch.
                               </p>
@@ -918,7 +920,7 @@ export default function ProductView({ product }: { product: Product }) {
                       {accordion.key === 'sizeguide' && (
                         <div>
                           {typeof product.size_guide === 'string' ? (
-                            <div className="prose prose-stone prose-sm font-light max-w-none">
+                            <div className="prose prose-stone prose-sm max-w-none font-[300]">
                               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {product.size_guide}
                               </ReactMarkdown>
@@ -926,7 +928,7 @@ export default function ProductView({ product }: { product: Product }) {
                           ) : (
                             <button
                               onClick={() => setShowSizeGuide(true)}
-                              className="text-stone-900 underline text-sm font-medium hover:text-stone-600"
+                              className="font-body text-[15px] font-medium text-stone-900 underline hover:text-stone-600"
                             >
                               View Full Size Guide →
                             </button>
@@ -960,15 +962,17 @@ export default function ProductView({ product }: { product: Product }) {
         aria-hidden={!showStickyATC}
       >
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-stone-500 font-medium truncate">
+          <p className="font-body truncate text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
             {product.title}
           </p>
-          <p className="text-base font-bold text-stone-900">{formattedPrice}</p>
+          <p className="font-body text-[14px] font-medium text-stone-900">
+            {formattedPrice}
+          </p>
         </div>
         <button
           onClick={handleAddToCart}
           disabled={!selectedVariant || addedToCart || outOfStock}
-          className={`px-6 py-3 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors ${
+          className={`font-body whitespace-nowrap px-6 py-3 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors ${
             addedToCart
               ? 'bg-green-600 text-white'
               : outOfStock

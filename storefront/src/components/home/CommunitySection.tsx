@@ -23,14 +23,15 @@ export function CommunitySection({ communityItems }: CommunitySectionProps) {
           </h2>
         </div>
         <p
+          className="font-body hidden md:block"
           style={{
-            fontSize: '13px',
+            fontSize: '15px',
+            fontWeight: 300,
             color: 'var(--mid)',
             maxWidth: '280px',
             textAlign: 'right',
             lineHeight: 1.7,
           }}
-          className="hidden md:block"
         >
           Real people. Real style. Tag us to be featured.
         </p>

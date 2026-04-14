@@ -218,7 +218,7 @@ export default function CatalogClient({
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="text-sm text-stone-500">
+              <div className="font-body text-[15px] font-[300] text-stone-500">
                 {total > 0
                   ? `${startItem}-${endItem} of ${total} Items`
                   : `${total} Items`}
@@ -230,7 +230,7 @@ export default function CatalogClient({
                 <select
                   value={currentSort}
                   onChange={(e) => handleSortChange(e.target.value)}
-                  className="text-sm text-stone-600 bg-transparent border-none cursor-pointer focus:outline-none hover:text-black"
+                  className="font-body cursor-pointer border-none bg-transparent text-[15px] font-[300] text-stone-600 focus:outline-none hover:text-black"
                 >
                   {SORT_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -315,7 +315,7 @@ export default function CatalogClient({
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-stone-100">
-                <h2 className="font-serif text-lg font-bold text-stone-900">
+                <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-stone-900">
                   Filters
                 </h2>
                 <button

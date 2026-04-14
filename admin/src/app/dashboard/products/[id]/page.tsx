@@ -1,6 +1,7 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import {
@@ -80,11 +81,7 @@ export default function EditProductPage() {
     compare_at_price: '',
   });
 
-  useEffect(() => {
-    init();
-  }, [router, id]);
-
-  const init = async () => {
+  const init = useCallback(async () => {
     try {
       const [regionData, productResult, catsData, tagsData] = await Promise.all(
         [
@@ -186,7 +183,11 @@ export default function EditProductPage() {
     } finally {
       setFetching(false);
     }
-  };
+  }, [id, showNotification]);
+
+  useEffect(() => {
+    void init();
+  }, [init]);
 
   const toSlug = (text: string) =>
     text
@@ -413,33 +414,38 @@ export default function EditProductPage() {
   if (fetching) return <div className="p-10 text-center">Loading...</div>;
 
   return (
-    <div>
+    <div className="space-y-6 px-4 pb-8 md:space-y-8 md:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/products"
-            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--kv-border)] bg-white text-[var(--kv-muted)] transition hover:text-[var(--kv-text)]"
           >
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Edit Product</h1>
-            <p className="text-gray-500 text-sm">{formData.title}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--kv-accent-deep)]">
+              Listing editor
+            </p>
+            <h1 className="mt-2 font-[var(--font-display)] text-[2.35rem] leading-none text-[var(--kv-text)]">
+              Edit Product
+            </h1>
+            <p className="mt-2 text-sm text-[var(--kv-muted)]">{formData.title}</p>
           </div>
         </div>
         <div className="flex gap-3">
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            className="rounded-2xl border border-[var(--kv-border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--kv-text)]"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 rounded-2xl bg-[var(--kv-text)] px-6 py-3 text-sm font-semibold text-white disabled:opacity-50"
           >
             <Save size={18} />
             {loading ? 'Saving...' : 'Save Changes'}

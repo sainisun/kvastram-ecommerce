@@ -24,14 +24,16 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <span className="text-stone-400 text-xs font-bold uppercase tracking-[0.2em] block mb-1">
+            <span className="font-body mb-1 block text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Your Journey
             </span>
-            <h2 className="font-serif text-2xl text-stone-900">Recently Viewed</h2>
+            <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-stone-900 md:text-[36px]">
+              Recently Viewed
+            </h2>
           </div>
           <Link
             href="/products"
-            className="text-xs font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-1"
+            className="font-body flex items-center gap-1 text-[12px] font-medium uppercase tracking-[0.1em] text-stone-500 transition-colors hover:text-stone-900"
           >
             View All →
           </Link>
@@ -53,13 +55,20 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-stone-200">
-                    <span className="text-stone-400 text-xs font-serif italic">No image</span>
+                    <span className="font-heading text-xs italic text-stone-400">
+                      No image
+                    </span>
                   </div>
                 )}
               </div>
               {/* Info */}
-              <p className="font-serif text-sm text-stone-900 leading-snug group-hover:text-stone-600 transition-colors truncate mb-1" title={item.title}>{item.title}</p>
-              <p className="text-xs text-stone-500 font-medium">
+              <p
+                className="font-body mb-1 truncate text-[14px] font-medium leading-[1.45] tracking-[0.03em] text-stone-900 transition-colors group-hover:text-stone-600"
+                title={item.title}
+              >
+                {item.title}
+              </p>
+              <p className="font-body text-[14px] font-normal text-stone-500">
                 {new Intl.NumberFormat(undefined, {
                   style: 'currency',
                   currency: item.currency || 'USD',

@@ -147,15 +147,15 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1 space-y-5">
             <Link href="/" className="block">
-              <span className="font-serif text-2xl tracking-[0.2em] text-white font-light">
+              <span className="font-heading text-2xl font-semibold uppercase tracking-[0.2em] text-white">
                 KVASTRAM
               </span>
             </Link>
-            <p className="text-stone-400 text-sm leading-relaxed font-light">
+            <p className="font-body text-[15px] font-[300] leading-[1.7] text-stone-400">
               Handcrafted luxury fashion connecting global citizens with the
               finest artisanal craftsmanship from India and beyond.
             </p>
-            <div className="space-y-1 text-xs text-stone-500 font-light">
+            <div className="font-body space-y-1 text-[12px] font-[300] text-stone-500">
               <p>support@kvastram.com</p>
               <p>Mon–Fri, 9am–6pm IST</p>
             </div>
@@ -178,7 +178,7 @@ export function Footer() {
 
           {/* Shop */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-5">
+            <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Shop
             </h4>
             <ul className="space-y-2.5">
@@ -186,7 +186,7 @@ export function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="text-sm text-stone-400 hover:text-white transition-colors font-light"
+                    className="font-body text-[15px] font-[300] text-stone-400 transition-colors hover:text-white"
                   >
                     {label}
                   </Link>
@@ -197,7 +197,7 @@ export function Footer() {
 
           {/* Support */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-5">
+            <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Support
             </h4>
             <ul className="space-y-2.5">
@@ -205,7 +205,7 @@ export function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="text-sm text-stone-400 hover:text-white transition-colors font-light"
+                    className="font-body text-[15px] font-[300] text-stone-400 transition-colors hover:text-white"
                   >
                     {label}
                   </Link>
@@ -216,7 +216,7 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-5">
+            <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Company
             </h4>
             <ul className="space-y-2.5">
@@ -224,10 +224,10 @@ export function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className={`text-sm transition-colors font-light ${
+                    className={`font-body text-[15px] transition-colors ${
                       highlight
-                        ? 'text-amber-400 hover:text-amber-300 font-medium'
-                        : 'text-stone-400 hover:text-white'
+                        ? 'font-medium text-amber-400 hover:text-amber-300'
+                        : 'font-[300] text-stone-400 hover:text-white'
                     }`}
                   >
                     {label}
@@ -239,14 +239,14 @@ export function Footer() {
 
           {/* Newsletter mini */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-5">
+            <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Stay Updated
             </h4>
-            <p className="text-stone-500 text-sm font-light mb-4 leading-relaxed">
+            <p className="font-body mb-4 text-[15px] font-[300] leading-[1.7] text-stone-500">
               Get 10% off your first order + early access to new collections.
             </p>
             <NewsletterForm minimal />
-            <div className="mt-4 flex items-center gap-1.5 text-[11px] text-stone-600">
+            <div className="font-body mt-4 flex items-center gap-1.5 text-[12px] text-stone-600">
               <span>🔒</span>
               <span>No spam. Unsubscribe anytime.</span>
             </div>
@@ -258,24 +258,24 @@ export function Footer() {
       <div className="border-t border-stone-800">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
           <PaymentIcons className="mb-4" />
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-600">
+          <div className="font-body flex flex-col items-center justify-between gap-3 text-[12px] text-stone-600 sm:flex-row">
             <p>© {new Date().getFullYear()} Kvastram. All rights reserved.</p>
             <div className="flex gap-4">
               <Link
                 href="/pages/privacy-policy"
-                className="hover:text-stone-400 transition-colors"
+                className="font-body hover:text-stone-400 transition-colors"
               >
                 Privacy
               </Link>
               <Link
                 href="/pages/terms-of-service"
-                className="hover:text-stone-400 transition-colors"
+                className="font-body hover:text-stone-400 transition-colors"
               >
                 Terms
               </Link>
               <Link
                 href="/pages/cookie-policy"
-                className="hover:text-stone-400 transition-colors"
+                className="font-body hover:text-stone-400 transition-colors"
               >
                 Cookies
               </Link>

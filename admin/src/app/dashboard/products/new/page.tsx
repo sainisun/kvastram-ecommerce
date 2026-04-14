@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -68,7 +69,7 @@ export default function NewProductPage() {
     try {
       const data = await api.getRegions();
       setRegions(data.regions || []);
-    } catch (error) {
+    } catch {
       console.error('Failed to load regions');
       // No rethrow needed since the component handles empty state gracefully
     }
@@ -186,20 +187,25 @@ export default function NewProductPage() {
   };
 
   return (
-    <div>
+    <div className="space-y-6 px-4 pb-8 md:space-y-8 md:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/products"
-            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--kv-border)] bg-white text-[var(--kv-muted)] transition hover:text-[var(--kv-text)]"
           >
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Create Product</h1>
-            <p className="text-gray-500 text-sm">
-              Add a new item to your catalog
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--kv-accent-deep)]">
+              Listing editor
+            </p>
+            <h1 className="mt-2 font-[var(--font-display)] text-[2.35rem] leading-none text-[var(--kv-text)]">
+              Create Product
+            </h1>
+            <p className="mt-2 text-sm text-[var(--kv-muted)]">
+              Build a new storefront listing with pricing, media, shipping, and merchandising details.
             </p>
           </div>
         </div>
@@ -207,14 +213,14 @@ export default function NewProductPage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            className="rounded-2xl border border-[var(--kv-border)] bg-white px-4 py-3 text-sm font-semibold text-[var(--kv-text)]"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 rounded-2xl bg-[var(--kv-text)] px-6 py-3 text-sm font-semibold text-white disabled:opacity-50"
           >
             <Save size={18} />
             {loading ? 'Saving...' : 'Save Product'}

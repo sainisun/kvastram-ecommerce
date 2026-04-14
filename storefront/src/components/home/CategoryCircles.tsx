@@ -34,7 +34,7 @@ export function CategoryCircles() {
             <div className="w-[72px] h-[72px] rounded-full bg-gray-200 overflow-hidden flex items-center justify-center shrink-0">
                {/* Placeholder background, ready for next/image */}
             </div>
-            <span className="text-[11px] text-gray-700 text-center tracking-wide block w-full whitespace-normal leading-tight">
+            <span className="font-body block w-full whitespace-normal text-center text-[11px] font-medium uppercase leading-tight tracking-[0.05em] text-gray-700">
               {cat.name}
             </span>
           </Link>

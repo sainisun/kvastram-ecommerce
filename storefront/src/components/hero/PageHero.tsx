@@ -40,15 +40,15 @@ export default function PageHero({
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center space-y-4">
         {subtitle && (
-          <span className="text-white/80 text-xs font-bold tracking-[0.25em] uppercase block">
+          <span className="font-body block text-[13px] font-medium uppercase tracking-[0.08em] text-white/80">
             {subtitle}
           </span>
         )}
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-white leading-[1.1]">
+        <h1 className="font-heading text-4xl font-semibold uppercase tracking-[0.02em] text-white leading-[1.1] md:text-6xl lg:text-7xl">
           {title}
         </h1>
         {description && (
-          <p className="max-w-xl mx-auto text-white/80 font-light text-lg leading-relaxed">
+          <p className="font-body mx-auto max-w-xl text-[15px] font-[300] leading-[1.7] text-white/80 md:text-lg">
             {description}
           </p>
         )}

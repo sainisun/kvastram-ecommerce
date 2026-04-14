@@ -1,3 +1,4 @@
+@config '../../tailwind.config.ts';
 @import 'tailwindcss';
 
 /* ═══════════════════════════════════════════════════
@@ -12,8 +13,8 @@
   --off-white: #f0ede8;
   --mid: #888888;
   --border: rgba(8, 8, 8, 0.12);
-  --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Archivo', 'Inter', sans-serif;
+  --font-display: var(--font-cormorant, 'Cormorant Garamond', Georgia, serif);
+  --font-ui: var(--font-jost, 'Jost', 'Inter', sans-serif);
   --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   /* ─── Tailwind compat aliases ─── */
@@ -24,8 +25,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-jost);
   --font-serif: var(--font-cormorant);
+  --font-heading: var(--font-cormorant);
+  --font-body: var(--font-jost);
 }
 
 /* ─── BASE ─── */
@@ -41,9 +44,11 @@ html {
 
 body {
   background: var(--white) !important;
-  color: var(--black) !important;
-  font-family: var(--font-archivo, var(--font-body)) !important;
-  font-size: 14px;
+  color: #1a1a1a !important;
+  font-family: var(--font-ui) !important;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
   letter-spacing: 0.01em;
   overflow-x: hidden;
 }
@@ -221,8 +226,10 @@ a {
   color: var(--white);
   border: none;
   padding: 16px 36px;
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -242,8 +249,10 @@ a {
   border: 1px solid rgba(248, 246, 243, 0.3);
   color: var(--white);
   padding: 16px 32px;
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -260,8 +269,10 @@ a {
 }
 
 .link-all-prem {
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--black);
@@ -308,13 +319,19 @@ a {
 }
 .section-title-prem {
   font-family: var(--font-display);
-  font-size: clamp(36px, 3.5vw, 56px);
-  font-weight: 300;
-  line-height: 1;
-  letter-spacing: -0.01em;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 .section-title-prem em {
   font-style: italic;
+}
+@media (min-width: 768px) {
+  .section-title-prem {
+    font-size: 36px;
+  }
 }
 
 /* ═══ STATS BAR ═══ */
@@ -506,7 +523,9 @@ a {
   left: 16px;
   background: var(--black);
   color: var(--white);
+  font-family: var(--font-ui);
   font-size: 9px;
+  font-weight: 500;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 5px 10px;
@@ -527,13 +546,14 @@ a {
   color: var(--white);
   border: none;
   padding: 14px;
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
   transform: translateY(100%);
   transition: transform 0.35s var(--transition);
-  font-family: var(--font-body);
   z-index: 3;
 }
 .prod-card-prem:hover .prod-quick-add-prem {
@@ -567,23 +587,28 @@ a {
   border-top: 1px solid var(--border);
 }
 .prod-collection-prem {
-  font-size: 9px;
-  letter-spacing: 0.2em;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mid);
   margin-bottom: 6px;
 }
 .prod-name-prem {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 300;
-  letter-spacing: -0.01em;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 1.45;
   margin-bottom: 8px;
   color: var(--black);
 }
 .prod-price-prem {
-  font-size: 13px;
+  font-family: var(--font-ui);
+  font-size: 14px;
   font-weight: 400;
+  letter-spacing: 0.01em;
   color: var(--black);
 }
 
@@ -640,8 +665,10 @@ a {
   font-style: italic;
 }
 .editorial-body-prem {
-  font-size: 14px;
-  line-height: 1.9;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.7;
   color: rgba(248, 246, 243, 0.6);
   margin-bottom: 48px;
 }
@@ -787,7 +814,9 @@ a {
 }
 .newsletter-sub-prem {
   color: rgba(248, 246, 243, 0.5);
-  font-size: 13px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 300;
   line-height: 1.7;
   margin: 0 auto 56px;
   max-width: 480px;
@@ -841,8 +870,10 @@ a {
   gap: 32px;
 }
 .pdp-brand-prem {
-  font-size: 10px;
-  letter-spacing: 0.3em;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mid);
 }
@@ -864,8 +895,11 @@ a {
   height: 48px;
   border: 1px solid var(--border);
   background: none;
+  font-family: var(--font-ui);
   font-size: 12px;
+  font-weight: 500;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
   transition:
     background 0.2s,
@@ -886,14 +920,15 @@ a {
   color: var(--white);
   border: none;
   height: 56px;
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
-  font-family: var(--font-body);
 }
 .add-btn-prem:hover {
   transform: translateY(-2px);
@@ -917,8 +952,10 @@ a {
   text-align: center;
 }
 .trust-text-prem {
-  font-size: 9px;
-  letter-spacing: 0.15em;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mid);
   line-height: 1.4;
@@ -940,12 +977,13 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
   transition: opacity 0.25s;
-  font-family: var(--font-body);
   color: var(--black);
 }
 .accordion-trigger-prem:hover {
@@ -962,8 +1000,10 @@ a {
   overflow-y: auto;
 }
 .filters-header-prem {
-  font-size: 10px;
-  letter-spacing: 0.25em;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 32px;
   padding-bottom: 16px;
@@ -974,8 +1014,9 @@ a {
   margin-bottom: 32px;
 }
 .filter-group-label-prem {
-  font-size: 9px;
-  letter-spacing: 0.2em;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mid);
   margin-bottom: 14px;
@@ -986,7 +1027,10 @@ a {
   align-items: center;
   justify-content: space-between;
   padding: 6px 0;
-  font-size: 13px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.7;
   cursor: pointer;
   transition: opacity 0.2s;
   border: none;
@@ -994,7 +1038,6 @@ a {
   width: 100%;
   text-align: left;
   color: var(--black);
-  font-family: var(--font-body);
 }
 .filter-option-prem:hover {
   opacity: 0.5;
@@ -1104,6 +1147,11 @@ a {
 .announcement-bar {
   position: relative;
   background: linear-gradient(90deg, #0f0d0b, #1a1714, #0f0d0b);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 .ticker-shimmer {
   background: linear-gradient(
@@ -1206,6 +1254,11 @@ a {
 .nav-link-premium {
   position: relative;
   padding: 6px 10px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   transition: color 0.3s ease;
 }
 .nav-link-premium::after {
@@ -1282,8 +1335,10 @@ a {
   bottom: -22px;
   left: 50%;
   transform: translateX(-50%) translateY(4px);
-  font-size: 8px;
-  letter-spacing: 0.18em;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
@@ -1292,7 +1347,6 @@ a {
     transform 0.25s ease;
   pointer-events: none;
   color: var(--mid);
-  font-family: var(--font-body);
 }
 .header-icon-wrap:hover::after {
   opacity: 0.7;

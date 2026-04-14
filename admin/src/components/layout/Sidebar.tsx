@@ -2,167 +2,149 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LogOut } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
 import {
-  LayoutDashboard,
-  ShoppingBag,
-  Users,
-  Settings,
-  Globe,
-  Box,
-  Palette,
-  BarChart3,
-  Building2,
-  Layers,
-  Folder,
-  Tag,
-  Star,
-  FileText,
-  Bell,
-  RotateCcw,
-  Menu,
-  ShoppingCart,
-  Image,
-  Clapperboard,
-  LayoutGrid,
-} from 'lucide-react';
+  isNavItemActive,
+  moreNavItems,
+  primaryNavItems,
+} from '@/components/layout/navigation';
 
-// Sidebar structure per PRD — reorganized into logical sections
-const sections = [
-  {
-    title: 'MAIN',
-    items: [{ name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' }],
-  },
-  {
-    title: 'CATALOG',
-    items: [
-      { name: 'Products', icon: ShoppingBag, path: '/dashboard/products' },
-      { name: 'Collections', icon: Layers, path: '/dashboard/collections' },
-      { name: 'Categories', icon: Folder, path: '/dashboard/categories' },
-      { name: 'Tags', icon: Tag, path: '/dashboard/tags' },
-    ],
-  },
-  {
-    title: 'STOREFRONT',
-    items: [
-      {
-        name: 'Header Navigation',
-        icon: Menu,
-        path: '/dashboard/header-navigation',
-      },
-      {
-        name: 'Hero Banners',
-        icon: Image,
-        path: '/dashboard/content/hero-banners',
-      },
-      {
-        name: 'Trending Reels',
-        icon: Clapperboard,
-        path: '/dashboard/content/trending-reels',
-      },
-      {
-        name: 'Homepage Categories',
-        icon: LayoutGrid,
-        path: '/dashboard/content/homepage-categories',
-      },
-    ],
-  },
-  {
-    title: 'OPERATIONS',
-    items: [
-      { name: 'Orders', icon: Box, path: '/dashboard/orders' },
-      { name: 'Returns', icon: RotateCcw, path: '/dashboard/returns' },
-      { name: 'Customers', icon: Users, path: '/dashboard/customers' },
-      { name: 'Wholesale', icon: Building2, path: '/dashboard/wholesale' },
-      { name: 'Regions & Currencies', icon: Globe, path: '/dashboard/regions' },
-    ],
-  },
-  {
-    title: 'GROWTH',
-    items: [
-      { name: 'Analytics', icon: BarChart3, path: '/dashboard/analytics' },
-      { name: 'Marketing', icon: Palette, path: '/dashboard/marketing' },
-      {
-        name: 'Abandoned Carts',
-        icon: ShoppingCart,
-        path: '/dashboard/abandoned-carts',
-      },
-      { name: 'Reviews', icon: Star, path: '/dashboard/reviews' },
-    ],
-  },
-  {
-    title: 'CONTENT',
-    items: [{ name: 'Content', icon: FileText, path: '/dashboard/content' }],
-  },
-  {
-    title: 'SETTINGS',
-    items: [{ name: 'Settings', icon: Settings, path: '/dashboard/settings' }],
-  },
-];
-
-export default function Sidebar() {
+export default function Sidebar({
+  pendingOrders,
+}: {
+  pendingOrders: number;
+}) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#1e1e2d] text-white transition-all z-50">
-      {/* Logo Area */}
-      <div className="h-16 flex items-center px-6 border-b border-gray-700 bg-[#1b1b28]">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-lg">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[240px] border-r border-[var(--kv-border)] bg-[color:var(--kv-card)]/96 p-4 backdrop-blur md:flex md:flex-col">
+      <div className="rounded-[28px] border border-[var(--kv-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(249,247,244,0.92))] p-5 shadow-[0_20px_40px_rgba(26,26,26,0.04)]">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--kv-text)] text-lg font-semibold text-white">
             K
           </div>
-          <span className="font-bold text-xl tracking-wide">Kvastram</span>
+          <div>
+            <p className="font-[var(--font-display)] text-[1.55rem] leading-none tracking-[0.14em] text-[var(--kv-text)]">
+              KVASTRAM
+            </p>
+            <p className="mt-1 text-[11px] uppercase tracking-[0.24em] text-[var(--kv-muted)]">
+              Seller Studio
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-3">
+          <p className="text-xs uppercase tracking-[0.26em] text-[var(--kv-muted)]">
+            Admin
+          </p>
+          <p className="mt-2 text-base font-semibold text-[var(--kv-text)]">
+            {user?.first_name || 'Kvastram Admin'}
+          </p>
+          <p className="text-sm text-[var(--kv-muted)] capitalize">
+            {user?.role || 'super admin'}
+          </p>
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-64px)]">
-        {sections.map((section) => (
-          <div key={section.title}>
-            <div className="mb-2 mt-5 first:mt-0 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              {section.title}
-            </div>
+      <div className="mt-4 flex min-h-0 flex-1 flex-col">
+        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pr-1">
+          <section>
+            <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--kv-muted)]">
+              Main
+            </p>
+            <nav className="mt-3 space-y-1.5">
+              {primaryNavItems.map((item) => {
+                const active = isNavItemActive(pathname, item.href);
+                const Icon = item.icon;
 
-            {section.items.map((item) => {
-              const isActive =
-                pathname === item.path || pathname.startsWith(item.path + '/');
-              const Icon = item.icon;
-
-              return (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-400 hover:bg-[#2b2b40] hover:text-white'
-                  }`}
-                >
-                  <Icon size={18} />
-                  {item.name}
-                </Link>
-              );
-            })}
-
-            {/* Marketing sub-items (show when in marketing section) */}
-            {section.title === 'GROWTH' &&
-              pathname.startsWith('/dashboard/marketing') && (
-                <div className="ml-4 mt-1 space-y-1">
+                return (
                   <Link
-                    href="/dashboard/marketing/back-in-stock"
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
-                      pathname === '/dashboard/marketing/back-in-stock'
-                        ? 'bg-amber-600/20 text-amber-400'
-                        : 'text-gray-500 hover:bg-[#2b2b40] hover:text-gray-300'
+                    key={item.href}
+                    href={item.href}
+                    className={`group flex items-center gap-3 rounded-2xl border-l-4 px-3 py-3 transition ${
+                      active
+                        ? 'border-[var(--kv-accent)] bg-[var(--kv-accent-soft)] text-[var(--kv-text)]'
+                        : 'border-transparent text-[var(--kv-muted)] hover:bg-[var(--kv-soft)] hover:text-[var(--kv-text)]'
                     }`}
                   >
-                    <Bell size={14} />
-                    Back-in-Stock
+                    <span
+                      className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl ${
+                        active
+                          ? 'bg-white text-[var(--kv-accent-deep)]'
+                          : 'bg-[var(--kv-soft)] text-[var(--kv-muted)] group-hover:text-[var(--kv-text)]'
+                      }`}
+                    >
+                      <Icon size={18} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">
+                        {item.label}
+                      </span>
+                      <span className="block truncate text-xs text-[var(--kv-muted)]">
+                        {item.description}
+                      </span>
+                    </span>
+                    {item.badge === 'pendingOrders' && pendingOrders > 0 ? (
+                      <span className="rounded-full bg-[var(--kv-danger)] px-2 py-0.5 text-xs font-semibold text-white">
+                        {pendingOrders}
+                      </span>
+                    ) : null}
                   </Link>
-                </div>
-              )}
-          </div>
-        ))}
-      </nav>
+                );
+              })}
+            </nav>
+          </section>
+
+          <section>
+            <p className="px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--kv-muted)]">
+              More Tools
+            </p>
+            <nav className="mt-3 space-y-1.5">
+              {moreNavItems.map((item) => {
+                const active = isNavItemActive(pathname, item.href);
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`group flex items-center gap-3 rounded-2xl border-l-4 px-3 py-3 transition ${
+                      active
+                        ? 'border-[var(--kv-accent)] bg-[var(--kv-accent-soft)] text-[var(--kv-text)]'
+                        : 'border-transparent text-[var(--kv-muted)] hover:bg-[var(--kv-soft)] hover:text-[var(--kv-text)]'
+                    }`}
+                  >
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--kv-soft)]">
+                      <Icon size={18} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">
+                        {item.label}
+                      </span>
+                      <span className="block truncate text-xs text-[var(--kv-muted)]">
+                        {item.description}
+                      </span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </section>
+        </div>
+
+        <button
+          type="button"
+          onClick={logout}
+          className="mt-4 inline-flex items-center gap-3 rounded-2xl border border-[var(--kv-danger)]/20 bg-[var(--kv-danger)]/6 px-4 py-3 text-sm font-semibold text-[var(--kv-danger)] transition hover:bg-[var(--kv-danger)]/10"
+        >
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white">
+            <LogOut size={18} />
+          </span>
+          Logout
+        </button>
+      </div>
     </aside>
   );
 }

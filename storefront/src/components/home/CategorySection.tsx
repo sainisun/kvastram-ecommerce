@@ -29,10 +29,10 @@ function CategoryCard({ category }: { category: HomepageCategory }) {
       />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/45 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-5 text-white md:p-5">
-        <p className="text-[14px] font-semibold uppercase tracking-[0.18em] sm:text-[16px] md:text-[18px]">
+        <p className="font-heading text-[24px] font-semibold uppercase tracking-[0.02em] sm:text-[26px] md:text-[28px]">
           {category.name}
         </p>
-        <p className="mt-1 text-[10px] uppercase tracking-[0.24em] text-white/90 md:text-[11px]">
+        <p className="font-body mt-1 text-[12px] font-medium uppercase tracking-[0.1em] text-white/90">
           EXPLORE COLLECTION
         </p>
       </div>
@@ -163,7 +163,7 @@ export function CategorySection() {
   return (
     <section className="mx-auto w-full max-w-[1440px] py-10 sm:px-6 md:px-8 md:py-14">
       <div className="mb-6 px-4 text-center md:mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
+        <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-gray-900 md:text-[36px]">
           Categories
         </h2>
       </div>

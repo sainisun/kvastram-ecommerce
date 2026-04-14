@@ -342,7 +342,9 @@ function ProductGrid({
               {priceInfo.isWholesale ? (
                 <p
                   style={{
-                    fontSize: '11px',
+                    fontFamily: 'var(--font-ui)',
+                    fontSize: '12px',
+                    fontWeight: 500,
                     color: '#2a7a2a',
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
@@ -365,7 +367,8 @@ function ProductGrid({
                           style={{
                             color: 'var(--mid)',
                             textDecoration: 'line-through',
-                            fontSize: '12px',
+                            fontFamily: 'var(--font-ui)',
+                            fontSize: '14px',
                           }}
                         >
                           {new Intl.NumberFormat(undefined, {

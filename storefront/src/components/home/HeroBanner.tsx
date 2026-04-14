@@ -125,19 +125,19 @@ export function HeroBanner() {
                 <div className="absolute inset-x-0 bottom-0 mx-auto flex w-full max-w-7xl justify-start px-4 pb-6 pt-24 sm:px-6 md:px-8 md:pb-10">
                   <div className="max-w-xl text-white">
                     {banner.title ? (
-                      <h2 className="text-2xl font-semibold leading-tight sm:text-3xl md:text-5xl">
+                      <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] leading-[1.1] sm:text-[34px] md:text-[52px]">
                         {banner.title}
                       </h2>
                     ) : null}
                     {banner.subtitle ? (
-                      <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/85 sm:text-base md:text-lg">
+                      <p className="font-body mt-3 max-w-lg text-[15px] font-[300] leading-[1.7] text-white/85 sm:text-base md:text-lg">
                         {banner.subtitle}
                       </p>
                     ) : null}
                     {banner.button_text && banner.button_link ? (
                       <Link
                         href={banner.button_link}
-                        className="mt-5 inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-100 md:px-6 md:py-3"
+                        className="font-body mt-5 inline-flex items-center rounded-full bg-white px-5 py-2.5 text-[12px] font-medium uppercase tracking-[0.1em] text-gray-900 transition hover:bg-gray-100 md:px-6 md:py-3"
                       >
                         {banner.button_text}
                       </Link>

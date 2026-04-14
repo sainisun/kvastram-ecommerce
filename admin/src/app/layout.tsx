@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AuthProvider } from '@/context/auth-context';
 import { NotificationProvider } from '@/context/notification-context';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import AdminShell from '@/components/layout/AdminShell';
 import './globals.css';
 
 // Fonts disabled due to Turbopack compatibility issue
@@ -42,7 +43,9 @@ export default function RootLayout({
       >
         <ErrorBoundary>
           <AuthProvider>
-            <NotificationProvider>{children}</NotificationProvider>
+            <NotificationProvider>
+              <AdminShell>{children}</AdminShell>
+            </NotificationProvider>
           </AuthProvider>
         </ErrorBoundary>
         <script

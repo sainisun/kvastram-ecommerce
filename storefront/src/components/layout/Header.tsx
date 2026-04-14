@@ -212,7 +212,7 @@ export function Header() {
       >
         {/* Announcement Strip — Premium with shimmer & dismiss */}
         {announcementEnabled && announcementText && !announcementDismissed && (
-          <div className="announcement-bar text-white text-[10px] uppercase tracking-widest overflow-hidden h-8 flex items-center">
+          <div className="announcement-bar flex h-8 items-center overflow-hidden text-white">
             <div className="animate-marquee">
               {Array.from({ length: 4 }).map((_, i) => (
                 <span key={`ticker-${i}`} className="px-8 whitespace-nowrap">
@@ -252,7 +252,7 @@ export function Header() {
             {/* Center: Logo */}
             <Link
               href="/"
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-serif text-xl tracking-[0.2em] font-light text-stone-900"
+              className="font-heading absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-semibold uppercase tracking-[0.2em] text-stone-900"
             >
               KVASTRAM
             </Link>
@@ -292,7 +292,7 @@ export function Header() {
             </Link>
 
             {/* Nav - Desktop */}
-            <nav className="flex items-center gap-6 text-sm font-medium text-stone-600">
+            <nav className="font-body flex items-center gap-6 text-stone-600">
               {navLinks.map((link, index) => {
                 const isActive =
                   pathname === link.url ||
@@ -334,7 +334,7 @@ export function Header() {
                           <div className="grid grid-cols-12 min-h-[340px]">
                             {/* Left: Categories with Subcategories */}
                             <div className="col-span-5 py-6 px-6 border-r border-stone-100">
-                              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-4">
+                              <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-stone-400">
                                 Categories
                               </p>
                               <div className="grid grid-cols-2 gap-x-6 gap-y-1">
@@ -346,7 +346,7 @@ export function Header() {
                                   >
                                     <Link
                                       href={`/products?category_id=${cat.id}`}
-                                      className="text-sm font-semibold text-stone-800 hover:text-black transition-colors py-1.5 block border-l-2 border-transparent hover:border-amber-500 pl-2 -ml-2"
+                                      className="font-body -ml-2 block border-l-2 border-transparent py-1.5 pl-2 text-[15px] font-medium text-stone-800 transition-colors hover:border-amber-500 hover:text-black"
                                       onClick={closeShopMenu}
                                       onMouseEnter={() =>
                                         setHoveredCategory(cat.id)
@@ -369,7 +369,7 @@ export function Header() {
                                               <li key={child.id}>
                                                 <Link
                                                   href={`/products?category_id=${child.id}`}
-                                                  className="text-xs text-stone-500 hover:text-black transition-colors py-0.5 block pl-2"
+                                                  className="font-body block py-0.5 pl-2 text-[15px] font-[300] text-stone-500 transition-colors hover:text-black"
                                                   onClick={closeShopMenu}
                                                 >
                                                   {child.name}
@@ -384,7 +384,7 @@ export function Header() {
                               <div className="h-px bg-stone-100 my-3" />
                               <Link
                                 href="/products"
-                                className="text-xs font-bold uppercase tracking-[0.15em] text-stone-900 hover:text-amber-700 transition-colors flex items-center gap-1.5"
+                                className="font-body flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.1em] text-stone-900 transition-colors hover:text-amber-700"
                                 onClick={closeShopMenu}
                               >
                                 Shop All Products →
@@ -426,10 +426,10 @@ export function Header() {
                                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                                     </div>
                                     <div className="absolute bottom-0 left-0 right-0 p-5">
-                                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 block mb-1">
+                                      <span className="font-body mb-1 block text-[12px] font-medium uppercase tracking-[0.08em] text-white/60">
                                         Featured
                                       </span>
-                                      <span className="text-lg font-serif text-white font-light">
+                                      <span className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-white">
                                         {(featured as any).emoji && (
                                           <span className="mr-2">
                                             {(featured as any).emoji}
@@ -445,7 +445,7 @@ export function Header() {
 
                             {/* Right: Quick Links + Promo */}
                             <div className="col-span-3 py-6 px-5 bg-stone-50/70">
-                              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-4">
+                              <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-stone-400">
                                 Shop By
                               </p>
                               <div className="space-y-2.5">
@@ -453,7 +453,7 @@ export function Header() {
                                   <Link
                                     key={qLink.label}
                                     href={qLink.url}
-                                    className={`block text-sm transition-colors ${qLink.highlight ? 'text-amber-600 font-semibold hover:text-amber-700' : 'text-stone-700 hover:text-black font-medium'}`}
+                                    className={`font-body block text-[15px] transition-colors ${qLink.highlight ? 'font-medium text-amber-600 hover:text-amber-700' : 'font-[300] text-stone-700 hover:text-black'}`}
                                     onClick={closeShopMenu}
                                   >
                                     {qLink.label}
@@ -463,14 +463,14 @@ export function Header() {
                               <div className="h-px bg-stone-200/60 my-4" />
                               <Link
                                 href="/collections"
-                                className="block text-sm font-medium text-stone-700 hover:text-black transition-colors"
+                                className="font-body block text-[15px] font-[300] text-stone-700 transition-colors hover:text-black"
                                 onClick={closeShopMenu}
                               >
                                 All Collections
                               </Link>
                               <Link
                                 href="/products?sort=newest"
-                                className="block text-sm font-medium text-stone-700 hover:text-black transition-colors mt-2.5"
+                                className="font-body mt-2.5 block text-[15px] font-[300] text-stone-700 transition-colors hover:text-black"
                                 onClick={closeShopMenu}
                               >
                                 New Arrivals ✦
@@ -537,7 +537,7 @@ export function Header() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setShowRegionMenu(!showRegionMenu)}
-                  className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-black transition-colors px-3 py-1.5 rounded-full hover:bg-stone-100 focus:outline-none"
+                  className="font-body flex items-center gap-2 rounded-full px-3 py-1.5 text-[13px] font-medium uppercase tracking-[0.08em] text-stone-600 transition-colors hover:bg-stone-100 hover:text-black focus:outline-none"
                   aria-label="Select region and currency"
                   aria-expanded={showRegionMenu}
                   aria-haspopup="true"
@@ -552,7 +552,7 @@ export function Header() {
 
                 {showRegionMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-stone-100 py-1 overflow-hidden">
-                    <div className="px-4 py-2 bg-stone-50 border-b border-stone-100 text-xs font-semibold text-stone-500 uppercase">
+                    <div className="font-body border-b border-stone-100 bg-stone-50 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
                       Select Region
                     </div>
                     {regions.map((region) => (
@@ -562,9 +562,9 @@ export function Header() {
                           setRegion(region);
                           setShowRegionMenu(false);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-stone-50 flex items-center justify-between group focus:outline-none ${
+                        className={`font-body group flex w-full items-center justify-between px-4 py-2.5 text-left text-[15px] hover:bg-stone-50 focus:outline-none ${
                           currentRegion?.id === region.id
-                            ? 'text-blue-600 font-medium'
+                            ? 'font-medium text-blue-600'
                             : 'text-stone-600'
                         }`}
                       >

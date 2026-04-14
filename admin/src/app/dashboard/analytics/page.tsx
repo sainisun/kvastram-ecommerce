@@ -1,408 +1,381 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
-  BarChart3,
-  TrendingUp,
+  BarChart2,
   DollarSign,
-  ShoppingCart,
+  ShoppingBag,
+  TrendingUp,
   Users,
-  Package,
-  Calendar,
-  ArrowUp,
-  ArrowDown,
 } from 'lucide-react';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-} from 'recharts';
 import { api } from '@/lib/api';
+import {
+  MetricCard,
+  PageHeader,
+  SectionHeader,
+  Surface,
+} from '@/components/ui/admin-ui';
 
-interface TrendData {
+interface SalesPoint {
   date: string;
-  value: number;
+  sales?: number;
+  revenue?: number;
+  orders?: number;
 }
 
-interface AnalyticsData {
-  revenue: { current: number; growth: number };
-  orders: { current: number; growth: number };
-  customers: { current: number; growth: number };
-  revenueTrend: TrendData[];
-  ordersTrend: TrendData[];
+interface StatusPoint {
+  status: string;
+  count: number;
+}
+
+interface AnalyticsOverview {
+  total_sales?: number;
+  total_orders?: number;
+  average_order_value?: number;
+  total_customers?: number;
+}
+
+interface CustomerOverview {
+  total_customers?: number;
+  new_this_month?: number;
+}
+
+interface ProductPreview {
+  id: string;
+  title: string;
+  thumbnail: string | null;
+  total_inventory: number;
 }
 
 export default function AnalyticsPage() {
-  const router = useRouter();
-  const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState<'week' | 'month' | 'year'>('month');
+  const [overview, setOverview] = useState<AnalyticsOverview | null>(null);
+  const [weeklyTrend, setWeeklyTrend] = useState<SalesPoint[]>([]);
+  const [monthlyTrend, setMonthlyTrend] = useState<SalesPoint[]>([]);
+  const [statusBreakdown, setStatusBreakdown] = useState<StatusPoint[]>([]);
+  const [productPreview, setProductPreview] = useState<ProductPreview[]>([]);
+  const [customerStats, setCustomerStats] = useState<CustomerOverview | null>(
+    null
+  );
 
   useEffect(() => {
-    fetchAnalytics();
-  }, [period]);
+    const loadAnalytics = async () => {
+      try {
+        setLoading(true);
+        const [overviewData, weeklyData, monthlyData, statuses, products, customers] =
+          await Promise.all([
+            api.getAnalyticsOverview(),
+            api.getSalesTrend(7),
+            api.getSalesTrend(30),
+            api.getOrdersByStatus(),
+            api.getProducts(5, 0, '', 'published'),
+            api.getCustomerStats(),
+          ]);
 
-  const fetchAnalytics = async () => {
-    try {
-      setLoading(true);
-      const days = getDaysForPeriod(period);
-      const previousDays = days * 2; // Fetch double to get previous period data
+        setOverview(overviewData || null);
+        setWeeklyTrend(Array.isArray(weeklyData) ? weeklyData : []);
+        setMonthlyTrend(Array.isArray(monthlyData) ? monthlyData : []);
+        setStatusBreakdown(Array.isArray(statuses) ? statuses : []);
+        setProductPreview(products?.data || products || []);
+        setCustomerStats(customers || null);
+      } catch (error) {
+        console.error('Failed to load analytics:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      // Use existing APIs that are available in backend
-      const [overviewData, salesTrendData, ordersByStatus, previousSalesTrend] =
-        await Promise.all([
-          api.getAnalyticsOverview(),
-          api.getSalesTrend(days),
-          api.getOrdersByStatus(),
-          api.getSalesTrend(previousDays),
-        ]);
+    void loadAnalytics();
+  }, []);
 
-      // Calculate totals from orders by status
-      // Backend returns array directly, not wrapped in data property
-      const ordersByStatusArray = Array.isArray(ordersByStatus)
-        ? ordersByStatus
-        : ordersByStatus?.data || [];
-      const totalOrders =
-        ordersByStatusArray.reduce(
-          (sum: number, item: any) => sum + (item.count || 0),
-          0
-        ) || 0;
-
-      // Calculate growth by comparing current period with previous period
-      const safeSalesTrend = Array.isArray(salesTrendData)
-        ? salesTrendData
-        : [];
-      const safePreviousTrend = Array.isArray(previousSalesTrend)
-        ? previousSalesTrend
-        : [];
-
-      const currentRevenue = safeSalesTrend.reduce(
-        (sum: number, item: any) => sum + (item.sales || item.revenue || 0),
-        0
-      );
-      const previousRevenue = safePreviousTrend
-        .slice(0, -days)
-        .reduce(
-          (sum: number, item: any) => sum + (item.sales || item.revenue || 0),
-          0
-        );
-      const revenueGrowth =
-        previousRevenue > 0
-          ? ((currentRevenue - previousRevenue) / previousRevenue) * 100
-          : 0;
-
-      const currentOrders = safeSalesTrend.reduce(
-        (sum: number, item: any) => sum + (item.orders || 0),
-        0
-      );
-      const previousOrders = safePreviousTrend
-        .slice(0, -days)
-        .reduce((sum: number, item: any) => sum + (item.orders || 0), 0);
-      const ordersGrowth =
-        previousOrders > 0
-          ? ((currentOrders - previousOrders) / previousOrders) * 100
-          : 0;
-
-      // For customers, we'll use a simplified calculation based on available data
-      const customerGrowth = overviewData.customer_growth || 0;
-
-      setData({
-        revenue: {
-          current: currentRevenue || overviewData.total_sales || 0,
-          growth: Math.round(revenueGrowth * 10) / 10,
-        },
-        orders: {
-          current: currentOrders || totalOrders,
-          growth: Math.round(ordersGrowth * 10) / 10,
-        },
-        customers: {
-          current: overviewData.total_customers || 0,
-          growth: customerGrowth,
-        },
-        revenueTrend: safeSalesTrend.map((item: any) => ({
-          date: item.date,
-          value: item.sales || item.revenue || 0,
-        })),
-        ordersTrend: safeSalesTrend.map((item: any) => ({
-          date: item.date,
-          value: item.orders || 0,
-        })),
-      });
-    } catch (error) {
-      console.error('Error fetching analytics:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getDaysForPeriod = (period: string): number => {
-    switch (period) {
-      case 'week':
-        return 7;
-      case 'month':
-        return 30;
-      case 'year':
-        return 365;
-      default:
-        return 30;
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
+      maximumFractionDigits: 0,
     }).format(amount / 100);
-  };
 
-  const formatPercent = (val: number) => {
-    return `${val > 0 ? '+' : ''}${val.toFixed(1)}%`;
-  };
+  const weekRevenue = weeklyTrend.reduce(
+    (sum, point) => sum + (point.sales || point.revenue || 0),
+    0
+  );
+  const monthRevenue = monthlyTrend.reduce(
+    (sum, point) => sum + (point.sales || point.revenue || 0),
+    0
+  );
+  const weekOrders = weeklyTrend.reduce((sum, point) => sum + (point.orders || 0), 0);
+  const totalStatusOrders = statusBreakdown.reduce(
+    (sum, point) => sum + point.count,
+    0
+  );
+
+  const palette = ['#c97d4e', '#d4860b', '#4f7cac', '#2d7a4f', '#c0392b', '#6b6560'];
+
+  const donutStops = statusBreakdown.reduce<string[]>(
+    (segments, point, index) => {
+      const start =
+        statusBreakdown
+          .slice(0, index)
+          .reduce((sum, current) => sum + current.count, 0) / totalStatusOrders;
+      const end =
+        statusBreakdown
+          .slice(0, index + 1)
+          .reduce((sum, current) => sum + current.count, 0) / totalStatusOrders;
+      segments.push(
+        `${palette[index % palette.length]} ${start * 100}% ${end * 100}%`
+      );
+      return segments;
+    },
+    []
+  );
+
+  const maxTrendValue =
+    Math.max(
+      ...monthlyTrend.map((point) => point.sales || point.revenue || 0),
+      1
+    ) || 1;
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="text-center py-12">
-          <p className="text-gray-500">Loading analytics for {period}...</p>
-        </div>
+      <div className="px-4 pb-8 md:px-8">
+        <PageHeader
+          eyebrow="Performance"
+          title="Analytics"
+          description="Loading your revenue and order trends."
+        />
       </div>
     );
   }
 
-  // Default data if null
-  const safeData = data || {
-    revenue: { current: 0, growth: 0 },
-    orders: { current: 0, growth: 0 },
-    customers: { current: 0, growth: 0 },
-    revenueTrend: [],
-    ordersTrend: [],
-  };
-
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Analytics & Reports
-            </h1>
-            <p className="text-gray-600">
-              Track your store's performance and growth
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {['week', 'month', 'year'].map((p) => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p as any)}
-                className={`px-4 py-2 rounded-lg font-medium capitalize ${
-                  period === p
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
+    <div className="space-y-6 px-4 pb-8 md:space-y-8 md:px-8">
+      <PageHeader
+        eyebrow="Performance"
+        title="Analytics"
+        description="Revenue, status mix, recent customer momentum, and a clear view into what the current backend can measure today."
+      />
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <MetricCard
+          label="Revenue this week"
+          value={formatCurrency(weekRevenue)}
+          icon={DollarSign}
+          hint={`${weekOrders} orders in the last 7 days`}
+          tone="accent"
+        />
+        <MetricCard
+          label="Revenue this month"
+          value={formatCurrency(monthRevenue)}
+          icon={BarChart2}
+          hint="Trailing 30 days"
+        />
+        <MetricCard
+          label="All-time revenue"
+          value={formatCurrency(overview?.total_sales || 0)}
+          icon={TrendingUp}
+          hint={`${overview?.total_orders || 0} total orders`}
+          tone="success"
+        />
+        <MetricCard
+          label="Recent customers"
+          value={customerStats?.new_this_month || 0}
+          icon={Users}
+          hint={`${customerStats?.total_customers || 0} total customers`}
+        />
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <DollarSign className="text-green-600" size={24} />
+      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <Surface className="p-5 md:p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
+                Sales trend
+              </p>
+              <h2 className="mt-2 text-xl font-semibold text-[var(--kv-text)]">
+                Revenue over the last 30 days
+              </h2>
             </div>
-            <div
-              className={`flex items-center gap-1 text-sm font-medium ${safeData.revenue.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}
-            >
-              {safeData.revenue.growth >= 0 ? (
-                <ArrowUp size={16} />
-              ) : (
-                <ArrowDown size={16} />
-              )}
-              {formatPercent(safeData.revenue.growth)}
-            </div>
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]">
+              <TrendingUp size={18} />
+            </span>
           </div>
-          <p className="text-sm text-gray-600 mb-1">Total Revenue ({period})</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {formatCurrency(safeData.revenue.current)}
-          </p>
-        </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <ShoppingCart className="text-blue-600" size={24} />
-            </div>
-            <div
-              className={`flex items-center gap-1 text-sm font-medium ${safeData.orders.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}
-            >
-              {safeData.orders.growth >= 0 ? (
-                <ArrowUp size={16} />
-              ) : (
-                <ArrowDown size={16} />
-              )}
-              {formatPercent(safeData.orders.growth)}
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 mb-1">Total Orders ({period})</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {safeData.orders.current}
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Users className="text-purple-600" size={24} />
-            </div>
-            <div
-              className={`flex items-center gap-1 text-sm font-medium ${safeData.customers.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}
-            >
-              {safeData.customers.growth >= 0 ? (
-                <ArrowUp size={16} />
-              ) : (
-                <ArrowDown size={16} />
-              )}
-              {formatPercent(safeData.customers.growth)}
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 mb-1">New Customers ({period})</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {safeData.customers.current}
-          </p>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <BarChart3 size={20} />
-            Revenue Trend
-          </h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={safeData.revenueTrend}>
-                <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(str) =>
-                    new Date(str).toLocaleDateString(undefined, {
+          <div className="mt-8 flex h-60 items-end gap-2">
+            {monthlyTrend.map((point) => {
+              const value = point.sales || point.revenue || 0;
+              const height = Math.max((value / maxTrendValue) * 100, 8);
+              return (
+                <div key={point.date} className="flex flex-1 flex-col items-center gap-2">
+                  <div className="flex h-44 w-full items-end rounded-2xl bg-[var(--kv-soft)] p-1.5">
+                    <div
+                      className="w-full rounded-[1rem] bg-[linear-gradient(180deg,#dca17c_0%,#c97d4e_100%)]"
+                      style={{ height: `${height}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--kv-muted)]">
+                    {new Date(point.date).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
-                    })
-                  }
-                  fontSize={12}
-                />
-                <YAxis fontSize={12} tickFormatter={(val) => `$${val / 100}`} />
-                <Tooltip
-                  formatter={(value: any) => [formatCurrency(value), 'Revenue']}
-                  labelFormatter={(label) =>
-                    new Date(label).toLocaleDateString()
-                  }
-                />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#3b82f6"
-                  fillOpacity={1}
-                  fill="url(#colorRevenue)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+                    })}
+                  </p>
+                </div>
+              );
+            })}
           </div>
-        </div>
+        </Surface>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <TrendingUp size={20} />
-            Orders Trend
-          </h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={safeData.ordersTrend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(str) =>
-                    new Date(str).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                    })
-                  }
-                  fontSize={12}
-                />
-                <YAxis allowDecimals={false} fontSize={12} />
-                <Tooltip
-                  labelFormatter={(label) =>
-                    new Date(label).toLocaleDateString()
-                  }
-                />
-                <Bar
-                  dataKey="value"
-                  fill="#8b5cf6"
-                  radius={[4, 4, 0, 0]}
-                  name="Orders"
-                />
-              </BarChart>
-            </ResponsiveContainer>
+        <Surface className="p-5 md:p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
+                Status mix
+              </p>
+              <h2 className="mt-2 text-xl font-semibold text-[var(--kv-text)]">
+                Orders by status
+              </h2>
+            </div>
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-[var(--kv-accent-deep)]">
+              <ShoppingBag size={18} />
+            </span>
           </div>
-        </div>
-      </div>
 
-      {/* Summary Banner */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg p-8 text-white shadow-lg">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <h2 className="text-2xl font-bold mb-2">Performance Summary</h2>
-            <p className="text-gray-300">
-              You've made{' '}
-              <span className="text-white font-bold">
-                {formatCurrency(safeData.revenue.current)}
-              </span>{' '}
-              in revenue from{' '}
-              <span className="text-white font-bold">
-                {safeData.orders.current}
-              </span>{' '}
-              orders this {period}.
-            </p>
-          </div>
-          <div className="flex gap-4">
-            <div className="text-center px-6 py-3 bg-white/10 rounded-lg backdrop-blur-sm">
-              <p className="text-xs text-gray-300 uppercase tracking-wider mb-1">
-                Avg Order Value
-              </p>
-              <p className="text-xl font-bold">
-                {safeData.orders.current > 0
-                  ? formatCurrency(
-                      safeData.revenue.current / safeData.orders.current
-                    )
-                  : '$0.00'}
-              </p>
+          <div className="mt-6 flex flex-col items-center gap-6 lg:flex-row lg:items-start">
+            <div
+              className="relative h-48 w-48 rounded-full"
+              style={{
+                background:
+                  totalStatusOrders > 0
+                    ? `conic-gradient(${donutStops.join(', ')})`
+                    : 'conic-gradient(#e8e3dc 0% 100%)',
+              }}
+            >
+              <div className="absolute inset-[18px] flex items-center justify-center rounded-full bg-white text-center">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-[var(--kv-muted)]">
+                    Orders
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
+                    {totalStatusOrders}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full space-y-3">
+              {statusBreakdown.map((point, index) => (
+                <div
+                  key={point.status}
+                  className="flex items-center justify-between rounded-[1rem] bg-[var(--kv-soft)] px-4 py-3 text-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="inline-flex h-3.5 w-3.5 rounded-full"
+                      style={{ backgroundColor: palette[index % palette.length] }}
+                    />
+                    <span className="font-medium capitalize text-[var(--kv-text)]">
+                      {point.status}
+                    </span>
+                  </div>
+                  <span className="font-semibold text-[var(--kv-text)]">
+                    {point.count}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </Surface>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        <Surface className="overflow-hidden">
+          <SectionHeader
+            title="Catalog spotlight"
+            description="Using recent published products until a top-selling-products API is available."
+          />
+          <div className="space-y-3 p-5 md:p-6">
+            {productPreview.length === 0 ? (
+              <p className="text-sm text-[var(--kv-muted)]">
+                No published products available for preview.
+              </p>
+            ) : (
+              productPreview.map((product, index) => (
+                <div
+                  key={product.id}
+                  className="flex items-center gap-4 rounded-[1.2rem] border border-[var(--kv-border)] bg-white px-4 py-4"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-sm font-semibold text-[var(--kv-accent-deep)]">
+                    {index + 1}
+                  </div>
+                  <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-[var(--kv-soft)]">
+                    {product.thumbnail ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={product.thumbnail}
+                        alt={product.title}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <PackageFallback />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold text-[var(--kv-text)]">
+                      {product.title}
+                    </p>
+                    <p className="mt-1 text-sm text-[var(--kv-muted)]">
+                      Inventory {product.total_inventory}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </Surface>
+
+        <Surface className="p-5 md:p-6">
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
+                Customer momentum
+              </p>
+              <h2 className="mt-2 text-xl font-semibold text-[var(--kv-text)]">
+                Growth snapshot
+              </h2>
+            </div>
+
+            <div className="space-y-3">
+              <div className="rounded-[1.2rem] bg-[var(--kv-soft)] px-4 py-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                  Total customers
+                </p>
+                <p className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
+                  {customerStats?.total_customers || 0}
+                </p>
+              </div>
+              <div className="rounded-[1.2rem] bg-[var(--kv-soft)] px-4 py-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                  New this month
+                </p>
+                <p className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
+                  {customerStats?.new_this_month || 0}
+                </p>
+              </div>
+              <div className="rounded-[1.2rem] bg-[var(--kv-soft)] px-4 py-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                  Average order value
+                </p>
+                <p className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
+                  {formatCurrency(overview?.average_order_value || 0)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Surface>
       </div>
     </div>
   );
+}
+
+function PackageFallback() {
+  return <ShoppingBag size={18} className="text-[var(--kv-muted)]" />;
 }
