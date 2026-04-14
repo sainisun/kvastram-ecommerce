@@ -208,7 +208,7 @@ productsRouter.post(
     }
 
     // Convert status to correct type if needed, Zod handles validation
-    const product = await productService.create(result.data as any);
+    const product = await productService.create(result.data);
     return successResponse(
       c,
       { product },
@@ -232,10 +232,10 @@ productsRouter.put(
     }
 
     try {
-      const product = await productService.update(id, result.data as any);
+      const product = await productService.update(id, result.data);
       return successResponse(c, { product }, 'Product updated successfully');
-    } catch (e: any) {
-      if (e.message.includes('not found'))
+    } catch (e: unknown) {
+      if (e instanceof Error && e.message.includes('not found'))
         throw new NotFoundError('Product not found');
       throw e;
     }
@@ -359,7 +359,7 @@ productsRouter.get(
 
     // Get prices for each variant
     const variantIds = variants.map((v) => v.id);
-    let prices: any[] = [];
+    let prices: (typeof money_amounts.$inferSelect)[] = [];
     if (variantIds.length > 0) {
       prices = await db
         .select()
@@ -374,7 +374,7 @@ productsRouter.get(
       .where(eq(product_options.product_id, productId));
 
     // Get option values for each variant
-    let optionValues: any[] = [];
+    let optionValues: (typeof product_option_values.$inferSelect)[] = [];
     if (variantIds.length > 0) {
       optionValues = await db
         .select()
@@ -479,7 +479,7 @@ productsRouter.put(
 
     await db.transaction(async (tx) => {
       // Update variant
-      const updateData: any = {};
+      const updateData: Partial<typeof product_variants.$inferInsert> = {};
       if (title !== undefined) updateData.title = title;
       if (sku !== undefined) updateData.sku = sku;
       if (inventory_quantity !== undefined)

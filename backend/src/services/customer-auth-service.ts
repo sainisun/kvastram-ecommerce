@@ -269,12 +269,13 @@ export const customerAuthService = {
       .from(customers)
       .where(eq(customers.email, data.email.toLowerCase()));
 
-    if (
-      existing.length === 0 ||
-      !existing[0].has_account ||
-      !existing[0].password_hash
-    ) {
+    if (existing.length === 0 || !existing[0].has_account) {
       throw new Error('Invalid email or password');
+    }
+
+    // Social-only account — no password set, must use social login
+    if (!existing[0].password_hash) {
+      throw new Error('This account was created with social login. Please sign in with Google or Facebook.');
     }
 
     const customer = existing[0];
@@ -511,7 +512,7 @@ export const customerAuthService = {
           email: email.toLowerCase(),
           first_name: firstName,
           last_name: lastName,
-          password_hash: `social_${provider}_${Date.now()}`,
+          password_hash: null, // Social-only account — no password set
           email_verified: true, // Social login verifies email
           has_account: true,
         })

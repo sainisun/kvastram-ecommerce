@@ -1,26 +1,20 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
+import { verify } from 'hono/jwt';
 import { db } from '../../db/client';
 import { saved_carts } from '../../db/schema';
 import { eq } from 'drizzle-orm';
-import type { AuthContextVariables } from '../../middleware/auth';
+import { config } from '../../config';
 
-const cartRouter = new Hono<{ Variables: AuthContextVariables }>();
+const cartRouter = new Hono();
 
 // Helper: Get customer ID from JWT cookie (optional auth — don't block guests)
-async function getCustomerId(c: any): Promise<string | null> {
+async function getCustomerId(c: Context): Promise<string | null> {
   try {
-    const { verify } = await import('hono/jwt');
-    const { config } = await import('../../config');
-    const { getCookie } = await import('hono/cookie');
-
-    const token =
-      c.req.header('Authorization')?.replace('Bearer ', '') ||
-      getCookie(c, 'auth_token');
-
+    const token = getCookie(c, 'auth_token');
     if (!token) return null;
-    const payload = (await verify(token, config.jwt.secret, 'HS256')) as any;
-    return payload?.sub || null;
+    const payload = await verify(token, config.jwt.secret, 'HS256') as { sub?: string };
+    return payload?.sub ?? null;
   } catch {
     return null;
   }
@@ -52,8 +46,8 @@ cartRouter.get('/', async (c) => {
     }
 
     return c.json({ items: [] });
-  } catch (error: any) {
-    console.error('[Cart] GET error:', error.message);
+  } catch (error: unknown) {
+    console.error('[Cart] GET error:', error instanceof Error ? error.message : String(error));
     return c.json({ items: [] }); // Silent fallback — don't crash storefront
   }
 });
@@ -117,8 +111,8 @@ cartRouter.post('/save', async (c) => {
     }
 
     return c.json({ success: true });
-  } catch (error: any) {
-    console.error('[Cart] POST /save error:', error.message);
+  } catch (error: unknown) {
+    console.error('[Cart] POST /save error:', error instanceof Error ? error.message : String(error));
     return c.json({ error: 'Failed to save cart' }, 500);
   }
 });
@@ -143,8 +137,8 @@ cartRouter.post('/clear', async (c) => {
     }
 
     return c.json({ success: true });
-  } catch (error: any) {
-    console.error('[Cart] POST /clear error:', error.message);
+  } catch (error: unknown) {
+    console.error('[Cart] POST /clear error:', error instanceof Error ? error.message : String(error));
     return c.json({ success: true }); // Silent fail — don't block checkout
   }
 });

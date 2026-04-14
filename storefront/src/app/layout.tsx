@@ -11,7 +11,7 @@ import { RecentlyViewedProvider } from '@/context/recently-viewed-context';
 import { WholesaleProvider } from '@/context/wholesale-context';
 import { WholesaleCartProvider } from '@/context/wholesale-cart-context';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { RootErrorBoundary } from '@/components/RootErrorBoundary';
 import { Analytics } from '@/components/Analytics';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
 import { CookieConsent } from '@/components/ui/CookieConsent';
@@ -123,7 +123,7 @@ export default async function RootLayout({
           Skip to main content
         </a>
 
-        <ErrorBoundary>
+        <RootErrorBoundary>
           <NotificationProvider>
             <ShopProvider>
               <AuthProvider>
@@ -143,7 +143,7 @@ export default async function RootLayout({
               </AuthProvider>
             </ShopProvider>
           </NotificationProvider>
-        </ErrorBoundary>
+        </RootErrorBoundary>
         <Analytics />
         {/* consent banner shown client-side */}
         <CookieConsent />

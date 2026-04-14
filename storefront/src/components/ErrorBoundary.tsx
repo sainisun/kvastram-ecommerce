@@ -6,6 +6,8 @@ import * as Sentry from '@sentry/nextjs';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  /** Pass current pathname to auto-reset error state on navigation */
+  resetKey?: string;
 }
 
 interface State {
@@ -23,10 +25,16 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
+  // Reset error state when navigating to a different route
+  componentDidUpdate(prevProps: Props) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false, error: undefined });
+    }
+  }
+
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
 
-    // Send error to Sentry
     Sentry.captureException(error, {
       extra: {
         componentStack: errorInfo.componentStack,

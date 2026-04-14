@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Download,
@@ -60,19 +61,45 @@ interface CollectionOption {
 }
 
 export default function ProductsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // UX-004: Read filter state from URL so it persists on refresh and is shareable
+  const search = searchParams.get('q') ?? '';
+  const statusFilter = (searchParams.get('status') as ListingFilter) ?? 'all';
+  const viewMode = (searchParams.get('view') as ViewMode) ?? 'grid';
+  const sortMode = (searchParams.get('sort') as SortMode) ?? 'newest';
+  const categoryFilter = searchParams.get('category') ?? 'all';
+  const collectionFilter = searchParams.get('collection') ?? 'all';
+  const page = Number(searchParams.get('page') ?? '1');
+
+  // Helper to update one URL param while keeping the rest
+  const setParam = useCallback((key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === '' || value === 'all' || value === 'grid' || value === 'newest' || (key === 'page' && value === '1')) {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
+    // Reset page to 1 when filters change (but not when page itself changes)
+    if (key !== 'page') params.delete('page');
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
+  const setSearch = (v: string) => setParam('q', v);
+  const setStatusFilter = (v: ListingFilter) => setParam('status', v);
+  const setViewMode = (v: ViewMode) => setParam('view', v);
+  const setSortMode = (v: SortMode) => setParam('sort', v);
+  const setCategoryFilter = (v: string) => setParam('category', v);
+  const setCollectionFilter = (v: string) => setParam('collection', v);
+  const setPage = (v: number) => setParam('page', String(v));
+
   const [products, setProducts] = useState<Product[]>([]);
   const [stats, setStats] = useState<ProductStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ListingFilter>('all');
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [sortMode, setSortMode] = useState<SortMode>('newest');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [collectionFilter, setCollectionFilter] = useState('all');
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [collections, setCollections] = useState<CollectionOption[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
