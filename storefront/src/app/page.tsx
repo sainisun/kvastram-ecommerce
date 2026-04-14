@@ -10,7 +10,7 @@ import { CategoryCircles } from '@/components/home/CategoryCircles';
 import { HeroBanner } from '@/components/home/HeroBanner';
 import { TrendingReels } from '@/components/home/TrendingReels';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
 

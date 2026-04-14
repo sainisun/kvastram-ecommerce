@@ -24,7 +24,9 @@ export default function AccountPage() {
     }
   }, [loading, customer, router]);
 
+  // UX-001: Guard against race condition — only fetch orders after auth is confirmed
   useEffect(() => {
+    if (loading || !customer) return;
     api
       .getCustomerOrders()
       .then((data) => {
@@ -35,7 +37,7 @@ export default function AccountPage() {
         setOrders([]);
         setOrdersLoading(false);
       });
-  }, []);
+  }, [customer, loading]);
 
   if (loading || !customer) return <AccountSkeleton />;
 

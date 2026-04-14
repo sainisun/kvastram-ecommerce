@@ -2,7 +2,7 @@ import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
 
 // Define interface for post since backend types may not have it
 interface Post {

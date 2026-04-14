@@ -2,7 +2,7 @@ import CatalogClient from '@/components/products/CatalogClient';
 import { api } from '@/lib/api';
 import type { Product } from '@/types';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
 
 async function fetchWithTimeout<T>(
   promise: Promise<T>,

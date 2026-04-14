@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import PageHero from '@/components/hero/PageHero';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
 
 export default async function CollectionsPage() {
   const data = await api.getCollections();

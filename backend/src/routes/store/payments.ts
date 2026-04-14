@@ -24,6 +24,9 @@ import { orders, line_items, webhook_events } from '../../db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { logInfo, logError } from '../../utils/logger';
 import { asyncHandler } from '../../middleware/error-handler';
+import { verify } from 'hono/jwt';
+import { getCookie } from 'hono/cookie';
+import { config } from '../../config';
 
 // Only create Stripe instance if key is available
 const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -67,8 +70,30 @@ paymentRouter.post(
         return c.json({ error: 'Order not found' }, 404);
       }
 
+      // SEC-004: Ownership check
+      // If order belongs to a registered customer, verify the caller is that customer
+      if (order.customer_id) {
+        const token = getCookie(c, 'auth_token');
+        if (!token) {
+          return c.json({ error: 'Unauthorized' }, 401);
+        }
+        try {
+          const payload = await verify(token, config.jwt.secret, 'HS256') as { sub: string; role: string };
+          if (payload.role !== 'customer' || payload.sub !== order.customer_id) {
+            return c.json({ error: 'Forbidden' }, 403);
+          }
+        } catch {
+          return c.json({ error: 'Unauthorized' }, 401);
+        }
+      }
+
       if (order.payment_status === 'captured') {
         return c.json({ error: 'Order already paid' }, 400);
+      }
+
+      // Prevent creating intent on cancelled/refunded orders
+      if (['cancelled', 'refunded'].includes(order.status ?? '')) {
+        return c.json({ error: 'Cannot create payment for this order' }, 400);
       }
 
       // Fetch line items for the order (for metadata/receipts if needed later)
