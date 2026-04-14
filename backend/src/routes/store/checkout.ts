@@ -11,12 +11,11 @@ import {
   customers,
   addresses,
   money_amounts,
-  campaigns,
   regions,
   discount_usage,
   store_settings,
 } from '../../db/schema';
-import { eq, and, gte, lte, sql, inArray, ne } from 'drizzle-orm';
+import { eq, and, gte, sql, inArray } from 'drizzle-orm';
 import { config } from '../../config';
 import { calculateTax, type TaxBreakdown } from '../../utils/tax-calculator';
 
@@ -257,7 +256,7 @@ checkoutRouter.post(
       
       // Determine shipping country
       const destCountry = body.shipping_address.country_code.toUpperCase();
-      const allowedCountries: string[] = (settingsMap['shipping_countries'] || 'US, CA').split(',').map((c: string) => c.trim().toUpperCase());
+      const allowedCountries: string[] = (settingsMap['shipping_countries'] || 'US, CA').split(',').map((s: string) => s.trim().toUpperCase());
       
       if (!allowedCountries.includes(destCountry)) {
          return c.json({ error: `Shipping is not available to ${destCountry}` }, 400);
@@ -278,7 +277,16 @@ checkoutRouter.post(
 
       // Batch fetch all variants in ONE query to avoid N+1 problem
       const variantIds = body.items.map((item) => item.variant_id);
-      const variantsMap = new Map<string, typeof variant>();
+      type VariantRow = {
+        id: string;
+        price: number | null;
+        product_id: string;
+        product_title: string | null;
+        thumbnail: string | null;
+        variant_title: string;
+        inventory_quantity: number | null;
+      };
+      const variantsMap = new Map<string, VariantRow>();
 
       if (variantIds.length > 0) {
         const allVariants = await db
@@ -376,13 +384,14 @@ checkoutRouter.post(
       // 3. Calculate Totals
       let shippingTotal = 0;
       if (subtotal < freeThreshold) {
-         shippingTotal = (destCountry === 'US') ? domesticRate : intlRate;
+        shippingTotal = destCountry === 'US' ? domesticRate : intlRate;
       }
-      
-      // FIX-005: Use dedicated tax calculator for GST (CGST + SGST)
-      const taxBreakdown: TaxBreakdown = calculateTax(subtotal, taxRate);
+
+      // Tax is calculated on the discounted subtotal (post-discount), not gross subtotal
+      const taxableAmount = Math.max(0, subtotal - discountTotal);
+      const taxBreakdown: TaxBreakdown = calculateTax(taxableAmount, taxRate);
       const taxTotal = taxBreakdown.total;
-      const total = subtotal + shippingTotal + taxTotal - discountTotal;
+      const total = taxableAmount + shippingTotal + taxTotal;
 
       // 4. Create Order Transaction
       let newOrder: typeof orders.$inferSelect | undefined;
@@ -471,7 +480,9 @@ checkoutRouter.post(
           metadata: {
             tax_rate: taxBreakdown.rate,
             tax_breakdown: {
-              subtotal: taxBreakdown.subtotal,
+              gross_subtotal: subtotal,
+              discount_total: discountTotal,
+              taxable_amount: taxableAmount,
               cgst: taxBreakdown.cgst,
               sgst: taxBreakdown.sgst,
               total: taxBreakdown.total,
@@ -489,21 +500,19 @@ checkoutRouter.post(
 
         newOrder = order;
 
-        // Create Line Items - only include defined values
+        // Create Line Items
+        // title is NOT NULL in schema — always provide a fallback value
         for (const item of validatedItems) {
-          const lineItemData: any = {
+          await tx.insert(line_items).values({
             order_id: order.id,
             variant_id: item.id,
+            title: item.product_title ?? item.variant_title ?? 'Product',
+            description: item.variant_title || null,
+            thumbnail: item.thumbnail || null,
             quantity: item.quantity,
             unit_price: item.unitPrice,
             total_price: item.lineTotal,
-          };
-
-          if (item.product_title) lineItemData.title = item.product_title;
-          if (item.variant_title) lineItemData.description = item.variant_title;
-          if (item.thumbnail) lineItemData.thumbnail = item.thumbnail;
-
-          await tx.insert(line_items).values(lineItemData);
+          });
         }
 
         // 🔒 RACE-FIX: Deduct inventory atomically — single UPDATE with WHERE inventory >= quantity.
@@ -576,7 +585,7 @@ checkoutRouter.post(
       // 5. Send order confirmation email
       try {
         const { emailService } = await import('../../services/email-service');
-        if (newOrder && newOrder.display_id) {
+        if (newOrder.display_id) {
           await emailService.sendOrderConfirmation(
             {
               ...newOrder,
