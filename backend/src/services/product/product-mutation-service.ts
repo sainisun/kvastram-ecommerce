@@ -160,19 +160,24 @@ export class ProductMutationService {
       const updatedProduct = await this.updateBaseProductDetails(tx, id, data);
 
       // 2. Update default variant if exists
-      await this.updateDefaultVariant(tx, id, data);
+      const defaultVariantId = await this.updateDefaultVariant(tx, id, data);
 
-      // 3. Handle images if provided
+      // 3. Sync prices for the default variant when pricing is provided
+      if (defaultVariantId && data.prices) {
+        await this.syncVariantPrices(tx, defaultVariantId, data.prices);
+      }
+
+      // 4. Handle images if provided
       if (data.images) {
         await this.syncProductImages(tx, id, data.images);
       }
 
-      // 4. Handle Categories
+      // 5. Handle Categories
       if (data.category_ids) {
         await this.syncProductCategories(tx, id, data.category_ids);
       }
 
-      // 5. Handle Tags
+      // 6. Handle Tags
       if (data.tag_ids) {
         await this.syncProductTags(tx, id, data.tag_ids);
       }
@@ -220,22 +225,44 @@ export class ProductMutationService {
       .from(product_variants)
       .where(eq(product_variants.product_id, productId));
 
-    if (variants.length > 0) {
-      await tx
-        .update(product_variants)
-        .set({
-          hs_code: data.hs_code,
-          origin_country: data.origin_country,
-          material: data.material,
-          weight: data.weight,
-          length: data.length,
-          height: data.height,
-          width: data.width,
-          inventory_quantity: data.inventory_quantity,
-          updated_at: new Date(),
-        })
-        .where(eq(product_variants.id, variants[0].id));
+    if (variants.length === 0) {
+      return null;
     }
+
+    await tx
+      .update(product_variants)
+      .set({
+        hs_code: data.hs_code,
+        origin_country: data.origin_country,
+        material: data.material,
+        weight: data.weight,
+        length: data.length,
+        height: data.height,
+        width: data.width,
+        inventory_quantity: data.inventory_quantity,
+        updated_at: new Date(),
+      })
+      .where(eq(product_variants.id, variants[0].id));
+
+    return variants[0].id;
+  }
+
+  private async syncVariantPrices(tx: any, variantId: string, prices: any[]) {
+    await tx.delete(money_amounts).where(eq(money_amounts.variant_id, variantId));
+
+    if (!prices.length) {
+      return;
+    }
+
+    await tx.insert(money_amounts).values(
+      prices.map((price) => ({
+        variant_id: variantId,
+        region_id: price.region_id,
+        currency_code: price.currency_code,
+        amount: price.amount,
+        min_quantity: 1,
+      }))
+    );
   }
 
   private async syncProductImages(tx: any, productId: string, images: any[]) {

@@ -15,9 +15,17 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
+interface RegionRecord {
+  id: string;
+  name: string;
+  currency_code: string;
+  tax_rate?: string | number | null;
+  countries?: string[] | string | null;
+}
+
 export default function RegionsPage() {
   const router = useRouter();
-  const [regions, setRegions] = useState<any[]>([]);
+  const [regions, setRegions] = useState<RegionRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -84,7 +92,7 @@ export default function RegionsPage() {
     }
   };
 
-  const handleEdit = (region: any) => {
+  const handleEdit = (region: RegionRecord) => {
     setFormData({
       name: region.name || '',
       currency_code: region.currency_code || '',
@@ -94,6 +102,17 @@ export default function RegionsPage() {
         : region.countries || '',
     });
     setEditingId(region.id);
+    setShowModal(true);
+  };
+
+  const handleQuickAddIndia = () => {
+    setEditingId(null);
+    setFormData({
+      name: 'India',
+      currency_code: 'INR',
+      tax_rate: '18',
+      countries: 'IN',
+    });
     setShowModal(true);
   };
 
@@ -136,22 +155,30 @@ export default function RegionsPage() {
               Manage regional settings, currencies, and tax rates
             </p>
           </div>
-          <button
-            onClick={() => {
-              setEditingId(null);
-              setFormData({
-                name: '',
-                currency_code: '',
-                tax_rate: '0',
-                countries: '',
-              });
-              setShowModal(true);
-            }}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
-          >
-            <Plus size={18} />
-            Add Region
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleQuickAddIndia}
+              className="px-4 py-2 border border-blue-200 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100"
+            >
+              Quick Add India
+            </button>
+            <button
+              onClick={() => {
+                setEditingId(null);
+                setFormData({
+                  name: '',
+                  currency_code: '',
+                  tax_rate: '0',
+                  countries: '',
+                });
+                setShowModal(true);
+              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
+            >
+              <Plus size={18} />
+              Add Region
+            </button>
+          </div>
         </div>
       </div>
 
@@ -238,7 +265,16 @@ export default function RegionsPage() {
                     colSpan={5}
                     className="px-6 py-8 text-center text-gray-500"
                   >
-                    No regions found. Add your first region!
+                    <div className="flex flex-col items-center gap-3">
+                      <span>No regions found. Add your first region!</span>
+                      <button
+                        type="button"
+                        onClick={handleQuickAddIndia}
+                        className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100"
+                      >
+                        Create India (INR)
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ) : (

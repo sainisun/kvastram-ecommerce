@@ -16,6 +16,7 @@ import {
   NotFoundError,
   ValidationError,
 } from '../middleware/error-handler';
+import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 
 const productsRouter = new Hono();
 
@@ -199,6 +200,12 @@ productsRouter.post(
 
     // Convert status to correct type if needed, Zod handles validation
     const product = await productService.create(result.data);
+    await triggerStorefrontRevalidation({
+      productId: product.id,
+      handle: product.handle,
+      paths: ['/', '/products'],
+      tags: ['products'],
+    });
     return successResponse(
       c,
       { product },
@@ -223,6 +230,12 @@ productsRouter.put(
 
     try {
       const product = await productService.update(id, result.data);
+      await triggerStorefrontRevalidation({
+        productId: product.id,
+        handle: product.handle,
+        paths: ['/', '/products'],
+        tags: ['products'],
+      });
       return successResponse(c, { product }, 'Product updated successfully');
     } catch (e: unknown) {
       if (e instanceof Error && e.message.includes('not found'))
@@ -259,6 +272,10 @@ productsRouter.post(
 
     const { product_ids, updates } = result.data;
     const count = await productService.bulkUpdate(product_ids, updates);
+    await triggerStorefrontRevalidation({
+      paths: ['/', '/products'],
+      tags: ['products'],
+    });
 
     return successResponse(
       c,
@@ -294,6 +311,10 @@ productsRouter.post(
 
     const { product_ids } = result.data;
     const count = await productService.bulkDelete(product_ids);
+    await triggerStorefrontRevalidation({
+      paths: ['/', '/products'],
+      tags: ['products'],
+    });
 
     return successResponse(
       c,
@@ -317,6 +338,12 @@ productsRouter.delete(
       throw new NotFoundError('Product not found');
     }
     await productService.delete(id);
+    await triggerStorefrontRevalidation({
+      productId: id,
+      handle: product.handle,
+      paths: ['/', '/products'],
+      tags: ['products'],
+    });
     return successResponse(
       c,
       { id, deleted: true },
@@ -571,4 +598,3 @@ productsRouter.post(
 );
 
 export default productsRouter;
-

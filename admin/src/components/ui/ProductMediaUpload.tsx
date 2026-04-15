@@ -53,6 +53,8 @@ interface UploadState {
   label: string;
   progress: number;
   status: string;
+  mediaType: ProductMediaType;
+  previewUrl?: string;
 }
 
 interface ProductMediaUploadProps {
@@ -305,7 +307,13 @@ export default function ProductMediaUpload({
   );
 
   const removeUploadState = useCallback((id: string) => {
-    setUploads((current) => current.filter((upload) => upload.id !== id));
+    setUploads((current) => {
+      const upload = current.find((entry) => entry.id === id);
+      if (upload?.previewUrl) {
+        URL.revokeObjectURL(upload.previewUrl);
+      }
+      return current.filter((entry) => entry.id !== id);
+    });
   }, []);
 
   const uploadPosterForVideo = useCallback(
@@ -321,9 +329,17 @@ export default function ProductMediaUpload({
       }
 
       const uploadId = createItemId();
+      const previewUrl = URL.createObjectURL(posterFile);
       setUploads((current) => [
         ...current,
-        { id: uploadId, label: posterFile.name, progress: 0, status: 'Uploading poster' },
+        {
+          id: uploadId,
+          label: posterFile.name,
+          progress: 0,
+          status: 'Uploading poster',
+          mediaType: 'image',
+          previewUrl,
+        },
       ]);
 
       try {
@@ -382,6 +398,7 @@ export default function ProductMediaUpload({
         }
 
         const uploadId = createItemId();
+        const previewUrl = URL.createObjectURL(file);
 
         setUploads((current) => [
           ...current,
@@ -390,6 +407,8 @@ export default function ProductMediaUpload({
             label: file.name,
             progress: 0,
             status: `Uploading ${mediaType}`,
+            mediaType,
+            previewUrl,
           },
         ]);
 
@@ -541,20 +560,56 @@ export default function ProductMediaUpload({
       {uploads.length > 0 && (
         <div className="space-y-3 rounded-[24px] border border-gray-200 bg-white p-4">
           {uploads.map((upload) => (
-            <div key={upload.id} className="space-y-2">
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="truncate font-medium text-gray-700">
-                  {upload.label}
-                </span>
-                <span className="text-xs uppercase tracking-[0.16em] text-gray-500">
-                  {upload.status}
-                </span>
+            <div key={upload.id} className="flex gap-4 rounded-[20px] border border-gray-100 p-3">
+              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+                {upload.previewUrl ? (
+                  upload.mediaType === 'video' ? (
+                    <>
+                      <video
+                        src={upload.previewUrl}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="h-full w-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/15">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white">
+                          <Play size={16} className="ml-0.5" fill="currentColor" />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <img
+                      src={upload.previewUrl}
+                      alt={`${upload.label} preview`}
+                      className="h-full w-full object-cover"
+                    />
+                  )
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-gray-400">
+                    {upload.mediaType === 'video' ? <Video size={20} /> : <ImageIcon size={20} />}
+                  </div>
+                )}
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-                <div
-                  className="h-full rounded-full bg-black transition-[width]"
-                  style={{ width: `${upload.progress}%` }}
-                />
+
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <span className="truncate font-medium text-gray-700">
+                    {upload.label}
+                  </span>
+                  <span className="text-xs uppercase tracking-[0.16em] text-gray-500">
+                    {upload.status}
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+                  <div
+                    className="h-full rounded-full bg-black transition-[width]"
+                    style={{ width: `${upload.progress}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500">
+                  Preview is shown while the file finishes uploading.
+                </p>
               </div>
             </div>
           ))}
