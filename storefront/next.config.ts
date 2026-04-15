@@ -39,6 +39,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'api.kvastram.com',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
       {
