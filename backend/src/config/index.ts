@@ -53,15 +53,31 @@ export const config = {
   tax: {
     defaultRate: Number(getEnvVarWithDefault('DEFAULT_TAX_RATE', '18')),
   },
+  storefront: {
+    url: getEnvVar('STOREFRONT_URL', false),
+    revalidateSecret: getEnvVar('STOREFRONT_REVALIDATE_SECRET', false),
+  },
   database: {
     url: getEnvVar('DATABASE_URL', process.env.NODE_ENV === 'production'),
   },
   // Stripe is OPTIONAL — only validate if STRIPE_SECRET_KEY is set.
-  // If you are using RogerPay / PayPal instead, leave this unset or empty.
   stripe: {
     secretKey: getEnvVar('STRIPE_SECRET_KEY', false),
     webhookSecret: getEnvVar('STRIPE_WEBHOOK_SECRET', false),
     publishableKey: getEnvVar('STRIPE_PUBLISHABLE_KEY', false),
+  },
+  // Razorpay is OPTIONAL — used for INR / India payments.
+  razorpay: {
+    keyId: getEnvVar('RAZORPAY_ID', false),
+    keySecret: getEnvVar('RAZORPAY_SECRET', false),
+    webhookSecret: getEnvVar('RAZORPAY_WEBHOOK_SECRET', false),
+  },
+  // PayPal is OPTIONAL — used for international payments.
+  paypal: {
+    clientId: getEnvVar('PAYPAL_CLIENT_ID', false),
+    clientSecret: getEnvVar('PAYPAL_CLIENT_SECRET', false),
+    webhookId: getEnvVar('PAYPAL_WEBHOOK_ID', false),
+    sandbox: process.env.PAYPAL_SANDBOX === 'true',
   },
 };
 
@@ -79,6 +95,13 @@ if (process.env.NODE_ENV === 'production') {
 
   if (!config.database.url) {
     throw new Error('FATAL: DATABASE_URL not configured');
+  }
+
+  if (config.storefront.url && !config.storefront.revalidateSecret) {
+    console.log(
+      '[CONFIG] WARNING: STOREFRONT_URL is set but STOREFRONT_REVALIDATE_SECRET is missing. ' +
+        'Storefront cache revalidation after product changes will be skipped.'
+    );
   }
 
   // Stripe is optional — warn only

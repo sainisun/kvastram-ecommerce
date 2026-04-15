@@ -11,6 +11,7 @@
     "test:unit:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@paypal/react-paypal-js": "^9.1.1",
     "@react-oauth/google": "^0.12.1",
     "@sentry/nextjs": "^10.39.0",
     "@sentry/replay": "^7.116.0",

@@ -27,6 +27,8 @@ import CountrySelect from '@/components/ui/CountrySelect';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 import { CheckoutSkeleton } from '@/components/ui/Skeleton';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import RazorpayButton from '@/components/checkout/RazorpayButton';
+import PayPalButton from '@/components/checkout/PayPalButton';
 
 // Initialize Stripe
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -178,7 +180,8 @@ export default function CheckoutPage() {
   const [step, setStep] = useState<'shipping' | 'payment' | 'success'>(
     'shipping'
   );
-  const [orderId, setOrderId] = useState('');
+  const [orderId, setOrderId] = useState('');         // display_id for UI
+  const [orderUUID, setOrderUUID] = useState('');      // UUID for payment APIs
   const [clientSecret, setClientSecret] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -483,12 +486,26 @@ export default function CheckoutPage() {
 
       // Create order
       const res = await api.createOrder(payload);
-      const newOrderId = res.order.id;
+      const newOrderUUID = res.order.id;
       setOrderId(res.order.display_id);
+      setOrderUUID(newOrderUUID);
 
-      // Create payment intent
-      const paymentRes = await api.createPaymentIntent(newOrderId);
-      setClientSecret(paymentRes.client_secret);
+      const currencyCode = (currentRegion?.currency_code || 'usd').toLowerCase();
+
+      // For INR (Razorpay) and international PayPal — no Stripe intent needed.
+      // Only create a Stripe intent for currencies without a dedicated provider.
+      const hasRazorpay =
+        currencyCode === 'inr' &&
+        !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      const hasPayPal =
+        currencyCode !== 'inr' &&
+        !!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+
+      if (!hasRazorpay && !hasPayPal) {
+        // Fallback: use Stripe
+        const paymentRes = await api.createPaymentIntent(newOrderUUID);
+        setClientSecret(paymentRes.client_secret);
+      }
 
       // Move to payment step
       setStep('payment');
@@ -959,47 +976,87 @@ export default function CheckoutPage() {
                   Payment
                 </h3>
 
-                {/* PHASE 7.3: Express Checkout Buttons */}
-                {clientSecret && (
-                  <ErrorBoundary fallback={
-                    <p className="text-sm text-stone-500 py-2">Express checkout unavailable. Please use card below.</p>
-                  }>
-                    <Elements stripe={stripePromise} options={{ clientSecret }}>
-                      <ExpressCheckoutForm
-                        orderId={orderId}
+                {/* Razorpay — Indian customers (INR) */}
+                {currency.toLowerCase() === 'inr' &&
+                  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && (
+                    <ErrorBoundary fallback={
+                      <p className="text-sm text-red-600 py-2">Payment failed to load. Please refresh.</p>
+                    }>
+                      <RazorpayButton
+                        orderId={orderUUID}
+                        amount={finalTotal}
+                        currency="INR"
+                        customerName={`${formData.first_name} ${formData.last_name}`.trim()}
+                        customerEmail={formData.email}
+                        customerPhone={formData.phone}
                         onSuccess={handlePaymentSuccess}
                         onError={handlePaymentError}
                       />
-                    </Elements>
-                  </ErrorBoundary>
-                )}
+                    </ErrorBoundary>
+                  )}
 
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-stone-200"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-stone-400">
-                      or pay with card
-                    </span>
-                  </div>
-                </div>
+                {/* PayPal — International customers (non-INR) */}
+                {currency.toLowerCase() !== 'inr' &&
+                  process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID && (
+                    <ErrorBoundary fallback={
+                      <p className="text-sm text-red-600 py-2">PayPal failed to load. Please use card below.</p>
+                    }>
+                      <PayPalButton
+                        orderId={orderUUID}
+                        currency={currency.toUpperCase()}
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                      />
+                    </ErrorBoundary>
+                  )}
 
+                {/* Stripe Express (Apple Pay / Google Pay) — shown when Stripe is the active provider */}
                 {clientSecret && (
-                  <ErrorBoundary fallback={
-                    <div className="p-4 border border-red-200 bg-red-50 rounded text-sm text-red-700">
-                      Payment form failed to load. Please refresh the page to try again.
+                  <>
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-stone-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white text-stone-400">or express checkout</span>
+                      </div>
                     </div>
-                  }>
-                    <Elements stripe={stripePromise} options={{ clientSecret }}>
-                      <PaymentForm
-                        orderId={orderId}
-                        onSuccess={handlePaymentSuccess}
-                        onError={handlePaymentError}
-                      />
-                    </Elements>
-                  </ErrorBoundary>
+                    <ErrorBoundary fallback={
+                      <p className="text-sm text-stone-500 py-2">Express checkout unavailable.</p>
+                    }>
+                      <Elements stripe={stripePromise} options={{ clientSecret }}>
+                        <ExpressCheckoutForm
+                          orderId={orderId}
+                          onSuccess={handlePaymentSuccess}
+                          onError={handlePaymentError}
+                        />
+                      </Elements>
+                    </ErrorBoundary>
+
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-stone-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white text-stone-400">or pay with card</span>
+                      </div>
+                    </div>
+                    <ErrorBoundary fallback={
+                      <div className="p-4 border border-red-200 bg-red-50 rounded text-sm text-red-700">
+                        Payment form failed to load. Please refresh the page.
+                      </div>
+                    }>
+                      <Elements stripe={stripePromise} options={{ clientSecret }}>
+                        <PaymentForm
+                          orderId={orderId}
+                          onSuccess={handlePaymentSuccess}
+                          onError={handlePaymentError}
+                        />
+                      </Elements>
+                    </ErrorBoundary>
+                  </>
                 )}
+
                 <button
                   onClick={() => setStep('shipping')}
                   className="w-full mt-4 border border-stone-300 text-stone-600 py-3 font-medium text-sm hover:bg-stone-50 transition-colors"

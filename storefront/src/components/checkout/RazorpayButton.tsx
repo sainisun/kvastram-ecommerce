@@ -1,0 +1,164 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { CreditCard } from 'lucide-react';
+
+interface RazorpayButtonProps {
+  orderId: string;        // Our DB order ID (UUID)
+  amount: number;         // Amount in paise
+  currency?: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  onSuccess: () => void;
+  onError: (msg: string) => void;
+}
+
+// Razorpay checkout.js is loaded dynamically from their CDN
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
+export default function RazorpayButton({
+  orderId,
+  amount,
+  currency = 'INR',
+  customerName,
+  customerEmail,
+  customerPhone,
+  onSuccess,
+  onError,
+}: RazorpayButtonProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+
+  useEffect(() => {
+    loadRazorpayScript().then(setScriptLoaded);
+  }, []);
+
+  const handlePay = async () => {
+    if (!scriptLoaded) {
+      onError('Payment gateway failed to load. Please refresh and try again.');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+      // Step 1: Create Razorpay order on our backend
+      const res = await fetch(`${API_URL}/store/payments/razorpay/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ order_id: orderId }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to initialize payment');
+      }
+
+      const { razorpay_order_id, amount: rzpAmount, key_id } = await res.json();
+
+      // Step 2: Open Razorpay checkout popup
+      const options = {
+        key: key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: rzpAmount,
+        currency,
+        name: 'Kvastram',
+        description: `Order #${orderId.slice(0, 8)}`,
+        image: '/logo.png',
+        order_id: razorpay_order_id,
+        prefill: {
+          name: customerName || '',
+          email: customerEmail || '',
+          contact: customerPhone || '',
+        },
+        theme: {
+          color: '#1c1917', // stone-900 — matches site palette
+        },
+        handler: async (response: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) => {
+          try {
+            // Step 3: Verify payment signature on our backend
+            const verifyRes = await fetch(
+              `${API_URL}/store/payments/razorpay/verify`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                  order_id: orderId,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              }
+            );
+
+            if (!verifyRes.ok) {
+              const err = await verifyRes.json();
+              throw new Error(err.error || 'Payment verification failed');
+            }
+
+            onSuccess();
+          } catch (err: any) {
+            onError(err.message || 'Payment verification failed');
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', (response: any) => {
+        onError(
+          response.error?.description || 'Payment failed. Please try again.'
+        );
+        setIsProcessing(false);
+      });
+      rzp.open();
+    } catch (err: any) {
+      onError(err.message || 'Failed to initialize payment');
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handlePay}
+      disabled={isProcessing || !scriptLoaded}
+      className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+    >
+      <CreditCard size={16} />
+      {isProcessing ? 'Processing Payment...' : 'Pay with Razorpay'}
+    </button>
+  );
+}

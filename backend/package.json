@@ -31,11 +31,12 @@
     "hono-rate-limiter": "^0.5.3",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.0",
-    "speakeasy": "^2.0.0",
     "pdfkit": "^0.17.2",
     "pg": "^8.18.0",
     "postgres": "^3.4.0",
     "qrcode": "^1.5.4",
+    "razorpay": "^2.9.6",
+    "speakeasy": "^2.0.0",
     "string-replace-async": "^3.0.2",
     "stripe": "^17.7.0",
     "zod": "^3.22.0"

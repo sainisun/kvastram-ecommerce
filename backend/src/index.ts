@@ -47,6 +47,8 @@ import storeAuthRoutes from './routes/store/auth';
 import storeCustomersRouter from './routes/store/customers';
 import checkoutRoutes from './routes/store/checkout';
 import paymentRoutes from './routes/store/payments';
+import razorpayRoutes from './routes/store/payments-razorpay';
+import paypalRoutes from './routes/store/payments-paypal';
 import wholesaleRoutes from './routes/wholesale';
 import wholesaleCustomersRoutes from './routes/wholesale-customers';
 import wholesalePricingRoutes from './routes/store/wholesale-pricing';
@@ -113,6 +115,8 @@ app.use('*', defaultTimeout);
 // Extended timeout for file uploads and webhooks
 app.use('/upload/*', uploadTimeout);
 app.use('/store/payments/webhook', webhookTimeout);
+app.use('/store/payments/razorpay/webhook', webhookTimeout);
+app.use('/store/payments/paypal/webhook', webhookTimeout);
 
 // CORS Configuration
 // In production set ALLOWED_ORIGINS in backend/.env.production, e.g.:
@@ -167,10 +171,15 @@ const csrfForStateChanging = (routes: string[]) => {
 };
 
 // Store Routes - Customer checkout and payments (state-changing only)
+// Note: Webhooks are EXCLUDED — they are server-to-server with signature verification
 csrfForStateChanging([
   '/store/checkout/*',
   '/store/payments/create-intent',
   '/store/payments/status/*',
+  '/store/payments/razorpay/create-order',
+  '/store/payments/razorpay/verify',
+  '/store/payments/paypal/create-order',
+  '/store/payments/paypal/capture',
 ]);
 
 // 🔒 FIX-002: CSRF Protection for Admin Routes
@@ -356,6 +365,8 @@ app.route('/store/auth', storeAuthRoutes);
 app.route('/store/customers', storeCustomersRouter);
 app.route('/store/checkout', checkoutRoutes);
 app.route('/store/payments', paymentRoutes);
+app.route('/store/payments/razorpay', razorpayRoutes);
+app.route('/store/payments/paypal', paypalRoutes);
 app.route('/store/wholesale', wholesalePricingRoutes);
 app.route('/store/wholesale', wholesaleOrdersRoutes);
 app.route('/store/settings', storeSettingsRoutes);
