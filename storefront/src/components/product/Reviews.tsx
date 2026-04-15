@@ -179,7 +179,7 @@ export function Reviews({ productId }: ReviewsProps) {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
           <div>
-            <h2 className="text-2xl font-serif text-stone-900 mb-2">
+            <h2 className="text-2xl font-semibold uppercase tracking-[0.06em] text-stone-900 mb-2">
               Client Reviews
             </h2>
             <div className="flex items-center gap-2">
@@ -193,7 +193,7 @@ export function Reviews({ productId }: ReviewsProps) {
           {!submitted && (
             <button
               onClick={() => setShowForm(!showForm)}
-              className="px-6 py-3 bg-stone-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+              className="px-6 py-3 border border-stone-700 text-stone-800 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors"
             >
               {showForm ? 'Cancel' : 'Write a Review'}
             </button>
@@ -206,7 +206,7 @@ export function Reviews({ productId }: ReviewsProps) {
             onSubmit={handleSubmit}
             className="max-w-xl bg-stone-50 p-8 mb-12 rounded-sm space-y-4"
           >
-            <h3 className="text-lg font-serif mb-4">Share you experience</h3>
+            <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-stone-800 mb-4">Share Your Experience</h3>
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">

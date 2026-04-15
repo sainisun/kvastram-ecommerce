@@ -32,7 +32,7 @@ export default function ProductView({ product }: { product: Product }) {
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState('');
-  const [activeAccordion, setActiveAccordion] = useState<string | null>('description');
+  const [activeAccordion, setActiveAccordion] = useState<string | null>('productDetails');
   const [showStickyATC, setShowStickyATC] = useState(false);
   const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
   const primaryCategory = getPrimaryCategory(product);
@@ -161,8 +161,9 @@ export default function ProductView({ product }: { product: Product }) {
   };
 
   const accordions = [
+    { key: 'productDetails', label: 'Product Details', show: true },
     { key: 'description', label: 'Description', show: true },
-    { key: 'materials', label: 'Materials & Care', show: Boolean(product.material || product.care_instructions || product.origin_country) },
+    { key: 'fabricCare', label: 'Fabric & Care Instructions', show: Boolean(product.material || product.care_instructions || product.origin_country) },
     { key: 'shipping', label: 'Shipping & Returns', show: true },
     { key: 'sizeguide', label: 'Size Guide', show: Boolean(product.size_guide) },
   ].filter((accordion) => accordion.show);
@@ -213,10 +214,9 @@ export default function ProductView({ product }: { product: Product }) {
                   </span>
                 )}
               </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <WishlistButton productId={product.id} title={product.title} price={selectedVariant?.prices?.[0]?.amount || 0} currency={currentRegion?.currency_code?.toUpperCase() || 'USD'} thumbnail={product.thumbnail || undefined} handle={product.handle || product.id} variantId={selectedVariant?.id} showLabel className="rounded-full border border-stone-200 px-4" />
-                <ShareButtons title={product.title} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
-              </div>
+              {selectedVariant?.sku && (
+                <p className="text-[11px] tracking-[0.12em] text-stone-400">SKU: {selectedVariant.sku}</p>
+              )}
             </section>
 
             <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
@@ -282,7 +282,11 @@ export default function ProductView({ product }: { product: Product }) {
                   </div>
                   <button id="add-to-cart-btn" type="button" onClick={handleAddToCart} disabled={!selectedVariant || addedToCart || outOfStock} className={`min-h-12 flex-1 rounded-full px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] transition ${addedToCart ? 'bg-green-700 text-white' : outOfStock ? 'cursor-not-allowed bg-stone-300 text-stone-600' : 'bg-stone-900 text-white hover:bg-stone-800'}`}>{outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag' : 'Add to Bag'}</button>
                 </div>
-                <div className="flex items-center justify-between border-b border-stone-100 pb-4 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
+                <div className="flex items-center gap-3 pt-1">
+                  <WishlistButton productId={product.id} title={product.title} price={selectedVariant?.prices?.[0]?.amount || 0} currency={currentRegion?.currency_code?.toUpperCase() || 'USD'} thumbnail={product.thumbnail || undefined} handle={product.handle || product.id} variantId={selectedVariant?.id} showLabel className="rounded-full border border-stone-200 px-4" />
+                  <ShareButtons title={product.title} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
+                </div>
+                <div className="flex items-center justify-between text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
                   <span className="flex items-center gap-1">
                     {selectedVariant && currentInventory > 0 ? (
                       <>
@@ -309,31 +313,6 @@ export default function ProductView({ product }: { product: Product }) {
               </div>
             </section>
 
-            <section className="space-y-8 rounded-[28px] border border-stone-200 bg-white p-5">
-              <div className="space-y-4">
-                <h2 className="text-[18px] font-semibold uppercase tracking-[0.08em] text-stone-900">Product Details</h2>
-                <p className="text-[15px] leading-[1.8] text-stone-700">{seoContent.intro}</p>
-                <ul className="space-y-3 border-t border-stone-100 pt-4">
-                  {seoContent.bullets.map((item) => (
-                    <li key={item.label} className="flex items-start justify-between gap-6 border-b border-stone-100 pb-3 last:border-b-0">
-                      <span className="text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">{item.label}</span>
-                      <span className="text-right text-stone-700">{item.value}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-[15px] leading-[1.8] text-stone-700">{seoContent.styling}</p>
-                <div className="flex flex-wrap gap-3">
-                  {primaryCategoryPath && primaryCategory && <Link href={primaryCategoryPath} className="border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900">Shop More {primaryCategory.name}</Link>}
-                  <Link href={seoContent.collectionLink || '/collections'} className="border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900">{product.collection?.title ? `Explore ${product.collection.title}` : 'Explore More Collections'}</Link>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <h2 className="text-[18px] font-semibold uppercase tracking-[0.08em] text-stone-900">Fabric & Care Instructions</h2>
-                {product.material && <p className="text-[15px] leading-[1.8] text-stone-700"><span className="font-medium text-stone-900">Fabric:</span> {product.material}</p>}
-                {product.care_instructions && <div className="prose prose-stone prose-sm max-w-none font-[300]"><ReactMarkdown remarkPlugins={[remarkGfm]}>{product.care_instructions}</ReactMarkdown></div>}
-              </div>
-            </section>
-
             <section className="rounded-[28px] border border-stone-200 bg-white p-5">
               {accordions.map((accordion) => (
                 <div key={accordion.key} className="border-b border-stone-100 last:border-b-0">
@@ -348,8 +327,32 @@ export default function ProductView({ product }: { product: Product }) {
                   </button>
                   {activeAccordion === accordion.key && (
                     <div className="pb-5 text-[15px] leading-[1.8] text-stone-600">
+                      {accordion.key === 'productDetails' && (
+                        <div className="space-y-4">
+                          <p className="leading-[1.8]">{seoContent.intro}</p>
+                          <ul className="space-y-3 border-t border-stone-100 pt-4">
+                            {seoContent.bullets.map((item) => (
+                              <li key={item.label} className="flex items-start justify-between gap-6 border-b border-stone-100 pb-3 last:border-b-0">
+                                <span className="text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">{item.label}</span>
+                                <span className="text-right text-stone-700">{item.value}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          {seoContent.styling && <p className="leading-[1.8]">{seoContent.styling}</p>}
+                          <div className="flex flex-wrap gap-3 pt-1">
+                            {primaryCategoryPath && primaryCategory && <Link href={primaryCategoryPath} className="border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900">Shop More {primaryCategory.name}</Link>}
+                            <Link href={seoContent.collectionLink || '/collections'} className="border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900">{product.collection?.title ? `Explore ${product.collection.title}` : 'Explore More Collections'}</Link>
+                          </div>
+                        </div>
+                      )}
                       {accordion.key === 'description' && <div className="prose prose-stone prose-sm max-w-none font-[300]"><ReactMarkdown remarkPlugins={[remarkGfm]}>{product.description || ''}</ReactMarkdown></div>}
-                      {accordion.key === 'materials' && <div className="space-y-4">{product.material && <p><span className="font-medium text-stone-900">Fabric:</span> {product.material}</p>}{product.origin_country && <p><span className="font-medium text-stone-900">Origin:</span> {product.origin_country}</p>}{product.care_instructions && <div className="prose prose-stone prose-sm max-w-none font-[300]"><ReactMarkdown remarkPlugins={[remarkGfm]}>{product.care_instructions}</ReactMarkdown></div>}</div>}
+                      {accordion.key === 'fabricCare' && (
+                        <div className="space-y-4">
+                          {product.material && <p><span className="font-medium text-stone-900">Fabric:</span> {product.material}</p>}
+                          {product.origin_country && <p><span className="font-medium text-stone-900">Origin:</span> {product.origin_country}</p>}
+                          {product.care_instructions && <div className="prose prose-stone prose-sm max-w-none font-[300]"><ReactMarkdown remarkPlugins={[remarkGfm]}>{product.care_instructions}</ReactMarkdown></div>}
+                        </div>
+                      )}
                       {accordion.key === 'shipping' && <div className="space-y-4"><p>Free express shipping on orders over $250, with delivery in {deliveryDate || '5-14 business days'}.</p><p>Returns and exchanges are accepted within 30 days when items are unworn and in original packaging.</p></div>}
                       {accordion.key === 'sizeguide' && <div>{typeof product.size_guide === 'string' ? <div className="prose prose-stone prose-sm max-w-none font-[300]"><ReactMarkdown remarkPlugins={[remarkGfm]}>{product.size_guide}</ReactMarkdown></div> : <button type="button" onClick={() => setShowSizeGuide(true)} className="font-medium text-stone-900 underline">View Full Size Guide</button>}</div>}
                     </div>
