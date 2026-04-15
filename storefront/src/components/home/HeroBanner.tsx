@@ -75,7 +75,7 @@ export function HeroBanner() {
 
   if (loading) {
     return (
-      <div className="relative h-[90vh] min-h-[500px] max-h-[750px] w-full overflow-hidden bg-gray-200 animate-pulse md:h-[600px]">
+      <div className="relative w-full overflow-hidden bg-gray-200 animate-pulse" style={{ height: 'calc(100svh - 72px)', minHeight: '400px' }}>
         <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200" />
       </div>
     );
@@ -103,7 +103,7 @@ export function HeroBanner() {
 
   return (
     <section className="hero-section homepage-slider relative w-full overflow-hidden bg-stone-100">
-      <div className="hero-banner relative h-[90vh] min-h-[500px] max-h-[750px] w-full md:h-[600px]">
+      <div className="hero-banner relative w-full" style={{ height: 'calc(100svh - 72px)', minHeight: '400px' }}>
         {banners.map((banner, index) => (
           <div
             key={banner.id}

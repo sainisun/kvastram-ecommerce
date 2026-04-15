@@ -104,9 +104,6 @@ export default async function Home() {
       {/* Reveal observer client component wrapper */}
       <RevealOnScroll>
         <div className="min-h-screen" style={{ background: 'var(--white)' }}>
-          <div className="block md:hidden">
-            <CategoryCircles />
-          </div>
           {isAnnouncementEnabled ? (
             <div
               style={{
@@ -158,6 +155,9 @@ export default async function Home() {
           ) : null}
 
           <HeroBanner />
+          <div className="block md:hidden">
+            <CategoryCircles />
+          </div>
           <section className="mx-auto max-w-5xl px-6 py-10 text-center md:py-14">
             <h1 className="font-heading text-4xl font-semibold uppercase tracking-[0.02em] text-stone-900 md:text-5xl">
               Handcrafted Indian Ethnic Wear for Women
