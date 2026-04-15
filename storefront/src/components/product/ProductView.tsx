@@ -170,7 +170,7 @@ export default function ProductView({ product }: { product: Product }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 pb-24 pt-0 sm:px-6 sm:pt-4 lg:px-8 lg:pt-6">
+      <div className="mx-auto max-w-7xl px-4 pb-24 pt-4 sm:px-6 sm:pt-4 lg:px-8 lg:pt-6">
         <nav aria-label="Breadcrumb" className="mb-6 hidden items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400 lg:flex">
           <Link href="/" className="transition-colors hover:text-stone-900">Home</Link>
           <span>/</span>
@@ -183,7 +183,7 @@ export default function ProductView({ product }: { product: Product }) {
           <span className="truncate text-stone-700">{product.title}</span>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,460px)] lg:gap-12">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,460px)] lg:gap-12">
           <div className="-mx-4 sm:-mx-6 lg:mx-0">
             <ProductGallery media={galleryMedia} title={product.title} videos={product.videos || []} />
           </div>

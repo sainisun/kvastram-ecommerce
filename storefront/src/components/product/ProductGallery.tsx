@@ -195,7 +195,7 @@ export default function ProductGallery({
               data-index={index}
               className="relative w-full shrink-0 snap-center bg-[#fafafa]"
             >
-              <div className="relative aspect-[4/5] overflow-hidden">
+              <div className="relative aspect-[3/4] max-h-[75vh] overflow-hidden">
                 {item.type === 'video' ? (
                   <>
                     <video
@@ -273,7 +273,7 @@ export default function ProductGallery({
                   key={`${item.id}-thumb`}
                   type="button"
                   onClick={() => scrollToIndex(index)}
-                  className={`relative h-20 w-16 shrink-0 overflow-hidden rounded-2xl border bg-stone-100 ${
+                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-xl border bg-stone-100 ${
                     activeIndex === index
                       ? 'border-stone-900'
                       : 'border-transparent opacity-70'
