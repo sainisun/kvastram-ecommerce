@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { serve } from '@hono/node-server';
+import { serve, serveStatic } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
@@ -105,6 +105,9 @@ if (process.env.NODE_ENV !== 'production') {
     await next();
   });
 }
+
+// Serve uploaded files as static assets (no auth required)
+app.use('/uploads/*', serveStatic({ root: '/app' }));
 
 // Security & Logging Middleware
 app.use('*', secureHeaders());
