@@ -13,6 +13,7 @@ import { SizeGuide } from '@/components/product/SizeGuide';
 import ShareButtons from '@/components/ui/ShareButtons';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { useCart } from '@/context/cart-context';
+import { useCurrency } from '@/context/currency-context';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import { useShop } from '@/context/shop-context';
 import { useInventoryWebSocket } from '@/hooks/useInventoryWebSocket';
@@ -26,6 +27,7 @@ function getColorHex(colorName: string) {
 
 export default function ProductView({ product }: { product: Product }) {
   const { currentRegion } = useShop();
+  const { formatPrice, currency: userCurrency } = useCurrency();
   const { addItem } = useCart();
   const { addItem: addToRecentlyViewed } = useRecentlyViewed();
   const [quantity, setQuantity] = useState(1);
@@ -108,14 +110,15 @@ export default function ProductView({ product }: { product: Product }) {
 
   const currentInventory = selectedVariant ? realTimeInventory[selectedVariant.id] ?? selectedVariant.inventory_quantity : 0;
   const prices = selectedVariant?.prices || [];
-  const priceObj = prices.find((price: MoneyAmount) => price.currency_code === (currentRegion?.currency_code || 'usd').toLowerCase()) || prices[0];
-  const currency = priceObj?.currency_code || 'USD';
-  const amount = priceObj?.amount || 0;
+  // Always use INR price as base for currency conversion
+  const inrPriceObj = prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || prices[0];
+  const amount = inrPriceObj?.amount || 0;
   const compareAtAmount = selectedVariant?.compare_at_price;
-  const formattedPrice = new Intl.NumberFormat('en-IN', { style: 'currency', currency: currency.toUpperCase() }).format(amount / 100);
-  const formattedComparePrice = compareAtAmount
-    ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: currency.toUpperCase() }).format(compareAtAmount / 100)
-    : null;
+  // Format in user's detected local currency
+  const formattedPrice = amount ? formatPrice(amount) : '';
+  const formattedComparePrice = compareAtAmount ? formatPrice(compareAtAmount) : null;
+  // Keep currency for cart/analytics
+  const currency = userCurrency || inrPriceObj?.currency_code || 'INR';
   const outOfStock = currentInventory <= 0;
 
   const galleryMedia =

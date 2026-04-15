@@ -17,28 +17,6 @@ interface Region {
   currency_code: string;
 }
 
-function getCurrencyHint(currencyCode: string) {
-  switch (currencyCode.toLowerCase()) {
-    case 'inr': return 'INR ₹';
-    case 'usd': return 'USD $';
-    case 'eur': return 'EUR €';
-    default:    return currencyCode.toUpperCase();
-  }
-}
-
-function getPricePlaceholder(currencyCode: string) {
-  return currencyCode.toLowerCase() === 'inr' ? 'e.g. 1999' : 'e.g. 49.99';
-}
-
-function getCurrencySymbol(currencyCode: string) {
-  switch (currencyCode.toLowerCase()) {
-    case 'usd': return '$';
-    case 'eur': return '€';
-    case 'inr': return '₹';
-    default:    return currencyCode.toUpperCase();
-  }
-}
-
 function getCoverThumbnail(mediaItems: ProductMediaItem[]) {
   const coverItem = mediaItems.find((item) => item.is_thumbnail) || mediaItems[0];
   if (!coverItem) return '';
@@ -169,11 +147,12 @@ export default function NewProductPage() {
   });
 
   const [mediaItems, setMediaItems] = useState<ProductMediaItem[]>([]);
-  const [prices, setPrices]         = useState<Record<string, string>>({});
+  // Single INR price — storefront converts to buyer's local currency automatically
+  const [inrPrice, setInrPrice] = useState('');
 
-  // ── INR preview price: first region with 'inr' currency, or first filled price
-  const inrRegion  = regions.find((r) => r.currency_code.toLowerCase() === 'inr');
-  const previewInrPrice = inrRegion ? (prices[inrRegion.id] || '') : '';
+  // INR region (from DB) — needed to build the prices payload
+  const inrRegion = regions.find((r) => r.currency_code.toLowerCase() === 'inr');
+  const previewInrPrice = inrPrice;
 
   useEffect(() => {
     api.getRegions().then((d) => setRegions(d.regions || [])).catch(() => {});
@@ -216,9 +195,6 @@ export default function NewProductPage() {
     });
   };
 
-  const handlePriceChange = (regionId: string, value: string) =>
-    setPrices((p) => ({ ...p, [regionId]: value }));
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
@@ -228,13 +204,14 @@ export default function NewProductPage() {
       if (mediaItems.length < 3)
         throw new Error('Add at least 3 media items before saving this product.');
 
-      const formattedPrices = regions
-        .filter((r) => prices[r.id])
-        .map((r) => ({
-          region_id: r.id,
-          currency_code: r.currency_code,
-          amount: Math.round(Number.parseFloat(prices[r.id]) * 100),
-        }));
+      // Save price only for the INR region — storefront converts to buyer's currency
+      const formattedPrices = inrRegion && inrPrice
+        ? [{
+            region_id: inrRegion.id,
+            currency_code: 'inr',
+            amount: Math.round(Number.parseFloat(inrPrice) * 100),
+          }]
+        : [];
 
       const payload = {
         ...formData,
@@ -396,46 +373,38 @@ export default function NewProductPage() {
           <div className={cardCls}>
             <div className="flex items-center gap-2 mb-2">
               <DollarSign size={18} className="text-green-600" />
-              <h2 className="text-base font-bold text-gray-800">International Pricing</h2>
+              <h2 className="text-base font-bold text-gray-800">Price</h2>
             </div>
             <p className="text-sm text-gray-500 mb-5">
-              Set prices per region. The correct price is served based on customer location.
+              Enter the price in Indian Rupees (₹). Customers worldwide will see it
+              automatically converted to their local currency.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {regions.map((region) => (
-                <div key={region.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">
-                      {region.name} ({getCurrencyHint(region.currency_code)})
-                    </span>
-                    <span className="text-[10px] font-bold bg-white px-2 py-0.5 rounded border uppercase text-gray-500">
-                      {region.currency_code}
-                    </span>
-                  </div>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold text-sm">
-                      {getCurrencySymbol(region.currency_code)}
-                    </span>
-                    <input
-                      type="number" value={prices[region.id] || ''}
-                      onChange={(e) => handlePriceChange(region.id, e.target.value)}
-                      className="w-full pl-8 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm"
-                      placeholder={getPricePlaceholder(region.currency_code)}
-                    />
-                  </div>
-                  <p className="mt-1.5 text-xs text-gray-500">
-                    Full selling price in {getCurrencyHint(region.currency_code)}.
-                  </p>
-                </div>
-              ))}
-              {regions.length === 0 && (
-                <div className="col-span-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-                  No regions found. Create India (INR) in{' '}
-                  <Link href="/dashboard/regions" className="font-semibold underline">
-                    Regions Settings
-                  </Link>{' '}
-                  before saving prices.
-                </div>
+            <div className="max-w-xs">
+              <label htmlFor="inr_price" className={labelCls}>
+                Price (INR ₹) <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
+                <input
+                  id="inr_price" type="number" min="0" step="1"
+                  value={inrPrice}
+                  onChange={(e) => setInrPrice(e.target.value)}
+                  className="w-full pl-8 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm"
+                  placeholder="e.g. 1999"
+                />
+              </div>
+              {inrPrice && (
+                <p className="mt-2 text-xs text-gray-500">
+                  ≈ ${(Number(inrPrice) * 0.012).toFixed(2)} USD &nbsp;·&nbsp;
+                  €{(Number(inrPrice) * 0.011).toFixed(2)} EUR
+                  <span className="ml-1 text-gray-400">(indicative)</span>
+                </p>
+              )}
+              {!inrRegion && (
+                <p className="mt-2 text-xs text-red-600">
+                  India (INR) region not found.{' '}
+                  <Link href="/dashboard/regions" className="underline font-semibold">Create it here.</Link>
+                </p>
               )}
             </div>
           </div>

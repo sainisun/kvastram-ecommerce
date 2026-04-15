@@ -5,6 +5,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { useCurrency } from '@/context/currency-context';
 import { useShop } from '@/context/shop-context';
 import { useCart } from '@/context/cart-context';
 import { Loader2, Filter, ArrowLeft } from 'lucide-react';
@@ -25,6 +26,7 @@ function SearchContent() {
     max?: string;
   }>({});
   const { currentRegion } = useShop();
+  const { formatPrice: formatCurrencyPrice } = useCurrency();
   const { addItem } = useCart();
 
   useEffect(() => {
@@ -75,26 +77,11 @@ function SearchContent() {
   };
 
   const formatPrice = (product: Product) => {
-    if (!currentRegion) return 'Loading...';
-    if (!product.variants || product.variants.length === 0)
-      return 'Unavailable';
-
+    if (!product.variants || product.variants.length === 0) return 'Unavailable';
     const prices = product.variants[0].prices || [];
-    const price = prices.find(
-      (p: MoneyAmount) =>
-        p.currency_code === currentRegion.currency_code?.toLowerCase()
-    );
-    const fallback = prices[0];
-
-    const validPrice = price || fallback;
-
-    if (validPrice) {
-      return new Intl.NumberFormat(undefined, {
-        style: 'currency',
-        currency: validPrice.currency_code.toUpperCase(),
-      }).format(validPrice.amount / 100);
-    }
-
+    // Prefer INR base price for conversion, fall back to first available
+    const inrPrice = prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || prices[0];
+    if (inrPrice) return formatCurrencyPrice(inrPrice.amount);
     return 'Contact for price';
   };
 

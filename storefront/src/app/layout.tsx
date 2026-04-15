@@ -8,6 +8,7 @@ import { RootErrorBoundary } from '@/components/RootErrorBoundary';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { AuthProvider } from '@/context/auth-context';
 import { CartProvider } from '@/context/cart-context';
+import { CurrencyProvider } from '@/context/currency-context';
 import { NotificationProvider } from '@/context/notification-context';
 import { RecentlyViewedProvider } from '@/context/recently-viewed-context';
 import { ShopProvider } from '@/context/shop-context';
@@ -116,6 +117,7 @@ export default async function RootLayout({
 
         <RootErrorBoundary>
           <NotificationProvider>
+            <CurrencyProvider>
             <ShopProvider>
               <AuthProvider>
                 <LogRocketProvider>
@@ -133,6 +135,7 @@ export default async function RootLayout({
                 </LogRocketProvider>
               </AuthProvider>
             </ShopProvider>
+            </CurrencyProvider>
           </NotificationProvider>
         </RootErrorBoundary>
         <Analytics />

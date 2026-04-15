@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { useCurrency } from '@/context/currency-context';
 
 interface Product {
   id: string;
@@ -20,6 +23,8 @@ interface BestsellersSectionProps {
 }
 
 export function BestsellersSection({ products }: BestsellersSectionProps) {
+  const { formatPrice } = useCurrency();
+
   if (products.length === 0) return null;
 
   return (
@@ -44,12 +49,11 @@ export function BestsellersSection({ products }: BestsellersSectionProps) {
       <div className="product-grid-prem">
         {products.slice(0, 4).map((product: Product) => {
           const priceObj = product.variants?.[0]?.prices?.[0];
-          const price = priceObj
-            ? new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: priceObj.currency_code?.toUpperCase() || 'USD',
-              }).format(priceObj.amount / 100)
-            : '';
+          // Find INR price first (base), fall back to first available
+          const inrPriceObj = product.variants?.[0]?.prices?.find(
+            (p) => p.currency_code?.toLowerCase() === 'inr'
+          ) ?? priceObj;
+          const price = inrPriceObj ? formatPrice(inrPriceObj.amount) : '';
 
           return (
             <Link
