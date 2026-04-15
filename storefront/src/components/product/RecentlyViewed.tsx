@@ -19,12 +19,12 @@ export function RecentlyViewedSection() {
   };
 
   return (
-    <section className="py-16 border-t border-stone-100">
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-2xl font-serif text-stone-900 mb-8">
+    <section className="py-12 border-t border-stone-100 lg:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <h2 className="text-xl font-semibold uppercase tracking-[0.06em] text-stone-900 mb-6 lg:text-2xl lg:mb-8">
           Recently Viewed
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-6">
           {items.slice(0, 6).map((item) => (
             <Link
               key={item.id}

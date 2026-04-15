@@ -68,7 +68,7 @@ export function BackInStock({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-2">
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <div className="relative flex-1">
             <Mail
               size={16}
@@ -86,10 +86,10 @@ export function BackInStock({
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-3 bg-stone-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-stone-800 transition-colors disabled:opacity-50"
+            className="w-full px-4 py-3 bg-stone-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-stone-800 transition-colors disabled:opacity-50 sm:w-auto"
           >
             {loading ? (
-              <Loader2 size={16} className="animate-spin" />
+              <Loader2 size={16} className="animate-spin mx-auto" />
             ) : (
               'Notify Me'
             )}

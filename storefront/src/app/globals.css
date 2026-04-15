@@ -1619,6 +1619,18 @@ a:active,
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
+  .prod-info-prem {
+    padding: 12px 12px 16px !important;
+  }
+
+  .prod-name-prem {
+    font-size: 12px !important;
+  }
+
+  .prod-price-prem {
+    font-size: 12px !important;
+  }
+
   .editorial-prem {
     grid-template-columns: 1fr !important;
   }

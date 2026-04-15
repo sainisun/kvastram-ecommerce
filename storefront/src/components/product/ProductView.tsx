@@ -219,11 +219,11 @@ export default function ProductView({ product }: { product: Product }) {
               )}
             </section>
 
-            <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
+            <div className="grid grid-cols-2 gap-2">
               {[{ icon: Truck, label: 'Free Shipping' }, { icon: RotateCcw, label: '30-Day Returns' }, { icon: ShieldCheck, label: 'Secure Payment' }, { icon: Star, label: 'Artisan Authentic' }].map((badge) => (
-                <div key={badge.label} className="flex min-w-[170px] items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3">
-                  <badge.icon size={18} className="text-stone-700" />
-                  <span className="text-[13px] font-medium text-stone-700">{badge.label}</span>
+                <div key={badge.label} className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-3">
+                  <badge.icon size={16} className="shrink-0 text-stone-700" />
+                  <span className="text-[12px] font-medium leading-tight text-stone-700">{badge.label}</span>
                 </div>
               ))}
             </div>
@@ -287,24 +287,28 @@ export default function ProductView({ product }: { product: Product }) {
                   <ShareButtons title={product.title} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
                 </div>
                 <div className="flex items-center justify-between text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5">
                     {selectedVariant && currentInventory > 0 ? (
                       <>
-                        <span className="h-2 w-2 rounded-full bg-green-500" />
+                        <span className="h-2 w-2 shrink-0 rounded-full bg-green-500" />
                         {currentInventory <= 5 ? `Only ${currentInventory} left` : 'In Stock, Ready to Ship'}
                         {isConnected ? <Wifi size={10} className="text-green-600" /> : <WifiOff size={10} className="text-stone-400" />}
                       </>
                     ) : (
                       <>
-                        <span className="h-2 w-2 rounded-full bg-red-500" />
+                        <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
                         Out of Stock
                         {isConnected ? <Wifi size={10} className="text-green-600" /> : <WifiOff size={10} className="text-stone-400" />}
-                        <BackInStock productId={product.id} variantId={selectedVariant?.id} productTitle={product.title} />
                       </>
                     )}
                   </span>
                   <button type="button" onClick={() => setShowSizeGuide(true)} className="underline transition-colors hover:text-stone-900">Size Guide</button>
                 </div>
+                {outOfStock && selectedVariant && (
+                  <div className="pt-1">
+                    <BackInStock productId={product.id} variantId={selectedVariant.id} productTitle={product.title} />
+                  </div>
+                )}
                 <div className="space-y-2 bg-stone-50 p-4">
                   <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-stone-900">Estimated Delivery</p>
                   <p className="text-[15px] font-[300] leading-[1.7] text-stone-600">Order now to receive by <span className="font-medium text-stone-900">{deliveryDate}</span>.</p>
