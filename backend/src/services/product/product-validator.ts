@@ -52,7 +52,7 @@ export const CreateProductSchema = z.object({
   seo_title: z.string().optional(),
   seo_description: z.string().optional(),
   inventory_quantity: z.number().int().optional().default(0),
-  thumbnail: z.string().url().optional(),
+  thumbnail: z.string().url().optional().or(z.literal('')).transform(v => v === '' ? undefined : v),
   sku: z.string().optional(),
   collection_id: z.string().uuid().optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),

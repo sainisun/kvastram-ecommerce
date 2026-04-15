@@ -23,6 +23,23 @@ interface Region {
   currency_code: string;
 }
 
+function getCurrencyHint(currencyCode: string) {
+  switch (currencyCode.toLowerCase()) {
+    case 'inr':
+      return 'INR ₹';
+    case 'usd':
+      return 'USD $';
+    case 'eur':
+      return 'EUR €';
+    default:
+      return currencyCode.toUpperCase();
+  }
+}
+
+function getPricePlaceholder(currencyCode: string) {
+  return currencyCode.toLowerCase() === 'inr' ? 'e.g. 1999' : 'e.g. 49.99';
+}
+
 function getCoverThumbnail(mediaItems: ProductMediaItem[]) {
   const coverItem = mediaItems.find((item) => item.is_thumbnail) || mediaItems[0];
 
@@ -390,6 +407,12 @@ export default function EditProductPage() {
     setLoading(true);
 
     try {
+      if (!formData.title?.trim()) {
+        throw new Error('Product title is required.');
+      }
+      if (!formData.handle?.trim()) {
+        throw new Error('URL handle is required.');
+      }
       if (mediaItems.length < 3) {
         throw new Error('Add at least 3 media items before saving this product.');
       }
@@ -418,7 +441,7 @@ export default function EditProductPage() {
           position: idx,
           metadata: item.metadata || undefined,
         })),
-        thumbnail: getCoverThumbnail(mediaItems),
+        thumbnail: getCoverThumbnail(mediaItems) || undefined,
         category_ids: selectedCategoryIds,
         tag_ids: selectedTagIds,
       };
@@ -611,7 +634,7 @@ export default function EditProductPage() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-gray-700">
-                      {region.name}
+                      {region.name} ({getCurrencyHint(region.currency_code)})
                     </span>
                     <span className="text-xs font-bold bg-white px-2 py-1 rounded border uppercase text-gray-500">
                       {region.currency_code}
@@ -639,15 +662,22 @@ export default function EditProductPage() {
                         handlePriceChange(region.id, e.target.value)
                       }
                       className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                      placeholder="0.00"
+                      placeholder={getPricePlaceholder(region.currency_code)}
                     />
                   </div>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Enter the full selling price in {getCurrencyHint(region.currency_code)}.
+                  </p>
                 </div>
               ))}
               {regions.length === 0 && (
-                <p className="text-sm text-red-500 col-span-2">
-                  No regions found. Please create regions in Settings first.
-                </p>
+                <div className="col-span-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                  No regions found. Create India (INR) in{' '}
+                  <Link href="/dashboard/regions" className="font-semibold underline">
+                    Regions Settings
+                  </Link>{' '}
+                  before saving prices.
+                </div>
               )}
             </div>
           </div>
