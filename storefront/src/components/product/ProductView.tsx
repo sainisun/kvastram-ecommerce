@@ -374,7 +374,8 @@ export default function ProductView({ product }: { product: Product }) {
       <Reviews productId={product.id} />
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} sizeGuide={product.size_guide} />
 
-      <div className={`fixed bottom-0 left-0 right-0 z-50 flex items-center gap-3 border-t border-stone-200 bg-white px-4 py-3 shadow-2xl transition-transform duration-300 md:hidden ${showStickyATC ? 'translate-y-0' : 'translate-y-full'}`} aria-hidden={!showStickyATC}>
+      {/* Sticky ATC: sits above BottomNav (h-16 = 64px) on mobile */}
+      <div className={`fixed bottom-16 left-0 right-0 z-40 flex items-center gap-3 border-t border-stone-200 bg-white px-4 py-3 shadow-2xl transition-transform duration-300 md:bottom-0 md:hidden ${showStickyATC ? 'translate-y-0' : 'translate-y-full'}`} aria-hidden={!showStickyATC}>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">{product.title}</p>
           <p className="text-[14px] font-medium text-stone-900">{formattedPrice}</p>
