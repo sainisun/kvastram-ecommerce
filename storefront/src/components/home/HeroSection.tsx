@@ -58,11 +58,11 @@ export function HeroSection() {
   const current = banners[activeIndex] ?? STATIC_HERO;
 
   if (loading) {
-    return <div className="w-full bg-zinc-200 animate-pulse" style={{ height: '751px' }} />;
+    return <div className="w-full bg-zinc-200 animate-pulse h-[65vh] md:h-[751px]" />;
   }
 
   return (
-    <section className="relative w-full overflow-hidden" style={{ height: '751px' }}>
+    <section className="relative w-full overflow-hidden h-[65vh] md:h-[751px]">
       {current.image_url ? (
         <OptimizedImage
           src={current.image_url}

@@ -20,7 +20,7 @@ import { InstagramReels } from '@/components/home/InstagramReels';
 import { BrandStory } from '@/components/home/BrandStory';
 import { SeenOnYou } from '@/components/home/SeenOnYou';
 import { FabricsSection } from '@/components/home/FabricsSection';
-import { StatsSection } from '@/components/home/StatsSection';
+
 import HomeSectionsClient from '@/components/home/HomeSectionsClient';
 
 export const revalidate = 60;
@@ -88,19 +88,6 @@ export default async function Home() {
     'Exclusive Artisan Collections',
   ];
 
-  // ── Stats (admin-configurable) ──
-  const statsData = [
-    { num: homepageSettings.stat_customer_rating || '4.9 Star Rating', label: 'Customer Rating' },
-    { num: homepageSettings.stat_happy_customers || '15,000+', label: 'Happy Customers' },
-    { num: homepageSettings.stat_countries_served || '150+', label: 'Countries Served' },
-    {
-      num:
-        homepageSettings.stat_return_policy && homepageSettings.stat_return_policy !== '30-Day'
-          ? homepageSettings.stat_return_policy
-          : '10+',
-      label: 'Years of Crafting',
-    },
-  ];
 
   const homepageSchema = [
     buildOrganizationJsonLd(),
@@ -176,8 +163,7 @@ export default async function Home() {
       {/* 3. Trending Reels — 9:16 cards */}
       <TrendingReels />
 
-      {/* 4. Stats strip */}
-      <StatsSection statsData={statsData} />
+
 
       {/* 5. Categories Grid — 2-col */}
       <CategoriesGrid />
@@ -194,17 +180,16 @@ export default async function Home() {
         speed="22s"
       />
 
+      {/* eslint-disable @typescript-eslint/no-explicit-any */}
       {/* 7. New Arrivals — 2-col product grid */}
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <NewArrivals products={products as any[]} />
 
       {/* 8. Best Sellers — horizontal carousel */}
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <BestSellers products={products as any[]} />
 
       {/* 9. Customer Testimonials — carousel with nav */}
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <Testimonials testimonials={testimonials as any[]} />
+      {/* eslint-enable @typescript-eslint/no-explicit-any */}
 
       {/* 10. Instagram Reels — @kvastram section */}
       <InstagramReels />
@@ -220,12 +205,7 @@ export default async function Home() {
 
       {/* Collections section — kept for existing functionality */}
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <HomeSectionsClient
-        products={[]}
-        featuredProductIds={[]}
-        testimonialsList={[]}
-        collections={collections as any[]}
-      />
+      <HomeSectionsClient collections={collections as any[]} />
     </>
   );
 }

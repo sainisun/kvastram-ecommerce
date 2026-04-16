@@ -42,16 +42,16 @@ function ReelCard({ reel }: { reel: TrendingReelItem }) {
   return (
     <Link
       href={reel.link_url}
-      className="min-w-[140px] flex flex-col gap-3"
+      className="shrink-0 w-[75vw] sm:w-[320px] flex flex-col gap-3 snap-center"
       onMouseEnter={() => void handleStartPlayback()}
       onMouseLeave={handleStopPlayback}
     >
-      <div className="aspect-[9/16] bg-zinc-200 relative overflow-hidden">
+      <div className="aspect-[9/16] bg-zinc-200 relative overflow-hidden rounded-xl shadow-sm">
         <OptimizedImage
           src={reel.thumbnail_url}
           alt={reel.product_name}
           fill
-          sizes="140px"
+          sizes="(max-width: 640px) 75vw, 320px"
           className={`object-cover transition-opacity duration-300 ${isPlaying ? 'opacity-0' : 'opacity-100'}`}
         />
         <video
@@ -66,13 +66,13 @@ function ReelCard({ reel }: { reel: TrendingReelItem }) {
         />
         {!isPlaying && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <PlayCircle className="text-white opacity-80" size={30} />
+            <PlayCircle className="text-white opacity-80" size={44} strokeWidth={1} />
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-0.5">
-        <span className="text-[11px] text-zinc-500 uppercase truncate">{reel.product_name}</span>
-        <span className="text-[12px] font-bold text-black">{reel.price}</span>
+      <div className="flex flex-col gap-1 items-center text-center mt-1">
+        <span className="text-[12px] text-zinc-500 uppercase truncate w-full px-2">{reel.product_name}</span>
+        <span className="text-[13px] font-bold text-black">{reel.price}</span>
       </div>
     </Link>
   );
@@ -95,17 +95,19 @@ export function TrendingReels() {
   if (!loading && reels.length === 0) return null;
 
   return (
-    <section className="py-16 bg-white">
-      <h3 className="px-6 mb-8 text-[11px] font-bold tracking-[0.2em] uppercase text-black">
+    <section className="py-16 bg-white overflow-hidden">
+      <h3 className="px-[12.5vw] sm:px-[calc(50vw-160px)] mb-8 text-[11px] font-bold tracking-[0.2em] uppercase text-black">
         TRENDING NOW
       </h3>
-      <div className="overflow-x-auto no-scrollbar flex gap-4 px-6">
+      <div className="overflow-x-auto no-scrollbar flex gap-6 px-[12.5vw] sm:px-[calc(50vw-160px)] snap-x snap-mandatory pb-4">
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="min-w-[140px] flex flex-col gap-3">
-                <div className="aspect-[9/16] bg-zinc-200 animate-pulse" />
-                <div className="h-3 w-20 bg-zinc-200 rounded animate-pulse" />
-                <div className="h-4 w-16 bg-zinc-200 rounded animate-pulse" />
+              <div key={i} className="shrink-0 w-[75vw] sm:w-[320px] flex flex-col gap-3 snap-center">
+                <div className="aspect-[9/16] bg-zinc-200 animate-pulse rounded-xl shadow-sm" />
+                <div className="flex flex-col items-center gap-1 mt-1">
+                  <div className="h-3 w-3/4 bg-zinc-200 rounded animate-pulse" />
+                  <div className="h-4 w-1/3 bg-zinc-200 rounded animate-pulse" />
+                </div>
               </div>
             ))
           : reels.map((reel) => <ReelCard key={reel.id} reel={reel} />)}
