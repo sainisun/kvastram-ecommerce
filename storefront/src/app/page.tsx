@@ -1,15 +1,6 @@
-import { api } from '@/lib/api';
-import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { MarqueeStrip } from '@/components/ui/MarqueeStrip';
-import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
-import { StatsSection } from '@/components/home/StatsSection';
-import { CategorySection } from '@/components/home/CategorySection';
-import HomeSectionsClient from '@/components/home/HomeSectionsClient';
-import { CommunitySection } from '@/components/home/CommunitySection';
-import { CategoryCircles } from '@/components/home/CategoryCircles';
-import { HeroBanner } from '@/components/home/HeroBanner';
-import { TrendingReels } from '@/components/home/TrendingReels';
+import type { Metadata } from 'next';
+import { api } from '@/lib/api';
 import {
   buildBreadcrumbJsonLd,
   buildHomepageMetadata,
@@ -17,16 +8,45 @@ import {
   buildWebsiteJsonLd,
   serializeJsonLd,
 } from '@/lib/seo';
+import { MarqueeStrip } from '@/components/ui/MarqueeStrip';
+import { CircularCategories } from '@/components/home/CircularCategories';
+import { HeroSection } from '@/components/home/HeroSection';
+import { TrendingReels } from '@/components/home/TrendingReels';
+import { CategoriesGrid } from '@/components/home/CategoriesGrid';
+import { NewArrivals } from '@/components/home/NewArrivals';
+import { BestSellers } from '@/components/home/BestSellers';
+import { Testimonials } from '@/components/home/Testimonials';
+import { InstagramReels } from '@/components/home/InstagramReels';
+import { BrandStory } from '@/components/home/BrandStory';
+import { SeenOnYou } from '@/components/home/SeenOnYou';
+import { FabricsSection } from '@/components/home/FabricsSection';
+import { StatsSection } from '@/components/home/StatsSection';
+import HomeSectionsClient from '@/components/home/HomeSectionsClient';
 
-export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
+export const revalidate = 60;
 
 export const metadata: Metadata = buildHomepageMetadata();
 
 export default async function Home() {
-  // All existing API calls preserved exactly.
-  const homepageData = await api.getHomepageSettings();
-  const homepageSettings = homepageData.settings || {};
+  // ── Fetch all homepage data in parallel; one failure won't break others ──
+  const [
+    homepageResult,
+    productsResult,
+    testimonialsResult,
+    collectionsResult,
+  ] = await Promise.allSettled([
+    api.getHomepageSettings(),
+    api.getProducts({ limit: 8, sort: 'newest' }),
+    api.getTestimonials(),
+    api.getCollections(),
+  ]);
 
+  const homepageSettings =
+    homepageResult.status === 'fulfilled'
+      ? homepageResult.value.settings || {}
+      : {};
+
+  // Featured product IDs from admin settings
   const featuredProductIds = homepageSettings.featured_product_ids
     ? homepageSettings.featured_product_ids
         .split(',')
@@ -34,54 +54,48 @@ export default async function Home() {
         .filter(Boolean)
     : [];
 
-  let productsData;
+  // If admin has specified featured products, fetch those specifically
+  let products: unknown[] = [];
   if (featuredProductIds.length > 0) {
-    productsData = await api.getFeaturedProducts(featuredProductIds);
-  } else {
-    productsData = await api.getProducts({ limit: 8, sort: 'newest' });
+    try {
+      const featuredResult = await api.getFeaturedProducts(featuredProductIds);
+      products = featuredResult.products || [];
+    } catch {
+      // fall through to products from productsResult below
+    }
+  }
+  if (products.length === 0 && productsResult.status === 'fulfilled') {
+    products = productsResult.value.products || [];
   }
 
-  const [collectionsData, testimonialsData] = await Promise.all([
-    api.getCollections(),
-    api.getTestimonials(),
-  ]);
+  const testimonials =
+    testimonialsResult.status === 'fulfilled'
+      ? testimonialsResult.value.testimonials || []
+      : [];
 
-  const products = productsData.products || [];
-  const collections = (collectionsData.collections || []).slice(0, 2);
-  const testimonialsList = testimonialsData.testimonials || [];
+  const collections =
+    collectionsResult.status === 'fulfilled'
+      ? (collectionsResult.value.collections || []).slice(0, 2)
+      : [];
 
-  const isAnnouncementEnabled = Boolean(
-    homepageSettings.announcement_bar_enabled
-  );
+  // ── Announcement ticker ──
+  const isAnnouncementEnabled = Boolean(homepageSettings.announcement_bar_enabled);
   const announcementText = homepageSettings.announcement_bar_text || '';
-
-  // Ticker items for marquee
   const tickerItems = [
-    announcementText ||
-      'Complimentary worldwide shipping on orders over Rs. 10,000',
+    announcementText || 'Complimentary worldwide shipping on orders over Rs. 10,000',
     'Handcrafted by Artisans Since 1987',
     '30-Day Returns & Exchanges',
     'Exclusive Artisan Collections',
   ];
 
-  // Stats data, admin-configurable with sensible fallbacks.
+  // ── Stats (admin-configurable) ──
   const statsData = [
-    {
-      num: homepageSettings.stat_customer_rating || '4.9 Star Rating',
-      label: 'Customer Rating',
-    },
-    {
-      num: homepageSettings.stat_happy_customers || '15,000+',
-      label: 'Happy Customers',
-    },
-    {
-      num: homepageSettings.stat_countries_served || '150+',
-      label: 'Countries Served',
-    },
+    { num: homepageSettings.stat_customer_rating || '4.9 Star Rating', label: 'Customer Rating' },
+    { num: homepageSettings.stat_happy_customers || '15,000+', label: 'Happy Customers' },
+    { num: homepageSettings.stat_countries_served || '150+', label: 'Countries Served' },
     {
       num:
-        homepageSettings.stat_return_policy &&
-        homepageSettings.stat_return_policy !== '30-Day'
+        homepageSettings.stat_return_policy && homepageSettings.stat_return_policy !== '30-Day'
           ? homepageSettings.stat_return_policy
           : '10+',
       label: 'Years of Crafting',
@@ -98,164 +112,120 @@ export default async function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: serializeJsonLd(homepageSchema),
-        }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
-      {/* Reveal observer client component wrapper */}
-      <RevealOnScroll>
-        <div className="min-h-screen" style={{ background: 'var(--white)' }}>
-          {isAnnouncementEnabled ? (
-            <div
-              style={{
-                background: 'var(--black)',
-                color: 'var(--white)',
-                overflow: 'hidden',
-                height: '36px',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <div
+
+      {/* ── Announcement ticker ── */}
+      {isAnnouncementEnabled && (
+        <div
+          style={{
+            background: 'var(--black)',
+            color: 'var(--white)',
+            overflow: 'hidden',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              animation: 'ticker 35s linear infinite',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {[...tickerItems, ...tickerItems].map((item, i) => (
+              <span
+                key={i}
                 style={{
-                  display: 'flex',
-                  animation: 'ticker 35s linear infinite',
-                  whiteSpace: 'nowrap',
-                  gap: 0,
+                  fontFamily: 'var(--font-ui)',
+                  fontSize: '10px',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  padding: '0 48px',
+                  opacity: 0.9,
+                  display: 'inline-block',
                 }}
               >
-                {[...tickerItems, ...tickerItems].map((item, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      fontFamily: 'var(--font-ui)',
-                      fontSize: '12px',
-                      letterSpacing: '0.05em',
-                      textTransform: 'uppercase',
-                      padding: '0 48px',
-                      opacity: 0.9,
-                      display: 'inline-block',
-                    }}
-                  >
-                    {item}
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        width: '4px',
-                        height: '4px',
-                        background: 'rgba(248,246,243,0.3)',
-                        borderRadius: '50%',
-                        marginLeft: '48px',
-                        verticalAlign: 'middle',
-                      }}
-                    />
-                  </span>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          <div className="block md:hidden">
-            <Suspense fallback={<div className="h-[100px] bg-white border-b border-stone-100" />}>
-              <CategoryCircles />
-            </Suspense>
+                {item}
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '4px',
+                    height: '4px',
+                    background: 'rgba(248,246,243,0.3)',
+                    borderRadius: '50%',
+                    marginLeft: '48px',
+                    verticalAlign: 'middle',
+                  }}
+                />
+              </span>
+            ))}
           </div>
-          <HeroBanner />
-          <section className="mx-auto max-w-5xl px-6 py-10 text-center md:py-14">
-            <h1 className="font-heading text-4xl font-semibold uppercase tracking-[0.02em] text-stone-900 md:text-5xl">
-              Handcrafted Indian Ethnic Wear for Women
-            </h1>
-            <p className="font-body mx-auto mt-4 max-w-3xl text-[15px] font-[300] leading-[1.8] text-stone-600 md:text-lg">
-              Discover artisan-made kurtis, shawls, wraps, sarees, and occasion-ready
-              silhouettes shaped by premium fabrics, timeless Indian craftsmanship,
-              and modern everyday elegance.
-            </p>
-          </section>
-          <TrendingReels />
-
-          <StatsSection statsData={statsData} />
-
-          <CategorySection />
-
-          {/* Marquee strip */}
-          <MarqueeStrip
-            items={[
-              'Kashmiri Weaves',
-              'Artisanal Luxury',
-              'Hand Embroidered',
-              'Slow Fashion',
-              'Florentine Leather',
-              'Silk Road Heritage',
-            ]}
-            speed="22s"
-          />
-
-          <HomeSectionsClient
-            products={products}
-            featuredProductIds={featuredProductIds}
-            testimonialsList={testimonialsList}
-            collections={collections}
-          />
-
-          {/* Divider */}
-          <div className="divider-text-prem">
-            <span>The Community</span>
-          </div>
-
-          <CommunitySection
-            communityItems={[
-              {
-                gradient: 'from-stone-200 to-stone-300',
-                user: '@aria.styles',
-                caption: 'This pashmina is everything.',
-                tag: 'New Arrival',
-              },
-              {
-                gradient: 'from-amber-100 to-amber-200',
-                user: '@luxe.by.nina',
-                caption: "Wearing the silk kurta to my sister's wedding.",
-                tag: 'Wedding Season',
-              },
-              {
-                gradient: 'from-rose-100 to-rose-200',
-                user: '@mira.edits',
-                caption: 'The quality is unmatched and worth every penny.',
-                tag: null,
-              },
-              {
-                gradient: 'from-stone-300 to-stone-400',
-                user: '@fatima.looks',
-                caption: 'So soft, so elegant. My new favourite piece!',
-                tag: 'Bestseller',
-              },
-              {
-                gradient: 'from-teal-100 to-teal-200',
-                user: '@style.by.aisha',
-                caption: 'Gifted this to my mum and she cried happy tears.',
-                tag: null,
-              },
-              {
-                gradient: 'from-purple-100 to-purple-200',
-                user: '@priya.ootd',
-                caption: 'The cashmere cardigan is pure luxury, obsessed!',
-                tag: 'Most Loved',
-              },
-            ]}
-          />
-
-          {/* Marquee strip two */}
-          <MarqueeStrip
-            items={[
-              'Authentic Craftsmanship',
-              'Sustainably Made',
-              'Worldwide Shipping',
-              'Premium Materials',
-              'Artisan Heritage',
-            ]}
-            speed="25s"
-          />
         </div>
-      </RevealOnScroll>
+      )}
+
+      {/* 1. Circular Categories — mobile horizontal scroll */}
+      <Suspense fallback={<div className="h-[120px] bg-white" />}>
+        <CircularCategories />
+      </Suspense>
+
+      {/* 2. Hero — 751px full-bleed with gradient overlay */}
+      <HeroSection />
+
+      {/* 3. Trending Reels — 9:16 cards */}
+      <TrendingReels />
+
+      {/* 4. Stats strip */}
+      <StatsSection statsData={statsData} />
+
+      {/* 5. Categories Grid — 2-col */}
+      <CategoriesGrid />
+
+      {/* 6. Marquee */}
+      <MarqueeStrip
+        items={[
+          'Kashmiri Weaves',
+          'Artisanal Luxury',
+          'Hand Embroidered',
+          'Slow Fashion',
+          'Silk Road Heritage',
+        ]}
+        speed="22s"
+      />
+
+      {/* 7. New Arrivals — 2-col product grid */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <NewArrivals products={products as any[]} />
+
+      {/* 8. Best Sellers — horizontal carousel */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <BestSellers products={products as any[]} />
+
+      {/* 9. Customer Testimonials — carousel with nav */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <Testimonials testimonials={testimonials as any[]} />
+
+      {/* 10. Instagram Reels — @kvastram section */}
+      <InstagramReels />
+
+      {/* 11. Brand Story — dark section */}
+      <BrandStory />
+
+      {/* 12. Seen On You — masonry UGC */}
+      <SeenOnYou />
+
+      {/* 13. Fabrics — horizontal scroll */}
+      <FabricsSection />
+
+      {/* Collections section — kept for existing functionality */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <HomeSectionsClient
+        products={[]}
+        featuredProductIds={[]}
+        testimonialsList={[]}
+        collections={collections as any[]}
+      />
     </>
   );
 }

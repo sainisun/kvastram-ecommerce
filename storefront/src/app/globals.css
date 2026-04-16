@@ -82,6 +82,10 @@ a {
   background: rgba(8, 8, 8, 0.4);
 }
 
+/* ═══ NO-SCROLLBAR UTILITY ═══ */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ═══ NOISE TEXTURE OVERLAY ═══ */
 .noise-overlay {
   position: fixed;

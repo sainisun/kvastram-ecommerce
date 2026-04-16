@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { api } from '@/lib/api';
+import { PlayCircle } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { api } from '@/lib/api';
 
 interface TrendingReelItem {
   id: string;
@@ -22,7 +23,6 @@ function ReelCard({ reel }: { reel: TrendingReelItem }) {
 
   async function handleStartPlayback() {
     if (!videoRef.current) return;
-
     try {
       videoRef.current.currentTime = 0;
       await videoRef.current.play();
@@ -34,58 +34,47 @@ function ReelCard({ reel }: { reel: TrendingReelItem }) {
 
   function handleStopPlayback() {
     if (!videoRef.current) return;
-
     videoRef.current.pause();
     videoRef.current.currentTime = 0;
     setIsPlaying(false);
   }
 
   return (
-    <article
-      className="group relative h-[280px] w-[160px] shrink-0 overflow-hidden rounded-[12px] bg-stone-200 md:h-[350px] md:w-[200px]"
+    <Link
+      href={reel.link_url}
+      className="min-w-[140px] flex flex-col gap-3"
       onMouseEnter={() => void handleStartPlayback()}
       onMouseLeave={handleStopPlayback}
-      onFocus={() => void handleStartPlayback()}
-      onBlur={handleStopPlayback}
     >
-      <OptimizedImage
-        src={reel.thumbnail_url}
-        alt={reel.product_name}
-        fill
-        sizes="(max-width: 768px) 160px, 200px"
-        className={`object-cover transition-opacity duration-300 ${
-          isPlaying ? 'opacity-0' : 'opacity-100'
-        }`}
-      />
-
-      <video
-        ref={videoRef}
-        src={reel.video_url}
-        poster={reel.thumbnail_url}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
-          isPlaying ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
-
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent p-3 text-white">
-        <p className="font-body line-clamp-2 text-[14px] font-medium leading-[1.45] tracking-[0.03em] md:text-[14px]">
-          {reel.product_name}
-        </p>
-        <p className="font-body mt-1 text-[14px] font-normal text-white/90">
-          {reel.price}
-        </p>
-        <Link
-          href={reel.link_url}
-          className="font-body mt-3 inline-flex rounded-full bg-white px-4 py-2 text-[12px] font-medium uppercase tracking-[0.1em] text-gray-900 transition hover:bg-stone-100"
-        >
-          Shop Now
-        </Link>
+      <div className="aspect-[9/16] bg-zinc-200 relative overflow-hidden">
+        <OptimizedImage
+          src={reel.thumbnail_url}
+          alt={reel.product_name}
+          fill
+          sizes="140px"
+          className={`object-cover transition-opacity duration-300 ${isPlaying ? 'opacity-0' : 'opacity-100'}`}
+        />
+        <video
+          ref={videoRef}
+          src={reel.video_url}
+          poster={reel.thumbnail_url}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${isPlaying ? 'opacity-100' : 'opacity-0'}`}
+        />
+        {!isPlaying && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <PlayCircle className="text-white opacity-80" size={30} />
+          </div>
+        )}
       </div>
-    </article>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-[11px] text-zinc-500 uppercase truncate">{reel.product_name}</span>
+        <span className="text-[12px] font-bold text-black">{reel.price}</span>
+      </div>
+    </Link>
   );
 }
 
@@ -95,61 +84,31 @@ export function TrendingReels() {
 
   useEffect(() => {
     let cancelled = false;
-
-    async function loadTrendingReels() {
-      try {
-        const response = await api.getTrendingReels();
-
-        if (!cancelled) {
-          setReels(response.reels || []);
-        }
-      } catch (error) {
-        console.error('Failed to load trending reels:', error);
-        if (!cancelled) {
-          setReels([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    void loadTrendingReels();
-
-    return () => {
-      cancelled = true;
-    };
+    api
+      .getTrendingReels()
+      .then((res) => { if (!cancelled) setReels(res.reels || []); })
+      .catch(() => { if (!cancelled) setReels([]); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
-  if (!loading && reels.length === 0) {
-    return null;
-  }
+  if (!loading && reels.length === 0) return null;
 
   return (
-    <section className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-6 md:px-8 md:py-10">
-      <div className="mb-6 text-center">
-        <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-gray-900 md:text-[36px]">
-          Trending Now
-        </h2>
-      </div>
-
-      <div className="overflow-x-auto pb-2 [scrollbar-width:none] [-ms-overflow-style:none]">
-        <style jsx>{`
-          div::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
-        <div className="flex gap-4 md:gap-5">
-          {loading
-            ? Array.from({ length: 5 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-[280px] w-[160px] shrink-0 animate-pulse rounded-[12px] bg-gray-200 md:h-[350px] md:w-[200px]"
-                />
-              ))
-            : reels.map((reel) => <ReelCard key={reel.id} reel={reel} />)}
-        </div>
+    <section className="py-16 bg-white">
+      <h3 className="px-6 mb-8 text-[11px] font-bold tracking-[0.2em] uppercase text-black">
+        TRENDING NOW
+      </h3>
+      <div className="overflow-x-auto no-scrollbar flex gap-4 px-6">
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="min-w-[140px] flex flex-col gap-3">
+                <div className="aspect-[9/16] bg-zinc-200 animate-pulse" />
+                <div className="h-3 w-20 bg-zinc-200 rounded animate-pulse" />
+                <div className="h-4 w-16 bg-zinc-200 rounded animate-pulse" />
+              </div>
+            ))
+          : reels.map((reel) => <ReelCard key={reel.id} reel={reel} />)}
       </div>
     </section>
   );
