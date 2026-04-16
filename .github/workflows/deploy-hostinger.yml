@@ -35,6 +35,9 @@ jobs:
             git pull origin main
             git stash drop --quiet 2>/dev/null || true
 
+            echo "=== Removing stopped containers to prevent name conflicts ==="
+            docker compose -f deploy/hostinger/docker-compose.yml down --remove-orphans || true
+
             echo "=== Rebuilding and restarting containers ==="
             docker compose -f deploy/hostinger/docker-compose.yml up -d --build --force-recreate
 
