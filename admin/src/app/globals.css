@@ -2,20 +2,24 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f9f7f4;
+  --background: #F3F4F6;
   --foreground: #1a1a1a;
   --kv-text: #1a1a1a;
-  --kv-muted: #6b6560;
-  --kv-border: #e8e3dc;
-  --kv-bg: #f9f7f4;
+  --kv-muted: #6B7280;
+  --kv-border: #E5E7EB;
+  --kv-bg: #F3F4F6;
   --kv-card: #ffffff;
-  --kv-soft: #f3eee7;
-  --kv-accent: #c97d4e;
-  --kv-accent-deep: #9f5e35;
-  --kv-accent-soft: #f6ebe4;
+  --kv-soft: #EDEDF8;
+  --kv-accent: #5E5FBF;
+  --kv-accent-deep: #4B4CA6;
+  --kv-accent-soft: #EDEDF8;
   --kv-success: #2d7a4f;
   --kv-warning: #d4860b;
   --kv-danger: #c0392b;
+  --kv-sidebar-bg: #1B1464;
+  --kv-sidebar-text: #C2C2E7;
+  --kv-sidebar-text-active: #ffffff;
+  --kv-sidebar-active-bg: rgba(94, 95, 191, 0.25);
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Jost', 'Segoe UI', sans-serif;
 }
@@ -52,7 +56,7 @@ textarea {
 }
 
 ::selection {
-  background: rgba(201, 125, 78, 0.18);
+  background: rgba(94, 95, 191, 0.18);
 }
 
 [data-admin-shell] h1,
@@ -75,8 +79,8 @@ textarea {
 [data-admin-shell] select:focus,
 [data-admin-shell] textarea:focus {
   outline: none;
-  border-color: rgba(201, 125, 78, 0.7);
-  box-shadow: 0 0 0 4px rgba(201, 125, 78, 0.12);
+  border-color: rgba(94, 95, 191, 0.7);
+  box-shadow: 0 0 0 4px rgba(94, 95, 191, 0.12);
 }
 
 [data-admin-shell] table {
@@ -90,7 +94,7 @@ textarea {
 }
 
 [data-admin-shell] ::-webkit-scrollbar-thumb {
-  background: #d8cec4;
+  background: #C2C2E7;
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;

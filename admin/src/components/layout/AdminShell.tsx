@@ -54,7 +54,7 @@ export default function AdminShell({
     <ProtectedRoute>
       <div
         data-admin-shell
-        className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(201,125,78,0.16),_transparent_36%),linear-gradient(180deg,#fdfbf8_0%,#f9f7f4_46%,#f4efe8_100%)] text-[var(--kv-text)]"
+        className="min-h-screen bg-[var(--kv-bg)] text-[var(--kv-text)]"
       >
         <Sidebar pendingOrders={pendingOrders} />
 

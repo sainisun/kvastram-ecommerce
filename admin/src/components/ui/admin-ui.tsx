@@ -75,7 +75,7 @@ export function ActionButton({
   const className = clsx(
     'inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold',
     variant === 'primary' &&
-      'bg-[var(--kv-text)] text-white hover:bg-[#2b2b2b]',
+      'bg-[var(--kv-accent)] text-white hover:bg-[var(--kv-accent-deep)]',
     variant === 'secondary' &&
       'border border-[var(--kv-border)] bg-white text-[var(--kv-text)] hover:bg-[var(--kv-soft)]',
     variant === 'danger' &&

@@ -139,7 +139,7 @@ export default function MobileBottomTab({
                   active
                     ? 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
                     : 'text-[var(--kv-muted)]'
-                } ${tab.accent ? 'bg-[var(--kv-text)] text-white' : ''}`}
+                } ${tab.accent ? 'bg-[var(--kv-accent)] text-white' : ''}`}
               >
                 <Icon size={18} />
                 <span>{tab.label}</span>

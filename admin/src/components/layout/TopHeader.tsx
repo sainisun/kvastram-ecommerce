@@ -51,7 +51,7 @@ export default function TopHeader({
             ) : null}
           </button>
 
-          <div className="flex h-11 min-w-11 items-center justify-center rounded-2xl bg-[var(--kv-text)] px-3 text-sm font-semibold text-white">
+          <div className="flex h-11 min-w-11 items-center justify-center rounded-2xl bg-[var(--kv-accent)] px-3 text-sm font-semibold text-white">
             {initial || <User size={16} />}
           </div>
         </div>

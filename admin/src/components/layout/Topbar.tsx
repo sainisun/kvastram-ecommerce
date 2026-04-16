@@ -23,7 +23,7 @@ export default function Topbar() {
             type="text"
             placeholder="Search for orders, products, customers..."
             suppressHydrationWarning
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
           />
         </div>
       </div>
@@ -47,7 +47,7 @@ export default function Topbar() {
             </p>
           </div>
           <div className="relative group cursor-pointer">
-            <div className="w-9 h-9 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center border border-blue-200">
+            <div className="w-9 h-9 bg-violet-100 text-violet-600 rounded-lg flex items-center justify-center border border-violet-200">
               <User size={18} />
             </div>
 

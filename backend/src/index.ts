@@ -83,6 +83,7 @@ import categoryCirclesRoutes from './routes/category-circles';
 import featuredProductsRoutes from './routes/featured-products';
 
 import docsApp from './docs';
+import { initSocketServer } from './services/socket';
 
 const app = new Hono();
 
@@ -418,6 +419,9 @@ const server = serve({
   fetch: app.fetch,
   port,
 });
+
+// Attach Socket.io for real-time inventory updates
+initSocketServer(server as import('node:http').Server, allowedOrigins);
 
 // OPT-003: Graceful shutdown handler
 const gracefulShutdown = (signal: string) => {

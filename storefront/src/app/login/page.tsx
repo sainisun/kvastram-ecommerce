@@ -11,51 +11,69 @@ import {
   GoogleLogin,
   CredentialResponse,
 } from '@react-oauth/google';
-import FacebookLogin from 'react-facebook-login';
-
-// Facebook OAuth Wrapper Component
+// Facebook OAuth Wrapper Component — uses the official Meta JS SDK (no npm package)
 function FacebookOAuthWrapper({ redirect }: { redirect: string }) {
   const router = useRouter();
   const { setUser } = useAuth();
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const FB_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
 
-  const handleFacebookCallback = async (response: Record<string, unknown>) => {
-    try {
-      if (!response?.accessToken) {
-        setError('Facebook authentication failed. Please try again.');
-        return;
-      }
+  // Lazy-load the Facebook JS SDK only when the app ID is configured
+  useState(() => {
+    if (!FB_APP_ID || document.getElementById('facebook-jssdk')) return;
+    window.fbAsyncInit = function () {
+      window.FB.init({ appId: FB_APP_ID, cookie: true, xfbml: false, version: 'v21.0' });
+    };
+    const script = document.createElement('script');
+    script.id = 'facebook-jssdk';
+    script.src = 'https://connect.facebook.net/en_US/sdk.js';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+  });
 
-      const accessToken = response.accessToken as string;
-      const email = (response.email as string) || '';
-      const name = (response.name as string) || '';
-      const picture = response.picture as
-        | { data?: { url?: string } }
-        | undefined;
-
-      // Call backend API
-      const apiResponse = await api.socialLogin('facebook', {
-        access_token: accessToken,
-        email: email,
-        name: name,
-        avatar: picture?.data?.url,
-      });
-
-      if (apiResponse.customer) {
-        setUser(apiResponse.customer);
-        router.push(redirect);
-      } else {
-        setError('Login failed. Please try again.');
-      }
-    } catch (err: unknown) {
-      console.error('Facebook login error:', err);
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : 'Facebook login failed. Please try again.';
-      setError(errorMessage);
+  const handleLogin = () => {
+    if (!window.FB) {
+      setError('Facebook SDK not loaded. Please refresh and try again.');
+      return;
     }
+    setLoading(true);
+    setError('');
+    window.FB.login(
+      (authResp) => {
+        if (!authResp.authResponse) {
+          setError('Facebook authentication cancelled.');
+          setLoading(false);
+          return;
+        }
+        const { accessToken } = authResp.authResponse;
+        window.FB.api('/me', { fields: 'name,email,picture' }, async (userInfo) => {
+          try {
+            const apiResponse = await api.socialLogin('facebook', {
+              access_token: accessToken,
+              email: userInfo.email || '',
+              name: userInfo.name || '',
+              avatar: userInfo.picture?.data?.url,
+            });
+            if (apiResponse.customer) {
+              setUser(apiResponse.customer);
+              router.push(redirect);
+            } else {
+              setError('Login failed. Please try again.');
+            }
+          } catch (err: unknown) {
+            console.error('Facebook login error:', err);
+            setError(
+              err instanceof Error ? err.message : 'Facebook login failed. Please try again.'
+            );
+          } finally {
+            setLoading(false);
+          }
+        });
+      },
+      { scope: 'email,public_profile' }
+    );
   };
 
   if (!FB_APP_ID) {
@@ -73,19 +91,17 @@ function FacebookOAuthWrapper({ redirect }: { redirect: string }) {
           {error}
         </div>
       )}
-      <FacebookLogin
-        appId={FB_APP_ID}
-        autoLoad={false}
-        fields="name,email,picture"
-        callback={handleFacebookCallback}
-        cssClass="w-full py-3 border border-stone-200 bg-white text-stone-700 font-medium flex items-center justify-center gap-3 hover:bg-stone-50 transition-colors cursor-pointer"
-        icon={
-          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="#1877F2">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-          </svg>
-        }
-        textButton="Continue with Facebook"
-      />
+      <button
+        type="button"
+        onClick={handleLogin}
+        disabled={loading}
+        className="w-full py-3 border border-stone-200 bg-white text-stone-700 font-medium flex items-center justify-center gap-3 hover:bg-stone-50 transition-colors cursor-pointer disabled:opacity-50"
+      >
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="#1877F2">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+        </svg>
+        {loading ? 'Connecting...' : 'Continue with Facebook'}
+      </button>
     </div>
   );
 }
