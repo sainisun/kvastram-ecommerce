@@ -15,14 +15,6 @@ import {
 } from 'lucide-react';
 import { exportToCSV, formatProductsForExport } from '@/lib/csv-export';
 import { api } from '@/lib/api';
-import {
-  ActionButton,
-  MetricCard,
-  PageHeader,
-  SegmentedTabs,
-  StatusBadge,
-  Surface,
-} from '@/components/ui/admin-ui';
 
 type ListingFilter = 'all' | 'published' | 'draft' | 'out_of_stock';
 type ViewMode = 'grid' | 'list';
@@ -60,11 +52,20 @@ interface CollectionOption {
   title: string;
 }
 
+/* ── Status helpers ── */
+const STATUS_STYLE: Record<string, { badge: string; border: string }> = {
+  published: { badge: 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]', border: 'border-[var(--tertiary-container)]' },
+  draft:     { badge: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]', border: 'border-[var(--secondary-container)]' },
+  archived:  { badge: 'bg-[var(--surface-container-high)] text-[var(--on-surface-variant)]', border: 'border-[var(--surface-container-high)]' },
+};
+function getStatusStyle(status: string) {
+  return STATUS_STYLE[status] ?? STATUS_STYLE.draft;
+}
+
 export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // UX-004: Read filter state from URL so it persists on refresh and is shareable
   const search = searchParams.get('q') ?? '';
   const statusFilter = (searchParams.get('status') as ListingFilter) ?? 'all';
   const viewMode = (searchParams.get('view') as ViewMode) ?? 'grid';
@@ -73,7 +74,6 @@ export default function ProductsPage() {
   const collectionFilter = searchParams.get('collection') ?? 'all';
   const page = Number(searchParams.get('page') ?? '1');
 
-  // Helper to update one URL param while keeping the rest
   const setParam = useCallback((key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value === '' || value === 'all' || value === 'grid' || value === 'newest' || (key === 'page' && value === '1')) {
@@ -81,7 +81,6 @@ export default function ProductsPage() {
     } else {
       params.set(key, value);
     }
-    // Reset page to 1 when filters change (but not when page itself changes)
     if (key !== 'page') params.delete('page');
     router.replace(`?${params.toString()}`, { scroll: false });
   }, [router, searchParams]);
@@ -115,7 +114,6 @@ export default function ProductsPage() {
         console.error('Failed to load product filters:', error);
       }
     };
-
     void loadFilters();
   }, []);
 
@@ -125,15 +123,7 @@ export default function ProductsPage() {
       const limit = 20;
       const offset = (page - 1) * limit;
       const statusParam = statusFilter === 'out_of_stock' ? 'all' : statusFilter;
-      const result = await api.getProducts(
-        limit,
-        offset,
-        search,
-        statusParam,
-        categoryFilter,
-        collectionFilter
-      );
-
+      const result = await api.getProducts(limit, offset, search, statusParam, categoryFilter, collectionFilter);
       setProducts(result?.data || result || []);
       setTotalPages(result?.pagination?.total_pages || 1);
     } catch (error) {
@@ -145,10 +135,6 @@ export default function ProductsPage() {
     }
   }, [page, search, statusFilter, categoryFilter, collectionFilter]);
 
-  useEffect(() => {
-    void Promise.all([fetchProducts(), fetchStats()]);
-  }, [fetchProducts]);
-
   const fetchStats = async () => {
     try {
       const data = await api.getProductStats();
@@ -158,45 +144,28 @@ export default function ProductsPage() {
     }
   };
 
+  useEffect(() => {
+    void Promise.all([fetchProducts(), fetchStats()]);
+  }, [fetchProducts]);
+
   const getProductPrice = (product: Product) => {
-    if (Array.isArray(product.prices) && product.prices[0]?.amount) {
-      return product.prices[0].amount;
-    }
-    if (typeof product.price === 'number') {
-      return product.price;
-    }
-    if (typeof product.price === 'object' && product.price?.amount) {
-      return product.price.amount;
-    }
+    if (Array.isArray(product.prices) && product.prices[0]?.amount) return product.prices[0].amount;
+    if (typeof product.price === 'number') return product.price;
+    if (typeof product.price === 'object' && product.price?.amount) return product.price.amount;
     return null;
   };
 
-  const formatCurrency = (amount: number | null, currency = 'USD') => {
-    if (amount === null) {
-      return 'Price in detail view';
-    }
-
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount / 100);
+  const formatCurrency = (amount: number | null) => {
+    if (amount === null) return '—';
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount / 100);
   };
 
   const filteredProducts = products
-    .filter((product) =>
-      statusFilter === 'out_of_stock' ? product.total_inventory === 0 : true
-    )
-    .sort((left, right) => {
-      if (sortMode === 'stock') {
-        return right.total_inventory - left.total_inventory;
-      }
-      if (sortMode === 'price') {
-        return (getProductPrice(right) || 0) - (getProductPrice(left) || 0);
-      }
-      return (
-        new Date(right.created_at).getTime() - new Date(left.created_at).getTime()
-      );
+    .filter((p) => statusFilter === 'out_of_stock' ? p.total_inventory === 0 : true)
+    .sort((a, b) => {
+      if (sortMode === 'stock') return b.total_inventory - a.total_inventory;
+      if (sortMode === 'price') return (getProductPrice(b) || 0) - (getProductPrice(a) || 0);
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
   const listingCounts = {
@@ -206,13 +175,9 @@ export default function ProductsPage() {
     out_of_stock: stats?.out_of_stock_products || 0,
   };
 
-  const toggleSelection = (productId: string) => {
+  const toggleSelection = (id: string) => {
     const next = new Set(selectedProducts);
-    if (next.has(productId)) {
-      next.delete(productId);
-    } else {
-      next.add(productId);
-    }
+    next.has(id) ? next.delete(id) : next.add(id);
     setSelectedProducts(next);
   };
 
@@ -221,288 +186,238 @@ export default function ProductsPage() {
       const nextStatus = product.status === 'published' ? 'draft' : 'published';
       await api.bulkUpdateProducts([product.id], { status: nextStatus });
       await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (error) {
-      console.error('Failed to toggle product status:', error);
-    }
+    } catch (error) { console.error('Failed to toggle product status:', error); }
   };
 
   const handleDelete = async (productId: string) => {
-    if (!window.confirm('Delete this product?')) {
-      return;
-    }
-
+    if (!window.confirm('Delete this product?')) return;
     try {
       await api.deleteProduct(productId);
       await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (error) {
-      console.error('Failed to delete product:', error);
-    }
+    } catch (error) { console.error('Failed to delete product:', error); }
   };
 
   const handleBulkStatus = async (status: 'published' | 'draft' | 'archived') => {
-    if (selectedProducts.size === 0) {
-      return;
-    }
-
+    if (selectedProducts.size === 0) return;
     try {
       await api.bulkUpdateProducts(Array.from(selectedProducts), { status });
       setSelectedProducts(new Set());
       await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (error) {
-      console.error('Failed bulk update:', error);
-    }
+    } catch (error) { console.error('Failed bulk update:', error); }
   };
 
   const handleBulkDelete = async () => {
-    if (selectedProducts.size === 0) {
-      return;
-    }
-
-    if (!window.confirm(`Delete ${selectedProducts.size} selected products?`)) {
-      return;
-    }
-
+    if (selectedProducts.size === 0) return;
+    if (!window.confirm(`Delete ${selectedProducts.size} selected products?`)) return;
     try {
       await api.bulkDeleteProducts(Array.from(selectedProducts));
       setSelectedProducts(new Set());
       await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (error) {
-      console.error('Failed bulk delete:', error);
-    }
+    } catch (error) { console.error('Failed bulk delete:', error); }
   };
 
-  return (
-    <div className="space-y-6 px-4 pb-8 md:space-y-8 md:px-8">
-      <PageHeader
-        eyebrow="Listings"
-        title="Products"
-        description="Manage active listings, drafts, stock health, and bulk catalog actions from a single responsive workspace."
-        actions={
-          <>
-            <ActionButton
-              onClick={() => void Promise.all([fetchProducts(), fetchStats()])}
-              icon={RefreshCw}
-              variant="secondary"
-            >
-              Refresh
-            </ActionButton>
-            <ActionButton onClick={() => exportToCSV(formatProductsForExport(products), 'products')} icon={Download} variant="secondary">
-              Export
-            </ActionButton>
-            <ActionButton href="/dashboard/products/new" icon={Plus}>
-              Add product
-            </ActionButton>
-          </>
-        }
-      />
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Total products"
-          value={stats?.total_products || 0}
-          icon={Package}
-          hint="Across every status"
-        />
-        <MetricCard
-          label="Active listings"
-          value={stats?.published_products || 0}
-          icon={Package}
-          hint="Visible on storefront"
-          tone="success"
-        />
-        <MetricCard
-          label="Drafts"
-          value={stats?.draft_products || 0}
-          icon={Package}
-          hint="Hidden from customers"
-          tone="warning"
-        />
-        <MetricCard
-          label="Low / out of stock"
-          value={`${stats?.low_stock_products || 0} / ${stats?.out_of_stock_products || 0}`}
-          icon={Package}
-          hint="Inventory alerts"
-          tone={(stats?.out_of_stock_products || 0) > 0 ? 'danger' : 'accent'}
-        />
-      </div>
-
-      <Surface className="p-4 md:p-6">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            <SegmentedTabs
-              value={statusFilter}
-              options={[
-                { label: 'All', value: 'all', count: listingCounts.all },
-                {
-                  label: 'Active',
-                  value: 'published',
-                  count: listingCounts.published,
-                },
-                { label: 'Draft', value: 'draft', count: listingCounts.draft },
-                {
-                  label: 'Out of stock',
-                  value: 'out_of_stock',
-                  count: listingCounts.out_of_stock,
-                },
-              ]}
-              onChange={(value) => {
-                setStatusFilter(value);
-                setPage(1);
-              }}
-            />
-
-            <div className="flex items-center gap-2 rounded-full border border-[var(--kv-border)] bg-white p-1">
-              <button
-                type="button"
-                onClick={() => setViewMode('grid')}
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${
-                  viewMode === 'grid'
-                    ? 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
-                    : 'text-[var(--kv-muted)]'
-                }`}
-              >
-                <Grid2X2 size={16} />
-                Grid
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('list')}
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${
-                  viewMode === 'list'
-                    ? 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
-                    : 'text-[var(--kv-muted)]'
-                }`}
-              >
-                <List size={16} />
-                List
-              </button>
-            </div>
-          </div>
-
-          <div className="grid gap-3 xl:grid-cols-[1fr_auto_auto_auto]">
-            <div className="relative">
-              <Search
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--kv-muted)]"
-              />
-              <input
-                type="search"
-                placeholder="Search by product name"
-                value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value);
-                  setPage(1);
-                }}
-                className="w-full border px-11 py-3 text-sm"
-              />
-            </div>
-
-            <select
-              value={sortMode}
-              onChange={(event) => setSortMode(event.target.value as SortMode)}
-              className="border px-4 py-3 text-sm"
-            >
-              <option value="newest">Sort: Newest</option>
-              <option value="price">Sort: Price</option>
-              <option value="stock">Sort: Stock</option>
-            </select>
-
-            <select
-              value={categoryFilter}
-              onChange={(event) => {
-                setCategoryFilter(event.target.value);
-                setPage(1);
-              }}
-              className="border px-4 py-3 text-sm"
-            >
-              <option value="all">All categories</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={collectionFilter}
-              onChange={(event) => {
-                setCollectionFilter(event.target.value);
-                setPage(1);
-              }}
-              className="border px-4 py-3 text-sm"
-            >
-              <option value="all">All collections</option>
-              {collections.map((collection) => (
-                <option key={collection.id} value={collection.id}>
-                  {collection.title}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {selectedProducts.size > 0 ? (
-            <div className="flex flex-wrap items-center gap-2 rounded-[1.2rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
-              <span className="font-medium text-[var(--kv-text)]">
-                {selectedProducts.size} selected
-              </span>
-              <button
-                type="button"
-                onClick={() => void handleBulkStatus('published')}
-                className="rounded-full border border-[var(--kv-border)] bg-white px-4 py-2 font-medium text-[var(--kv-text)]"
-              >
-                Publish
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleBulkStatus('draft')}
-                className="rounded-full border border-[var(--kv-border)] bg-white px-4 py-2 font-medium text-[var(--kv-text)]"
-              >
-                Draft
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleBulkStatus('archived')}
-                className="rounded-full border border-[var(--kv-border)] bg-white px-4 py-2 font-medium text-[var(--kv-text)]"
-              >
-                Archive
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleBulkDelete()}
-                className="rounded-full border border-[var(--kv-danger)]/20 bg-[var(--kv-danger)]/6 px-4 py-2 font-medium text-[var(--kv-danger)]"
-              >
-                Delete
-              </button>
-            </div>
-          ) : null}
+  /* ── Loading skeleton ── */
+  if (loading && products.length === 0) {
+    return (
+      <div className="space-y-6 px-4 py-6 md:px-6">
+        <div className="h-10 w-40 bg-[var(--surface-container-high)] rounded-xl animate-pulse" />
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-24 bg-[var(--surface-container-lowest)] rounded-xl animate-pulse" />
+          ))}
         </div>
-      </Surface>
+      </div>
+    );
+  }
 
+  const FILTER_TABS: { label: string; value: ListingFilter }[] = [
+    { label: 'All',          value: 'all' },
+    { label: 'Active',       value: 'published' },
+    { label: 'Draft',        value: 'draft' },
+    { label: 'Out of stock', value: 'out_of_stock' },
+  ];
+
+  return (
+    <div className="space-y-6 px-4 py-6 md:px-6">
+
+      {/* ── Heading ── */}
+      <section className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--on-surface)]">
+            Products
+          </h2>
+          <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">
+            Manage listings, drafts, stock health, and bulk actions.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => void Promise.all([fetchProducts(), fetchStats()])}
+            className="flex items-center gap-1.5 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors"
+          >
+            <RefreshCw size={13} /> Refresh
+          </button>
+          <button
+            type="button"
+            onClick={() => exportToCSV(formatProductsForExport(products), 'products')}
+            className="flex items-center gap-1.5 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors"
+          >
+            <Download size={13} /> Export
+          </button>
+          <Link
+            href="/dashboard/products/new"
+            className="flex items-center gap-1.5 rounded-full bg-[var(--primary)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white hover:opacity-90 transition-opacity"
+          >
+            <Plus size={13} /> Add product
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Stats bento ── */}
+      <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {[
+          { label: 'Total',        value: stats?.total_products || 0 },
+          { label: 'Active',       value: stats?.published_products || 0 },
+          { label: 'Drafts',       value: stats?.draft_products || 0 },
+          { label: 'Out of stock', value: stats?.out_of_stock_products || 0, warn: (stats?.out_of_stock_products || 0) > 0 },
+        ].map((card) => (
+          <div
+            key={card.label}
+            className={`bg-[var(--surface-container-lowest)] p-5 rounded-xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] flex flex-col gap-3 ${card.warn ? 'ring-1 ring-[var(--error)]/30' : ''}`}
+          >
+            <Package size={18} className="text-[var(--on-surface-variant)]" />
+            <div>
+              <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">{card.label}</p>
+              <p className={`text-xl font-black mt-0.5 ${card.warn ? 'text-[var(--error)]' : 'text-[var(--on-surface)]'}`}>{card.value}</p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* ── Filters ── */}
+      <section className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-4 space-y-4">
+        {/* Filter tabs + view toggle */}
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {FILTER_TABS.map((tab) => (
+              <button
+                key={tab.value}
+                type="button"
+                onClick={() => { setStatusFilter(tab.value); setPage(1); }}
+                className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                  statusFilter === tab.value
+                    ? 'bg-[var(--primary)] text-white'
+                    : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container-high)]'
+                }`}
+              >
+                {tab.label}
+                <span className="ml-1.5 opacity-60">{listingCounts[tab.value]}</span>
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1 rounded-full bg-[var(--surface-container-low)] p-1">
+            {([['grid', Grid2X2], ['list', List]] as [ViewMode, typeof Grid2X2][]).map(([mode, Icon]) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setViewMode(mode)}
+                className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                  viewMode === mode
+                    ? 'bg-[var(--primary)] text-white'
+                    : 'text-[var(--on-surface-variant)]'
+                }`}
+              >
+                <Icon size={12} /> {mode}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Search + selects */}
+        <div className="grid gap-3 xl:grid-cols-[1fr_auto_auto_auto]">
+          <div className="relative">
+            <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--on-surface-variant)]" />
+            <input
+              type="search"
+              placeholder="Search products…"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="w-full rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-low)] pl-10 pr-4 py-2.5 text-xs text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
+            />
+          </div>
+          <select
+            value={sortMode}
+            onChange={(e) => setSortMode(e.target.value as SortMode)}
+            className="rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-2.5 text-xs text-[var(--on-surface)] focus:outline-none"
+          >
+            <option value="newest">Newest</option>
+            <option value="price">By price</option>
+            <option value="stock">By stock</option>
+          </select>
+          <select
+            value={categoryFilter}
+            onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
+            className="rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-2.5 text-xs text-[var(--on-surface)] focus:outline-none"
+          >
+            <option value="all">All categories</option>
+            {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+          <select
+            value={collectionFilter}
+            onChange={(e) => { setCollectionFilter(e.target.value); setPage(1); }}
+            className="rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-2.5 text-xs text-[var(--on-surface)] focus:outline-none"
+          >
+            <option value="all">All collections</option>
+            {collections.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+          </select>
+        </div>
+
+        {/* Bulk actions bar */}
+        {selectedProducts.size > 0 && (
+          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-[var(--surface-container-low)] px-4 py-3 text-xs">
+            <span className="font-bold text-[var(--on-surface)]">{selectedProducts.size} selected</span>
+            {(['published', 'draft', 'archived'] as const).map((s) => (
+              <button key={s} type="button" onClick={() => void handleBulkStatus(s)}
+                className="rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-3 py-1.5 font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-high)] transition-colors capitalize">
+                {s}
+              </button>
+            ))}
+            <button type="button" onClick={() => void handleBulkDelete()}
+              className="rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] px-3 py-1.5 font-bold uppercase tracking-widest text-[var(--on-error-container)] hover:opacity-80 transition-opacity">
+              Delete
+            </button>
+          </div>
+        )}
+      </section>
+
+      {/* ── Product list ── */}
       {loading ? (
-        <Surface className="px-4 py-12 text-center text-sm text-[var(--kv-muted)] md:px-6">
+        <div className="bg-[var(--surface-container-lowest)] rounded-2xl px-4 py-12 text-center text-sm text-[var(--on-surface-variant)]">
           Loading listings…
-        </Surface>
+        </div>
       ) : filteredProducts.length === 0 ? (
-        <Surface className="px-4 py-12 text-center text-sm text-[var(--kv-muted)] md:px-6">
+        <div className="bg-[var(--surface-container-lowest)] rounded-2xl px-4 py-12 text-center text-sm text-[var(--on-surface-variant)]">
           No products match the current filters.
-        </Surface>
+        </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filteredProducts.map((product) => {
             const price = getProductPrice(product);
             const outOfStock = product.total_inventory === 0;
             const lowStock = product.total_inventory > 0 && product.total_inventory < 5;
+            const s = getStatusStyle(product.status);
 
             return (
-              <Surface key={product.id} className="overflow-hidden">
-                <div className="relative aspect-[4/3] bg-[var(--kv-soft)]">
+              <div key={product.id} className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] overflow-hidden">
+                <div className="relative aspect-[4/3] bg-[var(--surface-container-low)]">
                   <button
                     type="button"
                     onClick={() => toggleSelection(product.id)}
-                    className={`absolute left-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border ${
+                    className={`absolute left-3 top-3 z-10 h-8 w-8 rounded-full border flex items-center justify-center text-xs font-bold transition-colors ${
                       selectedProducts.has(product.id)
-                        ? 'border-[var(--kv-accent)] bg-[var(--kv-accent)] text-white'
-                        : 'border-[var(--kv-border)] bg-white text-[var(--kv-text)]'
+                        ? 'border-[var(--primary)] bg-[var(--primary)] text-white'
+                        : 'border-[var(--outline-variant)] bg-white/90 text-[var(--on-surface)]'
                     }`}
                     aria-label={`Select ${product.title}`}
                   >
@@ -510,231 +425,114 @@ export default function ProductsPage() {
                   </button>
                   {product.thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={product.thumbnail}
-                      alt={product.title}
-                      className="h-full w-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                    />
+                    <img src={product.thumbnail} alt={product.title} className="h-full w-full object-cover"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[var(--kv-muted)]">
+                    <div className="flex h-full w-full items-center justify-center text-[var(--on-surface-variant)]">
                       <Package size={22} />
                     </div>
                   )}
                 </div>
 
-                <div className="space-y-4 p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-base font-semibold text-[var(--kv-text)]">
-                        {product.title}
-                      </p>
-                      <p className="mt-1 text-sm text-[var(--kv-muted)]">
-                        {formatCurrency(price)}
-                      </p>
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-[var(--on-surface)] truncate">{product.title}</p>
+                      <p className="text-xs text-[var(--on-surface-variant)] mt-0.5">{formatCurrency(price)}</p>
                     </div>
-                    <StatusBadge
-                      status={product.status === 'published' ? 'active' : product.status}
-                    />
+                    <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase flex-shrink-0`}>
+                      {product.status}
+                    </span>
                   </div>
 
-                  <div className="flex items-center justify-between rounded-[1rem] bg-[var(--kv-soft)] px-4 py-3 text-sm">
-                    <span className="text-[var(--kv-muted)]">Stock</span>
-                    <span
-                      className={`font-semibold ${
-                        outOfStock
-                          ? 'text-[var(--kv-danger)]'
-                          : lowStock
-                            ? 'text-[var(--kv-warning)]'
-                            : 'text-[var(--kv-text)]'
-                      }`}
-                    >
+                  <div className="flex items-center justify-between rounded-xl bg-[var(--surface-container-low)] px-3 py-2 text-xs">
+                    <span className="text-[var(--on-surface-variant)]">Stock</span>
+                    <span className={`font-bold ${outOfStock ? 'text-[var(--error)]' : lowStock ? 'text-[var(--secondary-container)]' : 'text-[var(--on-surface)]'}`}>
                       {product.total_inventory}
                     </span>
                   </div>
 
-                  <div className="grid gap-2 sm:grid-cols-3">
-                    <button
-                      type="button"
-                      onClick={() => void handleToggleActive(product)}
-                      className="rounded-2xl border border-[var(--kv-border)] px-3 py-3 text-xs font-semibold text-[var(--kv-text)]"
-                    >
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button type="button" onClick={() => void handleToggleActive(product)}
+                      className="rounded-full border border-[var(--outline-variant)] py-2 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors">
                       {product.status === 'published' ? 'Pause' : 'Activate'}
                     </button>
-                    <Link
-                      href={`/dashboard/products/${product.id}`}
-                      className="rounded-2xl border border-[var(--kv-border)] px-3 py-3 text-center text-xs font-semibold text-[var(--kv-text)]"
-                    >
+                    <Link href={`/dashboard/products/${product.id}`}
+                      className="rounded-full border border-[var(--outline-variant)] py-2 text-center text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors">
                       Edit
                     </Link>
-                    <button
-                      type="button"
-                      onClick={() => void handleDelete(product.id)}
-                      className="rounded-2xl border border-[var(--kv-danger)]/20 bg-[var(--kv-danger)]/6 px-3 py-3 text-xs font-semibold text-[var(--kv-danger)]"
-                    >
+                    <button type="button" onClick={() => void handleDelete(product.id)}
+                      className="rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] py-2 text-[9px] font-bold uppercase tracking-widest text-[var(--on-error-container)] hover:opacity-80 transition-opacity">
                       Delete
                     </button>
                   </div>
                 </div>
-              </Surface>
+              </div>
             );
           })}
-        </div>
+        </section>
       ) : (
-        <Surface className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="border-b border-[var(--kv-border)] text-left text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
-                  <th className="px-6 py-4">
-                    <input
-                      type="checkbox"
-                      checked={
-                        filteredProducts.length > 0 &&
-                        selectedProducts.size === filteredProducts.length
-                      }
-                      onChange={() =>
-                        setSelectedProducts(
-                          selectedProducts.size === filteredProducts.length
-                            ? new Set()
-                            : new Set(filteredProducts.map((product) => product.id))
-                        )
-                      }
-                      className="h-4 w-4 rounded border-[var(--kv-border)]"
-                    />
-                  </th>
-                  <th className="px-6 py-4">Product</th>
-                  <th className="px-6 py-4">Price</th>
-                  <th className="px-6 py-4">Stock</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product) => {
-                  const price = getProductPrice(product);
-                  const outOfStock = product.total_inventory === 0;
-                  const lowStock =
-                    product.total_inventory > 0 && product.total_inventory < 5;
+        /* List view */
+        <section className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] divide-y divide-[var(--surface-container-low)]">
+          {filteredProducts.map((product) => {
+            const price = getProductPrice(product);
+            const outOfStock = product.total_inventory === 0;
+            const lowStock = product.total_inventory > 0 && product.total_inventory < 5;
+            const s = getStatusStyle(product.status);
 
-                  return (
-                    <tr
-                      key={product.id}
-                      className="border-b border-[var(--kv-border)]/70 text-sm text-[var(--kv-text)]"
-                    >
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedProducts.has(product.id)}
-                          onChange={() => toggleSelection(product.id)}
-                          className="h-4 w-4 rounded border-[var(--kv-border)]"
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-[var(--kv-soft)]">
-                            {product.thumbnail ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={product.thumbnail}
-                                alt={product.title}
-                                className="h-full w-full object-cover"
-                                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                              />
-                            ) : (
-                              <Package
-                                size={18}
-                                className="text-[var(--kv-muted)]"
-                              />
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-semibold">{product.title}</p>
-                            <p className="text-xs text-[var(--kv-muted)]">
-                              /products/{product.handle}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-medium">
-                        {formatCurrency(price)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`font-semibold ${
-                            outOfStock
-                              ? 'text-[var(--kv-danger)]'
-                              : lowStock
-                                ? 'text-[var(--kv-warning)]'
-                                : 'text-[var(--kv-text)]'
-                          }`}
-                        >
-                          {product.total_inventory}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <StatusBadge
-                          status={
-                            product.status === 'published' ? 'active' : product.status
-                          }
-                        />
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => void handleToggleActive(product)}
-                            className="rounded-full border border-[var(--kv-border)] px-3 py-2 text-xs font-semibold text-[var(--kv-text)]"
-                          >
-                            {product.status === 'published' ? 'Pause' : 'Activate'}
-                          </button>
-                          <Link
-                            href={`/dashboard/products/${product.id}`}
-                            className="rounded-full border border-[var(--kv-border)] px-3 py-2 text-xs font-semibold text-[var(--kv-text)]"
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            type="button"
-                            onClick={() => void handleDelete(product.id)}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--kv-danger)]/20 bg-[var(--kv-danger)]/6 text-[var(--kv-danger)]"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </Surface>
+            return (
+              <div key={product.id} className={`flex items-center gap-4 p-4 border-l-4 ${s.border} hover:bg-[var(--surface-container-low)]/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl`}>
+                <input type="checkbox" checked={selectedProducts.has(product.id)} onChange={() => toggleSelection(product.id)}
+                  className="h-4 w-4 rounded border-[var(--outline-variant)]" />
+                <div className="h-14 w-14 flex-shrink-0 rounded-xl overflow-hidden bg-[var(--surface-container-low)] flex items-center justify-center">
+                  {product.thumbnail
+                    ? <img src={product.thumbnail} alt={product.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> // eslint-disable-line @next/next/no-img-element
+                    : <Package size={18} className="text-[var(--on-surface-variant)]" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-[var(--on-surface)] truncate">{product.title}</p>
+                  <p className="text-[10px] text-[var(--on-surface-variant)]">/products/{product.handle}</p>
+                </div>
+                <div className="hidden md:block text-xs font-bold text-[var(--on-surface)]">{formatCurrency(price)}</div>
+                <div className={`hidden md:block text-xs font-bold ${outOfStock ? 'text-[var(--error)]' : lowStock ? 'text-[var(--on-secondary-container)]' : 'text-[var(--on-surface)]'}`}>
+                  {product.total_inventory}
+                </div>
+                <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{product.status}</span>
+                <div className="flex items-center gap-1.5">
+                  <button type="button" onClick={() => void handleToggleActive(product)}
+                    className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
+                    {product.status === 'published' ? 'Pause' : 'Activate'}
+                  </button>
+                  <Link href={`/dashboard/products/${product.id}`}
+                    className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
+                    Edit
+                  </Link>
+                  <button type="button" onClick={() => void handleDelete(product.id)}
+                    className="h-8 w-8 rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] flex items-center justify-center text-[var(--on-error-container)] hover:opacity-80">
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </section>
       )}
 
-      {totalPages > 1 ? (
-        <div className="flex items-center justify-between text-sm">
-          <button
-            type="button"
-            onClick={() => setPage(Math.max(1, page - 1))}
-            disabled={page === 1}
-            className="rounded-full border border-[var(--kv-border)] bg-white px-4 py-2 disabled:opacity-50"
-          >
+      {/* ── Pagination ── */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between text-xs">
+          <button type="button" onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
+            className="rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-4 py-2 font-bold text-[var(--on-surface)] disabled:opacity-40">
             Previous
           </button>
-          <span className="text-[var(--kv-muted)]">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            type="button"
-            onClick={() => setPage(Math.min(totalPages, page + 1))}
-            disabled={page === totalPages}
-            className="rounded-full border border-[var(--kv-border)] bg-white px-4 py-2 disabled:opacity-50"
-          >
+          <span className="text-[var(--on-surface-variant)]">Page {page} of {totalPages}</span>
+          <button type="button" onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages}
+            className="rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-4 py-2 font-bold text-[var(--on-surface)] disabled:opacity-40">
             Next
           </button>
         </div>
-      ) : null}
+      )}
+
     </div>
   );
 }

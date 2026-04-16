@@ -4,19 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
-  LogOut,
   MoreHorizontal,
-  PackagePlus,
+  Package,
   ShoppingBag,
   Users,
-  X,
 } from 'lucide-react';
-import { useAuth } from '@/context/auth-context';
-import {
-  isNavItemActive,
-  moreNavItems,
-  primaryNavItems,
-} from '@/components/layout/navigation';
+import { isNavItemActive } from '@/components/layout/navigation';
 
 interface MobileBottomTabProps {
   pendingOrders: number;
@@ -26,146 +19,68 @@ interface MobileBottomTabProps {
 }
 
 const tabs = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  {
-    label: 'Orders',
-    href: '/dashboard/orders',
-    icon: ShoppingBag,
-    badge: 'pendingOrders' as const,
-  },
-  {
-    label: 'Add Product',
-    href: '/dashboard/products/new',
-    icon: PackagePlus,
-    accent: true,
-  },
+  { label: 'Home',      href: '/dashboard',          icon: LayoutDashboard },
+  { label: 'Orders',    href: '/dashboard/orders',    icon: ShoppingBag,  badge: true },
+  { label: '',          href: '/dashboard/products/new', icon: Package,    fab: true },
   { label: 'Customers', href: '/dashboard/customers', icon: Users },
-];
+] as const;
 
 export default function MobileBottomTab({
   pendingOrders,
   isDrawerOpen,
   onOpenDrawer,
-  onCloseDrawer,
 }: MobileBottomTabProps) {
   const pathname = usePathname();
-  const { logout } = useAuth();
 
   return (
-    <>
-      {isDrawerOpen ? (
-        <div
-          className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm md:hidden"
-          onClick={onCloseDrawer}
-        >
-          <div
-            className="absolute inset-x-0 bottom-0 rounded-t-[2rem] border border-[var(--kv-border)] bg-[var(--kv-card)] p-5 shadow-[0_-24px_60px_rgba(26,26,26,0.16)]"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <p className="font-[var(--font-display)] text-2xl text-[var(--kv-text)]">
-                  More tools
-                </p>
-                <p className="text-sm text-[var(--kv-muted)]">
-                  Everything else in the admin panel.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={onCloseDrawer}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-soft)] text-[var(--kv-text)]"
-                aria-label="Close menu"
-              >
-                <X size={18} />
-              </button>
-            </div>
+    <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 backdrop-blur-md z-40 rounded-t-3xl shadow-[0_-8px_24px_-4px_rgba(25,28,30,0.08)] md:hidden">
+      {tabs.map((tab) => {
+        const Icon = tab.icon;
+        const active = isNavItemActive(pathname, tab.href);
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              {[...primaryNavItems.slice(4), ...moreNavItems].map((item) => {
-                const Icon = item.icon;
-                const active = isNavItemActive(pathname, item.href);
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onCloseDrawer}
-                    className={`rounded-2xl border px-4 py-4 transition ${
-                      active
-                        ? 'border-[var(--kv-accent)] bg-[var(--kv-accent-soft)] text-[var(--kv-text)]'
-                        : 'border-[var(--kv-border)] bg-white text-[var(--kv-text)]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-soft)]">
-                        <Icon size={18} />
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold">{item.label}</p>
-                        <p className="text-xs text-[var(--kv-muted)]">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-
-            <button
-              type="button"
-              onClick={logout}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--kv-danger)]/20 bg-[var(--kv-danger)]/6 px-4 py-3 text-sm font-semibold text-[var(--kv-danger)]"
+        if (tab.fab) {
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className="bg-[var(--primary)] text-white w-14 h-14 rounded-full flex items-center justify-center -mt-10 shadow-lg active:scale-90 duration-150"
+              aria-label="Add product"
             >
-              <LogOut size={16} />
-              Logout
-            </button>
-          </div>
-        </div>
-      ) : null}
+              <Icon size={22} />
+            </Link>
+          );
+        }
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--kv-border)] bg-[color:var(--kv-card)]/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 backdrop-blur md:hidden">
-        <div className="grid grid-cols-5 gap-1">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const active = isNavItemActive(pathname, tab.href);
-
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`relative flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition ${
-                  active
-                    ? 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
-                    : 'text-[var(--kv-muted)]'
-                } ${tab.accent ? 'bg-[var(--kv-accent)] text-white' : ''}`}
-              >
-                <Icon size={18} />
-                <span>{tab.label}</span>
-                {tab.badge === 'pendingOrders' && pendingOrders > 0 ? (
-                  <span className="absolute right-3 top-2 inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--kv-danger)] px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                    {pendingOrders > 9 ? '9+' : pendingOrders}
-                  </span>
-                ) : null}
-              </Link>
-            );
-          })}
-
-          <button
-            type="button"
-            onClick={onOpenDrawer}
-            className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition ${
-              isDrawerOpen
-                ? 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
-                : 'text-[var(--kv-muted)]'
+        return (
+          <Link
+            key={tab.href}
+            href={tab.href}
+            className={`relative flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-90 duration-150 ${
+              active ? 'text-[var(--primary)]' : 'text-[var(--on-surface-variant)] hover:text-[var(--primary)]'
             }`}
           >
-            <MoreHorizontal size={18} />
-            <span>More</span>
-          </button>
-        </div>
-      </nav>
-    </>
+            <Icon size={22} />
+            <span className="font-['Inter'] text-[10px] font-medium">{tab.label}</span>
+            {'badge' in tab && tab.badge && pendingOrders > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-4 h-4 bg-[var(--error)] text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+                {pendingOrders > 9 ? '9+' : pendingOrders}
+              </span>
+            )}
+          </Link>
+        );
+      })}
+
+      {/* More → opens drawer */}
+      <button
+        type="button"
+        onClick={onOpenDrawer}
+        className={`flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-90 duration-150 ${
+          isDrawerOpen ? 'text-[var(--primary)]' : 'text-[var(--on-surface-variant)] hover:text-[var(--primary)]'
+        }`}
+      >
+        <MoreHorizontal size={22} />
+        <span className="font-['Inter'] text-[10px] font-medium">More</span>
+      </button>
+    </nav>
   );
 }

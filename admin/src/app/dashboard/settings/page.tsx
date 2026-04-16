@@ -339,40 +339,39 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="text-center py-12">
-          <p className="text-gray-500">Loading settings...</p>
-        </div>
+      <div className="space-y-6 px-4 py-6 md:px-6">
+        <div className="h-10 w-40 bg-[var(--surface-container-high)] rounded-xl animate-pulse" />
+        <div className="h-64 bg-[var(--surface-container-lowest)] rounded-2xl animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="p-8 relative">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
-        <p className="text-gray-600">
+    <div className="space-y-6 px-4 py-6 md:px-6 relative">
+      <div>
+        <h2 className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--on-surface)]">Settings</h2>
+        <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">
           Manage your store settings and preferences
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <nav className="space-y-1">
+          <div className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-3">
+            <nav className="space-y-0.5">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-[var(--primary)] text-white'
+                        : 'text-[var(--on-surface-variant)] hover:bg-[var(--surface-container-low)]'
                     }`}
                   >
-                    <Icon size={18} />
+                    <Icon size={16} />
                     {tab.label}
                   </button>
                 );
@@ -382,17 +381,17 @@ export default function SettingsPage() {
         </div>
 
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-6">
             {activeTab === 'general' && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg font-black text-[var(--on-surface)]">
                   General Settings
                 </h2>
 
                 <div>
                   <label
                     htmlFor="store_name"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                   >
                     Store Name
                   </label>
@@ -402,13 +401,13 @@ export default function SettingsPage() {
                     value={settings.store_name || ''}
                     onChange={(e) => handleChange('store_name', e.target.value)}
                     placeholder="Kvastram Store"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="store_description"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                   >
                     Store Description
                   </label>
@@ -420,13 +419,13 @@ export default function SettingsPage() {
                       handleChange('store_description', e.target.value)
                     }
                     placeholder="Your premium e-commerce store"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="contact_email"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                   >
                     Contact Email
                   </label>
@@ -438,13 +437,13 @@ export default function SettingsPage() {
                       handleChange('contact_email', e.target.value)
                     }
                     placeholder="admin@kvastram.com"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="phone_number"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                   >
                     Phone Number
                   </label>
@@ -456,7 +455,7 @@ export default function SettingsPage() {
                       handleChange('phone_number', e.target.value)
                     }
                     placeholder="+1 (555) 123-4567"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                   />
                 </div>
               </div>
@@ -464,21 +463,21 @@ export default function SettingsPage() {
 
             {activeTab === 'homepage' && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg font-black text-[var(--on-surface)]">
                   Homepage Settings
                 </h2>
 
-                <div className="border-b border-gray-200 pb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-b border-[var(--surface-container-low)] pb-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Announcement Bar
                   </h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-[var(--on-surface)]">
                           Enable Announcement Bar
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-xs text-[var(--on-surface-variant)]">
                           Show a banner at the top of the homepage
                         </p>
                       </div>
@@ -491,13 +490,13 @@ export default function SettingsPage() {
                             e.target.checked
                           )
                         }
-                        className="w-5 h-5 text-blue-600"
+                        className="w-5 h-5 text-[var(--primary)]"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="announcement_bar_text"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Announcement Text
                       </label>
@@ -509,21 +508,21 @@ export default function SettingsPage() {
                           handleChange('announcement_bar_text', e.target.value)
                         }
                         placeholder="Complimentary Worldwide Shipping on Orders Over $250"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="border-b border-gray-200 pb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-b border-[var(--surface-container-low)] pb-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Hero Section
                   </h3>
                   <div className="space-y-4">
                     <div>
                       <label
                         htmlFor="hero_title"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Hero Title
                       </label>
@@ -535,13 +534,13 @@ export default function SettingsPage() {
                           handleChange('hero_title', e.target.value)
                         }
                         placeholder="Where Tradition Meets Modern"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="hero_subtitle"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Hero Subtitle
                       </label>
@@ -553,14 +552,14 @@ export default function SettingsPage() {
                           handleChange('hero_subtitle', e.target.value)
                         }
                         placeholder="Discover handcrafted elegance from master artisans..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label
                           htmlFor="hero_cta_text_1"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           CTA Button Text
                         </label>
@@ -572,14 +571,14 @@ export default function SettingsPage() {
                             handleChange('hero_cta_text', e.target.value)
                           }
                           placeholder="Shop New Arrivals"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
                       </div>
                     </div>
                     <div>
                       <label
                         htmlFor="hero_image"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Hero Image URL
                       </label>
@@ -591,9 +590,9 @@ export default function SettingsPage() {
                           handleChange('hero_image', e.target.value)
                         }
                         placeholder="https://example.com/hero-image.jpg"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                         Full URL to hero section background image
                       </p>
                     </div>
@@ -601,7 +600,7 @@ export default function SettingsPage() {
                       <div>
                         <label
                           htmlFor="hero_cta_text_2"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           CTA Button Text
                         </label>
@@ -613,13 +612,13 @@ export default function SettingsPage() {
                             handleChange('hero_cta_text', e.target.value)
                           }
                           placeholder="Shop New Arrivals"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
                       </div>
                       <div>
                         <label
                           htmlFor="hero_cta_link"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           CTA Link
                         </label>
@@ -631,7 +630,7 @@ export default function SettingsPage() {
                             handleChange('hero_cta_link', e.target.value)
                           }
                           placeholder="/products"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
                       </div>
                     </div>
@@ -639,38 +638,38 @@ export default function SettingsPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Category & Collection Images
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-[var(--on-surface-variant)] mb-4">
                     Upload images for categories and collections in their
                     respective pages.
                   </p>
                   <div className="flex gap-4">
                     <a
                       href="/dashboard/categories"
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-blue-700"
                     >
                       Manage Categories
                     </a>
                     <a
                       href="/dashboard/collections"
-                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                      className="px-4 py-2 bg-gray-200 text-[var(--on-surface-variant)] rounded-lg hover:bg-gray-300"
                     >
                       Manage Collections
                     </a>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-t border-[var(--surface-container-low)] pt-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Newsletter Section
                   </h3>
                   <div className="space-y-4">
                     <div>
                       <label
                         htmlFor="newsletter_title"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Newsletter Title
                       </label>
@@ -682,13 +681,13 @@ export default function SettingsPage() {
                           handleChange('newsletter_title', e.target.value)
                         }
                         placeholder="Unlock 10% Off"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="newsletter_subtitle"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Newsletter Subtitle
                       </label>
@@ -700,21 +699,21 @@ export default function SettingsPage() {
                           handleChange('newsletter_subtitle', e.target.value)
                         }
                         placeholder="Be the first to know about new collections..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-t border-[var(--surface-container-low)] pt-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Brand Story Section
                   </h3>
                   <div className="space-y-4">
                     <div>
                       <label
                         htmlFor="brand_story_title"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Title
                       </label>
@@ -726,13 +725,13 @@ export default function SettingsPage() {
                           handleChange('brand_story_title', e.target.value)
                         }
                         placeholder="Crafted with Soul & Purpose"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="brand_story_content"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Content
                       </label>
@@ -744,13 +743,13 @@ export default function SettingsPage() {
                           handleChange('brand_story_content', e.target.value)
                         }
                         placeholder="Every Kvastram piece begins its journey..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="brand_story_image"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Image URL
                       </label>
@@ -762,17 +761,17 @@ export default function SettingsPage() {
                           handleChange('brand_story_image', e.target.value)
                         }
                         placeholder="https://example.com/image.jpg"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-t border-[var(--surface-container-low)] pt-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Featured Products
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-[var(--on-surface-variant)] mb-4">
                     Enter product IDs (comma-separated) to feature on the
                     homepage. Leave empty to show newest products.
                   </p>
@@ -780,7 +779,7 @@ export default function SettingsPage() {
                     <div>
                       <label
                         htmlFor="featured_product_ids"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Featured Product IDs
                       </label>
@@ -792,9 +791,9 @@ export default function SettingsPage() {
                           handleChange('featured_product_ids', e.target.value)
                         }
                         placeholder="prod_123, prod_456, prod_789"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                         Enter product IDs separated by commas. First 8 will be
                         displayed.
                       </p>
@@ -802,7 +801,7 @@ export default function SettingsPage() {
                     <div className="flex gap-4">
                       <a
                         href="/dashboard/products"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-blue-700"
                       >
                         Browse Products
                       </a>
@@ -811,11 +810,11 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Navigation Links Section */}
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-t border-[var(--surface-container-low)] pt-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Navigation Links
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-[var(--on-surface-variant)] mb-4">
                     Configure the navigation menu links shown in the header.
                   </p>
                   {/* Force rebuild */}
@@ -823,10 +822,10 @@ export default function SettingsPage() {
                     <div>
                       <label
                         htmlFor="nav_links"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Nav Links (JSON){' '}
-                        <span className="ml-2 text-xs text-gray-400 font-normal">
+                        <span className="ml-2 text-xs text-[var(--on-surface-variant)] font-normal">
                           {'Array of (label, url, order, highlight)'}
                         </span>
                       </label>
@@ -843,9 +842,9 @@ export default function SettingsPage() {
                           }
                         }}
                         placeholder='[{"label":"Home","url":"/","order":1}]'
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                        className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                         Valid JSON required. See placeholder for format example.
                       </p>
                       <button
@@ -853,7 +852,7 @@ export default function SettingsPage() {
                         onClick={() =>
                           handleChange('nav_links', DEFAULT_NAV_LINKS)
                         }
-                        className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+                        className="mt-2 text-xs text-[var(--primary)] hover:text-blue-800"
                       >
                         Reset to Default
                       </button>
@@ -861,10 +860,10 @@ export default function SettingsPage() {
                     <div>
                       <label
                         htmlFor="quick_links"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Quick Links (JSON){' '}
-                        <span className="ml-2 text-xs text-gray-400 font-normal">
+                        <span className="ml-2 text-xs text-[var(--on-surface-variant)] font-normal">
                           {'Array of {label, url, order, highlight}'}
                         </span>
                       </label>
@@ -881,9 +880,9 @@ export default function SettingsPage() {
                           }
                         }}
                         placeholder='[{"label":"Bestsellers","url":"/products?tag=bestseller","order":1}]'
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                        className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                         Valid JSON required. Use "highlight":true for
                         Sale/featured links.
                       </p>
@@ -892,7 +891,7 @@ export default function SettingsPage() {
                         onClick={() =>
                           handleChange('quick_links', DEFAULT_QUICK_LINKS)
                         }
-                        className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+                        className="mt-2 text-xs text-[var(--primary)] hover:text-blue-800"
                       >
                         Reset to Default
                       </button>
@@ -901,18 +900,18 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Store Info Section */}
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-t border-[var(--surface-container-low)] pt-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Store Information
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-[var(--on-surface-variant)] mb-4">
                     Contact information shown in the footer.
                   </p>
                   <div className="space-y-4">
                     <div>
                       <label
                         htmlFor="store_logo_url"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Store Logo URL
                       </label>
@@ -924,13 +923,13 @@ export default function SettingsPage() {
                           handleChange('store_logo_url', e.target.value)
                         }
                         placeholder="https://example.com/logo.png"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="store_address"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Store Address
                       </label>
@@ -942,14 +941,14 @@ export default function SettingsPage() {
                           handleChange('store_address', e.target.value)
                         }
                         placeholder="123 Fashion Avenue, New York, NY 10001"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label
                           htmlFor="store_phone"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           Phone Number
                         </label>
@@ -961,13 +960,13 @@ export default function SettingsPage() {
                             handleChange('store_phone', e.target.value)
                           }
                           placeholder="+1 (555) 123-4567"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
                       </div>
                       <div>
                         <label
                           htmlFor="store_email"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           Email
                         </label>
@@ -979,7 +978,7 @@ export default function SettingsPage() {
                             handleChange('store_email', e.target.value)
                           }
                           placeholder="support@kvastram.com"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
                       </div>
                     </div>
@@ -990,7 +989,7 @@ export default function SettingsPage() {
 
             {activeTab === 'notifications' && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg font-black text-[var(--on-surface)]">
                   Notification Settings
                 </h2>
                 {/* Use settings state but simplified for brevity in this replace */}
@@ -998,7 +997,7 @@ export default function SettingsPage() {
                   {/* Keeping previous structure simplified */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-[var(--on-surface)]">
                         Order Notifications
                       </p>
                     </div>
@@ -1008,12 +1007,12 @@ export default function SettingsPage() {
                       onChange={(e) =>
                         handleChange('notify_orders', e.target.checked)
                       }
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-[var(--primary)]"
                     />
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-[var(--on-surface)]">
                         Low Stock Alerts
                       </p>
                     </div>
@@ -1023,7 +1022,7 @@ export default function SettingsPage() {
                       onChange={(e) =>
                         handleChange('notify_low_stock', e.target.checked)
                       }
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-[var(--primary)]"
                     />
                   </div>
                 </div>
@@ -1034,10 +1033,10 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className="text-lg font-black text-[var(--on-surface)]">
                       WhatsApp Notifications
                     </h2>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-[var(--on-surface-variant)] mt-1">
                       Receive order notifications on your WhatsApp
                     </p>
                   </div>
@@ -1045,14 +1044,14 @@ export default function SettingsPage() {
                     <button
                       onClick={handleTestWhatsApp}
                       disabled={testingWhatsapp || !whatsappSettings.is_active}
-                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                      className="px-4 py-2 bg-gray-100 text-[var(--on-surface-variant)] rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
                     >
                       {testingWhatsapp ? 'Sending...' : 'Test'}
                     </button>
                     <button
                       onClick={handleSaveWhatsApp}
                       disabled={saving}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-medium flex items-center gap-2"
+                      className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-medium flex items-center gap-2"
                     >
                       <Save size={16} />
                       {saving ? 'Saving...' : 'Save'}
@@ -1082,10 +1081,10 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-[var(--on-surface)]">
                         Enable WhatsApp Notifications
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-[var(--on-surface-variant)]">
                         Send notifications to your phone
                       </p>
                     </div>
@@ -1105,7 +1104,7 @@ export default function SettingsPage() {
                   <div>
                     <label
                       htmlFor="wa_phone_number_id"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest"
                     >
                       Phone Number ID
                     </label>
@@ -1120,14 +1119,14 @@ export default function SettingsPage() {
                         }))
                       }
                       placeholder="123456789012345"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                      className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                     />
                   </div>
 
                   <div>
                     <label
                       htmlFor="wa_access_token"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest"
                     >
                       Access Token
                     </label>
@@ -1146,9 +1145,9 @@ export default function SettingsPage() {
                           ? '••••••••••••'
                           : 'Enter access token'
                       }
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                      className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                       Leave blank to keep existing token
                     </p>
                   </div>
@@ -1156,7 +1155,7 @@ export default function SettingsPage() {
                   <div>
                     <label
                       htmlFor="wa_business_account_id"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest"
                     >
                       Business Account ID (Optional)
                     </label>
@@ -1171,14 +1170,14 @@ export default function SettingsPage() {
                         }))
                       }
                       placeholder="123456789012345"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                      className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                     />
                   </div>
 
                   <div>
                     <label
                       htmlFor="wa_admin_phone"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest"
                     >
                       Admin Phone Number
                     </label>
@@ -1193,25 +1192,25 @@ export default function SettingsPage() {
                         }))
                       }
                       placeholder="+1234567890"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                      className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                       Your WhatsApp number to receive notifications (with
                       country code)
                     </p>
                   </div>
 
-                  <div className="border-t border-gray-200 pt-4 mt-4">
-                    <h3 className="font-medium text-gray-900 mb-4">
+                  <div className="border-t border-[var(--surface-container-low)] pt-4 mt-4">
+                    <h3 className="font-medium text-[var(--on-surface)] mb-4">
                       Notification Types
                     </h3>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-[var(--on-surface)]">
                             New Orders
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-xs text-[var(--on-surface-variant)]">
                             Get notified when a new order is placed
                           </p>
                         </div>
@@ -1229,10 +1228,10 @@ export default function SettingsPage() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-[var(--on-surface)]">
                             New Customers
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-xs text-[var(--on-surface-variant)]">
                             Get notified when a new customer registers
                           </p>
                         </div>
@@ -1256,18 +1255,18 @@ export default function SettingsPage() {
 
             {activeTab === 'security' && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg font-black text-[var(--on-surface)]">
                   Security Settings
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-[var(--on-surface-variant)]">
                   Password management is handled via profile settings.
                 </p>
 
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-[var(--surface-container-low)]">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-[var(--on-surface)]">
                           Two-Factor Authentication
                         </p>
                         {user?.two_factor_enabled && (
@@ -1276,7 +1275,7 @@ export default function SettingsPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-[var(--on-surface-variant)]">
                         {user?.two_factor_enabled
                           ? 'Account is secured with 2FA'
                           : 'Add an extra layer of security'}
@@ -1292,7 +1291,7 @@ export default function SettingsPage() {
                     ) : (
                       <button
                         onClick={handleEnable2FA}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium"
+                        className="px-4 py-2 bg-[var(--surface-container-low)]0 text-white rounded-lg hover:bg-[var(--primary)] font-medium"
                       >
                         Enable 2FA
                       </button>
@@ -1304,29 +1303,29 @@ export default function SettingsPage() {
 
             {activeTab === 'payment' && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg font-black text-[var(--on-surface)]">
                   Payment Settings
                 </h2>
 
                 <div className="space-y-4">
-                  <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="border border-[var(--surface-container-low)] rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-gray-900">Stripe</p>
+                          <p className="font-medium text-[var(--on-surface)]">Stripe</p>
                           {settings.stripe_publishable_key && (
                             <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
                               <CheckCircle size={10} /> Configured
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-xs text-[var(--on-surface-variant)]">
                           Accept credit cards and digital wallets
                         </p>
                       </div>
                       <button
                         onClick={() => setShowStripeModal(true)}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2"
+                        className="px-4 py-2 bg-gray-100 text-[var(--on-surface-variant)] rounded-lg hover:bg-gray-200 flex items-center gap-2"
                       >
                         Configure
                       </button>
@@ -1338,10 +1337,10 @@ export default function SettingsPage() {
 
             {activeTab === 'email' && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg font-black text-[var(--on-surface)]">
                   Email Settings (SMTP)
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-[var(--on-surface-variant)]">
                   Configure your email provider for sending order confirmations
                   and notifications.
                 </p>
@@ -1351,7 +1350,7 @@ export default function SettingsPage() {
                     <div>
                       <label
                         htmlFor="from_name"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         From Name
                       </label>
@@ -1363,13 +1362,13 @@ export default function SettingsPage() {
                           handleChange('from_name', e.target.value)
                         }
                         placeholder="Kvastram Support"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="from_email"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         From Email
                       </label>
@@ -1381,7 +1380,7 @@ export default function SettingsPage() {
                           handleChange('from_email', e.target.value)
                         }
                         placeholder="support@kvastram.com"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                   </div>
@@ -1390,7 +1389,7 @@ export default function SettingsPage() {
                   <div>
                     <label
                       htmlFor="email_reply_to"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                     >
                       Reply-To Email
                     </label>
@@ -1402,22 +1401,22 @@ export default function SettingsPage() {
                         handleChange('email_reply_to', e.target.value)
                       }
                       placeholder="hello@kvastram.com"
-                      className="w-full lg:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full lg:w-1/2 px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                       Customer replies will be sent to this address
                     </p>
                   </div>
 
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  <div className="border-t border-[var(--surface-container-low)] pt-6">
+                    <h3 className="text-lg font-medium text-[var(--on-surface)] mb-4">
                       SMTP Configuration
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-2 md:col-span-1">
                         <label
                           htmlFor="smtp_host"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           SMTP Host
                         </label>
@@ -1429,13 +1428,13 @@ export default function SettingsPage() {
                             handleChange('smtp_host', e.target.value)
                           }
                           placeholder="smtp.example.com"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
                         <label
                           htmlFor="smtp_port"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           SMTP Port
                         </label>
@@ -1447,13 +1446,13 @@ export default function SettingsPage() {
                             handleChange('smtp_port', e.target.value)
                           }
                           placeholder="587"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
                         <label
                           htmlFor="smtp_user"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           SMTP User
                         </label>
@@ -1465,13 +1464,13 @@ export default function SettingsPage() {
                             handleChange('smtp_user', e.target.value)
                           }
                           placeholder="apikey"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
                         <label
                           htmlFor="smtp_pass"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                         >
                           SMTP Password
                         </label>
@@ -1484,11 +1483,11 @@ export default function SettingsPage() {
                               handleChange('smtp_pass', e.target.value)
                             }
                             placeholder="••••••••••••"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                            className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
                           />
                           <Lock
                             size={16}
-                            className="absolute right-3 top-3 text-gray-400"
+                            className="absolute right-3 top-3 text-[var(--on-surface-variant)]"
                           />
                         </div>
                       </div>
@@ -1496,11 +1495,11 @@ export default function SettingsPage() {
                   </div>
 
                   {/* Email Notification Toggles */}
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <div className="border-t border-[var(--surface-container-low)] pt-6">
+                    <h3 className="text-lg font-medium text-[var(--on-surface)] mb-2">
                       Email Notifications
                     </h3>
-                    <p className="text-sm text-gray-500 mb-4">
+                    <p className="text-sm text-[var(--on-surface-variant)] mb-4">
                       Choose which emails are sent automatically to customers
                     </p>
 
@@ -1535,7 +1534,7 @@ export default function SettingsPage() {
                             <p className="font-medium text-gray-800">
                               {item.label}
                             </p>
-                            <p className="text-sm text-gray-500">{item.desc}</p>
+                            <p className="text-xs text-[var(--on-surface-variant)]">{item.desc}</p>
                           </div>
                           <button
                             type="button"
@@ -1547,7 +1546,7 @@ export default function SettingsPage() {
                             }
                             className={`relative w-12 h-6 rounded-full transition-colors ${
                               (settings as any)[item.key]
-                                ? 'bg-blue-500'
+                                ? 'bg-[var(--surface-container-low)]0'
                                 : 'bg-gray-300'
                             }`}
                           >
@@ -1565,8 +1564,8 @@ export default function SettingsPage() {
                   </div>
 
                   {/* Review Request */}
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <div className="border-t border-[var(--surface-container-low)] pt-6">
+                    <h3 className="text-lg font-medium text-[var(--on-surface)] mb-2">
                       Review Request
                     </h3>
                     <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-3">
@@ -1574,7 +1573,7 @@ export default function SettingsPage() {
                         <p className="font-medium text-gray-800">
                           Send Review Request Email
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-xs text-[var(--on-surface-variant)]">
                           Automatically ask customers to review purchased
                           products
                         </p>
@@ -1589,7 +1588,7 @@ export default function SettingsPage() {
                         }
                         className={`relative w-12 h-6 rounded-full transition-colors ${
                           settings.email_review_request
-                            ? 'bg-blue-500'
+                            ? 'bg-[var(--surface-container-low)]0'
                             : 'bg-gray-300'
                         }`}
                       >
@@ -1602,7 +1601,7 @@ export default function SettingsPage() {
                     </div>
                     {settings.email_review_request && (
                       <div className="pl-4 border-l-2 border-blue-200">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                           Send after how many days of delivery?
                         </label>
                         <input
@@ -1616,9 +1615,9 @@ export default function SettingsPage() {
                               parseInt(e.target.value)
                             )
                           }
-                          className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-32 px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                           Days after delivery confirmation
                         </p>
                       </div>
@@ -1626,8 +1625,8 @@ export default function SettingsPage() {
                   </div>
 
                   {/* Abandoned Cart Recovery */}
-                  <div className="border-t border-gray-200 pt-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <div className="border-t border-[var(--surface-container-low)] pt-6">
+                    <h3 className="text-lg font-medium text-[var(--on-surface)] mb-2">
                       Abandoned Cart Recovery
                     </h3>
                     <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-3">
@@ -1635,7 +1634,7 @@ export default function SettingsPage() {
                         <p className="font-medium text-gray-800">
                           Send Recovery Email
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-xs text-[var(--on-surface-variant)]">
                           Automatically email customers who abandon their cart
                         </p>
                       </div>
@@ -1649,7 +1648,7 @@ export default function SettingsPage() {
                         }
                         className={`relative w-12 h-6 rounded-full transition-colors ${
                           settings.email_abandoned_cart
-                            ? 'bg-blue-500'
+                            ? 'bg-[var(--surface-container-low)]0'
                             : 'bg-gray-300'
                         }`}
                       >
@@ -1662,7 +1661,7 @@ export default function SettingsPage() {
                     </div>
                     {settings.email_abandoned_cart && (
                       <div className="pl-4 border-l-2 border-blue-200">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                           Send after how many hours of abandonment?
                         </label>
                         <input
@@ -1676,9 +1675,9 @@ export default function SettingsPage() {
                               parseInt(e.target.value)
                             )
                           }
-                          className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-32 px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                           Hours after cart was last updated
                         </p>
                       </div>
@@ -1690,11 +1689,11 @@ export default function SettingsPage() {
 
             {activeTab === 'shipping' && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg font-black text-[var(--on-surface)]">
                   Shipping & Tax Settings
                 </h2>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div className="bg-[var(--surface-container-low)] border border-blue-200 rounded-lg p-4 mb-4">
                   <p className="text-sm text-blue-800">
                     Configure shipping origin, rates, free shipping rules, and
                     shipping zones.
@@ -1702,17 +1701,17 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Shipping Origin Address */}
-                <div className="border-b border-gray-200 pb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-b border-[var(--surface-container-low)] pb-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Shipping Origin Address
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-[var(--on-surface-variant)] mb-4">
                     The address from which your orders are shipped. Used for
                     shipping rate calculations.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                         Street Address
                       </label>
                       <input
@@ -1729,11 +1728,11 @@ export default function SettingsPage() {
                           })
                         }
                         placeholder="123 Main Street"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                         City
                       </label>
                       <input
@@ -1749,11 +1748,11 @@ export default function SettingsPage() {
                           })
                         }
                         placeholder="Mumbai"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                         State / Province
                       </label>
                       <input
@@ -1769,11 +1768,11 @@ export default function SettingsPage() {
                           })
                         }
                         placeholder="Maharashtra"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                         Country
                       </label>
                       <input
@@ -1790,11 +1789,11 @@ export default function SettingsPage() {
                           })
                         }
                         placeholder="India"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                         PIN / ZIP Code
                       </label>
                       <input
@@ -1811,21 +1810,21 @@ export default function SettingsPage() {
                           })
                         }
                         placeholder="400001"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Tax Configuration */}
-                <div className="border-b border-gray-200 pb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-b border-[var(--surface-container-low)] pb-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Tax Configuration
                   </h3>
                   <div>
                     <label
                       htmlFor="tax_rate"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                     >
                       Default Tax Rate (%)
                     </label>
@@ -1840,17 +1839,17 @@ export default function SettingsPage() {
                           Number.parseFloat(e.target.value)
                         )
                       }
-                      className="w-full lg:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full lg:w-1/2 px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                       This tax rate will be applied to all orders.
                     </p>
                   </div>
                 </div>
 
                 {/* Free Shipping */}
-                <div className="border-b border-gray-200 pb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-b border-[var(--surface-container-low)] pb-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Free Shipping
                   </h3>
                   <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-4">
@@ -1858,7 +1857,7 @@ export default function SettingsPage() {
                       <p className="font-medium text-gray-800">
                         Enable Free Shipping
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-[var(--on-surface-variant)]">
                         Offer free shipping for qualifying orders
                       </p>
                     </div>
@@ -1871,7 +1870,7 @@ export default function SettingsPage() {
                       }
                       className={`relative w-12 h-6 rounded-full transition-colors ${
                         settings.shipping_free_enabled
-                          ? 'bg-blue-500'
+                          ? 'bg-[var(--surface-container-low)]0'
                           : 'bg-gray-300'
                       }`}
                     >
@@ -1886,7 +1885,7 @@ export default function SettingsPage() {
                   {settings.shipping_free_enabled && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4 border-l-2 border-blue-200">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                           Minimum Order Value (USD)
                         </label>
                         <input
@@ -1898,14 +1897,14 @@ export default function SettingsPage() {
                               Number.parseFloat(e.target.value)
                             )
                           }
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                           Orders above this amount qualify for free shipping
                         </p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                           Applies To
                         </label>
                         <select
@@ -1916,7 +1915,7 @@ export default function SettingsPage() {
                               e.target.value
                             )
                           }
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                         >
                           <option value="all">All Orders</option>
                           <option value="domestic">Domestic Only</option>
@@ -1930,15 +1929,15 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Shipping Rates */}
-                <div className="border-b border-gray-200 pb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <div className="border-b border-[var(--surface-container-low)] pb-6">
+                  <h3 className="text-sm font-bold text-[var(--on-surface)] mb-4">
                     Default Shipping Rates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label
                         htmlFor="domestic_shipping_rate"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         Domestic Shipping Rate (USD)
                       </label>
@@ -1952,13 +1951,13 @@ export default function SettingsPage() {
                             Number.parseFloat(e.target.value)
                           )
                         }
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="international_shipping_rate"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                       >
                         International Shipping Rate (USD)
                       </label>
@@ -1972,7 +1971,7 @@ export default function SettingsPage() {
                             Number.parseFloat(e.target.value)
                           )
                         }
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
                   </div>
@@ -1982,10 +1981,10 @@ export default function SettingsPage() {
                 <div className="pt-2">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800">
+                      <h3 className="text-sm font-bold text-[var(--on-surface)]">
                         Shipping Zones
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-[var(--on-surface-variant)]">
                         Define custom zones with specific rates for different
                         regions
                       </p>
@@ -2005,7 +2004,7 @@ export default function SettingsPage() {
                         });
                         handleChange('shipping_zones', zones);
                       }}
-                      className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
+                      className="px-3 py-1.5 bg-[var(--surface-container-low)]0 text-white text-sm rounded-lg hover:bg-[var(--primary)]"
                     >
                       + Add Zone
                     </button>
@@ -2013,23 +2012,23 @@ export default function SettingsPage() {
 
                   {Array.isArray(settings.shipping_zones) &&
                   (settings.shipping_zones as any[]).length > 0 ? (
-                    <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="border border-[var(--surface-container-low)] rounded-lg overflow-hidden">
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                               Zone Name
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                               Countries
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                               Standard Rate
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                               Express Rate
                             </th>
-                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-4 py-3 text-center text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                               Actions
                             </th>
                           </tr>
@@ -2053,7 +2052,7 @@ export default function SettingsPage() {
                                       handleChange('shipping_zones', zones);
                                     }}
                                     placeholder="e.g. South Asia"
-                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full px-2 py-1 text-sm border border-[var(--outline-variant)] rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </td>
                                 <td className="px-4 py-2">
@@ -2071,7 +2070,7 @@ export default function SettingsPage() {
                                       handleChange('shipping_zones', zones);
                                     }}
                                     placeholder="IN, LK, BD"
-                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full px-2 py-1 text-sm border border-[var(--outline-variant)] rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </td>
                                 <td className="px-4 py-2">
@@ -2090,7 +2089,7 @@ export default function SettingsPage() {
                                       };
                                       handleChange('shipping_zones', zones);
                                     }}
-                                    className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-20 px-2 py-1 text-sm border border-[var(--outline-variant)] rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </td>
                                 <td className="px-4 py-2">
@@ -2109,7 +2108,7 @@ export default function SettingsPage() {
                                       };
                                       handleChange('shipping_zones', zones);
                                     }}
-                                    className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-20 px-2 py-1 text-sm border border-[var(--outline-variant)] rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   />
                                 </td>
                                 <td className="px-4 py-2 text-center">
@@ -2135,7 +2134,7 @@ export default function SettingsPage() {
                       </table>
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+                    <div className="text-center py-8 text-[var(--on-surface-variant)] border border-dashed border-[var(--outline-variant)] rounded-lg">
                       <p className="mb-2">No shipping zones configured yet.</p>
                       <p className="text-sm">
                         Click &quot;+ Add Zone&quot; to create custom shipping
@@ -2149,7 +2148,7 @@ export default function SettingsPage() {
                 <div className="pt-2">
                   <label
                     htmlFor="shipping_countries"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                   >
                     Allowed Shipping Countries
                   </label>
@@ -2161,9 +2160,9 @@ export default function SettingsPage() {
                       handleChange('shipping_countries', e.target.value)
                     }
                     placeholder="US, CA, GB, AU"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-[var(--on-surface-variant)] mt-1">
                     Comma-separated two-letter ISO country codes.
                   </p>
                 </div>
@@ -2186,11 +2185,11 @@ export default function SettingsPage() {
               />
             )}
 
-            <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-8 pt-6 border-t border-[var(--surface-container-low)]">
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="flex items-center gap-2 rounded-full bg-[var(--primary)] px-6 py-3 text-xs font-bold uppercase tracking-widest text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
               >
                 <Save size={20} />
                 {saving ? 'Saving...' : 'Save Changes'}
@@ -2205,26 +2204,26 @@ export default function SettingsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <CreditCard size={24} className="text-blue-600" />
+              <h2 className="text-xl font-bold text-[var(--on-surface)] flex items-center gap-2">
+                <CreditCard size={24} className="text-[var(--primary)]" />
                 Configure Stripe
               </h2>
               <button
                 onClick={() => setShowStripeModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-[var(--on-surface-variant)] hover:text-[var(--on-surface-variant)]"
               >
                 <X size={20} />
               </button>
             </div>
             <form onSubmit={handleSaveStripe} className="space-y-4">
-              <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800 border border-blue-200">
+              <div className="bg-[var(--surface-container-low)] p-3 rounded-lg text-sm text-blue-800 border border-blue-200">
                 Enter your Stripe API keys. These are stored safely and used for
                 payment processing.
               </div>
               <div>
                 <label
                   htmlFor="stripe_publishable_key"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest"
                 >
                   Publishable Key
                 </label>
@@ -2233,7 +2232,7 @@ export default function SettingsPage() {
                   type="text"
                   required
                   placeholder="pk_test_..."
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900"
+                  className="w-full border border-[var(--outline-variant)] rounded p-2 text-[var(--on-surface)]"
                   value={stripeKeys.publishable}
                   onChange={(e) =>
                     setStripeKeys({
@@ -2246,7 +2245,7 @@ export default function SettingsPage() {
               <div>
                 <label
                   htmlFor="stripe_secret_key"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest"
                 >
                   Secret Key
                 </label>
@@ -2256,7 +2255,7 @@ export default function SettingsPage() {
                     type="password"
                     required
                     placeholder="sk_test_..."
-                    className="w-full border border-gray-300 rounded p-2 text-gray-900 pr-10"
+                    className="w-full border border-[var(--outline-variant)] rounded p-2 text-[var(--on-surface)] pr-10"
                     value={stripeKeys.secret}
                     onChange={(e) =>
                       setStripeKeys({ ...stripeKeys, secret: e.target.value })
@@ -2264,7 +2263,7 @@ export default function SettingsPage() {
                   />
                   <Lock
                     size={14}
-                    className="absolute right-3 top-3 text-gray-400"
+                    className="absolute right-3 top-3 text-[var(--on-surface-variant)]"
                   />
                 </div>
               </div>
@@ -2272,13 +2271,13 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => setShowStripeModal(false)}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded border border-gray-300"
+                  className="px-4 py-2 text-[var(--on-surface-variant)] hover:bg-gray-100 rounded border border-[var(--outline-variant)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="px-4 py-2 bg-[var(--primary)] text-white rounded hover:bg-blue-700"
                 >
                   Save Configuration
                 </button>
@@ -2293,26 +2292,26 @@ export default function SettingsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Shield size={24} className="text-blue-600" />
+              <h2 className="text-xl font-bold text-[var(--on-surface)] flex items-center gap-2">
+                <Shield size={24} className="text-[var(--primary)]" />
                 Enable 2FA
               </h2>
               <button
                 onClick={() => setShowTwoFactorModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-[var(--on-surface-variant)] hover:text-[var(--on-surface-variant)]"
               >
                 <X size={20} />
               </button>
             </div>
 
             <div className="space-y-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-xs text-[var(--on-surface-variant)]">
                 Scan this QR code with your authenticator app (Google
                 Authenticator, Authy, etc.), then enter the code below.
               </p>
 
               {qrCode && (
-                <div className="flex justify-center bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="flex justify-center bg-gray-50 p-4 rounded-lg border border-[var(--surface-container-low)]">
                   <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
                 </div>
               )}
@@ -2320,7 +2319,7 @@ export default function SettingsPage() {
               <div>
                 <label
                   htmlFor="otp_enable"
-                  className="block text-sm font-medium text-gray-700 mb-2 text-left"
+                  className="block text-sm font-medium text-[var(--on-surface-variant)] mb-2 text-left"
                 >
                   Authentication Code
                 </label>
@@ -2329,7 +2328,7 @@ export default function SettingsPage() {
                   type="text"
                   maxLength={6}
                   placeholder="000 000"
-                  className="w-full text-center text-2xl tracking-widest border border-gray-300 rounded-lg p-3 font-mono"
+                  className="w-full text-center text-2xl tracking-widest border border-[var(--outline-variant)] rounded-lg p-3 font-mono"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replaceAll(/\D/g, ''))}
                 />
@@ -2338,7 +2337,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleVerify2FA}
                 disabled={otp.length !== 6 || verifying2FA}
-                className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+                className="w-full py-3 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
               >
                 {verifying2FA ? 'Verifying...' : 'Verify & Enable'}
               </button>
@@ -2352,20 +2351,20 @@ export default function SettingsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Shield size={24} className="text-red-600" />
+              <h2 className="text-xl font-bold text-[var(--on-surface)] flex items-center gap-2">
+                <Shield size={24} className="text-[var(--error)]" />
                 Disable 2FA
               </h2>
               <button
                 onClick={() => setShowDisable2FAModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-[var(--on-surface-variant)] hover:text-[var(--on-surface-variant)]"
               >
                 <X size={20} />
               </button>
             </div>
 
             <div className="space-y-6">
-              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+              <div className="bg-[var(--error-container)] p-4 rounded-lg border border-[var(--error)]/20">
                 <p className="text-sm text-red-800">
                   <strong>Warning:</strong> Disabling 2FA will remove the extra
                   layer of security from your account. You will only need your
@@ -2373,7 +2372,7 @@ export default function SettingsPage() {
                 </p>
               </div>
 
-              <p className="text-sm text-gray-600">
+              <p className="text-xs text-[var(--on-surface-variant)]">
                 To confirm, please enter the current 6-digit code from your
                 authenticator app:
               </p>
@@ -2382,7 +2381,7 @@ export default function SettingsPage() {
                 {/* Nav Links JSON format hint */}
                 <label
                   htmlFor="otp_disable"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
                 >
                   Authentication Code
                 </label>
@@ -2391,7 +2390,7 @@ export default function SettingsPage() {
                   type="text"
                   maxLength={6}
                   placeholder="000 000"
-                  className="w-full text-center text-2xl tracking-widest border border-gray-300 rounded-lg p-3 font-mono"
+                  className="w-full text-center text-2xl tracking-widest border border-[var(--outline-variant)] rounded-lg p-3 font-mono"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replaceAll(/\D/g, ''))}
                 />
@@ -2407,7 +2406,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleConfirmDisable2FA}
                   disabled={otp.length !== 6 || disabling2FA}
-                  className="flex-1 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50"
+                  className="flex-1 py-3 bg-[var(--error)] text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50"
                 >
                   {disabling2FA ? 'Disabling...' : 'Disable 2FA'}
                 </button>
@@ -2512,8 +2511,8 @@ function TiersTabContent({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Wholesale Tiers</h2>
-          <p className="text-gray-600 mt-1">
+          <h2 className="text-lg font-black text-[var(--on-surface)]">Wholesale Tiers</h2>
+          <p className="text-[var(--on-surface-variant)] mt-1">
             Manage wholesale pricing tiers for bulk buyers
           </p>
         </div>
@@ -2523,7 +2522,7 @@ function TiersTabContent({
             setTierFormData(defaultFormData);
             setShowTierForm(!showTierForm);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-container-low)]0 text-white rounded-lg hover:bg-[var(--primary)] text-sm"
         >
           <Plus size={18} />
           Add Tier
@@ -2532,14 +2531,14 @@ function TiersTabContent({
 
       {/* Create/Edit Form */}
       {showTierForm && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+        <div className="bg-gray-50 border border-[var(--surface-container-low)] rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">
             {editingTierId ? 'Edit Tier' : 'Create Tier'}
           </h3>
           <form onSubmit={handleTierSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                   Tier Name
                 </label>
                 <input
@@ -2550,11 +2549,11 @@ function TiersTabContent({
                     setTierFormData({ ...tierFormData, name: e.target.value })
                   }
                   placeholder="e.g. Gold"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                   Slug
                 </label>
                 <input
@@ -2568,11 +2567,11 @@ function TiersTabContent({
                     })
                   }
                   placeholder="e.g. gold"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                   Discount %
                 </label>
                 <input
@@ -2586,11 +2585,11 @@ function TiersTabContent({
                       discount_percent: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                   Min Order Value
                 </label>
                 <input
@@ -2603,11 +2602,11 @@ function TiersTabContent({
                       min_order_value: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                   Min Order Quantity
                 </label>
                 <input
@@ -2620,11 +2619,11 @@ function TiersTabContent({
                       min_order_quantity: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                   Payment Terms
                 </label>
                 <input
@@ -2637,11 +2636,11 @@ function TiersTabContent({
                     })
                   }
                   placeholder="e.g. Net 30"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                   Color
                 </label>
                 <div className="flex gap-2">
@@ -2654,7 +2653,7 @@ function TiersTabContent({
                         color: e.target.value,
                       })
                     }
-                    className="w-12 h-10 rounded border border-gray-300 cursor-pointer"
+                    className="w-12 h-10 rounded border border-[var(--outline-variant)] cursor-pointer"
                   />
                   <input
                     type="text"
@@ -2665,12 +2664,12 @@ function TiersTabContent({
                         color: e.target.value,
                       })
                     }
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-bold text-[var(--on-surface-variant)] mb-1 uppercase tracking-widest">
                   Priority
                 </label>
                 <input
@@ -2683,7 +2682,7 @@ function TiersTabContent({
                       priority: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                 />
               </div>
             </div>
@@ -2701,7 +2700,7 @@ function TiersTabContent({
                   }
                   className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500"
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-[var(--on-surface-variant)]">
                   Active
                 </span>
               </label>
@@ -2710,7 +2709,7 @@ function TiersTabContent({
             <div className="flex gap-3 pt-2">
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="px-4 py-2 bg-[var(--surface-container-low)]0 text-white rounded-lg hover:bg-[var(--primary)]"
               >
                 {editingTierId ? 'Update Tier' : 'Create Tier'}
               </button>
@@ -2721,7 +2720,7 @@ function TiersTabContent({
                   setEditingTierId(null);
                   setTierFormData(defaultFormData);
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-[var(--outline-variant)] text-[var(--on-surface-variant)] rounded-lg hover:bg-gray-50"
               >
                 Cancel
               </button>
@@ -2732,11 +2731,11 @@ function TiersTabContent({
 
       {/* Tiers Table */}
       {tiersLoading ? (
-        <div className="text-center py-8 text-gray-500">Loading tiers...</div>
+        <div className="text-center py-8 text-[var(--on-surface-variant)]">Loading tiers...</div>
       ) : tiers.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 border border-dashed border-gray-300 rounded-lg">
+        <div className="text-center py-12 text-[var(--on-surface-variant)] border border-dashed border-[var(--outline-variant)] rounded-lg">
           <Layers size={48} className="mx-auto mb-4 text-gray-300" />
-          <p className="text-lg font-medium text-gray-900 mb-1">
+          <p className="text-lg font-medium text-[var(--on-surface)] mb-1">
             No tiers configured
           </p>
           <p className="text-sm mb-4">
@@ -2744,36 +2743,36 @@ function TiersTabContent({
           </p>
           <button
             onClick={() => setShowTierForm(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--surface-container-low)]0 text-white rounded-lg hover:bg-[var(--primary)]"
           >
             <Plus size={18} />
             Create First Tier
           </button>
         </div>
       ) : (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="border border-[var(--surface-container-low)] rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                   Name
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                   Slug
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                   Discount %
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                   Min Order
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-left text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                   Payment Terms
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                   Active
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                <th className="px-4 py-3 text-center text-xs font-medium text-[var(--on-surface-variant)] uppercase">
                   Actions
                 </th>
               </tr>
@@ -2787,21 +2786,21 @@ function TiersTabContent({
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: tier.color || '#3B82F6' }}
                       />
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-[var(--on-surface)]">
                         {tier.name}
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
+                  <td className="px-4 py-3 text-sm text-[var(--on-surface-variant)]">
                     {tier.slug}
                   </td>
                   <td className="px-4 py-3 text-center text-sm font-medium">
                     {tier.discount_percent}%
                   </td>
-                  <td className="px-4 py-3 text-center text-sm text-gray-500">
+                  <td className="px-4 py-3 text-center text-sm text-[var(--on-surface-variant)]">
                     ${tier.min_order_value || 0}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
+                  <td className="px-4 py-3 text-sm text-[var(--on-surface-variant)]">
                     {tier.payment_terms || '—'}
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -2809,7 +2808,7 @@ function TiersTabContent({
                       className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                         tier.is_active
                           ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-500'
+                          : 'bg-gray-100 text-[var(--on-surface-variant)]'
                       }`}
                     >
                       {tier.is_active ? 'Active' : 'Inactive'}
@@ -2819,14 +2818,14 @@ function TiersTabContent({
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => handleEditTier(tier)}
-                        className="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded"
+                        className="p-1.5 text-blue-500 hover:text-[var(--primary)] hover:bg-[var(--surface-container-low)] rounded"
                         title="Edit"
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleDeleteTier(tier.id)}
-                        className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
+                        className="p-1.5 text-red-500 hover:text-red-700 hover:bg-[var(--error-container)] rounded"
                         title="Delete"
                       >
                         <Trash2 size={16} />

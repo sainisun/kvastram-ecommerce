@@ -2,25 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import {
-  Download,
-  Mail,
-  Phone,
-  Search,
-  Trash2,
-  UserPen,
-  Users,
-} from 'lucide-react';
+import { Download, Mail, Phone, Search, Trash2, UserPen, Users, X } from 'lucide-react';
 import { exportToCSV, formatCustomersForExport } from '@/lib/csv-export';
 import { api } from '@/lib/api';
-import {
-  ActionButton,
-  MetricCard,
-  PageHeader,
-  SegmentedTabs,
-  StatusBadge,
-  Surface,
-} from '@/components/ui/admin-ui';
 
 type CustomerFilter = 'all' | 'registered' | 'guest';
 
@@ -53,12 +37,7 @@ export default function CustomersPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
-  const [editFormData, setEditFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-  });
+  const [editFormData, setEditFormData] = useState({ first_name: '', last_name: '', email: '', phone: '' });
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -78,282 +57,194 @@ export default function CustomersPage() {
     }
   }, [page, search, filter]);
 
-  useEffect(() => {
-    void fetchCustomers();
-  }, [fetchCustomers]);
-
-  useEffect(() => {
-    void fetchStats();
-  }, []);
-
   const fetchStats = async () => {
     try {
       const data = await api.getCustomerStats();
       setStats(data || null);
-    } catch (error) {
-      console.error('Failed to load customer stats:', error);
-    }
+    } catch (error) { console.error('Failed to load customer stats:', error); }
   };
+
+  useEffect(() => { void fetchCustomers(); }, [fetchCustomers]);
+  useEffect(() => { void fetchStats(); }, []);
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(amount / 100);
+    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount / 100);
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+    new Date(value).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
 
-  const getCustomerName = (customer: Customer) =>
-    customer.first_name && customer.last_name
-      ? `${customer.first_name} ${customer.last_name}`
-      : 'Unnamed customer';
+  const getCustomerName = (c: Customer) =>
+    c.first_name && c.last_name ? `${c.first_name} ${c.last_name}` : 'Unnamed customer';
 
-  const openEdit = (customer: Customer) => {
-    setEditingCustomer(customer);
-    setEditFormData({
-      first_name: customer.first_name || '',
-      last_name: customer.last_name || '',
-      email: customer.email || '',
-      phone: customer.phone || '',
-    });
+  const openEdit = (c: Customer) => {
+    setEditingCustomer(c);
+    setEditFormData({ first_name: c.first_name || '', last_name: c.last_name || '', email: c.email || '', phone: c.phone || '' });
   };
 
-  const handleEditSave = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (!editingCustomer) {
-      return;
-    }
-
+  const handleEditSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCustomer) return;
     try {
       setSavingEdit(true);
       await api.updateCustomer(editingCustomer.id, editFormData);
       setEditingCustomer(null);
       await Promise.all([fetchCustomers(), fetchStats()]);
-    } catch (error) {
-      console.error('Failed to update customer:', error);
-    } finally {
-      setSavingEdit(false);
-    }
+    } catch (error) { console.error('Failed to update customer:', error); }
+    finally { setSavingEdit(false); }
   };
 
   const handleDelete = async () => {
-    if (!deletingCustomer) {
-      return;
-    }
-
+    if (!deletingCustomer) return;
     try {
       setDeleting(true);
       await api.deleteCustomer(deletingCustomer.id);
       setDeletingCustomer(null);
       await Promise.all([fetchCustomers(), fetchStats()]);
-    } catch (error) {
-      console.error('Failed to delete customer:', error);
-    } finally {
-      setDeleting(false);
-    }
+    } catch (error) { console.error('Failed to delete customer:', error); }
+    finally { setDeleting(false); }
   };
 
+  const FILTER_TABS: { label: string; value: CustomerFilter; count: number }[] = [
+    { label: 'All',        value: 'all',        count: stats?.total_customers || 0 },
+    { label: 'Registered', value: 'registered', count: stats?.customers_with_accounts || 0 },
+    { label: 'Guest',      value: 'guest',      count: stats?.guest_customers || 0 },
+  ];
+
   return (
-    <div className="space-y-6 px-4 pb-8 md:space-y-8 md:px-8">
-      <PageHeader
-        eyebrow="Relationships"
-        title="Customers"
-        description="Browse every buyer, jump into lifetime order history, and keep profile details tidy without losing the existing management tools."
-        actions={
-          <ActionButton
-            onClick={() =>
-              exportToCSV(formatCustomersForExport(customers), 'customers')
-            }
-            icon={Download}
-            variant="secondary"
-          >
-            Export CSV
-          </ActionButton>
-        }
-      />
+    <div className="space-y-6 px-4 py-6 md:px-6">
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Total customers"
-          value={stats?.total_customers || 0}
-          icon={Users}
-          hint="All-time profiles"
-        />
-        <MetricCard
-          label="Registered"
-          value={stats?.customers_with_accounts || 0}
-          icon={Users}
-          hint="Customers with accounts"
-          tone="success"
-        />
-        <MetricCard
-          label="Guest"
-          value={stats?.guest_customers || 0}
-          icon={Users}
-          hint="Checkout-only buyers"
-          tone="accent"
-        />
-        <MetricCard
-          label="New this month"
-          value={stats?.new_this_month || 0}
-          icon={Users}
-          hint={`${stats?.customers_with_orders || 0} have placed orders`}
-        />
-      </div>
-
-      <Surface className="p-4 md:p-6">
-        <div className="flex flex-col gap-4">
-          <SegmentedTabs
-            value={filter}
-            options={[
-              { label: 'All', value: 'all', count: stats?.total_customers || 0 },
-              {
-                label: 'Registered',
-                value: 'registered',
-                count: stats?.customers_with_accounts || 0,
-              },
-              {
-                label: 'Guest',
-                value: 'guest',
-                count: stats?.guest_customers || 0,
-              },
-            ]}
-            onChange={(value) => {
-              setFilter(value);
-              setPage(1);
-            }}
-          />
-
-          <div className="relative">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--kv-muted)]"
-            />
-            <input
-              type="search"
-              placeholder="Search by name or email"
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-                setPage(1);
-              }}
-              className="w-full border px-11 py-3 text-sm"
-            />
-          </div>
+      {/* ── Heading ── */}
+      <section className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--on-surface)]">
+            Customers
+          </h2>
+          <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">
+            Browse buyers, view lifetime order history, and manage profiles.
+          </p>
         </div>
-      </Surface>
+        <button
+          type="button"
+          onClick={() => exportToCSV(formatCustomersForExport(customers), 'customers')}
+          className="flex items-center gap-1.5 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors self-start"
+        >
+          <Download size={13} /> Export CSV
+        </button>
+      </section>
 
-      <Surface className="overflow-hidden">
-        <div className="hidden overflow-x-auto md:block">
+      {/* ── Stats bento ── */}
+      <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {[
+          { label: 'Total',         value: stats?.total_customers || 0 },
+          { label: 'Registered',    value: stats?.customers_with_accounts || 0 },
+          { label: 'Guest',         value: stats?.guest_customers || 0 },
+          { label: 'New this month',value: stats?.new_this_month || 0 },
+        ].map((card) => (
+          <div key={card.label} className="bg-[var(--surface-container-lowest)] p-5 rounded-xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] flex flex-col gap-3">
+            <Users size={18} className="text-[var(--on-surface-variant)]" />
+            <div>
+              <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">{card.label}</p>
+              <p className="text-xl font-black mt-0.5 text-[var(--on-surface)]">{card.value}</p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* ── Filters ── */}
+      <section className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-4 space-y-4">
+        <div className="flex flex-wrap gap-2">
+          {FILTER_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => { setFilter(tab.value); setPage(1); }}
+              className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                filter === tab.value
+                  ? 'bg-[var(--primary)] text-white'
+                  : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container-high)]'
+              }`}
+            >
+              {tab.label}
+              <span className="ml-1.5 opacity-60">{tab.count}</span>
+            </button>
+          ))}
+        </div>
+        <div className="relative">
+          <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--on-surface-variant)]" />
+          <input
+            type="search"
+            placeholder="Search by name or email…"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            className="w-full rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-low)] pl-10 pr-4 py-2.5 text-xs text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
+          />
+        </div>
+      </section>
+
+      {/* ── Customer list ── */}
+      {/* Desktop table */}
+      <section className="hidden md:block bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] overflow-hidden">
+        <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
-              <tr className="border-b border-[var(--kv-border)] text-left text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
-                <th className="px-6 py-4">Customer</th>
-                <th className="px-6 py-4">Contact</th>
-                <th className="px-6 py-4">Type</th>
-                <th className="px-6 py-4">Orders</th>
-                <th className="px-6 py-4">Spent</th>
-                <th className="px-6 py-4">Joined</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+              <tr className="border-b border-[var(--surface-container-low)] text-left">
+                {['Customer', 'Contact', 'Type', 'Orders', 'Spent', 'Joined', ''].map((h) => (
+                  <th key={h} className="px-5 py-4 text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-6 py-14 text-center text-sm text-[var(--kv-muted)]"
-                  >
-                    Loading customers…
-                  </td>
-                </tr>
+                <tr><td colSpan={7} className="px-5 py-14 text-center text-sm text-[var(--on-surface-variant)]">Loading customers…</td></tr>
               ) : customers.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-6 py-14 text-center text-sm text-[var(--kv-muted)]"
-                  >
-                    No customers match the current filters.
-                  </td>
-                </tr>
+                <tr><td colSpan={7} className="px-5 py-14 text-center text-sm text-[var(--on-surface-variant)]">No customers match the current filters.</td></tr>
               ) : (
                 customers.map((customer) => (
-                  <tr
-                    key={customer.id}
-                    className="border-b border-[var(--kv-border)]/70 text-sm text-[var(--kv-text)]"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-sm font-semibold text-[var(--kv-accent-deep)]">
-                          {customer.first_name?.[0] ||
-                            customer.email?.[0]?.toUpperCase() ||
-                            '?'}
+                  <tr key={customer.id} className="border-b border-[var(--surface-container-low)] hover:bg-[var(--surface-container-low)]/50 transition-colors">
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-[var(--primary-container)] text-[var(--on-primary-container)] flex items-center justify-center text-sm font-bold flex-shrink-0">
+                          {(customer.first_name?.[0] || customer.email?.[0] || '?').toUpperCase()}
                         </div>
                         <div>
-                          <Link
-                            href={`/dashboard/customers/${customer.id}`}
-                            className="font-semibold hover:text-[var(--kv-accent-deep)]"
-                          >
+                          <Link href={`/dashboard/customers/${customer.id}`} className="text-xs font-bold text-[var(--on-surface)] hover:text-[var(--primary)] transition-colors">
                             {getCustomerName(customer)}
                           </Link>
-                          <p className="mt-1 text-xs text-[var(--kv-muted)]">
-                            {customer.email}
-                          </p>
+                          <p className="text-[10px] text-[var(--on-surface-variant)]">{customer.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-1 text-xs text-[var(--kv-muted)]">
-                        <p className="inline-flex items-center gap-2">
-                          <Mail size={13} />
-                          {customer.email}
-                        </p>
-                        <p className="inline-flex items-center gap-2">
-                          <Phone size={13} />
-                          {customer.phone || 'No phone'}
-                        </p>
+                    <td className="px-5 py-4">
+                      <div className="space-y-1 text-[10px] text-[var(--on-surface-variant)]">
+                        <p className="flex items-center gap-1.5"><Mail size={11} />{customer.email}</p>
+                        <p className="flex items-center gap-1.5"><Phone size={11} />{customer.phone || '—'}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <StatusBadge
-                        status={customer.has_account ? 'active' : 'inactive'}
-                      />
+                    <td className="px-5 py-4">
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                        customer.has_account
+                          ? 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]'
+                          : 'bg-[var(--surface-container-high)] text-[var(--on-surface-variant)]'
+                      }`}>
+                        {customer.has_account ? 'Registered' : 'Guest'}
+                      </span>
                     </td>
-                    <td className="px-6 py-4 font-medium">{customer.order_count}</td>
-                    <td className="px-6 py-4 font-medium">
-                      {formatCurrency(customer.total_spent)}
-                    </td>
-                    <td className="px-6 py-4 text-[var(--kv-muted)]">
-                      {formatDate(customer.created_at)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/dashboard/customers/${customer.id}`}
-                          className="rounded-full border border-[var(--kv-border)] px-3 py-2 text-xs font-semibold text-[var(--kv-text)]"
-                        >
+                    <td className="px-5 py-4 text-xs font-bold text-[var(--on-surface)]">{customer.order_count}</td>
+                    <td className="px-5 py-4 text-xs font-bold text-[var(--on-surface)]">{formatCurrency(customer.total_spent)}</td>
+                    <td className="px-5 py-4 text-[10px] text-[var(--on-surface-variant)]">{formatDate(customer.created_at)}</td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-1.5 justify-end">
+                        <Link href={`/dashboard/customers/${customer.id}`}
+                          className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
                           View
                         </Link>
-                        <button
-                          type="button"
-                          onClick={() => openEdit(customer)}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--kv-border)] bg-white text-[var(--kv-text)]"
-                        >
-                          <UserPen size={14} />
+                        <button type="button" onClick={() => openEdit(customer)}
+                          className="h-8 w-8 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] flex items-center justify-center text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
+                          <UserPen size={13} />
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeletingCustomer(customer)}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--kv-danger)]/20 bg-[var(--kv-danger)]/6 text-[var(--kv-danger)]"
-                        >
-                          <Trash2 size={14} />
+                        <button type="button" onClick={() => setDeletingCustomer(customer)}
+                          className="h-8 w-8 rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] flex items-center justify-center text-[var(--on-error-container)] hover:opacity-80">
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </td>
@@ -364,220 +255,149 @@ export default function CustomersPage() {
           </table>
         </div>
 
-        <div className="space-y-3 p-4 md:hidden">
-          {loading ? (
-            <p className="rounded-2xl bg-[var(--kv-soft)] px-4 py-6 text-center text-sm text-[var(--kv-muted)]">
-              Loading customers…
-            </p>
-          ) : customers.length === 0 ? (
-            <p className="rounded-2xl bg-[var(--kv-soft)] px-4 py-6 text-center text-sm text-[var(--kv-muted)]">
-              No customers match the current filters.
-            </p>
-          ) : (
-            customers.map((customer) => (
-              <div
-                key={customer.id}
-                className="rounded-[1.25rem] border border-[var(--kv-border)] bg-white p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <Link
-                      href={`/dashboard/customers/${customer.id}`}
-                      className="text-sm font-semibold text-[var(--kv-text)]"
-                    >
-                      {getCustomerName(customer)}
-                    </Link>
-                    <p className="mt-1 text-xs text-[var(--kv-muted)]">
-                      {customer.email}
-                    </p>
-                  </div>
-                  <StatusBadge
-                    status={customer.has_account ? 'active' : 'inactive'}
-                  />
-                </div>
-
-                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-2xl bg-[var(--kv-soft)] px-3 py-3">
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
-                      Orders
-                    </p>
-                    <p className="mt-2 font-semibold text-[var(--kv-text)]">
-                      {customer.order_count}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl bg-[var(--kv-soft)] px-3 py-3">
-                    <p className="text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
-                      Spent
-                    </p>
-                    <p className="mt-2 font-semibold text-[var(--kv-text)]">
-                      {formatCurrency(customer.total_spent)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex gap-2">
-                  <Link
-                    href={`/dashboard/customers/${customer.id}`}
-                    className="flex-1 rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-center text-sm font-semibold text-[var(--kv-text)]"
-                  >
-                    View detail
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => openEdit(customer)}
-                    className="rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)]"
-                  >
-                    Edit
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {totalPages > 1 ? (
-          <div className="flex items-center justify-between border-t border-[var(--kv-border)] px-4 py-4 text-sm md:px-6">
-            <button
-              type="button"
-              onClick={() => setPage((current) => Math.max(1, current - 1))}
-              disabled={page === 1}
-              className="rounded-full border border-[var(--kv-border)] px-4 py-2 disabled:opacity-50"
-            >
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-[var(--surface-container-low)] px-5 py-4 text-xs">
+            <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
+              className="rounded-full border border-[var(--outline-variant)] px-4 py-2 font-bold text-[var(--on-surface)] disabled:opacity-40">
               Previous
             </button>
-            <span className="text-[var(--kv-muted)]">
-              Page {page} of {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={() =>
-                setPage((current) => Math.min(totalPages, current + 1))
-              }
-              disabled={page === totalPages}
-              className="rounded-full border border-[var(--kv-border)] px-4 py-2 disabled:opacity-50"
-            >
+            <span className="text-[var(--on-surface-variant)]">Page {page} of {totalPages}</span>
+            <button type="button" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+              className="rounded-full border border-[var(--outline-variant)] px-4 py-2 font-bold text-[var(--on-surface)] disabled:opacity-40">
               Next
             </button>
           </div>
-        ) : null}
-      </Surface>
+        )}
+      </section>
 
-      {editingCustomer ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
-          <Surface className="w-full max-w-lg p-6">
-            <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-accent-deep)]">
-                Edit customer
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
-                {getCustomerName(editingCustomer)}
-              </h2>
-            </div>
-
-            <form onSubmit={handleEditSave} className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <input
-                  value={editFormData.first_name}
-                  onChange={(event) =>
-                    setEditFormData((current) => ({
-                      ...current,
-                      first_name: event.target.value,
-                    }))
-                  }
-                  placeholder="First name"
-                  className="w-full border px-4 py-3 text-sm"
-                />
-                <input
-                  value={editFormData.last_name}
-                  onChange={(event) =>
-                    setEditFormData((current) => ({
-                      ...current,
-                      last_name: event.target.value,
-                    }))
-                  }
-                  placeholder="Last name"
-                  className="w-full border px-4 py-3 text-sm"
-                />
+      {/* Mobile card list */}
+      <section className="md:hidden space-y-3">
+        {loading ? (
+          <p className="rounded-xl bg-[var(--surface-container-lowest)] px-4 py-6 text-center text-sm text-[var(--on-surface-variant)]">Loading customers…</p>
+        ) : customers.length === 0 ? (
+          <p className="rounded-xl bg-[var(--surface-container-lowest)] px-4 py-6 text-center text-sm text-[var(--on-surface-variant)]">No customers match the current filters.</p>
+        ) : (
+          customers.map((customer) => (
+            <div key={customer.id} className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-4 space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-[var(--primary-container)] text-[var(--on-primary-container)] flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    {(customer.first_name?.[0] || customer.email?.[0] || '?').toUpperCase()}
+                  </div>
+                  <div>
+                    <Link href={`/dashboard/customers/${customer.id}`} className="text-xs font-bold text-[var(--on-surface)]">{getCustomerName(customer)}</Link>
+                    <p className="text-[10px] text-[var(--on-surface-variant)]">{customer.email}</p>
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${customer.has_account ? 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]' : 'bg-[var(--surface-container-high)] text-[var(--on-surface-variant)]'}`}>
+                  {customer.has_account ? 'Reg' : 'Guest'}
+                </span>
               </div>
-              <input
-                type="email"
-                value={editFormData.email}
-                onChange={(event) =>
-                  setEditFormData((current) => ({
-                    ...current,
-                    email: event.target.value,
-                  }))
-                }
-                placeholder="Email"
-                className="w-full border px-4 py-3 text-sm"
-              />
-              <input
-                value={editFormData.phone}
-                onChange={(event) =>
-                  setEditFormData((current) => ({
-                    ...current,
-                    phone: event.target.value,
-                  }))
-                }
-                placeholder="Phone"
-                className="w-full border px-4 py-3 text-sm"
-              />
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded-xl bg-[var(--surface-container-low)] px-3 py-2">
+                  <p className="text-[10px] text-[var(--on-surface-variant)]">Orders</p>
+                  <p className="font-bold text-[var(--on-surface)]">{customer.order_count}</p>
+                </div>
+                <div className="rounded-xl bg-[var(--surface-container-low)] px-3 py-2">
+                  <p className="text-[10px] text-[var(--on-surface-variant)]">Spent</p>
+                  <p className="font-bold text-[var(--on-surface)]">{formatCurrency(customer.total_spent)}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Link href={`/dashboard/customers/${customer.id}`}
+                  className="flex-1 rounded-full border border-[var(--outline-variant)] py-2 text-center text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
+                  View
+                </Link>
+                <button type="button" onClick={() => openEdit(customer)}
+                  className="rounded-full border border-[var(--outline-variant)] px-4 py-2 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
+                  Edit
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between text-xs pt-2">
+            <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
+              className="rounded-full border border-[var(--outline-variant)] px-4 py-2 font-bold text-[var(--on-surface)] disabled:opacity-40">
+              Previous
+            </button>
+            <span className="text-[var(--on-surface-variant)]">Page {page} of {totalPages}</span>
+            <button type="button" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+              className="rounded-full border border-[var(--outline-variant)] px-4 py-2 font-bold text-[var(--on-surface)] disabled:opacity-40">
+              Next
+            </button>
+          </div>
+        )}
+      </section>
 
+      {/* ── Edit modal ── */}
+      {editingCustomer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
+          <div className="w-full max-w-lg bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_24px_48px_rgba(25,28,30,0.2)] p-6">
+            <div className="flex items-start justify-between mb-5">
+              <div>
+                <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Edit customer</p>
+                <h2 className="text-xl font-black mt-1 text-[var(--on-surface)]">{getCustomerName(editingCustomer)}</h2>
+              </div>
+              <button onClick={() => setEditingCustomer(null)} className="text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]"><X size={18} /></button>
+            </div>
+            <form onSubmit={handleEditSave} className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <input value={editFormData.first_name} onChange={(e) => setEditFormData((p) => ({ ...p, first_name: e.target.value }))}
+                  placeholder="First name"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30" />
+                <input value={editFormData.last_name} onChange={(e) => setEditFormData((p) => ({ ...p, last_name: e.target.value }))}
+                  placeholder="Last name"
+                  className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30" />
+              </div>
+              <input type="email" value={editFormData.email} onChange={(e) => setEditFormData((p) => ({ ...p, email: e.target.value }))}
+                placeholder="Email"
+                className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30" />
+              <input value={editFormData.phone} onChange={(e) => setEditFormData((p) => ({ ...p, phone: e.target.value }))}
+                placeholder="Phone"
+                className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30" />
               <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingCustomer(null)}
-                  className="rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)]"
-                >
+                <button type="button" onClick={() => setEditingCustomer(null)}
+                  className="rounded-full border border-[var(--outline-variant)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-[var(--on-surface)]">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={savingEdit}
-                  className="rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
-                >
+                <button type="submit" disabled={savingEdit}
+                  className="rounded-full bg-[var(--primary)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white disabled:opacity-60">
                   {savingEdit ? 'Saving…' : 'Save changes'}
                 </button>
               </div>
             </form>
-          </Surface>
+          </div>
         </div>
-      ) : null}
+      )}
 
-      {deletingCustomer ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
-          <Surface className="w-full max-w-lg p-6">
-            <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-danger)]">
-                Delete customer
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
-                {getCustomerName(deletingCustomer)}
-              </h2>
-              <p className="mt-2 text-sm text-[var(--kv-muted)]">
-                This permanently removes the customer record.
-              </p>
+      {/* ── Delete confirm modal ── */}
+      {deletingCustomer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
+          <div className="w-full max-w-sm bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_24px_48px_rgba(25,28,30,0.2)] p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--error)]">Delete customer</p>
+                <h2 className="text-lg font-black mt-1 text-[var(--on-surface)]">{getCustomerName(deletingCustomer)}</h2>
+                <p className="mt-1 text-xs text-[var(--on-surface-variant)]">This permanently removes the customer record.</p>
+              </div>
+              <button onClick={() => setDeletingCustomer(null)} className="text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]"><X size={18} /></button>
             </div>
             <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setDeletingCustomer(null)}
-                className="rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)]"
-              >
+              <button type="button" onClick={() => setDeletingCustomer(null)}
+                className="rounded-full border border-[var(--outline-variant)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-[var(--on-surface)]">
                 Cancel
               </button>
-              <button
-                type="button"
-                onClick={() => void handleDelete()}
-                disabled={deleting}
-                className="rounded-2xl bg-[var(--kv-danger)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
-              >
-                {deleting ? 'Deleting…' : 'Delete customer'}
+              <button type="button" onClick={() => void handleDelete()} disabled={deleting}
+                className="rounded-full bg-[var(--error)] px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white disabled:opacity-60">
+                {deleting ? 'Deleting…' : 'Delete'}
               </button>
             </div>
-          </Surface>
+          </div>
         </div>
-      ) : null}
+      )}
+
     </div>
   );
 }

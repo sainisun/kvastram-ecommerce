@@ -2,45 +2,26 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  DollarSign,
-  Image,
-  Package,
-  ShoppingBag,
-  Sparkles,
-  TrendingUp,
-  Users,
-  Video,
-} from 'lucide-react';
+import Link from 'next/link';
 import { api } from '@/lib/api';
-import {
-  MetricCard,
-  PageHeader,
-  QuickActionCard,
-  SectionHeader,
-  StatusBadge,
-  Surface,
-} from '@/components/ui/admin-ui';
 
+/* ── Types (unchanged from original) ── */
 interface DashboardStats {
   total_sales?: number;
   total_orders?: number;
   total_customers?: number;
   average_order_value?: number;
 }
-
 interface ProductStats {
   total_products: number;
   published_products: number;
   low_stock_products: number;
   out_of_stock_products: number;
 }
-
 interface CustomerStats {
   total_customers: number;
   new_this_month: number;
 }
-
 interface RecentOrder {
   id: string;
   order_number: string;
@@ -52,7 +33,6 @@ interface RecentOrder {
   email: string;
   created_at: string;
 }
-
 interface SalesPoint {
   date: string;
   sales?: number;
@@ -60,366 +40,303 @@ interface SalesPoint {
   orders?: number;
 }
 
+/* ── Status badge helper ── */
+const STATUS_STYLE: Record<string, { badge: string; border: string }> = {
+  paid:       { badge: 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]', border: 'border-[var(--tertiary-container)]' },
+  completed:  { badge: 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]', border: 'border-[var(--tertiary-container)]' },
+  pending:    { badge: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]', border: 'border-[var(--secondary-container)]' },
+  processing: { badge: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]', border: 'border-[var(--secondary-container)]' },
+  shipped:    { badge: 'bg-[var(--primary-fixed)] text-[var(--on-primary-fixed-variant)]', border: 'border-[var(--primary-fixed)]' },
+  cancelled:  { badge: 'bg-[var(--error-container)] text-[var(--on-error-container)]', border: 'border-[var(--error-container)]' },
+};
+function getStatusStyle(status: string) {
+  return STATUS_STYLE[status.toLowerCase()] ?? STATUS_STYLE.pending;
+}
+
+/* ── Formatting helpers ── */
+function fmtCurrency(amount: number, currency = 'INR') {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency', currency, maximumFractionDigits: 0,
+  }).format(amount / 100);
+}
+function fmtDate(value: string) {
+  return new Date(value).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+}
+function fmtCompact(n: number) {
+  if (n >= 100_000) return `₹${(n / 100_000).toFixed(1)}L`;
+  if (n >= 1_000)   return `₹${(n / 1_000).toFixed(1)}k`;
+  return `₹${n}`;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [analytics, setAnalytics] = useState<DashboardStats | null>(null);
+  const [analytics, setAnalytics]       = useState<DashboardStats | null>(null);
   const [productStats, setProductStats] = useState<ProductStats | null>(null);
-  const [customerStats, setCustomerStats] = useState<CustomerStats | null>(
-    null
-  );
+  const [customerStats, setCustomerStats] = useState<CustomerStats | null>(null);
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
-  const [salesTrend, setSalesTrend] = useState<SalesPoint[]>([]);
+  const [salesTrend, setSalesTrend]     = useState<SalesPoint[]>([]);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    const loadDashboard = async () => {
+    const load = async () => {
       try {
         setLoading(true);
-        const [
-          analyticsOverview,
-          productOverview,
-          customerOverview,
-          ordersData,
-          trendData,
-          orderStatuses,
-        ] = await Promise.all([
-          api.getAnalyticsOverview(),
-          api.getProductStats(),
-          api.getCustomerStats(),
-          api.getOrders(10, 0),
-          api.getSalesTrend(7),
-          api.getOrdersByStatus(),
-        ]);
-
-        setAnalytics(analyticsOverview || null);
-        setProductStats(productOverview || null);
-        setCustomerStats(customerOverview || null);
-        setRecentOrders(ordersData?.orders || ordersData || []);
-        setSalesTrend(Array.isArray(trendData) ? trendData : []);
-
-        const nextStatusCounts: Record<string, number> = {};
-        (Array.isArray(orderStatuses) ? orderStatuses : []).forEach(
-          (item: { status: string; count: number }) => {
-            nextStatusCounts[item.status] = item.count;
-          }
+        const [overview, products, customers, orders, trend, statuses] =
+          await Promise.all([
+            api.getAnalyticsOverview(),
+            api.getProductStats(),
+            api.getCustomerStats(),
+            api.getOrders(10, 0),
+            api.getSalesTrend(7),
+            api.getOrdersByStatus(),
+          ]);
+        setAnalytics(overview || null);
+        setProductStats(products || null);
+        setCustomerStats(customers || null);
+        setRecentOrders(orders?.orders || orders || []);
+        setSalesTrend(Array.isArray(trend) ? trend : []);
+        const counts: Record<string, number> = {};
+        (Array.isArray(statuses) ? statuses : []).forEach(
+          (s: { status: string; count: number }) => { counts[s.status] = s.count; }
         );
-        setStatusCounts(nextStatusCounts);
-      } catch (error) {
-        console.error('Failed to load dashboard:', error);
+        setStatusCounts(counts);
+      } catch (e) {
+        console.error('Dashboard load error', e);
       } finally {
         setLoading(false);
       }
     };
-
-    void loadDashboard();
+    void load();
   }, []);
 
-  const monthRevenue =
-    salesTrend.reduce(
-      (sum, point) => sum + (point.sales || point.revenue || 0),
-      0
-    ) || analytics?.total_sales || 0;
-  const monthOrders =
-    salesTrend.reduce((sum, point) => sum + (point.orders || 0), 0) ||
-    analytics?.total_orders ||
-    0;
+  const monthRevenue = salesTrend.reduce((s, p) => s + (p.sales || p.revenue || 0), 0)
+    || analytics?.total_sales || 0;
+  const monthOrders = salesTrend.reduce((s, p) => s + (p.orders || 0), 0)
+    || analytics?.total_orders || 0;
   const pendingOrders = statusCounts.pending || 0;
+  const maxBar = Math.max(...salesTrend.map(p => p.sales || p.revenue || 0), 1);
 
-  const maxBarValue =
-    Math.max(
-      ...salesTrend.map((point) => point.sales || point.revenue || 0),
-      1
-    ) || 1;
-
-  const formatCurrency = (amount: number, currency = 'USD') =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount / 100);
-
-  const formatDate = (value: string) =>
-    new Date(value).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    });
-
+  /* ── Loading skeleton ── */
   if (loading) {
     return (
-      <div className="px-4 pb-8 md:px-8">
-        <PageHeader
-          eyebrow="Seller dashboard"
-          title="Dashboard"
-          description="Loading your store overview."
-        />
+      <div className="space-y-8 px-4 py-6 md:px-6">
+        <div>
+          <div className="h-10 w-48 bg-[var(--surface-container-high)] rounded-xl animate-pulse" />
+          <div className="h-4 w-64 bg-[var(--surface-container)] rounded-xl animate-pulse mt-3" />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-24 bg-[var(--surface-container-lowest)] rounded-xl animate-pulse shadow-[0_4px_12px_rgba(25,28,30,0.04)]" />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 px-4 pb-8 md:space-y-8 md:px-8">
-      <PageHeader
-        eyebrow="Seller dashboard"
-        title="Dashboard"
-        description="A warm, Etsy-inspired control room for orders, listings, customers, and the pieces of your storefront that change every day."
-      />
+    <div className="space-y-8 px-4 py-6 md:px-6">
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Revenue this month"
-          value={formatCurrency(monthRevenue)}
-          icon={DollarSign}
-          hint="Last 7 days trend below"
-          tone="accent"
-        />
-        <MetricCard
-          label="Orders this month"
-          value={monthOrders}
-          icon={ShoppingBag}
-          hint="Across all fulfillment states"
-        />
-        <MetricCard
-          label="Pending orders"
-          value={pendingOrders}
-          icon={Sparkles}
-          hint="Needs review or fulfillment"
-          tone={pendingOrders > 0 ? 'danger' : 'success'}
-        />
-        <MetricCard
-          label="Active listings"
-          value={productStats?.published_products || 0}
-          icon={Package}
-          hint={`${productStats?.total_products || 0} total products`}
-          tone="success"
-        />
-      </div>
+      {/* ── Page heading ── */}
+      <section>
+        <h2 className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--on-surface)]">
+          Overview
+        </h2>
+        <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">
+          Performance tracking for the last 7 days.
+        </p>
+      </section>
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <QuickActionCard
-          title="Add new product"
-          subtitle="Launch a fresh listing"
-          href="/dashboard/products/new"
-          icon={Package}
-        />
-        <QuickActionCard
-          title="Review orders"
-          subtitle="Check today’s queue"
-          href="/dashboard/orders"
-          icon={ShoppingBag}
-        />
-        <QuickActionCard
-          title="Upload hero banner"
-          subtitle="Refresh the homepage lead"
-          href="/dashboard/content/hero-banners"
-          icon={Image}
-        />
-        <QuickActionCard
-          title="Add trending reel"
-          subtitle="Promote a visual bestseller"
-          href="/dashboard/content/trending-reels"
-          icon={Video}
-        />
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
-        <Surface className="overflow-hidden">
-          <SectionHeader
-            title="Recent orders"
-            description="Your latest 10 customer purchases."
-            actionHref="/dashboard/orders"
-            actionLabel="View all"
-          />
-
-          <div className="hidden overflow-x-auto md:block">
-            <table className="min-w-full">
-              <thead>
-                <tr className="border-b border-[var(--kv-border)] text-left text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
-                  <th className="px-6 py-4">Order ID</th>
-                  <th className="px-6 py-4">Customer</th>
-                  <th className="px-6 py-4">Amount</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentOrders.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-6 py-14 text-center text-sm text-[var(--kv-muted)]"
-                    >
-                      No orders have come in yet.
-                    </td>
-                  </tr>
-                ) : (
-                  recentOrders.map((order) => (
-                    <tr
-                      key={order.id}
-                      onClick={() => router.push(`/dashboard/orders/${order.id}`)}
-                      className="cursor-pointer border-b border-[var(--kv-border)]/70 text-sm text-[var(--kv-text)] transition hover:bg-[var(--kv-soft)]/55"
-                    >
-                      <td className="px-6 py-4 font-semibold">
-                        #{order.order_number}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div>
-                          <p className="font-medium">
-                            {order.customer_first_name && order.customer_last_name
-                              ? `${order.customer_first_name} ${order.customer_last_name}`
-                              : 'Guest customer'}
-                          </p>
-                          <p className="text-xs text-[var(--kv-muted)]">
-                            {order.email}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-medium">
-                        {formatCurrency(order.total, order.currency_code || 'USD')}
-                      </td>
-                      <td className="px-6 py-4">
-                        <StatusBadge status={order.status} />
-                      </td>
-                      <td className="px-6 py-4 text-[var(--kv-muted)]">
-                        {formatDate(order.created_at)}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="space-y-3 p-4 md:hidden">
-            {recentOrders.length === 0 ? (
-              <p className="rounded-2xl bg-[var(--kv-soft)] px-4 py-6 text-center text-sm text-[var(--kv-muted)]">
-                No orders yet.
+      {/* ── Stats bento grid ── */}
+      <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {[
+          { icon: '₹', label: 'Revenue', value: fmtCompact(monthRevenue / 100) },
+          { icon: '🛍', label: 'Orders', value: monthOrders.toLocaleString('en-IN') },
+          { icon: '⏳', label: 'Pending', value: pendingOrders, warn: pendingOrders > 0 },
+          { icon: '📦', label: 'Products', value: productStats?.published_products ?? 0 },
+        ].map((card) => (
+          <div
+            key={card.label}
+            className={`bg-[var(--surface-container-lowest)] p-5 rounded-xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] flex flex-col gap-3 ${
+              card.warn ? 'ring-1 ring-[var(--error)]/30' : ''
+            }`}
+          >
+            <span className="text-2xl leading-none">{card.icon}</span>
+            <div>
+              <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">
+                {card.label}
               </p>
-            ) : (
-              recentOrders.map((order) => (
+              <p className={`text-xl font-black mt-0.5 ${card.warn ? 'text-[var(--error)]' : 'text-[var(--on-surface)]'}`}>
+                {card.value}
+              </p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* ── Revenue highlight card ── */}
+      <section className="bg-[var(--primary)] text-white p-6 rounded-2xl overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--on-tertiary-container)]/20 blur-3xl -mr-16 -mt-16 rounded-full" />
+        <div className="relative z-10">
+          <p className="text-[0.6875rem] font-bold uppercase tracking-widest opacity-60">
+            Revenue trend — last 7 days
+          </p>
+          <h3 className="text-3xl font-black mt-1">
+            {fmtCurrency(monthRevenue, analytics ? 'INR' : 'INR')}
+          </h3>
+
+          <div className="mt-8 flex justify-between items-end gap-2">
+            {/* Mini bar chart from real salesTrend */}
+            <div className="flex items-end gap-1.5 h-14 flex-1">
+              {salesTrend.length > 0
+                ? salesTrend.map((p) => {
+                    const val = p.sales || p.revenue || 0;
+                    const pct = Math.max((val / maxBar) * 100, 8);
+                    return (
+                      <div
+                        key={p.date}
+                        className="flex-1 rounded-full bg-white/20"
+                        style={{ height: `${pct}%` }}
+                        title={fmtDate(p.date)}
+                      />
+                    );
+                  })
+                : [40, 60, 48, 75, 85, 70, 90].map((h, i) => (
+                    <div key={i} className="flex-1 rounded-full bg-white/20" style={{ height: `${h}%` }} />
+                  ))}
+            </div>
+            <Link
+              href="/dashboard/analytics"
+              className="flex-shrink-0 bg-[var(--secondary-container)] text-[var(--on-secondary-container)] px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest"
+            >
+              View Report
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Quick actions ── */}
+      <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {[
+          { label: 'Add Product',    sub: 'New listing',         href: '/dashboard/products/new' },
+          { label: 'View Orders',    sub: 'Fulfillment queue',   href: '/dashboard/orders' },
+          { label: 'Hero Banners',   sub: 'Homepage slider',     href: '/dashboard/content/hero-banners' },
+          { label: 'Add Coupon',     sub: 'Discounts & deals',   href: '/dashboard/marketing' },
+        ].map((a) => (
+          <Link
+            key={a.href}
+            href={a.href}
+            className="bg-[var(--surface-container-lowest)] rounded-xl p-4 shadow-[0_4px_12px_rgba(25,28,30,0.04)] hover:shadow-[0_8px_24px_rgba(25,28,30,0.08)] hover:bg-[var(--surface-container-low)] transition-all active:scale-95"
+          >
+            <p className="text-xs font-bold text-[var(--on-surface)]">{a.label}</p>
+            <p className="text-[10px] text-[var(--on-surface-variant)] mt-0.5">{a.sub}</p>
+          </Link>
+        ))}
+      </section>
+
+      {/* ── Recent orders ── */}
+      <section className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--on-surface)]">
+            Recent Orders
+          </h3>
+          <Link href="/dashboard/orders" className="text-[10px] font-bold text-[var(--on-tertiary-container)]">
+            Show All
+          </Link>
+        </div>
+
+        <div className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] divide-y divide-[var(--surface-container-low)]">
+          {recentOrders.length === 0 ? (
+            <p className="px-4 py-10 text-center text-sm text-[var(--on-surface-variant)]">
+              No orders yet.
+            </p>
+          ) : (
+            recentOrders.slice(0, 8).map((order) => {
+              const s = getStatusStyle(order.status);
+              const name =
+                order.customer_first_name && order.customer_last_name
+                  ? `${order.customer_first_name} ${order.customer_last_name}`
+                  : order.email;
+              return (
                 <button
                   key={order.id}
                   type="button"
                   onClick={() => router.push(`/dashboard/orders/${order.id}`)}
-                  className="w-full rounded-[1.2rem] border border-[var(--kv-border)] bg-white p-4 text-left"
+                  className={`w-full flex items-center justify-between p-4 border-l-4 ${s.border} text-left hover:bg-[var(--surface-container-low)]/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl active:scale-[0.99]`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-[var(--kv-text)]">
-                        #{order.order_number}
-                      </p>
-                      <p className="mt-1 text-xs text-[var(--kv-muted)]">
-                        {order.customer_first_name && order.customer_last_name
-                          ? `${order.customer_first_name} ${order.customer_last_name}`
-                          : order.email}
-                      </p>
-                    </div>
-                    <StatusBadge status={order.status} />
-                  </div>
-                  <div className="mt-4 flex items-center justify-between text-sm">
-                    <span className="font-medium text-[var(--kv-text)]">
-                      {formatCurrency(order.total, order.currency_code || 'USD')}
+                  <div>
+                    <span className="text-xs font-bold text-[var(--on-surface)] block">
+                      #{order.order_number}
                     </span>
-                    <span className="text-[var(--kv-muted)]">
-                      {formatDate(order.created_at)}
+                    <span className="text-[10px] text-[var(--on-surface-variant)]">
+                      {name}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end gap-1.5">
+                    <span className="text-xs font-black text-[var(--on-surface)]">
+                      {fmtCurrency(order.total, order.currency_code || 'INR')}
+                    </span>
+                    <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>
+                      {order.status}
                     </span>
                   </div>
                 </button>
-              ))
-            )}
-          </div>
-        </Surface>
-
-        <div className="space-y-6">
-          <Surface className="p-5 md:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
-                  Revenue mini chart
-                </p>
-                <h2 className="mt-2 text-xl font-semibold text-[var(--kv-text)]">
-                  Last 7 days
-                </h2>
-              </div>
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]">
-                <TrendingUp size={18} />
-              </span>
-            </div>
-
-            <div className="mt-6 flex h-52 items-end gap-3">
-              {salesTrend.map((point) => {
-                const value = point.sales || point.revenue || 0;
-                const height = Math.max((value / maxBarValue) * 100, 10);
-
-                return (
-                  <div key={point.date} className="flex flex-1 flex-col items-center gap-2">
-                    <div className="flex h-40 w-full items-end rounded-2xl bg-[var(--kv-soft)] p-1.5">
-                      <div
-                        className="w-full rounded-[1rem] bg-[linear-gradient(180deg,#dca17c_0%,#c97d4e_100%)]"
-                        style={{ height: `${height}%` }}
-                      />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--kv-muted)]">
-                        {formatDate(point.date)}
-                      </p>
-                      <p className="mt-1 text-xs font-semibold text-[var(--kv-text)]">
-                        {formatCurrency(value)}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Surface>
-
-          <Surface className="p-5 md:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
-                  Shop snapshot
-                </p>
-                <h2 className="mt-2 text-xl font-semibold text-[var(--kv-text)]">
-                  This week at a glance
-                </h2>
-              </div>
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-[var(--kv-accent-deep)]">
-                <Users size={18} />
-              </span>
-            </div>
-
-            <div className="mt-5 space-y-4">
-              <div className="flex items-center justify-between rounded-2xl bg-[var(--kv-soft)] px-4 py-3">
-                <span className="text-sm text-[var(--kv-muted)]">Customers</span>
-                <span className="text-sm font-semibold text-[var(--kv-text)]">
-                  {customerStats?.total_customers || analytics?.total_customers || 0}
-                </span>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl bg-[var(--kv-soft)] px-4 py-3">
-                <span className="text-sm text-[var(--kv-muted)]">New this month</span>
-                <span className="text-sm font-semibold text-[var(--kv-text)]">
-                  {customerStats?.new_this_month || 0}
-                </span>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl bg-[var(--kv-soft)] px-4 py-3">
-                <span className="text-sm text-[var(--kv-muted)]">
-                  Average order value
-                </span>
-                <span className="text-sm font-semibold text-[var(--kv-text)]">
-                  {formatCurrency(analytics?.average_order_value || 0)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl bg-[var(--kv-soft)] px-4 py-3">
-                <span className="text-sm text-[var(--kv-muted)]">Inventory alerts</span>
-                <span className="text-sm font-semibold text-[var(--kv-text)]">
-                  {(productStats?.low_stock_products || 0) +
-                    (productStats?.out_of_stock_products || 0)}
-                </span>
-              </div>
-            </div>
-          </Surface>
+              );
+            })
+          )}
         </div>
-      </div>
+      </section>
+
+      {/* ── Snapshot stats ── */}
+      <section className="grid gap-4 md:grid-cols-2">
+        <div className="bg-[var(--surface-container-lowest)] rounded-xl p-5 shadow-[0_4px_12px_rgba(25,28,30,0.04)] space-y-3">
+          <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">
+            Store Snapshot
+          </p>
+          {[
+            { label: 'Total customers', value: customerStats?.total_customers || analytics?.total_customers || 0 },
+            { label: 'New this month',  value: customerStats?.new_this_month || 0 },
+            { label: 'Avg order value', value: fmtCurrency(analytics?.average_order_value || 0) },
+            { label: 'Inventory alerts', value: (productStats?.low_stock_products || 0) + (productStats?.out_of_stock_products || 0) },
+          ].map((row) => (
+            <div key={row.label} className="flex items-center justify-between rounded-xl bg-[var(--surface-container-low)] px-4 py-3">
+              <span className="text-xs text-[var(--on-surface-variant)]">{row.label}</span>
+              <span className="text-xs font-bold text-[var(--on-surface)]">{row.value}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-[var(--surface-container-lowest)] rounded-xl p-5 shadow-[0_4px_12px_rgba(25,28,30,0.04)]">
+          <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)] mb-4">
+            Order Status
+          </p>
+          <div className="space-y-3">
+            {[
+              { label: 'Pending',    key: 'pending',    style: 'bg-[var(--secondary-container)]' },
+              { label: 'Processing', key: 'processing', style: 'bg-[var(--secondary-container)]' },
+              { label: 'Shipped',    key: 'shipped',    style: 'bg-[var(--primary-fixed)]' },
+              { label: 'Completed',  key: 'completed',  style: 'bg-[var(--tertiary-container)]' },
+              { label: 'Cancelled',  key: 'cancelled',  style: 'bg-[var(--error-container)]' },
+            ].map((row) => {
+              const count = statusCounts[row.key] || 0;
+              const total = Object.values(statusCounts).reduce((a, b) => a + b, 0) || 1;
+              const pct = Math.round((count / total) * 100);
+              return (
+                <div key={row.key}>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-[10px] font-medium text-[var(--on-surface-variant)]">{row.label}</span>
+                    <span className="text-[10px] font-bold text-[var(--on-surface)]">{count}</span>
+                  </div>
+                  <div className="h-1.5 bg-[var(--surface-container-high)] rounded-full overflow-hidden">
+                    <div className={`h-full ${row.style} rounded-full transition-all duration-700`} style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }

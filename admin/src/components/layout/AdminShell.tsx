@@ -15,65 +15,76 @@ export default function AdminShell({
 }) {
   const pathname = usePathname();
   const [pendingOrders, setPendingOrders] = useState(0);
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isDashboardRoute = pathname.startsWith('/dashboard');
 
   useEffect(() => {
-    if (!isDashboardRoute) {
-      return;
-    }
+    if (!isDashboardRoute) return;
 
     let active = true;
-
-    const loadShellCounts = async () => {
+    const load = async () => {
       try {
         const stats = await api.getOrderStats();
-        if (active) {
-          setPendingOrders(stats?.pending_orders || 0);
-        }
-      } catch (error) {
-        console.error('Failed to load admin shell counts:', error);
-      }
+        if (active) setPendingOrders(stats?.pending_orders || 0);
+      } catch { /* non-critical */ }
     };
 
-    void loadShellCounts();
-    const intervalId = window.setInterval(loadShellCounts, 45000);
-
-    return () => {
-      active = false;
-      window.clearInterval(intervalId);
-    };
+    void load();
+    const id = window.setInterval(load, 45_000);
+    return () => { active = false; window.clearInterval(id); };
   }, [isDashboardRoute, pathname]);
 
-  if (!isDashboardRoute) {
-    return <>{children}</>;
-  }
+  // Close drawer on route change
+  useEffect(() => { setDrawerOpen(false); }, [pathname]);
+
+  // ESC closes drawer
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDrawerOpen(false);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  if (!isDashboardRoute) return <>{children}</>;
 
   return (
     <ProtectedRoute>
-      <div
-        data-admin-shell
-        className="min-h-screen bg-[var(--kv-bg)] text-[var(--kv-text)]"
-      >
-        <Sidebar pendingOrders={pendingOrders} />
+      <div data-admin-shell className="min-h-screen bg-[var(--surface)] text-[var(--on-surface)]">
+
+        {/* Drawer overlay */}
+        <div
+          onClick={() => setDrawerOpen(false)}
+          className={`fixed inset-0 z-[60] bg-[var(--primary)]/40 backdrop-blur-sm transition-opacity duration-300 ${
+            drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+        />
+
+        <Sidebar
+          pendingOrders={pendingOrders}
+          isOpen={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        />
 
         <div className="relative min-h-screen md:pl-[240px]">
           <TopHeader
             pendingOrders={pendingOrders}
-            onMenuOpen={() => setMobileDrawerOpen(true)}
+            onMenuOpen={() => setDrawerOpen(true)}
           />
 
-          <main className="min-h-screen pb-28 pt-20 md:pb-10 md:pt-10">
-            <div className="mx-auto max-w-[1560px]">{children}</div>
+          <main className="min-h-screen pb-28 pt-20 md:pb-10 md:pt-[72px]">
+            <div className="mx-auto max-w-[1560px] page-fade" key={pathname}>
+              {children}
+            </div>
           </main>
         </div>
 
         <MobileBottomTab
           pendingOrders={pendingOrders}
-          isDrawerOpen={mobileDrawerOpen}
-          onOpenDrawer={() => setMobileDrawerOpen(true)}
-          onCloseDrawer={() => setMobileDrawerOpen(false)}
+          isDrawerOpen={drawerOpen}
+          onOpenDrawer={() => setDrawerOpen(true)}
+          onCloseDrawer={() => setDrawerOpen(false)}
         />
       </div>
     </ProtectedRoute>

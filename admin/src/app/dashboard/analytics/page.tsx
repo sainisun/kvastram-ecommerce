@@ -1,20 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  BarChart2,
-  DollarSign,
-  ShoppingBag,
-  TrendingUp,
-  Users,
-} from 'lucide-react';
+import { Package, ShoppingBag, TrendingUp, Users } from 'lucide-react';
 import { api } from '@/lib/api';
-import {
-  MetricCard,
-  PageHeader,
-  SectionHeader,
-  Surface,
-} from '@/components/ui/admin-ui';
 
 interface SalesPoint {
   date: string;
@@ -47,6 +35,15 @@ interface ProductPreview {
   total_inventory: number;
 }
 
+const STATUS_PALETTE: Record<string, string> = {
+  pending:    'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]',
+  processing: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]',
+  shipped:    'bg-[var(--primary-fixed)] text-[var(--on-primary-fixed-variant)]',
+  completed:  'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]',
+  cancelled:  'bg-[var(--error-container)] text-[var(--on-error-container)]',
+};
+const BAR_COLORS = ['#5080ff', '#fed488', '#4fd1c5', '#68d391', '#fc8181', '#b794f4'];
+
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState<AnalyticsOverview | null>(null);
@@ -54,12 +51,10 @@ export default function AnalyticsPage() {
   const [monthlyTrend, setMonthlyTrend] = useState<SalesPoint[]>([]);
   const [statusBreakdown, setStatusBreakdown] = useState<StatusPoint[]>([]);
   const [productPreview, setProductPreview] = useState<ProductPreview[]>([]);
-  const [customerStats, setCustomerStats] = useState<CustomerOverview | null>(
-    null
-  );
+  const [customerStats, setCustomerStats] = useState<CustomerOverview | null>(null);
 
   useEffect(() => {
-    const loadAnalytics = async () => {
+    const load = async () => {
       try {
         setLoading(true);
         const [overviewData, weeklyData, monthlyData, statuses, products, customers] =
@@ -71,311 +66,240 @@ export default function AnalyticsPage() {
             api.getProducts(5, 0, '', 'published'),
             api.getCustomerStats(),
           ]);
-
         setOverview(overviewData || null);
         setWeeklyTrend(Array.isArray(weeklyData) ? weeklyData : []);
         setMonthlyTrend(Array.isArray(monthlyData) ? monthlyData : []);
         setStatusBreakdown(Array.isArray(statuses) ? statuses : []);
         setProductPreview(products?.data || products || []);
         setCustomerStats(customers || null);
-      } catch (error) {
-        console.error('Failed to load analytics:', error);
+      } catch (e) {
+        console.error('Failed to load analytics:', e);
       } finally {
         setLoading(false);
       }
     };
-
-    void loadAnalytics();
+    void load();
   }, []);
 
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(amount / 100);
+  const fmtCurrency = (amount: number) =>
+    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount / 100);
 
-  const weekRevenue = weeklyTrend.reduce(
-    (sum, point) => sum + (point.sales || point.revenue || 0),
-    0
-  );
-  const monthRevenue = monthlyTrend.reduce(
-    (sum, point) => sum + (point.sales || point.revenue || 0),
-    0
-  );
-  const weekOrders = weeklyTrend.reduce((sum, point) => sum + (point.orders || 0), 0);
-  const totalStatusOrders = statusBreakdown.reduce(
-    (sum, point) => sum + point.count,
-    0
-  );
+  const fmtDate = (value: string) =>
+    new Date(value).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
 
-  const palette = ['#c97d4e', '#d4860b', '#4f7cac', '#2d7a4f', '#c0392b', '#6b6560'];
+  const weekRevenue  = weeklyTrend.reduce((s, p) => s + (p.sales || p.revenue || 0), 0);
+  const monthRevenue = monthlyTrend.reduce((s, p) => s + (p.sales || p.revenue || 0), 0);
+  const weekOrders   = weeklyTrend.reduce((s, p) => s + (p.orders || 0), 0);
+  const totalStatusOrders = statusBreakdown.reduce((s, p) => s + p.count, 0) || 1;
+  const maxBar = Math.max(...monthlyTrend.map((p) => p.sales || p.revenue || 0), 1);
 
-  const donutStops = statusBreakdown.reduce<string[]>(
-    (segments, point, index) => {
-      const start =
-        statusBreakdown
-          .slice(0, index)
-          .reduce((sum, current) => sum + current.count, 0) / totalStatusOrders;
-      const end =
-        statusBreakdown
-          .slice(0, index + 1)
-          .reduce((sum, current) => sum + current.count, 0) / totalStatusOrders;
-      segments.push(
-        `${palette[index % palette.length]} ${start * 100}% ${end * 100}%`
-      );
-      return segments;
-    },
-    []
-  );
-
-  const maxTrendValue =
-    Math.max(
-      ...monthlyTrend.map((point) => point.sales || point.revenue || 0),
-      1
-    ) || 1;
-
+  /* ── Loading skeleton ── */
   if (loading) {
     return (
-      <div className="px-4 pb-8 md:px-8">
-        <PageHeader
-          eyebrow="Performance"
-          title="Analytics"
-          description="Loading your revenue and order trends."
-        />
+      <div className="space-y-6 px-4 py-6 md:px-6">
+        <div className="h-10 w-40 bg-[var(--surface-container-high)] rounded-xl animate-pulse" />
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-24 bg-[var(--surface-container-lowest)] rounded-xl animate-pulse" />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 px-4 pb-8 md:space-y-8 md:px-8">
-      <PageHeader
-        eyebrow="Performance"
-        title="Analytics"
-        description="Revenue, status mix, recent customer momentum, and a clear view into what the current backend can measure today."
-      />
+    <div className="space-y-6 px-4 py-6 md:px-6">
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Revenue this week"
-          value={formatCurrency(weekRevenue)}
-          icon={DollarSign}
-          hint={`${weekOrders} orders in the last 7 days`}
-          tone="accent"
-        />
-        <MetricCard
-          label="Revenue this month"
-          value={formatCurrency(monthRevenue)}
-          icon={BarChart2}
-          hint="Trailing 30 days"
-        />
-        <MetricCard
-          label="All-time revenue"
-          value={formatCurrency(overview?.total_sales || 0)}
-          icon={TrendingUp}
-          hint={`${overview?.total_orders || 0} total orders`}
-          tone="success"
-        />
-        <MetricCard
-          label="Recent customers"
-          value={customerStats?.new_this_month || 0}
-          icon={Users}
-          hint={`${customerStats?.total_customers || 0} total customers`}
-        />
-      </div>
+      {/* ── Heading ── */}
+      <section>
+        <h2 className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--on-surface)]">
+          Analytics
+        </h2>
+        <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">
+          Revenue, status mix, and customer momentum at a glance.
+        </p>
+      </section>
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <Surface className="p-5 md:p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
-                Sales trend
-              </p>
-              <h2 className="mt-2 text-xl font-semibold text-[var(--kv-text)]">
-                Revenue over the last 30 days
-              </h2>
+      {/* ── KPI bento ── */}
+      <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {[
+          { icon: TrendingUp, label: 'This week',    value: fmtCurrency(weekRevenue),                     sub: `${weekOrders} orders` },
+          { icon: TrendingUp, label: 'This month',   value: fmtCurrency(monthRevenue),                    sub: 'Trailing 30 days' },
+          { icon: ShoppingBag,label: 'All-time rev', value: fmtCurrency(overview?.total_sales || 0),      sub: `${overview?.total_orders || 0} orders total` },
+          { icon: Users,      label: 'New customers',value: customerStats?.new_this_month || 0,           sub: `${customerStats?.total_customers || 0} total` },
+        ].map((card) => {
+          const Icon = card.icon;
+          return (
+            <div key={card.label} className="bg-[var(--surface-container-lowest)] p-5 rounded-xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] flex flex-col gap-3">
+              <Icon size={18} className="text-[var(--on-surface-variant)]" />
+              <div>
+                <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">{card.label}</p>
+                <p className="text-xl font-black mt-0.5 text-[var(--on-surface)]">{card.value}</p>
+                <p className="text-[10px] text-[var(--on-surface-variant)] mt-0.5">{card.sub}</p>
+              </div>
             </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]">
-              <TrendingUp size={18} />
-            </span>
+          );
+        })}
+      </section>
+
+      {/* ── Revenue bar chart + status donut ── */}
+      <section className="grid gap-4 xl:grid-cols-[1.3fr_0.7fr]">
+
+        {/* Bar chart */}
+        <div className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-5">
+          <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Revenue trend</p>
+          <h3 className="text-base font-black mt-1 text-[var(--on-surface)]">Last 30 days</h3>
+          <div className="mt-6 flex items-end gap-1 h-40">
+            {monthlyTrend.length > 0
+              ? monthlyTrend.map((p, i) => {
+                  const val = p.sales || p.revenue || 0;
+                  const pct = Math.max((val / maxBar) * 100, 4);
+                  return (
+                    <div key={p.date} className="flex flex-1 flex-col items-center gap-1">
+                      <div
+                        className="w-full rounded-t-lg transition-all duration-500"
+                        style={{ height: `${pct}%`, backgroundColor: BAR_COLORS[i % BAR_COLORS.length], opacity: 0.85 }}
+                        title={`${fmtDate(p.date)}: ${fmtCurrency(val)}`}
+                      />
+                    </div>
+                  );
+                })
+              : [40, 60, 48, 75, 85, 70, 90, 55, 65, 80].map((h, i) => (
+                  <div key={i} className="flex-1 rounded-t-lg bg-[var(--surface-container-high)]" style={{ height: `${h}%` }} />
+                ))}
+          </div>
+          {monthlyTrend.length > 0 && (
+            <div className="mt-2 flex gap-1">
+              {monthlyTrend.map((p) => (
+                <p key={p.date} className="flex-1 text-center text-[8px] text-[var(--on-surface-variant)] truncate">{fmtDate(p.date)}</p>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Status breakdown */}
+        <div className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-5">
+          <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Status mix</p>
+          <h3 className="text-base font-black mt-1 text-[var(--on-surface)]">Orders by status</h3>
+
+          {/* Mini donut */}
+          <div className="mt-4 flex justify-center">
+            <div
+              className="relative h-36 w-36 rounded-full"
+              style={{
+                background: totalStatusOrders > 1
+                  ? `conic-gradient(${statusBreakdown.reduce<{ stops: string[]; cum: number }>((acc, p, i) => {
+                      const start = (acc.cum / totalStatusOrders) * 100;
+                      acc.cum += p.count;
+                      const end = (acc.cum / totalStatusOrders) * 100;
+                      acc.stops.push(`${BAR_COLORS[i % BAR_COLORS.length]} ${start}% ${end}%`);
+                      return acc;
+                    }, { stops: [], cum: 0 }).stops.join(', ')})`
+                  : `conic-gradient(var(--surface-container-high) 0% 100%)`,
+              }}
+            >
+              <div className="absolute inset-[14px] rounded-full bg-[var(--surface-container-lowest)] flex items-center justify-center flex-col">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Total</p>
+                <p className="text-lg font-black text-[var(--on-surface)]">{totalStatusOrders}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-8 flex h-60 items-end gap-2">
-            {monthlyTrend.map((point) => {
-              const value = point.sales || point.revenue || 0;
-              const height = Math.max((value / maxTrendValue) * 100, 8);
+          <div className="mt-4 space-y-2">
+            {statusBreakdown.map((p, i) => {
+              const pct = Math.round((p.count / totalStatusOrders) * 100);
               return (
-                <div key={point.date} className="flex flex-1 flex-col items-center gap-2">
-                  <div className="flex h-44 w-full items-end rounded-2xl bg-[var(--kv-soft)] p-1.5">
-                    <div
-                      className="w-full rounded-[1rem] bg-[linear-gradient(180deg,#dca17c_0%,#c97d4e_100%)]"
-                      style={{ height: `${height}%` }}
-                    />
+                <div key={p.status}>
+                  <div className="flex justify-between mb-0.5">
+                    <span className="text-[10px] font-medium capitalize text-[var(--on-surface-variant)]">{p.status}</span>
+                    <span className="text-[10px] font-bold text-[var(--on-surface)]">{p.count}</span>
                   </div>
-                  <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--kv-muted)]">
-                    {new Date(point.date).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </p>
+                  <div className="h-1.5 bg-[var(--surface-container-high)] rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700"
+                      style={{ width: `${pct}%`, backgroundColor: BAR_COLORS[i % BAR_COLORS.length] }} />
+                  </div>
                 </div>
               );
             })}
           </div>
-        </Surface>
+        </div>
+      </section>
 
-        <Surface className="p-5 md:p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
-                Status mix
-              </p>
-              <h2 className="mt-2 text-xl font-semibold text-[var(--kv-text)]">
-                Orders by status
-              </h2>
-            </div>
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-[var(--kv-accent-deep)]">
-              <ShoppingBag size={18} />
-            </span>
+      {/* ── Catalog spotlight + customer momentum ── */}
+      <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+
+        {/* Catalog spotlight */}
+        <div className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] overflow-hidden">
+          <div className="p-5 border-b border-[var(--surface-container-low)]">
+            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Catalog spotlight</p>
+            <h3 className="text-base font-black mt-1 text-[var(--on-surface)]">Recent published products</h3>
           </div>
-
-          <div className="mt-6 flex flex-col items-center gap-6 lg:flex-row lg:items-start">
-            <div
-              className="relative h-48 w-48 rounded-full"
-              style={{
-                background:
-                  totalStatusOrders > 0
-                    ? `conic-gradient(${donutStops.join(', ')})`
-                    : 'conic-gradient(#e8e3dc 0% 100%)',
-              }}
-            >
-              <div className="absolute inset-[18px] flex items-center justify-center rounded-full bg-white text-center">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-[var(--kv-muted)]">
-                    Orders
-                  </p>
-                  <p className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
-                    {totalStatusOrders}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full space-y-3">
-              {statusBreakdown.map((point, index) => (
-                <div
-                  key={point.status}
-                  className="flex items-center justify-between rounded-[1rem] bg-[var(--kv-soft)] px-4 py-3 text-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="inline-flex h-3.5 w-3.5 rounded-full"
-                      style={{ backgroundColor: palette[index % palette.length] }}
-                    />
-                    <span className="font-medium capitalize text-[var(--kv-text)]">
-                      {point.status}
-                    </span>
-                  </div>
-                  <span className="font-semibold text-[var(--kv-text)]">
-                    {point.count}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Surface>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <Surface className="overflow-hidden">
-          <SectionHeader
-            title="Catalog spotlight"
-            description="Using recent published products until a top-selling-products API is available."
-          />
-          <div className="space-y-3 p-5 md:p-6">
+          <div className="divide-y divide-[var(--surface-container-low)]">
             {productPreview.length === 0 ? (
-              <p className="text-sm text-[var(--kv-muted)]">
-                No published products available for preview.
-              </p>
+              <p className="px-5 py-8 text-sm text-[var(--on-surface-variant)] text-center">No published products available.</p>
             ) : (
-              productPreview.map((product, index) => (
-                <div
-                  key={product.id}
-                  className="flex items-center gap-4 rounded-[1.2rem] border border-[var(--kv-border)] bg-white px-4 py-4"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-sm font-semibold text-[var(--kv-accent-deep)]">
-                    {index + 1}
-                  </div>
-                  <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-[var(--kv-soft)]">
-                    {product.thumbnail ? (
+              productPreview.map((product, i) => (
+                <div key={product.id} className="flex items-center gap-4 px-5 py-4 hover:bg-[var(--surface-container-low)]/50 transition-colors">
+                  <span className="text-[0.6875rem] font-black text-[var(--on-surface-variant)] w-5 text-center">{i + 1}</span>
+                  <div className="h-12 w-12 rounded-xl overflow-hidden bg-[var(--surface-container-low)] flex items-center justify-center flex-shrink-0">
+                    {product.thumbnail
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={product.thumbnail}
-                        alt={product.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <PackageFallback />
-                    )}
+                      ? <img src={product.thumbnail} alt={product.title} className="h-full w-full object-cover" />
+                      : <Package size={16} className="text-[var(--on-surface-variant)]" />}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-[var(--kv-text)]">
-                      {product.title}
-                    </p>
-                    <p className="mt-1 text-sm text-[var(--kv-muted)]">
-                      Inventory {product.total_inventory}
-                    </p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-[var(--on-surface)] truncate">{product.title}</p>
+                    <p className="text-[10px] text-[var(--on-surface-variant)]">Inventory: {product.total_inventory}</p>
                   </div>
                 </div>
               ))
             )}
           </div>
-        </Surface>
+        </div>
 
-        <Surface className="p-5 md:p-6">
-          <div className="space-y-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
-                Customer momentum
-              </p>
-              <h2 className="mt-2 text-xl font-semibold text-[var(--kv-text)]">
-                Growth snapshot
-              </h2>
-            </div>
+        {/* Customer momentum */}
+        <div className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-5 space-y-4">
+          <div>
+            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">Customer momentum</p>
+            <h3 className="text-base font-black mt-1 text-[var(--on-surface)]">Growth snapshot</h3>
+          </div>
+          <div className="space-y-3">
+            {[
+              { label: 'Total customers',    value: customerStats?.total_customers || 0 },
+              { label: 'New this month',     value: customerStats?.new_this_month || 0 },
+              { label: 'Avg order value',    value: fmtCurrency(overview?.average_order_value || 0) },
+              { label: 'Total orders',       value: overview?.total_orders || 0 },
+            ].map((row) => (
+              <div key={row.label} className="flex items-center justify-between rounded-xl bg-[var(--surface-container-low)] px-4 py-3">
+                <span className="text-xs text-[var(--on-surface-variant)]">{row.label}</span>
+                <span className="text-xs font-bold text-[var(--on-surface)]">{row.value}</span>
+              </div>
+            ))}
+          </div>
 
-            <div className="space-y-3">
-              <div className="rounded-[1.2rem] bg-[var(--kv-soft)] px-4 py-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
-                  Total customers
-                </p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
-                  {customerStats?.total_customers || 0}
-                </p>
-              </div>
-              <div className="rounded-[1.2rem] bg-[var(--kv-soft)] px-4 py-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
-                  New this month
-                </p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
-                  {customerStats?.new_this_month || 0}
-                </p>
-              </div>
-              <div className="rounded-[1.2rem] bg-[var(--kv-soft)] px-4 py-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
-                  Average order value
-                </p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
-                  {formatCurrency(overview?.average_order_value || 0)}
-                </p>
-              </div>
+          {/* Weekly spark */}
+          <div>
+            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)] mb-3">Weekly revenue</p>
+            <div className="flex items-end gap-1 h-16">
+              {weeklyTrend.length > 0
+                ? weeklyTrend.map((p, i) => {
+                    const val = p.sales || p.revenue || 0;
+                    const maxW = Math.max(...weeklyTrend.map((x) => x.sales || x.revenue || 0), 1);
+                    const pct = Math.max((val / maxW) * 100, 6);
+                    return (
+                      <div key={p.date} className="flex-1 rounded-t-md"
+                        style={{ height: `${pct}%`, backgroundColor: BAR_COLORS[i % BAR_COLORS.length], opacity: 0.8 }}
+                        title={`${fmtDate(p.date)}: ${fmtCurrency(val)}`} />
+                    );
+                  })
+                : [40, 60, 48, 75, 85, 70, 90].map((h, i) => (
+                    <div key={i} className="flex-1 rounded-t-md bg-[var(--surface-container-high)]" style={{ height: `${h}%` }} />
+                  ))}
             </div>
           </div>
-        </Surface>
-      </div>
+        </div>
+      </section>
+
     </div>
   );
-}
-
-function PackageFallback() {
-  return <ShoppingBag size={18} className="text-[var(--kv-muted)]" />;
 }
