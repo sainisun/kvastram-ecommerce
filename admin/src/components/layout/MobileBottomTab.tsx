@@ -1,5 +1,6 @@
 'use client';
 
+import type React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -18,12 +19,20 @@ interface MobileBottomTabProps {
   onCloseDrawer: () => void;
 }
 
-const tabs = [
-  { label: 'Home',      href: '/dashboard',          icon: LayoutDashboard },
-  { label: 'Orders',    href: '/dashboard/orders',    icon: ShoppingBag,  badge: true },
-  { label: '',          href: '/dashboard/products/new', icon: Package,    fab: true },
-  { label: 'Customers', href: '/dashboard/customers', icon: Users },
-] as const;
+type NavTab = {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ size?: number }>;
+  badge?: boolean;
+  fab?: boolean;
+};
+
+const tabs: NavTab[] = [
+  { label: 'Home',      href: '/dashboard',             icon: LayoutDashboard },
+  { label: 'Orders',    href: '/dashboard/orders',       icon: ShoppingBag,  badge: true },
+  { label: '',          href: '/dashboard/products/new', icon: Package,      fab: true },
+  { label: 'Customers', href: '/dashboard/customers',    icon: Users },
+];
 
 export default function MobileBottomTab({
   pendingOrders,
