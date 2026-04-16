@@ -155,10 +155,10 @@ uploadRouter.post('/', async (c) => {
     // 🔒 FIX-005: Generate SHA-256 hash for file integrity verification
     const fileHash = createHash('sha256').update(fileBuffer).digest('hex');
 
-    // Construct URL (using secure filename only)
-    const protocol = c.req.header('x-forwarded-proto') || 'http';
-    const host = c.req.header('host') || 'localhost';
-    const url = `${protocol}://${host}/uploads/${secureFilename}`;
+    // 🔒 FIX: Return absolute URL using dynamic proxy-aware relative path
+    // The relative URL forces the browser to use the current domain (e.g. admin.kvastram.com or localhost)
+    const url = `/uploads/${secureFilename}`;
+
 
     console.log('✅ File uploaded securely:', {
       originalName: file.name,

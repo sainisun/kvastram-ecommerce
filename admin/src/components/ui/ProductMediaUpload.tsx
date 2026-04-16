@@ -65,7 +65,7 @@ interface ProductMediaUploadProps {
 
 const MAX_MEDIA_ITEMS = 14;
 const MIN_MEDIA_ITEMS = 3;
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 50 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
 
 function createItemId() {
@@ -546,7 +546,7 @@ export default function ProductMediaUpload({
             : 'Drag and drop media, or click to browse'}
         </p>
         <p className="mt-2 text-sm text-gray-500">
-          JPG, PNG, WEBP up to 5MB each. MP4 or MOV up to 50MB each.
+          JPG, PNG, WEBP up to 50MB each. MP4 or MOV up to 50MB each.
         </p>
         <p className="mt-1 text-sm text-gray-500">
           Portrait media works best for the new mobile-first product page.

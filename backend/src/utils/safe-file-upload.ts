@@ -45,7 +45,7 @@ const ALLOWED_MIME_TYPES: Record<string, string[]> = {
 };
 
 // Maximum file sizes
-export const IMAGE_MAX_FILE_SIZE = 5 * 1024 * 1024;
+export const IMAGE_MAX_FILE_SIZE = 50 * 1024 * 1024;
 export const VIDEO_MAX_FILE_SIZE = 50 * 1024 * 1024;
 export const DEFAULT_MAX_FILE_SIZE = IMAGE_MAX_FILE_SIZE;
 
