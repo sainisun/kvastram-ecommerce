@@ -1,21 +1,17 @@
 name: Deploy to Hostinger VPS
-
 # Trigger: push to main branch only
 on:
   push:
     branches: [main]
   workflow_dispatch: # Allow manual trigger from GitHub Actions UI
-
 jobs:
   deploy:
     name: SSH Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -26,21 +22,16 @@ jobs:
           command_timeout: 25m
           script: |
             set -e
-
             echo "=== Pulling latest code ==="
             cd ${{ secrets.VPS_PROJECT_PATH }}
-
-            # Stash any local changes (e.g. package-lock.json diffs) before pulling
-            git stash --quiet || true
-            git pull origin main
-            git stash drop --quiet 2>/dev/null || true
-
+            # Hard reset to match GitHub exactly (prevents divergence errors)
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
             echo "=== Removing stopped containers to prevent name conflicts ==="
             docker compose -f deploy/hostinger/docker-compose.yml down --remove-orphans || true
-
             echo "=== Rebuilding and restarting containers ==="
             docker compose -f deploy/hostinger/docker-compose.yml up -d --build --force-recreate
-
             echo "=== Waiting for backend to be healthy ==="
             for i in $(seq 1 20); do
               STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:4000/health 2>/dev/null || echo "000")
@@ -51,15 +42,12 @@ jobs:
               echo "  Waiting... (${i}/20) backend=${STATUS}"
               sleep 3
             done
-
             echo "=== Health Check ==="
             curl -sf http://localhost:4000/health || { echo "Backend health check FAILED"; exit 1; }
             curl -sf http://localhost:3000 > /dev/null || { echo "Storefront health check FAILED"; exit 1; }
             curl -sf http://localhost:3001 > /dev/null || { echo "Admin health check FAILED"; exit 1; }
             echo "All services healthy"
-
             echo "=== Removing unused Docker images ==="
             docker image prune -f --filter "until=24h"
-
             echo "=== Deployment complete ==="
             docker compose -f deploy/hostinger/docker-compose.yml ps
