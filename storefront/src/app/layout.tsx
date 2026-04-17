@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Jost } from 'next/font/google';
 
 import './globals.css';
 import { Analytics } from '@/components/Analytics';
@@ -17,21 +16,6 @@ import { WholesaleProvider } from '@/context/wholesale-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
-  display: 'swap',
-});
-
-const jost = Jost({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-jost',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -105,9 +89,7 @@ export default async function RootLayout({
           />
         )}
       </head>
-      <body
-        className={`${cormorant.variable} ${jost.variable} font-body antialiased`}
-      >
+      <body className="font-body antialiased">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"

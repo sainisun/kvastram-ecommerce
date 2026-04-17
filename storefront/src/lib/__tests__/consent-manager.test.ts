@@ -11,7 +11,12 @@ describe('ConsentManager', () => {
     });
 
     it('stores and reports consent', () => {
-        ConsentManager.setConsent({ analytics: true });
+        ConsentManager.setConsent({
+            essential: true,
+            analytics: true,
+            marketing: false,
+            session_recording: false,
+        });
         expect(ConsentManager.hasConsentFor('analytics')).toBe(true);
         expect(ConsentManager.getConsent()).toMatchObject({ analytics: true });
     });

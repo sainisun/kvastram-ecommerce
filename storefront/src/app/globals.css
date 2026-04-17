@@ -25,10 +25,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-jost);
-  --font-serif: var(--font-cormorant);
-  --font-heading: var(--font-cormorant);
-  --font-body: var(--font-jost);
+  --font-sans: var(--font-ui);
+  --font-serif: var(--font-display);
+  --font-heading: var(--font-display);
+  --font-body: var(--font-ui);
 }
 
 /* ─── BASE ─── */

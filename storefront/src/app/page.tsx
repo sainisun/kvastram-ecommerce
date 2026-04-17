@@ -8,37 +8,43 @@ import {
   buildWebsiteJsonLd,
   serializeJsonLd,
 } from '@/lib/seo';
-import { MarqueeStrip } from '@/components/ui/MarqueeStrip';
 import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
 import { TrendingReels } from '@/components/home/TrendingReels';
 import { CategoriesGrid } from '@/components/home/CategoriesGrid';
 import { NewArrivals } from '@/components/home/NewArrivals';
-import { BestSellers } from '@/components/home/BestSellers';
 import { Testimonials } from '@/components/home/Testimonials';
 import { InstagramReels } from '@/components/home/InstagramReels';
 import { BrandStory } from '@/components/home/BrandStory';
-import { SeenOnYou } from '@/components/home/SeenOnYou';
 import { FabricsSection } from '@/components/home/FabricsSection';
-
-import HomeSectionsClient from '@/components/home/HomeSectionsClient';
+import { CollectionsSection } from '@/components/home/CollectionsSection';
+import type { Product } from '@/types';
+import type {
+  HomepageCategoryCard,
+  HomepageCollection,
+  HomepageTestimonial,
+  HomepageTrendingReel,
+} from '@/types/homepage';
 
 export const revalidate = 60;
 
 export const metadata: Metadata = buildHomepageMetadata();
 
 export default async function Home() {
-  // ── Fetch all homepage data in parallel; one failure won't break others ──
   const [
     homepageResult,
     productsResult,
     testimonialsResult,
     collectionsResult,
+    reelsResult,
+    categoriesResult,
   ] = await Promise.allSettled([
     api.getHomepageSettings(),
     api.getProducts({ limit: 8, sort: 'newest' }),
     api.getTestimonials(),
     api.getCollections(),
+    api.getTrendingReels(),
+    api.getHomepageCategories(),
   ]);
 
   const homepageSettings =
@@ -46,7 +52,6 @@ export default async function Home() {
       ? homepageResult.value.settings || {}
       : {};
 
-  // Featured product IDs from admin settings
   const featuredProductIds = homepageSettings.featured_product_ids
     ? homepageSettings.featured_product_ids
         .split(',')
@@ -54,40 +59,154 @@ export default async function Home() {
         .filter(Boolean)
     : [];
 
-  // If admin has specified featured products, fetch those specifically
-  let products: unknown[] = [];
+  let products: Product[] = [];
   if (featuredProductIds.length > 0) {
     try {
       const featuredResult = await api.getFeaturedProducts(featuredProductIds);
       products = featuredResult.products || [];
     } catch {
-      // fall through to products from productsResult below
+      products = [];
     }
   }
   if (products.length === 0 && productsResult.status === 'fulfilled') {
     products = productsResult.value.products || [];
   }
 
-  const testimonials =
+  const testimonials: HomepageTestimonial[] =
     testimonialsResult.status === 'fulfilled'
-      ? testimonialsResult.value.testimonials || []
+      ? (testimonialsResult.value.testimonials || [])
+          .filter(
+            (item: {
+              id?: string;
+              name?: string;
+              content?: string;
+            }) => Boolean(item?.id && item?.name && item?.content)
+          )
+          .map(
+            (item: {
+              id: string;
+              name: string;
+              location?: string;
+              avatar_url?: string | null;
+              rating?: number;
+              content: string;
+            }) => ({
+              id: item.id,
+              name: item.name,
+              location: item.location,
+              avatar_url: item.avatar_url,
+              rating: item.rating,
+              content: item.content,
+            })
+          )
       : [];
 
-  const collections =
+  const collections: HomepageCollection[] =
     collectionsResult.status === 'fulfilled'
-      ? (collectionsResult.value.collections || []).slice(0, 2)
+      ? (collectionsResult.value.collections || [])
+          .filter(
+            (item: { id?: string; title?: string; handle?: string }) =>
+              Boolean(item?.id && item?.title && item?.handle)
+          )
+          .slice(0, 3)
+          .map(
+            (item: {
+              id: string;
+              title: string;
+              handle: string;
+              image?: string | null;
+            }) => ({
+              id: item.id,
+              title: item.title,
+              handle: item.handle,
+              image: item.image,
+            })
+          )
       : [];
 
-  // ── Announcement ticker ──
-  const isAnnouncementEnabled = Boolean(homepageSettings.announcement_bar_enabled);
-  const announcementText = homepageSettings.announcement_bar_text || '';
-  const tickerItems = [
-    announcementText || 'Complimentary worldwide shipping on orders over Rs. 10,000',
-    'Handcrafted by Artisans Since 1987',
-    '30-Day Returns & Exchanges',
-    'Exclusive Artisan Collections',
-  ];
+  const trendingReels: HomepageTrendingReel[] =
+    reelsResult.status === 'fulfilled'
+      ? (reelsResult.value.reels || [])
+          .filter(
+            (item: {
+              id?: string;
+              is_active?: boolean;
+              link_url?: string;
+            }) => Boolean(item?.id && item?.is_active && item?.link_url)
+          )
+          .sort(
+            (
+              a: { sort_order?: number | null },
+              b: { sort_order?: number | null }
+            ) => (a.sort_order || 0) - (b.sort_order || 0)
+          )
+          .map(
+            (item: {
+              id: string;
+              video_url: string;
+              thumbnail_url: string;
+              product_name: string;
+              price: string;
+              link_url: string;
+              is_active: boolean;
+              sort_order: number;
+            }) => ({
+              id: item.id,
+              video_url: item.video_url,
+              thumbnail_url: item.thumbnail_url,
+              product_name: item.product_name,
+              price: item.price,
+              link_url: item.link_url,
+              is_active: item.is_active,
+              sort_order: item.sort_order,
+            })
+          )
+      : [];
 
+  const homepageCategories: HomepageCategoryCard[] =
+    categoriesResult.status === 'fulfilled'
+      ? (categoriesResult.value.categories || [])
+          .filter(
+            (item: {
+              id?: string;
+              is_active?: boolean;
+              image_url?: string;
+              link_url?: string;
+              name?: string;
+            }) =>
+              Boolean(
+                item?.id &&
+                  item?.is_active &&
+                  item?.image_url &&
+                  item?.link_url &&
+                  item?.name
+              )
+          )
+          .sort(
+            (
+              a: { sort_order?: number | null },
+              b: { sort_order?: number | null }
+            ) => (a.sort_order || 0) - (b.sort_order || 0)
+          )
+          .slice(0, 4)
+          .map(
+            (item: {
+              id: string;
+              image_url: string;
+              name: string;
+              link_url: string;
+              is_active: boolean;
+              sort_order: number;
+            }) => ({
+              id: item.id,
+              image_url: item.image_url,
+              name: item.name,
+              link_url: item.link_url,
+              is_active: item.is_active,
+              sort_order: item.sort_order,
+            })
+          )
+      : [];
 
   const homepageSchema = [
     buildOrganizationJsonLd(),
@@ -102,110 +221,21 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
 
-      {/* ── Announcement ticker ── */}
-      {isAnnouncementEnabled && (
-        <div
-          style={{
-            background: 'var(--black)',
-            color: 'var(--white)',
-            overflow: 'hidden',
-            height: '36px',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              animation: 'ticker 35s linear infinite',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {[...tickerItems, ...tickerItems].map((item, i) => (
-              <span
-                key={i}
-                style={{
-                  fontFamily: 'var(--font-ui)',
-                  fontSize: '10px',
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  padding: '0 48px',
-                  opacity: 0.9,
-                  display: 'inline-block',
-                }}
-              >
-                {item}
-                <span
-                  style={{
-                    display: 'inline-block',
-                    width: '4px',
-                    height: '4px',
-                    background: 'rgba(248,246,243,0.3)',
-                    borderRadius: '50%',
-                    marginLeft: '48px',
-                    verticalAlign: 'middle',
-                  }}
-                />
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 1. Circular Categories — mobile horizontal scroll */}
       <Suspense fallback={<div className="h-[120px] bg-white" />}>
         <CircularCategories />
       </Suspense>
-
-      {/* 2. Hero — 751px full-bleed with gradient overlay */}
       <HeroSection />
-
-      {/* 3. Trending Reels — 9:16 cards */}
-      <TrendingReels />
-
-
-
-      {/* 5. Categories Grid — 2-col */}
-      <CategoriesGrid />
-
-      {/* 6. Marquee */}
-      <MarqueeStrip
-        items={[
-          'Kashmiri Weaves',
-          'Artisanal Luxury',
-          'Hand Embroidered',
-          'Slow Fashion',
-          'Silk Road Heritage',
-        ]}
-        speed="22s"
+      <TrendingReels reels={trendingReels} />
+      <CategoriesGrid categories={homepageCategories} />
+      <NewArrivals
+        products={products}
+        isCurated={featuredProductIds.length > 0}
       />
-
-      {/* eslint-disable @typescript-eslint/no-explicit-any */}
-      {/* 7. New Arrivals — 2-col product grid */}
-      <NewArrivals products={products as any[]} />
-
-      {/* 8. Best Sellers — horizontal carousel */}
-      <BestSellers products={products as any[]} />
-
-      {/* 9. Customer Testimonials — carousel with nav */}
-      <Testimonials testimonials={testimonials as any[]} />
-      {/* eslint-enable @typescript-eslint/no-explicit-any */}
-
-      {/* 10. Instagram Reels — @kvastram section */}
-      <InstagramReels />
-
-      {/* 11. Brand Story — dark section */}
+      <CollectionsSection collections={collections} />
+      <Testimonials testimonials={testimonials} />
+      <InstagramReels reels={trendingReels.slice(0, 3)} />
       <BrandStory />
-
-      {/* 12. Seen On You — masonry UGC */}
-      <SeenOnYou />
-
-      {/* 13. Fabrics — horizontal scroll */}
       <FabricsSection />
-
-      {/* Collections section — kept for existing functionality */}
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <HomeSectionsClient collections={collections as any[]} />
     </>
   );
 }
