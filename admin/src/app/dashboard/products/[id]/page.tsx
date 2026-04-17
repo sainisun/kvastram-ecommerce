@@ -139,6 +139,8 @@ export default function EditProductPage() {
   // Selection State
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [selectedTagIds, setSelectedTagIds]           = useState<string[]>([]);
+  const [collections, setCollections]                 = useState<any[]>([]);
+  const [selectedCollectionId, setSelectedCollectionId] = useState('');
 
   // Form
   const [formData, setFormData] = useState({
@@ -167,16 +169,18 @@ export default function EditProductPage() {
 
   const init = useCallback(async () => {
     try {
-      const [regionData, productResult, catsData, tagsData] = await Promise.all([
+      const [regionData, productResult, catsData, tagsData, colData] = await Promise.all([
         api.getRegions(),
         api.getProduct(id),
         api.getCategories(),
         api.getTags(),
+        api.getCollections(),
       ]);
 
       setRegions(regionData.regions || []);
       setCategories(catsData.categories || []);
       setTags(tagsData.tags || []);
+      setCollections(colData.collections || []);
 
       const product = productResult.data?.product || productResult.product;
 
@@ -185,6 +189,9 @@ export default function EditProductPage() {
       }
       if (product.tags) {
         setSelectedTagIds(product.tags.map((t: any) => t.tag_id));
+      }
+      if (product.collection_id) {
+        setSelectedCollectionId(product.collection_id);
       }
 
       setFormData({
@@ -422,6 +429,7 @@ export default function EditProductPage() {
         thumbnail:    getCoverThumbnail(mediaItems) || undefined,
         category_ids: selectedCategoryIds,
         tag_ids:      selectedTagIds,
+        collection_id: selectedCollectionId || undefined,
       };
 
       await api.updateProduct(id, payload);
@@ -923,6 +931,20 @@ export default function EditProductPage() {
                   <option value="published">Published</option>
                   <option value="proposed">Proposed</option>
                   <option value="rejected">Rejected</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="collection" className={labelCls}>Collection</label>
+                <select
+                  id="collection" value={selectedCollectionId}
+                  onChange={(e) => setSelectedCollectionId(e.target.value)}
+                  className={inputCls}
+                >
+                  <option value="">No Collection</option>
+                  {collections.map((col: any) => (
+                    <option key={col.id} value={col.id}>{col.title}</option>
+                  ))}
                 </select>
               </div>
 

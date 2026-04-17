@@ -45,6 +45,7 @@ const emptyForm = (): CircleFormState => ({
 
 export default function CategoryCirclesManager() {
   const [circles, setCircles] = useState<CategoryCircle[]>([]);
+  const [collections, setCollections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export default function CategoryCirclesManager() {
 
   useEffect(() => {
     void loadCircles();
+    void loadCollections();
 
     return () => {
       if (previewUrlRef.current) {
@@ -76,6 +78,15 @@ export default function CategoryCirclesManager() {
       alert('Failed to load category circles');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadCollections() {
+    try {
+      const response = await api.getCollections();
+      setCollections(response.collections || []);
+    } catch (error) {
+      console.error('Failed to load collections:', error);
     }
   }
 
@@ -435,20 +446,32 @@ export default function CategoryCirclesManager() {
 
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                      Link URL
+                      Linked Collection
                     </label>
-                    <input
+                    <select
                       value={form.linkUrl}
-                      onChange={(event) =>
-                        setForm((current) => ({
-                          ...current,
-                          linkUrl: event.target.value,
-                        }))
-                      }
+                      onChange={(event) => {
+                        const val = event.target.value;
+                        setForm((current) => {
+                          const update: CircleFormState = { ...current, linkUrl: val };
+                          // Auto prepopulate label if it's empty
+                          const selectedCol = collections.find((c) => `/collections/${c.handle}` === val);
+                          if (selectedCol && !current.label) {
+                            update.label = selectedCol.title;
+                          }
+                          return update;
+                        });
+                      }}
                       className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                      placeholder="/products?category_id=..."
                       required
-                    />
+                    >
+                      <option value="">-- Select a Collection --</option>
+                      {collections.map((col) => (
+                        <option key={col.id} value={`/collections/${col.handle}`}>
+                          {col.title}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">

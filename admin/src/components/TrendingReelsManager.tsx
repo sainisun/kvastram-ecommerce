@@ -53,6 +53,7 @@ const emptyForm = (): ReelFormState => ({
 
 export default function TrendingReelsManager() {
   const [reels, setReels] = useState<TrendingReel[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -61,9 +62,10 @@ export default function TrendingReelsManager() {
   const [editingReel, setEditingReel] = useState<TrendingReel | null>(null);
   const [form, setForm] = useState<ReelFormState>(emptyForm);
   const previewUrlRef = useRef<string>('');
-
+  
   useEffect(() => {
     void loadReels();
+    void loadProducts();
 
     return () => {
       if (previewUrlRef.current) {
@@ -82,6 +84,15 @@ export default function TrendingReelsManager() {
       alert('Failed to load trending reels');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadProducts() {
+    try {
+      const p = await api.getProducts(100);
+      setProducts(p.data?.products || p.products || []);
+    } catch (e) {
+      console.error('Failed to load products for dropdown', e);
     }
   }
 
@@ -489,6 +500,31 @@ export default function TrendingReelsManager() {
 
                 <div className="space-y-4">
                   <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Linked Product
+                    </label>
+                    <select
+                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 mb-4"
+                      onChange={(e) => {
+                        const product = products.find((p) => p.id === e.target.value);
+                        if (product) {
+                          setForm((cur) => ({
+                            ...cur,
+                            productName: product.title,
+                            linkUrl: `/products/${product.handle}`,
+                            price: product.variants?.[0]?.prices?.[0]
+                              ? `Rs. ${product.variants[0].prices[0].amount / 100}`
+                              : 'Rs. '
+                          }));
+                        }
+                      }}
+                    >
+                      <option value="">-- Select Product to auto-fill --</option>
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>{p.title}</option>
+                      ))}
+                    </select>
+
                     <label className="mb-2 block text-sm font-medium text-gray-700">
                       Product Name
                     </label>
