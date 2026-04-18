@@ -4,44 +4,75 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { useParams } from 'next/navigation';
 import PageForm from '@/components/PageForm';
+import type { PageFormData } from '@/components/PageForm';
+
+interface ApiErrorLike {
+  message?: string;
+  status?: number;
+  response?: {
+    status?: number;
+  };
+}
+
+interface PageResponse {
+  page: PageFormData;
+}
+
+type PageLoadState =
+  | { status: 'loading' }
+  | { status: 'not-found' }
+  | { status: 'auth-error' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; page: PageFormData };
 
 export default function EditPagePage() {
   const params = useParams();
-  const [page, setPage] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [authError, setAuthError] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const pageId = typeof params.id === 'string' ? params.id : null;
+  const [state, setState] = useState<PageLoadState>(
+    pageId ? { status: 'loading' } : { status: 'not-found' }
+  );
 
   useEffect(() => {
-    const id = params.id;
-    if (!id || Array.isArray(id)) {
-      setNotFound(true);
-      setLoading(false);
+    if (!pageId) {
       return;
     }
 
+    let active = true;
+
     api
-      .getPage(id)
-      .then((data) => setPage(data.page))
-      .catch((err) => {
+      .getPage(pageId)
+      .then((data: PageResponse) => {
+        if (!active) {
+          return;
+        }
+        setState({ status: 'ready', page: data.page });
+      })
+      .catch((err: ApiErrorLike) => {
+        if (!active) {
+          return;
+        }
         const status = err.status || err.response?.status;
         if (status === 404) {
-          setNotFound(true);
+          setState({ status: 'not-found' });
         } else if (status === 401) {
-          setAuthError(true);
+          setState({ status: 'auth-error' });
         } else {
-          setError(err.message || 'Failed to load page');
+          setState({
+            status: 'error',
+            message: err.message || 'Failed to load page',
+          });
         }
-      })
-      .finally(() => setLoading(false));
-  }, [params.id]);
+      });
 
-  if (loading) return <div className="p-6">Loading...</div>;
-  if (notFound) return <div className="p-6">Page not found</div>;
-  if (authError) return <div className="p-6">Authentication required</div>;
-  if (error) return <div className="p-6">Error: {error}</div>;
-  if (!page) return <div className="p-6">Page not found</div>;
+    return () => {
+      active = false;
+    };
+  }, [pageId]);
 
-  return <PageForm initialData={page} isEdit />;
+  if (state.status === 'loading') return <div className="p-6">Loading...</div>;
+  if (state.status === 'not-found') return <div className="p-6">Page not found</div>;
+  if (state.status === 'auth-error') return <div className="p-6">Authentication required</div>;
+  if (state.status === 'error') return <div className="p-6">Error: {state.message}</div>;
+
+  return <PageForm initialData={state.page} isEdit />;
 }

@@ -4,29 +4,63 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { useParams } from 'next/navigation';
 import PostForm from '@/components/PostForm';
+import type { PostFormData } from '@/components/PostForm';
+
+interface ApiErrorLike {
+  message?: string;
+}
+
+interface PostResponse {
+  post: PostFormData;
+}
+
+type PostLoadState =
+  | { status: 'loading' }
+  | { status: 'not-found' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; post: PostFormData };
 
 export default function EditPostPage() {
   const params = useParams();
-  const [post, setPost] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const postId = typeof params.id === 'string' ? params.id : null;
+  const [state, setState] = useState<PostLoadState>(
+    postId ? { status: 'loading' } : { status: 'not-found' }
+  );
 
   useEffect(() => {
-    const id = params.id as string;
-    setError(null);
+    if (!postId) {
+      return;
+    }
+
+    let active = true;
+
     api
-      .getPost(id)
-      .then((data) => setPost(data.post))
-      .catch((err) => {
-        console.error('Failed to load post:', err);
-        setError(err.message || 'Failed to load post');
+      .getPost(postId)
+      .then((data: PostResponse) => {
+        if (!active) {
+          return;
+        }
+        setState({ status: 'ready', post: data.post });
       })
-      .finally(() => setLoading(false));
-  }, [params.id]);
+      .catch((err: ApiErrorLike) => {
+        if (!active) {
+          return;
+        }
+        console.error('Failed to load post:', err);
+        setState({
+          status: 'error',
+          message: err.message || 'Failed to load post',
+        });
+      });
 
-  if (loading) return <div className="p-6">Loading...</div>;
-  if (error) return <div className="p-6">Error: {error}</div>;
-  if (!post) return <div className="p-6">Post not found</div>;
+    return () => {
+      active = false;
+    };
+  }, [postId]);
 
-  return <PostForm initialData={post} isEdit />;
+  if (state.status === 'loading') return <div className="p-6">Loading...</div>;
+  if (state.status === 'error') return <div className="p-6">Error: {state.message}</div>;
+  if (state.status === 'not-found') return <div className="p-6">Post not found</div>;
+
+  return <PostForm initialData={state.post} isEdit />;
 }

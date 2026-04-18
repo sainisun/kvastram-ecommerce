@@ -272,7 +272,7 @@ export const api = {
     return response.data;
   },
 
-  createProduct: async (data: any) => {
+  createProduct: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/products`, {
       method: 'POST',
       headers: {
@@ -285,7 +285,7 @@ export const api = {
     return response.data;
   },
 
-  updateProduct: async (id: string, data: any) => {
+  updateProduct: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/products/${id}`, {
       method: 'PUT',
       headers: {
@@ -320,7 +320,7 @@ export const api = {
     return response.data;
   },
 
-  bulkUpdateProducts: async (productIds: string[], updates: any) => {
+  bulkUpdateProducts: async (productIds: string[], updates: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/products/bulk-update`, {
       method: 'POST',
       headers: {
@@ -357,7 +357,7 @@ export const api = {
     return response.data;
   },
 
-  updateCustomer: async (id: string, data: any) => {
+  updateCustomer: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/customers/${id}`, {
       method: 'PUT',
       headers: {
@@ -411,7 +411,7 @@ export const api = {
     return res.json();
   },
 
-  createRegion: async (data: any) => {
+  createRegion: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/regions`, {
       method: 'POST',
       headers: {
@@ -431,7 +431,7 @@ export const api = {
     return res.json();
   },
 
-  updateRegion: async (id: string, data: any) => {
+  updateRegion: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/regions/${id}`, {
       method: 'PUT',
       headers: {
@@ -454,7 +454,7 @@ export const api = {
     return response.data;
   },
 
-  createVariant: async (productId: string, data: any) => {
+  createVariant: async (productId: string, data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/products/${productId}/variants`,
       {
@@ -467,7 +467,11 @@ export const api = {
     return res.json();
   },
 
-  updateVariant: async (productId: string, variantId: string, data: any) => {
+  updateVariant: async (
+    productId: string,
+    variantId: string,
+    data: unknown
+  ) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/products/${productId}/variants/${variantId}`,
       {
@@ -480,7 +484,7 @@ export const api = {
     return res.json();
   },
 
-  createOption: async (productId: string, data: any) => {
+  createOption: async (productId: string, data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/products/${productId}/options`,
       {
@@ -712,7 +716,7 @@ export const api = {
     return res.json();
   },
 
-  updateSetting: async (key: string, value: any, category?: string) => {
+  updateSetting: async (key: string, value: unknown, category?: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/settings/${key}`, {
       method: 'PUT',
       headers: {
@@ -724,7 +728,7 @@ export const api = {
     return res.json();
   },
 
-  updateSettingsBulk: async (settings: any) => {
+  updateSettingsBulk: async (settings: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/settings/bulk`, {
       method: 'POST',
       headers: {
@@ -745,7 +749,7 @@ export const api = {
     return res.json();
   },
 
-  createCampaign: async (data: any) => {
+  createCampaign: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/marketing/campaigns`, {
       method: 'POST',
       headers: {
@@ -757,7 +761,7 @@ export const api = {
     return res.json();
   },
 
-  updateCampaign: async (id: string, data: any) => {
+  updateCampaign: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/marketing/campaigns/${id}`,
       {
@@ -791,7 +795,7 @@ export const api = {
     return res.json();
   },
 
-  createDiscount: async (data: any) => {
+  createDiscount: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/marketing/discounts`, {
       method: 'POST',
       headers: {
@@ -803,7 +807,7 @@ export const api = {
     return res.json();
   },
 
-  updateDiscount: async (id: string, data: any) => {
+  updateDiscount: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/marketing/discounts/${id}`,
       {
@@ -889,7 +893,7 @@ export const api = {
   },
 
   // Generic POST helper for admin
-  post: async (path: string, data?: any) => {
+  post: async (path: string, data?: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1017,7 +1021,7 @@ export const api = {
     return res.json();
   },
 
-  updateWholesaleInquiry: async (id: string, data: any) => {
+  updateWholesaleInquiry: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/wholesale/${id}`, {
       method: 'PATCH',
       headers: {
@@ -1131,7 +1135,7 @@ export const api = {
     return res.json();
   },
 
-  updateWholesaleOrder: async (id: string, data: any) => {
+  updateWholesaleOrder: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/admin/wholesale/orders/${id}`,
       {
@@ -1169,7 +1173,7 @@ export const api = {
     return res.json();
   },
 
-  createWholesaleTier: async (data: any) => {
+  createWholesaleTier: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers/tiers`, {
       method: 'POST',
       headers: {
@@ -1181,7 +1185,7 @@ export const api = {
     return res.json();
   },
 
-  updateWholesaleTier: async (id: string, data: any) => {
+  updateWholesaleTier: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/admin/tiers/tiers/${id}`,
       {
@@ -1228,7 +1232,7 @@ export const api = {
     return res.json();
   },
 
-  createBanner: async (data: any) => {
+  createBanner: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/banners`, {
       method: 'POST',
       headers: {
@@ -1240,7 +1244,7 @@ export const api = {
     return res.json();
   },
 
-  updateBanner: async (id: string, data: any) => {
+  updateBanner: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/banners/${id}`, {
       method: 'PUT',
       headers: {
@@ -1260,7 +1264,7 @@ export const api = {
     return res.json();
   },
 
-  reorderBanners: async (items: any[]) => {
+  reorderBanners: async (items: unknown[]) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/banners/reorder`, {
       method: 'POST',
       headers: {
@@ -1592,7 +1596,7 @@ export const api = {
     return res.json();
   },
 
-  createPost: async (data: any) => {
+  createPost: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/posts`, {
       method: 'POST',
       headers: {
@@ -1604,7 +1608,7 @@ export const api = {
     return res.json();
   },
 
-  updatePost: async (id: string, data: any) => {
+  updatePost: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/posts/${id}`, {
       method: 'PUT',
       headers: {
@@ -1641,7 +1645,7 @@ export const api = {
     return res.json();
   },
 
-  createPage: async (data: any) => {
+  createPage: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/pages`, {
       method: 'POST',
       headers: {
@@ -1653,7 +1657,7 @@ export const api = {
     return res.json();
   },
 
-  updatePage: async (id: string, data: any) => {
+  updatePage: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/pages/${id}`, {
       method: 'PUT',
       headers: {
@@ -1698,7 +1702,7 @@ export const api = {
     return res.json();
   },
 
-  createCategory: async (data: any) => {
+  createCategory: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/categories`, {
       method: 'POST',
       headers: {
@@ -1710,7 +1714,7 @@ export const api = {
     return res.json();
   },
 
-  updateCategory: async (id: string, data: any) => {
+  updateCategory: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/categories/${id}`, {
       method: 'PUT',
       headers: {
@@ -1747,7 +1751,7 @@ export const api = {
     return res.json();
   },
 
-  createCollection: async (data: any) => {
+  createCollection: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/collections`, {
       method: 'POST',
       headers: {
@@ -1759,7 +1763,7 @@ export const api = {
     return res.json();
   },
 
-  updateCollection: async (id: string, data: any) => {
+  updateCollection: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}`, {
       method: 'PUT',
       headers: {
@@ -1788,7 +1792,7 @@ export const api = {
     return res.json();
   },
 
-  createTag: async (data: any) => {
+  createTag: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/tags`, {
       method: 'POST',
       headers: {
@@ -1830,7 +1834,7 @@ export const api = {
     return res.json();
   },
 
-  updateEmailTemplate: async (id: string, data: any) => {
+  updateEmailTemplate: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/email-templates/${id}`, {
       method: 'PUT',
       headers: {
@@ -2085,7 +2089,7 @@ export const api = {
     return res.json();
   },
 
-  createBulkDiscount: async (data: any) => {
+  createBulkDiscount: async (data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/admin/bulk-discounts`,
       {
@@ -2098,7 +2102,7 @@ export const api = {
     return res.json();
   },
 
-  updateBulkDiscount: async (id: string, data: any) => {
+  updateBulkDiscount: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/admin/bulk-discounts/${id}`,
       {
@@ -2131,7 +2135,7 @@ export const api = {
     return res.json();
   },
 
-  createTier: async (data: any) => {
+  createTier: async (data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/admin/tiers/tiers`,
       {
@@ -2144,7 +2148,7 @@ export const api = {
     return res.json();
   },
 
-  updateTier: async (id: string, data: any) => {
+  updateTier: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/admin/tiers/tiers/${id}`,
       {

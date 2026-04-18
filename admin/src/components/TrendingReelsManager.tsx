@@ -28,6 +28,21 @@ interface TrendingReel {
   created_at: string;
 }
 
+interface ProductOptionPrice {
+  amount?: number;
+}
+
+interface ProductOptionVariant {
+  prices?: ProductOptionPrice[];
+}
+
+interface ProductSummary {
+  id: string;
+  title: string;
+  handle: string;
+  variants?: ProductOptionVariant[];
+}
+
 interface ReelFormState {
   productName: string;
   price: string;
@@ -54,7 +69,7 @@ const emptyForm = (): ReelFormState => ({
 
 export default function TrendingReelsManager() {
   const [reels, setReels] = useState<TrendingReel[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<ProductSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -512,13 +527,15 @@ export default function TrendingReelsManager() {
                       onChange={(e) => {
                         const product = products.find((p) => p.id === e.target.value);
                         if (product) {
+                          const firstPrice = product.variants?.[0]?.prices?.[0]?.amount;
                           setForm((cur) => ({
                             ...cur,
                             productName: product.title,
                             linkUrl: `/products/${product.handle}`,
-                            price: product.variants?.[0]?.prices?.[0]
-                              ? `Rs. ${product.variants[0].prices[0].amount / 100}`
-                              : 'Rs. '
+                            price:
+                              typeof firstPrice === 'number'
+                                ? `Rs. ${firstPrice / 100}`
+                                : 'Rs. '
                           }));
                         }
                       }}

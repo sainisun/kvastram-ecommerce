@@ -103,8 +103,8 @@ export default function TierManagementPage() {
       } else {
         setError(result.error || 'Failed to create tier');
       }
-    } catch (err: any) {
-      setError(err?.message || 'An error occurred');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
@@ -126,8 +126,8 @@ export default function TierManagementPage() {
       } else {
         setError(result.error || 'Failed to update tier');
       }
-    } catch (err: any) {
-      setError(err?.message || 'An error occurred');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
@@ -144,8 +144,8 @@ export default function TierManagementPage() {
       await api.deleteWholesaleTier(id);
       setSuccess('Tier deleted successfully');
       fetchTiers();
-    } catch (err: any) {
-      setError(err?.message || 'Failed to delete tier');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete tier');
     }
   };
 

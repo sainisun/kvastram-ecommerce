@@ -7,28 +7,45 @@ import { ArrowLeft, Save, Image as ImageIcon, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 
+export interface PostFormData {
+  id?: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  cover_image: string;
+  status: 'draft' | 'published' | 'archived';
+  seo_title: string;
+  seo_description: string;
+  seo_keywords: string;
+  published_at?: string | null;
+}
+
 interface PostFormProps {
-  initialData?: any;
+  initialData?: PostFormData;
   isEdit?: boolean;
 }
+
+const createEmptyPostForm = (): PostFormData => ({
+  title: '',
+  slug: '',
+  excerpt: '',
+  content: '',
+  cover_image: '',
+  status: 'draft',
+  seo_title: '',
+  seo_description: '',
+  seo_keywords: '',
+  published_at: null,
+});
 
 export default function PostForm({ initialData, isEdit }: PostFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const [formData, setFormData] = useState(
-    initialData || {
-      title: '',
-      slug: '',
-      excerpt: '',
-      content: '',
-      cover_image: '',
-      status: 'draft',
-      seo_title: '',
-      seo_description: '',
-      seo_keywords: '',
-    }
+  const [formData, setFormData] = useState<PostFormData>(
+    initialData ?? createEmptyPostForm()
   );
 
   const handleChange = (
@@ -37,8 +54,10 @@ export default function PostForm({ initialData, isEdit }: PostFormProps) {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => {
-      const updates: any = { [name]: value };
+    setFormData((prev) => {
+      const updates: Partial<PostFormData> = {
+        [name]: value,
+      } as Partial<PostFormData>;
       // Auto-generate slug from title if creating and not manually editing slug
       if (name === 'title' && !isEdit && !prev.slug) {
         updates.slug = value
@@ -58,7 +77,7 @@ export default function PostForm({ initialData, isEdit }: PostFormProps) {
     setUploading(true);
     try {
       const res = await api.uploadImage(file);
-      setFormData((prev: any) => ({ ...prev, cover_image: res.url }));
+      setFormData((prev) => ({ ...prev, cover_image: res.url }));
     } catch (error) {
       console.error(error);
       alert('Upload failed');
@@ -88,8 +107,8 @@ export default function PostForm({ initialData, isEdit }: PostFormProps) {
         await api.createPost(payload);
       }
       router.push('/dashboard/content/posts');
-    } catch (error: any) {
-      alert(error.message || 'Failed to save post');
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : 'Failed to save post');
     } finally {
       setLoading(false);
     }
@@ -139,9 +158,7 @@ export default function PostForm({ initialData, isEdit }: PostFormProps) {
               <label className="block text-sm font-medium mb-1">Content</label>
               <RichTextEditor
                 content={formData.content}
-                onChange={(content) =>
-                  setFormData((prev: any) => ({ ...prev, content }))
-                }
+                onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
                 placeholder="Write your post content here..."
               />
             </div>
@@ -227,9 +244,7 @@ export default function PostForm({ initialData, isEdit }: PostFormProps) {
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    setFormData((prev: any) => ({ ...prev, cover_image: '' }))
-                  }
+                  onClick={() => setFormData((prev) => ({ ...prev, cover_image: '' }))}
                   className="absolute top-2 right-2 bg-white text-red-600 p-1.5 rounded-full shadow hover:bg-red-50"
                 >
                   <Trash2 size={16} />

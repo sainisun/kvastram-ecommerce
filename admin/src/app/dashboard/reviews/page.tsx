@@ -4,15 +4,30 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { Loader2, Star, Check, X, Trash2, Filter } from 'lucide-react';
 
+interface Review {
+  id: string;
+  title?: string | null;
+  content: string;
+  product_id: string;
+  rating: number;
+  author_name: string;
+  created_at: string;
+  status: 'pending' | 'approved' | 'rejected' | string;
+}
+
+interface ReviewsResponse {
+  reviews?: Review[];
+}
+
 export default function ReviewsPage() {
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
 
   const fetchReviews = async () => {
     setLoading(true);
     try {
-      const data = await api.getReviews(50, 0, statusFilter);
+      const data = (await api.getReviews(50, 0, statusFilter)) as ReviewsResponse;
       setReviews(data.reviews || []);
     } catch (error) {
       console.error('Failed to fetch reviews', error);

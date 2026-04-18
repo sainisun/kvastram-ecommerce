@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { ArrowUp, ArrowDown, Eye, EyeOff, Save } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface Category {
   id: string;
@@ -23,7 +22,6 @@ export default function HeaderNavigationPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
 
   const fetchCategories = async () => {
     try {
@@ -107,8 +105,8 @@ export default function HeaderNavigationPage() {
       successMsg.textContent = 'Header navigation saved!';
       document.body.appendChild(successMsg);
       setTimeout(() => successMsg.remove(), 3000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to save order');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to save order');
     } finally {
       setSaving(false);
     }

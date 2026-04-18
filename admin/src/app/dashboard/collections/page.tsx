@@ -111,7 +111,7 @@ export default function CollectionsPage() {
       {/* Clarification Banner */}
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
         <p className="text-sm text-amber-900">
-          <strong>What are Collections?</strong> Collections are editorial or seasonal groupings of products created for marketing campaigns and storytelling. They don't affect navigation but help you organize and promote curated product selections.
+          <strong>What are Collections?</strong> Collections are editorial or seasonal groupings of products created for marketing campaigns and storytelling. They don&apos;t affect navigation but help you organize and promote curated product selections.
         </p>
       </div>
 

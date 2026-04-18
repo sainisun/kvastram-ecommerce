@@ -15,9 +15,21 @@ export default function AdminShell({
 }) {
   const pathname = usePathname();
   const [pendingOrders, setPendingOrders] = useState(0);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerState, setDrawerState] = useState({
+    open: false,
+    pathname,
+  });
 
   const isDashboardRoute = pathname.startsWith('/dashboard');
+  const drawerOpen = drawerState.open && drawerState.pathname === pathname;
+
+  const openDrawer = () => {
+    setDrawerState({ open: true, pathname });
+  };
+
+  const closeDrawer = () => {
+    setDrawerState({ open: false, pathname });
+  };
 
   useEffect(() => {
     if (!isDashboardRoute) return;
@@ -27,51 +39,57 @@ export default function AdminShell({
       try {
         const stats = await api.getOrderStats();
         if (active) setPendingOrders(stats?.pending_orders || 0);
-      } catch { /* non-critical */ }
+      } catch {
+        // Non-critical dashboard badge refresh.
+      }
     };
 
     void load();
     const id = window.setInterval(load, 45_000);
-    return () => { active = false; window.clearInterval(id); };
+    return () => {
+      active = false;
+      window.clearInterval(id);
+    };
   }, [isDashboardRoute, pathname]);
 
-  // Close drawer on route change
-  useEffect(() => { setDrawerOpen(false); }, [pathname]);
-
-  // ESC closes drawer
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setDrawerOpen(false);
+      if (e.key === 'Escape') {
+        setDrawerState((current) =>
+          current.open ? { open: false, pathname } : current
+        );
+      }
     };
+
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [pathname]);
 
   if (!isDashboardRoute) return <>{children}</>;
 
   return (
     <ProtectedRoute>
-      <div data-admin-shell className="min-h-screen bg-[var(--surface)] text-[var(--on-surface)]">
-
-        {/* Drawer overlay */}
+      <div
+        data-admin-shell
+        className="min-h-screen bg-[var(--surface)] text-[var(--on-surface)]"
+      >
         <div
-          onClick={() => setDrawerOpen(false)}
+          onClick={closeDrawer}
           className={`fixed inset-0 z-[60] bg-[var(--primary)]/40 backdrop-blur-sm transition-opacity duration-300 ${
-            drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+            drawerOpen
+              ? 'pointer-events-auto opacity-100'
+              : 'pointer-events-none opacity-0'
           }`}
         />
 
         <Sidebar
           pendingOrders={pendingOrders}
           isOpen={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
+          onClose={closeDrawer}
         />
 
         <div className="relative min-h-screen md:pl-[240px]">
-          <TopHeader
-            pendingOrders={pendingOrders}
-            onMenuOpen={() => setDrawerOpen(true)}
-          />
+          <TopHeader pendingOrders={pendingOrders} onMenuOpen={openDrawer} />
 
           <main className="min-h-screen pb-28 pt-20 md:pb-10 md:pt-[72px]">
             <div className="mx-auto max-w-[1560px] page-fade" key={pathname}>
@@ -83,8 +101,8 @@ export default function AdminShell({
         <MobileBottomTab
           pendingOrders={pendingOrders}
           isDrawerOpen={drawerOpen}
-          onOpenDrawer={() => setDrawerOpen(true)}
-          onCloseDrawer={() => setDrawerOpen(false)}
+          onOpenDrawer={openDrawer}
+          onCloseDrawer={closeDrawer}
         />
       </div>
     </ProtectedRoute>

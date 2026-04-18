@@ -19,7 +19,7 @@ interface AbandonedCart {
   session_id: string | null;
   customer_email: string;
   customer_name: string;
-  items: any[];
+  items: unknown[];
   cart_value: number;
   item_count: number;
   created_at: string;

@@ -1,6 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import {
+  useState,
+  useEffect,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Store,
@@ -21,6 +27,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import type { User as ApiUser } from '@/lib/api';
 
 import { useNotification } from '@/context/notification-context';
 
@@ -31,21 +38,159 @@ const DEFAULT_NAV_LINKS =
 const DEFAULT_QUICK_LINKS =
   '[{"label":"Bestsellers","url":"/products?tag=bestseller","order":1},{"label":"New Arrivals","url":"/products?tag=new","order":2},{"label":"Collections","url":"/collections","order":3},{"label":"Sale","url":"/sale","order":4,"highlight":true}]';
 
+interface ShippingOriginAddress {
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  pincode?: string;
+}
+
+interface ShippingZone {
+  id: string;
+  name: string;
+  countries: string;
+  standard_rate?: number | null;
+  express_rate?: number | null;
+  rate?: number | null;
+  free_threshold?: number | null;
+}
+
+interface TierFormData {
+  name: string;
+  slug: string;
+  discount_percent: number;
+  min_order_value: number;
+  min_order_quantity: number;
+  payment_terms: string;
+  color: string;
+  priority: number;
+  is_active: boolean;
+}
+
+interface TierRecord extends TierFormData {
+  id: string;
+}
+
+type SettingValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ShippingOriginAddress
+  | ShippingZone[];
+
+interface SettingsState {
+  [key: string]: SettingValue;
+  announcement_bar_enabled?: boolean;
+  announcement_bar_text?: string | null;
+  brand_story_content?: string | null;
+  brand_story_image?: string | null;
+  brand_story_title?: string | null;
+  contact_email?: string | null;
+  domestic_shipping_rate?: number | null;
+  email_abandoned_cart?: boolean;
+  email_abandoned_cart_hours?: number | null;
+  email_notify_delivery?: boolean;
+  email_notify_order_confirm?: boolean;
+  email_notify_payment?: boolean;
+  email_notify_shipping?: boolean;
+  email_reply_to?: string | null;
+  email_review_request?: boolean;
+  email_review_request_days?: number | null;
+  featured_product_ids?: string | null;
+  from_email?: string | null;
+  from_name?: string | null;
+  hero_cta_link?: string | null;
+  hero_cta_text?: string | null;
+  hero_image?: string | null;
+  hero_subtitle?: string | null;
+  hero_title?: string | null;
+  international_shipping_rate?: number | null;
+  nav_links?: string | null;
+  newsletter_subtitle?: string | null;
+  newsletter_title?: string | null;
+  notify_low_stock?: boolean;
+  notify_orders?: boolean;
+  phone_number?: string | null;
+  quick_links?: string | null;
+  shipping_countries?: string | null;
+  shipping_free_applies_to?: string | null;
+  shipping_free_enabled?: boolean;
+  shipping_free_min_value?: number | null;
+  shipping_origin_address?: ShippingOriginAddress;
+  shipping_zones?: ShippingZone[];
+  smtp_host?: string | null;
+  smtp_pass?: string | null;
+  smtp_port?: string | null;
+  smtp_user?: string | null;
+  store_address?: string | null;
+  store_description?: string | null;
+  store_email?: string | null;
+  store_logo_url?: string | null;
+  store_name?: string | null;
+  store_phone?: string | null;
+  stripe_publishable_key?: string | null;
+  stripe_secret_key?: string | null;
+  tax_rate?: number | null;
+}
+
+interface SettingArrayEntry {
+  key: string;
+  value: SettingValue;
+}
+
+interface SettingsResponse {
+  settings?:
+    | SettingArrayEntry[]
+    | Record<string, Record<string, SettingValue> | null | undefined>;
+}
+
+type NotificationFn = (
+  type: 'success' | 'error' | 'info' | 'warning',
+  message: string,
+  duration?: number
+) => void;
+
+const EMAIL_NOTIFICATION_ITEMS = [
+  {
+    key: 'email_notify_order_confirm',
+    label: 'Order Confirmation',
+    desc: 'Send email when a new order is placed',
+  },
+  {
+    key: 'email_notify_payment',
+    label: 'Payment Received',
+    desc: 'Send email when payment is confirmed',
+  },
+  {
+    key: 'email_notify_shipping',
+    label: 'Shipping Update',
+    desc: 'Send email when order is shipped with tracking info',
+  },
+  {
+    key: 'email_notify_delivery',
+    label: 'Delivery Confirmed',
+    desc: 'Send email when order is marked as delivered',
+  },
+] as const;
+
 export default function SettingsPage() {
   const router = useRouter();
   const { showNotification } = useNotification();
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [settings, setSettings] = useState<any>({});
-  const [user, setUser] = useState<any>(null);
+  const [settings, setSettings] = useState<SettingsState>({});
+  const [user, setUser] = useState<ApiUser | null>(null);
 
   // Tiers State
-  const [tiers, setTiers] = useState<any[]>([]);
+  const [tiers, setTiers] = useState<TierRecord[]>([]);
   const [tiersLoading, setTiersLoading] = useState(false);
   const [showTierForm, setShowTierForm] = useState(false);
   const [editingTierId, setEditingTierId] = useState<string | null>(null);
-  const [tierFormData, setTierFormData] = useState({
+  const [tierFormData, setTierFormData] = useState<TierFormData>({
     name: '',
     slug: '',
     discount_percent: 0,
@@ -94,17 +239,18 @@ export default function SettingsPage() {
       ]);
 
       // Flatten settings - handle both array and object formats
-      const flatSettings: any = {};
-      if (settingsData?.settings) {
+      const flatSettings: SettingsState = {};
+      const settingsPayload = (settingsData as SettingsResponse | null)?.settings;
+      if (settingsPayload) {
         // Backend returns array: [{ key, value, category }, ...]
-        if (Array.isArray(settingsData.settings)) {
-          settingsData.settings.forEach((setting: any) => {
+        if (Array.isArray(settingsPayload)) {
+          settingsPayload.forEach((setting) => {
             flatSettings[setting.key] = setting.value;
           });
         }
         // Backend returns object: { category: { key: value } }
-        else if (typeof settingsData.settings === 'object') {
-          Object.values(settingsData.settings).forEach((category: any) => {
+        else if (typeof settingsPayload === 'object') {
+          Object.values(settingsPayload).forEach((category) => {
             if (category && typeof category === 'object') {
               Object.entries(category).forEach(([key, value]) => {
                 flatSettings[key] = value;
@@ -135,8 +281,11 @@ export default function SettingsPage() {
     }
   };
 
-  const handleChange = (key: string, value: any) => {
-    setSettings((prev: any) => ({ ...prev, [key]: value }));
+  const handleChange = <K extends keyof SettingsState>(
+    key: K,
+    value: SettingsState[K]
+  ) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSave = async () => {
@@ -168,7 +317,7 @@ export default function SettingsPage() {
         'payment'
       );
 
-      setSettings((prev: any) => ({
+      setSettings((prev) => ({
         ...prev,
         stripe_publishable_key: stripeKeys.publishable,
         stripe_secret_key: stripeKeys.secret,
@@ -336,6 +485,11 @@ export default function SettingsPage() {
     { id: 'shipping', label: 'Shipping', icon: Truck },
     { id: 'tiers', label: 'Tiers', icon: Layers },
   ];
+
+  const shippingOrigin = settings.shipping_origin_address ?? {};
+  const shippingZones = Array.isArray(settings.shipping_zones)
+    ? settings.shipping_zones
+    : [];
 
   if (loading) {
     return (
@@ -646,18 +800,18 @@ export default function SettingsPage() {
                     respective pages.
                   </p>
                   <div className="flex gap-4">
-                    <a
+                    <Link
                       href="/dashboard/categories"
                       className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-blue-700"
                     >
                       Manage Categories
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                       href="/dashboard/collections"
                       className="px-4 py-2 bg-gray-200 text-[var(--on-surface-variant)] rounded-lg hover:bg-gray-300"
                     >
                       Manage Collections
-                    </a>
+                    </Link>
                   </div>
                 </div>
 
@@ -799,12 +953,12 @@ export default function SettingsPage() {
                       </p>
                     </div>
                     <div className="flex gap-4">
-                      <a
+                      <Link
                         href="/dashboard/products"
                         className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-blue-700"
                       >
                         Browse Products
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -883,7 +1037,7 @@ export default function SettingsPage() {
                         className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                       />
                       <p className="text-xs text-[var(--on-surface-variant)] mt-1">
-                        Valid JSON required. Use "highlight":true for
+                        Valid JSON required. Use &quot;highlight&quot;:true for
                         Sale/featured links.
                       </p>
                       <button
@@ -1504,28 +1658,7 @@ export default function SettingsPage() {
                     </p>
 
                     <div className="space-y-3">
-                      {[
-                        {
-                          key: 'email_notify_order_confirm',
-                          label: 'Order Confirmation',
-                          desc: 'Send email when a new order is placed',
-                        },
-                        {
-                          key: 'email_notify_payment',
-                          label: 'Payment Received',
-                          desc: 'Send email when payment is confirmed',
-                        },
-                        {
-                          key: 'email_notify_shipping',
-                          label: 'Shipping Update',
-                          desc: 'Send email when order is shipped with tracking info',
-                        },
-                        {
-                          key: 'email_notify_delivery',
-                          label: 'Delivery Confirmed',
-                          desc: 'Send email when order is marked as delivered',
-                        },
-                      ].map((item) => (
+                      {EMAIL_NOTIFICATION_ITEMS.map((item) => (
                         <div
                           key={item.key}
                           className="flex items-center justify-between bg-gray-50 rounded-lg p-4"
@@ -1541,18 +1674,18 @@ export default function SettingsPage() {
                             onClick={() =>
                               handleChange(
                                 item.key,
-                                !(settings as any)[item.key]
+                                !settings[item.key]
                               )
                             }
                             className={`relative w-12 h-6 rounded-full transition-colors ${
-                              (settings as any)[item.key]
+                              settings[item.key]
                                 ? 'bg-[var(--surface-container-low)]0'
                                 : 'bg-gray-300'
                             }`}
                           >
                             <span
                               className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform shadow ${
-                                (settings as any)[item.key]
+                                settings[item.key]
                                   ? 'translate-x-6'
                                   : ''
                               }`}
@@ -1716,14 +1849,10 @@ export default function SettingsPage() {
                       </label>
                       <input
                         type="text"
-                        value={
-                          (settings.shipping_origin_address as any)?.address ||
-                          ''
-                        }
+                        value={shippingOrigin.address || ''}
                         onChange={(e) =>
                           handleChange('shipping_origin_address', {
-                            ...((settings.shipping_origin_address as any) ||
-                              {}),
+                            ...shippingOrigin,
                             address: e.target.value,
                           })
                         }
@@ -1737,13 +1866,10 @@ export default function SettingsPage() {
                       </label>
                       <input
                         type="text"
-                        value={
-                          (settings.shipping_origin_address as any)?.city || ''
-                        }
+                        value={shippingOrigin.city || ''}
                         onChange={(e) =>
                           handleChange('shipping_origin_address', {
-                            ...((settings.shipping_origin_address as any) ||
-                              {}),
+                            ...shippingOrigin,
                             city: e.target.value,
                           })
                         }
@@ -1757,13 +1883,10 @@ export default function SettingsPage() {
                       </label>
                       <input
                         type="text"
-                        value={
-                          (settings.shipping_origin_address as any)?.state || ''
-                        }
+                        value={shippingOrigin.state || ''}
                         onChange={(e) =>
                           handleChange('shipping_origin_address', {
-                            ...((settings.shipping_origin_address as any) ||
-                              {}),
+                            ...shippingOrigin,
                             state: e.target.value,
                           })
                         }
@@ -1777,14 +1900,10 @@ export default function SettingsPage() {
                       </label>
                       <input
                         type="text"
-                        value={
-                          (settings.shipping_origin_address as any)?.country ||
-                          ''
-                        }
+                        value={shippingOrigin.country || ''}
                         onChange={(e) =>
                           handleChange('shipping_origin_address', {
-                            ...((settings.shipping_origin_address as any) ||
-                              {}),
+                            ...shippingOrigin,
                             country: e.target.value,
                           })
                         }
@@ -1798,14 +1917,10 @@ export default function SettingsPage() {
                       </label>
                       <input
                         type="text"
-                        value={
-                          (settings.shipping_origin_address as any)?.pincode ||
-                          ''
-                        }
+                        value={shippingOrigin.pincode || ''}
                         onChange={(e) =>
                           handleChange('shipping_origin_address', {
-                            ...((settings.shipping_origin_address as any) ||
-                              {}),
+                            ...shippingOrigin,
                             pincode: e.target.value,
                           })
                         }
@@ -1992,9 +2107,7 @@ export default function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        const zones = Array.isArray(settings.shipping_zones)
-                          ? [...(settings.shipping_zones as any[])]
-                          : [];
+                        const zones = [...shippingZones];
                         zones.push({
                           id: Date.now().toString(),
                           name: '',
@@ -2010,8 +2123,7 @@ export default function SettingsPage() {
                     </button>
                   </div>
 
-                  {Array.isArray(settings.shipping_zones) &&
-                  (settings.shipping_zones as any[]).length > 0 ? (
+                  {shippingZones.length > 0 ? (
                     <div className="border border-[var(--surface-container-low)] rounded-lg overflow-hidden">
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
@@ -2034,17 +2146,14 @@ export default function SettingsPage() {
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                          {(settings.shipping_zones as any[]).map(
-                            (zone: any, index: number) => (
+                          {shippingZones.map((zone, index) => (
                               <tr key={zone.id || index}>
                                 <td className="px-4 py-2">
                                   <input
                                     type="text"
                                     value={zone.name || ''}
                                     onChange={(e) => {
-                                      const zones = [
-                                        ...(settings.shipping_zones as any[]),
-                                      ];
+                                      const zones = [...shippingZones];
                                       zones[index] = {
                                         ...zones[index],
                                         name: e.target.value,
@@ -2060,9 +2169,7 @@ export default function SettingsPage() {
                                     type="text"
                                     value={zone.countries || ''}
                                     onChange={(e) => {
-                                      const zones = [
-                                        ...(settings.shipping_zones as any[]),
-                                      ];
+                                      const zones = [...shippingZones];
                                       zones[index] = {
                                         ...zones[index],
                                         countries: e.target.value,
@@ -2078,9 +2185,7 @@ export default function SettingsPage() {
                                     type="number"
                                     value={zone.standard_rate || 0}
                                     onChange={(e) => {
-                                      const zones = [
-                                        ...(settings.shipping_zones as any[]),
-                                      ];
+                                      const zones = [...shippingZones];
                                       zones[index] = {
                                         ...zones[index],
                                         standard_rate: Number.parseFloat(
@@ -2097,9 +2202,7 @@ export default function SettingsPage() {
                                     type="number"
                                     value={zone.express_rate || 0}
                                     onChange={(e) => {
-                                      const zones = [
-                                        ...(settings.shipping_zones as any[]),
-                                      ];
+                                      const zones = [...shippingZones];
                                       zones[index] = {
                                         ...zones[index],
                                         express_rate: Number.parseFloat(
@@ -2115,10 +2218,8 @@ export default function SettingsPage() {
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      const zones = (
-                                        settings.shipping_zones as any[]
-                                      ).filter(
-                                        (_: any, i: number) => i !== index
+                                      const zones = shippingZones.filter(
+                                        (_, i) => i !== index
                                       );
                                       handleChange('shipping_zones', zones);
                                     }}
@@ -2128,8 +2229,7 @@ export default function SettingsPage() {
                                   </button>
                                 </td>
                               </tr>
-                            )
-                          )}
+                            ))}
                         </tbody>
                       </table>
                     </div>
@@ -2420,6 +2520,20 @@ export default function SettingsPage() {
 }
 
 // --- Tiers Tab Component ---
+interface TiersTabContentProps {
+  tiers: TierRecord[];
+  setTiers: Dispatch<SetStateAction<TierRecord[]>>;
+  tiersLoading: boolean;
+  setTiersLoading: Dispatch<SetStateAction<boolean>>;
+  showTierForm: boolean;
+  setShowTierForm: Dispatch<SetStateAction<boolean>>;
+  editingTierId: string | null;
+  setEditingTierId: Dispatch<SetStateAction<string | null>>;
+  tierFormData: TierFormData;
+  setTierFormData: Dispatch<SetStateAction<TierFormData>>;
+  showNotification: NotificationFn;
+}
+
 function TiersTabContent({
   tiers,
   setTiers,
@@ -2432,7 +2546,7 @@ function TiersTabContent({
   tierFormData,
   setTierFormData,
   showNotification,
-}: any) {
+}: TiersTabContentProps) {
   const defaultFormData = {
     name: '',
     slug: '',
@@ -2475,12 +2589,15 @@ function TiersTabContent({
       setEditingTierId(null);
       setTierFormData(defaultFormData);
       fetchTiers();
-    } catch (error: any) {
-      showNotification('error', error.message || 'Failed to save tier');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to save tier'
+      );
     }
   };
 
-  const handleEditTier = (tier: any) => {
+  const handleEditTier = (tier: TierRecord) => {
     setTierFormData({
       name: tier.name || '',
       slug: tier.slug || '',
@@ -2502,8 +2619,11 @@ function TiersTabContent({
       await api.deleteTier(id);
       showNotification('success', 'Tier deleted');
       fetchTiers();
-    } catch (error: any) {
-      showNotification('error', error.message || 'Failed to delete tier');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to delete tier'
+      );
     }
   };
 
@@ -2778,7 +2898,7 @@ function TiersTabContent({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {tiers.map((tier: any) => (
+              {tiers.map((tier) => (
                 <tr key={tier.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">

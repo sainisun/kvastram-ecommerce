@@ -23,7 +23,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 // Debug logging helper
-const debugLog = (message: string, data?: any) => {
+const debugLog = (message: string, data?: unknown) => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`[Auth DEBUG] ${message}`, data || '');
   }
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           debugLog('Auth state restored from API');
         }
       })
-      .catch((err) => {
+      .catch(() => {
         debugLog('Not authenticated or session expired');
         setUser(null);
       })
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     debugLog('Logging out user');
     try {
       await api.logout();
-    } catch (err) {
+    } catch {
       debugLog('Logout API call failed, clearing local state anyway');
     }
     setUser(null);

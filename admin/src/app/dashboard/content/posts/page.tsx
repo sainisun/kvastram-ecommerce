@@ -4,12 +4,17 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { Plus, Trash2, Edit2, FileText } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import type { PostFormData } from '@/components/PostForm';
+
+type PostListItem = PostFormData & { id: string };
+
+interface PostsResponse {
+  posts: PostListItem[];
+}
 
 export default function PostsPage() {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<PostListItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     loadPosts();
@@ -17,14 +22,14 @@ export default function PostsPage() {
 
   const loadPosts = async () => {
     try {
-      const data = await api.getPosts();
+      const data = (await api.getPosts()) as PostsResponse;
       if (data && Array.isArray(data.posts)) {
         setPosts(data.posts);
       } else {
         console.error('Unexpected response shape from getPosts:', data);
         setPosts([]);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to load posts:', error);
       setPosts([]);
     } finally {
@@ -37,7 +42,7 @@ export default function PostsPage() {
     try {
       await api.deletePost(id);
       loadPosts(); // Reload list
-    } catch (error) {
+    } catch {
       alert('Failed to delete post');
     }
   };

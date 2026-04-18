@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useRef, useState, ReactNode } from 'react';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 interface Notification {
@@ -24,14 +24,23 @@ const NotificationContext = createContext<NotificationContextType | undefined>(
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const notificationSequence = useRef(0);
+
+  const createNotificationId = () => {
+    if (typeof globalThis.crypto?.randomUUID === 'function') {
+      return globalThis.crypto.randomUUID();
+    }
+
+    notificationSequence.current += 1;
+    return `notification-${notificationSequence.current}`;
+  };
 
   const showNotification = (
     type: Notification['type'],
     message: string,
     duration = 3000
   ) => {
-    const id =
-      globalThis.crypto?.randomUUID?.() ?? `notification-${Date.now()}`;
+    const id = createNotificationId();
     const newNotification = { id, type, message, duration };
 
     setNotifications((prev) => [...prev, newNotification]);

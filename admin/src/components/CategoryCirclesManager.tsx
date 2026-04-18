@@ -25,6 +25,12 @@ interface CategoryCircle {
   created_at: string;
 }
 
+interface CollectionSummary {
+  id: string;
+  title: string;
+  handle: string;
+}
+
 interface CircleFormState {
   label: string;
   linkUrl: string;
@@ -45,7 +51,7 @@ const emptyForm = (): CircleFormState => ({
 
 export default function CategoryCirclesManager() {
   const [circles, setCircles] = useState<CategoryCircle[]>([]);
-  const [collections, setCollections] = useState<any[]>([]);
+  const [collections, setCollections] = useState<CollectionSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);

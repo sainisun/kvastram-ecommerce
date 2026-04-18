@@ -133,7 +133,7 @@ export default function BackInStockPage() {
 
       {/* How it works info */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-sm text-blue-800">
-        <strong>🤖 Auto-Notify:</strong> When you update a product's inventory
+        <strong>Auto-Notify:</strong> When you update a product&apos;s inventory
         above 0 in the Products section, all pending subscribers are{' '}
         <strong>automatically emailed</strong> and marked as notified.
       </div>

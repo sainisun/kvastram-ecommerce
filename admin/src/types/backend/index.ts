@@ -52,5 +52,5 @@ export interface Order {
   payment_status: 'not_paid' | 'paid';
   fulfillment_status: 'not_fulfilled' | 'fulfilled';
   created_at: string;
-  metadata?: Record<string, any> | null;
+  metadata?: Record<string, unknown> | null;
 }

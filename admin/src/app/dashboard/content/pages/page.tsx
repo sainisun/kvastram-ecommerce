@@ -4,9 +4,16 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { Plus, Trash2, Edit2, FileText } from 'lucide-react';
+import type { PageFormData } from '@/components/PageForm';
+
+type PageListItem = PageFormData & { id: string };
+
+interface PagesResponse {
+  pages: PageListItem[];
+}
 
 export default function PagesPage() {
-  const [pages, setPages] = useState<any[]>([]);
+  const [pages, setPages] = useState<PageListItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,14 +22,14 @@ export default function PagesPage() {
 
   const loadPages = async () => {
     try {
-      const data = await api.getPages();
+      const data = (await api.getPages()) as PagesResponse;
       if (data && Array.isArray(data.pages)) {
         setPages(data.pages);
       } else {
         console.error('Unexpected response shape from getPages:', data);
         setPages([]);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to load pages:', error);
       setPages([]);
     } finally {
@@ -35,7 +42,7 @@ export default function PagesPage() {
     try {
       await api.deletePage(id);
       loadPages();
-    } catch (error) {
+    } catch {
       alert('Failed to delete page');
     }
   };

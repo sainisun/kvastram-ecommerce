@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { Edit2, Save, X, Plus, Trash2, FileDown, Eye, EyeOff } from 'lucide-react';
+import { Edit2, Save, X, Eye, EyeOff } from 'lucide-react';
 
 interface WholesalePage {
   id: string;
@@ -16,23 +16,29 @@ interface WholesalePage {
   is_published: boolean;
 }
 
+interface WholesalePageWithSlug extends WholesalePage {
+  slug: string;
+}
+
+interface PagesResponse {
+  pages?: WholesalePageWithSlug[];
+}
+
 export default function WholesalePageManagerPage() {
   const [page, setPage] = useState<WholesalePage | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState('');
-  const [previewTitle, setPreviewTitle] = useState('');
 
   const fetchPage = async () => {
     try {
-      const data = await api.getPages();
+      const data = (await api.getPages()) as PagesResponse;
       const wholesalePage = data?.pages?.find(
-        (p: any) => p.slug === 'wholesale'
+        (p) => p.slug === 'wholesale'
       );
       if (wholesalePage) {
         setPage(wholesalePage);
-        setPreviewTitle(wholesalePage.title);
       }
     } catch (error) {
       console.error('Failed to fetch page:', error);
@@ -60,8 +66,8 @@ export default function WholesalePageManagerPage() {
       successMsg.textContent = 'Wholesale page saved!';
       document.body.appendChild(successMsg);
       setTimeout(() => successMsg.remove(), 3000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to save page');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to save page');
     } finally {
       setSaving(false);
     }
@@ -86,8 +92,8 @@ export default function WholesalePageManagerPage() {
         : 'Page unpublished!';
       document.body.appendChild(successMsg);
       setTimeout(() => successMsg.remove(), 3000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to update page');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to update page');
     } finally {
       setSaving(false);
     }

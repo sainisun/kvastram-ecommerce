@@ -7,24 +7,36 @@ import { ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 
+export interface PageFormData {
+  id?: string;
+  title: string;
+  slug: string;
+  content: string;
+  is_visible: boolean;
+  seo_title: string;
+  seo_description: string;
+}
+
 interface PageFormProps {
-  initialData?: any;
+  initialData?: PageFormData;
   isEdit?: boolean;
 }
+
+const createEmptyPageForm = (): PageFormData => ({
+  title: '',
+  slug: '',
+  content: '',
+  is_visible: true,
+  seo_title: '',
+  seo_description: '',
+});
 
 export default function PageForm({ initialData, isEdit }: PageFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState(
-    initialData || {
-      title: '',
-      slug: '',
-      content: '',
-      is_visible: true,
-      seo_title: '',
-      seo_description: '',
-    }
+  const [formData, setFormData] = useState<PageFormData>(
+    initialData ?? createEmptyPageForm()
   );
 
   const handleChange = (
@@ -33,8 +45,10 @@ export default function PageForm({ initialData, isEdit }: PageFormProps) {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => {
-      const updates: any = { [name]: value };
+    setFormData((prev) => {
+      const updates: Partial<PageFormData> = {
+        [name]: value,
+      } as Partial<PageFormData>;
       if (name === 'title' && !isEdit && !prev.slug) {
         updates.slug = value
           .toLowerCase()
@@ -61,8 +75,8 @@ export default function PageForm({ initialData, isEdit }: PageFormProps) {
         await api.createPage(formData);
       }
       router.push('/dashboard/content/pages');
-    } catch (error: any) {
-      alert(error.message || 'Failed to save page');
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : 'Failed to save page');
     } finally {
       setLoading(false);
     }
@@ -111,9 +125,7 @@ export default function PageForm({ initialData, isEdit }: PageFormProps) {
               <label className="block text-sm font-medium mb-1">Content</label>
               <RichTextEditor
                 content={formData.content}
-                onChange={(content) =>
-                  setFormData((prev: any) => ({ ...prev, content }))
-                }
+                onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
                 placeholder="Write your page content here..."
               />
             </div>

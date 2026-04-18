@@ -4,11 +4,16 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import CategoryForm from '@/components/CategoryForm';
+import type { Category } from '@/components/CategoryForm';
+
+interface CategoryResponse {
+  category: Category;
+}
 
 export default function EditCategoryPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [category, setCategory] = useState<any>(null);
+  const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -17,7 +22,7 @@ export default function EditCategoryPage() {
 
     const fetchCategory = async () => {
       try {
-        const data = await api.getCategory(id as string);
+        const data = (await api.getCategory(id as string)) as CategoryResponse;
         setCategory(data.category);
       } catch (err) {
         console.error(err);

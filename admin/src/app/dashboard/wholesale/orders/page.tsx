@@ -10,9 +10,14 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
-  Search,
-  Filter,
 } from 'lucide-react';
+
+interface WholesaleOrderMetadata {
+  wholesale_tier?: string;
+  po_number?: string;
+  payment_terms?: string;
+  tier_discount?: number;
+}
 
 interface WholesaleOrder {
   id: string;
@@ -23,7 +28,7 @@ interface WholesaleOrder {
   total: number;
   currency_code: string;
   created_at: string;
-  metadata: any;
+  metadata: WholesaleOrderMetadata | null;
   customer: {
     id: string;
     email: string;
@@ -51,10 +56,6 @@ export default function WholesaleOrdersPage() {
     total: 0,
     pages: 1,
   });
-  const [selectedOrder, setSelectedOrder] = useState<WholesaleOrder | null>(
-    null
-  );
-
   useEffect(() => {
     fetchOrders();
   }, [statusFilter, page]);
@@ -308,7 +309,7 @@ export default function WholesaleOrdersPage() {
                     <div className="text-sm font-medium text-gray-900">
                       {formatCurrency(order.total, order.currency_code)}
                     </div>
-                    {order.metadata?.tier_discount > 0 && (
+                    {(order.metadata?.tier_discount ?? 0) > 0 && (
                       <div className="text-xs text-green-600">
                         Tier discount applied
                       </div>

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { Plus, Trash2, Tag as TagIcon, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface Tag {
   id: string;
@@ -17,7 +16,6 @@ export default function TagsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [newTagName, setNewTagName] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
 
   const fetchTags = async () => {
     try {
@@ -50,8 +48,8 @@ export default function TagsPage() {
       setNewTagName('');
       setIsCreating(false);
       fetchTags();
-    } catch (err: any) {
-      setError(err.message || 'Failed to create tag');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to create tag');
     }
   };
 
@@ -61,8 +59,8 @@ export default function TagsPage() {
     try {
       await api.deleteTag(id);
       fetchTags();
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete tag');
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Failed to delete tag');
     }
   };
 

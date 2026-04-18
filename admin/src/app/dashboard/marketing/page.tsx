@@ -1,6 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import {
   Megaphone,
   Mail,
@@ -17,28 +23,136 @@ import {
   Loader2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
+
+interface MarketingCampaign {
+  id: string;
+  name: string;
+  description?: string | null;
+  status: string;
+  type?: string | null;
+  start_date?: string | null;
+  created_at?: string | null;
+  customers_reached?: number | null;
+  conversions?: number | null;
+  revenue?: number | null;
+}
+
+interface DiscountCode {
+  id: string;
+  code: string;
+  campaign_id?: string | null;
+  type?: string | null;
+  value: string | number;
+  is_active: boolean;
+  usage_count?: number | null;
+  usage_limit?: string | number | null;
+  starts_at?: string | null;
+  ends_at?: string | null;
+}
+
+interface BulkDiscount {
+  id: string;
+  product_id?: string | null;
+  product_title?: string | null;
+  min_quantity: number;
+  discount_percent: number;
+  description?: string | null;
+  active: boolean;
+}
+
+interface ProductSummary {
+  id: string;
+  title: string;
+}
+
+interface MarketingFormData {
+  name?: string;
+  description?: string;
+  code?: string;
+  campaign_id?: string;
+  type?: string;
+  value?: string;
+  usage_limit?: string;
+  starts_at?: string;
+  ends_at?: string;
+}
+
+interface CampaignsResponse {
+  campaigns?: MarketingCampaign[];
+}
+
+interface DiscountsResponse {
+  discounts?: DiscountCode[];
+}
+
+interface BulkDiscountsResponse {
+  bulk_discounts?: BulkDiscount[];
+}
+
+interface ProductsResponse {
+  products?: ProductSummary[];
+  data?: ProductSummary[];
+}
+
+interface BlastResponse {
+  message?: string;
+}
+
+interface BulkDiscountFormState {
+  product_id: string | null;
+  min_quantity: number;
+  discount_percent: number;
+  description: string;
+  active: boolean;
+}
+
+interface BulkDiscountsTabContentProps {
+  bulkDiscounts: BulkDiscount[];
+  setBulkDiscounts: Dispatch<SetStateAction<BulkDiscount[]>>;
+  bulkDiscountsLoading: boolean;
+  setBulkDiscountsLoading: Dispatch<SetStateAction<boolean>>;
+  showBulkDiscountForm: boolean;
+  setShowBulkDiscountForm: Dispatch<SetStateAction<boolean>>;
+  editingBulkDiscount: BulkDiscount | null;
+  setEditingBulkDiscount: Dispatch<SetStateAction<BulkDiscount | null>>;
+  products: ProductSummary[];
+  setProducts: Dispatch<SetStateAction<ProductSummary[]>>;
+  bulkDiscountForm: BulkDiscountFormState;
+  setBulkDiscountForm: Dispatch<SetStateAction<BulkDiscountFormState>>;
+}
+
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return fallback;
+};
 export default function MarketingPage() {
   const [activeTab, setActiveTab] = useState('campaigns');
   const [loading, setLoading] = useState(true);
-  const [campaigns, setCampaigns] = useState<any[]>([]);
-  const [discounts, setDiscounts] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<MarketingCampaign[]>([]);
+  const [discounts, setDiscounts] = useState<DiscountCode[]>([]);
 
   // Modal states
   const [showCampaignModal, setShowCampaignModal] = useState(false);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [showEditCampaignModal, setShowEditCampaignModal] = useState(false);
   const [showEditDiscountModal, setShowEditDiscountModal] = useState(false);
-  const [formData, setFormData] = useState<any>({});
-  const [editingCampaign, setEditingCampaign] = useState<any>(null);
-  const [editingDiscount, setEditingDiscount] = useState<any>(null);
+  const [formData, setFormData] = useState<MarketingFormData>({});
+  const [editingCampaign, setEditingCampaign] =
+    useState<MarketingCampaign | null>(null);
+  const [editingDiscount, setEditingDiscount] =
+    useState<DiscountCode | null>(null);
 
   // Bulk Discounts state
-  const [bulkDiscounts, setBulkDiscounts] = useState<any[]>([]);
+  const [bulkDiscounts, setBulkDiscounts] = useState<BulkDiscount[]>([]);
   const [bulkDiscountsLoading, setBulkDiscountsLoading] = useState(false);
   const [showBulkDiscountForm, setShowBulkDiscountForm] = useState(false);
-  const [editingBulkDiscount, setEditingBulkDiscount] = useState<any>(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [bulkDiscountForm, setBulkDiscountForm] = useState({
+  const [editingBulkDiscount, setEditingBulkDiscount] =
+    useState<BulkDiscount | null>(null);
+  const [products, setProducts] = useState<ProductSummary[]>([]);
+  const [bulkDiscountForm, setBulkDiscountForm] = useState<BulkDiscountFormState>({
     product_id: '' as string | null,
     min_quantity: 1,
     discount_percent: 5,
@@ -49,7 +163,8 @@ export default function MarketingPage() {
   // Blast Modal
   const [showBlastModal, setShowBlastModal] = useState(false);
   const [blastLoading, setBlastLoading] = useState(false);
-  const [selectedBlastCampaign, setSelectedBlastCampaign] = useState<any>(null);
+  const [selectedBlastCampaign, setSelectedBlastCampaign] =
+    useState<MarketingCampaign | null>(null);
   const [blastMsg, setBlastMsg] = useState<string | null>(null);
   const [blastForm, setBlastForm] = useState({
     subject: '',
@@ -59,25 +174,33 @@ export default function MarketingPage() {
     cta_url: '/',
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [campaignsData, discountsData] = await Promise.all([
         api.getCampaigns(),
         api.getDiscounts(),
       ]);
-      setCampaigns(campaignsData?.campaigns || []);
-      setDiscounts(discountsData?.discounts || []);
+      setCampaigns(
+        ((campaignsData as CampaignsResponse | null)?.campaigns ?? []).filter(
+          Boolean
+        )
+      );
+      setDiscounts(
+        ((discountsData as DiscountsResponse | null)?.discounts ?? []).filter(
+          Boolean
+        )
+      );
     } catch (error) {
       console.error('Error fetching marketing data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void fetchData();
+  }, [fetchData]);
 
   const handleCreateCampaign = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -90,7 +213,7 @@ export default function MarketingPage() {
       });
       setShowCampaignModal(false);
       setFormData({});
-      fetchData();
+      void fetchData();
     } catch (error) {
       console.error('Error creating campaign:', error);
       alert('Failed to create campaign');
@@ -102,7 +225,7 @@ export default function MarketingPage() {
 
     try {
       await api.deleteCampaign(id);
-      fetchData();
+      void fetchData();
     } catch (error) {
       console.error('Error deleting campaign:', error);
       alert('Failed to delete campaign');
@@ -122,7 +245,7 @@ export default function MarketingPage() {
       });
       setShowEditCampaignModal(false);
       setEditingCampaign(null);
-      fetchData();
+      void fetchData();
     } catch (error) {
       console.error('Error updating campaign:', error);
       alert('Failed to update campaign');
@@ -137,10 +260,10 @@ export default function MarketingPage() {
       await api.updateDiscount(editingDiscount.id, {
         code: editingDiscount.code,
         type: editingDiscount.type,
-        value: Number.parseInt(editingDiscount.value),
+        value: Number.parseInt(String(editingDiscount.value), 10),
         is_active: editingDiscount.is_active,
         usage_limit: editingDiscount.usage_limit
-          ? Number.parseInt(editingDiscount.usage_limit)
+          ? Number.parseInt(String(editingDiscount.usage_limit), 10)
           : null,
         starts_at: editingDiscount.starts_at
           ? new Date(editingDiscount.starts_at).toISOString()
@@ -151,14 +274,10 @@ export default function MarketingPage() {
       });
       setShowEditDiscountModal(false);
       setEditingDiscount(null);
-      fetchData();
-    } catch (error: any) {
+      void fetchData();
+    } catch (error: unknown) {
       console.error('Error updating discount:', error);
-      const msg =
-        error.response?.details?.[0]?.message ||
-        error.message ||
-        'Failed to update discount';
-      alert(msg);
+      alert(getErrorMessage(error, 'Failed to update discount'));
     }
   };
 
@@ -168,9 +287,9 @@ export default function MarketingPage() {
     try {
       await api.createDiscount({
         ...formData,
-        value: Number.parseInt(formData.value),
+        value: Number.parseInt(formData.value ?? '0', 10),
         usage_limit: formData.usage_limit
-          ? Number.parseInt(formData.usage_limit)
+          ? Number.parseInt(formData.usage_limit, 10)
           : null,
         is_active: true,
         starts_at: formData.starts_at
@@ -182,14 +301,10 @@ export default function MarketingPage() {
       });
       setShowDiscountModal(false);
       setFormData({});
-      fetchData();
-    } catch (error: any) {
+      void fetchData();
+    } catch (error: unknown) {
       console.error('Error creating discount:', error);
-      const msg =
-        error.response?.details?.[0]?.message ||
-        error.message ||
-        'Failed to create discount';
-      alert(msg);
+      alert(getErrorMessage(error, 'Failed to create discount'));
     }
   };
 
@@ -199,7 +314,7 @@ export default function MarketingPage() {
 
     try {
       await api.deleteDiscount(id);
-      fetchData();
+      void fetchData();
     } catch (error) {
       console.error('Error deleting discount:', error);
       alert('Failed to delete discount');
@@ -211,14 +326,14 @@ export default function MarketingPage() {
     setBlastLoading(true);
     setBlastMsg(null);
     try {
-      const res = await api.post(
-        `/marketing/campaigns/${selectedBlastCampaign.id}/send`,
+      const res = (await api.sendCampaignBlast(
+        selectedBlastCampaign.id,
         blastForm
-      );
-      setBlastMsg((res as any).message || 'Blast sent successfully!');
-      fetchData();
-    } catch (err: any) {
-      setBlastMsg(`Error: ${err.message}`);
+      )) as BlastResponse;
+      setBlastMsg(res.message || 'Blast sent successfully!');
+      void fetchData();
+    } catch (err: unknown) {
+      setBlastMsg(`Error: ${getErrorMessage(err, 'Failed to send blast')}`);
     } finally {
       setBlastLoading(false);
     }
@@ -383,9 +498,11 @@ export default function MarketingPage() {
                             <div className="flex items-center gap-1">
                               <Calendar size={14} />
                               <span>
-                                {new Date(
-                                  campaign.start_date || campaign.created_at
-                                ).toLocaleDateString()}
+                                {campaign.start_date || campaign.created_at
+                                  ? new Date(
+                                      campaign.start_date ?? campaign.created_at!
+                                    ).toLocaleDateString()
+                                  : 'N/A'}
                               </span>
                             </div>
                             <div className="flex items-center gap-1">
@@ -1269,7 +1386,7 @@ function BulkDiscountsTabContent({
   setProducts,
   bulkDiscountForm,
   setBulkDiscountForm,
-}: any) {
+}: BulkDiscountsTabContentProps) {
   const defaultForm = {
     product_id: '' as string | null,
     min_quantity: 1,
@@ -1278,32 +1395,36 @@ function BulkDiscountsTabContent({
     active: true,
   };
 
-  const fetchBulkDiscounts = async () => {
+  const fetchBulkDiscounts = useCallback(async () => {
     try {
       setBulkDiscountsLoading(true);
-      const data = await api.getBulkDiscounts();
-      setBulkDiscounts(data.bulk_discounts || []);
+      const data = (await api.getBulkDiscounts()) as BulkDiscountsResponse;
+      setBulkDiscounts(data.bulk_discounts ?? []);
     } catch (error) {
       console.error('Error fetching bulk discounts:', error);
     } finally {
       setBulkDiscountsLoading(false);
     }
-  };
+  }, [setBulkDiscounts, setBulkDiscountsLoading]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       // ⚠️ api.getProducts() already exists — use with limit=100
       const data = await api.getProducts(100, 0);
-      setProducts(data.products || data.data || []);
+      setProducts(
+        ((data as ProductsResponse | null)?.products ??
+          (data as ProductsResponse | null)?.data ??
+          [])
+      );
     } catch (error) {
       console.error('Error fetching products:', error);
     }
-  };
+  }, [setProducts]);
 
   useEffect(() => {
-    fetchBulkDiscounts();
-    fetchProducts();
-  }, []);
+    void fetchBulkDiscounts();
+    void fetchProducts();
+  }, [fetchBulkDiscounts, fetchProducts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1321,13 +1442,13 @@ function BulkDiscountsTabContent({
       setShowBulkDiscountForm(false);
       setEditingBulkDiscount(null);
       setBulkDiscountForm(defaultForm);
-      fetchBulkDiscounts();
-    } catch (error: any) {
-      alert(error.message || 'Failed to save bulk discount');
+      void fetchBulkDiscounts();
+    } catch (error: unknown) {
+      alert(getErrorMessage(error, 'Failed to save bulk discount'));
     }
   };
 
-  const handleEdit = (discount: any) => {
+  const handleEdit = (discount: BulkDiscount) => {
     setBulkDiscountForm({
       product_id: discount.product_id || '',
       min_quantity: discount.min_quantity || 1,
@@ -1344,9 +1465,9 @@ function BulkDiscountsTabContent({
       return;
     try {
       await api.deleteBulkDiscount(id);
-      fetchBulkDiscounts();
-    } catch (error: any) {
-      alert(error.message || 'Failed to delete bulk discount');
+      void fetchBulkDiscounts();
+    } catch (error: unknown) {
+      alert(getErrorMessage(error, 'Failed to delete bulk discount'));
     }
   };
 
@@ -1398,9 +1519,9 @@ function BulkDiscountsTabContent({
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   >
                     <option value="">All Products</option>
-                    {products.map((p: any) => (
-                      <option key={p.id} value={p.id}>
-                        {p.title}
+                    {products.map((product) => (
+                      <option key={product.id} value={product.id}>
+                        {product.title}
                       </option>
                     ))}
                   </select>
@@ -1548,7 +1669,7 @@ function BulkDiscountsTabContent({
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {bulkDiscounts.map((discount: any) => (
+                {bulkDiscounts.map((discount) => (
                   <tr key={discount.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {discount.product_title || 'All Products'}

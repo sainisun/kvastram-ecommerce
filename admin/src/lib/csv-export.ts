@@ -1,6 +1,40 @@
 // CSV Export Utility Functions
 
-export const exportToCSV = (data: any[], filename: string) => {
+type CsvRow = Record<string, string | number | boolean | null | undefined>;
+
+interface ExportCustomer {
+  id: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  email: string;
+  phone?: string | null;
+  has_account?: boolean | null;
+  order_count?: number | null;
+  created_at: string;
+}
+
+interface ExportProduct {
+  id: string;
+  title: string;
+  handle: string;
+  status: string;
+  total_inventory?: number | null;
+  variant_count?: number | null;
+  created_at: string;
+}
+
+interface ExportOrder {
+  order_number: string;
+  status: string;
+  customer_first_name?: string | null;
+  customer_last_name?: string | null;
+  email: string;
+  total: number;
+  currency_code: string;
+  created_at: string;
+}
+
+export const exportToCSV = (data: CsvRow[], filename: string) => {
   if (!data || data.length === 0) {
     alert('No data to export');
     return;
@@ -51,7 +85,7 @@ export const exportToCSV = (data: any[], filename: string) => {
 };
 
 // Format data for export
-export const formatCustomersForExport = (customers: any[]) => {
+export const formatCustomersForExport = (customers: ExportCustomer[]) => {
   return customers.map((customer) => ({
     ID: customer.id,
     'First Name': customer.first_name || '',
@@ -64,7 +98,7 @@ export const formatCustomersForExport = (customers: any[]) => {
   }));
 };
 
-export const formatProductsForExport = (products: any[]) => {
+export const formatProductsForExport = (products: ExportProduct[]) => {
   return products.map((product) => ({
     ID: product.id,
     Title: product.title,
@@ -76,7 +110,7 @@ export const formatProductsForExport = (products: any[]) => {
   }));
 };
 
-export const formatOrdersForExport = (orders: any[]) => {
+export const formatOrdersForExport = (orders: ExportOrder[]) => {
   return orders.map((order) => ({
     'Order Number': order.order_number,
     Status: order.status,

@@ -1,11 +1,11 @@
 'use client';
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import './RichTextEditor.css';
 
 interface RichTextEditorProps {
@@ -19,12 +19,6 @@ export default function RichTextEditor({
   onChange,
   placeholder = 'Start writing...',
 }: RichTextEditorProps) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -56,18 +50,15 @@ export default function RichTextEditor({
     },
   });
 
-  // Update editor content when prop changes
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content);
     }
   }, [content, editor]);
 
-  // Cleanup editor on unmount (fix memory leak)
   useEffect(() => {
     return () => {
       if (editor) {
-        console.log('[RichTextEditor] Destroying editor instance');
         editor.destroy();
       }
     };
@@ -101,7 +92,7 @@ export default function RichTextEditor({
       .run();
   }, [editor]);
 
-  if (!isMounted || !editor) {
+  if (!editor) {
     return (
       <div className="rich-text-editor">
         <div
@@ -120,7 +111,6 @@ export default function RichTextEditor({
 
   return (
     <div className="rich-text-editor">
-      {/* Toolbar */}
       <div className="editor-toolbar">
         <div className="toolbar-group">
           <button
@@ -199,7 +189,7 @@ export default function RichTextEditor({
             className={editor.isActive('bulletList') ? 'is-active' : ''}
             title="Bullet List"
           >
-            • List
+            Bullet List
           </button>
           <button
             type="button"
@@ -207,7 +197,7 @@ export default function RichTextEditor({
             className={editor.isActive('orderedList') ? 'is-active' : ''}
             title="Numbered List"
           >
-            1. List
+            Numbered List
           </button>
           <button
             type="button"
@@ -215,7 +205,7 @@ export default function RichTextEditor({
             className={editor.isActive('blockquote') ? 'is-active' : ''}
             title="Quote"
           >
-            " Quote
+            Quote
           </button>
         </div>
 
@@ -228,10 +218,10 @@ export default function RichTextEditor({
             className={editor.isActive('link') ? 'is-active' : ''}
             title="Add Link"
           >
-            🔗 Link
+            Link
           </button>
           <button type="button" onClick={addImage} title="Add Image">
-            🖼️ Image
+            Image
           </button>
         </div>
 
@@ -251,7 +241,7 @@ export default function RichTextEditor({
             onClick={() => editor.chain().focus().setHorizontalRule().run()}
             title="Horizontal Line"
           >
-            ― Line
+            Line
           </button>
         </div>
 
@@ -264,7 +254,7 @@ export default function RichTextEditor({
             disabled={!editor.can().undo()}
             title="Undo (Ctrl+Z)"
           >
-            ↶ Undo
+            Undo
           </button>
           <button
             type="button"
@@ -272,17 +262,15 @@ export default function RichTextEditor({
             disabled={!editor.can().redo()}
             title="Redo (Ctrl+Y)"
           >
-            ↷ Redo
+            Redo
           </button>
         </div>
       </div>
 
-      {/* Editor Content */}
       <div className="editor-content-wrapper">
         <EditorContent editor={editor} />
       </div>
 
-      {/* Character Count */}
       <div className="editor-footer">
         <span className="character-count">
           {editor.storage.characterCount?.characters() ||

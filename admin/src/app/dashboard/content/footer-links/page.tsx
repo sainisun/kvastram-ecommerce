@@ -19,6 +19,10 @@ interface FooterLink {
   placeholder: string;
 }
 
+interface FooterSettingsResponse {
+  settings?: Record<string, string>;
+}
+
 const DEFAULT_FOOTER_LINKS: FooterLink[] = [
   {
     key: 'wholesale_footer_catalog_link',
@@ -66,12 +70,13 @@ export default function FooterLinksPage() {
   const fetchFooterLinks = async () => {
     try {
       setLoading(true);
-      const data = await api.getFooterSettings();
+      const data = (await api.getFooterSettings()) as FooterSettingsResponse;
       
       if (data.settings) {
+        const settings = data.settings ?? {};
         const updatedLinks = DEFAULT_FOOTER_LINKS.map((link) => ({
           ...link,
-          value: data.settings[link.key] || '',
+          value: settings[link.key] || '',
         }));
         setLinks(updatedLinks);
       }
@@ -89,7 +94,7 @@ export default function FooterLinksPage() {
       setError('');
       setSuccess('');
 
-      const settingsToUpdate: Record<string, any> = {};
+      const settingsToUpdate: Record<string, string> = {};
       links.forEach((link) => {
         settingsToUpdate[link.key] = link.value;
       });
@@ -99,9 +104,9 @@ export default function FooterLinksPage() {
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving footer links:', err);
-      setError(err?.message || 'Failed to save footer links');
+      setError(err instanceof Error ? err.message : 'Failed to save footer links');
     } finally {
       setSaving(false);
     }
