@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import {
   Package,
@@ -56,11 +56,7 @@ export default function WholesaleOrdersPage() {
     total: 0,
     pages: 1,
   });
-  useEffect(() => {
-    fetchOrders();
-  }, [statusFilter, page]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       const [ordersData, statsData] = await Promise.all([
@@ -88,7 +84,11 @@ export default function WholesaleOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, statusFilter]);
+
+  useEffect(() => {
+    void fetchOrders();
+  }, [fetchOrders]);
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {

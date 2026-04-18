@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import {
   ShoppingCart,
@@ -45,7 +45,7 @@ export default function AbandonedCartsPage() {
     null
   );
 
-  const fetchCarts = async () => {
+  const fetchCarts = useCallback(async () => {
     try {
       setLoading(true);
       const data = await api.getAbandonedCarts(period);
@@ -56,11 +56,11 @@ export default function AbandonedCartsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
 
   useEffect(() => {
-    fetchCarts();
-  }, [period]);
+    void fetchCarts();
+  }, [fetchCarts]);
 
   const handleRecover = async (id: string) => {
     try {

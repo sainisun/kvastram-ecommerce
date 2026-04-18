@@ -1,6 +1,7 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {
   DndContext,
@@ -19,7 +20,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { X, Upload, GripVertical, Image as ImageIcon } from 'lucide-react';
+import { X, Upload, GripVertical } from 'lucide-react';
 
 export interface ImageItem {
   id: string; // unique id for dnd

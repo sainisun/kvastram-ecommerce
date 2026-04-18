@@ -1,8 +1,8 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Star, Plus, X, Trash2, Edit2, GripVertical, User } from 'lucide-react';
+import { Star, Plus, X, Trash2, Edit2, User } from 'lucide-react';
 import { api } from '@/lib/api';
 
 interface Testimonial {
@@ -18,7 +18,6 @@ interface Testimonial {
 }
 
 export default function TestimonialsPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [showModal, setShowModal] = useState(false);

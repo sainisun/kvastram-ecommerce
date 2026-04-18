@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Loader2, Star, Check, X, Trash2, Filter } from 'lucide-react';
 
@@ -24,7 +24,7 @@ export default function ReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     setLoading(true);
     try {
       const data = (await api.getReviews(50, 0, statusFilter)) as ReviewsResponse;
@@ -34,11 +34,11 @@ export default function ReviewsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter]);
 
   useEffect(() => {
-    fetchReviews();
-  }, [statusFilter]);
+    void fetchReviews();
+  }, [fetchReviews]);
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
     try {
@@ -46,7 +46,7 @@ export default function ReviewsPage() {
       setReviews(
         reviews.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
       );
-    } catch (error) {
+    } catch {
       alert('Failed to update status');
     }
   };

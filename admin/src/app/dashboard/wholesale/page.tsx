@@ -1,14 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import {
   Building2,
   Mail,
-  Phone,
-  Globe,
-  Calendar,
   CheckCircle,
   XCircle,
   Clock,
@@ -32,7 +28,6 @@ interface WholesaleInquiry {
 }
 
 export default function WholesalePage() {
-  const router = useRouter();
   const [inquiries, setInquiries] = useState<WholesaleInquiry[]>([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -46,18 +41,19 @@ export default function WholesalePage() {
   const [selectedInquiry, setSelectedInquiry] =
     useState<WholesaleInquiry | null>(null);
   const [updating, setUpdating] = useState(false);
+  const searchRef = useRef(search);
 
   useEffect(() => {
-    fetchInquiries();
-  }, [filter]);
+    searchRef.current = search;
+  }, [search]);
 
-  const fetchInquiries = async () => {
+  const fetchInquiries = useCallback(async () => {
     try {
       setLoading(true);
       const [inquiriesData, statsData] = await Promise.all([
         api.getWholesaleInquiries(
           filter === 'all' ? undefined : filter,
-          search
+          searchRef.current
         ),
         api.getWholesaleStats(),
       ]);
@@ -68,7 +64,11 @@ export default function WholesalePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    void fetchInquiries();
+  }, [fetchInquiries]);
 
   const handleUpdateStatus = async (
     id: string,

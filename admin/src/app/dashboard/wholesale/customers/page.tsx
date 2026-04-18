@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 import {
   Users,
@@ -45,16 +45,17 @@ export default function WholesaleCustomersPage() {
     pages: 1,
   });
   const [editingTier, setEditingTier] = useState<string | null>(null);
+  const searchRef = useRef(search);
 
   useEffect(() => {
-    fetchCustomers();
-  }, [tierFilter, page]);
+    searchRef.current = search;
+  }, [search]);
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
       const [customersData, statsData] = await Promise.all([
-        api.getWholesaleCustomers(search, tierFilter, page),
+        api.getWholesaleCustomers(searchRef.current, tierFilter, page),
         api.getWholesaleCustomerStats(),
       ]);
       setCustomers(customersData.customers || []);
@@ -67,12 +68,16 @@ export default function WholesaleCustomersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, tierFilter]);
+
+  useEffect(() => {
+    void fetchCustomers();
+  }, [fetchCustomers]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
-    fetchCustomers();
+    void fetchCustomers();
   };
 
   const handleTierChange = async (customerId: string, newTier: string) => {
@@ -84,7 +89,7 @@ export default function WholesaleCustomersPage() {
         )
       );
       setEditingTier(null);
-      fetchCustomers();
+      void fetchCustomers();
     } catch (error) {
       console.error('Error updating tier:', error);
     }

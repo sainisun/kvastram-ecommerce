@@ -1,6 +1,7 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Bell,
   Trash2,
@@ -39,7 +40,7 @@ export default function BackInStockPage() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'notified'>('all');
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       let notifiedParam = '';
@@ -58,11 +59,11 @@ export default function BackInStockPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
 
   useEffect(() => {
-    fetchData();
-  }, [filter]);
+    void fetchData();
+  }, [fetchData]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Remove this subscription?')) return;

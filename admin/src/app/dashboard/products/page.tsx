@@ -177,7 +177,11 @@ export default function ProductsPage() {
 
   const toggleSelection = (id: string) => {
     const next = new Set(selectedProducts);
-    next.has(id) ? next.delete(id) : next.add(id);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
     setSelectedProducts(next);
   };
 

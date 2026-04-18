@@ -1,13 +1,14 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import {
+  useCallback,
   useState,
   useEffect,
   type Dispatch,
   type SetStateAction,
 } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   Store,
   Bell,
@@ -177,7 +178,6 @@ const EMAIL_NOTIFICATION_ITEMS = [
 ] as const;
 
 export default function SettingsPage() {
-  const router = useRouter();
   const { showNotification } = useNotification();
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
@@ -226,11 +226,7 @@ export default function SettingsPage() {
   });
   const [testingWhatsapp, setTestingWhatsapp] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, [router]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const [settingsData, profileData] = await Promise.all([
@@ -279,7 +275,11 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showNotification]);
+
+  useEffect(() => {
+    void fetchData();
+  }, [fetchData]);
 
   const handleChange = <K extends keyof SettingsState>(
     key: K,
@@ -2559,7 +2559,7 @@ function TiersTabContent({
     is_active: true,
   };
 
-  const fetchTiers = async () => {
+  const fetchTiers = useCallback(async () => {
     try {
       setTiersLoading(true);
       const data = await api.getTiers();
@@ -2569,11 +2569,11 @@ function TiersTabContent({
     } finally {
       setTiersLoading(false);
     }
-  };
+  }, [setTiers, setTiersLoading]);
 
   useEffect(() => {
-    fetchTiers();
-  }, []);
+    void fetchTiers();
+  }, [fetchTiers]);
 
   const handleTierSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -2588,7 +2588,7 @@ function TiersTabContent({
       setShowTierForm(false);
       setEditingTierId(null);
       setTierFormData(defaultFormData);
-      fetchTiers();
+      void fetchTiers();
     } catch (error: unknown) {
       showNotification(
         'error',

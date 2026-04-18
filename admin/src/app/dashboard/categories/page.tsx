@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
@@ -12,7 +13,6 @@ import {
   Folder,
   FolderOpen,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface Category {
   id: string;
@@ -145,7 +145,6 @@ function CategoryItem({
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   const fetchCategories = async () => {
     try {

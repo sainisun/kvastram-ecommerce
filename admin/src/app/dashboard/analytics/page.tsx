@@ -35,13 +35,6 @@ interface ProductPreview {
   total_inventory: number;
 }
 
-const STATUS_PALETTE: Record<string, string> = {
-  pending:    'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]',
-  processing: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]',
-  shipped:    'bg-[var(--primary-fixed)] text-[var(--on-primary-fixed-variant)]',
-  completed:  'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]',
-  cancelled:  'bg-[var(--error-container)] text-[var(--on-error-container)]',
-};
 const BAR_COLORS = ['#5080ff', '#fed488', '#4fd1c5', '#68d391', '#fc8181', '#b794f4'];
 
 export default function AnalyticsPage() {

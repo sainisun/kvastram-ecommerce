@@ -1,4 +1,3 @@
-const CACHE_NAME = 'kvastram-admin-v1';
 const STATIC_CACHE = 'kvastram-static-v1';
 const DYNAMIC_CACHE = 'kvastram-dynamic-v1';
 
@@ -54,7 +53,7 @@ async function cacheFirst(request) {
       cache.put(request, response.clone());
     }
     return response;
-  } catch (error) {
+  } catch {
     return new Response('Offline', { status: 503 });
   }
 }
@@ -67,7 +66,7 @@ async function networkFirst(request) {
       cache.put(request, response.clone());
     }
     return response;
-  } catch (error) {
+  } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
     return new Response('Offline', { status: 503 });
