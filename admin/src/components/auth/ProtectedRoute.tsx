@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 
 interface ProtectedRouteProps {
@@ -11,25 +11,14 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
-  const [isClient, setIsClient] = useState(false);
-
-  // Set isClient to true after hydration
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   useEffect(() => {
-    // Only check auth after loading is complete and we're on client
-    if (!loading && isClient) {
-      if (!user) {
-        router.push('/');
-      }
+    if (!loading && !user) {
+      router.push('/');
     }
-  }, [user, loading, router, pathname, isClient]);
+  }, [user, loading, router]);
 
-  // Show loading during SSR and initial hydration
-  if (!isClient || loading) {
+  if (loading) {
     return (
       <div
         style={{
@@ -48,9 +37,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  // After hydration, check if user exists
   if (!user) {
-    return null; // Will redirect
+    return null;
   }
 
   return <>{children}</>;

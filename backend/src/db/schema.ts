@@ -782,6 +782,7 @@ export const trending_reels = pgTable(
     product_name: text('product_name').notNull(),
     price: text('price').notNull(),
     link_url: text('link_url').notNull(),
+    view_count: integer('view_count').default(0).notNull(),
     is_active: boolean('is_active').default(true).notNull(),
     sort_order: integer('sort_order').default(0).notNull(),
     created_at: timestamp('created_at').defaultNow().notNull(),

@@ -53,7 +53,7 @@ export interface ApiFetchOptions extends RequestInit {
   /**
    * Validator function to validate response data
    */
-  validator?: (data: unknown) => data is any;
+  validator?: (data: unknown) => boolean;
   
   /**
    * Whether to throw on non-2xx status (default: true)
@@ -67,6 +67,18 @@ export interface ApiFetchOptions extends RequestInit {
     revalidate?: number | false;
     tags?: string[];
   };
+}
+
+interface ApiErrorBody {
+  message?: string;
+  code?: string;
+  details?: Record<string, unknown>;
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : null;
 }
 
 /**
@@ -156,18 +168,24 @@ export async function apiFetch<T>(
 
     // Handle non-2xx responses
     if (!response.ok) {
-      let errorData: any;
+      let errorData: unknown;
       try {
         errorData = await response.json();
       } catch {
         errorData = { message: response.statusText };
       }
 
-      const message = errorData?.error?.message || errorData?.message || response.statusText;
-      const code = errorData?.error?.code || `HTTP_${response.status}`;
+      const errorRecord = asRecord(errorData);
+      const nestedError = asRecord(errorRecord?.error) as ApiErrorBody | null;
+      const message =
+        nestedError?.message ||
+        (typeof errorRecord?.message === 'string'
+          ? errorRecord.message
+          : response.statusText);
+      const code = nestedError?.code || `HTTP_${response.status}`;
 
       if (throwOnError) {
-        throw new ApiError(code, response.status, message, errorData?.error?.details);
+        throw new ApiError(code, response.status, message, nestedError?.details);
       }
 
       if (process.env.NODE_ENV === 'development') {
@@ -178,23 +196,26 @@ export async function apiFetch<T>(
     }
 
     // Parse response
-    const data = await response.json();
+    const data: unknown = await response.json();
+    const dataRecord = asRecord(data);
 
     // Handle ApiResponse wrapped format
-    if (data.success !== undefined) {
-      if (!data.success) {
-        const message = data.error?.message || 'API request failed';
-        const code = data.error?.code || 'API_ERROR';
+    if (dataRecord && dataRecord.success !== undefined) {
+      const wrappedError = asRecord(dataRecord.error) as ApiErrorBody | null;
+
+      if (!dataRecord.success) {
+        const message = wrappedError?.message || 'API request failed';
+        const code = wrappedError?.code || 'API_ERROR';
         
         if (throwOnError) {
-          throw new ApiError(code, 200, message, data.error?.details);
+          throw new ApiError(code, 200, message, wrappedError?.details);
         }
         return null as T;
       }
 
       // Validate if validator provided
-      if (validator && data.data) {
-        if (!validator(data.data)) {
+      if (validator && dataRecord.data !== undefined) {
+        if (!validator(dataRecord.data)) {
           console.warn('[API] Response validation failed for:', endpoint);
           if (throwOnError) {
             throw new ApiError('VALIDATION_ERROR', 200, 'Response validation failed');
@@ -204,7 +225,7 @@ export async function apiFetch<T>(
       }
 
       // Return unwrapped data
-      return data.data as T;
+      return dataRecord.data as T;
     }
 
     // Handle direct data format (not wrapped in ApiResponse)
@@ -260,7 +281,7 @@ export async function apiGet<T>(
  */
 export async function apiPost<T>(
   endpoint: string,
-  body?: any,
+  body?: unknown,
   options?: Omit<ApiFetchOptions, 'method' | 'body'>
 ): Promise<T> {
   return apiFetch<T>(endpoint, {
@@ -275,7 +296,7 @@ export async function apiPost<T>(
  */
 export async function apiPut<T>(
   endpoint: string,
-  body?: any,
+  body?: unknown,
   options?: Omit<ApiFetchOptions, 'method' | 'body'>
 ): Promise<T> {
   return apiFetch<T>(endpoint, {
@@ -290,7 +311,7 @@ export async function apiPut<T>(
  */
 export async function apiPatch<T>(
   endpoint: string,
-  body?: any,
+  body?: unknown,
   options?: Omit<ApiFetchOptions, 'method' | 'body'>
 ): Promise<T> {
   return apiFetch<T>(endpoint, {
@@ -313,10 +334,12 @@ export async function apiDelete<T>(
 /**
  * Helper to batch multiple API calls with consistent error handling
  */
-export async function apiBatch<T extends Record<string, Promise<any>>>(
+export async function apiBatch<T extends Record<string, Promise<unknown>>>(
   calls: T
-): Promise<Record<string, any>> {
-  const results: Record<string, any> = { errors: {} };
+): Promise<Record<string, unknown>> {
+  const results: Record<string, unknown> & {
+    errors: Record<string, unknown>;
+  } = { errors: {} };
 
   const entries = Object.entries(calls);
   const promises = entries.map(async ([key, promise]) => {

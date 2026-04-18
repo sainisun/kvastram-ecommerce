@@ -35,6 +35,11 @@ interface CartValidationResult {
   }>;
 }
 
+interface BulkDiscount {
+  min_quantity: number;
+  discount_percent: number;
+}
+
 interface WholesaleCartContextType {
   items: WholesaleCartItem[];
   validation: CartValidationResult;
@@ -98,7 +103,7 @@ export function WholesaleCartProvider({ children }: { children: ReactNode }) {
           const discountsResponse = await api.getWholesaleBulkDiscounts(
             item.variantId
           );
-          const bulkDiscounts = discountsResponse.discounts || [];
+          const bulkDiscounts = (discountsResponse.discounts || []) as BulkDiscount[];
 
           // Calculate pricing
           const priceInfo = getPrice(item.variantId, item.price);
@@ -115,8 +120,8 @@ export function WholesaleCartProvider({ children }: { children: ReactNode }) {
             item.quantity >= bulkDiscounts[0].min_quantity
           ) {
             const applicableDiscount = bulkDiscounts
-              .sort((a: any, b: any) => b.min_quantity - a.min_quantity)
-              .find((d: any) => item.quantity >= d.min_quantity);
+              .sort((a, b) => b.min_quantity - a.min_quantity)
+              .find((discount) => item.quantity >= discount.min_quantity);
 
             if (applicableDiscount) {
               bulkDiscount = applicableDiscount.discount_percent;

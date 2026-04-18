@@ -7,6 +7,7 @@ export interface HomepageTrendingReel {
   product_name: string;
   price: string;
   link_url: string;
+  view_count: number;
   is_active: boolean;
   sort_order: number;
 }

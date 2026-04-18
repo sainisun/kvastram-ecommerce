@@ -20,6 +20,10 @@ interface Collection {
   title: string;
 }
 
+function getCategoryCount(category: Category) {
+  return category.children?.length ?? 0;
+}
+
 interface FilterSidebarProps {
   categories: Category[];
   tags: Tag[];
@@ -156,9 +160,7 @@ export default function FilterSidebar({
                 }}
               >
                 <span>{cat.name}</span>
-                <span className="filter-count-prem">
-                  {Math.floor(Math.random() * 50) + 12}
-                </span>
+                <span className="filter-count-prem">{getCategoryCount(cat)}</span>
               </button>
               {cat.children && cat.children.length > 0 && (
                 <button

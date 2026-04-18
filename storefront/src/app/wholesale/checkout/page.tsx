@@ -116,9 +116,13 @@ export default function WholesaleCheckoutPage() {
       } else {
         setError(result.error || 'Failed to place order');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Order error:', err);
-      setError(err?.message || 'An error occurred while placing your order');
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An error occurred while placing your order'
+      );
     } finally {
       setLoading(false);
     }

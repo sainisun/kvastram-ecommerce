@@ -87,7 +87,7 @@ function ReelCard({ reel }: { reel: HomepageTrendingReel }) {
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">
-                Watch & Buy
+                Watch &amp; Buy
               </p>
               <h3 className="mt-2 line-clamp-2 text-lg font-semibold text-white">
                 {reel.product_name}
@@ -135,7 +135,7 @@ export function TrendingReels({ reels }: TrendingReelsProps) {
           </p>
           <div className="space-y-4">
             <h2 className="font-heading text-[40px] font-semibold leading-[0.95] tracking-[0.01em] text-stone-950 sm:text-[52px]">
-              Watch & Buy
+              Watch &amp; Buy
             </h2>
             <p className="mx-auto max-w-sm text-[15px] font-[300] leading-7 text-stone-600 lg:mx-0">
               A shoppable edit of Kvastram looks in motion, inspired by retail

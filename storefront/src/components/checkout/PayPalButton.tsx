@@ -63,8 +63,8 @@ function PayPalButtonInner({
       }
 
       onSuccess();
-    } catch (err: any) {
-      onError(err.message || 'Payment failed');
+    } catch (err: unknown) {
+      onError(err instanceof Error ? err.message : 'Payment failed');
     } finally {
       setIsProcessing(false);
     }

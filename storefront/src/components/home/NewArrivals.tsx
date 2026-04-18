@@ -1,6 +1,8 @@
 'use client';
 
+import { useRef } from 'react';
 import Link from 'next/link';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { useCurrency } from '@/context/currency-context';
@@ -16,9 +18,16 @@ export function NewArrivals({
   isCurated = false,
 }: NewArrivalsProps) {
   const { formatPrice } = useCurrency();
+  const railRef = useRef<HTMLDivElement | null>(null);
 
-  const displayed = products.slice(0, 4);
+  const displayed = products.slice(0, 8);
   if (displayed.length === 0) return null;
+
+  function scrollRail(direction: 'left' | 'right') {
+    if (!railRef.current) return;
+    const amount = direction === 'left' ? -320 : 320;
+    railRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+  }
 
   function getPrice(product: Product): string {
     const prices = product.variants?.[0]?.prices;
@@ -37,37 +46,57 @@ export function NewArrivals({
   return (
     <section className="bg-[#f6f1ea] py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 flex flex-col gap-5 sm:mb-12 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-3">
+        <div className="mb-8 flex items-end justify-between gap-4 border-b border-stone-200 pb-4">
+          <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-stone-500">
               {isCurated ? 'Featured Products' : 'New Arrivals'}
             </p>
-            <h2 className="font-heading text-[32px] font-semibold leading-[0.98] text-stone-950 sm:text-[40px] lg:text-[48px]">
+            <h2 className="mt-2 font-heading text-[30px] font-semibold leading-none text-stone-950 sm:text-[38px]">
               {isCurated
-                ? 'A handpicked edit for the homepage'
+                ? 'Featured Products'
                 : 'Fresh pieces, ready to discover'}
             </h2>
-            <p className="max-w-2xl text-[15px] font-[300] leading-7 text-stone-600">
-              {isCurated
-                ? 'Using your existing featured-product wiring, this section elevates the current curated picks into a cleaner premium shopping grid.'
-                : 'When featured products are not curated in admin, the homepage falls back to the newest live catalog items automatically.'}
-            </p>
           </div>
-          <Link
-            href={isCurated ? '/products' : '/products?sort=newest'}
-            className="inline-flex w-full items-center justify-center rounded-full border border-stone-300 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-stone-800 transition-colors hover:border-stone-950 hover:text-stone-950 sm:w-auto"
-          >
-            View All Products
-          </Link>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => scrollRail('left')}
+              className="hidden h-10 w-10 items-center justify-center rounded-full border border-stone-300 text-stone-700 transition hover:border-stone-950 hover:text-stone-950 md:inline-flex"
+              aria-label="Scroll products left"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollRail('right')}
+              className="hidden h-10 w-10 items-center justify-center rounded-full border border-stone-300 text-stone-700 transition hover:border-stone-950 hover:text-stone-950 md:inline-flex"
+              aria-label="Scroll products right"
+            >
+              <ChevronRight size={18} />
+            </button>
+            <Link
+              href={isCurated ? '/products' : '/products?sort=newest'}
+              className="inline-flex shrink-0 items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-stone-700 transition-colors hover:text-stone-950"
+            >
+              View All
+              <ArrowRight size={14} />
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 md:grid-cols-4 md:gap-6">
+        <div
+          ref={railRef}
+          className="flex gap-5 overflow-x-auto pb-2 scroll-smooth no-scrollbar snap-x snap-mandatory"
+        >
           {displayed.map((product) => {
             const comparePrice = getComparePrice(product);
             const secondImage = product.images?.[1]?.url;
 
             return (
-              <article key={product.id} className="group">
+              <article
+                key={product.id}
+                className="group w-[74vw] shrink-0 snap-start min-[480px]:w-[44vw] sm:w-[280px] lg:w-[300px]"
+              >
                 <Link
                   href={`/products/${product.handle || product.id}`}
                   className="relative block aspect-[4/5] overflow-hidden rounded-[24px] bg-stone-100"

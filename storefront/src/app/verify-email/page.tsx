@@ -40,9 +40,11 @@ function VerifyContent() {
           setStatus('error');
           setMessage(data.error || 'Verification failed');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         setStatus('error');
-        setMessage(err.message || 'Verification failed');
+        setMessage(
+          err instanceof Error ? err.message : 'Verification failed'
+        );
       }
     };
 

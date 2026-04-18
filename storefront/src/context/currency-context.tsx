@@ -29,15 +29,11 @@ const FALLBACK_RATES: Record<string, number> = {
 };
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [currency, setCurrency] = useState('INR');
+  const [currency] = useState(() => detectUserCurrency());
   const [rates, setRates] = useState<Record<string, number>>(FALLBACK_RATES);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Detect currency from browser locale
-    const detected = detectUserCurrency();
-    setCurrency(detected);
-
     // Fetch live rates from our cached API route
     fetch('/api/exchange-rates')
       .then((r) => r.json())

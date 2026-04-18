@@ -42,6 +42,8 @@ jobs:
               echo "  Waiting... (${i}/20) backend=${STATUS}"
               sleep 3
             done
+            echo "=== Running manual backend migrations ==="
+            docker compose -f deploy/hostinger/docker-compose.yml exec -T backend node dist/run-manual-migrations.js
             echo "=== Health Check ==="
             curl -sf http://localhost:4000/health || { echo "Backend health check FAILED"; exit 1; }
             curl -sf http://localhost:3000 > /dev/null || { echo "Storefront health check FAILED"; exit 1; }

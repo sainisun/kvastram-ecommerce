@@ -102,7 +102,7 @@ export function QuickViewModal({
   }, [isOpen, product.id]);
 
   const images = product.images?.length
-    ? product.images.map((img: any) =>
+    ? product.images.map((img: string | { url?: string | null }) =>
         typeof img === 'string' ? img : img.url
       )
     : ([product.thumbnail].filter(Boolean) as string[]);

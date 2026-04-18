@@ -19,9 +19,39 @@ interface AddressAutocompleteProps {
   autoComplete?: string;
 }
 
+interface GoogleAddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+interface GooglePlaceResult {
+  address_components?: GoogleAddressComponent[];
+  formatted_address?: string;
+}
+
+interface GoogleAutocompleteInstance {
+  addListener: (eventName: 'place_changed', handler: () => void) => void;
+  getPlace: () => GooglePlaceResult;
+}
+
+interface GoogleMapsApi {
+  maps: {
+    places: {
+      Autocomplete: new (
+        input: HTMLInputElement,
+        options: {
+          types: string[];
+          fields: string[];
+        }
+      ) => GoogleAutocompleteInstance;
+    };
+  };
+}
+
 declare global {
   interface Window {
-    google: any;
+    google?: GoogleMapsApi;
     initAddressAutocomplete: () => void;
   }
 }
@@ -38,7 +68,7 @@ export function AddressAutocomplete({
   autoComplete = 'street-address',
 }: AddressAutocompleteProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<any>(null);
+  const autocompleteRef = useRef<GoogleAutocompleteInstance | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -89,7 +119,10 @@ export function AddressAutocomplete({
       );
 
       autocompleteRef.current.addListener('place_changed', () => {
-        const place = autocompleteRef.current.getPlace();
+        const autocomplete = autocompleteRef.current;
+        if (!autocomplete) return;
+
+        const place = autocomplete.getPlace();
 
         if (!place) return;
 
@@ -100,7 +133,7 @@ export function AddressAutocomplete({
           country: '',
         };
 
-        place.address_components?.forEach((component: any) => {
+        place.address_components?.forEach((component) => {
           const types = component.types;
 
           if (types.includes('street_number')) {

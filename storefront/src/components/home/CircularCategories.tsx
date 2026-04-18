@@ -23,12 +23,12 @@ export async function CircularCategories() {
   if (circles.length === 0) return null;
 
   return (
-    <section className="py-8 bg-white overflow-x-auto no-scrollbar flex gap-6 px-6">
+    <section className="flex gap-4 overflow-x-auto bg-white px-4 py-4 no-scrollbar md:hidden">
       {circles.map((circle, i) => (
         <Link
           key={circle.id}
           href={circle.link_url}
-          className="flex flex-col items-center gap-2 min-w-[72px]"
+          className="flex min-w-[72px] flex-col items-center"
         >
           <div
             className={`w-[72px] h-[72px] rounded-full p-[2px] ${
@@ -49,13 +49,7 @@ export async function CircularCategories() {
               <div className="w-full h-full rounded-full bg-zinc-200" />
             )}
           </div>
-          <span
-            className={`text-[10px] font-medium tracking-wider uppercase ${
-              i === 0 ? 'text-black' : 'text-zinc-500'
-            }`}
-          >
-            {circle.label}
-          </span>
+          <span className="sr-only">{circle.label}</span>
         </Link>
       ))}
     </section>

@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
+import type { HomepageCollection } from '@/types/homepage';
 
 interface Props {
-  readonly collections: any[];
+  readonly collections: HomepageCollection[];
 }
 
 export default function HomeSectionsClient({ collections: initialCollections }: Props) {
-  const [collections, setCollections] = useState<any[]>(initialCollections);
+  const [collections, setCollections] = useState<HomepageCollection[]>(
+    initialCollections
+  );
 
   useEffect(() => {
     if (initialCollections.length > 0) return;

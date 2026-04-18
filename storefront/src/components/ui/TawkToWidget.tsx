@@ -67,13 +67,11 @@ export function TawkToWidget({ propertyId }: TawkToProps) {
 
       if (window.Tawk_API) {
         try {
-          // @ts-ignore
           delete window.Tawk_API;
         } catch {}
       }
       if (window.Tawk_LoadStart) {
         try {
-          // @ts-ignore
           delete window.Tawk_LoadStart;
         } catch {}
       }

@@ -5,9 +5,10 @@
     "lint": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:integration": "node scripts/run-integration-tests.mjs",
     "check:all": "concurrently -k -s first \"npm run dev\" \"wait-on tcp:4000 && npx tsx scripts/debug/test-core-flows.ts && echo '✅ ALL CHECKS PASSED!'\"",
     "dev": "tsx watch src/index.ts",
-    "build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --external:pg --external:postgres --external:bcryptjs --external:jsonwebtoken --external:speakeasy --external:socket.io && esbuild src/db/migrate.ts --bundle --platform=node --outfile=dist/migrate.js --external:pg --external:postgres",
+    "build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --external:pg --external:postgres --external:bcryptjs --external:jsonwebtoken --external:speakeasy --external:socket.io && esbuild src/db/migrate.ts --bundle --platform=node --outfile=dist/migrate.js --external:pg --external:postgres && esbuild src/db/run-manual-migrations.ts --bundle --platform=node --outfile=dist/run-manual-migrations.js --external:pg --external:postgres",
     "start": "node dist/index.js",
     "start:prod": "node dist/index.js",
     "generate": "drizzle-kit generate:pg",
@@ -16,6 +17,7 @@
     "unlock-admin": "NODE_ENV=production tsx src/db/unlock-admin.ts",
     "seed:tags": "tsx scripts/seed-default-tags.ts",
     "migrate:manual": "NODE_ENV=production tsx src/db/run-manual-migrations.ts",
+    "migrate:manual:prod": "node dist/run-manual-migrations.js",
     "seed:admin": "NODE_ENV=production tsx src/db/seed.ts"
   },
   "dependencies": {

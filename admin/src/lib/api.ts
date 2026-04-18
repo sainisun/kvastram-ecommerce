@@ -149,7 +149,7 @@ export const api = {
       debugLog('Response status:', res.status);
 
       if (!res.ok) {
-        let data: any = {};
+        let data: Record<string, unknown> = {};
         let errorText = '';
         try {
           errorText = await res.text();
@@ -162,7 +162,9 @@ export const api = {
           };
         }
         const errorMessage =
-          data.error || data.message || `Login failed (${res.status})`;
+          (typeof data.error === 'string' ? data.error : undefined) ||
+          (typeof data.message === 'string' ? data.message : undefined) ||
+          `Login failed (${res.status})`;
         const error = new Error(errorMessage) as ApiError;
         error.response = data;
         throw error;

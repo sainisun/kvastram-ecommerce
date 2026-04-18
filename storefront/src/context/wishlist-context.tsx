@@ -33,6 +33,23 @@ interface WishlistContextType {
   totalItems: number;
 }
 
+interface BackendWishlistEntry {
+  id: string;
+  product_id: string;
+  variant_id?: string;
+  created_at: string;
+  product?: {
+    title?: string;
+    thumbnail?: string;
+    handle?: string;
+    variants?: Array<{
+      prices?: Array<{
+        amount?: number;
+      }>;
+    }>;
+  };
+}
+
 const WishlistContext = createContext<WishlistContextType | undefined>(
   undefined
 );
@@ -56,7 +73,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         const data = await api.getWishlist();
         if (data.wishlist && data.wishlist.length > 0) {
           // Backend wishlist takes precedence when logged in
-          const backendItems: WishlistItem[] = data.wishlist.map((w: any) => ({
+          const backendItems: WishlistItem[] = data.wishlist.map(
+            (w: BackendWishlistEntry) => ({
             id: `wishlist-${w.id}`,
             productId: w.product_id,
             variantId: w.variant_id,
@@ -66,7 +84,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             thumbnail: w.product?.thumbnail || undefined,
             handle: w.product?.handle || w.product_id,
             addedAt: new Date(w.created_at).getTime(),
-          }));
+            })
+          );
           setItems(backendItems);
           storage.set('kvastram_wishlist', backendItems);
         }

@@ -25,6 +25,12 @@ import type {
   ApiPagination,
 } from '@/types/api-contracts';
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
 /**
  * Validates that a value is a valid ApiResponse structure
  */
@@ -41,7 +47,12 @@ export function isApiResponseOf<T>(
   data: unknown,
   validator: (val: unknown) => val is T
 ): data is ApiResponse<T> {
-  return isValidApiResponse(data) && (data as any).data === undefined || validator((data as any).data);
+  if (!isValidApiResponse(data)) {
+    return false;
+  }
+
+  const payload = (data as ApiResponse<unknown>).data;
+  return payload === undefined || validator(payload);
 }
 
 /**
@@ -204,12 +215,13 @@ export function isValidPagination(data: unknown): data is { limit: number; offse
 export function isValidErrorResponse(data: unknown): data is { success: false; error: { code: string; message: string } } {
   if (!data || typeof data !== 'object') return false;
   const obj = data as Record<string, unknown>;
+  const error = obj.error as Record<string, unknown> | undefined;
   
   return (
     obj.success === false &&
     obj.error !== undefined &&
-    typeof (obj.error as any)?.code === 'string' &&
-    typeof (obj.error as any)?.message === 'string'
+    typeof error?.code === 'string' &&
+    typeof error?.message === 'string'
   );
 }
 
@@ -255,13 +267,15 @@ export function validateApiResponse<T>(
  * Helper to safely extract and validate list from response
  */
 export function extractAndValidateList<T>(
-  response: any,
+  response: unknown,
   validator: (val: unknown) => val is T[]
 ): T[] {
   try {
+    const record = asRecord(response);
+
     // Handle ApiResponse wrapped format
-    if (response?.success && response?.data && validator(response.data)) {
-      return response.data;
+    if (record?.success && record.data && validator(record.data)) {
+      return record.data;
     }
     
     // Handle direct array format
@@ -270,8 +284,8 @@ export function extractAndValidateList<T>(
     }
     
     // Handle data-wrapped format
-    if (response?.data && validator(response.data)) {
-      return response.data;
+    if (record?.data && validator(record.data)) {
+      return record.data;
     }
     
     console.warn('[extractAndValidateList] Could not extract valid list from response');
@@ -286,13 +300,15 @@ export function extractAndValidateList<T>(
  * Helper to safely extract and validate single item from response
  */
 export function extractAndValidateItem<T>(
-  response: any,
+  response: unknown,
   validator: (val: unknown) => val is T
 ): T | null {
   try {
+    const record = asRecord(response);
+
     // Handle ApiResponse wrapped format
-    if (response?.success && response?.data && validator(response.data)) {
-      return response.data;
+    if (record?.success && record.data && validator(record.data)) {
+      return record.data;
     }
     
     // Handle direct item format
@@ -301,8 +317,8 @@ export function extractAndValidateItem<T>(
     }
     
     // Handle data-wrapped format
-    if (response?.data && validator(response.data)) {
-      return response.data;
+    if (record?.data && validator(record.data)) {
+      return record.data;
     }
     
     console.warn('[extractAndValidateItem] Could not extract valid item from response');

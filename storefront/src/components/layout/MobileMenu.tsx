@@ -104,10 +104,20 @@ export default function MobileMenu({
   const prevPathname = useRef(pathname);
 
   useEffect(() => {
+    let closeTimeout: ReturnType<typeof setTimeout> | null = null;
+
     if (isOpen && pathname !== prevPathname.current) {
-      handleClose();
+      closeTimeout = setTimeout(() => {
+        handleClose();
+      }, 0);
     }
     prevPathname.current = pathname;
+
+    return () => {
+      if (closeTimeout) {
+        clearTimeout(closeTimeout);
+      }
+    };
   }, [pathname, isOpen, handleClose]);
 
   const reducedMotion =

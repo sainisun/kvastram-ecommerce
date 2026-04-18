@@ -22,6 +22,7 @@ interface TrendingReel {
   product_name: string;
   price: string;
   link_url: string;
+  view_count: number;
   is_active: boolean;
   sort_order: number;
   created_at: string;
@@ -333,6 +334,9 @@ export default function TrendingReelsManager() {
                   <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
                     Sort #{reel.sort_order}
                   </span>
+                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                    {reel.view_count || 0} views
+                  </span>
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium ${
                       reel.is_active
@@ -528,6 +532,9 @@ export default function TrendingReelsManager() {
                     <label className="mb-2 block text-sm font-medium text-gray-700">
                       Product Name
                     </label>
+                    <p className="mb-2 text-xs text-gray-500">
+                      This title is shown on the storefront reel card and inside the reel player.
+                    </p>
                     <input
                       value={form.productName}
                       onChange={(event) =>
@@ -564,6 +571,9 @@ export default function TrendingReelsManager() {
                     <label className="mb-2 block text-sm font-medium text-gray-700">
                       Link URL
                     </label>
+                    <p className="mb-2 text-xs text-gray-500">
+                      This product URL powers the Buy Now action on the trending reel experience.
+                    </p>
                     <input
                       value={form.linkUrl}
                       onChange={(event) =>

@@ -49,10 +49,11 @@ export default function TrackOrderPage() {
     try {
       const data = await api.getOrder(orderId);
       setOrder(data.order);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
-        err.message ||
-          'Order not found. Please check your order ID and try again.'
+        err instanceof Error
+          ? err.message
+          : 'Order not found. Please check your order ID and try again.'
       );
     } finally {
       setLoading(false);

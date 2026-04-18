@@ -912,6 +912,18 @@ export const api = {
     }
   },
 
+  async recordTrendingReelView(id: string) {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/trending-reels/${id}/view`, {
+        method: 'POST',
+      });
+      if (!res.ok) return null;
+      return res.json();
+    } catch {
+      return null;
+    }
+  },
+
   async getHomepageCategories() {
     try {
       const res = await fetchWithTrace(`${API_URL}/homepage-categories`, {
@@ -943,10 +955,13 @@ export const api = {
       });
       if (!res.ok) return { featuredProducts: [] };
       const json = await res.json();
+      type SpotlightApiItem = Record<string, unknown> & {
+        product?: Parameters<typeof adaptProduct>[0] | null;
+      };
 
       return {
         featuredProducts: Array.isArray(json.featuredProducts)
-          ? json.featuredProducts.map((item: any) => ({
+          ? json.featuredProducts.map((item: SpotlightApiItem) => ({
               ...item,
               product: item.product ? adaptProduct(item.product) : null,
             }))

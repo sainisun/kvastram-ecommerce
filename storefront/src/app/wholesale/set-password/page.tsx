@@ -68,12 +68,12 @@ function SetPasswordContent() {
       } else {
         setError('Failed to set password. Please try again.');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Setup password error:', err);
       setError(
-        err?.error ||
-          err?.message ||
-          'Failed to set password. The link may have expired.'
+        err instanceof Error
+          ? err.message
+          : 'Failed to set password. The link may have expired.'
       );
     } finally {
       setLoading(false);

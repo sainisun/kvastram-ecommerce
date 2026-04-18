@@ -8,10 +8,13 @@
 
 import { describe, it, expect } from 'vitest';
 
+const runIntegrationTests = process.env.RUN_INTEGRATION_TESTS === 'true';
+const describeIntegration = runIntegrationTests ? describe : describe.skip;
+
 // Mock fetch for API calls
 const API_BASE = process.env.API_URL || 'http://localhost:4000';
 
-describe('Store API Endpoints', () => {
+describeIntegration('Store API Endpoints', () => {
     describe('Health Check', () => {
         it('should return 200 OK', async () => {
             const response = await fetch(`${API_BASE}/health`);
@@ -141,7 +144,7 @@ describe('Store API Endpoints', () => {
     });
 });
 
-describe('Admin API Endpoints', () => {
+describeIntegration('Admin API Endpoints', () => {
     describe('Auth Middleware', () => {
         it('should reject unauthorized access to product stats', async () => {
             const response = await fetch(`${API_BASE}/products/stats/overview`, {
@@ -196,7 +199,7 @@ describe('Admin API Endpoints', () => {
     });
 });
 
-describe('Input Validation', () => {
+describeIntegration('Input Validation', () => {
     describe('Email Validation', () => {
         const validEmails = [
             'test@example.com',
@@ -340,7 +343,7 @@ describe('Input Validation', () => {
     });
 });
 
-describe('Rate Limiting', () => {
+describeIntegration('Rate Limiting', () => {
     it('should apply rate limiting to auth endpoints', async () => {
         // Skip rate limiting test in development mode (rate limiter is relaxed)
         // This test is meant for production environments with strict rate limits
@@ -349,7 +352,7 @@ describe('Rate Limiting', () => {
     }, 30000);
 });
 
-describe('CORS Headers', () => {
+describeIntegration('CORS Headers', () => {
     it('should include CORS headers', async () => {
         const response = await fetch(`${API_BASE}/health`, {
             method: 'GET',

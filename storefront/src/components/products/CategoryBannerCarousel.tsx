@@ -18,6 +18,8 @@ interface Props {
 
 export default function CategoryBannerCarousel({ banners }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const safeActiveIndex =
+    banners.length === 0 ? 0 : activeIndex % banners.length;
 
   useEffect(() => {
     if (banners.length <= 1) {
@@ -30,14 +32,6 @@ export default function CategoryBannerCarousel({ banners }: Props) {
 
     return () => window.clearInterval(timer);
   }, [banners.length]);
-
-  useEffect(() => {
-    if (activeIndex < banners.length) {
-      return;
-    }
-
-    setActiveIndex(0);
-  }, [activeIndex, banners.length]);
 
   if (banners.length === 0) {
     return null;
@@ -83,7 +77,9 @@ export default function CategoryBannerCarousel({ banners }: Props) {
               key={banner.id}
               href={banner.button_url}
               className={`absolute inset-0 block transition-opacity duration-700 ${
-                index === activeIndex ? 'opacity-100' : 'pointer-events-none opacity-0'
+                index === safeActiveIndex
+                  ? 'opacity-100'
+                  : 'pointer-events-none opacity-0'
               }`}
             >
               {content}
@@ -92,7 +88,9 @@ export default function CategoryBannerCarousel({ banners }: Props) {
             <div
               key={banner.id}
               className={`absolute inset-0 transition-opacity duration-700 ${
-                index === activeIndex ? 'opacity-100' : 'pointer-events-none opacity-0'
+                index === safeActiveIndex
+                  ? 'opacity-100'
+                  : 'pointer-events-none opacity-0'
               }`}
             >
               {content}
@@ -109,7 +107,7 @@ export default function CategoryBannerCarousel({ banners }: Props) {
               type="button"
               onClick={() => setActiveIndex(index)}
               className={`h-2.5 rounded-full transition-all ${
-                index === activeIndex
+                index === safeActiveIndex
                   ? 'w-7 bg-white'
                   : 'w-2.5 bg-white/55'
               }`}

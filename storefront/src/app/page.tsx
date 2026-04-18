@@ -148,6 +148,7 @@ export default async function Home() {
               product_name: string;
               price: string;
               link_url: string;
+              view_count?: number;
               is_active: boolean;
               sort_order: number;
             }) => ({
@@ -157,6 +158,7 @@ export default async function Home() {
               product_name: item.product_name,
               price: item.price,
               link_url: item.link_url,
+              view_count: item.view_count || 0,
               is_active: item.is_active,
               sort_order: item.sort_order,
             })
@@ -188,7 +190,6 @@ export default async function Home() {
               b: { sort_order?: number | null }
             ) => (a.sort_order || 0) - (b.sort_order || 0)
           )
-          .slice(0, 4)
           .map(
             (item: {
               id: string;

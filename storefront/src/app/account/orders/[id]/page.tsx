@@ -197,8 +197,12 @@ export default function OrderDetailsPage() {
         'Your return request has been submitted. Our team will review it within 2-3 business days.'
       );
       setShowReturnModal(false);
-    } catch (err: any) {
-      setReturnError(err.message || 'Failed to submit return request.');
+    } catch (err: unknown) {
+      setReturnError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to submit return request.'
+      );
     } finally {
       setReturnLoading(false);
     }

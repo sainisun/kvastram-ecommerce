@@ -33,10 +33,10 @@ export default function ProductView({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [deliveryDate, setDeliveryDate] = useState('');
   const [activeAccordion, setActiveAccordion] = useState<string | null>('productDetails');
   const [showStickyATC, setShowStickyATC] = useState(false);
   const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
+  const [shippingEstimateBase] = useState(() => Date.now());
   const primaryCategory = getPrimaryCategory(product);
   const primaryCategoryPath = primaryCategory ? getCategoryPath(primaryCategory) : null;
   const seoContent = buildProductSeoContent(product);
@@ -51,14 +51,20 @@ export default function ProductView({ product }: { product: Product }) {
     return () => product.variants?.forEach((variant) => unsubscribeFromInventory(variant.id));
   }, [product.variants, subscribeToInventory, unsubscribeFromInventory]);
 
-  useEffect(() => {
-    if (!currentRegion) return;
+  const deliveryDate = useMemo(() => {
+    if (!currentRegion) return '';
+
     const usRegion = currentRegion.id.toLowerCase().startsWith('us');
-    const minDate = new Date(Date.now() + (usRegion ? 3 : 7) * 86400000);
-    const maxDate = new Date(Date.now() + (usRegion ? 5 : 14) * 86400000);
-    const formatOptions: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
-    setDeliveryDate(`${minDate.toLocaleDateString('en-US', formatOptions)} - ${maxDate.toLocaleDateString('en-US', formatOptions)}`);
-  }, [currentRegion]);
+    const minDate = new Date(shippingEstimateBase + (usRegion ? 3 : 7) * 86400000);
+    const maxDate = new Date(shippingEstimateBase + (usRegion ? 5 : 14) * 86400000);
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    };
+
+    return `${minDate.toLocaleDateString('en-US', formatOptions)} - ${maxDate.toLocaleDateString('en-US', formatOptions)}`;
+  }, [currentRegion, shippingEstimateBase]);
 
   useEffect(() => {
     const price = product.variants?.[0]?.prices?.[0];

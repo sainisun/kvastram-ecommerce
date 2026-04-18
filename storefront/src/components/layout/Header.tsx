@@ -29,6 +29,25 @@ interface NavLink {
   highlight?: boolean;
 }
 
+interface HeaderCategory {
+  id: string;
+  name: string;
+  slug: string;
+  image?: string;
+  emoji?: string;
+  header_image_url?: string;
+  show_in_header?: boolean;
+  display_order?: number;
+  children?: HeaderCategory[];
+}
+
+interface HeaderSettings {
+  announcement_bar_text?: string;
+  announcement_bar_enabled?: boolean;
+  nav_links?: string;
+  quick_links?: string;
+}
+
 // DEFAULT FALLBACK VALUES - Used if API fails or returns empty
 const DEFAULT_NAV_LINKS: NavLink[] = [
   { label: 'Home', url: '/', order: 1 },
@@ -78,20 +97,7 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [menuRef]);
 
-  const [categories, setCategories] = useState<
-    Array<{
-      id: string;
-      name: string;
-      slug: string;
-      image?: string;
-      children?: Array<{
-        id: string;
-        name: string;
-        slug: string;
-        image?: string;
-      }>;
-    }>
-  >([]);
+  const [categories, setCategories] = useState<HeaderCategory[]>([]);
   const [showShopMenu, setShowShopMenu] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [announcementText, setAnnouncementText] = useState('');
@@ -126,13 +132,16 @@ export function Header() {
         const categoriesData = await apiModule.getCategoriesTree();
         // Filter only categories with show_in_header = true, sorted by display_order
         const headerCategories = (categoriesData.categories || [])
-          .filter((cat: any) => cat.show_in_header)
-          .sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0));
+          .filter((cat: HeaderCategory) => cat.show_in_header)
+          .sort(
+            (a: HeaderCategory, b: HeaderCategory) =>
+              (a.display_order || 0) - (b.display_order || 0)
+          );
         setCategories(headerCategories);
 
         // Fetch homepage settings (includes nav_links and quick_links)
         const settingsData = await apiModule.getHomepageSettings();
-        const settings = settingsData.settings || {};
+        const settings: HeaderSettings = settingsData.settings || {};
 
         setAnnouncementText(settings.announcement_bar_text || '');
         setAnnouncementEnabled(settings.announcement_bar_enabled || false);
@@ -352,9 +361,9 @@ export function Header() {
                                         setHoveredCategory(cat.id)
                                       }
                                     >
-                                      {(cat as any).emoji && (
+                                      {cat.emoji && (
                                         <span className="mr-2">
-                                          {(cat as any).emoji}
+                                          {cat.emoji}
                                         </span>
                                       )}
                                       {cat.name}
@@ -399,17 +408,14 @@ export function Header() {
                                       (c) => c.id === hoveredCategory
                                     )
                                   : categories[0];
+                                const featuredImageSrc =
+                                  featured?.header_image_url ?? featured?.image;
                                 return featured ? (
                                   <>
                                     <div className="absolute inset-0">
-                                      {(featured as any).header_image_url ||
-                                      featured.image ? (
+                                      {featuredImageSrc ? (
                                         <OptimizedImage
-                                          src={
-                                            (featured as any)
-                                              .header_image_url ||
-                                            featured.image
-                                          }
+                                          src={featuredImageSrc}
                                           alt={featured.name}
                                           fill
                                           className="object-cover transition-opacity duration-300"
@@ -418,7 +424,7 @@ export function Header() {
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
                                           <span className="text-stone-300 text-6xl font-serif">
-                                            {(featured as any).emoji ||
+                                            {featured.emoji ||
                                               featured.name?.charAt(0)}
                                           </span>
                                         </div>
@@ -430,9 +436,9 @@ export function Header() {
                                         Featured
                                       </span>
                                       <span className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-white">
-                                        {(featured as any).emoji && (
+                                        {featured.emoji && (
                                           <span className="mr-2">
-                                            {(featured as any).emoji}
+                                            {featured.emoji}
                                           </span>
                                         )}
                                         {featured.name}

@@ -25,6 +25,7 @@ RUN npm ci --omit=dev --legacy-peer-deps
 # Copy compiled output from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle ./drizzle
+COPY --from=builder /app/src/db/migrations ./dist/migrations
 
 EXPOSE 4000
 

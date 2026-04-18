@@ -417,16 +417,11 @@ export function isApiResponse<T>(
 // EXPORT FOR CONVENIENCE
 // ==========================================
 
-/**
- * All API contracts exported as namespace
- */
-export namespace ApiContracts {
-  export type Product = ApiProductResponse;
-  export type Variant = ApiVariantResponse;
-  export type Collection = ApiCollectionResponse;
-  export type Customer = ApiCustomerResponse;
-  export type Order = ApiOrderResponse;
-  export type Cart = ApiCartResponse;
-  export type Response<T> = ApiResponse<T>;
-  export type Pagination = ApiPagination;
-}
+export type ApiContractProduct = ApiProductResponse;
+export type ApiContractVariant = ApiVariantResponse;
+export type ApiContractCollection = ApiCollectionResponse;
+export type ApiContractCustomer = ApiCustomerResponse;
+export type ApiContractOrder = ApiOrderResponse;
+export type ApiContractCart = ApiCartResponse;
+export type ApiContractResponse<T> = ApiResponse<T>;
+export type ApiContractPagination = ApiPagination;

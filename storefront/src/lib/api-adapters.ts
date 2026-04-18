@@ -148,21 +148,29 @@ export interface SingleResponse<T> {
   data: T;
 }
 
-// Normalize product from various API response formats
-export function normalizeProduct(json: any): Product | null {
-  if (!json) return null;
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : null;
+}
 
-  let productObj: any = null;
+// Normalize product from various API response formats
+export function normalizeProduct(json: unknown): Product | null {
+  const root = asRecord(json);
+  if (!root) return null;
+
+  let productObj: Record<string, unknown> | null = null;
+  const data = asRecord(root.data);
 
   // Handle wrapped format: { data: { product: {...} } }
-  if (json.data?.product) {
-    productObj = json.data.product;
+  if (data && asRecord(data.product)) {
+    productObj = asRecord(data.product);
   } // Handle wrapped format: { data: {...} }
-  else if (json.data && !Array.isArray(json.data)) {
-    productObj = json.data;
+  else if (data) {
+    productObj = data;
   } // Handle direct product object
-  else if (json.id && json.title) {
-    productObj = json;
+  else if (typeof root.id === 'string' && typeof root.title === 'string') {
+    productObj = root;
   }
 
   // Validate required fields
@@ -173,14 +181,14 @@ export function normalizeProduct(json: any): Product | null {
     typeof productObj.id === 'string' &&
     typeof productObj.title === 'string'
   ) {
-    return productObj;
+    return productObj as unknown as Product;
   }
 
   return null;
 }
 
 // Normalize products list from various API response formats
-export function normalizeProductsList(json: any): {
+export function normalizeProductsList(json: unknown): {
   products: Product[];
   total: number;
   limit?: number;
@@ -191,13 +199,21 @@ export function normalizeProductsList(json: any): {
     return { products: [], total: 0 };
   }
 
+  const root = asRecord(json);
+
   // Handle wrapped format: { data: [...], pagination: {...} }
-  if (json.data && Array.isArray(json.data)) {
+  if (root && Array.isArray(root.data)) {
+    const pagination = asRecord(root.pagination);
     return {
-      products: json.data,
-      total: json.pagination?.total ?? json.data.length,
-      limit: json.pagination?.limit,
-      offset: json.pagination?.offset,
+      products: root.data as Product[],
+      total:
+        typeof pagination?.total === 'number'
+          ? pagination.total
+          : root.data.length,
+      limit:
+        typeof pagination?.limit === 'number' ? pagination.limit : undefined,
+      offset:
+        typeof pagination?.offset === 'number' ? pagination.offset : undefined,
     };
   }
 
@@ -210,10 +226,11 @@ export function normalizeProductsList(json: any): {
   }
 
   // Handle wrapped format: { products: [...] }
-  if (json.products && Array.isArray(json.products)) {
+  if (root && Array.isArray(root.products)) {
     return {
-      products: json.products,
-      total: json.total ?? json.products.length,
+      products: root.products as Product[],
+      total:
+        typeof root.total === 'number' ? root.total : root.products.length,
     };
   }
 
@@ -221,20 +238,21 @@ export function normalizeProductsList(json: any): {
 }
 
 // Normalize single item from various API response formats
-export function normalizeSingleItem<T>(json: any, key?: string): T | null {
-  if (!json) return null;
+export function normalizeSingleItem<T>(json: unknown, key?: string): T | null {
+  const root = asRecord(json);
+  if (!root) return null;
 
   // Handle wrapped format: { data: {...} }
   if (
-    Object.prototype.hasOwnProperty.call(json, 'data') &&
-    json.data !== undefined
+    Object.prototype.hasOwnProperty.call(root, 'data') &&
+    root.data !== undefined
   ) {
-    return json.data as T;
+    return root.data as T;
   }
 
   // Handle keyed format: { products: {...} }
-  if (key && Object.prototype.hasOwnProperty.call(json, key)) {
-    return json[key] as T;
+  if (key && Object.prototype.hasOwnProperty.call(root, key)) {
+    return root[key] as T;
   }
 
   // Return null if neither property exists (avoid returning raw json)
@@ -242,12 +260,14 @@ export function normalizeSingleItem<T>(json: any, key?: string): T | null {
 }
 
 // Normalize array from various API response formats
-export function normalizeArray<T>(json: any): T[] {
+export function normalizeArray<T>(json: unknown): T[] {
   if (!json) return [];
 
+  const root = asRecord(json);
+
   // Handle wrapped format: { data: [...] }
-  if (json.data && Array.isArray(json.data)) {
-    return json.data;
+  if (root && Array.isArray(root.data)) {
+    return root.data as T[];
   }
 
   // Handle direct array format
@@ -259,20 +279,23 @@ export function normalizeArray<T>(json: any): T[] {
 }
 
 // Extract featured products from API response
-export function normalizeFeaturedProducts(json: any): Product[] {
+export function normalizeFeaturedProducts(json: unknown): Product[] {
+  const root = asRecord(json);
+  const data = root ? asRecord(root.data) : null;
+
   // Handle format: { data: { data: [...] } }
-  if (json?.data?.data && Array.isArray(json.data.data)) {
-    return json.data.data;
+  if (data && Array.isArray(data.data)) {
+    return data.data as Product[];
   }
 
   // Handle format: { data: [...] }
-  if (json?.data && Array.isArray(json.data)) {
-    return json.data;
+  if (root && Array.isArray(root.data)) {
+    return root.data as Product[];
   }
 
   // Handle format: { products: [...] }
-  if (json?.products && Array.isArray(json.products)) {
-    return json.products;
+  if (root && Array.isArray(root.products)) {
+    return root.products as Product[];
   }
 
   // Handle direct array
@@ -285,13 +308,15 @@ export function normalizeFeaturedProducts(json: any): Product[] {
 
 // Search result normalization
 export function normalizeSearchResults(
-  json: any
+  json: unknown
 ): { products: Product[]; total: number } {
+  const root = asRecord(json);
+
   // Handle format: { data: [...] }
-  if (json?.data && Array.isArray(json.data)) {
+  if (root && Array.isArray(root.data)) {
     return {
-      products: json.data,
-      total: json.total ?? json.data.length,
+      products: root.data as Product[],
+      total: typeof root.total === 'number' ? root.total : root.data.length,
     };
   }
 

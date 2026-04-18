@@ -14,10 +14,52 @@ interface RazorpayButtonProps {
   onError: (msg: string) => void;
 }
 
+interface RazorpayCheckoutResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayPaymentFailureResponse {
+  error?: {
+    description?: string;
+  };
+}
+
+interface RazorpayOptions {
+  key?: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  image: string;
+  order_id: string;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  theme: {
+    color: string;
+  };
+  handler: (response: RazorpayCheckoutResponse) => void | Promise<void>;
+  modal: {
+    ondismiss: () => void;
+  };
+}
+
+interface RazorpayInstance {
+  on: (
+    event: 'payment.failed',
+    handler: (response: RazorpayPaymentFailureResponse) => void
+  ) => void;
+  open: () => void;
+}
+
 // Razorpay checkout.js is loaded dynamically from their CDN
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay?: new (options: RazorpayOptions) => RazorpayInstance;
   }
 }
 
@@ -79,7 +121,7 @@ export default function RazorpayButton({
       const { razorpay_order_id, amount: rzpAmount, key_id } = await res.json();
 
       // Step 2: Open Razorpay checkout popup
-      const options = {
+      const options: RazorpayOptions = {
         key: key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: rzpAmount,
         currency,
@@ -95,11 +137,7 @@ export default function RazorpayButton({
         theme: {
           color: '#1c1917', // stone-900 — matches site palette
         },
-        handler: async (response: {
-          razorpay_order_id: string;
-          razorpay_payment_id: string;
-          razorpay_signature: string;
-        }) => {
+        handler: async (response) => {
           try {
             // Step 3: Verify payment signature on our backend
             const verifyRes = await fetch(
@@ -123,8 +161,10 @@ export default function RazorpayButton({
             }
 
             onSuccess();
-          } catch (err: any) {
-            onError(err.message || 'Payment verification failed');
+          } catch (err: unknown) {
+            onError(
+              err instanceof Error ? err.message : 'Payment verification failed'
+            );
           } finally {
             setIsProcessing(false);
           }
@@ -136,16 +176,22 @@ export default function RazorpayButton({
         },
       };
 
+      if (!window.Razorpay) {
+        throw new Error('Payment gateway failed to load. Please refresh and try again.');
+      }
+
       const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', (response: any) => {
+      rzp.on('payment.failed', (response) => {
         onError(
           response.error?.description || 'Payment failed. Please try again.'
         );
         setIsProcessing(false);
       });
       rzp.open();
-    } catch (err: any) {
-      onError(err.message || 'Failed to initialize payment');
+    } catch (err: unknown) {
+      onError(
+        err instanceof Error ? err.message : 'Failed to initialize payment'
+      );
       setIsProcessing(false);
     }
   };

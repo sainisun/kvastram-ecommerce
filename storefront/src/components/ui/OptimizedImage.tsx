@@ -1,19 +1,21 @@
 'use client';
 
-import Image, { ImageProps } from 'next/image';
+import Image, { type ImageProps } from 'next/image';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'onError' | 'onLoad'> {
   fallbackSrc?: string;
 }
 
 export default function OptimizedImage({
+  alt,
   quality = 75,
   loading,
   sizes,
   ...props
 }: OptimizedImageProps) {
   // Default loading behavior: lazy unless explicitly priority
-  const resolvedLoading = loading ?? (props.priority ? 'eager' : 'lazy');
+  const resolvedLoading: NonNullable<ImageProps['loading']> =
+    loading ?? (props.priority ? 'eager' : 'lazy');
 
   // Default sizes for responsive images when not provided
   const resolvedSizes = sizes ?? '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
@@ -23,13 +25,13 @@ export default function OptimizedImage({
   const defaultWidth = 400;
   const defaultHeight = 400;
 
-  const finalProps: ImageProps = {
+  const finalProps: Omit<ImageProps, 'alt'> = {
     quality,
-    loading: resolvedLoading as any,
+    loading: resolvedLoading,
     sizes: resolvedSizes,
     ...(shouldProvideDefaults ? { width: defaultWidth, height: defaultHeight } : {}),
-    ...((props as unknown) as ImageProps),
+    ...props,
   };
 
-  return <Image {...finalProps} />;
+  return <Image {...finalProps} alt={alt} />;
 }

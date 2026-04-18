@@ -1,30 +1,21 @@
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useMemo, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, ArrowLeft, Eye, EyeOff, Check, X } from 'lucide-react';
 
 function usePasswordValidation(password: string) {
-  const [valid, setValid] = useState({
-    length: false,
-    uppercase: false,
-    lowercase: false,
-    number: false,
-    special: false,
-  });
-
-  useEffect(() => {
-    setValid({
+  return useMemo(
+    () => ({
       length: password.length >= 12,
       uppercase: /[A-Z]/.test(password),
       lowercase: /[a-z]/.test(password),
       number: /\d/.test(password),
       special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-    });
-  }, [password]);
-
-  return valid;
+    }),
+    [password]
+  );
 }
 
 function SuccessView() {
@@ -105,7 +96,7 @@ function ResetPasswordContent() {
   const isPasswordValid = Object.values(passwordValid).every(Boolean);
   const passwordsMatch = password === confirmPassword && password !== '';
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
