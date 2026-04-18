@@ -2,7 +2,7 @@
   "name": "kvastram-backend",
   "version": "1.0.0",
   "scripts": {
-    "lint": "tsc --noEmit",
+    "lint": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc -p tsconfig.lint.core.json",
     "test": "vitest",
     "test:run": "vitest run",
     "test:integration": "node scripts/run-integration-tests.mjs",

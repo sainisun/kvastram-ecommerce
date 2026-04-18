@@ -251,7 +251,7 @@ class OrderService {
 
   async addTracking(id: string, data: { tracking_number: string; shipping_carrier?: string; tracking_link?: string; }) {
     const [existingOrder] = await db
-      .select({ id: orders.id, email: orders.email, order_number: orders.order_number })
+      .select({ id: orders.id, email: orders.email, order_number: orders.display_id })
       .from(orders)
       .where(eq(orders.id, id));
 
@@ -395,7 +395,7 @@ class OrderService {
         ORDER BY date ASC
       `
     );
-    return result.rows;
+    return Array.from(result);
   }
 
   // Export orders data for CSV
@@ -436,4 +436,3 @@ class OrderService {
 }
 
 export const orderService = new OrderService();
-

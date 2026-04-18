@@ -41,18 +41,18 @@ export function serializeCustomer(
  * Safely serialize array of users
  */
 export function serializeUsers(
-  users: InferSelectModel<typeof users>[]
+  userRows: InferSelectModel<typeof users>[]
 ): SafeUser[] {
-  return users.map(serializeUser);
+  return userRows.map(serializeUser);
 }
 
 /**
  * Safely serialize array of customers
  */
 export function serializeCustomers(
-  customers: InferSelectModel<typeof customers>[]
+  customerRows: InferSelectModel<typeof customers>[]
 ): SafeCustomer[] {
-  return customers.map(serializeCustomer);
+  return customerRows.map(serializeCustomer);
 }
 
 /**

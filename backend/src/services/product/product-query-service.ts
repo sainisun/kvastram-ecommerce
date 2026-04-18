@@ -198,7 +198,7 @@ export class ProductQueryService {
         id: variant.id,
         title: variant.title,
         sku: variant.sku,
-        inventory_quantity: variant.inventory_quantity,
+        inventory_quantity: variant.inventory_quantity ?? 0,
         prices: variant.prices as Array<{
           id: string;
           amount: number;

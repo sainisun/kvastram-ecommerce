@@ -147,18 +147,20 @@ export const generateInvoice = async (
   });
   y += 20;
 
-  if (order.shipping_total > 0) {
+  const shippingTotal = order.shipping_total ?? 0;
+  if (shippingTotal > 0) {
     doc.text('Shipping:', 350, y, { width: 90, align: 'right' });
-    doc.text(`$${(order.shipping_total / 100).toFixed(2)}`, rightAlign, y, {
+    doc.text(`$${(shippingTotal / 100).toFixed(2)}`, rightAlign, y, {
       width: 90,
       align: 'right',
     });
     y += 20;
   }
 
-  if (order.tax_total > 0) {
+  const taxTotal = order.tax_total ?? 0;
+  if (taxTotal > 0) {
     doc.text('Tax:', 350, y, { width: 90, align: 'right' });
-    doc.text(`$${(order.tax_total / 100).toFixed(2)}`, rightAlign, y, {
+    doc.text(`$${(taxTotal / 100).toFixed(2)}`, rightAlign, y, {
       width: 90,
       align: 'right',
     });

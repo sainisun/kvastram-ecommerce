@@ -338,8 +338,10 @@ export const wholesalePriceService = {
 
     // Find the highest tier the customer qualifies for
     for (const tier of tiers) {
-      const meetsValue = totalValue >= tier.min_order_value;
-      const meetsQuantity = totalQuantity >= tier.min_order_quantity;
+      const minOrderValue = tier.min_order_value ?? 0;
+      const minOrderQuantity = tier.min_order_quantity ?? 0;
+      const meetsValue = totalValue >= minOrderValue;
+      const meetsQuantity = totalQuantity >= minOrderQuantity;
 
       if (meetsValue && meetsQuantity) {
         // Update customer's tier
@@ -426,16 +428,18 @@ export const wholesalePriceService = {
       .orderBy(desc(wholesale_tiers.priority));
 
     const eligibleTiers = tiers.map((tier) => {
-      const meetsValue = totalValue >= tier.min_order_value;
-      const meetsQuantity = totalQuantity >= tier.min_order_quantity;
+      const minOrderValue = tier.min_order_value ?? 0;
+      const minOrderQuantity = tier.min_order_quantity ?? 0;
+      const meetsValue = totalValue >= minOrderValue;
+      const meetsQuantity = totalQuantity >= minOrderQuantity;
 
       let requirements = '';
-      if (tier.min_order_value > 0) {
-        requirements += `$${(tier.min_order_value / 100).toFixed(0)} order value`;
+      if (minOrderValue > 0) {
+        requirements += `$${(minOrderValue / 100).toFixed(0)} order value`;
       }
-      if (tier.min_order_quantity > 0) {
+      if (minOrderQuantity > 0) {
         if (requirements) requirements += ' + ';
-        requirements += `${tier.min_order_quantity} items`;
+        requirements += `${minOrderQuantity} items`;
       }
       if (!requirements) requirements = 'No minimum requirements';
 
