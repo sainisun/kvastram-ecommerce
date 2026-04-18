@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { Play, Heart, Share2, X, ChevronLeft } from 'lucide-react';
@@ -15,19 +16,70 @@ interface TrendingReelItem {
   link_url: string;
 }
 
-export default function TrendingNowPage() {
+function TrendingNowPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [reels, setReels] = useState<TrendingReelItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeReelIndex, setActiveReelIndex] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+
     api
       .getTrendingReels()
-      .then((res) => { if (!cancelled) setReels(res.reels || []); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+      .then((res) => {
+        if (cancelled) return;
+
+        const nextReels = res.reels || [];
+        setReels(nextReels);
+
+        const selectedId = searchParams.get('reel');
+        if (selectedId) {
+          const selectedIndex = nextReels.findIndex(
+            (reel: TrendingReelItem) => reel.id === selectedId
+          );
+          setActiveReelIndex(
+            selectedIndex >= 0 ? selectedIndex : nextReels.length > 0 ? 0 : null
+          );
+          return;
+        }
+
+        setActiveReelIndex(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchParams]);
+
+  function openReel(index: number) {
+    const selectedReel = reels[index];
+    if (!selectedReel) return;
+
+    setActiveReelIndex(index);
+    router.replace(`/trending-now?reel=${encodeURIComponent(selectedReel.id)}`, {
+      scroll: false,
+    });
+  }
+
+  function closeReel() {
+    setActiveReelIndex(null);
+    router.replace('/trending-now', { scroll: false });
+  }
+
+  function handleReelChange(index: number) {
+    const nextReel = reels[index];
+    if (!nextReel) return;
+
+    setActiveReelIndex(index);
+    router.replace(`/trending-now?reel=${encodeURIComponent(nextReel.id)}`, {
+      scroll: false,
+    });
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -54,7 +106,7 @@ export default function TrendingNowPage() {
             {reels.map((reel, idx) => (
               <button
                 key={reel.id}
-                onClick={() => setActiveReelIndex(idx)}
+                onClick={() => openReel(idx)}
                 className="relative aspect-[9/16] bg-gray-200 overflow-hidden group rounded-md sm:rounded-xl"
               >
                 <OptimizedImage
@@ -87,10 +139,19 @@ export default function TrendingNowPage() {
         <ReelPlayerModal
           reels={reels}
           initialIndex={activeReelIndex}
-          onClose={() => setActiveReelIndex(null)}
+          onClose={closeReel}
+          onReelChange={handleReelChange}
         />
       )}
     </div>
+  );
+}
+
+export default function TrendingNowPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 pb-20" />}>
+      <TrendingNowPageContent />
+    </Suspense>
   );
 }
 
@@ -98,17 +159,23 @@ export default function TrendingNowPage() {
 function ReelPlayerModal({
   reels,
   initialIndex,
-  onClose
+  onClose,
+  onReelChange,
 }: {
   reels: TrendingReelItem[];
   initialIndex: number;
   onClose: () => void;
+  onReelChange: (index: number) => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [liked, setLiked] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   const currentReel = reels[currentIndex];
+
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
 
   useEffect(() => {
     // Lock body scroll when modal is open
@@ -156,11 +223,19 @@ function ReelPlayerModal({
   };
 
   const handleSwipeUp = () => {
-    if (currentIndex < reels.length - 1) setCurrentIndex(currentIndex + 1);
+    if (currentIndex < reels.length - 1) {
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
+      onReelChange(nextIndex);
+    }
   };
 
   const handleSwipeDown = () => {
-    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+    if (currentIndex > 0) {
+      const nextIndex = currentIndex - 1;
+      setCurrentIndex(nextIndex);
+      onReelChange(nextIndex);
+    }
   };
 
   // Simple touch swipe implementation

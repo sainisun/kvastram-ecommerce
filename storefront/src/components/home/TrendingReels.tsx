@@ -46,7 +46,7 @@ function ReelCard({ reel }: { reel: HomepageTrendingReel }) {
 
   return (
     <Link
-      href={reel.link_url || '/trending-now'}
+      href={`/trending-now?reel=${encodeURIComponent(reel.id)}`}
       ref={containerRef}
       className="group flex w-[78vw] shrink-0 snap-center flex-col gap-4 sm:w-[280px] lg:w-[320px]"
     >
@@ -124,6 +124,8 @@ interface TrendingReelsProps {
 export function TrendingReels({ reels }: TrendingReelsProps) {
   if (reels.length === 0) return null;
 
+  const trendingHref = `/trending-now?reel=${encodeURIComponent(reels[0].id)}`;
+
   return (
     <section className="border-y border-stone-200 bg-[#f8f1eb] py-20">
       <div className="mx-auto flex max-w-7xl flex-col gap-10 px-4 sm:px-6 lg:flex-row lg:items-start lg:gap-14 lg:px-8">
@@ -141,7 +143,7 @@ export function TrendingReels({ reels }: TrendingReelsProps) {
             </p>
           </div>
           <Link
-            href="/trending-now"
+            href={trendingHref}
             className="inline-flex items-center gap-2 rounded-full bg-stone-950 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-stone-800"
           >
             Explore Trending
