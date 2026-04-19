@@ -18,6 +18,8 @@ describe('ConsentManager', () => {
             session_recording: false,
         });
         expect(ConsentManager.hasConsentFor('analytics')).toBe(true);
-        expect(ConsentManager.getConsent()).toMatchObject({ analytics: true });
+        expect(ConsentManager.getConsent()).toMatchObject({
+            categories: { analytics: true },
+        });
     });
 });

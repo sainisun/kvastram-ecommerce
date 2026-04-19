@@ -23,8 +23,8 @@ test.describe('Storefront E2E Tests', () => {
       }
     });
     
-    // Wait for page to fully load
-    await page.waitForLoadState('networkidle');
+    // Persistent widgets/API calls can keep the page from reaching networkidle.
+    await page.waitForLoadState('domcontentloaded');
     
     // Log any errors found
     if (errors.length > 0) {
@@ -35,8 +35,7 @@ test.describe('Storefront E2E Tests', () => {
   test('Products page loads', async ({ page }) => {
     await page.goto('/products');
     
-    // Wait for content to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     // Check page loads
     await expect(page).toHaveTitle(/Products|Kvastram/);
@@ -69,7 +68,7 @@ test.describe('Storefront E2E Tests', () => {
     await page.goto('/cart');
     
     // Should load without errors
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     // Check cart content area exists
     await expect(page.locator('main')).toBeVisible();
@@ -78,7 +77,7 @@ test.describe('Storefront E2E Tests', () => {
   test('Login page loads', async ({ page }) => {
     await page.goto('/login');
     
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     // Check login form elements exist
     const emailInput = page.locator('input[type="email"]').first();
@@ -88,7 +87,7 @@ test.describe('Storefront E2E Tests', () => {
   test('Wholesale page loads', async ({ page }) => {
     await page.goto('/wholesale');
     
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     // Check wholesale page content
     await expect(page.locator('main')).toBeVisible();
@@ -99,7 +98,7 @@ test.describe('Storefront E2E Tests', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     // Page should still load correctly on mobile
     await expect(page.locator('body')).toBeVisible();
@@ -110,7 +109,7 @@ test.describe('Storefront E2E Tests', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
     
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     // Page should still load correctly on tablet
     await expect(page.locator('body')).toBeVisible();
@@ -126,10 +125,9 @@ test.describe('Storefront E2E Tests', () => {
     });
     
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
-    // Wait a bit more for any async errors
-    await page.waitForTimeout(2000);
+    await page.locator('main').waitFor({ state: 'visible' });
     
     // Filter out non-critical errors (like 404s for images, etc)
     const criticalErrors = errors.filter(err => 
