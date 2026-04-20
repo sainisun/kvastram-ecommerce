@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { storage } from '@/lib/storage';
 import { api } from '@/lib/api';
+import { useShop } from '@/context/shop-context';
 
 export interface WishlistItem {
   id: string;
@@ -57,6 +58,7 @@ const WishlistContext = createContext<WishlistContextType | undefined>(
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const { currentRegion } = useShop();
 
   // Load from localStorage on mount, then try backend sync
   useEffect(() => {
@@ -75,15 +77,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
           // Backend wishlist takes precedence when logged in
           const backendItems: WishlistItem[] = data.wishlist.map(
             (w: BackendWishlistEntry) => ({
-            id: `wishlist-${w.id}`,
-            productId: w.product_id,
-            variantId: w.variant_id,
-            title: w.product?.title || '',
-            price: w.product?.variants?.[0]?.prices?.[0]?.amount || 0,
-            currency: 'USD',
-            thumbnail: w.product?.thumbnail || undefined,
-            handle: w.product?.handle || w.product_id,
-            addedAt: new Date(w.created_at).getTime(),
+              id: `wishlist-${w.id}`,
+              productId: w.product_id,
+              variantId: w.variant_id,
+              title: w.product?.title || '',
+              price: w.product?.variants?.[0]?.prices?.[0]?.amount || 0,
+              currency: currentRegion?.currency_code?.toUpperCase() || 'USD',
+              thumbnail: w.product?.thumbnail || undefined,
+              handle: w.product?.handle || w.product_id,
+              addedAt: new Date(w.created_at).getTime(),
             })
           );
           setItems(backendItems);
@@ -94,7 +96,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       }
     }, 0);
     return () => clearTimeout(timer);
-  }, []);
+  }, [currentRegion?.currency_code]);
 
   // Save to localStorage when items change
   useEffect(() => {

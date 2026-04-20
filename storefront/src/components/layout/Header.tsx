@@ -66,7 +66,7 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
 ];
 
 const DEFAULT_QUICK_LINKS: NavLink[] = [
-  { label: 'Bestsellers', url: '/search?query=bestsellers', order: 1 },
+  { label: 'Bestsellers', url: '/bestsellers', order: 1 },
   { label: 'Gift Cards', url: '/gift-cards', order: 2 },
   { label: 'New In', url: '/products?sort=newest', order: 3 },
 ];

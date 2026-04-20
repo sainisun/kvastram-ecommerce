@@ -120,19 +120,34 @@ async function RelatedProducts({
   collectionId?: string;
   currentId: string;
 }) {
-  const params =
-    categoryIds.length > 0
-      ? { category_id: categoryIds[0], limit: 5 }
-      : collectionId
-        ? { collection_id: collectionId, limit: 5 }
-        : null;
+  const uniqueCategoryIds = Array.from(new Set(categoryIds)).slice(0, 3);
+  const requests: Promise<{ products?: Product[] }>[] = [];
 
-  if (!params) return null;
+  for (const categoryId of uniqueCategoryIds) {
+    requests.push(api.getProducts({ category_id: categoryId, limit: 5 }));
+  }
 
-  const data = await api.getProducts(params);
-  const related = (data.products || [])
-    .filter((product: Product) => product.id !== currentId)
-    .slice(0, 4);
+  if (requests.length === 0 && collectionId) {
+    requests.push(api.getProducts({ collection_id: collectionId, limit: 5 }));
+  } else if (collectionId) {
+    requests.push(api.getProducts({ collection_id: collectionId, limit: 5 }));
+  }
+
+  if (requests.length === 0) return null;
+
+  const results = await Promise.all(requests);
+  const relatedMap = new Map<string, Product>();
+
+  for (const result of results) {
+    for (const product of result.products || []) {
+      if (product.id === currentId || relatedMap.has(product.id)) continue;
+      relatedMap.set(product.id, product);
+      if (relatedMap.size >= 4) break;
+    }
+    if (relatedMap.size >= 4) break;
+  }
+
+  const related = Array.from(relatedMap.values()).slice(0, 4);
 
   if (related.length === 0) return null;
 

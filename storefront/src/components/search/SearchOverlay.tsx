@@ -8,6 +8,7 @@ import { useDebounce } from 'use-debounce';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
 import { useShop } from '@/context/shop-context';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -159,10 +160,8 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   };
 
   const formatPrice = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency?.toUpperCase() || 'USD',
-    }).format(amount / 100);
+    const normalizedCurrency = currency?.toUpperCase() || 'USD';
+    return formatMoney(amount, normalizedCurrency, getCurrencyLocale(normalizedCurrency));
   };
 
   return (

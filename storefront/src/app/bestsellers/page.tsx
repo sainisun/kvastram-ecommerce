@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 import {
   buildBasicPageMetadata,
   buildBreadcrumbJsonLd,
@@ -58,10 +59,8 @@ function formatPrice(product: Product) {
     return 'Contact for price';
   }
 
-  return new Intl.NumberFormat(undefined, {
-    style: 'currency',
-    currency: price.currency_code?.toUpperCase() || 'USD',
-  }).format(price.amount / 100);
+  const currency = price.currency_code?.toUpperCase() || 'USD';
+  return formatMoney(price.amount, currency, getCurrencyLocale(currency));
 }
 
 function renderStars(rating?: number | null) {

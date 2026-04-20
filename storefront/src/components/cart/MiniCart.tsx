@@ -5,6 +5,7 @@ import { useShop } from '@/context/shop-context';
 import { useState, useRef, useEffect } from 'react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 import { X, Minus, Plus, Trash2 } from 'lucide-react';
 
 interface MiniCartProps {
@@ -43,10 +44,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
 
   const formatPrice = (amount: number) => {
     const currency = currentRegion?.currency_code?.toUpperCase() || 'USD';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-    }).format(amount / 100);
+    return formatMoney(amount, currency, getCurrencyLocale(currency));
   };
 
   if (!isOpen) return null;
@@ -112,7 +110,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-medium text-stone-900 truncate">
                       <Link
-                        href={`/products/${item.variantId}`}
+                        href={`/products/${item.handle || item.id}`}
                         onClick={onClose}
                       >
                         {item.title}

@@ -6,6 +6,7 @@ import { useShop } from '@/context/shop-context';
 import { useNotification } from '@/context/notification-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 import { Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 
 export default function WishlistPage() {
@@ -34,10 +35,8 @@ export default function WishlistPage() {
   };
 
   const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: currency?.toUpperCase() || 'USD',
-    }).format(price / 100);
+    const normalizedCurrency = currency?.toUpperCase() || 'USD';
+    return formatMoney(price, normalizedCurrency, getCurrencyLocale(normalizedCurrency));
   };
 
   if (items.length === 0) {

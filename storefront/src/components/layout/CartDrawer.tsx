@@ -5,6 +5,7 @@ import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 import {
   X,
   Minus,
@@ -38,10 +39,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   // Format price
   const formatPrice = (amount: number) => {
     const currency = currentRegion?.currency_code?.toUpperCase() || 'USD';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-    }).format(amount / 100);
+    return formatMoney(amount, currency, getCurrencyLocale(currency));
   };
 
   // Lock body scroll when drawer is open

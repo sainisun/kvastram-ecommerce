@@ -34,6 +34,27 @@ const LOCALE_CURRENCY_MAP: Record<string, string> = {
 };
 
 const ZERO_DECIMAL_CURRENCIES = new Set(['JPY', 'KRW', 'VND', 'IDR', 'TWD', 'CLP']);
+const CURRENCY_LOCALE_MAP: Record<string, string> = {
+  INR: 'en-IN',
+  USD: 'en-US',
+  GBP: 'en-GB',
+  EUR: 'de-DE',
+  JPY: 'ja-JP',
+  AUD: 'en-AU',
+  CAD: 'en-CA',
+  SGD: 'en-SG',
+  AED: 'ar-AE',
+  SAR: 'ar-SA',
+  CNY: 'zh-CN',
+  KRW: 'ko-KR',
+  CHF: 'de-CH',
+  SEK: 'sv-SE',
+  NOK: 'nb-NO',
+  DKK: 'da-DK',
+  BRL: 'pt-BR',
+  MXN: 'es-MX',
+  ZAR: 'en-ZA',
+};
 
 /**
  * Detect the user's preferred currency from browser locale.
@@ -88,7 +109,8 @@ export function formatPriceFromINR(
   locale?: string
 ): string {
   const converted = convertFromINR(inrPaise, targetCurrency, rates);
-  const resolvedLocale = locale ?? (typeof navigator !== 'undefined' ? navigator.language : 'en-IN');
+  const resolvedLocale =
+    locale ?? getCurrencyLocale(targetCurrency) ?? (typeof navigator !== 'undefined' ? navigator.language : 'en-IN');
   const isZeroDecimal = ZERO_DECIMAL_CURRENCIES.has(targetCurrency.toUpperCase());
   try {
     return new Intl.NumberFormat(resolvedLocale, {
@@ -99,6 +121,34 @@ export function formatPriceFromINR(
     }).format(converted);
   } catch {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(inrPaise / 100);
+  }
+}
+
+export function getCurrencyLocale(currency: string): string {
+  return CURRENCY_LOCALE_MAP[currency.toUpperCase()] || 'en-IN';
+}
+
+export function formatMoney(
+  amount: number,
+  currency: string,
+  locale?: string
+): string {
+  const normalizedCurrency = currency.toUpperCase();
+  const resolvedLocale = locale ?? getCurrencyLocale(normalizedCurrency);
+  const isZeroDecimal = ZERO_DECIMAL_CURRENCIES.has(normalizedCurrency);
+
+  try {
+    return new Intl.NumberFormat(resolvedLocale, {
+      style: 'currency',
+      currency: normalizedCurrency,
+      maximumFractionDigits: isZeroDecimal ? 0 : 2,
+      minimumFractionDigits: 0,
+    }).format(amount / 100);
+  } catch {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+    }).format(amount / 100);
   }
 }
 

@@ -5,6 +5,7 @@ import { useShop } from '@/context/shop-context';
 import { useNotification } from '@/context/notification-context';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import {
@@ -96,10 +97,7 @@ export default function CartPage() {
 
   const formatCartPrice = (amount: number) => {
     const currency = currentRegion?.currency_code?.toUpperCase() || 'USD';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-    }).format(amount / 100);
+    return formatMoney(amount, currency, getCurrencyLocale(currency));
   };
 
   const handleApplyPromo = async () => {
@@ -222,11 +220,13 @@ export default function CartPage() {
                         (currentRegion?.currency_code || 'usd').toLowerCase()
                     ) || prices[0];
                   const price = priceObj
-                    ? new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency:
-                          priceObj.currency_code?.toUpperCase() || 'USD',
-                      }).format(priceObj.amount / 100)
+                    ? formatMoney(
+                        priceObj.amount,
+                        priceObj.currency_code?.toUpperCase() || 'USD',
+                        getCurrencyLocale(
+                          priceObj.currency_code?.toUpperCase() || 'USD'
+                        )
+                      )
                     : '';
 
                   return (

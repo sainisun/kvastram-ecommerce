@@ -10,6 +10,7 @@ import type { Product, MoneyAmount } from '@/types';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product as ProductType } from '@/types';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 
 interface ProductCarouselProps {
   products?: Product[];
@@ -82,10 +83,11 @@ function ProductCarousel({
       ) || prices[0];
 
     if (price) {
-      return new Intl.NumberFormat(undefined, {
-        style: 'currency',
-        currency: price?.currency_code?.toUpperCase() || 'USD',
-      }).format(price.amount / 100);
+      return formatMoney(
+        price.amount,
+        price?.currency_code?.toUpperCase() || 'USD',
+        getCurrencyLocale(price?.currency_code?.toUpperCase() || 'USD')
+      );
     }
 
     return 'Contact for price';

@@ -4,6 +4,7 @@ import React from 'react';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 
 interface RecentlyViewedRowProps {
   currentProductId: string;
@@ -69,10 +70,11 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
                 {item.title}
               </p>
               <p className="font-body text-[14px] font-normal text-stone-500">
-                {new Intl.NumberFormat(undefined, {
-                  style: 'currency',
-                  currency: item.currency || 'USD',
-                }).format(item.price / 100)}
+                {formatMoney(
+                  item.price,
+                  item.currency || 'USD',
+                  getCurrencyLocale(item.currency || 'USD')
+                )}
               </p>
             </Link>
           ))}

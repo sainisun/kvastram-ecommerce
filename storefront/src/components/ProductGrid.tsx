@@ -9,6 +9,7 @@ import { useWholesale } from '@/context/wholesale-context';
 import { QuickViewModal } from '@/components/product/QuickViewModal';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import WishlistButton from '@/components/ui/WishlistButton';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 import { buildProductImageAlt } from '@/lib/seo';
 
 interface SpotlightProduct {
@@ -118,10 +119,11 @@ function ProductGrid({
       const wholesale = getWholesalePrice(variantId, retailPrice);
       if (wholesale.isWholesale) {
         return {
-          price: new Intl.NumberFormat(undefined, {
-            style: 'currency',
-            currency: price.currency_code?.toUpperCase() || 'USD',
-          }).format(wholesale.price / 100),
+          price: formatMoney(
+            wholesale.price,
+            price.currency_code?.toUpperCase() || 'USD',
+            getCurrencyLocale(price.currency_code?.toUpperCase() || 'USD')
+          ),
           isWholesale: true,
           savings: wholesale.savings,
           discountPercent: wholesaleInfo.discountPercent,
@@ -130,10 +132,11 @@ function ProductGrid({
     }
 
     return {
-      price: new Intl.NumberFormat(undefined, {
-        style: 'currency',
-        currency: price.currency_code?.toUpperCase() || 'USD',
-      }).format(price.amount / 100),
+      price: formatMoney(
+        price.amount,
+        price.currency_code?.toUpperCase() || 'USD',
+        getCurrencyLocale(price.currency_code?.toUpperCase() || 'USD')
+      ),
       isWholesale: false,
       savings: 0,
     };
@@ -361,11 +364,14 @@ function ProductGrid({
                         fontSize: '14px',
                       }}
                     >
-                      {new Intl.NumberFormat(undefined, {
-                        style: 'currency',
-                        currency:
-                          variant?.prices?.[0]?.currency_code?.toUpperCase() || 'USD',
-                      }).format(compareAt / 100)}
+                      {formatMoney(
+                        compareAt,
+                        variant?.prices?.[0]?.currency_code?.toUpperCase() || 'USD',
+                        getCurrencyLocale(
+                          variant?.prices?.[0]?.currency_code?.toUpperCase() ||
+                            'USD'
+                        )
+                      )}
                     </span>
                   );
                 }

@@ -4,6 +4,7 @@ import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import { useShop } from '@/context/shop-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
+import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 
 export function RecentlyViewedSection() {
   const { items } = useRecentlyViewed();
@@ -12,10 +13,8 @@ export function RecentlyViewedSection() {
   if (items.length === 0) return null;
 
   const formatPrice = (amount: number, currency: string) => {
-    return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: currency?.toUpperCase() || 'USD',
-    }).format(amount / 100);
+    const normalizedCurrency = currency?.toUpperCase() || 'USD';
+    return formatMoney(amount, normalizedCurrency, getCurrencyLocale(normalizedCurrency));
   };
 
   return (

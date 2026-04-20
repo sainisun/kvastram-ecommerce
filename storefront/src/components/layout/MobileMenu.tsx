@@ -329,7 +329,7 @@ export default function MobileMenu({
                   highlight
                 />
                 <MobileNavLink
-                  href="/search?query=bestsellers"
+                  href="/bestsellers"
                   icon={<Tag size={18} />}
                   label="Bestsellers"
                   pathname={pathname}
