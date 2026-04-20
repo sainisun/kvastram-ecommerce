@@ -2,6 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { formatPriceFromINR } from '@/lib/currency';
+import { useShop } from '@/context/shop-context';
 
 interface CurrencyContextValue {
   /** Detected currency code e.g. 'USD', 'GBP', 'INR' */
@@ -29,10 +30,36 @@ const FALLBACK_RATES: Record<string, number> = {
 };
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [currency] = useState('INR');
-  const [locale] = useState('en-IN');
+  const { currentRegion } = useShop();
   const [rates, setRates] = useState<Record<string, number>>(FALLBACK_RATES);
   const [loading, setLoading] = useState(true);
+
+  const currency = currentRegion?.currency_code?.toUpperCase() || 'INR';
+  const locale = useMemo(() => {
+    switch (currency) {
+      case 'USD':
+        return 'en-US';
+      case 'GBP':
+        return 'en-GB';
+      case 'EUR':
+        return 'de-DE';
+      case 'JPY':
+        return 'ja-JP';
+      case 'AUD':
+        return 'en-AU';
+      case 'CAD':
+        return 'en-CA';
+      case 'SGD':
+        return 'en-SG';
+      case 'AED':
+        return 'ar-AE';
+      case 'SAR':
+        return 'ar-SA';
+      case 'INR':
+      default:
+        return 'en-IN';
+    }
+  }, [currency]);
 
   useEffect(() => {
     // Fetch live rates from our cached API route

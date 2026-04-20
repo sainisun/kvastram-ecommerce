@@ -112,25 +112,25 @@ export default async function RootLayout({
 
         <RootErrorBoundary>
           <NotificationProvider>
-            <CurrencyProvider>
             <ShopProvider>
-              <AuthProvider>
-                <LogRocketProvider>
-                  <CartProvider>
-                    <WholesaleCartProvider>
-                      <WishlistProvider>
-                        <RecentlyViewedProvider>
-                          <WholesaleProvider>
-                            <MainLayout>{children}</MainLayout>
-                          </WholesaleProvider>
-                        </RecentlyViewedProvider>
-                      </WishlistProvider>
-                    </WholesaleCartProvider>
-                  </CartProvider>
-                </LogRocketProvider>
-              </AuthProvider>
+              <CurrencyProvider>
+                <AuthProvider>
+                  <LogRocketProvider>
+                    <CartProvider>
+                      <WholesaleCartProvider>
+                        <WishlistProvider>
+                          <RecentlyViewedProvider>
+                            <WholesaleProvider>
+                              <MainLayout>{children}</MainLayout>
+                            </WholesaleProvider>
+                          </RecentlyViewedProvider>
+                        </WishlistProvider>
+                      </WholesaleCartProvider>
+                    </CartProvider>
+                  </LogRocketProvider>
+                </AuthProvider>
+              </CurrencyProvider>
             </ShopProvider>
-            </CurrencyProvider>
           </NotificationProvider>
         </RootErrorBoundary>
         <Analytics />
