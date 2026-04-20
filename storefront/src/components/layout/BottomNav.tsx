@@ -61,7 +61,7 @@ export function BottomNav() {
 
       {/* Bottom Navigation Bar */}
       <nav
-        className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-100 z-40 transition-transform duration-300 md:hidden ${
+        className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-100 z-[45] pointer-events-auto transition-transform duration-300 md:hidden ${
           isVisible ? 'translate-y-0' : 'translate-y-full'
         }`}
         aria-label="Bottom navigation"

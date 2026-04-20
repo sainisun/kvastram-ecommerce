@@ -42,7 +42,6 @@ function ProductGrid({
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
     null
   );
-  const [renderedAt] = useState(() => Date.now());
   const products = initialProducts;
   const resolvedLoading = externalLoading || initialProducts.length === 0;
 
@@ -204,12 +203,9 @@ function ProductGrid({
   }
 
   const renderedItems: React.ReactNode[] = [];
-  const freshProductThreshold = renderedAt - 14 * 24 * 60 * 60 * 1000;
 
   products.forEach((product, index) => {
-    const isNew = product.created_at
-      ? new Date(product.created_at).getTime() > freshProductThreshold
-      : false;
+    const isNew = index < 4;
     const isOnSale = !!(
       product.variants?.[0]?.compare_at_price &&
       product.variants[0].compare_at_price >

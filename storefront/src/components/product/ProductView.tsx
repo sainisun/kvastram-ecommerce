@@ -36,7 +36,6 @@ export default function ProductView({ product }: { product: Product }) {
   const [activeAccordion, setActiveAccordion] = useState<string | null>('productDetails');
   const [showStickyATC, setShowStickyATC] = useState(false);
   const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
-  const [shippingEstimateBase] = useState(() => Date.now());
   const primaryCategory = getPrimaryCategory(product);
   const primaryCategoryPath = primaryCategory ? getCategoryPath(primaryCategory) : null;
   const seoContent = buildProductSeoContent(product);
@@ -51,20 +50,13 @@ export default function ProductView({ product }: { product: Product }) {
     return () => product.variants?.forEach((variant) => unsubscribeFromInventory(variant.id));
   }, [product.variants, subscribeToInventory, unsubscribeFromInventory]);
 
-  const deliveryDate = useMemo(() => {
+  const deliveryWindow = useMemo(() => {
     if (!currentRegion) return '';
 
-    const usRegion = currentRegion.id.toLowerCase().startsWith('us');
-    const minDate = new Date(shippingEstimateBase + (usRegion ? 3 : 7) * 86400000);
-    const maxDate = new Date(shippingEstimateBase + (usRegion ? 5 : 14) * 86400000);
-    const formatOptions: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    };
-
-    return `${minDate.toLocaleDateString('en-US', formatOptions)} - ${maxDate.toLocaleDateString('en-US', formatOptions)}`;
-  }, [currentRegion, shippingEstimateBase]);
+    return currentRegion.id.toLowerCase().startsWith('us')
+      ? '3-5 business days'
+      : '7-14 business days';
+  }, [currentRegion]);
 
   useEffect(() => {
     const price = product.variants?.[0]?.prices?.[0];
@@ -320,7 +312,7 @@ export default function ProductView({ product }: { product: Product }) {
                 )}
                 <div className="space-y-2 bg-stone-50 p-4">
                   <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-stone-900">Estimated Delivery</p>
-                  <p className="text-[15px] font-[300] leading-[1.7] text-stone-600">Order now to receive by <span className="font-medium text-stone-900">{deliveryDate}</span>.</p>
+                  <p className="text-[15px] font-[300] leading-[1.7] text-stone-600">Order now to receive in <span className="font-medium text-stone-900">{deliveryWindow}</span>.</p>
                   <p className="text-[12px] text-stone-400">Free express shipping on orders over $250.</p>
                 </div>
               </div>
@@ -366,7 +358,7 @@ export default function ProductView({ product }: { product: Product }) {
                           {product.care_instructions && <div className="prose prose-stone prose-sm max-w-none font-[300]"><ReactMarkdown remarkPlugins={[remarkGfm]}>{product.care_instructions}</ReactMarkdown></div>}
                         </div>
                       )}
-                      {accordion.key === 'shipping' && <div className="space-y-4"><p>Free express shipping on orders over $250, with delivery in {deliveryDate || '5-14 business days'}.</p><p>Returns and exchanges are accepted within 30 days when items are unworn and in original packaging.</p></div>}
+                      {accordion.key === 'shipping' && <div className="space-y-4"><p>Free express shipping on orders over $250, with delivery in {deliveryWindow || '5-14 business days'}.</p><p>Returns and exchanges are accepted within 30 days when items are unworn and in original packaging.</p></div>}
                       {accordion.key === 'sizeguide' && <div>{typeof product.size_guide === 'string' ? <div className="prose prose-stone prose-sm max-w-none font-[300]"><ReactMarkdown remarkPlugins={[remarkGfm]}>{product.size_guide}</ReactMarkdown></div> : <button type="button" onClick={() => setShowSizeGuide(true)} className="font-medium text-stone-900 underline">View Full Size Guide</button>}</div>}
                     </div>
                   )}
@@ -380,8 +372,8 @@ export default function ProductView({ product }: { product: Product }) {
       <Reviews productId={product.id} />
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} sizeGuide={product.size_guide} />
 
-      {/* Sticky ATC: sits above BottomNav (h-16 = 64px) on mobile */}
-      <div className={`fixed bottom-16 left-0 right-0 z-40 flex items-center gap-3 border-t border-stone-200 bg-white px-4 py-3 shadow-2xl transition-transform duration-300 md:bottom-0 md:hidden ${showStickyATC ? 'translate-y-0' : 'translate-y-full'}`} aria-hidden={!showStickyATC}>
+      {/* Sticky ATC: leaves clear room for the mobile bottom nav on small screens */}
+      <div className={`fixed bottom-20 left-0 right-0 z-40 flex items-center gap-3 border-t border-stone-200 bg-white px-4 py-3 shadow-2xl transition-transform duration-300 md:bottom-0 md:hidden ${showStickyATC ? 'translate-y-0' : 'translate-y-full'}`} aria-hidden={!showStickyATC}>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">{product.title}</p>
           <p className="text-[14px] font-medium text-stone-900">{formattedPrice}</p>

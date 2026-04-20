@@ -214,7 +214,7 @@ export default function FilterSidebar({
                     >
                       <span>{sub.name}</span>
                       <span className="filter-count-prem">
-                        {Math.floor(Math.random() * 20) + 5}
+                        {getCategoryCount(sub)}
                       </span>
                     </button>
                   ))}
