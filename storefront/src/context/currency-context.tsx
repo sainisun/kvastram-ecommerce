@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { detectUserCurrency, formatPriceFromINR } from '@/lib/currency';
+import { formatPriceFromINR } from '@/lib/currency';
 
 interface CurrencyContextValue {
   /** Detected currency code e.g. 'USD', 'GBP', 'INR' */
@@ -29,7 +29,8 @@ const FALLBACK_RATES: Record<string, number> = {
 };
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [currency] = useState(() => detectUserCurrency());
+  const [currency] = useState('INR');
+  const [locale] = useState('en-IN');
   const [rates, setRates] = useState<Record<string, number>>(FALLBACK_RATES);
   const [loading, setLoading] = useState(true);
 
@@ -47,8 +48,8 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const formatPrice = useCallback(
-    (inrPaise: number) => formatPriceFromINR(inrPaise, currency, rates),
-    [currency, rates]
+    (inrPaise: number) => formatPriceFromINR(inrPaise, currency, rates, locale),
+    [currency, rates, locale]
   );
 
   const value = useMemo<CurrencyContextValue>(
