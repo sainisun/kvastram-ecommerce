@@ -1,5 +1,5 @@
-import CategoryCirclesManager from '@/components/CategoryCirclesManager';
+import HomepageCategoriesManager from '@/components/HomepageCategoriesManager';
 
 export default function HomepageCategoriesPage() {
-  return <CategoryCirclesManager />;
+  return <HomepageCategoriesManager />;
 }

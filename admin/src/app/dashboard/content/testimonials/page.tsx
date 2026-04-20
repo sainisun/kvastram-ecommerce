@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Star, Plus, X, Trash2, Edit2, User } from 'lucide-react';
 import { api } from '@/lib/api';
+import ImageUploadField from '@/components/ui/ImageUploadField';
 
 interface Testimonial {
   id: string;
@@ -343,23 +344,14 @@ export default function TestimonialsPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Avatar URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.avatar_url}
-                  onChange={(e) =>
-                    setFormData({ ...formData, avatar_url: e.target.value })
-                  }
-                  placeholder="https://example.com/avatar.jpg"
-                  className="w-full border border-gray-300 rounded-lg p-2.5 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Leave empty to use initials
-                </p>
-              </div>
+              <ImageUploadField
+                label="Avatar"
+                value={formData.avatar_url}
+                onChange={(avatar_url) => setFormData({ ...formData, avatar_url })}
+                helpText="Leave empty to use initials."
+                uploadButtonText="Upload avatar"
+                previewClassName="aspect-square"
+              />
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

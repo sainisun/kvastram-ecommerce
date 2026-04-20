@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { Plus, Edit, Trash2, Folder } from 'lucide-react';
+import ImageUploadField from '@/components/ui/ImageUploadField';
 
 interface Collection {
   id: string;
@@ -156,23 +157,13 @@ export default function CollectionsPage() {
                 />
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image URL
-              </label>
-              <input
-                type="text"
-                value={formData.image}
-                onChange={(e) =>
-                  setFormData({ ...formData, image: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                placeholder="https://example.com/image.jpg"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Enter full URL to collection cover image
-              </p>
-            </div>
+            <ImageUploadField
+              label="Collection Image"
+              value={formData.image}
+              onChange={(image) => setFormData({ ...formData, image })}
+              helpText="Upload the collection cover image instead of pasting a URL."
+              uploadButtonText="Upload collection image"
+            />
             <div className="flex gap-3">
               <button
                 type="submit"

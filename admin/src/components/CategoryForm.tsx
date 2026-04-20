@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { AlertCircle, ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
+import ImageUploadField from '@/components/ui/ImageUploadField';
 
 export interface Category {
   id: string;
@@ -230,22 +231,13 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Image URL (Optional)
-          </label>
-          <input
-            type="text"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
-            placeholder="https://example.com/image.jpg"
-          />
-          <p className="text-xs text-gray-500">
-            Enter full URL to category image for homepage display
-          </p>
-        </div>
+        <ImageUploadField
+          label="Image"
+          value={formData.image}
+          onChange={(image) => setFormData((prev) => ({ ...prev, image }))}
+          helpText="Upload the category image instead of pasting a URL."
+          uploadButtonText="Upload category image"
+        />
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
@@ -293,22 +285,15 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Header Image URL (Optional)
-          </label>
-          <input
-            type="text"
-            name="header_image_url"
-            value={formData.header_image_url}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
-            placeholder="https://example.com/header-image.jpg"
-          />
-          <p className="text-xs text-gray-500">
-            Shows in the storefront mega menu dropdown.
-          </p>
-        </div>
+        <ImageUploadField
+          label="Header Image"
+          value={formData.header_image_url}
+          onChange={(header_image_url) =>
+            setFormData((prev) => ({ ...prev, header_image_url }))
+          }
+          helpText="Shows in the storefront mega menu dropdown."
+          uploadButtonText="Upload header image"
+        />
 
         <div className="flex items-center gap-2">
           <input

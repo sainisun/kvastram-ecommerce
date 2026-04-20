@@ -35,6 +35,16 @@ export default function ContentDashboard() {
           </p>
         </Link>
         <Link
+          href="/dashboard/content/homepage-categories"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <LayoutGrid className="mb-4 text-emerald-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Homepage Categories</h2>
+          <p className="text-gray-500">
+            Manage the homepage category cards shown below the hero.
+          </p>
+        </Link>
+        <Link
           href="/dashboard/content/featured-products"
           className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
         >

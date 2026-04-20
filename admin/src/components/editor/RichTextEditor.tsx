@@ -5,7 +5,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { api } from '@/lib/api';
 import './RichTextEditor.css';
 
 interface RichTextEditorProps {
@@ -19,6 +20,9 @@ export default function RichTextEditor({
   onChange,
   placeholder = 'Start writing...',
 }: RichTextEditorProps) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -65,11 +69,36 @@ export default function RichTextEditor({
   }, [editor]);
 
   const addImage = useCallback(() => {
-    const url = window.prompt('Enter image URL:');
-    if (url && editor) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-  }, [editor]);
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleImageFileChange = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file || !editor) return;
+
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image must be 5MB or smaller');
+        event.target.value = '';
+        return;
+      }
+
+      try {
+        setUploadingImage(true);
+        const result = await api.uploadImage(file);
+        editor.chain().focus().setImage({ src: result.url }).run();
+      } catch (error) {
+        console.error('Failed to upload editor image:', error);
+        alert(
+          error instanceof Error ? error.message : 'Failed to upload image'
+        );
+      } finally {
+        setUploadingImage(false);
+        event.target.value = '';
+      }
+    },
+    [editor]
+  );
 
   const setLink = useCallback(() => {
     const previousUrl = editor?.getAttributes('link').href;
@@ -220,8 +249,8 @@ export default function RichTextEditor({
           >
             Link
           </button>
-          <button type="button" onClick={addImage} title="Add Image">
-            Image
+          <button type="button" onClick={addImage} title="Upload Image">
+            {uploadingImage ? 'Uploading...' : 'Image'}
           </button>
         </div>
 
@@ -270,6 +299,14 @@ export default function RichTextEditor({
       <div className="editor-content-wrapper">
         <EditorContent editor={editor} />
       </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleImageFileChange}
+      />
 
       <div className="editor-footer">
         <span className="character-count">

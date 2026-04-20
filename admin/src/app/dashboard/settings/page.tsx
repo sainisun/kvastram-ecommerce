@@ -31,6 +31,7 @@ import { api } from '@/lib/api';
 import type { User as ApiUser } from '@/lib/api';
 
 import { useNotification } from '@/context/notification-context';
+import ImageUploadField from '@/components/ui/ImageUploadField';
 
 // Default values for navigation and quick links
 const DEFAULT_NAV_LINKS =
@@ -729,27 +730,14 @@ export default function SettingsPage() {
                         />
                       </div>
                     </div>
-                    <div>
-                      <label
-                        htmlFor="hero_image"
-                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
-                      >
-                        Hero Image URL
-                      </label>
-                      <input
-                        id="hero_image"
-                        type="text"
-                        value={settings.hero_image || ''}
-                        onChange={(e) =>
-                          handleChange('hero_image', e.target.value)
-                        }
-                        placeholder="https://example.com/hero-image.jpg"
-                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
-                      />
-                      <p className="text-xs text-[var(--on-surface-variant)] mt-1">
-                        Full URL to hero section background image
-                      </p>
-                    </div>
+                    <ImageUploadField
+                      label="Hero Image"
+                      value={settings.hero_image || ''}
+                      onChange={(url) => handleChange('hero_image', url)}
+                      helpText="Upload the hero section background image instead of pasting a URL."
+                      uploadButtonText="Upload hero image"
+                      previewClassName="aspect-[16/9]"
+                    />
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label
@@ -900,24 +888,16 @@ export default function SettingsPage() {
                         className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor="brand_story_image"
-                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
-                      >
-                        Image URL
-                      </label>
-                      <input
-                        id="brand_story_image"
-                        type="text"
-                        value={settings.brand_story_image || ''}
-                        onChange={(e) =>
-                          handleChange('brand_story_image', e.target.value)
-                        }
-                        placeholder="https://example.com/image.jpg"
-                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
-                      />
-                    </div>
+                    <ImageUploadField
+                      label="Brand Story Image"
+                      value={settings.brand_story_image || ''}
+                      onChange={(url) =>
+                        handleChange('brand_story_image', url)
+                      }
+                      helpText="Upload the brand story image instead of pasting a URL."
+                      uploadButtonText="Upload story image"
+                      previewClassName="aspect-[4/5]"
+                    />
                   </div>
                 </div>
 
@@ -1062,24 +1042,14 @@ export default function SettingsPage() {
                     Contact information shown in the footer.
                   </p>
                   <div className="space-y-4">
-                    <div>
-                      <label
-                        htmlFor="store_logo_url"
-                        className="block text-xs font-bold text-[var(--on-surface-variant)] mb-2 uppercase tracking-widest"
-                      >
-                        Store Logo URL
-                      </label>
-                      <input
-                        id="store_logo_url"
-                        type="text"
-                        value={settings.store_logo_url || ''}
-                        onChange={(e) =>
-                          handleChange('store_logo_url', e.target.value)
-                        }
-                        placeholder="https://example.com/logo.png"
-                        className="w-full rounded-xl border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-3 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
-                      />
-                    </div>
+                    <ImageUploadField
+                      label="Store Logo"
+                      value={settings.store_logo_url || ''}
+                      onChange={(url) => handleChange('store_logo_url', url)}
+                      helpText="Upload the store logo instead of pasting a URL."
+                      uploadButtonText="Upload logo"
+                      previewClassName="aspect-square"
+                    />
                     <div>
                       <label
                         htmlFor="store_address"
