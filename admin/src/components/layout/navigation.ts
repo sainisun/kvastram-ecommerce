@@ -98,6 +98,18 @@ export const primaryNavItems: NavItem[] = [
 
 export const moreNavItems: NavItem[] = [
   {
+    label: 'Homepage Categories',
+    href: '/dashboard/content/homepage-categories',
+    icon: Layers,
+    description: 'Homepage browse-by-category cards',
+  },
+  {
+    label: 'Category Circles',
+    href: '/dashboard/content/category-circles',
+    icon: LayoutDashboard,
+    description: 'Mobile hero circle shortcuts',
+  },
+  {
     label: 'Collections',
     href: '/dashboard/collections',
     icon: FolderKanban,
