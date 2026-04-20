@@ -145,14 +145,16 @@ function CategoryItem({
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const fetchCategories = async () => {
     try {
+      setError('');
       const data = await api.getCategoriesTree();
       setCategories(data?.categories || []);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
-      alert('Failed to load categories');
+      setError('Unable to load the category list right now. New categories can still be created, but the page needs a working refresh to show them.');
     } finally {
       setLoading(false);
     }
@@ -207,6 +209,12 @@ export default function CategoriesPage() {
           <strong>What are Categories?</strong> Categories form the product taxonomy and appear in the storefront header navigation. Customers use them to browse by product type. Use emojis and header images to make them visually appealing.
         </p>
       </div>
+
+      {error && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          {error}
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 flex text-xs font-medium text-gray-500 uppercase tracking-wider">

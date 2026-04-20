@@ -153,7 +153,10 @@ export default function HomepageBannersManager() {
       }
 
       closeModal();
-      await loadBanners();
+      void loadBanners().catch((refreshError) => {
+        console.warn('Saved homepage banner, but refresh failed:', refreshError);
+        alert('Saved homepage banner, but the list could not refresh. Reload the page to see the update.');
+      });
     } catch (error) {
       console.error('Failed to save homepage banner:', error);
       alert(

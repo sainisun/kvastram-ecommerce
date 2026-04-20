@@ -164,7 +164,10 @@ export default function HomepageCategoriesManager() {
       }
 
       closeModal();
-      await loadCategories();
+      void loadCategories().catch((refreshError) => {
+        console.warn('Saved homepage category, but refresh failed:', refreshError);
+        alert('Saved homepage category, but the list could not refresh. Reload the page to see the update.');
+      });
     } catch (error) {
       console.error('Failed to save homepage category:', error);
       alert(

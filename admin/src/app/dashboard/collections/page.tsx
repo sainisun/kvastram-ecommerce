@@ -52,7 +52,10 @@ export default function CollectionsPage() {
       setFormData({ title: '', handle: '', image: '' });
       setShowForm(false);
       setEditingId(null);
-      fetchCollections();
+      void fetchCollections().catch((refreshError) => {
+        console.warn('Saved collection, but refresh failed:', refreshError);
+        alert('Saved collection, but the list could not refresh. Reload the page to see the update.');
+      });
     } catch (error) {
       console.error('Failed to save collection:', error);
       alert('Failed to save collection');

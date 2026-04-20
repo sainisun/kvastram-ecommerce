@@ -156,7 +156,10 @@ export default function HeroBannersManager() {
       }
 
       closeModal();
-      await loadBanners();
+      void loadBanners().catch((refreshError) => {
+        console.warn('Saved hero banner, but refresh failed:', refreshError);
+        alert('Saved hero banner, but the list could not refresh. Reload the page to see the update.');
+      });
     } catch (error) {
       console.error('Failed to save hero banner:', error);
       alert(

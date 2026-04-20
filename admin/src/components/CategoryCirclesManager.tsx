@@ -181,7 +181,10 @@ export default function CategoryCirclesManager() {
       }
 
       closeModal();
-      await loadCircles();
+      void loadCircles().catch((refreshError) => {
+        console.warn('Saved category circle, but refresh failed:', refreshError);
+        alert('Saved category circle, but the list could not refresh. Reload the page to see the update.');
+      });
     } catch (error) {
       console.error('Failed to save category circle:', error);
       alert(

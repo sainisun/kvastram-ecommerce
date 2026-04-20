@@ -224,7 +224,10 @@ export default function TrendingReelsManager() {
       }
 
       closeModal();
-      await loadReels();
+      void loadReels().catch((refreshError) => {
+        console.warn('Saved trending reel, but refresh failed:', refreshError);
+        alert('Saved trending reel, but the list could not refresh. Reload the page to see the update.');
+      });
     } catch (error) {
       console.error('Failed to save trending reel:', error);
       alert(

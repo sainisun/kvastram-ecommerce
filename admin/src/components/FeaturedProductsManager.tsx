@@ -235,7 +235,10 @@ export default function FeaturedProductsManager() {
       }
 
       closeModal();
-      await loadFeaturedProducts();
+      void loadFeaturedProducts().catch((refreshError) => {
+        console.warn('Saved featured product, but refresh failed:', refreshError);
+        alert('Saved spotlight product, but the list could not refresh. Reload the page to see the update.');
+      });
     } catch (error) {
       console.error('Failed to save featured product:', error);
       alert(
