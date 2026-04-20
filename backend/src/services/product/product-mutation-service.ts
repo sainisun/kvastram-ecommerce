@@ -30,7 +30,16 @@ export class ProductMutationService {
    */
   async create(data: CreateProductInput) {
     return await db.transaction(async (tx) => {
-      const { prices, ...productData } = data;
+      const {
+        prices,
+        options,
+        images,
+        category_ids,
+        tag_ids,
+        inventory_quantity,
+        sku,
+        ...productData
+      } = data;
 
       // 1. Create Product
       const newProduct = await this.createBaseProduct(tx, productData);
@@ -42,16 +51,16 @@ export class ProductMutationService {
       await this.assignPricesToVariant(tx, newVariant.id, prices);
 
       // 4. Create Options
-      await this.assignOptionsToProduct(tx, newProduct.id, data.options);
+      await this.assignOptionsToProduct(tx, newProduct.id, options);
 
       // 5. Create Images
-      await this.assignImagesToProduct(tx, newProduct.id, data.images);
+      await this.assignImagesToProduct(tx, newProduct.id, images);
 
       // 6. Assign Categories
-      await this.assignCategoriesToProduct(tx, newProduct.id, data.category_ids);
+      await this.assignCategoriesToProduct(tx, newProduct.id, category_ids);
 
       // 7. Assign Tags
-      await this.assignTagsToProduct(tx, newProduct.id, data.tag_ids);
+      await this.assignTagsToProduct(tx, newProduct.id, tag_ids);
 
       return { ...newProduct, default_variant_id: newVariant.id };
     });
@@ -60,10 +69,7 @@ export class ProductMutationService {
   private async createBaseProduct(tx: any, productData: any) {
     const result = await tx
       .insert(products)
-      .values({
-        ...productData,
-        options: undefined,
-      } as typeof products.$inferInsert)
+      .values(productData as typeof products.$inferInsert)
       .returning();
     return result[0];
   }
@@ -197,14 +203,20 @@ export class ProductMutationService {
   }
 
   private async updateBaseProductDetails(tx: any, id: string, data: UpdateProductInput) {
+    const {
+      options,
+      prices,
+      images,
+      category_ids,
+      tag_ids,
+      inventory_quantity,
+      sku,
+      ...productFields
+    } = data;
+
     const updateData = {
-      ...data,
+      ...productFields,
       updated_at: new Date(),
-      options: undefined,
-      prices: undefined,
-      images: undefined,
-      category_ids: undefined,
-      tag_ids: undefined,
     };
 
     const result = await tx

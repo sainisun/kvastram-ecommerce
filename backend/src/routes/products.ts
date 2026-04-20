@@ -21,84 +21,84 @@ import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 const productsRouter = new Hono();
 
 // GET /products - List products with advanced filters (Public)
-productsRouter.get(
-  '/',
-  asyncHandler(async (c) => {
-    const query = c.req.query();
-    const {
-      limit = '20',
-      offset = '0',
-      search = '',
-      status = '',
-      sort = 'created_at',
-      min_price = '',
-      max_price = '',
-      category_id = '',
-      tag_id = '',
-      collection_id = '',
-    } = query;
+const listProductsHandler = asyncHandler(async (c) => {
+  const query = c.req.query();
+  const {
+    limit = '20',
+    offset = '0',
+    search = '',
+    status = '',
+    sort = 'created_at',
+    min_price = '',
+    max_price = '',
+    category_id = '',
+    tag_id = '',
+    collection_id = '',
+  } = query;
 
-    const limitNum = Math.min(parseInt(limit) || 20, 100);
-    const offsetNum = Math.max(parseInt(offset) || 0, 0);
+  const limitNum = Math.min(parseInt(limit) || 20, 100);
+  const offsetNum = Math.max(parseInt(offset) || 0, 0);
 
-    // Only use search service when there's actual text search query
-    // For sorting/filtering without text search, use listDetailed
-    if (search) {
-      let sortBy: 'relevance' | 'price_asc' | 'price_desc' | 'newest' =
-        'relevance';
-      if (sort === 'price_asc') sortBy = 'price_asc';
-      if (sort === 'price_desc') sortBy = 'price_desc';
-      if (sort === 'created_at' || sort === 'newest') sortBy = 'newest';
+  // Only use search service when there's actual text search query
+  // For sorting/filtering without text search, use listDetailed
+  if (search) {
+    let sortBy: 'relevance' | 'price_asc' | 'price_desc' | 'newest' =
+      'relevance';
+    if (sort === 'price_asc') sortBy = 'price_asc';
+    if (sort === 'price_desc') sortBy = 'price_desc';
+    if (sort === 'created_at' || sort === 'newest') sortBy = 'newest';
 
-      const results = await productService.search(search, {
-        query: search,
-        minPrice: min_price ? Number(min_price) : undefined,
-        maxPrice: max_price ? Number(max_price) : undefined,
-        status: status || undefined,
-        sortBy,
-        categoryId: category_id || undefined,
-        tagId: tag_id || undefined,
-        collectionId: collection_id || undefined,
-      });
-
-      // Manual pagination for search results
-      const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
-
-      return paginatedResponse(
-        c,
-        paginatedResults,
-        {
-          offset: offsetNum,
-          limit: limitNum,
-          total: results.length,
-        },
-        'Products retrieved successfully'
-      );
-    }
-
-    // Standard detailed list - handles sorting and all filters
-    const result = await productService.listDetailed({
-      limit: limitNum,
-      offset: offsetNum,
-      sort: sort || 'created_at',
+    const results = await productService.search(search, {
+      query: search,
+      minPrice: min_price ? Number(min_price) : undefined,
+      maxPrice: max_price ? Number(max_price) : undefined,
       status: status || undefined,
+      sortBy,
       categoryId: category_id || undefined,
       tagId: tag_id || undefined,
       collectionId: collection_id || undefined,
     });
 
+    // Manual pagination for search results
+    const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
+
     return paginatedResponse(
       c,
-      result.products,
+      paginatedResults,
       {
-        offset: result.offset || 0,
-        limit: result.limit || 20,
-        total: result.total || 0,
+        offset: offsetNum,
+        limit: limitNum,
+        total: results.length,
       },
       'Products retrieved successfully'
     );
-  })
-);
+  }
+
+  // Standard detailed list - handles sorting and all filters
+  const result = await productService.listDetailed({
+    limit: limitNum,
+    offset: offsetNum,
+    sort: sort || 'created_at',
+    status: status || undefined,
+    categoryId: category_id || undefined,
+    tagId: tag_id || undefined,
+    collectionId: collection_id || undefined,
+  });
+
+  return paginatedResponse(
+    c,
+    result.products,
+    {
+      offset: result.offset || 0,
+      limit: result.limit || 20,
+      total: result.total || 0,
+    },
+    'Products retrieved successfully'
+  );
+});
+
+productsRouter.get('', listProductsHandler);
+productsRouter.get('/', listProductsHandler);
 
 // GET /products/search/suggestions - Autocomplete
 productsRouter.get(
@@ -187,33 +187,32 @@ productsRouter.get(
 );
 
 // POST /products - Create product (Protected)
-productsRouter.post(
-  '/',
-  verifyAdmin,
-  asyncHandler(async (c) => {
-    const body = await c.req.json();
-    const result = CreateProductSchema.safeParse(body);
+const createProductHandler = asyncHandler(async (c) => {
+  const body = await c.req.json();
+  const result = CreateProductSchema.safeParse(body);
 
-    if (!result.success) {
-      throw new ValidationError('Invalid product data', result.error.errors);
-    }
+  if (!result.success) {
+    throw new ValidationError('Invalid product data', result.error.errors);
+  }
 
-    // Convert status to correct type if needed, Zod handles validation
-    const product = await productService.create(result.data);
-    await triggerStorefrontRevalidation({
-      productId: product.id,
-      handle: product.handle,
-      paths: ['/', '/products'],
-      tags: ['products'],
-    });
-    return successResponse(
-      c,
-      { product },
-      'Product created successfully',
-      HttpStatus.CREATED
-    );
-  })
-);
+  // Convert status to correct type if needed, Zod handles validation
+  const product = await productService.create(result.data);
+  await triggerStorefrontRevalidation({
+    productId: product.id,
+    handle: product.handle,
+    paths: ['/', '/products'],
+    tags: ['products'],
+  });
+  return successResponse(
+    c,
+    { product },
+    'Product created successfully',
+    HttpStatus.CREATED
+  );
+});
+
+productsRouter.post('', verifyAdmin, createProductHandler);
+productsRouter.post('/', verifyAdmin, createProductHandler);
 
 // PUT /products/:id - Update product (Protected)
 productsRouter.put(

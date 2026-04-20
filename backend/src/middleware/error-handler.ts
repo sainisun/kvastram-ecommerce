@@ -107,9 +107,11 @@ export async function errorHandler(err: Error, c: Context) {
   }
 
   // Handle specific error types by message (legacy support)
+  const normalizedMessage = err.message?.toLowerCase() || '';
+
   if (
-    err.message?.includes('not found') ||
-    err.message?.includes('Not found')
+    normalizedMessage.includes('not found') &&
+    !normalizedMessage.includes('tenant or user not found')
   ) {
     return errorResponse(
       c,
@@ -119,7 +121,7 @@ export async function errorHandler(err: Error, c: Context) {
     );
   }
 
-  if (err.message?.toLowerCase().includes('unauthorized')) {
+  if (normalizedMessage.includes('unauthorized')) {
     return errorResponse(
       c,
       ErrorMessages.UNAUTHORIZED,
@@ -129,7 +131,7 @@ export async function errorHandler(err: Error, c: Context) {
   }
 
   if (
-    err.message?.toLowerCase().includes('conflict') ||
+    normalizedMessage.includes('conflict') ||
     err.message?.includes('already exists')
   ) {
     return errorResponse(c, ErrorMessages.CONFLICT, null, HttpStatus.CONFLICT);
