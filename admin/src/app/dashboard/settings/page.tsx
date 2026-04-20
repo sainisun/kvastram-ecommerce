@@ -38,7 +38,7 @@ const DEFAULT_NAV_LINKS =
   '[{"label":"Home","url":"/","order":1},{"label":"New Arrivals","url":"/products?sort=newest","order":2},{"label":"Shop","url":"/products","order":3},{"label":"Collections","url":"/collections","order":4},{"label":"Sale","url":"/sale","order":5,"highlight":true},{"label":"About","url":"/about","order":6},{"label":"Contact","url":"/contact","order":7}]';
 
 const DEFAULT_QUICK_LINKS =
-  '[{"label":"Bestsellers","url":"/products?tag=bestseller","order":1},{"label":"New Arrivals","url":"/products?tag=new","order":2},{"label":"Collections","url":"/collections","order":3},{"label":"Sale","url":"/sale","order":4,"highlight":true}]';
+  '[{"label":"Bestsellers","url":"/bestsellers","order":1},{"label":"New Arrivals","url":"/products?tag=new","order":2},{"label":"Collections","url":"/collections","order":3},{"label":"Sale","url":"/sale","order":4,"highlight":true}]';
 
 interface ShippingOriginAddress {
   address?: string;
@@ -1013,7 +1013,7 @@ export default function SettingsPage() {
                             // Invalid JSON - don't save
                           }
                         }}
-                        placeholder='[{"label":"Bestsellers","url":"/products?tag=bestseller","order":1}]'
+  placeholder='[{"label":"Bestsellers","url":"/bestsellers","order":1}]'
                         className="w-full px-4 py-2 border border-[var(--outline-variant)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                       />
                       <p className="text-xs text-[var(--on-surface-variant)] mt-1">

@@ -167,7 +167,6 @@ export default function EditProductPage() {
   const [newVariant, setNewVariant] = useState({
     title: '', sku: '', inventory_quantity: '0', compare_at_price: '',
   });
-  const [initialMediaCount, setInitialMediaCount] = useState(0);
 
   const init = useCallback(async () => {
     try {
@@ -218,7 +217,6 @@ export default function EditProductPage() {
       });
 
       if (product.images && product.images.length > 0) {
-        setInitialMediaCount(product.images.length);
         setMediaItems(
           product.images
             .sort((a: any, b: any) => (a.position || 0) - (b.position || 0))
@@ -232,10 +230,7 @@ export default function EditProductPage() {
             }))
         );
       } else if (product.thumbnail) {
-        setInitialMediaCount(1);
         setMediaItems([{ id: 'legacy-thumb', url: product.thumbnail, is_thumbnail: true, position: 0 }]);
-      } else {
-        setInitialMediaCount(0);
       }
 
       if (product.variants && product.variants.length > 0) {
@@ -408,9 +403,6 @@ export default function EditProductPage() {
       if (!formData.handle?.trim()) throw new Error('URL handle is required.');
       if (mediaItems.length === 0) {
         throw new Error('Add at least 1 media item before saving this product.');
-      }
-      if (mediaItems.length < 3 && initialMediaCount === 0) {
-        throw new Error('Add at least 3 media items before saving a new product.');
       }
 
       // Save price only for the INR region — storefront converts to buyer's currency

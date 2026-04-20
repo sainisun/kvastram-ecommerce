@@ -202,8 +202,9 @@ export default function NewProductPage() {
     try {
       if (!formData.title.trim()) throw new Error('Product title is required.');
       if (!formData.handle.trim()) throw new Error('URL handle is required.');
-      if (mediaItems.length < 3)
-        throw new Error('Add at least 3 media items before saving this product.');
+      if (mediaItems.length === 0) {
+        throw new Error('Add at least 1 media item before saving this product.');
+      }
 
       // Save price only for the INR region — storefront converts to buyer's currency
       const formattedPrices = inrRegion && inrPrice
