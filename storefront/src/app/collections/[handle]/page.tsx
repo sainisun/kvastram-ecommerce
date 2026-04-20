@@ -219,7 +219,7 @@ export default async function CollectionPage({
 
         <section className="grid gap-10 border-b border-stone-100 pb-12 md:grid-cols-[1.5fr,1fr]">
           <div>
-            <h2 className="font-heading text-3xl font-semibold uppercase tracking-[0.02em] text-stone-900">
+            <h2 className="font-heading text-[clamp(32px,4vw,54px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
               {landing.kind === 'category'
                 ? `New Arrivals in ${landing.title}`
                 : `Explore the ${landing.title} Collection`}
@@ -278,7 +278,7 @@ export default async function CollectionPage({
 
         {featuredProducts.length > 0 && (
           <section className="py-12">
-            <h2 className="font-heading text-3xl font-semibold uppercase tracking-[0.02em] text-stone-900">
+            <h2 className="font-heading text-[clamp(28px,3.4vw,44px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
               Bestselling {landing.title}
             </h2>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -293,7 +293,7 @@ export default async function CollectionPage({
                       ? `Shop ${landing.title}`
                       : 'Featured Product'}
                   </p>
-                  <p className="font-heading mt-2 text-2xl font-semibold text-stone-900">
+                  <p className="font-body mt-2 text-[15px] font-normal leading-[1.55] text-stone-900">
                     {product.title}
                   </p>
                 </Link>

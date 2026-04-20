@@ -26,22 +26,19 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
             Kavastram Love
           </div>
-          <h2 className="mt-3 font-heading text-[clamp(34px,4vw,54px)] font-medium leading-[0.96] tracking-[-0.02em] text-stone-950">
+          <h2 className="mt-3 font-heading text-[clamp(34px,4vw,54px)] font-normal leading-[0.96] tracking-[-0.02em] text-stone-950">
             What they&apos;re <em>saying</em>
           </h2>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           {displayed.map((testimonial) => (
-            <article
-              key={testimonial.id}
-              className="bg-[#f8f1eb] p-8 text-center sm:p-10"
-            >
+            <article key={testimonial.id} className="bg-[#f8f1eb] p-8 text-center sm:p-10">
               <div className="flex items-center justify-center gap-1 text-[14px]">
                 {renderStars(testimonial.rating)}
               </div>
 
-              <p className="mt-6 min-h-[108px] font-heading text-[18px] italic leading-[1.5] text-stone-800 sm:text-[20px]">
+              <p className="font-body mt-6 min-h-[108px] text-[17px] italic leading-[1.7] text-stone-800 sm:text-[18px]">
                 “{testimonial.content}”
               </p>
 
@@ -58,11 +55,11 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
                   </div>
                 ) : null}
                 <div className="text-left">
-                  <p className="text-[14px] font-semibold uppercase tracking-[0.08em] text-stone-900">
+                  <p className="font-body text-[14px] font-semibold uppercase tracking-[0.08em] text-stone-900">
                     {testimonial.name}
                   </p>
                   {testimonial.location ? (
-                    <p className="text-[12px] uppercase tracking-[0.14em] text-stone-500">
+                    <p className="font-body text-[12px] uppercase tracking-[0.14em] text-stone-500">
                       {testimonial.location}
                     </p>
                   ) : null}

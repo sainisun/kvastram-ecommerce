@@ -44,7 +44,7 @@ export default function PageHero({
             {subtitle}
           </span>
         )}
-        <h1 className="font-heading text-4xl font-semibold uppercase tracking-[0.02em] text-white leading-[1.1] md:text-6xl lg:text-7xl">
+        <h1 className="font-heading text-[clamp(40px,5vw,72px)] font-normal tracking-[-0.03em] text-white leading-[1.02]">
           {title}
         </h1>
         {description && (

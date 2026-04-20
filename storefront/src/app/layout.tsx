@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Amiri, Cardo } from 'next/font/google';
 
 import './globals.css';
 import { Analytics } from '@/components/Analytics';
@@ -16,6 +17,18 @@ import { WholesaleProvider } from '@/context/wholesale-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
+
+const cardo = Cardo({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-cardo',
+});
+
+const amiri = Amiri({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-amiri',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -89,7 +102,7 @@ export default async function RootLayout({
           />
         )}
       </head>
-      <body className="font-body antialiased">
+      <body className={`${cardo.variable} ${amiri.variable} font-body antialiased`}>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"

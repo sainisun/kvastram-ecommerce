@@ -86,7 +86,7 @@ export default async function ProductPage({ params }: Props) {
 
       <div className="mx-auto max-w-7xl border-t border-stone-100 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <h2 className="font-body text-3xl font-semibold uppercase tracking-[0.02em] text-stone-900">
+          <h2 className="font-heading text-[clamp(28px,3vw,44px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
             You May Also Like
           </h2>
           {primaryCategoryPath && primaryCategory && (

@@ -57,17 +57,17 @@ export function BestSellers({ products }: BestSellersProps) {
               </Link>
 
               <div className="px-1 pt-4">
-                <Link
-                  href={`/products/${product.handle || product.id}`}
-                  className="line-clamp-2 block text-[17px] font-semibold leading-snug text-stone-900 sm:text-[18px]"
-                >
-                  {product.title}
-                </Link>
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="text-[16px] font-semibold text-stone-950">
-                    {formatPrice(product)}
-                  </span>
-                </div>
+                  <Link
+                    href={`/products/${product.handle || product.id}`}
+                    className="font-body mt-2 line-clamp-2 block text-[15px] font-normal leading-[1.55] text-stone-900 sm:text-[16px]"
+                  >
+                    {product.title}
+                  </Link>
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="font-body text-[15px] font-normal text-stone-950">
+                      {formatPrice(product)}
+                    </span>
+                  </div>
               </div>
             </article>
           ))}
@@ -76,7 +76,7 @@ export function BestSellers({ products }: BestSellersProps) {
         <div className="mt-12 text-center">
           <Link
             href="/bestsellers"
-            className="inline-flex items-center justify-center bg-stone-950 px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-stone-800"
+            className="inline-flex items-center justify-center bg-stone-950 px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] text-white transition-colors hover:bg-stone-800"
           >
             View All Bestsellers
           </Link>

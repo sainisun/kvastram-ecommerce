@@ -13,8 +13,8 @@
   --off-white: #f0ede8;
   --mid: #888888;
   --border: rgba(8, 8, 8, 0.12);
-  --font-display: var(--font-cormorant, 'Cormorant Garamond', Georgia, serif);
-  --font-ui: var(--font-jost, 'Jost', 'Inter', sans-serif);
+  --font-display: var(--font-amiri, 'Amiri', Georgia, serif);
+  --font-ui: var(--font-cardo, 'Cardo', Georgia, serif);
   --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   /* ─── Tailwind compat aliases ─── */
@@ -48,8 +48,8 @@ body {
   font-family: var(--font-ui) !important;
   font-size: 15px;
   font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: 0.01em;
+  line-height: 1.73;
+  letter-spacing: 0;
   overflow-x: hidden;
 }
 
@@ -592,27 +592,27 @@ a {
 }
 .prod-collection-prem {
   font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--mid);
   margin-bottom: 6px;
 }
 .prod-name-prem {
   font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  line-height: 1.45;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.55;
   margin-bottom: 8px;
   color: var(--black);
 }
 .prod-price-prem {
   font-family: var(--font-ui);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 400;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
   color: var(--black);
 }
 
@@ -1223,10 +1223,10 @@ a {
 /* ─── 1.2 Logo Evolution ─── */
 .nav-logo-premium {
   position: relative;
-  font-family: var(--font-display, 'Cormorant Garamond', serif);
-  font-size: 1.5rem;
-  letter-spacing: 0.25em;
-  font-weight: 300;
+  font-family: var(--font-ui, 'Cardo', serif);
+  font-size: 1.35rem;
+  letter-spacing: 0.2em;
+  font-weight: 400;
   color: var(--black);
   transition:
     letter-spacing 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -1236,7 +1236,7 @@ a {
   gap: 2px;
 }
 .nav-logo-premium:hover {
-  letter-spacing: 0.38em;
+  letter-spacing: 0.28em;
   color: #1a1714;
 }
 .logo-motif {

@@ -261,7 +261,7 @@ export function Header() {
             {/* Center: Logo */}
             <Link
               href="/"
-              className="font-heading absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-semibold uppercase tracking-[0.2em] text-stone-900"
+              className="font-body absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[1.05rem] font-semibold uppercase tracking-[0.22em] text-stone-900"
             >
               KVASTRAM
             </Link>

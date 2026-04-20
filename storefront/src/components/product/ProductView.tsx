@@ -212,10 +212,10 @@ export default function ProductView({ product }: { product: Product }) {
 
             <section className="space-y-4 border-b border-stone-200 pb-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500">{product.collection?.title || 'Kvastram Collection'}</p>
-              <h1 className="text-[22px] font-semibold leading-tight text-stone-950 lg:text-[34px]">{product.title}</h1>
+              <h1 className="font-heading text-[20px] font-normal leading-[1.1] tracking-[-0.03em] text-stone-950">{product.title}</h1>
               {product.subtitle && <p className="text-[15px] leading-7 text-stone-600">{product.subtitle}</p>}
               <div className="flex flex-wrap items-center gap-3">
-                <p className="text-[20px] font-semibold text-stone-950 lg:text-[28px]">{formattedPrice}</p>
+                <p className="font-body text-[18px] font-normal text-stone-950">{formattedPrice}</p>
                 {formattedComparePrice && <p className="text-[15px] text-stone-400 line-through">{formattedComparePrice}</p>}
                 {formattedComparePrice && compareAtAmount && amount < compareAtAmount && (
                   <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">

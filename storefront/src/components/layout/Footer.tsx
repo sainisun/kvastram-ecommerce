@@ -223,7 +223,7 @@ function DesktopFooter() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5 lg:gap-8">
           <div className="space-y-5 lg:col-span-1">
             <Link href="/" className="block">
-              <span className="font-heading text-2xl font-semibold uppercase tracking-[0.2em] text-white">
+              <span className="font-body text-[1.45rem] font-semibold uppercase tracking-[0.22em] text-white">
                 KVASTRAM
               </span>
             </Link>

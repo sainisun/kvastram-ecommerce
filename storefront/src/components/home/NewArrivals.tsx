@@ -78,12 +78,12 @@ export function NewArrivals({ products, isCurated = false }: NewArrivalsProps) {
                   </p>
                   <Link
                     href={`/products/${product.handle || product.id}`}
-                    className="mt-2 line-clamp-2 block text-[17px] font-semibold leading-snug text-stone-900 sm:text-[18px]"
+                    className="mt-2 line-clamp-2 block font-body text-[15px] font-normal leading-[1.55] text-stone-900 sm:text-[16px]"
                   >
                     {product.title}
                   </Link>
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="text-[16px] font-semibold text-stone-950">
+                    <span className="font-body text-[15px] font-normal text-stone-950">
                       {formatPrice(product)}
                     </span>
                   </div>
@@ -96,7 +96,7 @@ export function NewArrivals({ products, isCurated = false }: NewArrivalsProps) {
         <div className="mt-12 text-center">
           <Link
             href={isCurated ? '/products' : '/products?sort=newest'}
-            className="inline-flex items-center justify-center bg-stone-950 px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-stone-800"
+            className="inline-flex items-center justify-center bg-stone-950 px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] text-white transition-colors hover:bg-stone-800"
           >
             {isCurated ? 'View All Featured Products' : 'View All New Arrivals'}
             <ArrowRight size={14} className="ml-2" />
