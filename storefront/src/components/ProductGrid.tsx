@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import type { MoneyAmount, Product } from '@/types';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
@@ -217,8 +216,8 @@ function ProductGrid({
     const priceInfo = getPrice(product);
 
     renderedItems.push(
-      <div key={product.id} className="prod-card-prem group">
-        <Link
+      <div key={product.id} className="prod-card-prem group relative">
+        <a
           href={`/products/${product.handle || product.id}`}
           className="block prod-img-wrap-prem"
         >
@@ -266,31 +265,32 @@ function ProductGrid({
             ) : null}
           </div>
 
-          <div className="prod-wishlist-prem">
-            <WishlistButton
-              productId={product.id}
-              title={product.title}
-              price={product.variants?.[0]?.prices?.[0]?.amount || 0}
-              currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
-              thumbnail={product.thumbnail || undefined}
-              handle={product.handle || product.id}
-              variantId={product.variants?.[0]?.id}
-              size="sm"
-            />
-          </div>
+        </a>
 
-          <button
-            onClick={(e) => handleAddToCart(e, product)}
-            className="prod-quick-add-prem"
-            aria-label={
-              addedId === product.id ? 'Added to cart' : 'Quick Add to cart'
-            }
-          >
-            {addedId === product.id ? 'Added' : 'Quick Add'}
-          </button>
-        </Link>
+        <div className="prod-wishlist-prem">
+          <WishlistButton
+            productId={product.id}
+            title={product.title}
+            price={product.variants?.[0]?.prices?.[0]?.amount || 0}
+            currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
+            thumbnail={product.thumbnail || undefined}
+            handle={product.handle || product.id}
+            variantId={product.variants?.[0]?.id}
+            size="sm"
+          />
+        </div>
 
-        <Link
+        <button
+          onClick={(e) => handleAddToCart(e, product)}
+          className="prod-quick-add-prem"
+          aria-label={
+            addedId === product.id ? 'Added to cart' : 'Quick Add to cart'
+          }
+        >
+          {addedId === product.id ? 'Added' : 'Quick Add'}
+        </button>
+
+        <a
           href={`/products/${product.handle || product.id}`}
           className="prod-info-prem block"
         >
@@ -374,7 +374,7 @@ function ProductGrid({
               <p className="prod-price-prem">{priceInfo.price}</p>
             </div>
           )}
-        </Link>
+        </a>
       </div>
     );
 
@@ -387,7 +387,7 @@ function ProductGrid({
         const spotlightPrice = getPrice(spotlightProduct);
 
         renderedItems.push(
-          <Link
+          <a
             key={`spotlight-${spotlight.id}-${index}`}
             href={`/products/${spotlightProduct.handle || spotlightProduct.id}`}
             className="product-spotlight-prem md:hidden"
@@ -422,12 +422,12 @@ function ProductGrid({
                 <p className="font-body text-[15px] font-medium text-stone-900">
                   {spotlightPrice.price}
                 </p>
-                <span className="inline-flex items-center rounded-full bg-stone-900 px-5 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-white">
+              <span className="inline-flex items-center rounded-full bg-stone-900 px-5 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-white">
                   View
                 </span>
               </div>
             </div>
-          </Link>
+          </a>
         );
       }
     }

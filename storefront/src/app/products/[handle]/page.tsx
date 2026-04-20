@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
 
 import ProductGrid from '@/components/ProductGrid';
@@ -90,12 +89,12 @@ export default async function ProductPage({ params }: Props) {
             You May Also Like
           </h2>
           {primaryCategoryPath && primaryCategory && (
-            <Link
+            <a
               href={primaryCategoryPath}
               className="font-body text-[12px] font-medium uppercase tracking-[0.08em] text-amber-700 transition-colors hover:text-stone-900"
             >
               Shop More {primaryCategory.name}
-            </Link>
+            </a>
           )}
         </div>
         <Suspense fallback={<div>Loading...</div>}>

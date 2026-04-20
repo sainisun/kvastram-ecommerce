@@ -1,7 +1,7 @@
 'use client';
+/* eslint-disable @next/next/no-html-link-for-pages */
 
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ChevronDown, Minus, Plus, RotateCcw, ShieldCheck, Star, Truck, Wifi, WifiOff } from 'lucide-react';
@@ -173,11 +173,11 @@ export default function ProductView({ product }: { product: Product }) {
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-7xl px-4 pb-24 pt-4 sm:px-6 sm:pt-4 lg:px-8 lg:pt-6">
         <nav aria-label="Breadcrumb" className="mb-6 hidden items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400 lg:flex">
-          <Link href="/" className="transition-colors hover:text-stone-900">Home</Link>
+          <a href="/" className="transition-colors hover:text-stone-900">Home</a>
           <span>/</span>
           {primaryCategoryPath && primaryCategory ? (
             <>
-              <Link href={primaryCategoryPath} className="transition-colors hover:text-stone-900">{primaryCategory.name}</Link>
+              <a href={primaryCategoryPath} className="transition-colors hover:text-stone-900">{primaryCategory.name}</a>
               <span>/</span>
             </>
           ) : null}
@@ -191,11 +191,11 @@ export default function ProductView({ product }: { product: Product }) {
 
           <div className="space-y-6">
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 overflow-x-auto whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] text-stone-400 lg:hidden">
-              <Link href="/" className="transition-colors hover:text-stone-900">Home</Link>
+              <a href="/" className="transition-colors hover:text-stone-900">Home</a>
               <span>/</span>
               {primaryCategoryPath && primaryCategory ? (
                 <>
-                  <Link href={primaryCategoryPath} className="transition-colors hover:text-stone-900">{primaryCategory.name}</Link>
+                  <a href={primaryCategoryPath} className="transition-colors hover:text-stone-900">{primaryCategory.name}</a>
                   <span>/</span>
                 </>
               ) : null}
@@ -344,9 +344,9 @@ export default function ProductView({ product }: { product: Product }) {
                             ))}
                           </ul>
                           {seoContent.styling && <p className="leading-[1.8]">{seoContent.styling}</p>}
-                          <div className="flex flex-wrap gap-3 pt-1">
-                            {primaryCategoryPath && primaryCategory && <Link href={primaryCategoryPath} className="border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900">Shop More {primaryCategory.name}</Link>}
-                            <Link href={seoContent.collectionLink || '/collections'} className="border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900">{product.collection?.title ? `Explore ${product.collection.title}` : 'Explore More Collections'}</Link>
+                        <div className="flex flex-wrap gap-3 pt-1">
+                            {primaryCategoryPath && primaryCategory && <a href={primaryCategoryPath} className="border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900">Shop More {primaryCategory.name}</a>}
+                            <a href={seoContent.collectionLink || '/collections'} className="border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900">{product.collection?.title ? `Explore ${product.collection.title}` : 'Explore More Collections'}</a>
                           </div>
                         </div>
                       )}

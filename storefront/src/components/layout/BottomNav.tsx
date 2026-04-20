@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
 import { Home, LayoutGrid, Heart, User, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
@@ -72,7 +71,7 @@ export function BottomNav() {
             const isActive = item.active;
 
             return (
-              <Link
+              <a
                 key={item.href}
                 href={item.href}
                 className={`flex flex-col items-center justify-center py-2 px-2 min-w-[52px] transition-colors relative ${
@@ -102,7 +101,7 @@ export function BottomNav() {
                 {isActive && (
                   <span className="absolute bottom-1 w-1 h-1 bg-stone-900 rounded-full" />
                 )}
-              </Link>
+              </a>
             );
           })}
         </div>
