@@ -12,16 +12,13 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { CategoriesGrid } from '@/components/home/CategoriesGrid';
 import { BrandStory } from '@/components/home/BrandStory';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
+import { BestSellers } from '@/components/home/BestSellers';
 import { ShopTheLook } from '@/components/home/ShopTheLook';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
-import { TrendingReels } from '@/components/home/TrendingReels';
 import { AsSeenOn } from '@/components/home/AsSeenOn';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { Testimonials } from '@/components/home/Testimonials';
-import { SeenOnYou } from '@/components/home/SeenOnYou';
-import { InstagramReels } from '@/components/home/InstagramReels';
-import { FabricsSection } from '@/components/home/FabricsSection';
 import type { Product } from '@/types';
 import type {
   HomepageCategoryCard,
@@ -293,21 +290,18 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
 
+      <CircularCategories />
       <HeroSection settings={homepageSettings} fallbackBanner={heroBanner} />
       <CategoriesGrid categories={homepageCategories} />
+      <NewArrivals products={products} isCurated={featuredProductIds.length > 0} />
       <CollectionsSection collections={collections} />
       <ShopTheLook spotlightProducts={spotlightProducts} />
       <WatchBuyPreview reels={trendingReels} />
+      <BestSellers products={products} />
       <AsSeenOn />
       <BrandStory settings={homepageSettings} />
-      <NewsletterSection settings={homepageSettings} />
-      <CircularCategories />
-      <NewArrivals products={products} isCurated={featuredProductIds.length > 0} />
       <Testimonials testimonials={testimonials} />
-      <SeenOnYou />
-      <InstagramReels reels={trendingReels.slice(0, 3)} />
-      <FabricsSection />
-      <TrendingReels reels={trendingReels} />
+      <NewsletterSection settings={homepageSettings} />
     </>
   );
 }

@@ -1,98 +1,87 @@
-'use client';
-
-import { useState } from 'react';
 import Link from 'next/link';
-import { ShoppingCart } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
-import { useCurrency } from '@/context/currency-context';
-
-interface ProductPrice {
-  amount: number;
-  currency_code: string;
-}
-
-interface ProductVariant {
-  prices?: ProductPrice[];
-}
-
-interface Product {
-  id: string;
-  title: string;
-  handle?: string;
-  thumbnail?: string;
-  variants?: ProductVariant[];
-}
+import type { Product } from '@/types';
 
 interface BestSellersProps {
   products: Product[];
 }
 
-export function BestSellers({ products }: BestSellersProps) {
-  const { formatPrice } = useCurrency();
-  const [activeDot, setActiveDot] = useState(0);
+function formatPrice(product: Product): string {
+  const price = product.variants?.[0]?.prices?.[0];
+  if (!price) return '';
 
-  const displayed = products.slice(0, 6);
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: price.currency_code?.toUpperCase() || 'INR',
+  }).format(price.amount / 100);
+}
+
+export function BestSellers({ products }: BestSellersProps) {
+  const curated = products.slice(4, 8);
+  const displayed = curated.length > 0 ? curated : products.slice(0, 4);
   if (displayed.length === 0) return null;
 
-  function getPrice(product: Product): string {
-    const prices = product.variants?.[0]?.prices;
-    if (!prices?.length) return '';
-    const inr = prices.find((p) => p.currency_code?.toLowerCase() === 'inr') ?? prices[0];
-    return formatPrice(inr.amount);
-  }
-
   return (
-    <section className="py-20 bg-zinc-200 overflow-hidden">
-      <h3 className="font-heading text-3xl text-center mb-10">Best Sellers</h3>
+    <section className="bg-white py-16 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 text-center">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
+            Most Loved
+          </div>
+          <h2 className="mt-3 font-heading text-[clamp(34px,4vw,54px)] font-medium leading-[0.96] tracking-[-0.02em] text-stone-950">
+            Our <em>Bestsellers</em>
+          </h2>
+          <p className="mt-3 text-[15px] leading-7 text-stone-600">
+            Pieces the Kavastram community can&apos;t stop talking about
+          </p>
+        </div>
 
-      <div className="overflow-x-auto no-scrollbar flex gap-6 px-6 snap-x snap-mandatory">
-        {displayed.map((product, i) => (
-          <Link
-            key={product.id}
-            href={`/products/${product.handle || product.id}`}
-            className="min-w-[300px] relative snap-center overflow-hidden block"
-            style={{ height: '380px' }}
-            onMouseEnter={() => setActiveDot(i)}
-          >
-            {product.thumbnail ? (
-              <OptimizedImage
-                src={product.thumbnail}
-                alt={product.title}
-                fill
-                sizes="300px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 bg-zinc-300" />
-            )}
-            <div className="absolute inset-x-4 bottom-4 bg-white/90 backdrop-blur-sm p-4 flex justify-between items-center">
-              <div className="flex flex-col">
-                <span className="text-[12px] font-medium uppercase tracking-tighter text-black line-clamp-1">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {displayed.map((product) => (
+            <article key={product.id} className="group">
+              <Link
+                href={`/products/${product.handle || product.id}`}
+                className="relative block aspect-[4/5] overflow-hidden bg-stone-100"
+              >
+                {product.thumbnail ? (
+                  <OptimizedImage
+                    src={product.thumbnail}
+                    alt={product.title}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-stone-200" />
+                )}
+              </Link>
+
+              <div className="px-1 pt-4">
+                <Link
+                  href={`/products/${product.handle || product.id}`}
+                  className="line-clamp-2 block text-[17px] font-semibold leading-snug text-stone-900 sm:text-[18px]"
+                >
                   {product.title}
-                </span>
-                <span className="text-[14px] font-bold text-black">{getPrice(product)}</span>
+                </Link>
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-[16px] font-semibold text-stone-950">
+                    {formatPrice(product)}
+                  </span>
+                </div>
               </div>
-              <ShoppingCart size={20} className="text-black" />
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {displayed.length > 1 && (
-        <div className="flex justify-center gap-2 mt-8">
-          {displayed.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              aria-label={`Go to slide ${i + 1}`}
-              onClick={() => setActiveDot(i)}
-              className={`w-1.5 h-1.5 rounded-full transition-all ${
-                i === activeDot ? 'bg-black' : 'bg-zinc-400'
-              }`}
-            />
+            </article>
           ))}
         </div>
-      )}
+
+        <div className="mt-12 text-center">
+          <Link
+            href="/bestsellers"
+            className="inline-flex items-center justify-center bg-stone-950 px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-stone-800"
+          >
+            View All Bestsellers
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }

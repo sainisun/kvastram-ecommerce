@@ -51,9 +51,7 @@ export function HeroSection({ settings, fallbackBanner }: HeroSectionProps) {
       <div className="absolute inset-0">
         <div className="mx-auto flex h-full max-w-[1280px] items-end px-4 pb-12 sm:px-6 lg:px-8 lg:pb-16">
           <div className="max-w-2xl text-left">
-            <div className="text-[11px] uppercase tracking-[0.25em] text-white">
-              {subtitle}
-            </div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-white">{subtitle}</div>
             {hasCustomTitle ? (
               <h1 className="mt-5 max-w-3xl font-heading text-[clamp(52px,6vw,84px)] font-normal leading-[0.94] tracking-[-0.03em] text-white">
                 {title}
@@ -65,7 +63,8 @@ export function HeroSection({ settings, fallbackBanner }: HeroSectionProps) {
               </h1>
             )}
             <p className="mt-4 max-w-xl text-[17px] leading-8 text-white/92">
-              Handcrafted ethnic wear designed for the modern Indian woman — where timeless meets tomorrow.
+              Handcrafted ethnic wear designed for the modern Indian woman — where timeless
+              meets tomorrow.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link

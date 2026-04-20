@@ -1,11 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
-import WishlistButton from '@/components/ui/WishlistButton';
-import { useCurrency } from '@/context/currency-context';
 import type { MoneyAmount, Product } from '@/types';
 
 interface NewArrivalsProps {
@@ -13,93 +10,44 @@ interface NewArrivalsProps {
   isCurated?: boolean;
 }
 
-export function NewArrivals({
-  products,
-  isCurated = false,
-}: NewArrivalsProps) {
-  const { formatPrice } = useCurrency();
-  const railRef = useRef<HTMLDivElement | null>(null);
+function formatPrice(product: Product): string {
+  const prices = product.variants?.[0]?.prices;
+  if (!prices?.length) return '';
+  const inr =
+    prices.find((price: MoneyAmount) => price.currency_code?.toLowerCase() === 'inr') ??
+    prices[0];
 
-  const displayed = products.slice(0, 8);
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: inr.currency_code?.toUpperCase() || 'INR',
+  }).format(inr.amount / 100);
+}
+
+export function NewArrivals({ products, isCurated = false }: NewArrivalsProps) {
+  const displayed = products.slice(0, 4);
   if (displayed.length === 0) return null;
 
-  function scrollRail(direction: 'left' | 'right') {
-    if (!railRef.current) return;
-    const amount = direction === 'left' ? -320 : 320;
-    railRef.current.scrollBy({ left: amount, behavior: 'smooth' });
-  }
-
-  function getPrice(product: Product): string {
-    const prices = product.variants?.[0]?.prices;
-    if (!prices?.length) return '';
-    const inr =
-      prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') ??
-      prices[0];
-    return formatPrice(inr.amount);
-  }
-
-  function getComparePrice(product: Product): string | null {
-    const compareAt = product.variants?.[0]?.compare_at_price;
-    return compareAt ? formatPrice(compareAt) : null;
-  }
-
   return (
-    <section className="bg-[#f6f1ea] py-16 sm:py-20">
+    <section className={isCurated ? 'bg-[#f6f1ea] py-16 sm:py-20' : 'bg-white py-16 sm:py-20'}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-end justify-between gap-4 border-b border-stone-200 pb-4">
-          <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-stone-500">
-              {isCurated ? 'Featured Products' : 'New Arrivals'}
-            </p>
-            <h2 className="mt-2 font-heading text-[30px] font-semibold leading-none text-stone-950 sm:text-[38px]">
-              {isCurated
-                ? 'Featured Products'
-                : 'Fresh pieces, ready to discover'}
-            </h2>
+        <div className="mb-10 text-center">
+          <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
+            New Arrivals
           </div>
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => scrollRail('left')}
-              className="hidden h-10 w-10 items-center justify-center rounded-full border border-stone-300 text-stone-700 transition hover:border-stone-950 hover:text-stone-950 md:inline-flex"
-              aria-label="Scroll products left"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollRail('right')}
-              className="hidden h-10 w-10 items-center justify-center rounded-full border border-stone-300 text-stone-700 transition hover:border-stone-950 hover:text-stone-950 md:inline-flex"
-              aria-label="Scroll products right"
-            >
-              <ChevronRight size={18} />
-            </button>
-            <Link
-              href={isCurated ? '/products' : '/products?sort=newest'}
-              className="inline-flex shrink-0 items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-stone-700 transition-colors hover:text-stone-950"
-            >
-              View All
-              <ArrowRight size={14} />
-            </Link>
-          </div>
+          <h2 className="mt-3 font-heading text-[clamp(34px,4vw,54px)] font-medium leading-[0.96] tracking-[-0.02em] text-stone-950">
+            Fresh pieces, ready to <em>discover</em>
+          </h2>
         </div>
 
-        <div
-          ref={railRef}
-          className="flex gap-5 overflow-x-auto pb-2 scroll-smooth no-scrollbar snap-x snap-mandatory"
-        >
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {displayed.map((product) => {
-            const comparePrice = getComparePrice(product);
             const secondImage = product.images?.[1]?.url;
 
             return (
-              <article
-                key={product.id}
-                className="group w-[74vw] shrink-0 snap-start min-[480px]:w-[44vw] sm:w-[280px] lg:w-[300px]"
-              >
+              <article key={product.id} className="group">
                 <Link
                   href={`/products/${product.handle || product.id}`}
-                  className="relative block aspect-[4/5] overflow-hidden rounded-[24px] bg-stone-100"
+                  className="relative block aspect-[4/5] overflow-hidden bg-stone-100"
                 >
                   {product.thumbnail ? (
                     <OptimizedImage
@@ -112,6 +60,7 @@ export function NewArrivals({
                   ) : (
                     <div className="absolute inset-0 bg-stone-200" />
                   )}
+
                   {secondImage ? (
                     <OptimizedImage
                       src={secondImage}
@@ -121,21 +70,6 @@ export function NewArrivals({
                       className="absolute inset-0 object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
                     />
                   ) : null}
-                  <div className="absolute right-3 top-3 z-10">
-                    <WishlistButton
-                      productId={product.id}
-                      title={product.title}
-                      price={product.variants?.[0]?.prices?.[0]?.amount || 0}
-                      currency={
-                        product.variants?.[0]?.prices?.[0]?.currency_code?.toUpperCase() ||
-                        'INR'
-                      }
-                      thumbnail={product.thumbnail || undefined}
-                      handle={product.handle || product.id}
-                      variantId={product.variants?.[0]?.id}
-                      size="sm"
-                    />
-                  </div>
                 </Link>
 
                 <div className="px-1 pt-4">
@@ -149,19 +83,24 @@ export function NewArrivals({
                     {product.title}
                   </Link>
                   <div className="mt-3 flex items-center gap-2">
-                    {comparePrice ? (
-                      <span className="text-[13px] text-stone-400 line-through">
-                        {comparePrice}
-                      </span>
-                    ) : null}
                     <span className="text-[16px] font-semibold text-stone-950">
-                      {getPrice(product)}
+                      {formatPrice(product)}
                     </span>
                   </div>
                 </div>
               </article>
             );
           })}
+        </div>
+
+        <div className="mt-12 text-center">
+          <Link
+            href={isCurated ? '/products' : '/products?sort=newest'}
+            className="inline-flex items-center justify-center bg-stone-950 px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-stone-800"
+          >
+            {isCurated ? 'View All Featured Products' : 'View All New Arrivals'}
+            <ArrowRight size={14} className="ml-2" />
+          </Link>
         </div>
       </div>
     </section>
