@@ -228,7 +228,7 @@ export default function NewProductPage() {
           alt_text:     item.alt_text || '',
           is_thumbnail: item.is_thumbnail,
           position:     idx,
-          metadata:     item.metadata || undefined,
+          metadata:     item.metadata ? { ...item.metadata, thumbnail_url: item.metadata.thumbnail_url || undefined } : undefined,
         })),
         thumbnail:     getCoverThumbnail(mediaItems) || undefined,
         category_ids:  selectedCategoryIds,

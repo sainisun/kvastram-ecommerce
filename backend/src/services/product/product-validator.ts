@@ -21,7 +21,7 @@ export const ImageSchema = z.object({
   metadata: z
     .object({
       media_type: z.enum(['image', 'video']).default('image'),
-      thumbnail_url: z.string().url().optional(),
+      thumbnail_url: z.string().url().optional().or(z.literal('')).transform(v => v === '' ? undefined : v),
       mime_type: z.string().optional(),
       file_size: z.number().int().optional(),
     })
