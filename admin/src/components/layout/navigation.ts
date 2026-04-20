@@ -71,10 +71,10 @@ export const primaryNavItems: NavItem[] = [
     description: 'Homepage slider',
   },
   {
-    label: 'Category Banners',
+    label: 'Homepage Banners',
     href: '/dashboard/content/homepage-banners',
     icon: Layers,
-    description: 'Mobile category hero',
+    description: 'Homepage hero/banner slider',
   },
   {
     label: 'Trending Reels',

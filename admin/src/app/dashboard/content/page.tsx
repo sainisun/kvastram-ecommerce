@@ -19,9 +19,9 @@ export default function ContentDashboard() {
           className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
         >
           <Layers className="mb-4 text-blue-600" size={32} />
-          <h2 className="text-xl font-bold mb-2">Category Banners</h2>
+          <h2 className="text-xl font-bold mb-2">Homepage Banners</h2>
           <p className="text-gray-500">
-            Manage the mobile hero slider shown on category listing pages.
+            Manage the homepage hero/banner slider shown on the storefront.
           </p>
         </Link>
         <Link
