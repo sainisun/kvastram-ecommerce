@@ -19,7 +19,7 @@ const DEFAULT_NAV_LINKS = JSON.stringify([
 ]);
 
 const DEFAULT_QUICK_LINKS = JSON.stringify([
-  { label: 'Bestsellers', url: '/products?tag=bestseller', order: 1 },
+  { label: 'Bestsellers', url: '/bestsellers', order: 1 },
   { label: 'New Arrivals', url: '/products?tag=new', order: 2 },
   { label: 'Collections', url: '/collections', order: 3 },
   { label: 'Sale', url: '/sale', order: 4, highlight: true },

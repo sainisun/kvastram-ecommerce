@@ -28,6 +28,24 @@ export interface HomepageCollection {
   image?: string | null;
 }
 
+export interface HomepageSpotlightProduct {
+  id: string;
+  badge_text?: string | null;
+  custom_image_url?: string | null;
+  product: {
+    id: string;
+    title: string;
+    handle?: string;
+    thumbnail?: string | null;
+    variants?: Array<{
+      prices?: Array<{
+        amount: number;
+        currency_code: string;
+      }>;
+    }>;
+  };
+}
+
 export interface HomepageTestimonial {
   id: string;
   name: string;

@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { api } from '@/lib/api';
 import {
@@ -10,21 +9,41 @@ import {
 } from '@/lib/seo';
 import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
-import { TrendingReels } from '@/components/home/TrendingReels';
 import { CategoriesGrid } from '@/components/home/CategoriesGrid';
+import { BrandStory } from '@/components/home/BrandStory';
+import { CollectionsSection } from '@/components/home/CollectionsSection';
+import { ShopTheLook } from '@/components/home/ShopTheLook';
+import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
+import { TrendingReels } from '@/components/home/TrendingReels';
+import { AsSeenOn } from '@/components/home/AsSeenOn';
+import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { Testimonials } from '@/components/home/Testimonials';
+import { SeenOnYou } from '@/components/home/SeenOnYou';
 import { InstagramReels } from '@/components/home/InstagramReels';
-import { BrandStory } from '@/components/home/BrandStory';
 import { FabricsSection } from '@/components/home/FabricsSection';
-import { CollectionsSection } from '@/components/home/CollectionsSection';
 import type { Product } from '@/types';
 import type {
   HomepageCategoryCard,
   HomepageCollection,
   HomepageTestimonial,
   HomepageTrendingReel,
+  HomepageSpotlightProduct,
 } from '@/types/homepage';
+
+type HomepageSettings = {
+  hero_title?: string | null;
+  hero_subtitle?: string | null;
+  hero_cta_text?: string | null;
+  hero_cta_link?: string | null;
+  hero_image?: string | null;
+  newsletter_title?: string | null;
+  newsletter_subtitle?: string | null;
+  brand_story_title?: string | null;
+  brand_story_content?: string | null;
+  brand_story_image?: string | null;
+  featured_product_ids?: string | null;
+};
 
 export const revalidate = 60;
 
@@ -38,6 +57,8 @@ export default async function Home() {
     collectionsResult,
     reelsResult,
     categoriesResult,
+    spotlightsResult,
+    heroBannersResult,
   ] = await Promise.allSettled([
     api.getHomepageSettings(),
     api.getProducts({ limit: 8, sort: 'newest' }),
@@ -45,9 +66,11 @@ export default async function Home() {
     api.getCollections(),
     api.getTrendingReels(),
     api.getHomepageCategories(),
+    api.getSpotlightProducts(),
+    api.getHeroBanners(),
   ]);
 
-  const homepageSettings =
+  const homepageSettings: HomepageSettings =
     homepageResult.status === 'fulfilled'
       ? homepageResult.value.settings || {}
       : {};
@@ -209,6 +232,54 @@ export default async function Home() {
           )
       : [];
 
+  const spotlightProducts: HomepageSpotlightProduct[] =
+    spotlightsResult.status === 'fulfilled'
+      ? (spotlightsResult.value.featuredProducts || [])
+          .filter(
+            (item: {
+              id?: string;
+              product?: { id?: string; title?: string; handle?: string };
+            }) => Boolean(item?.id && item?.product?.id && item?.product?.title)
+          )
+          .slice(0, 3)
+          .map(
+            (item: {
+              id: string;
+              badge_text?: string | null;
+              custom_image_url?: string | null;
+              product: {
+                id: string;
+                title: string;
+                handle?: string;
+                thumbnail?: string | null;
+                variants?: Array<{
+                  prices?: Array<{ amount: number; currency_code: string }>;
+                }>;
+              };
+            }) => ({
+              id: item.id,
+              badge_text: item.badge_text || null,
+              custom_image_url: item.custom_image_url || null,
+              product: item.product,
+            })
+          )
+      : [];
+
+  const heroBanner =
+    heroBannersResult.status === 'fulfilled'
+      ? (heroBannersResult.value.banners || [])
+          .filter(
+            (item: { id?: string; is_active?: boolean; image_url?: string }) =>
+              Boolean(item?.id && item?.is_active && item?.image_url)
+          )
+          .sort(
+            (
+              a: { sort_order?: number | null },
+              b: { sort_order?: number | null }
+            ) => (a.sort_order || 0) - (b.sort_order || 0)
+          )[0] || null
+      : null;
+
   const homepageSchema = [
     buildOrganizationJsonLd(),
     buildWebsiteJsonLd(),
@@ -222,21 +293,21 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
 
-      <Suspense fallback={<div className="h-[120px] bg-white" />}>
-        <CircularCategories />
-      </Suspense>
-      <HeroSection />
-      <TrendingReels reels={trendingReels} />
+      <HeroSection settings={homepageSettings} fallbackBanner={heroBanner} />
       <CategoriesGrid categories={homepageCategories} />
-      <NewArrivals
-        products={products}
-        isCurated={featuredProductIds.length > 0}
-      />
       <CollectionsSection collections={collections} />
+      <ShopTheLook spotlightProducts={spotlightProducts} />
+      <WatchBuyPreview reels={trendingReels} />
+      <AsSeenOn />
+      <BrandStory settings={homepageSettings} />
+      <NewsletterSection settings={homepageSettings} />
+      <CircularCategories />
+      <NewArrivals products={products} isCurated={featuredProductIds.length > 0} />
       <Testimonials testimonials={testimonials} />
+      <SeenOnYou />
       <InstagramReels reels={trendingReels.slice(0, 3)} />
-      <BrandStory />
       <FabricsSection />
+      <TrendingReels reels={trendingReels} />
     </>
   );
 }

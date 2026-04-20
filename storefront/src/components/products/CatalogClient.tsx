@@ -1,25 +1,29 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import Link from 'next/link';
+import { useCallback, useState } from 'react';
 import {
-  SlidersHorizontal,
-  X,
+  ArrowUpDown,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown,
+  SlidersHorizontal,
+  X,
 } from 'lucide-react';
-import { Product } from '@/types';
-import { api } from '@/lib/api';
-import ProductGrid from '@/components/ProductGrid';
-import FilterSidebar from '@/components/products/FilterSidebar';
-import PageHero from '@/components/hero/PageHero';
+import { useRouter, useSearchParams } from 'next/navigation';
+
 import CategoryBannerCarousel from '@/components/products/CategoryBannerCarousel';
 import CategoryCircleStrip from '@/components/products/CategoryCircleStrip';
-import { useSearchParams, useRouter } from 'next/navigation';
+import FilterSidebar from '@/components/products/FilterSidebar';
+import PageHero from '@/components/hero/PageHero';
+import ProductGrid from '@/components/ProductGrid';
+import { api } from '@/lib/api';
+import { Product } from '@/types';
 
 interface Category {
   id: string;
   name: string;
+  slug?: string;
+  handle?: string;
   children?: Category[];
 }
 
@@ -31,6 +35,7 @@ interface Tag {
 interface Collection {
   id: string;
   title: string;
+  handle?: string;
 }
 
 interface CatalogClientProps {
@@ -68,6 +73,23 @@ const SORT_OPTIONS = [
   { value: 'price_desc', label: 'Price: High to Low' },
 ];
 
+function findCategoryById(categories: Category[], id: string): Category | null {
+  for (const category of categories) {
+    if (category.id === id) {
+      return category;
+    }
+
+    if (category.children?.length) {
+      const match = findCategoryById(category.children, id);
+      if (match) {
+        return match;
+      }
+    }
+  }
+
+  return null;
+}
+
 export default function CatalogClient({
   initialProducts,
   categories,
@@ -92,10 +114,23 @@ export default function CatalogClient({
   const currentTagId = searchParams.get('tag_id');
   const currentCollectionId = searchParams.get('collection_id');
 
-  // Calculate total pages
+  const activeCategory = currentCategoryId
+    ? findCategoryById(categories, currentCategoryId)
+    : null;
+  const activeTag = currentTagId
+    ? tags.find((tag) => tag.id === currentTagId)
+    : null;
+  const activeCollection = currentCollectionId
+    ? collections.find((collection) => collection.id === currentCollectionId)
+    : null;
+
+  const topCategories = categories.slice(0, 6);
+  const featuredCollections = collections
+    .slice(0, 6)
+    .filter((collection) => Boolean(collection.handle));
+
   const totalPages = Math.ceil(total / limit);
 
-  // Fetch products with pagination and filters
   const fetchProducts = useCallback(
     async (pageNum: number, sortValue?: string) => {
       setLoading(true);
@@ -109,6 +144,7 @@ export default function CatalogClient({
           tag_id: currentTagId || undefined,
           collection_id: currentCollectionId || undefined,
         });
+
         if (result.products) {
           setProducts(result.products);
           setTotal(result.total || result.products.length);
@@ -122,7 +158,6 @@ export default function CatalogClient({
     [limit, currentSort, currentCategoryId, currentTagId, currentCollectionId]
   );
 
-  // Handle page change
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages && newPage !== page) {
       setPage(newPage);
@@ -131,7 +166,6 @@ export default function CatalogClient({
     }
   };
 
-  // Handle sort change
   const handleSortChange = (newSort: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (newSort && newSort !== 'newest') {
@@ -144,167 +178,182 @@ export default function CatalogClient({
     fetchProducts(1, newSort);
   };
 
-  // Calculate showing range
   const startItem = total > 0 ? (page - 1) * limit + 1 : 0;
   const endItem = Math.min(page * limit, total);
+
+  const clearFilter = (key: 'category_id' | 'tag_id' | 'collection_id') => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(key);
+    router.push(`/products?${params.toString()}`);
+  };
 
   return (
     <div className="min-h-screen bg-white">
       {categoryPageBanners.length > 0 ? (
         <CategoryBannerCarousel banners={categoryPageBanners} />
-      ) : (
-        <div className="md:hidden">
-          <PageHero
-            title="All Products"
-            subtitle="The Collection"
-            description="Discover our curated selection of artisanal luxury, from Kashmiri weaves to Florentine leather."
-            image="/images/home/hero-main.jpg"
-          />
-        </div>
-      )}
-
-      {categoryCircles.length > 0 ? (
-        <CategoryCircleStrip circles={categoryCircles} />
       ) : null}
 
-      <div className="hidden md:block">
-        <PageHero
-          title="All Products"
-          subtitle="The Collection"
-          description="Discover our curated selection of artisanal luxury, from Kashmiri weaves to Florentine leather."
-          image="/images/home/hero-main.jpg"
-        />
-      </div>
+      {categoryCircles.length > 0 ? <CategoryCircleStrip circles={categoryCircles} /> : null}
 
-      {/* Content with Sidebar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col md:flex-row gap-8 md:gap-12">
-        {/* Sidebar (Desktop) */}
-        <aside className="hidden md:block w-64 shrink-0">
-          <FilterSidebar
-            categories={categories}
-            tags={tags}
-            collections={collections}
-          />
-        </aside>
+      <PageHero
+        title="Shop All"
+        subtitle="The Collection"
+        description="Browse the full Kvastram edit. Sort by newest, filter by admin-managed categories, tags, and collections, and discover pieces ready to wear now."
+        image="/images/home/hero-main.jpg"
+      />
 
-        {/* Main Content */}
-        <main className="flex-1">
-          {/* Toolbar */}
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-stone-100">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setMobileFilterOpen(true)}
-                className="md:hidden flex items-center gap-2 text-sm font-medium text-stone-600 cursor-pointer hover:text-black"
-                aria-label="Open filters"
-              >
-                <SlidersHorizontal size={16} />
-                <span>Filter</span>
-              </button>
+      <div className="mx-auto max-w-[1280px] px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 pb-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.delete('category_id');
+                params.delete('tag_id');
+                params.delete('collection_id');
+                router.push(`/products?${params.toString()}`);
+              }}
+              className={`inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors ${
+                !currentCategoryId && !currentTagId && !currentCollectionId
+                  ? 'border-stone-950 bg-stone-950 text-white'
+                  : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
+              }`}
+            >
+              All
+            </button>
 
-              {/* Active Filters Display */}
-              {(currentCategoryId || currentTagId || currentCollectionId) && (
-                <div className="hidden md:flex items-center gap-2">
-                  {currentCategoryId && (
-                    <span className="px-2 py-1 bg-stone-100 text-xs text-stone-600 rounded">
-                      Category
-                      <button
-                        onClick={() => {
-                          const params = new URLSearchParams(
-                            searchParams.toString()
-                          );
-                          params.delete('category_id');
-                          router.push(`/products?${params.toString()}`);
-                        }}
-                        className="ml-1 text-stone-400 hover:text-red-500"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  {currentTagId && (
-                    <span className="px-2 py-1 bg-stone-100 text-xs text-stone-600 rounded">
-                      Tag
-                      <button
-                        onClick={() => {
-                          const params = new URLSearchParams(
-                            searchParams.toString()
-                          );
-                          params.delete('tag_id');
-                          router.push(`/products?${params.toString()}`);
-                        }}
-                        className="ml-1 text-stone-400 hover:text-red-500"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                  {currentCollectionId && (
-                    <span className="px-2 py-1 bg-stone-100 text-xs text-stone-600 rounded">
-                      Collection
-                      <button
-                        onClick={() => {
-                          const params = new URLSearchParams(
-                            searchParams.toString()
-                          );
-                          params.delete('collection_id');
-                          router.push(`/products?${params.toString()}`);
-                        }}
-                        className="ml-1 text-stone-400 hover:text-red-500"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+            {topCategories.map((category) => {
+              const isActive = currentCategoryId === category.id;
 
-            <div className="flex items-center gap-4">
-              <div className="font-body text-[15px] font-[300] text-stone-500">
-                {total > 0
-                  ? `${startItem}-${endItem} of ${total} Items`
-                  : `${total} Items`}
-              </div>
-
-              {/* Sort Dropdown */}
-              <div className="hidden md:flex items-center gap-2">
-                <ArrowUpDown size={14} className="text-stone-400" />
-                <select
-                  value={currentSort}
-                  onChange={(e) => handleSortChange(e.target.value)}
-                  className="font-body cursor-pointer border-none bg-transparent text-[15px] font-[300] text-stone-600 focus:outline-none hover:text-black"
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    if (isActive) {
+                      params.delete('category_id');
+                    } else {
+                      params.set('category_id', category.id);
+                      params.delete('tag_id');
+                      params.delete('collection_id');
+                    }
+                    router.push(`/products?${params.toString()}`);
+                  }}
+                  className={`inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors ${
+                    isActive
+                      ? 'border-stone-950 bg-stone-950 text-white'
+                      : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
+                  }`}
                 >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+                  {category.name}
+                </button>
+              );
+            })}
+
+            {featuredCollections.map((collection) => (
+              <Link
+                key={collection.id}
+                href={`/collections/${collection.handle}`}
+                className="inline-flex items-center rounded-full border border-stone-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+              >
+                {collection.title}
+              </Link>
+            ))}
           </div>
 
+          <button
+            onClick={() => setMobileFilterOpen(true)}
+            className="inline-flex items-center gap-2 border border-stone-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+            aria-label="Open filters"
+          >
+            <SlidersHorizontal size={14} />
+            Filters
+          </button>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {activeCategory ? (
+              <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                {activeCategory.name}
+                <button
+                  onClick={() => clearFilter('category_id')}
+                  aria-label="Remove category filter"
+                  className="text-stone-400 transition-colors hover:text-stone-900"
+                >
+                  ×
+                </button>
+              </span>
+            ) : null}
+
+            {activeTag ? (
+              <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                {activeTag.name}
+                <button
+                  onClick={() => clearFilter('tag_id')}
+                  aria-label="Remove tag filter"
+                  className="text-stone-400 transition-colors hover:text-stone-900"
+                >
+                  ×
+                </button>
+              </span>
+            ) : null}
+
+            {activeCollection ? (
+              <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                {activeCollection.title}
+                <button
+                  onClick={() => clearFilter('collection_id')}
+                  aria-label="Remove collection filter"
+                  className="text-stone-400 transition-colors hover:text-stone-900"
+                >
+                  ×
+                </button>
+              </span>
+            ) : null}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="font-body text-[13px] font-[300] text-stone-500">
+              {total > 0 ? `${startItem}-${endItem} of ${total} Items` : `${total} Items`}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <ArrowUpDown size={14} className="text-stone-400" />
+              <select
+                value={currentSort}
+                onChange={(e) => handleSortChange(e.target.value)}
+                className="cursor-pointer border-none bg-transparent text-[13px] font-[300] text-stone-600 focus:outline-none hover:text-black"
+              >
+                {SORT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <main className="mt-8">
           <ProductGrid
             initialProducts={products}
             loading={loading}
             spotlightProducts={spotlightProducts}
           />
 
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-12">
+          {totalPages > 1 ? (
+            <div className="mt-12 flex items-center justify-center gap-2">
               <button
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page === 1 || loading}
-                className="p-2 rounded-md border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Previous page"
               >
                 <ChevronLeft size={20} />
               </button>
 
-              {/* Page Numbers */}
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                // Show pages around current page
                 let pageNum: number;
                 if (totalPages <= 5) {
                   pageNum = i + 1;
@@ -321,7 +370,7 @@ export default function CatalogClient({
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
                     disabled={loading}
-                    className={`w-10 h-10 rounded-md text-sm font-medium cursor-pointer transition-colors ${
+                    className={`h-10 w-10 rounded-md text-sm font-medium transition-colors ${
                       page === pageNum
                         ? 'bg-stone-900 text-white'
                         : 'text-stone-600 hover:bg-stone-50 hover:text-black'
@@ -337,30 +386,26 @@ export default function CatalogClient({
               <button
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page === totalPages || loading}
-                className="p-2 rounded-md border border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Next page"
               >
                 <ChevronRight size={20} />
               </button>
             </div>
-          )}
+          ) : null}
         </main>
       </div>
 
-      {/* Mobile Filter Drawer */}
       {mobileFilterOpen && (
         <>
-          {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            className="fixed inset-0 z-40 bg-black/50"
             onClick={() => setMobileFilterOpen(false)}
             aria-hidden="true"
           />
-          {/* Drawer */}
-          <div className="fixed inset-y-0 left-0 w-80 bg-white z-50 md:hidden shadow-xl transform transition-transform duration-300">
-            <div className="flex flex-col h-full">
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-stone-100">
+          <div className="fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl transition-transform duration-300">
+            <div className="flex h-full flex-col">
+              <div className="flex items-center justify-between border-b border-stone-100 p-4">
                 <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-stone-900">
                   Filters
                 </h2>
@@ -372,9 +417,12 @@ export default function CatalogClient({
                   <X size={24} />
                 </button>
               </div>
-              {/* Content */}
               <div className="flex-1 overflow-y-auto p-4">
-                <FilterSidebar categories={categories} tags={tags} />
+                <FilterSidebar
+                  categories={categories}
+                  tags={tags}
+                  collections={collections}
+                />
               </div>
             </div>
           </div>

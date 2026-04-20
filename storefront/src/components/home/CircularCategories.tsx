@@ -28,15 +28,15 @@ export async function CircularCategories() {
         <Link
           key={circle.id}
           href={circle.link_url}
-          className="flex min-w-[72px] flex-col items-center"
+          className="flex min-w-[80px] flex-col items-center"
         >
           <div
-            className={`w-[72px] h-[72px] rounded-full p-[2px] ${
+            className={`h-[72px] w-[72px] rounded-full p-[2px] ${
               i === 0 ? 'border border-black' : 'border border-transparent'
             }`}
           >
             {circle.image_url ? (
-              <div className="relative w-full h-full rounded-full overflow-hidden">
+              <div className="relative h-full w-full overflow-hidden rounded-full">
                 <OptimizedImage
                   src={circle.image_url}
                   alt={circle.label}
@@ -46,10 +46,12 @@ export async function CircularCategories() {
                 />
               </div>
             ) : (
-              <div className="w-full h-full rounded-full bg-zinc-200" />
+              <div className="h-full w-full rounded-full bg-zinc-200" />
             )}
           </div>
-          <span className="sr-only">{circle.label}</span>
+          <span className="mt-2 text-center text-[10px] font-medium uppercase tracking-[0.14em] text-stone-600">
+            {circle.label}
+          </span>
         </Link>
       ))}
     </section>

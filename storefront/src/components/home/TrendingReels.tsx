@@ -9,6 +9,7 @@ import type { HomepageTrendingReel } from '@/types/homepage';
 function ReelCard({ reel }: { reel: HomepageTrendingReel }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLAnchorElement>(null);
 
   async function handleStartPlayback() {
@@ -31,13 +32,14 @@ function ReelCard({ reel }: { reel: HomepageTrendingReel }) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
+        setIsVisible(entry.isIntersecting);
         if (entry.isIntersecting) {
           handleStartPlayback();
         } else {
           handleStopPlayback();
         }
       },
-      { threshold: 0.6 }
+      { threshold: 0.45 }
     );
 
     if (containerRef.current) observer.observe(containerRef.current);
@@ -48,7 +50,11 @@ function ReelCard({ reel }: { reel: HomepageTrendingReel }) {
     <Link
       href={`/trending-now?reel=${encodeURIComponent(reel.id)}`}
       ref={containerRef}
-      className="group flex w-[78vw] shrink-0 snap-center flex-col gap-4 sm:w-[280px] lg:w-[320px]"
+      className={`group flex w-[78vw] shrink-0 snap-center flex-col gap-4 transition-all duration-700 ease-out sm:w-[280px] lg:w-[320px] ${
+        isVisible
+          ? 'translate-y-0 scale-100 opacity-100'
+          : 'translate-y-8 scale-[0.94] opacity-0'
+      }`}
     >
       <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-stone-100">
         {reel.thumbnail_url ? (
