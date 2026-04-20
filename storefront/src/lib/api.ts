@@ -475,7 +475,7 @@ export const api = {
       }
     });
 
-    const url = `${API_URL}/products?${searchParams.toString()}`;
+      const url = `${API_URL}/products?${searchParams.toString()}`;
 
     try {
       // Cache for 60 seconds (ISR), but allow bypassing cache via params
