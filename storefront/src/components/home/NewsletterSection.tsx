@@ -17,10 +17,10 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
   const [message, setMessage] = useState('');
 
   const hasCustomTitle = Boolean(settings.newsletter_title);
-  const title = settings.newsletter_title || 'Join the Kavastram';
+  const title = settings.newsletter_title || 'New pieces, every month.';
   const subtitle =
     settings.newsletter_subtitle ||
-    'Be first to know about new collections, exclusive offers, and styling inspiration';
+    'Each collection is small-batch and sells out fast. Get first access — plus 10% off your first order.';
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,7 +62,7 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
             title
           ) : (
             <>
-              Join the Kavastram <em className="italic">Edit</em>
+              New pieces, <em className="italic">every month.</em>
             </>
           )}
         </h2>

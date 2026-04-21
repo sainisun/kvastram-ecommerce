@@ -18,6 +18,8 @@ import { BestSellers } from '@/components/home/BestSellers';
 import { ShopTheLook } from '@/components/home/ShopTheLook';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { AsSeenOn } from '@/components/home/AsSeenOn';
+import { ArtisanStrip } from '@/components/home/ArtisanStrip';
+import { StatsSection } from '@/components/home/StatsSection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { Testimonials } from '@/components/home/Testimonials';
@@ -332,6 +334,13 @@ export default async function Home() {
       <WatchBuyPreview reels={trendingReels} />
       <BestSellers products={products} />
       <AsSeenOn />
+      <StatsSection statsData={[
+        { num: '500+', label: 'Orders shipped worldwide' },
+        { num: '30', label: 'Artisan women employed' },
+        { num: '300+', label: 'Years of Kantha tradition' },
+        { num: '50+', label: 'Countries we ship to' },
+      ]} />
+      <ArtisanStrip />
       <BrandStory settings={homepageSettings} />
       <Testimonials testimonials={testimonials} />
       <NewsletterSection settings={homepageSettings} />

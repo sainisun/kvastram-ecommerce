@@ -1,19 +1,24 @@
-const PRESS_LOGOS = ['Vogue', 'Elle', "Harper's", 'Cosmopolitan', 'Grazia', 'Femina'];
+const TRUST_ITEMS = [
+  { icon: '✦', label: 'Handmade in India', sub: 'Every stitch by hand' },
+  { icon: '✦', label: 'Ships Worldwide', sub: 'USA · UK · EU · AU' },
+  { icon: '✦', label: 'Ethically Made', sub: 'Fair wages, always' },
+  { icon: '✦', label: '500+ Happy Customers', sub: 'Verified reviews' },
+  { icon: '✦', label: 'Secure Checkout', sub: 'Visa · PayPal · Apple Pay' },
+];
 
 export function AsSeenOn() {
   return (
-    <section className="bg-[#f8f1eb] px-4 py-16 sm:px-6 sm:py-16">
+    <section className="border-y border-stone-200 bg-white px-4 py-6 sm:px-6">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-8 text-center text-[11px] uppercase tracking-[0.25em] text-stone-500">
-          As Seen In
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 sm:gap-x-14">
-          {PRESS_LOGOS.map((logo) => (
-            <div
-              key={logo}
-              className="font-heading text-[24px] font-medium text-stone-500 opacity-70 transition-opacity hover:opacity-100"
-            >
-              {logo}
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-12 lg:gap-x-16">
+          {TRUST_ITEMS.map((item) => (
+            <div key={item.label} className="flex flex-col items-center text-center">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-stone-900">
+                {item.label}
+              </span>
+              <span className="mt-0.5 text-[10px] tracking-[0.1em] text-stone-400">
+                {item.sub}
+              </span>
             </div>
           ))}
         </div>

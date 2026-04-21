@@ -6,13 +6,13 @@ import { PaymentIcons } from '@/components/ui/SecurityBadges';
 import NewsletterForm from '@/components/NewsletterForm';
 
 const shopLinks = [
-  { label: 'Shop New Arrivals', href: '/products?sort=newest' },
-  { label: 'Browse All Collections', href: '/collections' },
-  { label: 'Shop Handcrafted Shawls', href: '/collections/shawls' },
-  { label: 'Shop Kurtis & Tops', href: '/collections/kurtis' },
-  { label: 'Shop Sarees Online', href: '/collections/sarees' },
-  { label: 'Shop Everyday Ethnic Wear', href: '/products' },
-  { label: 'Explore Sale Styles', href: '/sale' },
+  { label: 'New Arrivals', href: '/products?sort=newest' },
+  { label: 'Kantha Quilts & Throws', href: '/collections/kantha-quilts' },
+  { label: 'Handmade Bags & Totes', href: '/collections/bags' },
+  { label: 'Block Print Clothing', href: '/collections/block-print' },
+  { label: 'Artisan Scarves & Wraps', href: '/collections/dupattas-stoles' },
+  { label: 'Gifts Under $75', href: '/collections/gifts' },
+  { label: 'Last Pieces — On Sale', href: '/sale' },
 ];
 
 const supportLinks = [
@@ -26,11 +26,10 @@ const supportLinks = [
 ];
 
 const companyLinks = [
-  { label: 'About Kvastram', href: '/about' },
-  { label: 'Our Artisans', href: '/about#artisans' },
-  { label: 'Sustainability', href: '/about#sustainability' },
-  { label: 'Journal', href: '/journal' },
-  { label: 'Store Locator', href: '/stores' },
+  { label: 'Our Story', href: '/about' },
+  { label: 'Meet the Artisans', href: '/about#artisans' },
+  { label: 'What is Kantha?', href: '/journal/what-is-kantha' },
+  { label: 'Slow Fashion Journal', href: '/journal' },
   { label: 'Wholesale / B2B', href: '/wholesale', highlight: true },
 ];
 

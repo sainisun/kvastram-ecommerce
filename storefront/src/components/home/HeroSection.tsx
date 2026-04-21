@@ -31,7 +31,7 @@ export function HeroSection({ settings, fallbackBanner }: HeroSectionProps) {
   const hasCustomTitle = Boolean(settings.hero_title || fallbackBanner?.title);
   const title = settings.hero_title || fallbackBanner?.title || '';
   const subtitle =
-    settings.hero_subtitle || fallbackBanner?.subtitle || 'A Kavastram Summer • Now Live';
+    settings.hero_subtitle || fallbackBanner?.subtitle || 'Handcrafted in Jaipur, India';
   const ctaText =
     settings.hero_cta_text || fallbackBanner?.button_text || 'Shop the Collection';
   const ctaLink = settings.hero_cta_link || fallbackBanner?.button_link || '/products';
@@ -61,13 +61,13 @@ export function HeroSection({ settings, fallbackBanner }: HeroSectionProps) {
               </h1>
             ) : (
               <h1 className="mt-5 max-w-3xl font-heading text-[clamp(52px,6vw,84px)] font-normal leading-[0.94] tracking-[-0.03em] text-white">
-                Woven with <em className="italic">intention</em>,<br />
-                worn with joy.
+                Made by hand.<br />
+                Carried <em className="italic">across the world.</em>
               </h1>
             )}
             <p className="mt-4 max-w-xl text-[17px] leading-8 text-white/92">
-              Handcrafted ethnic wear designed for the modern Indian woman — where timeless
-              meets tomorrow.
+              Kantha quilts, block-printed clothing &amp; artisan bags — each piece hand-stitched
+              by skilled women in Jaipur. Ships to 50+ countries.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
@@ -77,10 +77,10 @@ export function HeroSection({ settings, fallbackBanner }: HeroSectionProps) {
                 {ctaText}
               </Link>
               <Link
-                href="/collections"
+                href="/about"
                 className="inline-flex items-center justify-center border border-white px-8 py-4 text-[12px] font-medium uppercase tracking-[0.16em] text-white transition-colors duration-300 hover:bg-white hover:text-black"
               >
-                Explore
+                Our Story
               </Link>
             </div>
           </div>
