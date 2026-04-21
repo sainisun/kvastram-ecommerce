@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { asc, eq, sql } from 'drizzle-orm';
 import { db } from '../db/client';
 import { trending_reels } from '../db/schema';
-import { isCloudinaryUrl } from '../utils/media-url';
+import { isCloudinaryUrl, isStorefrontHref } from '../utils/media-url';
 
 const app = new Hono();
 
@@ -18,7 +18,8 @@ app.get('/', async (c) => {
       reels: reels.filter(
         (reel) =>
           isCloudinaryUrl(reel.video_url) &&
-          isCloudinaryUrl(reel.thumbnail_url)
+          isCloudinaryUrl(reel.thumbnail_url) &&
+          isStorefrontHref(reel.link_url)
       ),
     });
   } catch (error) {
@@ -41,7 +42,8 @@ app.post('/:id/view', async (c) => {
       !existingReel ||
       !existingReel.is_active ||
       !isCloudinaryUrl(existingReel.video_url) ||
-      !isCloudinaryUrl(existingReel.thumbnail_url)
+      !isCloudinaryUrl(existingReel.thumbnail_url) ||
+      !isStorefrontHref(existingReel.link_url)
     ) {
       return c.json({ error: 'Trending reel not found' }, 404);
     }

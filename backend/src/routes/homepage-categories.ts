@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '../db/client';
 import { homepage_categories } from '../db/schema';
-import { isCloudinaryUrl } from '../utils/media-url';
+import { isCloudinaryUrl, isStorefrontHref } from '../utils/media-url';
 
 const app = new Hono();
 
@@ -19,7 +19,8 @@ app.get('/', async (c) => {
 
     return c.json({
       categories: categories.filter((category) =>
-        isCloudinaryUrl(category.image_url)
+        isCloudinaryUrl(category.image_url) &&
+        isStorefrontHref(category.link_url)
       ),
     });
   } catch (error) {

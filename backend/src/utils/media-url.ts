@@ -16,3 +16,21 @@ export function isCloudinaryUrl(value: unknown): value is string {
 export function cloudinaryUrlOrNull(value: unknown): string | null {
   return isCloudinaryUrl(value) ? value : null;
 }
+
+export function isStorefrontHref(value: unknown): value is string {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return false;
+  }
+
+  const href = value.trim();
+  if (href.startsWith('/') && !href.startsWith('//')) {
+    return true;
+  }
+
+  try {
+    const url = new URL(href);
+    return url.protocol === 'https:' || url.protocol === 'http:';
+  } catch {
+    return false;
+  }
+}

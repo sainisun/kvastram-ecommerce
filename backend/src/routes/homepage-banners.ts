@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '../db/client';
 import { homepage_banners } from '../db/schema';
-import { isCloudinaryUrl } from '../utils/media-url';
+import { isCloudinaryUrl, isStorefrontHref } from '../utils/media-url';
 
 const app = new Hono();
 
@@ -18,7 +18,11 @@ app.get('/', async (c) => {
       );
 
     return c.json({
-      banners: banners.filter((banner) => isCloudinaryUrl(banner.image_url)),
+      banners: banners.filter(
+        (banner) =>
+          isCloudinaryUrl(banner.image_url) &&
+          (!banner.button_url || isStorefrontHref(banner.button_url))
+      ),
     });
   } catch (error) {
     console.error('Error fetching homepage banners:', error);

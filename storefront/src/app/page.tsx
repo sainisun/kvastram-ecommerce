@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { api } from '@/lib/api';
+import { storefrontHrefOrNull } from '@/lib/links';
 import { cloudinaryUrlOrNull } from '@/lib/media';
 import {
   buildBreadcrumbJsonLd,
@@ -155,7 +156,12 @@ export default async function Home() {
               link_url?: string;
               thumbnail_url?: string | null;
               video_url?: string | null;
-            }) => Boolean(item?.id && item?.is_active && item?.link_url)
+            }) =>
+              Boolean(
+                item?.id &&
+                  item?.is_active &&
+                  storefrontHrefOrNull(item?.link_url)
+              )
           )
           .filter((item: { thumbnail_url?: string | null; video_url?: string | null }) =>
             Boolean(
@@ -188,7 +194,7 @@ export default async function Home() {
               product_name: item.product_name,
               price: item.price,
               price_amount: item.price_amount ?? null,
-              link_url: item.link_url,
+              link_url: storefrontHrefOrNull(item.link_url) || '/products',
               view_count: item.view_count || 0,
               is_active: item.is_active,
               sort_order: item.sort_order,
@@ -211,7 +217,7 @@ export default async function Home() {
                 item?.id &&
                   item?.is_active &&
                   item?.image_url &&
-                  item?.link_url &&
+                  storefrontHrefOrNull(item?.link_url) &&
                   item?.name
               )
           )
@@ -236,7 +242,7 @@ export default async function Home() {
               id: item.id,
               image_url: cloudinaryUrlOrNull(item.image_url) || '',
               name: item.name,
-              link_url: item.link_url,
+              link_url: storefrontHrefOrNull(item.link_url) || '/collections',
               is_active: item.is_active,
               sort_order: item.sort_order,
             })
@@ -283,11 +289,17 @@ export default async function Home() {
     heroBannersResult.status === 'fulfilled'
       ? (heroBannersResult.value.banners || [])
           .filter(
-            (item: { id?: string; is_active?: boolean; image_url?: string }) =>
+            (item: {
+              id?: string;
+              is_active?: boolean;
+              image_url?: string;
+              button_link?: string | null;
+            }) =>
               Boolean(
                 item?.id &&
                   item?.is_active &&
-                  cloudinaryUrlOrNull(item?.image_url)
+                  cloudinaryUrlOrNull(item?.image_url) &&
+                  (!item.button_link || storefrontHrefOrNull(item.button_link))
               )
           )
           .sort(
