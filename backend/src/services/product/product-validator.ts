@@ -19,6 +19,10 @@ const urlOrPath = z.string().refine(
   },
   { message: 'Must be a valid URL or a path starting with /' }
 );
+const optionalUrlOrPath = urlOrPath
+  .optional()
+  .or(z.literal(''))
+  .transform((v) => (v === '' ? undefined : v));
 
 // --- Image Schema ---
 export const ImageSchema = z.object({
@@ -29,7 +33,7 @@ export const ImageSchema = z.object({
   metadata: z
     .object({
       media_type: z.enum(['image', 'video']).default('image'),
-      thumbnail_url: urlOrPath.optional(),
+      thumbnail_url: optionalUrlOrPath,
       mime_type: z.string().optional(),
       file_size: z.number().int().optional(),
     })
@@ -60,7 +64,7 @@ export const CreateProductSchema = z.object({
   seo_title: z.string().optional(),
   seo_description: z.string().optional(),
   inventory_quantity: z.number().int().optional().default(0),
-  thumbnail: urlOrPath.optional().or(z.literal('')).transform(v => v === '' ? undefined : v),
+  thumbnail: optionalUrlOrPath,
   sku: z.string().optional(),
   collection_id: z.string().uuid().optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
