@@ -74,29 +74,21 @@ const CURRENCY_LOCALE_MAP: Record<string, string> = {
 
 /**
  * Detect the user's preferred currency from browser locale.
- *
- * This is an Indian store (base currency INR). We intentionally do NOT map
- * generic 'en' or 'en-US' → USD because most Indian users have their browser
- * set to English (United States) — they should still see INR.
- * Only clearly non-Indian locales (en-GB, en-AU, de-DE, ja-JP, etc.) convert.
- * Falls back to INR.
+ * Store sells to international (Western) buyers — defaults to USD.
+ * Only falls back to INR for explicitly Indian locales (hi, en-IN).
  */
 export function detectUserCurrency(): string {
-  if (typeof navigator === 'undefined') return 'INR';
-  const languages = navigator.languages?.length ? [...navigator.languages] : [navigator.language || 'en-IN'];
+  if (typeof navigator === 'undefined') return 'USD';
+  const languages = navigator.languages?.length ? [...navigator.languages] : [navigator.language || 'en-US'];
 
   for (const lang of languages) {
-    // Full locale match (e.g. en-IN, en-GB, ja-JP) — these are reliable
     if (LOCALE_CURRENCY_MAP[lang]) return LOCALE_CURRENCY_MAP[lang];
 
     const base = lang.split('-')[0];
-    // Skip base 'en' mapping: 'en' alone or 'en-US' should not force USD
-    // because Indian users commonly have en-US as their browser language.
-    // Non-English base locales (ja, de, fr, hi, etc.) are still matched.
     if (base !== 'en' && LOCALE_CURRENCY_MAP[base]) return LOCALE_CURRENCY_MAP[base];
   }
 
-  return 'INR'; // Default: INR for this Indian store
+  return 'USD';
 }
 
 /**

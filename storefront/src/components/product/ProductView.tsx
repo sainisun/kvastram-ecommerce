@@ -51,11 +51,12 @@ export default function ProductView({ product }: { product: Product }) {
   }, [product.variants, subscribeToInventory, unsubscribeFromInventory]);
 
   const deliveryWindow = useMemo(() => {
-    if (!currentRegion) return '';
-
-    return currentRegion.id.toLowerCase().startsWith('us')
-      ? '3-5 business days'
-      : '7-14 business days';
+    const regionId = currentRegion?.id?.toLowerCase() || '';
+    if (regionId.startsWith('us')) return '10–14 business days';
+    if (regionId.startsWith('gb') || regionId.startsWith('uk')) return '8–12 business days';
+    if (regionId.startsWith('au') || regionId.startsWith('ca')) return '12–18 business days';
+    if (regionId.startsWith('de') || regionId.startsWith('fr') || regionId.startsWith('eu')) return '10–16 business days';
+    return '10–18 business days';
   }, [currentRegion]);
 
   useEffect(() => {
@@ -205,6 +206,10 @@ export default function ProductView({ product }: { product: Product }) {
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500">{product.collection?.title || 'Kvastram Collection'}</p>
               <h1 className="font-heading text-[20px] font-normal leading-[1.1] tracking-[-0.03em] text-stone-950">{product.title}</h1>
               {product.subtitle && <p className="text-[15px] leading-7 text-stone-600">{product.subtitle}</p>}
+              <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-800">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                One of a kind — handmade in Jaipur, India
+              </p>
               <div className="flex flex-wrap items-center gap-3">
                 <p className="font-body text-[18px] font-normal text-stone-950">{formattedPrice}</p>
                 {formattedComparePrice && <p className="text-[15px] text-stone-400 line-through">{formattedComparePrice}</p>}
@@ -286,6 +291,18 @@ export default function ProductView({ product }: { product: Product }) {
                   <WishlistButton productId={product.id} title={product.title} price={selectedVariant?.prices?.[0]?.amount || 0} currency={currentRegion?.currency_code?.toUpperCase() || 'USD'} thumbnail={product.thumbnail || undefined} handle={product.handle || product.id} variantId={selectedVariant?.id} showLabel className="rounded-full border border-stone-200 px-4" />
                   <ShareButtons title={product.title} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
                 </div>
+                <a
+                  href={`https://wa.me/message/kvastram?text=${encodeURIComponent(`Hi, I'm interested in: ${product.title} — ${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-[#25D366] bg-white py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                    <path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.83L.057 23.486a.5.5 0 0 0 .614.612l5.579-1.453A11.942 11.942 0 0 0 12 24c6.626 0 12-5.373 12-12S18.626 0 12 0zm0 21.818a9.818 9.818 0 0 1-4.992-1.364l-.358-.213-3.714.968.993-3.601-.233-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
+                  </svg>
+                  Ask on WhatsApp
+                </a>
                 <div className="flex items-center justify-between text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
                   <span className="flex items-center gap-1.5">
                     {selectedVariant && currentInventory > 0 ? (
@@ -310,9 +327,9 @@ export default function ProductView({ product }: { product: Product }) {
                   </div>
                 )}
                 <div className="space-y-2 bg-stone-50 p-4">
-                  <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-stone-900">Estimated Delivery</p>
-                  <p className="text-[15px] font-[300] leading-[1.7] text-stone-600">Order now to receive in <span className="font-medium text-stone-900">{deliveryWindow}</span>.</p>
-                  <p className="text-[12px] text-stone-400">Free express shipping on orders over $250.</p>
+                  <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-stone-900">Shipping from Jaipur, India</p>
+                  <p className="text-[15px] font-[300] leading-[1.7] text-stone-600">Estimated delivery: <span className="font-medium text-stone-900">{deliveryWindow || '10–18 business days'}</span>.</p>
+                  <p className="text-[12px] text-stone-400">Free worldwide shipping on orders over $75. Tracked courier, signature on delivery.</p>
                 </div>
               </div>
             </section>

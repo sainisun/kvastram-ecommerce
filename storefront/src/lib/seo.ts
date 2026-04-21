@@ -80,36 +80,36 @@ const CATEGORY_KEYWORD_MAP: Record<
   { primary: string; secondary: string[]; label: string }
 > = {
   kurti: {
-    primary: 'buy kurtis online india',
+    primary: 'handmade Indian block print top',
     secondary: [
-      'cotton kurtis for women',
-      'chikankari kurti',
-      'kurti with dupatta set',
+      'kantha embroidery tunic',
+      'Indian artisan blouse',
+      'fair trade Indian top',
     ],
-    label: 'Kurtis',
+    label: 'Artisan Tops',
   },
   shawl: {
-    primary: 'buy shawls and wraps online',
+    primary: 'handmade Indian scarf wrap',
     secondary: [
-      'pashmina shawl',
-      'embroidered stole',
-      'winter shawl for women',
+      'kantha stitch stole',
+      'block print scarf',
+      'Indian artisan wrap',
     ],
-    label: 'Shawls & Wraps',
+    label: 'Scarves & Wraps',
   },
   saree: {
-    primary: 'buy sarees online india',
-    secondary: ['handcrafted saree', 'festive saree', 'silk saree for women'],
-    label: 'Sarees',
+    primary: 'handwoven Indian textile',
+    secondary: ['kantha fabric', 'block print cotton', 'artisan Indian cloth'],
+    label: 'Indian Textiles',
   },
   default: {
-    primary: 'ethnic wear for women online india',
+    primary: 'handmade Indian clothing',
     secondary: [
-      'handcrafted kurti',
-      'indian women clothing',
-      'buy shawls online',
+      'kantha handmade clothing',
+      'artisan Indian bags',
+      'fair trade Indian textiles',
     ],
-    label: 'Ethnic Wear',
+    label: 'Handmade Indian Goods',
   },
 };
 
@@ -217,7 +217,7 @@ export function getPrimaryCollectionOrCategoryLabel(product: Product): string {
   return (
     getPrimaryCategory(product)?.name ||
     product.collection?.title ||
-    'Ethnic Wear'
+    'Handmade Indian Goods'
   );
 }
 
@@ -231,9 +231,9 @@ export function getProductCategoryLabel(product: Product): string {
   if (title.includes('shawl')) return 'Shawl';
   if (title.includes('wrap')) return 'Wrap';
   if (title.includes('saree') || title.includes('sari')) return 'Saree';
-  if (title.includes('dupatta')) return 'Dupatta';
+  if (title.includes('dupatta') || title.includes('stole')) return 'Artisan Scarf';
 
-  return 'Ethnic Wear';
+  return 'Handmade Goods';
 }
 
 export function getProductMaterial(product: Product): string {
@@ -344,9 +344,9 @@ export function buildProductMetaDescription(product: Product): string {
     .join(', ');
 
   return truncateAtWord(
-    `Buy ${product.title} in ${material}. ${highlight} ${
+    `${product.title} — handmade in Jaipur, India. ${highlight} ${
       variantSummary ? `Available in ${variantSummary}. ` : ''
-    }${price ? `${price.display}. ` : ''}Free delivery from ${SITE_NAME}.`,
+    }${price ? `From ${price.display}. ` : ''}Free worldwide shipping on orders over $75. Ships in tracked packaging.`,
     155
   );
 }
@@ -370,10 +370,10 @@ export function buildCollectionTitle({
   kind: 'category' | 'collection';
 }): string {
   if (kind === 'category') {
-    return truncateAtWord(`Buy ${name} Online | ${SITE_NAME}`, 60);
+    return truncateAtWord(`Handmade ${name} from India | ${SITE_NAME}`, 60);
   }
 
-  return truncateAtWord(`${name} Collection | ${SITE_NAME}`, 60);
+  return truncateAtWord(`${name} — Handmade in Jaipur | ${SITE_NAME}`, 60);
 }
 
 export function buildCollectionDescription({
@@ -387,7 +387,7 @@ export function buildCollectionDescription({
 }): string {
   const source = stripMarkdown(description);
   const summary =
-    source || `Handcrafted with premium fabrics for festive and everyday wear.`;
+    source || `Handmade by artisan women in Jaipur, India using traditional Kantha and block-print techniques.`;
   const countPart = productCount ? ` Shop ${productCount}+ styles.` : '';
 
   return truncateAtWord(
@@ -436,7 +436,7 @@ export function createMetadata({
       title: trimmedTitle,
       description: trimmedDescription,
       siteName: SITE_NAME,
-      locale: 'en_IN',
+      locale: 'en_US',
       images: [
         {
           url: imageUrl,
@@ -455,31 +455,32 @@ export function createMetadata({
 
 export function buildHomepageMetadata(): Metadata {
   return createMetadata({
-    title: 'Indian Ethnic Wear, Kurtis & Sarees | Kvastram',
+    title: 'Handmade Kantha Quilts, Bags & Clothing from India | Kvastram',
     description:
-      "Shop Kvastram's handcrafted kurtis, shawls, wraps and sarees with premium fabrics, artisan craftsmanship, and effortless festive dressing.",
+      'Kvastram — handmade kantha quilts, block-print clothing and artisan bags made by skilled women in Jaipur, India. Ships to USA, UK, EU, Australia and 50+ countries.',
     path: '/',
     image: DEFAULT_OG_IMAGE,
     keywords: [
-      'ethnic wear for women online india',
-      'handcrafted kurti',
-      'indian women clothing',
-      'buy shawls online',
+      'kantha quilt handmade India',
+      'artisan Indian bags',
+      'block print clothing India',
+      'fair trade handmade Indian textiles',
     ],
   });
 }
 
 export function buildCatalogMetadata(): Metadata {
   return createMetadata({
-    title: 'Shop Indian Ethnic Wear Online | Kvastram',
+    title: 'Shop Handmade Kantha Quilts, Bags & Clothing | Kvastram',
     description:
-      'Browse handcrafted kurtis, shawls, sarees and festive ethnic wear for women. Discover premium fabrics, artisan finishes, and new arrivals at Kvastram.',
+      'Browse handmade kantha quilts, block-print clothing, artisan bags and scarves — each piece hand-stitched by skilled women in Jaipur, India. Ships worldwide.',
     path: '/products',
     image: DEFAULT_OG_IMAGE,
     keywords: [
-      'ethnic wear for women online india',
-      'buy indian ethnic wear online',
-      'handcrafted women clothing',
+      'kantha quilt buy online',
+      'handmade Indian clothing',
+      'artisan Indian bags',
+      'block print clothing',
     ],
   });
 }
@@ -753,16 +754,16 @@ export function buildProductSeoContent(product: Product) {
 
   return {
     primaryKeyword,
-    intro: `${primaryKeyword} is a signature ${category.toLowerCase()} from ${SITE_NAME}, crafted in ${material.toLowerCase()} for women who value elegant Indian dressing with comfort and longevity. ${firstSentence} This piece works beautifully for festive occasions, office wear, travel, and elevated daily styling thanks to its refined finish, breathable feel, and artisan-led detailing. If you are shopping for ${primaryKeyword.toLowerCase()} online, this design brings together premium fabric, thoughtful craftsmanship, and an easy silhouette that moves effortlessly from day to evening.`,
+    intro: `${product.title} is a handmade ${category.toLowerCase()} from ${SITE_NAME}, crafted in ${material.toLowerCase()} by skilled artisan women in Jaipur, India. ${firstSentence} Each piece is one of a kind — no two are identical because every stitch is placed by hand. This makes a beautiful gift and a lasting everyday piece. Free worldwide shipping on orders over $75.`,
     bullets: [
       { label: 'Fabric', value: material },
       {
         label: 'Craft',
         value:
           cleanDescription.split('. ').find(Boolean) ||
-          'Handcrafted artisan detailing',
+          'Handmade by artisan women in Jaipur',
       },
-      { label: 'Occasion', value: 'Casual, Festive, Office Wear' },
+      { label: 'Made in', value: 'Jaipur, India' },
       {
         label: 'Fit',
         value: product.options?.some((option) => option.title === 'Size')
@@ -778,10 +779,10 @@ export function buildProductSeoContent(product: Product) {
         value: price?.display || 'Contact for pricing',
       },
     ],
-    styling: `Style this ${category.toLowerCase()} with statement earrings, tonal bottoms, and artisanal layers for a polished ethnic look. ${
+    styling: `Ships from Jaipur, India in tracked packaging. Arrives in 10–18 business days. ${
       categoryLink
-        ? `Explore our ${getPrimaryCategory(product)?.name || category} collection for matching separates and complementary silhouettes.`
-        : 'Discover more handcrafted separates and occasion-ready styles across our latest edits.'
+        ? `Browse more ${getPrimaryCategory(product)?.name || category} pieces in our handmade collection.`
+        : 'Explore more handmade pieces from our Jaipur workshop.'
     }`,
     categoryLink,
     collectionLink,
