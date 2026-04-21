@@ -65,6 +65,7 @@ export async function uploadImageToCloudinary(
     {
       method: 'POST',
       body: formData,
+      signal: AbortSignal.timeout(30000),
     }
   );
 

@@ -116,6 +116,7 @@ whatsappRouter.post('/test', verifyAdmin, async (c) => {
             body: 'Test notification from Kvastram Admin!',
           },
         }),
+        signal: AbortSignal.timeout(10000),
       }
     );
 
@@ -196,6 +197,7 @@ export const sendWhatsAppNotification = async (
           type: 'text',
           text: { body: message },
         }),
+        signal: AbortSignal.timeout(10000),
       }
     );
 
