@@ -1381,6 +1381,7 @@ export const api = {
     const res = await fetchWithTimeout(`${API_BASE_URL}/admin/trending-reels`, {
       method: 'POST',
       body: formData,
+      timeout: 300000, // 5 minutes — Cloudinary video upload can be slow
     });
     if (!res.ok) return handleApiError(res, 'Failed to create trending reel');
     return res.json();
@@ -1392,6 +1393,7 @@ export const api = {
       {
         method: 'PUT',
         body: formData,
+        timeout: 300000, // 5 minutes — Cloudinary video upload can be slow
       }
     );
     if (!res.ok) return handleApiError(res, 'Failed to update trending reel');

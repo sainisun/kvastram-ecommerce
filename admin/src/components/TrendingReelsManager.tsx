@@ -694,9 +694,11 @@ export default function TrendingReelsManager() {
                   className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving
-                    ? editingReel
-                      ? 'Saving...'
-                      : 'Creating...'
+                    ? form.videoFile
+                      ? 'Uploading video… (may take a minute)'
+                      : editingReel
+                        ? 'Saving...'
+                        : 'Creating...'
                     : editingReel
                       ? 'Save Changes'
                       : 'Create Reel'}
