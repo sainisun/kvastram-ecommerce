@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { api } from '@/lib/api';
+import { cloudinaryUrlOrNull } from '@/lib/media';
 import {
   buildBreadcrumbJsonLd,
   buildHomepageMetadata,
@@ -139,7 +140,7 @@ export default async function Home() {
               id: item.id,
               title: item.title,
               handle: item.handle,
-              image: item.image,
+              image: cloudinaryUrlOrNull(item.image),
             })
           )
       : [];
@@ -152,7 +153,15 @@ export default async function Home() {
               id?: string;
               is_active?: boolean;
               link_url?: string;
+              thumbnail_url?: string | null;
+              video_url?: string | null;
             }) => Boolean(item?.id && item?.is_active && item?.link_url)
+          )
+          .filter((item: { thumbnail_url?: string | null; video_url?: string | null }) =>
+            Boolean(
+              cloudinaryUrlOrNull(item.video_url) &&
+                cloudinaryUrlOrNull(item.thumbnail_url)
+            )
           )
           .sort(
             (
@@ -174,8 +183,8 @@ export default async function Home() {
               sort_order: number;
             }) => ({
               id: item.id,
-              video_url: item.video_url,
-              thumbnail_url: item.thumbnail_url,
+              video_url: cloudinaryUrlOrNull(item.video_url) || '',
+              thumbnail_url: cloudinaryUrlOrNull(item.thumbnail_url) || '',
               product_name: item.product_name,
               price: item.price,
               price_amount: item.price_amount ?? null,
@@ -206,6 +215,9 @@ export default async function Home() {
                   item?.name
               )
           )
+          .filter((item: { image_url?: string | null }) =>
+            Boolean(cloudinaryUrlOrNull(item.image_url))
+          )
           .sort(
             (
               a: { sort_order?: number | null },
@@ -222,7 +234,7 @@ export default async function Home() {
               sort_order: number;
             }) => ({
               id: item.id,
-              image_url: item.image_url,
+              image_url: cloudinaryUrlOrNull(item.image_url) || '',
               name: item.name,
               link_url: item.link_url,
               is_active: item.is_active,
@@ -258,8 +270,11 @@ export default async function Home() {
             }) => ({
               id: item.id,
               badge_text: item.badge_text || null,
-              custom_image_url: item.custom_image_url || null,
-              product: item.product,
+              custom_image_url: cloudinaryUrlOrNull(item.custom_image_url),
+              product: {
+                ...item.product,
+                thumbnail: cloudinaryUrlOrNull(item.product.thumbnail),
+              },
             })
           )
       : [];
@@ -269,7 +284,11 @@ export default async function Home() {
       ? (heroBannersResult.value.banners || [])
           .filter(
             (item: { id?: string; is_active?: boolean; image_url?: string }) =>
-              Boolean(item?.id && item?.is_active && item?.image_url)
+              Boolean(
+                item?.id &&
+                  item?.is_active &&
+                  cloudinaryUrlOrNull(item?.image_url)
+              )
           )
           .sort(
             (

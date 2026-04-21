@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import type { HomepageSpotlightProduct } from '@/types/homepage';
+import { cloudinaryUrlOrNull } from '@/lib/media';
 
 interface ShopTheLookProps {
   spotlightProducts: HomepageSpotlightProduct[];
@@ -27,7 +28,10 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
   const items = spotlightProducts.slice(0, 3).map((item, index) => ({
     id: item.id,
     product: item.product,
-    image: item.custom_image_url || item.product.thumbnail || '/images/home/atelier-story.jpg',
+    image:
+      cloudinaryUrlOrNull(item.custom_image_url) ||
+      cloudinaryUrlOrNull(item.product.thumbnail) ||
+      '/images/home/atelier-story.jpg',
     fallback: fallbackProducts[index],
   }));
 

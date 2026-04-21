@@ -3,6 +3,7 @@ import { type InferSelectModel, asc, eq } from 'drizzle-orm';
 import { db } from '../db/client';
 import { featured_products } from '../db/schema';
 import { productService } from '../services/product-service';
+import { cloudinaryUrlOrNull } from '../utils/media-url';
 
 const app = new Hono();
 type FeaturedProductRow = InferSelectModel<typeof featured_products>;
@@ -17,6 +18,7 @@ async function serializeFeaturedProduct(item: FeaturedProductRow) {
 
     return {
       ...item,
+      custom_image_url: cloudinaryUrlOrNull(item.custom_image_url),
       product,
     };
   } catch {

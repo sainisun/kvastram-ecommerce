@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { cloudinaryUrlOrNull } from '@/lib/media';
 
 interface HeroBannerFallback {
   image_url?: string | null;
@@ -23,8 +24,10 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ settings, fallbackBanner }: HeroSectionProps) {
+  const bannerImage = cloudinaryUrlOrNull(fallbackBanner?.image_url);
+  const settingsImage = cloudinaryUrlOrNull(settings.hero_image);
   const imageUrl =
-    settings.hero_image || fallbackBanner?.image_url || '/images/home/hero-main.jpg';
+    bannerImage || settingsImage || '/images/home/hero-main.jpg';
   const hasCustomTitle = Boolean(settings.hero_title || fallbackBanner?.title);
   const title = settings.hero_title || fallbackBanner?.title || '';
   const subtitle =

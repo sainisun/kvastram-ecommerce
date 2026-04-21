@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
+import { cloudinaryUrlOrNull } from '@/lib/media';
 
 interface CategoryCircle {
   id: string;
@@ -15,7 +16,12 @@ export async function CircularCategories() {
   let circles: CategoryCircle[] = [];
   try {
     const data = await api.getCategoryCircles();
-    circles = (data.circles || []).filter((c: CategoryCircle) => c.is_active);
+    circles = (data.circles || [])
+      .filter((c: CategoryCircle) => c.is_active && cloudinaryUrlOrNull(c.image_url))
+      .map((c: CategoryCircle) => ({
+        ...c,
+        image_url: cloudinaryUrlOrNull(c.image_url),
+      }));
   } catch {
     return null;
   }

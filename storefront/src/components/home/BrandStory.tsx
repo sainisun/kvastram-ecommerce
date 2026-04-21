@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { cloudinaryUrlOrNull } from '@/lib/media';
 
 interface HomepageSettings {
   brand_story_title?: string | null;
@@ -17,7 +18,8 @@ export function BrandStory({ settings }: BrandStoryProps) {
   const content =
     settings.brand_story_content ||
     'Every Kavastram piece begins in the hands of our artisans — where heritage techniques meet contemporary design. From the first drape to the final stitch, each garment is made to be lived in, not just worn.';
-  const imageUrl = settings.brand_story_image || '/images/home/atelier-story.jpg';
+  const imageUrl =
+    cloudinaryUrlOrNull(settings.brand_story_image) || '/images/home/atelier-story.jpg';
 
   return (
     <section className="bg-white px-4 py-0 sm:px-6 lg:px-8">

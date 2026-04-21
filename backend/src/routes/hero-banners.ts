@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '../db/client';
 import { hero_banners } from '../db/schema';
+import { isCloudinaryUrl } from '../utils/media-url';
 
 const app = new Hono();
 
@@ -13,7 +14,9 @@ app.get('/', async (c) => {
       .where(eq(hero_banners.is_active, true))
       .orderBy(asc(hero_banners.sort_order), asc(hero_banners.created_at));
 
-    return c.json({ banners });
+    return c.json({
+      banners: banners.filter((banner) => isCloudinaryUrl(banner.image_url)),
+    });
   } catch (error) {
     console.error('Error fetching active hero banners:', error);
     return c.json({ error: 'Failed to fetch hero banners' }, 500);

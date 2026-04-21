@@ -6,9 +6,7 @@ import { product_reviews, products } from '../db/schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { verifyAdmin, verifyAuth } from '../middleware/auth'; // BUG-012 FIX: was verifyAuth
 import { generalLimiter } from '../middleware/rate-limiter';
-import { mkdir, writeFile } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { uploadImageToCloudinary } from '../utils/cloudinary';
 
 const reviewsRouter = new Hono();
 
@@ -98,12 +96,6 @@ reviewsRouter.post('/upload', generalLimiter, verifyAuth, async (c) => {
     }
 
     const uploadedUrls: string[] = [];
-    const uploadDir = join(process.cwd(), 'uploads', 'reviews');
-
-    // Create directory if it doesn't exist
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
 
     for (const file of fileArray) {
       if (!(file instanceof File)) {
@@ -130,29 +122,10 @@ reviewsRouter.post('/upload', generalLimiter, verifyAuth, async (c) => {
         );
       }
 
-      // Generate unique filename with sanitized extension
-      const timestamp = Date.now();
-      const randomString = Math.random().toString(36).substring(2, 8);
-
-      // Safely extract and sanitize extension
-      const rawExtension = file.name.split('.').pop()?.toLowerCase() || '';
-      const sanitizedExtension = rawExtension.replace(/[^a-z0-9]/g, '');
-      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-      const extension = allowedExtensions.includes(sanitizedExtension)
-        ? sanitizedExtension
-        : 'jpg';
-
-      const filename = `review_${timestamp}_${randomString}.${extension}`;
-      const filepath = join(uploadDir, filename);
-
-      // Save file
-      const buffer = await file.arrayBuffer();
-      await writeFile(filepath, Buffer.from(buffer));
-
-      // Generate URL
-      const baseUrl = process.env.UPLOAD_URL || '/uploads';
-      const url = `${baseUrl}/reviews/${filename}`;
-      uploadedUrls.push(url);
+      const upload = await uploadImageToCloudinary(file, {
+        folder: 'kvastram/reviews',
+      });
+      uploadedUrls.push(upload.secureUrl);
     }
 
     return c.json(

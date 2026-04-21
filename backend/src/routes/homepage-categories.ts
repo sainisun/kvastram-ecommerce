@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '../db/client';
 import { homepage_categories } from '../db/schema';
+import { isCloudinaryUrl } from '../utils/media-url';
 
 const app = new Hono();
 
@@ -16,7 +17,11 @@ app.get('/', async (c) => {
         asc(homepage_categories.created_at)
       );
 
-    return c.json({ categories });
+    return c.json({
+      categories: categories.filter((category) =>
+        isCloudinaryUrl(category.image_url)
+      ),
+    });
   } catch (error) {
     console.error('Error fetching active homepage categories:', error);
     return c.json({ error: 'Failed to fetch homepage categories' }, 500);
