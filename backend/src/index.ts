@@ -83,7 +83,7 @@ import categoryCirclesRoutes from './routes/category-circles';
 import featuredProductsRoutes from './routes/featured-products';
 
 import docsApp from './docs';
-import { initSocketServer } from './services/socket';
+import { initSocketServer, io } from './services/socket';
 
 const app = new Hono();
 
@@ -126,23 +126,24 @@ app.use('/store/payments/paypal/webhook', webhookTimeout);
 // CORS Configuration
 // In production set ALLOWED_ORIGINS in backend/.env.production, e.g.:
 //   ALLOWED_ORIGINS=https://kvastram.com,https://www.kvastram.com,https://admin.kvastram.com
+const isProd = process.env.NODE_ENV === 'production';
 const allowedOrigins =
   process.env.ALLOWED_ORIGINS
     ?.split(',')
     .map(origin => origin.trim())
-    .filter(Boolean) || [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'http://localhost:4000',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
-    'http://127.0.0.1:3002',
-    'http://127.0.0.1:4000',
-    'https://kvastram.com',
-    'https://www.kvastram.com',
-    'https://admin.kvastram.com',
-  ];
+    .filter(Boolean) ||
+  (isProd
+    ? ['https://kvastram.com', 'https://www.kvastram.com', 'https://admin.kvastram.com']
+    : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'http://localhost:4000',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:3001',
+        'http://127.0.0.1:3002',
+        'http://127.0.0.1:4000',
+      ]);
 app.use(
   '*',
   cors({
@@ -426,6 +427,8 @@ initSocketServer(server as import('node:http').Server, allowedOrigins);
 // OPT-003: Graceful shutdown handler
 const gracefulShutdown = (signal: string) => {
   console.log(`\n🛑 Received ${signal}. Shutting down gracefully...`);
+  // Close Socket.IO first so clients reconnect cleanly
+  if (io) io.close();
   server.close(() => {
     console.log('✅ HTTP server closed');
     process.exit(0);

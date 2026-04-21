@@ -112,6 +112,13 @@ if (process.env.NODE_ENV === 'production') {
     );
   }
 
+  // Cloudinary is required for file uploads
+  const missingCloudinary = ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET']
+    .filter((k) => !process.env[k]);
+  if (missingCloudinary.length > 0) {
+    throw new Error(`FATAL: Missing Cloudinary env vars: ${missingCloudinary.join(', ')}`);
+  }
+
   console.log('[CONFIG] All critical configuration validated ✓');
 } else {
   console.log('[CONFIG] Running in DEVELOPMENT mode');

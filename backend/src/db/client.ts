@@ -3,7 +3,12 @@ import postgres from 'postgres';
 import * as schema from './schema';
 import 'dotenv/config';
 
-// PostgreSQL connection using postgres.js
+// Fail loudly in production if DATABASE_URL is missing
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+  console.error('❌ FATAL: DATABASE_URL is not set in production');
+  process.exit(1);
+}
+
 const connectionString =
   process.env.DATABASE_URL ||
   'postgresql://postgres:postgres@localhost:5432/kvastram_dev';
@@ -20,13 +25,13 @@ const requiresSsl = isSupabase || process.env.DATABASE_SSL === 'true';
 
 // Create postgres client with proper configuration
 const client = postgres(connectionString, {
-  max: 10, // Always use 10 connections for better performance
+  max: 10,
   idle_timeout: 20,
-  connect_timeout: 60,
+  connect_timeout: 10, // fail fast instead of hanging
+  max_lifetime: 1800,  // recycle connections every 30 min
   ssl: requiresSsl ? { rejectUnauthorized: false } : false,
   prepare: false,
-  // Add connection debugging
-  // Debugging hooks removed
+  onnotice: () => {}, // suppress noise
 });
 
 // Test connection function

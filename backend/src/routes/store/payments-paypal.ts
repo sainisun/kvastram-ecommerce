@@ -44,6 +44,7 @@ async function getPaypalAccessToken(): Promise<string> {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: 'grant_type=client_credentials',
+    signal: AbortSignal.timeout(8000), // 8s timeout — fail fast
   });
 
   if (!res.ok) {
@@ -142,6 +143,7 @@ paypalRouter.post(
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
+        signal: AbortSignal.timeout(10000),
         body: JSON.stringify({
           intent: 'CAPTURE',
           purchase_units: [

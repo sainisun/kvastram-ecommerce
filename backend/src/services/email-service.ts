@@ -73,6 +73,10 @@ class EmailService {
       // Assign a placeholder — `ready` will be resolved by initTransporter
       Promise.resolve()
     );
+    if (process.env.NODE_ENV === 'production' && !process.env.SMTP_HOST) {
+      console.error('❌ FATAL: SMTP_HOST is not set in production — emails will not be sent');
+    }
+
     if (process.env.SMTP_HOST) {
       instance.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,

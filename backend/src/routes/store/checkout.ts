@@ -67,7 +67,7 @@ const PlaceOrderSchema = z.object({
       })
     )
     .min(1),
-  discount_code: z.string().optional(),
+  discount_code: z.string().min(1).max(50).optional(),
 });
 
 // --- HELPERS ---

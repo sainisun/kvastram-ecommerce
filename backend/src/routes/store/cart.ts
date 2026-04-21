@@ -1,10 +1,24 @@
 import { Hono, type Context } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
 import { verify } from 'hono/jwt';
+import { z } from 'zod';
 import { db } from '../../db/client';
 import { saved_carts } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 import { config } from '../../config';
+
+const CartItemSchema = z.object({
+  variant_id: z.string().uuid(),
+  quantity: z.number().int().positive().max(999),
+  product_id: z.string().uuid().optional(),
+  title: z.string().max(500).optional(),
+  thumbnail: z.string().max(2048).optional(),
+  unit_price: z.number().int().min(0).optional(),
+});
+
+const SaveCartSchema = z.object({
+  items: z.array(CartItemSchema).max(100),
+});
 
 const cartRouter = new Hono();
 
@@ -55,12 +69,12 @@ cartRouter.get('/', async (c) => {
 // POST /store/cart/save — Save/update cart
 cartRouter.post('/save', async (c) => {
   try {
-    const body = await c.req.json();
-    const { items } = body;
-
-    if (!Array.isArray(items)) {
-      return c.json({ error: 'Items must be an array' }, 400);
+    const raw = await c.req.json();
+    const parsed = SaveCartSchema.safeParse(raw);
+    if (!parsed.success) {
+      return c.json({ error: 'Invalid cart data', details: parsed.error.errors }, 400);
     }
+    const { items } = parsed.data;
 
     const customerId = await getCustomerId(c);
 

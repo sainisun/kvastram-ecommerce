@@ -18,20 +18,27 @@ export function initSocketServer(
   io.on('connection', (socket) => {
     console.log(`[Socket.io] Client connected: ${socket.id}`);
 
-    socket.on('subscribe:inventory', ({ variantId }: { variantId: string }) => {
-      socket.join(`inventory:${variantId}`);
+    socket.on('error', (err) => {
+      console.error(`[Socket.io] Socket error (${socket.id}):`, err.message);
     });
 
-    socket.on(
-      'unsubscribe:inventory',
-      ({ variantId }: { variantId: string }) => {
-        socket.leave(`inventory:${variantId}`);
+    socket.on('subscribe:inventory', ({ variantId }: { variantId: string }) => {
+      if (typeof variantId === 'string' && variantId.length < 100) {
+        socket.join(`inventory:${variantId}`);
       }
-    );
+    });
+
+    socket.on('unsubscribe:inventory', ({ variantId }: { variantId: string }) => {
+      socket.leave(`inventory:${variantId}`);
+    });
 
     socket.on('disconnect', () => {
       console.log(`[Socket.io] Client disconnected: ${socket.id}`);
     });
+  });
+
+  io.on('error', (err) => {
+    console.error('[Socket.io] Server error:', err.message);
   });
 
   console.log('[Socket.io] Server initialized');

@@ -92,7 +92,7 @@ export const ProductWithVariantsSchema = ProductSchema.extend({
     .array(
       z.object({
         id: z.string().uuid(),
-        url: z.string().url(),
+        url: z.string().min(1).max(2048),
         alt_text: z.string().optional(),
         position: z.number().int(),
         is_thumbnail: z.boolean(),
@@ -139,7 +139,7 @@ export const CreateProductSchema = z
     hs_code: z.string().optional(),
     material: z.string().optional(),
     inventory_quantity: z.number().int().optional().default(0),
-    thumbnail: z.string().url().optional(),
+    thumbnail: z.string().min(1).max(2048).optional(),
     metadata: z.record(z.any()).optional(),
     options: z
       .array(
@@ -160,7 +160,7 @@ export const CreateProductSchema = z
     images: z
       .array(
         z.object({
-          url: z.string().url(),
+          url: z.string().min(1).max(2048),
           alt_text: z.string().optional(),
           is_thumbnail: z.boolean().default(false),
           position: z.number().int().default(0),
