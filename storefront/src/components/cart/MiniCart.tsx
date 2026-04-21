@@ -1,11 +1,10 @@
 'use client';
 
 import { useCart } from '@/context/cart-context';
-import { useShop } from '@/context/shop-context';
 import { useState, useRef, useEffect } from 'react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
+import { useCurrency } from '@/context/currency-context';
 import { X, Minus, Plus, Trash2 } from 'lucide-react';
 
 interface MiniCartProps {
@@ -15,7 +14,7 @@ interface MiniCartProps {
 
 export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
   const { items, removeItem, updateQuantity, cartTotal } = useCart();
-  const { currentRegion } = useShop();
+  const { formatPrice } = useCurrency();
   const cartRef = useRef<HTMLDivElement>(null);
 
   // Close on click outside
@@ -41,11 +40,6 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
     }
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
-
-  const formatPrice = (amount: number) => {
-    const currency = currentRegion?.currency_code?.toUpperCase() || 'USD';
-    return formatMoney(amount, currency, getCurrencyLocale(currency));
-  };
 
   if (!isOpen) return null;
 

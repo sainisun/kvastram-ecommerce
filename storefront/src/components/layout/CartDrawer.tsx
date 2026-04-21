@@ -3,9 +3,9 @@
 import { useEffect, useRef } from 'react';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
+import { useCurrency } from '@/context/currency-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 import {
   X,
   Minus,
@@ -24,7 +24,8 @@ interface CartDrawerProps {
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, totalItems, cartTotal } =
     useCart();
-  const { currentRegion, settings } = useShop();
+  const { settings } = useShop();
+  const { formatPrice } = useCurrency();
   const drawerRef = useRef<HTMLDivElement>(null);
 
   // Free shipping threshold (in cents)
@@ -36,11 +37,6 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const amountToFreeShipping = Math.max(0, freeShippingThreshold - cartTotal);
   const hasFreeShipping = cartTotal >= freeShippingThreshold;
 
-  // Format price
-  const formatPrice = (amount: number) => {
-    const currency = currentRegion?.currency_code?.toUpperCase() || 'USD';
-    return formatMoney(amount, currency, getCurrencyLocale(currency));
-  };
 
   // Lock body scroll when drawer is open
   useEffect(() => {

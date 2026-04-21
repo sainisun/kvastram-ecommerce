@@ -27,7 +27,7 @@ function getColorHex(colorName: string) {
 
 export default function ProductView({ product }: { product: Product }) {
   const { currentRegion } = useShop();
-  const { formatPrice, currency: userCurrency } = useCurrency();
+  const { formatPrice } = useCurrency();
   const { addItem } = useCart();
   const { addItem: addToRecentlyViewed } = useRecentlyViewed();
   const [quantity, setQuantity] = useState(1);
@@ -115,8 +115,7 @@ export default function ProductView({ product }: { product: Product }) {
   // Format in user's detected local currency
   const formattedPrice = amount ? formatPrice(amount) : '';
   const formattedComparePrice = compareAtAmount ? formatPrice(compareAtAmount) : null;
-  // Keep currency for cart/analytics
-  const currency = userCurrency || inrPriceObj?.currency_code || 'INR';
+  const currency = 'INR';
   const outOfStock = currentInventory <= 0;
 
   const galleryMedia =

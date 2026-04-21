@@ -7,8 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useDebounce } from 'use-debounce';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
-import { useShop } from '@/context/shop-context';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
+import { useCurrency } from '@/context/currency-context';
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -28,7 +27,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { currentRegion } = useShop();
+  const { formatPrice } = useCurrency();
 
   // Store the element that triggered the search for focus restoration
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -159,10 +158,6 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     }
   };
 
-  const formatPrice = (amount: number, currency: string) => {
-    const normalizedCurrency = currency?.toUpperCase() || 'USD';
-    return formatMoney(amount, normalizedCurrency, getCurrencyLocale(normalizedCurrency));
-  };
 
   return (
     <AnimatePresence>
@@ -407,10 +402,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                             {product.price !== undefined && (
                               <p className="text-sm text-stone-500 mt-1">
                                 from{' '}
-                                {formatPrice(
-                                  product.price * 100,
-                                  currentRegion?.currency_code || 'USD'
-                                )}
+                                {formatPrice(product.price)}
                                 {/* Note: product.price from backend search is formatted generic price, multiplying by 100 to convert back to cents if needed or assuming standard format. Checking backend logic: backend returns `minProductPrice` which is int cents? No, service mapped `price: minProductPrice`. wait, map returns minProductPrice which is variants' amount. Amount is in cents. So we pass cents to `formatPrice`. */}
                                 {/* Update: In service we did `return { ...p, price: minProductPrice };`. minProductPrice comes from `pr.amount` which is in cents. formatPrice expects cents? No, `formatPrice` usually expects number. Let's check logic. `new Intl.NumberFormat().format(amount / 100)`. So yes, pass cents. */}
                               </p>

@@ -4,26 +4,24 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import type { MoneyAmount, Product } from '@/types';
+import { useCurrency } from '@/context/currency-context';
 
 interface NewArrivalsProps {
   products: Product[];
   isCurated?: boolean;
 }
 
-function formatPrice(product: Product): string {
-  const prices = product.variants?.[0]?.prices;
-  if (!prices?.length) return '';
-  const inr =
-    prices.find((price: MoneyAmount) => price.currency_code?.toLowerCase() === 'inr') ??
-    prices[0];
-
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: inr.currency_code?.toUpperCase() || 'INR',
-  }).format(inr.amount / 100);
-}
-
 export function NewArrivals({ products, isCurated = false }: NewArrivalsProps) {
+  const { formatPrice } = useCurrency();
+
+  function getInrAmount(product: Product): number {
+    const prices = product.variants?.[0]?.prices;
+    if (!prices?.length) return 0;
+    const inr =
+      prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') ??
+      prices[0];
+    return inr?.amount || 0;
+  }
   const displayed = products.slice(0, 4);
   if (displayed.length === 0) return null;
 
@@ -84,7 +82,7 @@ export function NewArrivals({ products, isCurated = false }: NewArrivalsProps) {
                   </Link>
                   <div className="mt-3 flex items-center gap-2">
                     <span className="font-body text-[15px] font-normal text-stone-950">
-                      {formatPrice(product)}
+                      {getInrAmount(product) ? formatPrice(getInrAmount(product)) : ''}
                     </span>
                   </div>
                 </div>

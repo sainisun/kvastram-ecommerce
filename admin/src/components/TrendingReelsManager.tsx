@@ -21,6 +21,7 @@ interface TrendingReel {
   thumbnail_url: string;
   product_name: string;
   price: string;
+  price_amount: number | null;
   link_url: string;
   view_count: number;
   is_active: boolean;
@@ -46,6 +47,7 @@ interface ProductSummary {
 interface ReelFormState {
   productName: string;
   price: string;
+  priceAmount: string;
   linkUrl: string;
   sortOrder: string;
   isActive: boolean;
@@ -58,6 +60,7 @@ interface ReelFormState {
 const emptyForm = (): ReelFormState => ({
   productName: '',
   price: '',
+  priceAmount: '',
   linkUrl: '',
   sortOrder: '0',
   isActive: true,
@@ -132,6 +135,7 @@ export default function TrendingReelsManager() {
     setForm({
       productName: reel.product_name,
       price: reel.price,
+      priceAmount: reel.price_amount != null ? String(reel.price_amount) : '',
       linkUrl: reel.link_url,
       sortOrder: String(reel.sort_order),
       isActive: reel.is_active,
@@ -186,6 +190,9 @@ export default function TrendingReelsManager() {
     const formData = new FormData();
     formData.append('product_name', form.productName);
     formData.append('price', form.price);
+    if (form.priceAmount.trim()) {
+      formData.append('price_amount', form.priceAmount.trim());
+    }
     formData.append('link_url', form.linkUrl);
     formData.append('sort_order', form.sortOrder || '0');
     formData.append('is_active', String(form.isActive));
@@ -538,7 +545,11 @@ export default function TrendingReelsManager() {
                             price:
                               typeof firstPrice === 'number'
                                 ? `Rs. ${firstPrice / 100}`
-                                : 'Rs. '
+                                : 'Rs. ',
+                            priceAmount:
+                              typeof firstPrice === 'number'
+                                ? String(firstPrice)
+                                : '',
                           }));
                         }
                       }}
@@ -571,7 +582,7 @@ export default function TrendingReelsManager() {
 
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                      Price
+                      Price Label
                     </label>
                     <input
                       value={form.price}
@@ -584,6 +595,28 @@ export default function TrendingReelsManager() {
                       className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                       placeholder="Rs. 5,999"
                       required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Price Amount <span className="text-gray-400 font-normal">(INR paise — for currency conversion)</span>
+                    </label>
+                    <p className="mb-2 text-xs text-gray-500">
+                      Enter price in paise e.g. ₹5,999 → type 599900. Auto-filled when you select a product above.
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      value={form.priceAmount}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          priceAmount: event.target.value,
+                        }))
+                      }
+                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      placeholder="599900"
                     />
                   </div>
 

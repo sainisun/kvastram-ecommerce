@@ -11,6 +11,7 @@ import {
 } from 'react';
 import { api } from '@/lib/api';
 import { storage } from '@/lib/storage';
+import { detectUserCurrency } from '@/lib/currency';
 
 interface Region {
   id: string;
@@ -112,16 +113,14 @@ export function ShopProvider({ children }: Readonly<{ children: ReactNode }>) {
         const stored = storage.get<Region | null>('kvastram_region', null);
         if (stored) {
           const found = regionList.find((r: Region) => r.id === stored.id);
-          if (found) {
-            setCurrentRegion(found);
-          } else if (regionList.length > 0) {
-            setCurrentRegion(regionList[0]);
-          }
+          setCurrentRegion(found || regionList[0] || null);
         } else if (regionList.length > 0) {
-          // Default to first (usually seeded US/Global)
-          // Or prioritize USD/US if exists
-          const us = regionList.find((r: Region) => r.currency_code === 'usd');
-          setCurrentRegion(us || regionList[0]);
+          // Auto-detect region from browser locale — no network call needed
+          const detectedCurrency = detectUserCurrency().toLowerCase();
+          const matched = regionList.find(
+            (r: Region) => r.currency_code?.toLowerCase() === detectedCurrency
+          );
+          setCurrentRegion(matched || regionList[0]);
         }
       } catch (err) {
         console.error('ShopProvider Init Error', err);

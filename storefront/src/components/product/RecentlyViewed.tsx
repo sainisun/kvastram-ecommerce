@@ -1,21 +1,15 @@
 'use client';
 
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
-import { useShop } from '@/context/shop-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
+import { useCurrency } from '@/context/currency-context';
 
 export function RecentlyViewedSection() {
   const { items } = useRecentlyViewed();
-  const { currentRegion } = useShop();
+  const { formatPrice } = useCurrency();
 
   if (items.length === 0) return null;
-
-  const formatPrice = (amount: number, currency: string) => {
-    const normalizedCurrency = currency?.toUpperCase() || 'USD';
-    return formatMoney(amount, normalizedCurrency, getCurrencyLocale(normalizedCurrency));
-  };
 
   return (
     <section className="py-12 border-t border-stone-100 lg:py-16">
@@ -49,7 +43,7 @@ export function RecentlyViewedSection() {
                 {item.title}
               </h3>
               <p className="text-sm text-stone-500 mt-1">
-                {formatPrice(item.price, item.currency)}
+                {formatPrice(item.price)}
               </p>
             </Link>
           ))}

@@ -16,6 +16,7 @@ app.use('*', verifyAdmin);
 const trendingReelFieldsSchema = z.object({
   product_name: z.string().trim().min(1).max(255),
   price: z.string().trim().min(1).max(100),
+  price_amount: z.number().int().min(0).optional().nullable(),
   link_url: z.string().trim().min(1).max(500),
   is_active: z.boolean().default(true),
   sort_order: z.number().int().min(0).default(0),
@@ -80,9 +81,16 @@ async function parseTrendingReelForm(
   const videoFile = video instanceof File ? video : undefined;
   const thumbnailFile = thumbnail instanceof File ? thumbnail : undefined;
 
+  const rawPriceAmount = body.price_amount;
+  const parsedPriceAmount =
+    typeof rawPriceAmount === 'string' && rawPriceAmount.trim() !== ''
+      ? parseInt(rawPriceAmount, 10) || null
+      : null;
+
   const fields = trendingReelFieldsSchema.parse({
     product_name: normalizeRequiredString(body.product_name),
     price: normalizeRequiredString(body.price),
+    price_amount: parsedPriceAmount,
     link_url: normalizeRequiredString(body.link_url),
     is_active: parseBoolean(body.is_active, defaults?.is_active ?? true),
     sort_order: parseSortOrder(body.sort_order, defaults?.sort_order ?? 0),
@@ -143,6 +151,7 @@ app.post('/', async (c) => {
       .values({
         product_name: fields.product_name,
         price: fields.price,
+        price_amount: fields.price_amount ?? null,
         link_url: fields.link_url,
         is_active: fields.is_active,
         sort_order: fields.sort_order,
@@ -220,6 +229,7 @@ app.put('/:id', async (c) => {
       .set({
         product_name: fields.product_name,
         price: fields.price,
+        price_amount: fields.price_amount ?? null,
         link_url: fields.link_url,
         is_active: fields.is_active,
         sort_order: fields.sort_order,

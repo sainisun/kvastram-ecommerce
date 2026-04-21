@@ -1,25 +1,27 @@
+'use client';
+
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
-import type { Product } from '@/types';
+import type { MoneyAmount, Product } from '@/types';
+import { useCurrency } from '@/context/currency-context';
 
 interface BestSellersProps {
   products: Product[];
 }
 
-function formatPrice(product: Product): string {
-  const price = product.variants?.[0]?.prices?.[0];
-  if (!price) return '';
-
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: price.currency_code?.toUpperCase() || 'INR',
-  }).format(price.amount / 100);
-}
-
 export function BestSellers({ products }: BestSellersProps) {
+  const { formatPrice } = useCurrency();
   const curated = products.slice(4, 8);
   const displayed = curated.length > 0 ? curated : products.slice(0, 4);
   if (displayed.length === 0) return null;
+
+  function getInrAmount(product: Product): number {
+    const prices = product.variants?.[0]?.prices || [];
+    const inr =
+      prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') ||
+      prices[0];
+    return inr?.amount || 0;
+  }
 
   return (
     <section className="bg-white py-16 sm:py-20">
@@ -65,7 +67,7 @@ export function BestSellers({ products }: BestSellersProps) {
                   </Link>
                   <div className="mt-3 flex items-center gap-2">
                     <span className="font-body text-[15px] font-normal text-stone-950">
-                      {formatPrice(product)}
+                      {getInrAmount(product) ? formatPrice(getInrAmount(product)) : ''}
                     </span>
                   </div>
               </div>

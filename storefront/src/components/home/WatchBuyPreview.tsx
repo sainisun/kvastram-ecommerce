@@ -1,17 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import type { HomepageTrendingReel } from '@/types/homepage';
+import { useCurrency } from '@/context/currency-context';
 
 interface WatchBuyPreviewProps {
   reels: HomepageTrendingReel[];
 }
 
-function formatPriceLabel(price?: string) {
-  return price || '₹ —';
-}
-
 export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
+  const { formatPrice } = useCurrency();
+
   if (reels.length === 0) return null;
 
   const displayed = reels.slice(0, 4);
@@ -65,7 +66,9 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
               </div>
               <div className="flex items-center justify-between gap-4 px-1 py-4">
                 <span className="line-clamp-1 text-[16px] font-semibold text-stone-950">
-                  {formatPriceLabel(reel.price)}
+                  {reel.price_amount != null
+                    ? formatPrice(reel.price_amount)
+                    : reel.price || '₹ —'}
                 </span>
                 <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-700 transition-colors group-hover:text-stone-950">
                   View

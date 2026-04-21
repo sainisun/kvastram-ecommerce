@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
+import { formatPriceFromINR } from '@/lib/currency';
 import {
   buildBasicPageMetadata,
   buildBreadcrumbJsonLd,
@@ -54,13 +54,12 @@ function productMatchesSize(product: Product, size: string) {
 
 function formatPrice(product: Product) {
   const variant = product.variants?.[0];
-  const price = variant?.prices?.[0];
-  if (!price) {
-    return 'Contact for price';
-  }
-
-  const currency = price.currency_code?.toUpperCase() || 'USD';
-  return formatMoney(price.amount, currency, getCurrencyLocale(currency));
+  const prices = variant?.prices || [];
+  const inrPrice =
+    prices.find((p) => p.currency_code?.toLowerCase() === 'inr') || prices[0];
+  if (!inrPrice) return 'Contact for price';
+  // Server component — always show INR; client components handle per-user currency
+  return formatPriceFromINR(inrPrice.amount, 'INR', { INR: 1 });
 }
 
 function renderStars(rating?: number | null) {

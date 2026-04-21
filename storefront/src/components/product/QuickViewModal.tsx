@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
+import { useCurrency } from '@/context/currency-context';
 import { StarRating } from '@/components/ui/StarRating';
 import { api } from '@/lib/api';
 
@@ -51,6 +52,7 @@ export function QuickViewModal({
     review_count: number;
   }>({ rating: 0, review_count: 0 });
   const { addItem } = useCart();
+  const { formatPrice } = useCurrency();
   const addedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Reset state when product changes
@@ -106,7 +108,11 @@ export function QuickViewModal({
         typeof img === 'string' ? img : img.url
       )
     : ([product.thumbnail].filter(Boolean) as string[]);
-  const displayPrice = selectedVariant?.prices?.[0]?.amount || 0;
+  const variantPrices = selectedVariant?.prices || [];
+  const inrPriceObj =
+    variantPrices.find((p) => p.currency_code?.toLowerCase() === 'inr') ||
+    variantPrices[0];
+  const displayPrice = inrPriceObj?.amount || 0;
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % (images.length || 1));
@@ -152,14 +158,13 @@ export function QuickViewModal({
     setAdding(true);
     setError(null);
     try {
-      const currency = selectedVariant?.prices?.[0]?.currency_code || 'USD';
       await addItem({
         id: selectedVariant?.id || product.id,
         variantId: selectedVariant?.id || product.id,
         quantity,
         title: product.title,
         price: displayPrice,
-        currency: currency.toUpperCase(),
+        currency: 'INR',
         thumbnail: product.thumbnail || undefined,
       });
       setAdded(true);
@@ -282,7 +287,7 @@ export function QuickViewModal({
                     {/* Price */}
                     <div className="mb-6">
                       <span className="text-2xl font-serif text-stone-900">
-                        ${(displayPrice / 100).toFixed(2)}
+                        {displayPrice ? formatPrice(displayPrice) : ''}
                       </span>
                     </div>
 

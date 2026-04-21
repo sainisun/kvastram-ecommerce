@@ -10,7 +10,7 @@ import type { Product, MoneyAmount } from '@/types';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product as ProductType } from '@/types';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
+import { useCurrency } from '@/context/currency-context';
 
 interface ProductCarouselProps {
   products?: Product[];
@@ -28,6 +28,7 @@ function ProductCarousel({
   autoPlayInterval = 5000,
 }: ProductCarouselProps) {
   const { currentRegion } = useShop();
+  const { formatPrice } = useCurrency();
   const { addItem } = useCart();
   const { showNotification } = useNotification();
   const [addedId, setAddedId] = useState<string | null>(null);
@@ -44,14 +45,11 @@ function ProductCarousel({
     const variant = product.variants[0];
 
     const prices = variant.prices || [];
-    const priceObj =
-      prices.find(
-        (p: MoneyAmount) =>
-          p.currency_code ===
-          (currentRegion?.currency_code || 'usd').toLowerCase()
-      ) || prices[0];
+    const inrPrice =
+      prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') ||
+      prices[0];
 
-    if (!priceObj) {
+    if (!inrPrice) {
       showNotification('error', 'Price unavailable for this region');
       return;
     }
@@ -61,8 +59,8 @@ function ProductCarousel({
       variantId: variant.id,
       quantity: 1,
       title: product.title,
-      price: priceObj.amount,
-      currency: priceObj.currency_code,
+      price: inrPrice.amount,
+      currency: 'INR',
       thumbnail: product.thumbnail || undefined,
       material: product.material || undefined,
       origin: product.origin_country || undefined,
@@ -76,18 +74,12 @@ function ProductCarousel({
 
   const getPrice = (product: Product) => {
     const prices = product.variants?.[0]?.prices || [];
-    const currencyCode = currentRegion?.currency_code || 'usd';
-    const price =
-      prices.find(
-        (p: MoneyAmount) => p.currency_code === currencyCode.toLowerCase()
-      ) || prices[0];
+    const inrPrice =
+      prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') ||
+      prices[0];
 
-    if (price) {
-      return formatMoney(
-        price.amount,
-        price?.currency_code?.toUpperCase() || 'USD',
-        getCurrencyLocale(price?.currency_code?.toUpperCase() || 'USD')
-      );
+    if (inrPrice) {
+      return formatPrice(inrPrice.amount);
     }
 
     return 'Contact for price';

@@ -4,7 +4,7 @@ import React from 'react';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
+import { useCurrency } from '@/context/currency-context';
 
 interface RecentlyViewedRowProps {
   currentProductId: string;
@@ -12,6 +12,7 @@ interface RecentlyViewedRowProps {
 
 function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps) {
   const { items } = useRecentlyViewed();
+  const { formatPrice } = useCurrency();
 
   // Filter out current product and show last 6
   const filtered = items
@@ -70,11 +71,7 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
                 {item.title}
               </p>
               <p className="font-body text-[14px] font-normal text-stone-500">
-                {formatMoney(
-                  item.price,
-                  item.currency || 'USD',
-                  getCurrencyLocale(item.currency || 'USD')
-                )}
+                {formatPrice(item.price)}
               </p>
             </Link>
           ))}

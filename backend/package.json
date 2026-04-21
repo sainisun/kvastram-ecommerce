@@ -18,7 +18,8 @@
     "seed:tags": "tsx scripts/seed-default-tags.ts",
     "migrate:manual": "NODE_ENV=production tsx src/db/run-manual-migrations.ts",
     "migrate:manual:prod": "node dist/run-manual-migrations.js",
-    "seed:admin": "NODE_ENV=production tsx src/db/seed.ts"
+    "seed:admin": "NODE_ENV=production tsx src/db/seed.ts",
+    "seed:regions": "tsx src/db/seed-global-regions.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",

@@ -9,7 +9,7 @@ import { useWholesale } from '@/context/wholesale-context';
 import { QuickViewModal } from '@/components/product/QuickViewModal';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import WishlistButton from '@/components/ui/WishlistButton';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
+import { useCurrency } from '@/context/currency-context';
 import { buildProductImageAlt } from '@/lib/seo';
 
 interface SpotlightProduct {
@@ -31,6 +31,7 @@ function ProductGrid({
   spotlightProducts = [],
 }: ProductGridProps) {
   const { currentRegion } = useShop();
+  const { formatPrice } = useCurrency();
   const { addItem } = useCart();
   const { showNotification } = useNotification();
   const {
@@ -70,14 +71,11 @@ function ProductGrid({
 
     const variant = product.variants[0];
     const prices = variant.prices || [];
-    const priceObj =
-      prices.find(
-        (price: MoneyAmount) =>
-          price.currency_code ===
-          (currentRegion?.currency_code || 'usd').toLowerCase()
-      ) || prices[0];
+    const inrPrice =
+      prices.find((price: MoneyAmount) => price.currency_code?.toLowerCase() === 'inr') ||
+      prices[0];
 
-    if (!priceObj) {
+    if (!inrPrice) {
       showNotification('error', 'Price unavailable for this region');
       return;
     }
@@ -87,8 +85,8 @@ function ProductGrid({
       variantId: variant.id,
       quantity: 1,
       title: product.title,
-      price: priceObj.amount,
-      currency: priceObj.currency_code,
+      price: inrPrice.amount,
+      currency: 'INR',
       thumbnail: product.thumbnail || undefined,
       material: product.material || undefined,
       origin: product.origin_country || undefined,
@@ -102,28 +100,22 @@ function ProductGrid({
 
   const getPrice = (product: Product) => {
     const prices = product.variants?.[0]?.prices || [];
-    const currencyCode = currentRegion?.currency_code || 'usd';
-    const price =
-      prices.find(
-        (money: MoneyAmount) => money.currency_code === currencyCode.toLowerCase()
-      ) || prices[0];
+    const inrPrice =
+      prices.find((money: MoneyAmount) => money.currency_code?.toLowerCase() === 'inr') ||
+      prices[0];
 
-    if (!price) {
+    if (!inrPrice) {
       return { price: 'Contact for price', isWholesale: false, savings: 0 };
     }
 
-    const retailPrice = price.amount;
+    const retailPrice = inrPrice.amount;
     const variantId = product.variants?.[0]?.id;
 
     if (variantId && wholesaleInfo?.hasWholesaleAccess) {
       const wholesale = getWholesalePrice(variantId, retailPrice);
       if (wholesale.isWholesale) {
         return {
-          price: formatMoney(
-            wholesale.price,
-            price.currency_code?.toUpperCase() || 'USD',
-            getCurrencyLocale(price.currency_code?.toUpperCase() || 'USD')
-          ),
+          price: formatPrice(wholesale.price),
           isWholesale: true,
           savings: wholesale.savings,
           discountPercent: wholesaleInfo.discountPercent,
@@ -132,11 +124,7 @@ function ProductGrid({
     }
 
     return {
-      price: formatMoney(
-        price.amount,
-        price.currency_code?.toUpperCase() || 'USD',
-        getCurrencyLocale(price.currency_code?.toUpperCase() || 'USD')
-      ),
+      price: formatPrice(inrPrice.amount),
       isWholesale: false,
       savings: 0,
     };
@@ -352,8 +340,10 @@ function ProductGrid({
               {(() => {
                 const variant = product.variants?.[0];
                 const compareAt = variant?.compare_at_price;
-                const current = variant?.prices?.[0]?.amount || 0;
-                if (compareAt && compareAt > current) {
+                const inrPrices = variant?.prices || [];
+                const inrPriceAmt =
+                  (inrPrices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || inrPrices[0])?.amount || 0;
+                if (compareAt && compareAt > inrPriceAmt) {
                   return (
                     <span
                       className="prod-price-prem"
@@ -364,14 +354,7 @@ function ProductGrid({
                         fontSize: '14px',
                       }}
                     >
-                      {formatMoney(
-                        compareAt,
-                        variant?.prices?.[0]?.currency_code?.toUpperCase() || 'USD',
-                        getCurrencyLocale(
-                          variant?.prices?.[0]?.currency_code?.toUpperCase() ||
-                            'USD'
-                        )
-                      )}
+                      {formatPrice(compareAt)}
                     </span>
                   );
                 }

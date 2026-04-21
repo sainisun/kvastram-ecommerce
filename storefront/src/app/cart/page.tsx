@@ -3,9 +3,9 @@
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { useNotification } from '@/context/notification-context';
+import { useCurrency } from '@/context/currency-context';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { formatMoney, getCurrencyLocale } from '@/lib/currency';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import {
@@ -33,6 +33,7 @@ export default function CartPage() {
     useCart();
   const { currentRegion, settings } = useShop();
   const { showNotification } = useNotification();
+  const { formatPrice: formatCartPrice } = useCurrency();
   const [promoCode, setPromoCode] = useState('');
   const [promoLoading, setPromoLoading] = useState(false);
   const [discount, setDiscount] = useState<{
@@ -95,11 +96,6 @@ export default function CartPage() {
     setSelectedShipping(option || null);
   };
 
-  const formatCartPrice = (amount: number) => {
-    const currency = currentRegion?.currency_code?.toUpperCase() || 'USD';
-    return formatMoney(amount, currency, getCurrencyLocale(currency));
-  };
-
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) return;
     setPromoLoading(true);
@@ -154,20 +150,16 @@ export default function CartPage() {
     const variant = product.variants?.[0];
     if (!variant) return;
     const prices = variant.prices || [];
-    const priceObj =
-      prices.find(
-        (p) =>
-          p.currency_code ===
-          (currentRegion?.currency_code || 'usd').toLowerCase()
-      ) || prices[0];
-    if (!priceObj) return;
+    const inrPriceObj =
+      prices.find((p) => p.currency_code?.toLowerCase() === 'inr') || prices[0];
+    if (!inrPriceObj) return;
     addItem({
       id: variant.id,
       variantId: variant.id,
       quantity: 1,
       title: product.title,
-      price: priceObj.amount,
-      currency: priceObj.currency_code,
+      price: inrPriceObj.amount,
+      currency: 'INR',
       thumbnail: product.thumbnail || undefined,
       handle: product.handle || product.id,
     });
@@ -213,21 +205,10 @@ export default function CartPage() {
                 {recommendations.map((product) => {
                   const variant = product.variants?.[0];
                   const prices = variant?.prices || [];
-                  const priceObj =
-                    prices.find(
-                      (p) =>
-                        p.currency_code ===
-                        (currentRegion?.currency_code || 'usd').toLowerCase()
-                    ) || prices[0];
-                  const price = priceObj
-                    ? formatMoney(
-                        priceObj.amount,
-                        priceObj.currency_code?.toUpperCase() || 'USD',
-                        getCurrencyLocale(
-                          priceObj.currency_code?.toUpperCase() || 'USD'
-                        )
-                      )
-                    : '';
+                  const inrPriceObj =
+                    prices.find((p) => p.currency_code?.toLowerCase() === 'inr') ||
+                    prices[0];
+                  const price = inrPriceObj ? formatCartPrice(inrPriceObj.amount) : '';
 
                   return (
                     <div key={product.id} className="group flex flex-col">
