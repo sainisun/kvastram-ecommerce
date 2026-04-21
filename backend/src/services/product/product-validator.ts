@@ -12,16 +12,24 @@ export const PriceSchema = z.object({
   currency_code: z.string().length(3),
 });
 
+// Accepts absolute URLs (https://...) or relative paths (/uploads/...)
+const urlOrPath = z.string().refine(
+  (v) => {
+    try { new URL(v); return true; } catch { return v.startsWith('/'); }
+  },
+  { message: 'Must be a valid URL or a path starting with /' }
+);
+
 // --- Image Schema ---
 export const ImageSchema = z.object({
-  url: z.string().url(),
+  url: urlOrPath,
   alt_text: z.string().optional(),
   is_thumbnail: z.boolean().default(false),
   position: z.number().int().default(0),
   metadata: z
     .object({
       media_type: z.enum(['image', 'video']).default('image'),
-      thumbnail_url: z.string().url().optional().or(z.literal('')).transform(v => v === '' ? undefined : v),
+      thumbnail_url: urlOrPath.optional(),
       mime_type: z.string().optional(),
       file_size: z.number().int().optional(),
     })
@@ -52,7 +60,7 @@ export const CreateProductSchema = z.object({
   seo_title: z.string().optional(),
   seo_description: z.string().optional(),
   inventory_quantity: z.number().int().optional().default(0),
-  thumbnail: z.string().url().optional().or(z.literal('')).transform(v => v === '' ? undefined : v),
+  thumbnail: urlOrPath.optional().or(z.literal('')).transform(v => v === '' ? undefined : v),
   sku: z.string().optional(),
   collection_id: z.string().uuid().optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
