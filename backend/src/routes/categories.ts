@@ -57,19 +57,27 @@ categoriesRouter.get('/tree', async (c) => {
   }
 });
 
-// GET /categories/:id
+// GET /categories/:idOrSlug — accepts UUID or slug
 categoriesRouter.get('/:id', async (c) => {
-  const id = c.req.param('id');
+  const idOrSlug = c.req.param('id');
   try {
-    const category = await db.query.categories.findFirst({
-      where: eq(categories.id, id),
-    });
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+
+    const category = isUuid
+      ? await db.query.categories.findFirst({ where: eq(categories.id, idOrSlug) })
+      : await db.query.categories.findFirst({ where: eq(categories.slug, idOrSlug) });
 
     if (!category) {
       return c.json({ error: 'Category not found' }, 404);
     }
 
-    return c.json({ category });
+    // Include children
+    const children = await db
+      .select()
+      .from(categories)
+      .where(eq(categories.parent_id, category.id));
+
+    return c.json({ category: { ...category, children } });
   } catch (error: unknown) {
     console.error('Error fetching category:', error);
     return c.json({ error: 'Failed to fetch category' }, 500);

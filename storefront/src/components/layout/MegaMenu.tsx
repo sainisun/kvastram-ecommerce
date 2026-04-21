@@ -47,7 +47,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                 {children.map((child) => (
                   <Link
                     key={child.id}
-                    href={`/categories/${child.slug}`}
+                    href={`/collections/${child.slug}`}
                     className="block text-sm text-gray-700 hover:text-black transition-colors py-1"
                   >
                     {child.emoji && (
@@ -81,7 +81,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
               />
               <div className="absolute inset-0 bg-black/30 flex items-end p-6">
                 <Link
-                  href={`/categories/${category.slug}`}
+                  href={`/collections/${category.slug}`}
                   className="text-white text-lg font-semibold hover:opacity-80 transition-opacity"
                 >
                   Explore {category.name}
@@ -96,7 +96,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
               {children.slice(3).map((child) => (
                 <Link
                   key={child.id}
-                  href={`/categories/${child.slug}`}
+                  href={`/collections/${child.slug}`}
                   className="p-4 border border-gray-200 rounded-lg hover:border-black transition-colors"
                 >
                   {child.emoji && (
