@@ -30,6 +30,43 @@ const createTierSchema = z.object({
 
 const updateTierSchema = createTierSchema.partial();
 
+// Get tier statistics — MUST be before /tiers/:id to avoid param capture
+app.get('/tiers/stats/overview', async (c) => {
+  try {
+    const { customers, orders } = await import('../../db/schema');
+    const { sql } = await import('drizzle-orm');
+
+    const tiers = await db.select().from(wholesale_tiers);
+
+    const stats = await Promise.all(
+      tiers.map(async (tier) => {
+        const [customerCount] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(customers)
+          .where(sql`${customers.metadata}->>'discount_tier' = ${tier.slug}`);
+
+        const [orderCount] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(orders)
+          .where(sql`${orders.metadata}->>'wholesale_tier' = ${tier.slug}`);
+
+        return {
+          tier: tier.name,
+          slug: tier.slug,
+          customerCount: Number(customerCount?.count) || 0,
+          orderCount: Number(orderCount?.count) || 0,
+          discountPercent: tier.discount_percent,
+        };
+      })
+    );
+
+    return c.json({ stats });
+  } catch (error: any) {
+    console.error('Error fetching tier stats:', error);
+    return c.json({ error: 'Failed to fetch tier stats' }, 500);
+  }
+});
+
 // Get all tiers
 app.get('/tiers', async (c) => {
   try {
@@ -164,45 +201,6 @@ app.delete('/tiers/:id', async (c) => {
   } catch (error: any) {
     console.error('Error deleting wholesale tier:', error);
     return c.json({ error: 'Failed to delete tier' }, 500);
-  }
-});
-
-// Get tier statistics
-app.get('/tiers/stats/overview', async (c) => {
-  try {
-    const { customers, orders } = await import('../../db/schema');
-    const { sql } = await import('drizzle-orm');
-
-    const tiers = await db.select().from(wholesale_tiers);
-
-    const stats = await Promise.all(
-      tiers.map(async (tier) => {
-        // Count customers in this tier
-        const [customerCount] = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(customers)
-          .where(sql`${customers.metadata}->>'discount_tier' = ${tier.slug}`);
-
-        // Count orders from customers in this tier
-        const [orderCount] = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(orders)
-          .where(sql`${orders.metadata}->>'wholesale_tier' = ${tier.slug}`);
-
-        return {
-          tier: tier.name,
-          slug: tier.slug,
-          customerCount: Number(customerCount?.count) || 0,
-          orderCount: Number(orderCount?.count) || 0,
-          discountPercent: tier.discount_percent,
-        };
-      })
-    );
-
-    return c.json({ stats });
-  } catch (error: any) {
-    console.error('Error fetching tier stats:', error);
-    return c.json({ error: 'Failed to fetch tier stats' }, 500);
   }
 });
 

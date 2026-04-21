@@ -14,6 +14,29 @@ import { emailService } from '../services/email-service';
 
 const app = new Hono();
 
+// GET / — Marketing overview (admin)
+app.get('/', verifyAdmin, async (c) => {
+  try {
+    const [allCampaigns, allDiscounts] = await Promise.all([
+      marketingService.getAllCampaigns(),
+      marketingService.getAllDiscounts(),
+    ]);
+    const now = new Date();
+    const activeCampaigns = allCampaigns.filter((cp: any) =>
+      cp.is_active &&
+      (!cp.start_date || new Date(cp.start_date) <= now) &&
+      (!cp.end_date || new Date(cp.end_date) >= now)
+    );
+    const activeDiscounts = allDiscounts.filter((d: any) => d.is_active);
+    return c.json({
+      campaigns: { total: allCampaigns.length, active: activeCampaigns.length },
+      discounts: { total: allDiscounts.length, active: activeDiscounts.length },
+    });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
 // --- CAMPAIGNS ---
 
 // PUBLIC: Get active campaigns for storefront (no auth)

@@ -356,6 +356,7 @@ app.route('/auth/2fa', auth2faRoutes);
 app.route('/wholesale', wholesaleRoutes);
 app.route('/wholesale-customers', wholesaleCustomersRoutes);
 app.route('/admin/wholesale', adminWholesaleOrdersRoutes);
+app.route('/admin/wholesale-orders', adminWholesaleOrdersRoutes);
 app.route('/admin/tiers', adminTiersRoutes);
 app.route('/admin/notifications', adminNotificationsRoutes);
 app.route('/admin/whatsapp', whatsappRoutes);
