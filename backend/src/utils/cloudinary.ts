@@ -60,14 +60,32 @@ export async function uploadImageToCloudinary(
   formData.append('signature', signature);
   formData.append('folder', folder);
 
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
-    {
-      method: 'POST',
-      body: formData,
-      signal: AbortSignal.timeout(30000),
+  const uploadTimeoutMs = resourceType === 'video' ? 300000 : 60000;
+
+  let response: Response;
+  try {
+    response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+      {
+        method: 'POST',
+        body: formData,
+        signal: AbortSignal.timeout(uploadTimeoutMs),
+      }
+    );
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      ['AbortError', 'TimeoutError'].includes(error.name)
+    ) {
+      throw new Error(
+        `Timed out uploading ${resourceType} to Cloudinary after ${Math.round(
+          uploadTimeoutMs / 1000
+        )} seconds`
+      );
     }
-  );
+
+    throw error;
+  }
 
   const payload = (await response.json().catch(() => null)) as
     | { secure_url?: string; public_id?: string; error?: { message?: string } }
