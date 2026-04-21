@@ -167,6 +167,7 @@ export default async function Home() {
               thumbnail_url: string;
               product_name: string;
               price: string;
+              price_amount?: number | null;
               link_url: string;
               view_count?: number;
               is_active: boolean;
@@ -177,6 +178,7 @@ export default async function Home() {
               thumbnail_url: item.thumbnail_url,
               product_name: item.product_name,
               price: item.price,
+              price_amount: item.price_amount ?? null,
               link_url: item.link_url,
               view_count: item.view_count || 0,
               is_active: item.is_active,
