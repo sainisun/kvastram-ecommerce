@@ -126,14 +126,17 @@ INSERT INTO wholesale_tiers (id,name,slug,discount_percent,min_order_value,min_o
 ON CONFLICT (slug) DO NOTHING;
 
 -- ── PAGES ─────────────────────────────────────────────────────────────────
+-- Placeholder inserts only — run seed-legal-pages.sql after to fill real content
 INSERT INTO pages (id,title,slug,content,is_visible,created_at,updated_at) VALUES
 (gen_random_uuid(),'Privacy Policy','privacy-policy','<h1>Privacy Policy</h1><p>Content coming soon.</p>',true,now(),now()),
 (gen_random_uuid(),'Terms of Service','terms-of-service','<h1>Terms of Service</h1><p>Content coming soon.</p>',true,now(),now()),
-(gen_random_uuid(),'Refund & Cancellation Policy','refund-cancellation-policy','<h1>Refund Policy</h1><p>Content coming soon.</p>',true,now(),now()),
+(gen_random_uuid(),'Refund & Cancellation Policy','refund-cancellation-policy','<h1>Refund & Cancellation Policy</h1><p>Content coming soon.</p>',true,now(),now()),
 (gen_random_uuid(),'Shipping Policy','shipping-policy','<h1>Shipping Policy</h1><p>Content coming soon.</p>',true,now(),now()),
 (gen_random_uuid(),'Contact Us','contact','<h1>Contact Us</h1><p>Content coming soon.</p>',true,now(),now()),
 (gen_random_uuid(),'FAQ','faq','<h1>FAQ</h1><p>Content coming soon.</p>',true,now(),now()),
-(gen_random_uuid(),'About Us','about','<h1>About Us</h1><p>Content coming soon.</p>',true,now(),now())
+(gen_random_uuid(),'About Us','about','<h1>About Us</h1><p>Content coming soon.</p>',true,now(),now()),
+(gen_random_uuid(),'Shipping & Returns','shipping-returns','<h1>Shipping & Returns</h1><p>Content coming soon.</p>',true,now(),now()),
+(gen_random_uuid(),'Size Guide','size-guide','<h1>Size Guide</h1><p>Content coming soon.</p>',true,now(),now())
 ON CONFLICT (slug) DO NOTHING;
 
 -- ── VERIFY ────────────────────────────────────────────────────────────────

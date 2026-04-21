@@ -118,46 +118,7 @@ categoriesRouter.post(
   }
 );
 
-// PUT /categories/:id
-categoriesRouter.put(
-  '/:id',
-  verifyAdmin,
-  zValidator('json', CategorySchema.partial()),
-  async (c) => {
-    const id = c.req.param('id');
-    const data = c.req.valid('json');
-    try {
-      const [updatedCategory] = await db
-        .update(categories)
-        .set({
-          ...data,
-          updated_at: new Date(),
-        })
-        .where(eq(categories.id, id))
-        .returning();
-
-      return c.json({ category: updatedCategory });
-    } catch (error: any) {
-      return c.json(
-        { error: error.message || 'Failed to update category' },
-        500
-      );
-    }
-  }
-);
-
-// DELETE /categories/:id
-categoriesRouter.delete('/:id', verifyAdmin, async (c) => {
-  const id = c.req.param('id');
-  try {
-    await db.delete(categories).where(eq(categories.id, id));
-    return c.json({ success: true });
-  } catch (error: any) {
-    return c.json({ error: error.message || 'Failed to delete category' }, 500);
-  }
-});
-
-// PUT /categories/reorder - Bulk update display_order for multiple categories
+// PUT /categories/reorder - Bulk update display_order (must be before /:id)
 const ReorderSchema = z.object({
   updates: z.array(
     z.object({
@@ -196,5 +157,44 @@ categoriesRouter.put(
     }
   }
 );
+
+// PUT /categories/:id
+categoriesRouter.put(
+  '/:id',
+  verifyAdmin,
+  zValidator('json', CategorySchema.partial()),
+  async (c) => {
+    const id = c.req.param('id');
+    const data = c.req.valid('json');
+    try {
+      const [updatedCategory] = await db
+        .update(categories)
+        .set({
+          ...data,
+          updated_at: new Date(),
+        })
+        .where(eq(categories.id, id))
+        .returning();
+
+      return c.json({ category: updatedCategory });
+    } catch (error: any) {
+      return c.json(
+        { error: error.message || 'Failed to update category' },
+        500
+      );
+    }
+  }
+);
+
+// DELETE /categories/:id
+categoriesRouter.delete('/:id', verifyAdmin, async (c) => {
+  const id = c.req.param('id');
+  try {
+    await db.delete(categories).where(eq(categories.id, id));
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to delete category' }, 500);
+  }
+});
 
 export default categoriesRouter;

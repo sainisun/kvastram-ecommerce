@@ -12,8 +12,7 @@ declare global {
   }
 }
 
-const GA_MEASUREMENT_ID =
-  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID || '';
 
 import { ConsentManager } from '@/lib/consent-manager';
@@ -52,23 +51,27 @@ export function Analytics() {
 
   return (
     <>
-      {/* Google Analytics 4 */}
-      <Script
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-      />
-      <Script
-        id="ga-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
+      {/* Google Analytics 4 — only loads when a real measurement ID is set */}
+      {GA_MEASUREMENT_ID && (
+        <>
+          <Script
+            strategy="afterInteractive"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          />
+          <Script
+            id="ga-init"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
                         window.dataLayer = window.dataLayer || [];
                         function gtag(){dataLayer.push(arguments);}
                         gtag('js', new Date());
                         gtag('config', '${GA_MEASUREMENT_ID}');
                     `,
-        }}
-      />
+            }}
+          />
+        </>
+      )}
 
       {/* Facebook Pixel */}
       {FB_PIXEL_ID && (

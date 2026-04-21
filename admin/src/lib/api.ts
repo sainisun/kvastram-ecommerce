@@ -1152,7 +1152,7 @@ export const api = {
 
   // Tier Management endpoints
   getWholesaleTiers: async (active?: boolean) => {
-    let url = `${API_BASE_URL}/admin/tiers/tiers`;
+    let url = `${API_BASE_URL}/admin/tiers`;
     if (active !== undefined) url += `?active=${active}`;
 
     const res = await fetchWithTimeout(url, {
@@ -1164,7 +1164,7 @@ export const api = {
 
   getWholesaleTier: async (id: string) => {
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/tiers/${id}`,
+      `${API_BASE_URL}/admin/tiers/${id}`,
       {
         // No Authorization header needed - cookie is sent automatically
       }
@@ -1174,7 +1174,7 @@ export const api = {
   },
 
   createWholesaleTier: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers/tiers`, {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1187,7 +1187,7 @@ export const api = {
 
   updateWholesaleTier: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/tiers/${id}`,
+      `${API_BASE_URL}/admin/tiers/${id}`,
       {
         method: 'PATCH',
         headers: {
@@ -1202,7 +1202,7 @@ export const api = {
 
   deleteWholesaleTier: async (id: string) => {
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/tiers/${id}`,
+      `${API_BASE_URL}/admin/tiers/${id}`,
       {
         method: 'DELETE',
       }
@@ -1213,7 +1213,7 @@ export const api = {
 
   getWholesaleTierStats: async () => {
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/tiers/stats/overview`,
+      `${API_BASE_URL}/admin/tiers/stats/overview`,
       {
         // No Authorization header needed - cookie is sent automatically
       }
@@ -2127,10 +2127,10 @@ export const api = {
   },
 
   // Wholesale Tiers endpoints (Admin CRUD)
-  // Path: /admin/tiers/tiers — verified from index.ts line 282 + tiers.ts sub-routes
+  // Path: /admin/tiers — mounted at index.ts, routes use / /:id /stats/overview
   getTiers: async () => {
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/tiers`,
+      `${API_BASE_URL}/admin/tiers`,
       {}
     );
     if (!res.ok) throw new Error('Failed to fetch tiers');
@@ -2139,7 +2139,7 @@ export const api = {
 
   createTier: async (data: unknown) => {
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/tiers`,
+      `${API_BASE_URL}/admin/tiers`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2152,7 +2152,7 @@ export const api = {
 
   updateTier: async (id: string, data: unknown) => {
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/tiers/${id}`,
+      `${API_BASE_URL}/admin/tiers/${id}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -2165,7 +2165,7 @@ export const api = {
 
   deleteTier: async (id: string) => {
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/tiers/${id}`,
+      `${API_BASE_URL}/admin/tiers/${id}`,
       { method: 'DELETE' }
     );
     if (!res.ok) return handleApiError(res, 'Failed to delete tier');

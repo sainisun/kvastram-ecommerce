@@ -4,13 +4,12 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from '../../db/client';
 import { wholesale_tiers } from '../../db/schema';
-import { eq, desc, asc } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 
 const app = new Hono();
 
 app.use('*', verifyAdmin);
 
-// Validation schemas
 const createTierSchema = z.object({
   name: z.string().min(1),
   slug: z
@@ -30,8 +29,8 @@ const createTierSchema = z.object({
 
 const updateTierSchema = createTierSchema.partial();
 
-// Get tier statistics — MUST be before /tiers/:id to avoid param capture
-app.get('/tiers/stats/overview', async (c) => {
+// GET /admin/tiers/stats/overview — MUST be before /:id
+app.get('/stats/overview', async (c) => {
   try {
     const { customers, orders } = await import('../../db/schema');
     const { sql } = await import('drizzle-orm');
@@ -67,8 +66,8 @@ app.get('/tiers/stats/overview', async (c) => {
   }
 });
 
-// Get all tiers
-app.get('/tiers', async (c) => {
+// GET /admin/tiers
+app.get('/', async (c) => {
   try {
     const { active } = c.req.query();
 
@@ -87,8 +86,8 @@ app.get('/tiers', async (c) => {
   }
 });
 
-// Get single tier
-app.get('/tiers/:id', async (c) => {
+// GET /admin/tiers/:id
+app.get('/:id', async (c) => {
   try {
     const { id } = c.req.param();
 
@@ -109,12 +108,11 @@ app.get('/tiers/:id', async (c) => {
   }
 });
 
-// Create tier
-app.post('/tiers', zValidator('json', createTierSchema), async (c) => {
+// POST /admin/tiers
+app.post('/', zValidator('json', createTierSchema), async (c) => {
   try {
     const data = c.req.valid('json');
 
-    // Check if slug already exists
     const [existing] = await db
       .select()
       .from(wholesale_tiers)
@@ -134,13 +132,12 @@ app.post('/tiers', zValidator('json', createTierSchema), async (c) => {
   }
 });
 
-// Update tier
-app.patch('/tiers/:id', zValidator('json', updateTierSchema), async (c) => {
+// PATCH /admin/tiers/:id
+app.patch('/:id', zValidator('json', updateTierSchema), async (c) => {
   try {
     const { id } = c.req.param();
     const data = c.req.valid('json');
 
-    // Check if tier exists
     const [existing] = await db
       .select()
       .from(wholesale_tiers)
@@ -151,7 +148,6 @@ app.patch('/tiers/:id', zValidator('json', updateTierSchema), async (c) => {
       return c.json({ error: 'Tier not found' }, 404);
     }
 
-    // If slug is being updated, check if new slug already exists
     if (data.slug && data.slug !== existing.slug) {
       const [slugExists] = await db
         .select()
@@ -166,10 +162,7 @@ app.patch('/tiers/:id', zValidator('json', updateTierSchema), async (c) => {
 
     const [tier] = await db
       .update(wholesale_tiers)
-      .set({
-        ...data,
-        updated_at: new Date(),
-      })
+      .set({ ...data, updated_at: new Date() })
       .where(eq(wholesale_tiers.id, id))
       .returning();
 
@@ -180,8 +173,8 @@ app.patch('/tiers/:id', zValidator('json', updateTierSchema), async (c) => {
   }
 });
 
-// Delete tier
-app.delete('/tiers/:id', async (c) => {
+// DELETE /admin/tiers/:id
+app.delete('/:id', async (c) => {
   try {
     const { id } = c.req.param();
 
