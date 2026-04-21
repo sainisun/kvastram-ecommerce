@@ -56,7 +56,7 @@ app.get('/', async (c) => {
       .where(
         and(
           lt(saved_carts.updated_at, abandonedCutoff),
-          sql`${saved_carts.updated_at} >= ${periodCutoff}`
+          sql`${saved_carts.updated_at} >= ${periodCutoff.toISOString()}`
         )
       )
       .orderBy(desc(saved_carts.updated_at));
