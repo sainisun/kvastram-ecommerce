@@ -1,49 +1,26 @@
 import { Hono } from 'hono';
 import { verifyAuth } from '../middleware/auth';
-import * as path from 'path';
 import { createHash } from 'crypto';
 import { z } from 'zod';
 import {
   validateFileUpload,
-  isPathWithinUploadDir,
   getMaxFileSize,
   IMAGE_MAX_FILE_SIZE,
   VIDEO_MAX_FILE_SIZE,
-  getUploadDir,
 } from '../utils/safe-file-upload';
-import { writeFile, mkdir } from 'fs/promises';
+import {
+  uploadImageToCloudinary,
+  uploadVideoToCloudinary,
+} from '../utils/cloudinary';
 
 const uploadRouter = new Hono();
 
-// Allowed file types for documentation purposes
-const ALLOWED_EXTENSIONS = [
-  '.jpg',
-  '.jpeg',
-  '.png',
-  '.gif',
-  '.webp',
-  '.mp4',
-  '.mov',
-  '.pdf',
-  '.doc',
-  '.docx',
-];
-
-// 🔒 FIX-005: Zod schema for robust input validation
-// Validates file upload parameters with strict type checking
 const FileUploadSchema = z.object({
   filename: z.string().min(1).max(255),
   mimeType: z.string().min(1).max(100),
-  size: z
-    .number()
-    .int()
-    .positive()
-    .max(VIDEO_MAX_FILE_SIZE), // Large enough for video uploads; final limit is type-aware
+  size: z.number().int().positive().max(VIDEO_MAX_FILE_SIZE),
 });
 
-type FileUploadInput = z.infer<typeof FileUploadSchema>;
-
-// Use verifiedAuth middleware
 uploadRouter.use('*', verifyAuth);
 
 uploadRouter.post('/', async (c) => {
@@ -55,7 +32,6 @@ uploadRouter.post('/', async (c) => {
       return c.json({ error: 'No file uploaded' }, 400);
     }
 
-    // 🔒 FIX-005: Zod schema validation for robust input validation
     const validationResult = FileUploadSchema.safeParse({
       filename: file.name,
       mimeType: file.type,
@@ -64,113 +40,49 @@ uploadRouter.post('/', async (c) => {
 
     if (!validationResult.success) {
       return c.json(
-        {
-          error: 'Invalid file upload parameters',
-          details: validationResult.error.errors,
-        },
+        { error: 'Invalid file upload parameters', details: validationResult.error.errors },
         400
       );
     }
 
-    // 🔒 FIX-005: Validate file size first (prevent memory exhaustion)
     const maxFileSize = getMaxFileSize(file.name, file.type);
-
     if (file.size > maxFileSize) {
       return c.json(
-        {
-          error: `File too large. Maximum size is ${maxFileSize / 1024 / 1024}MB`,
-        },
+        { error: `File too large. Maximum size is ${maxFileSize / 1024 / 1024}MB` },
         400
       );
     }
 
-    // 🔒 FIX-005: Defense-in-depth file validation
     const validation = validateFileUpload(file.name, file.type, file.size);
-
     if (!validation.valid) {
       return c.json({ error: validation.error }, 400);
     }
 
-    // 🔒 FIX-005: Use cryptographically secure filename
-    // User input (file.name) is NOT used in final filename
-    const secureFilename = validation.secureFilename!;
+    // Determine resource type from mime type
+    const isVideo = file.type.startsWith('video/');
+    const folder = isVideo ? 'kvastram/products/videos' : 'kvastram/products/images';
 
-    // Get upload directory
-    const uploadDir = getUploadDir();
+    // Upload to Cloudinary
+    const result = isVideo
+      ? await uploadVideoToCloudinary(file, { folder })
+      : await uploadImageToCloudinary(file, { folder });
 
-    // 🔒 FIX-005: Construct target path and validate no traversal
-    const targetPath = path.join(uploadDir, secureFilename);
-
-    // 🔒 FIX-005: Additional path traversal defense - resolve to absolute and verify
-    const resolvedPath = path.resolve(targetPath);
-    const resolvedUploadDir = path.resolve(uploadDir);
-    const relativePath = path.relative(resolvedUploadDir, resolvedPath);
-
-    // Verify resolved path is still within upload directory
-    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
-      console.error('🚨 Path traversal attack detected (resolved path):', {
-        filename: file.name,
-        secureFilename,
-        targetPath,
-        resolvedPath,
-      });
-      return c.json({ error: 'Invalid file path' }, 400);
-    }
-
-    if (!isPathWithinUploadDir(targetPath, uploadDir)) {
-      console.error('🚨 Path traversal attack detected:', {
-        filename: file.name,
-        secureFilename,
-        targetPath,
-      });
-      return c.json({ error: 'Invalid file path' }, 400);
-    }
-
-    // Ensure directory exists
-    await mkdir(uploadDir, { recursive: true });
-
-    // 🔒 FIX-005: Additional check - ensure path is not a directory
-    try {
-      const { stat } = await import('fs/promises');
-      const stats = await stat(targetPath);
-      if (stats.isDirectory()) {
-        return c.json({ error: 'Cannot overwrite directory' }, 400);
-      }
-    } catch (error: unknown) {
-      const nodeError = error as NodeJS.ErrnoException;
-      if (nodeError.code === 'ENOENT') {
-        // File doesn't exist - safe to proceed (normal/happy path)
-      } else {
-        // Other errors (EACCES, EIO, etc.) are real problems
-        console.error('Error checking file stat:', error);
-        return c.json({ error: 'Failed to check file path' }, 500);
-      }
-    }
-
-    // Write file
+    // Generate hash for integrity verification
     const buffer = await file.arrayBuffer();
-    const fileBuffer = Buffer.from(buffer);
-    await writeFile(targetPath, fileBuffer);
+    const fileHash = createHash('sha256').update(Buffer.from(buffer)).digest('hex');
 
-    // 🔒 FIX-005: Generate SHA-256 hash for file integrity verification
-    const fileHash = createHash('sha256').update(fileBuffer).digest('hex');
-
-    // 🔒 FIX: Return absolute URL using dynamic proxy-aware relative path
-    // The relative URL forces the browser to use the current domain (e.g. admin.kvastram.com or localhost)
-    const url = `/uploads/${secureFilename}`;
-
-
-    console.log('✅ File uploaded securely:', {
+    console.log('✅ File uploaded to Cloudinary:', {
       originalName: file.name,
-      secureFilename,
+      publicId: result.publicId,
       size: file.size,
-      path: targetPath,
+      type: file.type,
       hash: fileHash,
     });
 
     return c.json({
-      url,
-      filename: secureFilename,
+      url: result.secureUrl,
+      publicId: result.publicId,
+      filename: result.publicId,
       originalName: file.name,
       size: file.size,
       type: file.type,
@@ -182,11 +94,7 @@ uploadRouter.post('/', async (c) => {
     });
   } catch (error: any) {
     console.error('❌ Upload error:', error);
-    console.error('Stack:', error.stack);
-    return c.json(
-      { error: 'Failed to upload file', details: error.message },
-      500
-    );
+    return c.json({ error: 'Failed to upload file', details: error.message }, 500);
   }
 });
 
