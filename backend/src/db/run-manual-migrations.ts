@@ -26,6 +26,7 @@ const MIGRATION_FILES = [
   '20260227_add_password_reset_fields.sql',
   '20260309_add_saved_carts_recovery.sql',
   '20260417_add_trending_reel_views.sql',
+  '20260423_homepage_merchandising_slots.sql',
   'phase4_returns.sql',
 ];
 
