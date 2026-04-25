@@ -148,7 +148,7 @@ export function HeroSection({ settings, banners = [] }: HeroSectionProps) {
                   />
                 </div>
 
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(0,0,0,0.3),transparent_70%),linear-gradient(to_right,rgba(0,0,0,0.45)_0%,rgba(0,0,0,0.12)_60%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(255,255,255,0.52),transparent_70%),linear-gradient(to_right,rgba(255,255,255,0.82)_0%,rgba(255,255,255,0.28)_60%)]" />
 
                 <div className="absolute inset-0">
                   <div className="mx-auto flex h-full max-w-[1280px] items-end px-4 pb-20 pt-28 sm:px-6 sm:pb-24 lg:px-8 lg:pb-16">

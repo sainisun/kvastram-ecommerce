@@ -44,7 +44,7 @@ html {
 
 body {
   background: var(--white) !important;
-  color: #1a1a1a !important;
+  color: #000000 !important;
   font-family: var(--font-ui) !important;
   font-size: 15px;
   font-weight: 400;
@@ -1814,6 +1814,7 @@ a:active,
 }
 
 :where(
+    [class*='text-white'],
     .text-stone-400,
     .text-stone-500,
     .text-stone-600,
@@ -1863,5 +1864,14 @@ a:active,
     input[type='button']
   ):not([data-hero-dot]):hover {
   background-color: #222222 !important;
+  color: #ffffff !important;
+}
+
+:where(
+    button[class*='bg-'],
+    a[class*='bg-'][class*='px-'][class*='py-'],
+    input[type='submit'],
+    input[type='button']
+  ):not([data-hero-dot]) * {
   color: #ffffff !important;
 }
