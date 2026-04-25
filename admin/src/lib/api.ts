@@ -1523,8 +1523,9 @@ export const api = {
   },
 
   // Featured Products
-  getFeaturedProductsAdmin: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/featured-products`, {});
+  getFeaturedProductsAdmin: async (section = '') => {
+    const suffix = section ? `?section=${encodeURIComponent(section)}` : '';
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/featured-products${suffix}`, {});
     if (!res.ok) throw new Error('Failed to fetch featured products');
     return res.json();
   },
@@ -1578,6 +1579,38 @@ export const api = {
       }
     );
     if (!res.ok) return handleApiError(res, 'Failed to toggle featured product');
+    return res.json();
+  },
+
+  getProductHomepagePlacements: async (productId: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/featured-products/product/${productId}/placements`,
+      {}
+    );
+    if (!res.ok) throw new Error('Failed to fetch product placements');
+    return res.json();
+  },
+
+  updateProductHomepagePlacements: async (
+    productId: string,
+    placements: Array<{
+      section_key: 'new_arrivals' | 'bestsellers';
+      is_active: boolean;
+      sort_order: number;
+      badge_text?: string | null;
+    }>
+  ) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/featured-products/product/${productId}/placements`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ placements }),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update product placements');
     return res.json();
   },
 
@@ -1704,6 +1737,24 @@ export const api = {
     return res.json();
   },
 
+  getCategoryProducts: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/${id}/products`, {});
+    if (!res.ok) throw new Error('Failed to fetch category products');
+    return res.json();
+  },
+
+  updateCategoryProducts: async (id: string, productIds: string[]) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/${id}/products`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ product_ids: productIds }),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update category products');
+    return res.json();
+  },
+
   createCategory: async (data: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/categories`, {
       method: 'POST',
@@ -1750,6 +1801,24 @@ export const api = {
       // No Authorization header needed - cookie is sent automatically
     });
     if (!res.ok) throw new Error('Failed to fetch collection');
+    return res.json();
+  },
+
+  getCollectionProducts: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}/products`, {});
+    if (!res.ok) throw new Error('Failed to fetch collection products');
+    return res.json();
+  },
+
+  updateCollectionProducts: async (id: string, productIds: string[]) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}/products`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ product_ids: productIds }),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update collection products');
     return res.json();
   },
 

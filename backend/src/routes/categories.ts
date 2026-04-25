@@ -2,9 +2,10 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
-import { categories } from '../db/schema';
+import { categories, product_categories, products } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
+import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 
 const categoriesRouter = new Hono();
 
@@ -19,6 +20,10 @@ const CategorySchema = z.object({
   show_in_header: z.boolean().optional().default(true),
   header_image_url: z.string().optional().nullable(),
   emoji: z.string().optional().nullable(),
+});
+
+const ProductAssignmentSchema = z.object({
+  product_ids: z.array(z.string().uuid()).default([]),
 });
 
 // GET /categories
@@ -58,6 +63,68 @@ categoriesRouter.get('/tree', async (c) => {
 });
 
 // GET /categories/:idOrSlug — accepts UUID or slug
+// GET /categories/:id/products
+categoriesRouter.get('/:id/products', verifyAdmin, async (c) => {
+  const id = c.req.param('id');
+  try {
+    const rows = await db
+      .select({
+        id: products.id,
+        title: products.title,
+        handle: products.handle,
+        thumbnail: products.thumbnail,
+        status: products.status,
+      })
+      .from(product_categories)
+      .innerJoin(products, eq(product_categories.product_id, products.id))
+      .where(eq(product_categories.category_id, id))
+      .orderBy(desc(products.created_at));
+
+    return c.json({ products: rows });
+  } catch (error: unknown) {
+    console.error('Error fetching category products:', error);
+    return c.json({ error: 'Failed to fetch category products' }, 500);
+  }
+});
+
+// PUT /categories/:id/products
+categoriesRouter.put(
+  '/:id/products',
+  verifyAdmin,
+  zValidator('json', ProductAssignmentSchema),
+  async (c) => {
+    const id = c.req.param('id');
+    const { product_ids } = c.req.valid('json');
+
+    try {
+      await db.transaction(async (tx) => {
+        await tx
+          .delete(product_categories)
+          .where(eq(product_categories.category_id, id));
+
+        if (product_ids.length > 0) {
+          await tx.insert(product_categories).values(
+            product_ids.map((productId) => ({
+              product_id: productId,
+              category_id: id,
+            }))
+          );
+        }
+      });
+
+      await triggerStorefrontRevalidation({
+        paths: ['/', '/products', '/collections'],
+        tags: ['products', 'categories'],
+      });
+
+      return c.json({ success: true, product_ids });
+    } catch (error: unknown) {
+      console.error('Error updating category products:', error);
+      return c.json({ error: 'Failed to update category products' }, 500);
+    }
+  }
+);
+
 categoriesRouter.get('/:id', async (c) => {
   const idOrSlug = c.req.param('id');
   try {

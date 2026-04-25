@@ -138,6 +138,12 @@ export default function NewProductPage() {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [selectedTagIds, setSelectedTagIds]           = useState<string[]>([]);
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
+  const [homepagePlacement, setHomepagePlacement] = useState({
+    new_arrivals: false,
+    bestsellers: false,
+    new_arrivals_sort: '0',
+    bestsellers_sort: '0',
+  });
 
   // Form
   const [formData, setFormData] = useState({
@@ -237,7 +243,33 @@ export default function NewProductPage() {
         sku:           formData.sku || undefined,
       };
 
-      await api.createProduct(payload);
+      const created = await api.createProduct(payload);
+      const productId = created?.product?.id;
+
+      if (productId) {
+        await api.updateProductHomepagePlacements(productId, [
+          ...(homepagePlacement.new_arrivals
+            ? [
+                {
+                  section_key: 'new_arrivals' as const,
+                  is_active: true,
+                  sort_order:
+                    Number.parseInt(homepagePlacement.new_arrivals_sort) || 0,
+                },
+              ]
+            : []),
+          ...(homepagePlacement.bestsellers
+            ? [
+                {
+                  section_key: 'bestsellers' as const,
+                  is_active: true,
+                  sort_order:
+                    Number.parseInt(homepagePlacement.bestsellers_sort) || 0,
+                },
+              ]
+            : []),
+        ]);
+      }
       showNotification('success', 'Product created successfully');
       router.push('/dashboard/products');
     } catch (error: any) {
@@ -547,6 +579,52 @@ export default function NewProductPage() {
           </div>
 
           {/* 3 ── Categorization */}
+          <div className={cardCls}>
+            <h2 className="text-base font-bold text-gray-800 mb-4">Homepage Placement</h2>
+            <div className="space-y-4">
+              {[
+                { key: 'new_arrivals', sortKey: 'new_arrivals_sort', label: 'Show in New Arrivals' },
+                { key: 'bestsellers', sortKey: 'bestsellers_sort', label: 'Show in Bestsellers' },
+              ].map((item) => (
+                <div key={item.key} className="rounded-lg border border-gray-200 p-3">
+                  <label className="flex items-center gap-3 text-sm font-medium text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={(homepagePlacement as any)[item.key]}
+                      onChange={(event) =>
+                        setHomepagePlacement((current) => ({
+                          ...current,
+                          [item.key]: event.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                    />
+                    {item.label}
+                  </label>
+                  {(homepagePlacement as any)[item.key] ? (
+                    <div className="mt-3">
+                      <label className="mb-1 block text-xs font-medium text-gray-500">
+                        Sort Order
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={(homepagePlacement as any)[item.sortKey]}
+                        onChange={(event) =>
+                          setHomepagePlacement((current) => ({
+                            ...current,
+                            [item.sortKey]: event.target.value,
+                          }))
+                        }
+                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className={cardCls}>
             <div className="flex items-center gap-2 mb-4">
               <Tag size={15} className="text-gray-400" />

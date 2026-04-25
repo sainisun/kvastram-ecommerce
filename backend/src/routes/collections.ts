@@ -2,9 +2,10 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
-import { product_collections } from '../db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { product_collections, products } from '../db/schema';
+import { eq, desc, inArray } from 'drizzle-orm';
 import { z } from 'zod';
+import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 
 const isUuid = (val: string): boolean => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -18,6 +19,10 @@ const CollectionSchema = z.object({
   handle: z.string().min(1),
   image: z.string().optional(),
   metadata: z.record(z.any()).optional(),
+});
+
+const ProductAssignmentSchema = z.object({
+  product_ids: z.array(z.string().uuid()).default([]),
 });
 
 // GET /collections
@@ -42,6 +47,64 @@ collectionsRouter.get('/', async (c) => {
 });
 
 // GET /collections/:id - accepts UUID or handle
+collectionsRouter.get('/:id/products', verifyAdmin, async (c) => {
+  const id = c.req.param('id');
+  try {
+    const rows = await db
+      .select({
+        id: products.id,
+        title: products.title,
+        handle: products.handle,
+        thumbnail: products.thumbnail,
+        status: products.status,
+      })
+      .from(products)
+      .where(eq(products.collection_id, id))
+      .orderBy(desc(products.created_at));
+
+    return c.json({ products: rows });
+  } catch (error: unknown) {
+    console.error('Error fetching collection products:', error);
+    return c.json({ error: 'Failed to fetch collection products' }, 500);
+  }
+});
+
+collectionsRouter.put(
+  '/:id/products',
+  verifyAdmin,
+  zValidator('json', ProductAssignmentSchema),
+  async (c) => {
+    const id = c.req.param('id');
+    const { product_ids } = c.req.valid('json');
+
+    try {
+      await db.transaction(async (tx) => {
+        await tx
+          .update(products)
+          .set({ collection_id: null, updated_at: new Date() })
+          .where(eq(products.collection_id, id));
+
+        if (product_ids.length > 0) {
+          await tx
+            .update(products)
+            .set({ collection_id: id, updated_at: new Date() })
+            .where(inArray(products.id, product_ids));
+        }
+      });
+
+      await triggerStorefrontRevalidation({
+        paths: ['/', '/products', '/collections'],
+        tags: ['products', 'collections'],
+      });
+
+      return c.json({ success: true, product_ids });
+    } catch (error: unknown) {
+      console.error('Error updating collection products:', error);
+      return c.json({ error: 'Failed to update collection products' }, 500);
+    }
+  }
+);
+
 collectionsRouter.get('/:id', async (c) => {
   const idOrHandle = c.req.param('id');
   try {

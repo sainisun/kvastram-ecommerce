@@ -798,6 +798,9 @@ export const homepage_categories = pgTable(
   'homepage_categories',
   {
     id: uuid('id').defaultRandom().primaryKey(),
+    category_id: uuid('category_id').references(() => categories.id, {
+      onDelete: 'set null',
+    }),
     image_url: text('image_url').notNull(),
     name: text('name').notNull(),
     link_url: text('link_url').notNull(),
@@ -833,6 +836,9 @@ export const category_circles = pgTable(
   'category_circles',
   {
     id: uuid('id').defaultRandom().primaryKey(),
+    category_id: uuid('category_id').references(() => categories.id, {
+      onDelete: 'set null',
+    }),
     image_url: text('image_url').notNull(),
     label: text('label').notNull(),
     link_url: text('link_url').notNull(),
@@ -850,6 +856,7 @@ export const featured_products = pgTable(
   'featured_products',
   {
     id: uuid('id').defaultRandom().primaryKey(),
+    section_key: text('section_key').default('spotlight').notNull(),
     product_id: uuid('product_id')
       .references(() => products.id, { onDelete: 'cascade' })
       .notNull(),
@@ -860,6 +867,7 @@ export const featured_products = pgTable(
     created_at: timestamp('created_at').defaultNow().notNull(),
   },
   (table) => ({
+    sectionIdx: index('idx_featured_products_section_key').on(table.section_key),
     productIdx: index('idx_featured_products_product_id').on(table.product_id),
     activeIdx: index('idx_featured_products_is_active').on(table.is_active),
     sortOrderIdx: index('idx_featured_products_sort_order').on(table.sort_order),

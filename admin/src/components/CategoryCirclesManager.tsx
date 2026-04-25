@@ -17,6 +17,7 @@ import {
 
 interface CategoryCircle {
   id: string;
+  category_id?: string | null;
   image_url: string;
   label: string;
   link_url: string;
@@ -32,6 +33,7 @@ interface CollectionSummary {
 }
 
 interface CircleFormState {
+  categoryId: string;
   label: string;
   linkUrl: string;
   sortOrder: string;
@@ -41,6 +43,7 @@ interface CircleFormState {
 }
 
 const emptyForm = (): CircleFormState => ({
+  categoryId: '',
   label: '',
   linkUrl: '',
   sortOrder: '0',
@@ -52,6 +55,7 @@ const emptyForm = (): CircleFormState => ({
 export default function CategoryCirclesManager() {
   const [circles, setCircles] = useState<CategoryCircle[]>([]);
   const [collections, setCollections] = useState<CollectionSummary[]>([]);
+  const [catalogCategories, setCatalogCategories] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -66,6 +70,7 @@ export default function CategoryCirclesManager() {
   useEffect(() => {
     void loadCircles();
     void loadCollections();
+    void loadCatalogCategories();
 
     return () => {
       if (previewUrlRef.current) {
@@ -96,6 +101,15 @@ export default function CategoryCirclesManager() {
     }
   }
 
+  async function loadCatalogCategories() {
+    try {
+      const response = await api.getCategories();
+      setCatalogCategories(response.categories || []);
+    } catch (error) {
+      console.error('Failed to load catalog categories:', error);
+    }
+  }
+
   function resetPreviewUrl() {
     if (previewUrlRef.current) {
       URL.revokeObjectURL(previewUrlRef.current);
@@ -115,6 +129,7 @@ export default function CategoryCirclesManager() {
     setEditingCircle(circle);
     setForm({
       label: circle.label,
+      categoryId: circle.category_id || '',
       linkUrl: circle.link_url,
       sortOrder: String(circle.sort_order),
       isActive: circle.is_active,
@@ -152,6 +167,7 @@ export default function CategoryCirclesManager() {
   function buildFormData() {
     const formData = new FormData();
     formData.append('label', form.label);
+    formData.append('category_id', form.categoryId);
     formData.append('link_url', form.linkUrl);
     formData.append('sort_order', form.sortOrder || '0');
     formData.append('is_active', String(form.isActive));
@@ -455,7 +471,34 @@ export default function CategoryCirclesManager() {
 
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
-                      Linked Collection
+                      Catalog Category
+                    </label>
+                    <select
+                      value={form.categoryId}
+                      onChange={(event) => {
+                        const categoryId = event.target.value;
+                        const selected = catalogCategories.find((cat) => cat.id === categoryId);
+                        setForm((current) => ({
+                          ...current,
+                          categoryId,
+                          label: selected && !current.label ? selected.name : current.label,
+                          linkUrl: selected ? `/collections/${selected.slug}` : current.linkUrl,
+                        }));
+                      }}
+                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    >
+                      <option value="">-- Select a Category --</option>
+                      {catalogCategories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Linked Collection (Optional)
                     </label>
                     <select
                       value={form.linkUrl}

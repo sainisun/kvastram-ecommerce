@@ -142,6 +142,13 @@ export default function EditProductPage() {
   const [selectedTagIds, setSelectedTagIds]           = useState<string[]>([]);
   const [collections, setCollections]                 = useState<any[]>([]);
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
+  const [homepagePlacement, setHomepagePlacement] = useState({
+    new_arrivals: false,
+    bestsellers: false,
+    new_arrivals_sort: '0',
+    bestsellers_sort: '0',
+  });
+  const [homepagePlacementsLoaded, setHomepagePlacementsLoaded] = useState(false);
 
   // Form
   const [formData, setFormData] = useState({
@@ -247,6 +254,24 @@ export default function EditProductPage() {
         setOptions(variantData?.options || []);
       } catch (e) {
         console.error('Failed to load variants/options', e);
+      }
+
+      try {
+        setHomepagePlacementsLoaded(false);
+        const placementData = await api.getProductHomepagePlacements(id);
+        const placements = placementData?.placements || [];
+        const newArrival = placements.find((item: any) => item.section_key === 'new_arrivals');
+        const bestseller = placements.find((item: any) => item.section_key === 'bestsellers');
+        setHomepagePlacement({
+          new_arrivals: Boolean(newArrival?.is_active),
+          bestsellers: Boolean(bestseller?.is_active),
+          new_arrivals_sort: String(newArrival?.sort_order ?? 0),
+          bestsellers_sort: String(bestseller?.sort_order ?? 0),
+        });
+        setHomepagePlacementsLoaded(true);
+      } catch (e) {
+        console.error('Failed to load homepage placements', e);
+        setHomepagePlacementsLoaded(false);
       }
     } catch (error) {
       console.error('Failed to load data', error);
@@ -436,6 +461,30 @@ export default function EditProductPage() {
       };
 
       await api.updateProduct(id, payload);
+      if (homepagePlacementsLoaded) {
+        await api.updateProductHomepagePlacements(id, [
+          ...(homepagePlacement.new_arrivals
+            ? [
+                {
+                  section_key: 'new_arrivals' as const,
+                  is_active: true,
+                  sort_order:
+                    Number.parseInt(homepagePlacement.new_arrivals_sort) || 0,
+                },
+              ]
+            : []),
+          ...(homepagePlacement.bestsellers
+            ? [
+                {
+                  section_key: 'bestsellers' as const,
+                  is_active: true,
+                  sort_order:
+                    Number.parseInt(homepagePlacement.bestsellers_sort) || 0,
+                },
+              ]
+            : []),
+        ]);
+      }
       showNotification('success', 'Product updated successfully');
       router.push('/dashboard/products');
     } catch (error: any) {
@@ -971,6 +1020,54 @@ export default function EditProductPage() {
           </div>
 
           {/* 3 ── Categorization */}
+          <div className={cardCls}>
+            <h2 className="text-base font-bold text-gray-800 mb-4">Homepage Placement</h2>
+            <div className="space-y-4">
+              {[
+                { key: 'new_arrivals', sortKey: 'new_arrivals_sort', label: 'Show in New Arrivals' },
+                { key: 'bestsellers', sortKey: 'bestsellers_sort', label: 'Show in Bestsellers' },
+              ].map((item) => (
+                <div key={item.key} className="rounded-lg border border-gray-200 p-3">
+                  <label className="flex items-center gap-3 text-sm font-medium text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={(homepagePlacement as any)[item.key]}
+                      disabled={!homepagePlacementsLoaded}
+                      onChange={(event) =>
+                        setHomepagePlacement((current) => ({
+                          ...current,
+                          [item.key]: event.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                    />
+                    {item.label}
+                  </label>
+                  {(homepagePlacement as any)[item.key] ? (
+                    <div className="mt-3">
+                      <label className="mb-1 block text-xs font-medium text-gray-500">
+                        Sort Order
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={(homepagePlacement as any)[item.sortKey]}
+                        disabled={!homepagePlacementsLoaded}
+                        onChange={(event) =>
+                          setHomepagePlacement((current) => ({
+                            ...current,
+                            [item.sortKey]: event.target.value,
+                          }))
+                        }
+                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className={cardCls}>
             <div className="flex items-center gap-2 mb-4">
               <Tag size={15} className="text-gray-400" />

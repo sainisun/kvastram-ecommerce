@@ -17,6 +17,7 @@ import {
 
 interface HomepageCategory {
   id: string;
+  category_id?: string | null;
   image_url: string;
   name: string;
   link_url: string;
@@ -26,6 +27,7 @@ interface HomepageCategory {
 }
 
 interface CategoryFormState {
+  categoryId: string;
   name: string;
   linkUrl: string;
   sortOrder: string;
@@ -35,6 +37,7 @@ interface CategoryFormState {
 }
 
 const emptyForm = (): CategoryFormState => ({
+  categoryId: '',
   name: '',
   linkUrl: '',
   sortOrder: '0',
@@ -45,6 +48,7 @@ const emptyForm = (): CategoryFormState => ({
 
 export default function HomepageCategoriesManager() {
   const [categories, setCategories] = useState<HomepageCategory[]>([]);
+  const [catalogCategories, setCatalogCategories] = useState<Array<{ id: string; name: string; slug: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -58,6 +62,7 @@ export default function HomepageCategoriesManager() {
 
   useEffect(() => {
     void loadCategories();
+    void loadCatalogCategories();
 
     return () => {
       if (previewUrlRef.current) {
@@ -76,6 +81,15 @@ export default function HomepageCategoriesManager() {
       alert('Failed to load homepage categories');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadCatalogCategories() {
+    try {
+      const response = await api.getCategories();
+      setCatalogCategories(response.categories || []);
+    } catch (error) {
+      console.error('Failed to load catalog categories:', error);
     }
   }
 
@@ -98,6 +112,7 @@ export default function HomepageCategoriesManager() {
     setEditingCategory(category);
     setForm({
       name: category.name,
+      categoryId: category.category_id || '',
       linkUrl: category.link_url,
       sortOrder: String(category.sort_order),
       isActive: category.is_active,
@@ -135,6 +150,7 @@ export default function HomepageCategoriesManager() {
   function buildFormData() {
     const formData = new FormData();
     formData.append('name', form.name);
+    formData.append('category_id', form.categoryId);
     formData.append('link_url', form.linkUrl);
     formData.append('sort_order', form.sortOrder || '0');
     formData.append('is_active', String(form.isActive));
@@ -425,6 +441,33 @@ export default function HomepageCategoriesManager() {
                 </div>
 
                 <div className="space-y-4">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Catalog Category
+                    </label>
+                    <select
+                      value={form.categoryId}
+                      onChange={(event) => {
+                        const categoryId = event.target.value;
+                        const selected = catalogCategories.find((cat) => cat.id === categoryId);
+                        setForm((current) => ({
+                          ...current,
+                          categoryId,
+                          name: selected && !current.name ? selected.name : current.name,
+                          linkUrl: selected ? `/collections/${selected.slug}` : current.linkUrl,
+                        }));
+                      }}
+                      className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    >
+                      <option value="">Choose a catalog category</option>
+                      {catalogCategories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
                       Category Name

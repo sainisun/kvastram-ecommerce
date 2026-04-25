@@ -11,6 +11,7 @@ const app = new Hono();
 app.use('*', verifyAdmin);
 
 const categoryCircleFieldsSchema = z.object({
+  category_id: z.string().uuid().nullable(),
   label: z.string().trim().min(1).max(255),
   link_url: z.string().trim().min(1).max(500),
   is_active: z.boolean().default(true),
@@ -65,6 +66,10 @@ async function parseCategoryCircleForm(
   const imageFile = image instanceof File ? image : undefined;
 
   const fields = categoryCircleFieldsSchema.parse({
+    category_id:
+      typeof body.category_id === 'string' && body.category_id.trim()
+        ? body.category_id.trim()
+        : null,
     label: normalizeRequiredString(body.label),
     link_url: normalizeRequiredString(body.link_url),
     is_active: parseBoolean(body.is_active, defaults?.is_active ?? true),

@@ -9,26 +9,26 @@ interface CategoriesGridProps {
 export function CategoriesGrid({ categories }: CategoriesGridProps) {
   if (categories.length === 0) return null;
 
-  const featuredCategories = categories.slice(0, 4);
+  const featuredCategories = categories.slice(0, 12);
 
   return (
     <section className="bg-white px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1280px]">
         <div className="mb-10 text-center">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
-            Browse by Category
+            Shop by Category
           </div>
           <h2 className="mt-3 font-heading text-[clamp(36px,4vw,54px)] font-medium leading-[0.98] tracking-[-0.02em] text-stone-950">
             Find your <em className="italic">silhouette</em>
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {featuredCategories.map((cat) => (
             <Link
               key={cat.id}
               href={cat.link_url}
-              className="group relative aspect-[4/5] overflow-hidden bg-stone-100"
+              className="group relative aspect-[4/5] min-w-[72%] snap-start overflow-hidden bg-stone-100 sm:min-w-[42%] lg:min-w-[24%]"
             >
               <OptimizedImage
                 src={cat.image_url}

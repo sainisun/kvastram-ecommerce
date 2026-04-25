@@ -948,9 +948,10 @@ export const api = {
     }
   },
 
-  async getSpotlightProducts() {
+  async getSpotlightProducts(section = 'spotlight') {
     try {
-      const res = await fetchWithTrace(`${API_URL}/featured-products`, {
+      const suffix = section ? `?section=${encodeURIComponent(section)}` : '';
+      const res = await fetchWithTrace(`${API_URL}/featured-products${suffix}`, {
         cache: 'no-store',
       });
       if (!res.ok) return { featuredProducts: [] };

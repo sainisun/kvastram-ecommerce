@@ -9,7 +9,7 @@ interface CollectionsSectionProps {
 export function CollectionsSection({ collections }: CollectionsSectionProps) {
   if (collections.length === 0) return null;
 
-  const displayed = collections.slice(0, 3);
+  const displayed = collections.slice(0, 12);
   const descriptions = [
     'Timeless pieces for your forever moments',
     'Dress up every celebration',
@@ -28,12 +28,12 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
           </h2>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {displayed.map((collection, index) => (
             <Link
               key={collection.id}
               href={`/collections/${collection.handle}`}
-              className="group relative overflow-hidden bg-stone-100"
+              className="group relative min-w-[78%] snap-start overflow-hidden bg-stone-100 sm:min-w-[44%] lg:min-w-[31%]"
             >
               <div className="relative aspect-[3/4]">
                 <OptimizedImage

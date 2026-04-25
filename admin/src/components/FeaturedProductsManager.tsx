@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { api } from '@/lib/api';
 import {
@@ -39,6 +39,7 @@ interface ProductSummary {
 
 interface FeaturedProductItem {
   id: string;
+  section_key: string;
   product_id: string;
   custom_image_url: string | null;
   badge_text: string | null;
@@ -49,6 +50,7 @@ interface FeaturedProductItem {
 }
 
 interface FormState {
+  sectionKey: 'spotlight' | 'new_arrivals' | 'bestsellers';
   productId: string;
   badgeText: string;
   sortOrder: string;
@@ -58,6 +60,7 @@ interface FormState {
 }
 
 const emptyForm = (): FormState => ({
+  sectionKey: 'spotlight',
   productId: '',
   badgeText: '',
   sortOrder: '0',
@@ -79,6 +82,7 @@ function formatPrice(product: ProductSummary | null) {
 }
 
 export default function FeaturedProductsManager() {
+  const [sectionKey, setSectionKey] = useState<'spotlight' | 'new_arrivals' | 'bestsellers'>('spotlight');
   const [items, setItems] = useState<FeaturedProductItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -93,9 +97,22 @@ export default function FeaturedProductsManager() {
   const [productResults, setProductResults] = useState<ProductCandidate[]>([]);
   const [searchingProducts, setSearchingProducts] = useState(false);
 
+  const loadFeaturedProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await api.getFeaturedProductsAdmin(sectionKey);
+      setItems(response.featuredProducts || []);
+    } catch (error) {
+      console.error('Failed to load featured products:', error);
+      alert('Failed to load featured products');
+    } finally {
+      setLoading(false);
+    }
+  }, [sectionKey]);
+
   useEffect(() => {
     void loadFeaturedProducts();
-  }, []);
+  }, [loadFeaturedProducts]);
 
   useEffect(() => {
     const trimmedQuery = productQuery.trim();
@@ -121,22 +138,9 @@ export default function FeaturedProductsManager() {
     return () => window.clearTimeout(timer);
   }, [productQuery]);
 
-  async function loadFeaturedProducts() {
-    try {
-      setLoading(true);
-      const response = await api.getFeaturedProductsAdmin();
-      setItems(response.featuredProducts || []);
-    } catch (error) {
-      console.error('Failed to load featured products:', error);
-      alert('Failed to load featured products');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   function openCreateModal() {
     setEditingItem(null);
-    setForm(emptyForm());
+    setForm({ ...emptyForm(), sectionKey });
     setProductQuery('');
     setProductResults([]);
     setIsModalOpen(true);
@@ -146,6 +150,7 @@ export default function FeaturedProductsManager() {
     setEditingItem(item);
     setForm({
       productId: item.product_id,
+      sectionKey: (item.section_key as FormState['sectionKey']) || sectionKey,
       badgeText: item.badge_text || '',
       sortOrder: String(item.sort_order),
       isActive: item.is_active,
@@ -206,6 +211,7 @@ export default function FeaturedProductsManager() {
 
   function buildFormData() {
     const formData = new FormData();
+    formData.append('section_key', form.sectionKey);
     formData.append('product_id', form.productId);
     formData.append('badge_text', form.badgeText);
     formData.append('sort_order', form.sortOrder || '0');
@@ -287,9 +293,9 @@ export default function FeaturedProductsManager() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Spotlight Products</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Homepage Products</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Manage the full-width product spotlight cards injected into the mobile category grid.
+            Curate products for Spotlight, New Arrivals, and Bestsellers.
           </p>
         </div>
         <button
@@ -298,13 +304,34 @@ export default function FeaturedProductsManager() {
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
         >
           <Plus size={18} />
-          Add Spotlight
+          Add Product
         </button>
+      </div>
+
+      <div className="flex flex-wrap gap-2 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
+        {[
+          { key: 'spotlight', label: 'Spotlight' },
+          { key: 'new_arrivals', label: 'New Arrivals' },
+          { key: 'bestsellers', label: 'Bestsellers' },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setSectionKey(tab.key as typeof sectionKey)}
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
+              sectionKey === tab.key
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">Total Spotlights</p>
+          <p className="text-sm text-gray-500">Total Products</p>
           <p className="mt-2 text-3xl font-bold text-gray-900">{items.length}</p>
         </div>
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -321,7 +348,7 @@ export default function FeaturedProductsManager() {
 
       {loading ? (
         <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
-          Loading spotlight products...
+          Loading homepage products...
         </div>
       ) : items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-12 text-center shadow-sm">
@@ -329,10 +356,10 @@ export default function FeaturedProductsManager() {
             <FolderOpen size={24} />
           </div>
           <h2 className="mt-4 text-lg font-semibold text-gray-900">
-            No spotlight products yet
+            No products selected yet
           </h2>
           <p className="mt-2 text-sm text-gray-500">
-            Choose featured products to insert between every four products on mobile.
+            Choose products for this homepage section.
           </p>
           <button
             type="button"
@@ -340,7 +367,7 @@ export default function FeaturedProductsManager() {
             className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
           >
             <Plus size={18} />
-            Add Spotlight
+            Add Product
           </button>
         </div>
       ) : (
@@ -447,7 +474,7 @@ export default function FeaturedProductsManager() {
             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {editingItem ? 'Edit Spotlight Product' : 'Add Spotlight Product'}
+                  {editingItem ? 'Edit Homepage Product' : 'Add Homepage Product'}
                 </h2>
                 <p className="mt-1 text-sm text-gray-500">
                   Search by product name or SKU, then optionally override the image and badge.
@@ -464,6 +491,25 @@ export default function FeaturedProductsManager() {
 
             <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
               <div className="space-y-3">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Homepage Section
+                  </label>
+                  <select
+                    value={form.sectionKey}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        sectionKey: event.target.value as FormState['sectionKey'],
+                      }))
+                    }
+                    className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  >
+                    <option value="spotlight">Spotlight</option>
+                    <option value="new_arrivals">New Arrivals</option>
+                    <option value="bestsellers">Bestsellers</option>
+                  </select>
+                </div>
                 <label className="block text-sm font-medium text-gray-700">
                   Search Product
                 </label>

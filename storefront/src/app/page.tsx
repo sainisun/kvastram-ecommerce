@@ -59,6 +59,8 @@ export default async function Home() {
     reelsResult,
     categoriesResult,
     spotlightsResult,
+    newArrivalsResult,
+    bestsellersResult,
     heroBannersResult,
   ] = await Promise.allSettled([
     api.getHomepageSettings(),
@@ -67,7 +69,9 @@ export default async function Home() {
     api.getCollections(),
     api.getTrendingReels(),
     api.getHomepageCategories(),
-    api.getSpotlightProducts(),
+    api.getSpotlightProducts('spotlight'),
+    api.getSpotlightProducts('new_arrivals'),
+    api.getSpotlightProducts('bestsellers'),
     api.getHeroBanners(),
   ]);
 
@@ -132,7 +136,6 @@ export default async function Home() {
             (item: { id?: string; title?: string; handle?: string }) =>
               Boolean(item?.id && item?.title && item?.handle)
           )
-          .slice(0, 3)
           .map(
             (item: {
               id: string;
@@ -287,7 +290,25 @@ export default async function Home() {
           )
       : [];
 
-  const heroBanner =
+  const newArrivalProducts: Product[] =
+    newArrivalsResult.status === 'fulfilled'
+      ? (newArrivalsResult.value.featuredProducts || [])
+          .map((item: { product?: Product | null }) => item.product)
+          .filter((product: Product | null | undefined): product is Product =>
+            Boolean(product?.id)
+          )
+      : [];
+
+  const bestsellerProducts: Product[] =
+    bestsellersResult.status === 'fulfilled'
+      ? (bestsellersResult.value.featuredProducts || [])
+          .map((item: { product?: Product | null }) => item.product)
+          .filter((product: Product | null | undefined): product is Product =>
+            Boolean(product?.id)
+          )
+      : [];
+
+  const heroBanners =
     heroBannersResult.status === 'fulfilled'
       ? (heroBannersResult.value.banners || [])
           .filter(
@@ -308,9 +329,26 @@ export default async function Home() {
             (
               a: { sort_order?: number | null },
               b: { sort_order?: number | null }
-            ) => (a.sort_order || 0) - (b.sort_order || 0)
-          )[0] || null
-      : null;
+           ) => (a.sort_order || 0) - (b.sort_order || 0)
+          )
+          .map(
+            (item: {
+              id: string;
+              image_url: string;
+              title?: string | null;
+              subtitle?: string | null;
+              button_text?: string | null;
+              button_link?: string | null;
+            }) => ({
+              id: item.id,
+              image_url: cloudinaryUrlOrNull(item.image_url) || '',
+              title: item.title || null,
+              subtitle: item.subtitle || null,
+              button_text: item.button_text || null,
+              button_link: storefrontHrefOrNull(item.button_link) || '/products',
+            })
+          )
+      : [];
 
   const homepageSchema = [
     buildOrganizationJsonLd(),
@@ -326,13 +364,19 @@ export default async function Home() {
       />
 
       <CircularCategories />
-      <HeroSection settings={homepageSettings} fallbackBanner={heroBanner} />
+      <HeroSection settings={homepageSettings} banners={heroBanners} />
       <CategoriesGrid categories={homepageCategories} />
-      <NewArrivals products={products} isCurated={featuredProductIds.length > 0} />
+      <NewArrivals
+        products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
+        isCurated={newArrivalProducts.length > 0}
+      />
       <CollectionsSection collections={collections} />
       <ShopTheLook spotlightProducts={spotlightProducts} />
       <WatchBuyPreview reels={trendingReels} />
-      <BestSellers products={products} />
+      <BestSellers
+        products={bestsellerProducts.length > 0 ? bestsellerProducts : products}
+        isCurated={bestsellerProducts.length > 0}
+      />
       <AsSeenOn />
       <StatsSection statsData={[
         { num: '500+', label: 'Orders shipped worldwide' },

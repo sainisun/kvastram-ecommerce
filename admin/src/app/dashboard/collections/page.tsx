@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { Plus, Edit, Trash2, Folder } from 'lucide-react';
 import ImageUploadField from '@/components/ui/ImageUploadField';
+import ProductAssignmentPicker, {
+  type AssignedProduct,
+} from '@/components/ProductAssignmentPicker';
 
 interface Collection {
   id: string;
@@ -20,6 +23,8 @@ export default function CollectionsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedProducts, setSelectedProducts] = useState<AssignedProduct[]>([]);
+  const [productsLoaded, setProductsLoaded] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     handle: '',
@@ -44,12 +49,28 @@ export default function CollectionsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (editingId && !productsLoaded) {
+        alert('Assigned products are still loading or failed to load. Reload this page before saving.');
+        return;
+      }
+
+      let collectionId = editingId;
       if (editingId) {
         await api.updateCollection(editingId, formData);
       } else {
-        await api.createCollection(formData);
+        const response = await api.createCollection(formData);
+        collectionId = response.collection?.id;
+      }
+
+      if (collectionId) {
+        await api.updateCollectionProducts(
+          collectionId,
+          selectedProducts.map((product) => product.id)
+        );
       }
       setFormData({ title: '', handle: '', image: '' });
+      setSelectedProducts([]);
+      setProductsLoaded(true);
       setShowForm(false);
       setEditingId(null);
       void fetchCollections().catch((refreshError) => {
@@ -62,13 +83,24 @@ export default function CollectionsPage() {
     }
   };
 
-  const handleEdit = (collection: Collection) => {
+  const handleEdit = async (collection: Collection) => {
     setFormData({
       title: collection.title,
       handle: collection.handle,
       image: collection.image || '',
     });
     setEditingId(collection.id);
+    setProductsLoaded(false);
+    try {
+      const response = await api.getCollectionProducts(collection.id);
+      setSelectedProducts(response.products || []);
+      setProductsLoaded(true);
+    } catch (error) {
+      console.error('Failed to load collection products:', error);
+      setSelectedProducts([]);
+      setProductsLoaded(false);
+      alert('Failed to load assigned products. Reload before saving this collection.');
+    }
     setShowForm(true);
   };
 
@@ -104,6 +136,8 @@ export default function CollectionsPage() {
             setShowForm(!showForm);
             setEditingId(null);
             setFormData({ title: '', handle: '', image: '' });
+            setSelectedProducts([]);
+            setProductsLoaded(true);
           }}
           className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
         >
@@ -170,7 +204,8 @@ export default function CollectionsPage() {
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                disabled={Boolean(editingId) && !productsLoaded}
+                className="px-4 py-2 bg-black text-white rounded-lg transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {editingId ? 'Update' : 'Create'}
               </button>
@@ -180,12 +215,20 @@ export default function CollectionsPage() {
                   setShowForm(false);
                   setEditingId(null);
                   setFormData({ title: '', handle: '', image: '' });
+                  setSelectedProducts([]);
+                  setProductsLoaded(true);
                 }}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
             </div>
+            <ProductAssignmentPicker
+              selectedProducts={selectedProducts}
+              onChange={setSelectedProducts}
+              label="Products in this Collection"
+              helpText="Select products that should appear on this collection storefront page."
+            />
           </form>
         </div>
       )}
@@ -231,7 +274,7 @@ export default function CollectionsPage() {
               </div>
               <div className="w-20 py-3 px-4 flex items-center gap-2">
                 <button
-                  onClick={() => handleEdit(collection)}
+                  onClick={() => void handleEdit(collection)}
                   className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                   title="Edit"
                 >

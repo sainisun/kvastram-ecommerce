@@ -1,6 +1,6 @@
 import { Hono, type Context } from 'hono';
 import { z } from 'zod';
-import { type InferSelectModel, and, asc, eq, or, sql } from 'drizzle-orm';
+import { type InferSelectModel, and, asc, eq, inArray, or, sql } from 'drizzle-orm';
 import { db } from '../../db/client';
 import {
   featured_products,
@@ -18,6 +18,9 @@ type FeaturedProductRow = InferSelectModel<typeof featured_products>;
 app.use('*', verifyAdmin);
 
 const featuredProductFieldsSchema = z.object({
+  section_key: z
+    .enum(['spotlight', 'new_arrivals', 'bestsellers'])
+    .default('spotlight'),
   product_id: z.string().uuid(),
   badge_text: z.string().trim().max(100).nullable(),
   is_active: z.boolean().default(true),
@@ -73,6 +76,8 @@ async function parseFeaturedProductForm(
   const imageFile = image instanceof File ? image : undefined;
 
   const fields = featuredProductFieldsSchema.parse({
+    section_key:
+      typeof body.section_key === 'string' ? body.section_key.trim() : 'spotlight',
     product_id:
       typeof body.product_id === 'string' ? body.product_id.trim() : '',
     badge_text: normalizeOptionalString(body.badge_text),
@@ -100,13 +105,23 @@ async function serializeFeaturedProduct(item: FeaturedProductRow) {
 
 app.get('/', async (c) => {
   try {
-    const items = await db
-      .select()
-      .from(featured_products)
-      .orderBy(
-        asc(featured_products.sort_order),
-        asc(featured_products.created_at)
-      );
+    const section = c.req.query('section');
+    const items = section
+      ? await db
+          .select()
+          .from(featured_products)
+          .where(eq(featured_products.section_key, section))
+          .orderBy(
+            asc(featured_products.sort_order),
+            asc(featured_products.created_at)
+          )
+      : await db
+          .select()
+          .from(featured_products)
+          .orderBy(
+            asc(featured_products.sort_order),
+            asc(featured_products.created_at)
+          );
 
     const featuredProducts = await Promise.all(
       items.map((item) => serializeFeaturedProduct(item))
@@ -343,6 +358,92 @@ app.patch('/:id/toggle', async (c) => {
   } catch (error) {
     console.error('Error toggling featured product:', error);
     return c.json({ error: 'Failed to toggle featured product' }, 500);
+  }
+});
+
+const ProductPlacementSchema = z.object({
+  placements: z
+    .array(
+      z.object({
+        section_key: z.enum(['new_arrivals', 'bestsellers']),
+        is_active: z.boolean().default(true),
+        sort_order: z.number().int().min(0).default(0),
+        badge_text: z.string().trim().max(100).optional().nullable(),
+      })
+    )
+    .default([]),
+});
+
+app.get('/product/:productId/placements', async (c) => {
+  try {
+    const { productId } = c.req.param();
+    const placements = await db
+      .select()
+      .from(featured_products)
+      .where(eq(featured_products.product_id, productId))
+      .orderBy(asc(featured_products.sort_order));
+
+    return c.json({ placements });
+  } catch (error) {
+    console.error('Error fetching product placements:', error);
+    return c.json({ error: 'Failed to fetch product placements' }, 500);
+  }
+});
+
+app.put('/product/:productId/placements', async (c) => {
+  try {
+    const { productId } = c.req.param();
+    const body = await c.req.json();
+    const result = ProductPlacementSchema.safeParse(body);
+
+    if (!result.success) {
+      return c.json(
+        { error: 'Invalid product placement data', details: result.error.flatten() },
+        400
+      );
+    }
+
+    const allowedSections = ['new_arrivals', 'bestsellers'];
+    const desired = new Map(
+      result.data.placements.map((placement) => [
+        placement.section_key,
+        placement,
+      ])
+    );
+
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(featured_products)
+        .where(
+          and(
+            eq(featured_products.product_id, productId),
+            inArray(featured_products.section_key, allowedSections)
+          )
+        );
+
+      const nextPlacements = Array.from(desired.values());
+      if (nextPlacements.length > 0) {
+        await tx.insert(featured_products).values(
+          nextPlacements.map((next) => ({
+            product_id: productId,
+            section_key: next.section_key,
+            is_active: next.is_active,
+            sort_order: next.sort_order,
+            badge_text: next.badge_text || null,
+          }))
+        );
+      }
+    });
+
+    const placements = await db
+      .select()
+      .from(featured_products)
+      .where(eq(featured_products.product_id, productId));
+
+    return c.json({ placements });
+  } catch (error) {
+    console.error('Error updating product placements:', error);
+    return c.json({ error: 'Failed to update product placements' }, 500);
   }
 });
 

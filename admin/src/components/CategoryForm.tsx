@@ -6,6 +6,9 @@ import { api } from '@/lib/api';
 import { AlertCircle, ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
 import ImageUploadField from '@/components/ui/ImageUploadField';
+import ProductAssignmentPicker, {
+  type AssignedProduct,
+} from '@/components/ProductAssignmentPicker';
 
 export interface Category {
   id: string;
@@ -67,6 +70,8 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<AssignedProduct[]>([]);
+  const [productsLoaded, setProductsLoaded] = useState(!initialData?.id);
   const [formData, setFormData] = useState<CategoryFormData>(
     createInitialFormData(initialData)
   );
@@ -86,6 +91,28 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
 
     void fetchCategories();
   }, [initialData]);
+
+  useEffect(() => {
+    if (!initialData?.id) {
+      setProductsLoaded(true);
+      return;
+    }
+
+    const fetchAssignedProducts = async () => {
+      try {
+        setProductsLoaded(false);
+        const data = await api.getCategoryProducts(initialData.id);
+        setSelectedProducts(data.products || []);
+        setProductsLoaded(true);
+      } catch (err) {
+        console.error('Failed to fetch assigned category products', err);
+        setProductsLoaded(false);
+        setError('Failed to load assigned products. Reload before saving this category.');
+      }
+    };
+
+    void fetchAssignedProducts();
+  }, [initialData?.id]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -122,6 +149,11 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
     setError('');
 
     try {
+      if (initialData?.id && !productsLoaded) {
+        setError('Assigned products are still loading or failed to load. Reload this page before saving.');
+        return;
+      }
+
       const payload: CategoryPayload = {
         ...formData,
         parent_id: formData.parent_id === '' ? null : formData.parent_id,
@@ -130,10 +162,20 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
           formData.header_image_url === '' ? null : formData.header_image_url,
       };
 
+      let categoryId = initialData?.id;
+
       if (initialData) {
         await api.updateCategory(initialData.id, payload);
       } else {
-        await api.createCategory(payload);
+        const response = await api.createCategory(payload);
+        categoryId = response.category?.id;
+      }
+
+      if (categoryId) {
+        await api.updateCategoryProducts(
+          categoryId,
+          selectedProducts.map((product) => product.id)
+        );
       }
 
       router.push('/dashboard/categories');
@@ -146,7 +188,7 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-6">
       <div className="mb-8 flex items-center justify-between">
         <Link
           href="/dashboard/categories"
@@ -329,22 +371,30 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
           </label>
         </div>
 
-        <div className="flex justify-end border-t border-gray-100 pt-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex items-center gap-2 rounded-lg bg-black px-6 py-2 text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading ? (
-              'Saving...'
-            ) : (
-              <>
-                <Save size={18} />
-                Save Category
-              </>
-            )}
-          </button>
-        </div>
+      </div>
+
+      <ProductAssignmentPicker
+        selectedProducts={selectedProducts}
+        onChange={setSelectedProducts}
+        label="Products in this Category"
+        helpText="Select products that should appear on this category storefront page."
+      />
+
+      <div className="flex justify-end rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <button
+          type="submit"
+          disabled={loading || (Boolean(initialData?.id) && !productsLoaded)}
+          className="flex items-center gap-2 rounded-lg bg-black px-6 py-2 text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading ? (
+            'Saving...'
+          ) : (
+            <>
+              <Save size={18} />
+              Save Category
+            </>
+          )}
+        </button>
       </div>
     </form>
   );
