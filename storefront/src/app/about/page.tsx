@@ -93,7 +93,7 @@ export default function AboutPage() {
                 it were getting older.
               </p>
               <p>
-                Kvastram started because we believed that shouldn't happen. We found
+                Kvastram started because we believed that shouldn&apos;t happen. We found
                 these women — in workshops and homes and small village cooperatives — and
                 asked them a simple question: if the world was willing to pay fairly,
                 would you teach others and keep making?
@@ -210,7 +210,7 @@ export default function AboutPage() {
               <div className="mt-6 space-y-5 text-[16px] leading-8 text-stone-600">
                 <p>
                   A single Kantha jacket takes one artisan between 4 and 7 days to
-                  complete. A large quilt, up to two weeks. We don't rush it.
+                  complete. A large quilt, up to two weeks. We don&apos;t rush it.
                 </p>
                 <p>
                   We make in small batches — never more than we need — so nothing goes
@@ -220,8 +220,8 @@ export default function AboutPage() {
                   otherwise be discarded.
                 </p>
                 <p>
-                  We're not perfect. But we're honest about where we are and where
-                  we're going.
+                  We&apos;re not perfect. But we&apos;re honest about where we are and where
+                  we&apos;re going.
                 </p>
               </div>
             </div>
