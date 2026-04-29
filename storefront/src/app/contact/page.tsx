@@ -116,8 +116,8 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16">
+    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto grid max-w-[1440px] gap-8 px-6 md:grid-cols-2 md:gap-12 md:px-12 lg:gap-16 lg:px-20">
         {/* Info Text */}
         <div className="space-y-12">
           <div className="space-y-6">

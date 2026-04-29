@@ -54,7 +54,7 @@ export default function AboutPage() {
   return (
     <div className="bg-white">
       {/* Hero */}
-      <div className="bg-[#f8f1eb] px-6 py-24 text-center sm:py-32">
+      <div className="bg-[#f8f1eb] px-6 py-16 text-center md:px-12 md:py-20 lg:px-20 lg:py-32">
         <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-stone-500">
           Made in Jaipur, India
         </span>
@@ -70,8 +70,8 @@ export default function AboutPage() {
       </div>
 
       {/* The Story */}
-      <div className="mx-auto max-w-[1280px] px-6 py-20 sm:py-28">
-        <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
+      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="grid items-start gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <div className="text-[11px] uppercase tracking-[0.25em] text-stone-400">
               How it started
@@ -119,8 +119,8 @@ export default function AboutPage() {
       </div>
 
       {/* How we work */}
-      <div className="bg-stone-950 px-6 py-20 text-white sm:py-28">
-        <div className="mx-auto max-w-[1280px]">
+      <div className="bg-stone-950 px-6 py-12 text-white md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="mx-auto max-w-[1440px]">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-400">
             How Kvastram works
           </div>
@@ -128,7 +128,7 @@ export default function AboutPage() {
             From hands in Jaipur to your door
           </h2>
 
-          <div className="mt-12 grid gap-8 sm:grid-cols-3">
+          <div className="mt-8 grid gap-8 sm:grid-cols-3 md:mt-12">
             {[
               {
                 step: '01',
@@ -159,8 +159,8 @@ export default function AboutPage() {
       </div>
 
       {/* Artisans */}
-      <div id="artisans" className="px-6 py-20 sm:py-28">
-        <div className="mx-auto max-w-[1280px]">
+      <div id="artisans" className="px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="mx-auto max-w-[1440px]">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-400">
             The people behind every piece
           </div>
@@ -172,7 +172,7 @@ export default function AboutPage() {
             When you buy a Kvastram piece, one of them made it.
           </p>
 
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-x-4 gap-y-8 sm:grid-cols-2 md:mt-12 md:gap-x-6 md:gap-y-12 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
             {ARTISANS.map((artisan) => (
               <div key={artisan.name} className="border border-stone-100 p-6">
                 <div
@@ -197,9 +197,9 @@ export default function AboutPage() {
       </div>
 
       {/* Sustainability */}
-      <div id="sustainability" className="bg-[#f8f1eb] px-6 py-20 sm:py-28">
-        <div className="mx-auto max-w-[1280px]">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+      <div id="sustainability" className="bg-[#f8f1eb] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="grid items-center gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
             <div>
               <div className="text-[11px] uppercase tracking-[0.25em] text-stone-400">
                 Slow fashion
@@ -246,7 +246,7 @@ export default function AboutPage() {
       </div>
 
       {/* CTA */}
-      <div className="px-6 py-20 text-center sm:py-24">
+      <div className="px-6 py-12 text-center md:px-12 md:py-16 lg:px-20 lg:py-24">
         <h2 className="font-heading text-[clamp(28px,3vw,44px)] font-medium leading-[1.0] tracking-[-0.02em] text-stone-950">
           Ready to own something real?
         </h2>

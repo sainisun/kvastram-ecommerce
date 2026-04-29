@@ -243,7 +243,7 @@ export function Header() {
         )}
 
         <div
-          className={`mx-auto flex max-w-[1440px] items-center justify-between px-6 transition-all duration-500 md:px-12 lg:px-20 ${
+          className={`mx-auto flex max-w-[1440px] items-center justify-between px-6 transition-all duration-500 md:px-12 lg:px-12 xl:px-20 ${
             isScrolled ? 'h-16 lg:h-20' : 'h-16 lg:h-20'
           }`}
         >
@@ -294,14 +294,14 @@ export function Header() {
           </div>
 
           {/* Desktop Header Layout */}
-          <div className="hidden md:flex items-center justify-between w-full">
+          <div className="hidden w-full items-center justify-between gap-8 md:flex">
             {/* Logo — Premium with motif */}
-            <Link href="/" className="nav-logo-premium">
+            <Link href="/" className="nav-logo-premium shrink-0">
               <span className="logo-motif">◆</span> KVASTRAM
             </Link>
 
             {/* Nav - Desktop */}
-            <nav className="font-body flex items-center gap-8 text-stone-600">
+            <nav className="font-body flex min-w-0 flex-1 items-center justify-center gap-4 text-stone-600 xl:gap-6 2xl:gap-8">
               {navLinks.map((link, index) => {
                 const isActive =
                   pathname === link.url ||
@@ -504,7 +504,7 @@ export function Header() {
 
             {/* Actions */}
             {/* Actions — Premium icon bar with tooltips & glow */}
-            <div className="flex items-center gap-6">
+            <div className="flex shrink-0 items-center gap-4 xl:gap-6">
               <button
                 type="button"
                 onClick={() => setShowSearch(true)}

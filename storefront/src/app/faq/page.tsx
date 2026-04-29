@@ -1,7 +1,7 @@
 export default function FAQPage() {
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
-      <div className="max-w-3xl mx-auto px-6">
+    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-3xl px-6 md:px-12 lg:px-20">
         <h1 className="text-4xl font-serif text-stone-900 mb-12 text-center">
           Frequently Asked Questions
         </h1>

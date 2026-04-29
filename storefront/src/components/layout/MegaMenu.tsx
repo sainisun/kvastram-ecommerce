@@ -32,7 +32,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
         /* Parent handles this */
       }}
     >
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="mx-auto max-w-[1440px] px-6 py-8 md:px-12 lg:px-20">
         <div className="grid grid-cols-3 gap-8">
           {/* Subcategories Column */}
           {hasChildren && (

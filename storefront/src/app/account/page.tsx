@@ -72,9 +72,9 @@ export default function AccountPage() {
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden md:block pt-24 pb-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row gap-8">
+      <div className="hidden pb-16 pt-16 md:block lg:pb-24 lg:pt-24">
+        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+          <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
             {/* Sidebar */}
             <div className="lg:w-64 shrink-0">
               <div className="bg-white border border-stone-200 shadow-sm overflow-hidden sticky top-24">

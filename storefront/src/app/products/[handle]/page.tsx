@@ -83,7 +83,7 @@ export default async function ProductPage({ params }: Props) {
 
       <ProductView product={product} />
 
-      <div className="mx-auto max-w-7xl border-t border-stone-100 px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1440px] border-t border-stone-100 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <h2 className="font-heading text-[clamp(28px,3vw,44px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
             You May Also Like

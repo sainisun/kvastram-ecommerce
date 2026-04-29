@@ -121,8 +121,8 @@ function SearchContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-24 pb-20">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         {/* Header */}
         <div className="mb-12">
           <Link

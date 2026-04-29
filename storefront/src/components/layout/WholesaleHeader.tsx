@@ -6,7 +6,7 @@ export function WholesaleHeader() {
     <header className="sticky top-0 z-50 bg-stone-900 text-white border-b border-stone-700">
       {/* Top Bar */}
       <div className="bg-amber-600 text-stone-900 py-2">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between text-xs font-bold">
+        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 text-xs font-bold md:px-12 lg:px-20">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-2">
               <Building2 size={14} />
@@ -36,7 +36,7 @@ export function WholesaleHeader() {
       </div>
 
       {/* Main Header */}
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-6 md:px-12 lg:h-20 lg:px-20">
         {/* Logo */}
         <Link href="/wholesale" className="flex items-center gap-3">
           <div className="text-2xl font-bold tracking-tighter">KVASTRAM</div>

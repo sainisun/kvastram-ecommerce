@@ -52,7 +52,7 @@ function VerifyContent() {
   }, [token]);
 
   return (
-    <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
+    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8 text-center">
         {status === 'loading' && (
           <>

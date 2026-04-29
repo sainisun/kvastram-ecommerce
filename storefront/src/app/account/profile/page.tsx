@@ -64,8 +64,8 @@ export default function ProfilePage() {
     );
 
   return (
-    <div className="min-h-screen bg-stone-50 pt-24 pb-24">
-      <div className="max-w-2xl mx-auto px-6">
+    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-2xl px-6 md:px-12 lg:px-20">
         <Link
           href="/account"
           className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-900 mb-8 text-sm transition-colors"

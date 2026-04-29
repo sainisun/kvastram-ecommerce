@@ -149,7 +149,7 @@ export default async function CollectionsPage({
             </div>
           </div>
         </section>
-        <div className="mx-auto max-w-7xl px-6 py-24 text-center">
+        <div className="mx-auto max-w-[1440px] px-6 py-12 text-center md:px-12 md:py-16 lg:px-20 lg:py-24">
           <p className="text-lg text-stone-500">No collections found. Check back soon!</p>
         </div>
       </div>
@@ -191,7 +191,7 @@ export default async function CollectionsPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1280px] px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
@@ -203,7 +203,7 @@ export default async function CollectionsPage({
           <span className="text-stone-700">Collections</span>
         </nav>
 
-        <section className="grid gap-4 sm:grid-cols-3">
+        <section className="grid gap-x-4 gap-y-8 sm:grid-cols-3 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
           {featuredCollections.map((collection) => (
             <Link
               key={collection.id}

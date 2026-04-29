@@ -123,9 +123,9 @@ export default function WholesalePage() {
     <>
       <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-stone-900 via-stone-800 to-amber-900 text-white py-24 pt-32">
+        <section className="relative bg-gradient-to-br from-stone-900 via-stone-800 to-amber-900 py-16 pt-32 text-white md:py-20 lg:py-32">
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
-          <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="relative z-10 mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="max-w-3xl">
               <span className="text-amber-400 text-xs font-bold uppercase tracking-[0.3em] block mb-4">
                 B2B Partnership
@@ -158,8 +158,8 @@ export default function WholesalePage() {
         </section>
 
         {/* Benefits Section */}
-        <section id="benefits" className="py-20 bg-stone-50">
-          <div className="max-w-7xl mx-auto px-6">
+        <section id="benefits" className="bg-stone-50 py-12 md:py-16 lg:py-24">
+          <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-serif text-stone-900 mb-4">
                 Why Partner With Kvastram?
@@ -170,7 +170,7 @@ export default function WholesalePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid gap-x-4 gap-y-8 md:grid-cols-2 md:gap-x-6 md:gap-y-12 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
               <div className="bg-white p-8 text-center">
                 <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <DollarSign className="text-amber-600" size={28} />
@@ -227,8 +227,8 @@ export default function WholesalePage() {
         </section>
 
         {/* Pricing Tiers */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
+        <section className="bg-white py-12 md:py-16 lg:py-24">
+          <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-serif text-stone-900 mb-4">
                 Wholesale Pricing Tiers
@@ -317,8 +317,8 @@ export default function WholesalePage() {
         </section>
 
         {/* Process Section */}
-        <section className="py-20 bg-stone-50">
-          <div className="max-w-7xl mx-auto px-6">
+        <section className="bg-stone-50 py-12 md:py-16 lg:py-24">
+          <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-serif text-stone-900 mb-4">
                 How It Works
@@ -368,8 +368,8 @@ export default function WholesalePage() {
         </section>
 
         {/* Inquiry Form */}
-        <section id="inquiry" className="py-20 bg-white">
-          <div className="max-w-4xl mx-auto px-6">
+        <section id="inquiry" className="bg-white py-12 md:py-16 lg:py-24">
+          <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-serif text-stone-900 mb-4">
                 Request Wholesale Pricing
@@ -564,7 +564,7 @@ export default function WholesalePage() {
 
         {/* Contact CTA */}
         <section className="py-16 bg-stone-900 text-white">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <Mail size={32} className="mx-auto mb-4 text-amber-400" />

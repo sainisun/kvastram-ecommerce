@@ -22,8 +22,8 @@ export default function SalePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="bg-amber-50 py-16 px-4 sm:px-6 lg:px-8 border-b border-amber-100">
-        <div className="max-w-7xl mx-auto text-center space-y-4">
+      <div className="border-b border-amber-100 bg-amber-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="mx-auto max-w-[1440px] space-y-4 text-center">
           <span className="text-xs font-bold tracking-[0.2em] text-amber-600 uppercase">
             Limited Time
           </span>
@@ -36,11 +36,11 @@ export default function SalePage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <ProductGrid initialProducts={products} loading={loading} />
 
         {!loading && products.length === 0 && (
-          <div className="text-center py-20">
+          <div className="py-12 text-center md:py-16 lg:py-20">
             <p className="text-stone-500">No sale items currently available.</p>
             <p className="text-stone-400 text-sm mt-2">
               Check back soon for new arrivals!

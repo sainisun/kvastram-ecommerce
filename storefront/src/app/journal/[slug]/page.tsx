@@ -97,7 +97,7 @@ export default async function ArticlePage({ params }: Props) {
           <div className="absolute inset-0 bg-stone-900" />
         )}
 
-        <div className="absolute inset-0 mx-auto flex w-full max-w-7xl flex-col justify-between p-6 md:p-12">
+        <div className="absolute inset-0 mx-auto flex w-full max-w-[1440px] flex-col justify-between p-6 md:p-12 lg:px-20">
           <Link
             href="/journal"
             className="flex w-fit items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-stone-300"
@@ -119,7 +119,7 @@ export default async function ArticlePage({ params }: Props) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl px-6 py-16">
+      <div className="mx-auto max-w-3xl px-6 py-12 md:py-16 lg:py-24">
         {post.excerpt && (
           <p className="mb-12 border-l-4 border-stone-900 pl-6 font-heading text-2xl font-medium leading-relaxed text-stone-600">
             {post.excerpt}

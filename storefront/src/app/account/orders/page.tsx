@@ -61,8 +61,8 @@ export default function OrdersListPage() {
   if (loading || !customer) return <OrdersListSkeleton />;
 
   return (
-    <div className="min-h-screen bg-stone-50 pt-24 pb-24">
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link

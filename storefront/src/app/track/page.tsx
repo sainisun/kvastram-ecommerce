@@ -99,7 +99,7 @@ export default function TrackOrderPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="bg-stone-50 py-16 px-4 sm:px-6 lg:px-8 border-b border-stone-100">
+      <div className="border-b border-stone-100 bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-serif text-stone-900">
             Track Your Order
@@ -110,9 +110,9 @@ export default function TrackOrderPage() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto max-w-3xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         {/* Search Form */}
-        <form onSubmit={handleSearch} className="space-y-4 mb-12">
+        <form onSubmit={handleSearch} className="mb-12 space-y-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold uppercase text-stone-500 mb-2">

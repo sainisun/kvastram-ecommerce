@@ -20,7 +20,7 @@ function usePasswordValidation(password: string) {
 
 function SuccessView() {
   return (
-    <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
+    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8 text-center">
         <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
           <svg
@@ -140,7 +140,7 @@ function ResetPasswordContent() {
   if (success) return <SuccessView />;
 
   return (
-    <div className="min-h-screen pt-24 pb-20 flex items-center justify-center bg-white px-4">
+    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Link

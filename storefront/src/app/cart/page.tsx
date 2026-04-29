@@ -171,7 +171,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
           {/* Hero empty message */}
           <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-stone-100 mb-6">
@@ -201,7 +201,7 @@ export default function CartPage() {
                   You Might Love
                 </h2>
               </div>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
                 {recommendations.map((product) => {
                   const variant = product.variants?.[0];
                   const prices = variant?.prices || [];
@@ -269,7 +269,7 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-serif text-stone-900">Shopping Cart</h1>
@@ -286,7 +286,7 @@ export default function CartPage() {
           </button>
         </div>
 
-        <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start">
+        <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-16">
           {/* Cart Items */}
           <div className="lg:col-span-7">
             <ul className="divide-y divide-stone-200 border-t border-b border-stone-200">

@@ -175,7 +175,7 @@ export default async function BestsellersPage({
       <section className="relative h-[480px] overflow-hidden bg-gradient-to-br from-stone-950 via-stone-800 to-stone-700">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1619715770663-8fb95ff9d0b5?w=1920&q=80')] bg-cover bg-center opacity-70" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.3),rgba(0,0,0,0.5))]" />
-        <div className="relative z-10 mx-auto flex h-full max-w-[1280px] flex-col items-center justify-center px-4 text-center text-white sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center px-6 text-center text-white md:px-12 lg:px-20">
           <h1 className="font-heading text-[clamp(48px,6vw,76px)] font-normal leading-none tracking-[-0.03em] text-white">
             Most <em className="italic">Loved</em>
           </h1>
@@ -185,7 +185,7 @@ export default async function BestsellersPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
@@ -241,9 +241,9 @@ export default async function BestsellersPage({
           </div>
         ) : null}
 
-        <section className="py-12">
+        <section className="py-12 md:py-16 lg:py-24">
           {products.length > 0 ? (
-            <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-x-4 gap-y-8 sm:grid-cols-2 md:gap-x-6 md:gap-y-12 xl:grid-cols-3 xl:gap-x-8 xl:gap-y-16">
               {products.map((product, index) => {
                 const rating = product.avg_rating;
                 const reviewCount = product.review_count;
@@ -302,7 +302,7 @@ export default async function BestsellersPage({
               })}
             </div>
           ) : (
-            <div className="py-24 text-center">
+            <div className="py-12 text-center md:py-16 lg:py-24">
               <p className="text-lg text-stone-500">
                 No bestselling products found right now. Add products to the
                 `bestseller` tag in admin or use featured products as fallback.

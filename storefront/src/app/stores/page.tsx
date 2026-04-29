@@ -95,8 +95,8 @@ export default function StoreLocatorPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="bg-stone-50 py-16 px-4 sm:px-6 lg:px-8 border-b border-stone-100">
-        <div className="max-w-7xl mx-auto text-center space-y-4">
+      <div className="border-b border-stone-100 bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="mx-auto max-w-[1440px] space-y-4 text-center">
           <h1 className="text-4xl md:text-5xl font-serif text-stone-900">
             Store Locator
           </h1>
@@ -107,7 +107,7 @@ export default function StoreLocatorPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         {/* Search */}
         <div className="mb-8">
           <input
@@ -119,7 +119,7 @@ export default function StoreLocatorPage() {
           />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid gap-8 md:grid-cols-2 lg:gap-16">
           {/* Store List */}
           <div className="space-y-4">
             {filteredStores.map((store) => (

@@ -2,8 +2,8 @@ import { Globe, Clock } from 'lucide-react';
 
 export default function ShippingPage() {
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
         <div className="text-center mb-16 space-y-4">
           <span className="text-xs font-bold tracking-[0.2em] text-stone-500 uppercase">
             Global Fulfillment
@@ -13,7 +13,7 @@ export default function ShippingPage() {
           </h1>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
+        <div className="mb-12 grid gap-8 md:mb-16 md:grid-cols-2 lg:gap-16">
           <div className="bg-stone-50 p-8 space-y-4">
             <Globe className="text-stone-900" size={32} />
             <h3 className="font-bold text-lg text-stone-900">

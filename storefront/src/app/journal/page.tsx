@@ -21,8 +21,8 @@ export default async function JournalPage() {
   const posts: Post[] = data.posts || [];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-24">
-      <div className="text-center mb-16 space-y-4">
+    <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="mb-12 space-y-4 text-center md:mb-16">
         <span className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">
           The Journal
         </span>
@@ -35,7 +35,7 @@ export default async function JournalPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 md:gap-x-6 md:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
         {posts.map((post) => (
           <Link
             key={post.id}

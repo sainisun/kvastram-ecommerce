@@ -36,8 +36,8 @@ export default function WishlistPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-white pt-24 pb-24">
-        <div className="max-w-7xl mx-auto px-6 py-16">
+      <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
+        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
           <div className="text-center">
             <Heart size={64} className="mx-auto text-stone-200 mb-6" />
             <h1 className="text-3xl font-serif text-stone-900 mb-4">
@@ -60,8 +60,8 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-24 pb-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex items-center justify-between mb-12">
           <div>
             <h1 className="text-3xl font-serif text-stone-900 mb-2">
@@ -79,7 +79,7 @@ export default function WishlistPage() {
           </button>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid gap-x-4 gap-y-8 sm:grid-cols-2 md:gap-x-6 md:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16 xl:grid-cols-4">
           {items.map((item) => (
             <div key={item.id} className="group">
               <div className="relative aspect-[3/4] bg-stone-100 mb-4 overflow-hidden rounded-sm">

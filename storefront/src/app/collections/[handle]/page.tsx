@@ -198,7 +198,7 @@ export default async function CollectionPage({
         <CategoryCircleStrip circles={categoryCircles} />
       ) : null}
 
-      <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
           className="font-body mb-8 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
@@ -217,7 +217,7 @@ export default async function CollectionPage({
           <span className="text-stone-700">{landing.title}</span>
         </nav>
 
-        <section className="grid gap-10 border-b border-stone-100 pb-12 md:grid-cols-[1.5fr,1fr]">
+        <section className="grid gap-8 border-b border-stone-100 pb-12 md:grid-cols-[1.5fr,1fr] md:gap-12 lg:gap-16">
           <div>
             <h2 className="font-heading text-[clamp(32px,4vw,54px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
               {landing.kind === 'category'
@@ -277,11 +277,11 @@ export default async function CollectionPage({
         </section>
 
         {featuredProducts.length > 0 && (
-          <section className="py-12">
+          <section className="py-12 md:py-16 lg:py-24">
             <h2 className="font-heading text-[clamp(28px,3.4vw,44px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
               Bestselling {landing.title}
             </h2>
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
               {featuredProducts.slice(0, 3).map((product) => (
                 <Link
                   key={product.id}
@@ -302,14 +302,14 @@ export default async function CollectionPage({
           </section>
         )}
 
-        <section className="pb-16">
+        <section className="pb-12 md:pb-16 lg:pb-24">
           {products.length > 0 ? (
             <ProductGrid
               initialProducts={products}
               spotlightProducts={spotlightProducts}
             />
           ) : (
-            <div className="py-24 text-center">
+            <div className="py-12 text-center md:py-16 lg:py-24">
               <p className="text-lg text-stone-500">
                 No products found in this section right now. Check back soon.
               </p>
