@@ -57,6 +57,16 @@ app.get('/health', (_req, res) => {
 });
 
 // ── OAuth 2.0 metadata (required by claude.ai) ───────────────
+
+// RFC 9728: Protected Resource Metadata — claude.ai fetches this first
+app.get('/.well-known/oauth-protected-resource', (_req, res) => {
+  res.json({
+    resource: `${BASE_URL}/mcp`,
+    authorization_servers: [BASE_URL],
+  });
+});
+
+// RFC 8414: Authorization Server Metadata
 app.get('/.well-known/oauth-authorization-server', (_req, res) => {
   res.json({
     issuer: BASE_URL,
