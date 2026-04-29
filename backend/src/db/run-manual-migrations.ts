@@ -28,6 +28,7 @@ const MIGRATION_FILES = [
   '20260417_add_trending_reel_views.sql',
   '20260423_homepage_merchandising_slots.sql',
   'phase4_returns.sql',
+  '20260429_add_trust_items.sql',
 ];
 
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
