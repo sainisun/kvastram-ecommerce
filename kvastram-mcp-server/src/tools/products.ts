@@ -33,34 +33,25 @@ export function registerProductTools(server: McpServer) {
     compare_at_price: z.number().optional().describe('Original/MRP price in rupees for showing discount'),
     status: z.enum(['published', 'draft']).optional().default('draft').describe('Product status'),
     category_ids: z.array(z.string()).optional().describe('Array of category UUIDs'),
+    tag_ids: z.array(z.string()).optional().describe('Array of tag UUIDs to attach to this product'),
     images: z.array(z.string()).optional().describe('Array of Cloudinary image URLs'),
     weight: z.number().optional().describe('Weight in grams'),
     sku: z.string().optional().describe('Stock Keeping Unit code'),
     inventory_quantity: z.number().optional().default(0).describe('Stock count'),
+    seo_title: z.string().optional().describe('SEO meta title'),
+    seo_description: z.string().optional().describe('SEO meta description'),
   }, async ({ title, price, compare_at_price, status, ...rest }) => {
     const api = await createApiClient();
-
-    // Auto-generate handle from title
-    const handle = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .substring(0, 200);
-
-    // India region ID (INR)
     const INDIA_REGION_ID = 'dc27dc4d-e976-4cc8-9748-6323a1c69d4c';
 
-    // Convert rupees → paise, wrap in prices array with INR region
+    const handle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').substring(0, 200);
     const prices = [{ amount: Math.round(price * 100), currency_code: 'inr', region_id: INDIA_REGION_ID }];
     const compare = compare_at_price ? [{ amount: Math.round(compare_at_price * 100), currency_code: 'inr', region_id: INDIA_REGION_ID }] : undefined;
-
-    // Backend uses 'published' not 'active'
-    const mappedStatus = status === 'published' ? 'published' : 'draft';
 
     const payload: Record<string, unknown> = {
       title,
       handle,
-      status: mappedStatus,
+      status: status ?? 'draft',
       prices,
       ...(compare && { compare_at_prices: compare }),
       ...rest,
@@ -68,6 +59,39 @@ export function registerProductTools(server: McpServer) {
 
     const { data } = await api.post('/products', payload);
     return { content: [{ type: 'text', text: `Product created successfully!\n\n${formatResponse(data)}` }] };
+  });
+
+  server.tool('bulk_create_products', 'Create multiple products in one call (max 50)', {
+    products: z.array(z.object({
+      title: z.string().describe('Product name/title'),
+      description: z.string().optional(),
+      price: z.number().describe('Price in INR rupees'),
+      compare_at_price: z.number().optional().describe('MRP/original price in rupees'),
+      status: z.enum(['published', 'draft']).optional().default('draft'),
+      category_ids: z.array(z.string()).optional(),
+      tag_ids: z.array(z.string()).optional(),
+      images: z.array(z.string()).optional().describe('Array of Cloudinary image URLs'),
+      weight: z.number().optional().describe('Weight in grams'),
+      sku: z.string().optional(),
+      inventory_quantity: z.number().optional().default(0),
+      seo_title: z.string().optional(),
+      seo_description: z.string().optional(),
+    })).min(1).max(50),
+  }, async ({ products }) => {
+    const api = await createApiClient();
+    const INDIA_REGION_ID = 'dc27dc4d-e976-4cc8-9748-6323a1c69d4c';
+
+    const formattedProducts = products.map(({ title, price, compare_at_price, status, ...rest }) => ({
+      title,
+      handle: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').substring(0, 200),
+      status: status ?? 'draft',
+      prices: [{ amount: Math.round(price * 100), currency_code: 'inr', region_id: INDIA_REGION_ID }],
+      ...(compare_at_price && { compare_at_prices: [{ amount: Math.round(compare_at_price * 100), currency_code: 'inr', region_id: INDIA_REGION_ID }] }),
+      ...rest,
+    }));
+
+    const { data } = await api.post('/products/bulk-create', { products: formattedProducts });
+    return { content: [{ type: 'text', text: formatResponse(data) }] };
   });
 
   server.tool('update_product', 'Update an existing product', {

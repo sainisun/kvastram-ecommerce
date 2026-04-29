@@ -222,6 +222,53 @@ const createProductHandler = asyncHandler(async (c) => {
 productsRouter.post('', verifyAdmin, createProductHandler);
 productsRouter.post('/', verifyAdmin, createProductHandler);
 
+// POST /products/bulk-create - Bulk create products (Protected)
+const BulkCreateSchema = z.object({
+  products: z.array(CreateProductSchema).min(1, 'At least one product is required').max(50, 'Maximum 50 products per request'),
+});
+
+productsRouter.post(
+  '/bulk-create',
+  verifyAdmin,
+  asyncHandler(async (c) => {
+    const body = await c.req.json();
+    const result = BulkCreateSchema.safeParse(body);
+
+    if (!result.success) {
+      throw new ValidationError('Invalid bulk create data', result.error.errors);
+    }
+
+    const created: unknown[] = [];
+    const failed: { index: number; title: string; error: string }[] = [];
+
+    for (let i = 0; i < result.data.products.length; i++) {
+      const productData = result.data.products[i];
+      try {
+        const product = await productService.create(productData);
+        created.push(product);
+      } catch (err: unknown) {
+        failed.push({
+          index: i,
+          title: productData.title,
+          error: err instanceof Error ? err.message : 'Unknown error',
+        });
+      }
+    }
+
+    await triggerStorefrontRevalidation({
+      paths: ['/', '/products'],
+      tags: ['products'],
+    });
+
+    return successResponse(
+      c,
+      { created_count: created.length, failed_count: failed.length, products: created, failed },
+      `${created.length} products created successfully`,
+      HttpStatus.CREATED
+    );
+  })
+);
+
 // PUT /products/:id - Update product (Protected)
 productsRouter.put(
   '/:id',
