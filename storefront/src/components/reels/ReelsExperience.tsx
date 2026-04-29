@@ -397,6 +397,8 @@ function ReelPlayerModal({
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('reel-player-open');
+    window.dispatchEvent(new Event('reel-player-state-change'));
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') onClose();
@@ -408,6 +410,8 @@ function ReelPlayerModal({
 
     return () => {
       document.body.style.overflow = '';
+      document.body.classList.remove('reel-player-open');
+      window.dispatchEvent(new Event('reel-player-state-change'));
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleSwipeDown, handleSwipeUp, onClose]);

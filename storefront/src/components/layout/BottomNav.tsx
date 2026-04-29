@@ -2,14 +2,43 @@
 
 import { usePathname } from 'next/navigation';
 import { Clapperboard, Heart, Home, LayoutGrid, User } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useWishlist } from '@/context/wishlist-context';
 
 export function BottomNav() {
   const pathname = usePathname();
   const { totalItems: wishlistCount } = useWishlist();
+  const [isReelPlayerOpen, setIsReelPlayerOpen] = useState(false);
+
+  useEffect(() => {
+    const syncReelPlayerState = () => {
+      setIsReelPlayerOpen(
+        document.body.classList.contains('reel-player-open')
+      );
+    };
+
+    syncReelPlayerState();
+
+    const observer = new MutationObserver(syncReelPlayerState);
+    observer.observe(document.body, {
+      attributeFilter: ['class'],
+      attributes: true,
+    });
+    window.addEventListener('reel-player-state-change', syncReelPlayerState);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener(
+        'reel-player-state-change',
+        syncReelPlayerState
+      );
+    };
+  }, []);
 
   const isVisible =
-    !pathname?.startsWith('/checkout') && !pathname?.startsWith('/admin');
+    !isReelPlayerOpen &&
+    !pathname?.startsWith('/checkout') &&
+    !pathname?.startsWith('/admin');
 
   const navItems = [
     {
@@ -50,6 +79,10 @@ export function BottomNav() {
       badge: 0,
     },
   ];
+
+  if (isReelPlayerOpen) {
+    return null;
+  }
 
   return (
     <>
