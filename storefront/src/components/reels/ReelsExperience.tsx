@@ -12,12 +12,13 @@ import {
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
+  ArrowLeft,
   ChevronLeft,
   Eye,
   Heart,
   Play,
   Share2,
-  X,
+  Search,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import OptimizedImage from '@/components/ui/OptimizedImage';
@@ -74,6 +75,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const [reels, setReels] = useState<TrendingReelItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeReelIndex, setActiveReelIndex] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const selectedTab = searchParams.get('tab') || 'all';
   const showAll = searchParams.get('show') === 'all';
 
@@ -166,6 +168,14 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     router.replace(`${basePath}?${params.toString()}`, { scroll: false });
   }
 
+  function handleSearchSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  }
+
   const reelChips = [
     { label: 'All', value: 'all' },
     { label: 'Bridal', value: 'bridal' },
@@ -176,35 +186,34 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-white pb-12 md:pb-16 lg:pb-24">
-      <div className="mx-auto max-w-[1440px] px-6 pt-6 md:px-12 md:pt-8 lg:px-20">
-        <nav
-          aria-label="Breadcrumb"
-          className="mb-10 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
-        >
-          <Link href="/" className="transition-colors hover:text-stone-900">
-            Home
-          </Link>
-          <span>/</span>
-          <span className="text-stone-700">Reels</span>
-        </nav>
+    <div className="min-h-screen bg-white pb-24 md:pb-16 lg:pb-20">
+      <div className="sticky top-0 z-40 border-b border-stone-100 bg-white/95 backdrop-blur-md">
+        <div className="mx-auto max-w-[1440px] px-4 py-3 md:px-12 lg:px-20">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="flex h-11 items-center gap-3 rounded-full bg-stone-100 px-4 text-stone-900 ring-1 ring-transparent transition focus-within:bg-white focus-within:ring-stone-200"
+          >
+            <Search size={19} className="shrink-0 text-stone-500" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search products"
+              aria-label="Search products"
+              className="h-full min-w-0 flex-1 bg-transparent text-[15px] font-medium outline-none placeholder:text-stone-500"
+            />
+          </form>
+        </div>
+      </div>
 
-        <section className="border-b border-stone-100 pb-8 text-center md:pb-10">
-          <h1 className="font-heading text-[clamp(48px,6vw,76px)] font-normal leading-none tracking-[-0.03em] text-stone-950">
-            Watch &amp; <em className="italic">Buy</em>
-          </h1>
-          <p className="mx-auto mt-4 max-w-[520px] font-heading text-[18px] font-normal italic leading-8 text-stone-700">
-            See our pieces in motion. Tap any reel to shop.
-          </p>
-        </section>
-
-        <div className="filter-chips mt-8 flex flex-wrap justify-center gap-3 md:gap-4">
+      <div className="mx-auto max-w-[1440px] px-3 pt-4 md:px-12 md:pt-6 lg:px-20">
+        <div className="filter-chips flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:justify-center md:gap-4">
           {reelChips.map((chip) => (
             <button
               key={chip.label}
               type="button"
               onClick={() => handleViewModeChange(chip.value)}
-              className={`inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors ${
+              className={`inline-flex shrink-0 items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors ${
                 selectedTab === chip.value
                   ? 'border-stone-950 bg-stone-950 text-white'
                   : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
@@ -215,24 +224,24 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           ))}
         </div>
 
-        <div className="mt-8">
+        <div className="mt-4 md:mt-8">
         {loading ? (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
+          <div className="grid grid-cols-3 gap-1 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="aspect-[9/16] animate-pulse rounded-[2px] bg-stone-200"
+                className="aspect-[9/16] animate-pulse bg-stone-200 md:rounded-[2px]"
               />
             ))}
           </div>
         ) : (
-           <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
+           <div className="grid grid-cols-3 gap-1 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
             {visibleReels.map((reel, idx) => (
               <button
                 key={reel.id}
                 type="button"
                 onClick={() => openReel(idx)}
-                className="group relative aspect-[9/16] overflow-hidden rounded-[2px] bg-stone-200 text-left"
+                className="group relative aspect-[9/16] overflow-hidden bg-stone-200 text-left md:rounded-[2px]"
               >
                 <OptimizedImage
                   src={reel.thumbnail_url}
@@ -242,19 +251,18 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-black/35 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                <div className="absolute right-1.5 top-1.5 flex items-center gap-1 rounded-full bg-black/35 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm md:right-2 md:top-2">
                   <Play size={12} fill="currentColor" />
-                  Play
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
-                  <p className="line-clamp-2 text-sm font-semibold text-white sm:text-base">
+                <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
+                  <p className="line-clamp-2 text-xs font-semibold text-white sm:text-base">
                     {reel.product_name}
                   </p>
                   <div className="mt-2 flex items-center justify-between gap-2 text-white/90">
-                    <span className="text-xs font-semibold sm:text-sm">
+                    <span className="text-[11px] font-semibold sm:text-sm">
                       {reel.price}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.18em]">
+                    <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.12em] sm:text-[10px]">
                       <Eye size={12} />
                       {reel.view_count || 0}
                     </span>
@@ -293,7 +301,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 
 function ReelsExperienceFallback() {
   return (
-    <div className="min-h-screen bg-[#f6f1ea] pb-20">
+    <div className="min-h-screen bg-white pb-24">
       <header className="sticky top-0 z-40 border-b border-stone-200 bg-white/85 px-4 py-4 backdrop-blur-md sm:px-6">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -315,12 +323,12 @@ function ReelsExperienceFallback() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-5xl px-2 pt-3 sm:px-4 sm:pt-5">
-        <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">
+      <div className="mx-auto max-w-5xl px-3 pt-4 sm:px-4 sm:pt-5">
+        <div className="grid grid-cols-3 gap-1 sm:gap-4 md:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="aspect-[9/16] animate-pulse rounded-xl bg-stone-200"
+              className="aspect-[9/16] animate-pulse bg-stone-200 sm:rounded-xl"
             />
           ))}
         </div>
@@ -498,22 +506,23 @@ function ReelPlayerModal({
         <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
 
-        <div className="relative z-10 flex items-center justify-between p-4 pt-6">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/70">
-              Reels
-            </p>
-            <p className="mt-1 text-lg font-semibold text-white">
-              {currentReel.product_name}
-            </p>
-          </div>
+        <div className="relative z-10 flex items-start justify-between gap-4 p-4 pt-5">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full bg-black/25 p-2 text-white backdrop-blur-md transition hover:bg-black/45"
+            aria-label="Back to reels"
+            className="mt-1 rounded-full bg-black/25 p-2 text-white backdrop-blur-md transition hover:bg-black/45"
           >
-            <X size={22} />
+            <ArrowLeft size={24} />
           </button>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/70">
+              Reels
+            </p>
+            <p className="mt-1 truncate text-lg font-semibold text-white">
+              {currentReel.product_name}
+            </p>
+          </div>
         </div>
 
         <div className="relative z-10 flex items-end justify-between gap-4 px-4 pb-6">

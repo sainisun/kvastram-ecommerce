@@ -1,13 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Home, LayoutGrid, Heart, User, ShoppingBag } from 'lucide-react';
-import { useCart } from '@/context/cart-context';
+import { Clapperboard, Heart, Home, LayoutGrid, User } from 'lucide-react';
 import { useWishlist } from '@/context/wishlist-context';
 
 export function BottomNav() {
   const pathname = usePathname();
-  const { totalItems } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
 
   const isVisible =
@@ -31,11 +29,11 @@ export function BottomNav() {
       badge: 0,
     },
     {
-      href: '/cart',
-      icon: ShoppingBag,
-      label: 'Cart',
-      active: pathname === '/cart',
-      badge: totalItems,
+      href: '/reels',
+      icon: Clapperboard,
+      label: 'Reels',
+      active: pathname?.startsWith('/reels'),
+      badge: 0,
     },
     {
       href: '/wishlist',

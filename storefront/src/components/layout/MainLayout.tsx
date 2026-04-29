@@ -68,6 +68,8 @@ export function MainLayout({
   const pathname = usePathname();
   const isWholesalePage = pathname?.startsWith('/wholesale');
   const isCheckoutPage = pathname?.startsWith('/checkout');
+  const isReelsPage = pathname?.startsWith('/reels');
+  const hideSiteChrome = isCheckoutPage || isReelsPage;
 
   return (
     <>
@@ -77,21 +79,21 @@ export function MainLayout({
       <CustomCursor />
       {/* Subtle noise texture overlay */}
       <div className="noise-overlay" aria-hidden="true" />
-      {isWholesalePage ? <WholesaleHeader /> : <Header />}
+      {!isReelsPage && (isWholesalePage ? <WholesaleHeader /> : <Header />)}
       <main id="main-content" tabIndex={-1} className="page-transition">
         {children}
       </main>
-      {isWholesalePage ? <WholesaleFooter /> : <Footer />}
+      {!isReelsPage && (isWholesalePage ? <WholesaleFooter /> : <Footer />)}
       {/* Mobile Bottom Navigation - Hide on checkout */}
       {!isCheckoutPage && <BottomNav />}
       {/* Scroll to top */}
-      {!isCheckoutPage && <ScrollToTop />}
+      {!hideSiteChrome && <ScrollToTop />}
       {/* Chat Widget */}
-      {!isCheckoutPage && <ChatWidget />}
+      {!hideSiteChrome && <ChatWidget />}
       {/* Cart Abandonment Recovery Modal */}
-      {!isCheckoutPage && <CartRecovery />}
+      {!hideSiteChrome && <CartRecovery />}
       {/* Cookie Consent */}
-      {!isCheckoutPage && !isWholesalePage && <CookieConsent />}
+      {!hideSiteChrome && !isWholesalePage && <CookieConsent />}
     </>
   );
 }
