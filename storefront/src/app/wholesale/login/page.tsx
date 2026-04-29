@@ -39,7 +39,7 @@ export default function WholesaleLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Wholesale Login</h1>

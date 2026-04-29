@@ -184,13 +184,13 @@ export default function ProductView({ product }: { product: Product }) {
           <span className="truncate text-stone-700">{product.title}</span>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,460px)] lg:gap-16">
-          <div className="-mx-6 md:-mx-12 lg:mx-0">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,460px)] lg:gap-16">
+          <div className="-mx-6 min-w-0 md:-mx-12 lg:mx-0">
             <ProductGallery media={galleryMedia} title={product.title} videos={product.videos || []} />
           </div>
 
-          <div className="space-y-8">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 overflow-x-auto whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] text-stone-400 lg:hidden">
+          <div className="min-w-0 space-y-8">
+            <nav aria-label="Breadcrumb" className="flex min-w-0 max-w-full items-center gap-2 overflow-x-auto whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] text-stone-400 lg:hidden">
               <a href="/" className="transition-colors hover:text-stone-900">Home</a>
               <span>/</span>
               {primaryCategoryPath && primaryCategory ? (

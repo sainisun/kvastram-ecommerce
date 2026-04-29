@@ -176,8 +176,8 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-white pb-20">
-      <div className="mx-auto max-w-[1280px] px-4 pt-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white pb-12 md:pb-16 lg:pb-24">
+      <div className="mx-auto max-w-[1440px] px-6 pt-6 md:px-12 md:pt-8 lg:px-20">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
@@ -189,7 +189,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           <span className="text-stone-700">Reels</span>
         </nav>
 
-        <section className="border-b border-stone-100 pb-10 text-center">
+        <section className="border-b border-stone-100 pb-8 text-center md:pb-10">
           <h1 className="font-heading text-[clamp(48px,6vw,76px)] font-normal leading-none tracking-[-0.03em] text-stone-950">
             Watch &amp; <em className="italic">Buy</em>
           </h1>
@@ -198,7 +198,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           </p>
         </section>
 
-        <div className="filter-chips mt-8 flex flex-wrap justify-center gap-3">
+        <div className="filter-chips mt-8 flex flex-wrap justify-center gap-3 md:gap-4">
           {reelChips.map((chip) => (
             <button
               key={chip.label}
@@ -217,7 +217,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 
         <div className="mt-8">
         {loading ? (
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
@@ -226,7 +226,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">
+           <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
             {visibleReels.map((reel, idx) => (
               <button
                 key={reel.id}

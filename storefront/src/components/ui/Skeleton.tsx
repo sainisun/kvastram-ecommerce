@@ -45,12 +45,12 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
 // Product detail skeleton
 export function ProductDetailSkeleton() {
   return (
-    <div className="bg-white min-h-screen pt-24 pb-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         {/* Breadcrumb skeleton */}
         <Skeleton className="h-4 w-64 mb-8" />
 
-        <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
+        <div className="grid gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
           {/* Left: Image Gallery skeleton */}
           <div className="aspect-square bg-stone-100">
             <Skeleton className="w-full h-full" />
@@ -105,8 +105,8 @@ export function ProductDetailSkeleton() {
 // Cart page skeleton
 export function CartSkeleton() {
   return (
-    <div className="min-h-screen bg-stone-50 pt-24 pb-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="grid lg:grid-cols-12 gap-8">
@@ -142,11 +142,11 @@ export function CartSkeleton() {
 // Checkout page skeleton
 export function CheckoutSkeleton() {
   return (
-    <div className="min-h-screen bg-stone-50 pt-24 pb-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <Skeleton className="h-10 w-64 mb-8" />
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
           {/* Shipping form */}
           <div className="space-y-6">
             <Skeleton className="h-6 w-48" />
@@ -189,8 +189,8 @@ export function CheckoutSkeleton() {
 // Account page skeleton
 export function AccountSkeleton() {
   return (
-    <div className="min-h-screen bg-stone-50 pt-24 pb-24">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -239,8 +239,8 @@ export function AccountSkeleton() {
 // Orders list skeleton
 export function OrdersListSkeleton() {
   return (
-    <div className="min-h-screen bg-stone-50 pt-24 pb-24">
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="bg-white">
@@ -286,7 +286,7 @@ export function TextSkeleton({
 export function HeroSkeleton() {
   return (
     <div className="relative min-h-[70vh] bg-stone-100 flex items-center">
-      <div className="max-w-7xl mx-auto px-6 py-24 w-full">
+      <div className="mx-auto w-full max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="max-w-2xl space-y-6">
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="h-6 w-full" />

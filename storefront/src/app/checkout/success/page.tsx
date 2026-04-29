@@ -99,7 +99,7 @@ function SuccessContent() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero success area */}
-      <div className="bg-stone-50 border-b border-stone-100 py-20 px-6 text-center">
+      <div className="border-b border-stone-100 bg-stone-50 px-6 py-12 text-center md:px-12 md:py-16 lg:px-20 lg:py-24">
         {/* Animated success ring */}
         <div className="relative inline-flex mb-8">
           <div className="w-28 h-28 rounded-full bg-green-100 flex items-center justify-center">
@@ -132,11 +132,11 @@ function SuccessContent() {
       </div>
 
       {/* Steps / What&apos;s next */}
-      <div className="max-w-3xl mx-auto px-6 py-16">
+      <div className="mx-auto max-w-3xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <h2 className="text-xl font-serif text-stone-900 mb-8 text-center">
           What Happens Next?
         </h2>
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="mb-12 grid gap-8 md:mb-16 md:grid-cols-3 md:gap-12">
           {[
             {
               step: '01',

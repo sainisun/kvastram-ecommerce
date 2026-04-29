@@ -66,7 +66,7 @@ export default function WholesaleDashboardPage() {
 
   if (!wholesaleInfo?.hasWholesaleAccess) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center px-4">
+      <div className="flex min-h-screen items-center justify-center bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="text-center max-w-md">
           <Building2 size={48} className="mx-auto text-stone-400 mb-4" />
           <h2 className="text-xl font-serif text-stone-900 mb-2">
@@ -99,7 +99,7 @@ export default function WholesaleDashboardPage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="mx-auto max-w-4xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-6">
           <Link
             href="/account"
@@ -113,7 +113,7 @@ export default function WholesaleDashboardPage() {
           Wholesale Dashboard
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
           <div className="bg-white border border-stone-200 p-6">
             <div className="flex items-center gap-3 mb-3">
               <Tag size={20} className="text-stone-400" />

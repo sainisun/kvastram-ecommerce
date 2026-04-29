@@ -38,7 +38,7 @@ export default function PageHero({
       <div className="absolute inset-0 bg-black/40" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center space-y-4">
+      <div className="relative z-10 mx-auto max-w-[1440px] space-y-4 px-6 text-center md:px-12 lg:px-20">
         {subtitle && (
           <span className="font-body block text-[13px] font-medium uppercase tracking-[0.08em] text-white/80">
             {subtitle}
