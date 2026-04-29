@@ -294,14 +294,14 @@ export function Header() {
           </div>
 
           {/* Desktop Header Layout */}
-          <div className="hidden w-full items-center justify-between gap-8 md:flex">
+          <div className="hidden w-full items-center justify-between gap-6 xl:gap-8 md:flex">
             {/* Logo — Premium with motif */}
             <Link href="/" className="nav-logo-premium shrink-0">
               <span className="logo-motif">◆</span> KVASTRAM
             </Link>
 
             {/* Nav - Desktop */}
-            <nav className="font-body flex min-w-0 flex-1 items-center justify-center gap-4 text-stone-600 xl:gap-6 2xl:gap-8">
+            <nav className="font-body flex min-w-0 flex-1 items-center justify-center gap-3 text-stone-600 xl:gap-6 2xl:gap-8">
               {navLinks.map((link, index) => {
                 const isActive =
                   pathname === link.url ||
