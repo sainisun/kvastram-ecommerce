@@ -18,6 +18,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Design System
+
+- Spacing source of truth: [`../docs/design-system/spacing.md`](../docs/design-system/spacing.md)
+- Always use spacing tokens or Tailwind spacing scale values.
+- Do not introduce hardcoded one-off spacing values such as `13px`, `27px`, or `py-[18px]`.
+- Code review spacing check: sections, containers, product grids, forms, header, and footer should follow the documented responsive rhythm.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More

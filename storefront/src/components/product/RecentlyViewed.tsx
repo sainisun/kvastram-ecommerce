@@ -12,12 +12,12 @@ export function RecentlyViewedSection() {
   if (items.length === 0) return null;
 
   return (
-    <section className="py-12 border-t border-stone-100 lg:py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="border-t border-stone-100 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <h2 className="text-xl font-semibold uppercase tracking-[0.06em] text-stone-900 mb-6 lg:text-2xl lg:mb-8">
           Recently Viewed
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-6">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:grid-cols-6 lg:gap-x-8 lg:gap-y-16">
           {items.slice(0, 6).map((item) => (
             <Link
               key={item.id}

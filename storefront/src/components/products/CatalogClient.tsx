@@ -202,8 +202,8 @@ export default function CatalogClient({
         image="/images/home/hero-main.jpg"
       />
 
-      <div className="mx-auto max-w-[1280px] px-4 pb-16 pt-10 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-100 pb-6">
+      <div className="mx-auto max-w-[1440px] px-6 pb-12 pt-12 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
+        <div className="flex flex-wrap items-center justify-between gap-6 border-b border-stone-100 pb-6">
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => {
@@ -335,7 +335,7 @@ export default function CatalogClient({
           </div>
         </div>
 
-        <main className="mt-8">
+        <main className="mt-12">
           <ProductGrid
             initialProducts={products}
             loading={loading}
@@ -343,7 +343,7 @@ export default function CatalogClient({
           />
 
           {totalPages > 1 ? (
-            <div className="mt-12 flex items-center justify-center gap-2">
+            <div className="mt-16 flex items-center justify-center gap-2">
               <button
                 onClick={() => handlePageChange(page - 1)}
                 disabled={page === 1 || loading}

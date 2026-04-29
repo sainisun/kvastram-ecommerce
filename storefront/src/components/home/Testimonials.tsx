@@ -20,9 +20,9 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
   const displayed = testimonials.slice(0, 3);
 
   return (
-    <section className="bg-white py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center">
+    <section className="bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <div className="mb-8 text-center md:mb-12">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
             Kavastram Love
           </div>
@@ -31,7 +31,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
           </h2>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
           {displayed.map((testimonial) => (
             <article key={testimonial.id} className="bg-[#f8f1eb] p-8 text-center sm:p-10">
               <div className="flex items-center justify-center gap-1 text-[14px]">

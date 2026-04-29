@@ -175,8 +175,8 @@ export function Reviews({ productId }: ReviewsProps) {
   };
 
   return (
-    <div className="border-t border-stone-100 pt-16 pb-16" id="reviews">
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="border-t border-stone-100 py-12 md:py-16 lg:py-24" id="reviews">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
           <div>
             <h2 className="text-2xl font-semibold uppercase tracking-[0.06em] text-stone-900 mb-2">

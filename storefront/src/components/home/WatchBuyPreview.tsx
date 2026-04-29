@@ -18,9 +18,9 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
   const displayed = reels.slice(0, 4);
 
   return (
-    <section className="bg-[#f8f1eb] px-4 py-20 sm:px-6 sm:py-20 lg:px-8">
-      <div className="mx-auto max-w-[1280px]">
-        <div className="mb-8 text-center">
+    <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <div className="mb-8 text-center md:mb-12">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
             In Motion
           </div>
@@ -32,7 +32,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12 xl:grid-cols-4 xl:gap-x-8 xl:gap-y-16">
           {displayed.map((reel) => (
             <Link
               key={reel.id}
@@ -64,7 +64,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                   </h3>
                 </div>
               </div>
-              <div className="flex items-center justify-between gap-4 px-1 py-4">
+              <div className="flex items-center justify-between gap-4 py-4">
                 <span className="line-clamp-1 text-[16px] font-semibold text-stone-950">
                   {reel.price_amount != null
                     ? formatPrice(reel.price_amount)
@@ -79,7 +79,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
           ))}
         </div>
 
-        <div className="mt-5 text-center">
+        <div className="mt-12 text-center md:mt-16">
           <Link
             href="/reels"
             className="inline-flex items-center justify-center bg-stone-950 px-7 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-stone-800"

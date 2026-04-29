@@ -17,6 +17,23 @@
   --font-ui: var(--font-cardo, 'Cardo', Georgia, serif);
   --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
+  /* Spacing scale: 4px base unit, 8px primary rhythm */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+  --space-40: 160px;
+
   /* ─── Tailwind compat aliases ─── */
   --background: #ffffff;
   --foreground: #080808;
@@ -85,6 +102,64 @@ a {
 /* ═══ NO-SCROLLBAR UTILITY ═══ */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Spacing utilities: source of truth for section/container rhythm */
+.container-prem {
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.container-wide-prem {
+  max-width: 1600px;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.container-narrow-prem {
+  max-width: 720px;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.section-spacing-prem {
+  padding-block: var(--space-12);
+}
+
+.section-spacing-dramatic-prem {
+  padding-block: var(--space-16);
+}
+
+@media (min-width: 768px) {
+  .container-prem,
+  .container-wide-prem,
+  .container-narrow-prem {
+    padding-inline: var(--space-12);
+  }
+
+  .section-spacing-prem {
+    padding-block: var(--space-16);
+  }
+
+  .section-spacing-dramatic-prem {
+    padding-block: var(--space-20);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-prem,
+  .container-wide-prem {
+    padding-inline: var(--space-20);
+  }
+
+  .section-spacing-prem {
+    padding-block: var(--space-24);
+  }
+
+  .section-spacing-dramatic-prem {
+    padding-block: var(--space-32);
+  }
+}
 
 /* ═══ NOISE TEXTURE OVERLAY ═══ */
 .noise-overlay {
@@ -161,7 +236,7 @@ a {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-6);
   transition:
     opacity 0.8s var(--transition),
     visibility 0.8s;
@@ -199,7 +274,7 @@ a {
 /* ═══ SECTION REVEAL ANIMATIONS ═══ */
 .reveal {
   opacity: 0;
-  transform: translateY(32px);
+  transform: translateY(var(--space-8));
   transition:
     opacity 0.8s var(--transition),
     transform 0.8s var(--transition);
@@ -225,11 +300,11 @@ a {
 .btn-primary-prem {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   background: var(--black);
   color: var(--white);
   border: none;
-  padding: 16px 36px;
+  padding: var(--space-4) var(--space-8);
   font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 500;
@@ -249,10 +324,10 @@ a {
 .btn-outline-prem {
   display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
   border: 1px solid rgba(248, 246, 243, 0.3);
   color: var(--white);
-  padding: 16px 32px;
+  padding: var(--space-4) var(--space-8);
   font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 500;
@@ -283,9 +358,9 @@ a {
   opacity: 0.5;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   transition: opacity 0.25s;
-  padding-bottom: 4px;
+  padding-bottom: var(--space-1);
 }
 .link-all-prem::after {
   content: '';
@@ -299,12 +374,12 @@ a {
   opacity: 1;
 }
 .link-all-prem:hover::after {
-  width: 40px;
+  width: var(--space-10);
 }
 
 /* ═══ SECTION PADDING ═══ */
 .section-prem {
-  padding: 96px 64px;
+  padding: var(--space-24) var(--space-20);
 }
 
 /* ═══ SECTION HEADER ═══ */
@@ -312,14 +387,14 @@ a {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 48px;
+  margin-bottom: var(--space-12);
 }
 .section-eyebrow-prem {
   font-size: 10px;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--mid);
-  margin-bottom: 10px;
+  margin-bottom: var(--space-3);
 }
 .section-title-prem {
   font-family: var(--font-display);
@@ -344,14 +419,14 @@ a {
   border-bottom: 1px solid var(--border);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 0 64px; /* ← Reference: only horizontal padding on container */
+  padding: var(--space-0) var(--space-20);
 }
 .stat-item-prem {
-  padding: 32px 0;
+  padding: var(--space-8) var(--space-0);
   text-align: center;
   border-right: 1px solid var(--border);
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(var(--space-4));
   transition:
     opacity 0.6s,
     transform 0.6s;
@@ -368,7 +443,7 @@ a {
   font-size: 36px;
   font-weight: 300;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 .stat-label-prem {
   font-size: 10px;
@@ -381,7 +456,7 @@ a {
 .category-grid-prem {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  gap: 2px;
+  gap: var(--space-2);
   height: 520px;
 }
 .cat-card-prem {
@@ -413,9 +488,9 @@ a {
   position: absolute;
   bottom: 0;
   left: 0;
-  padding: 32px;
+  padding: var(--space-8);
   color: var(--white);
-  transform: translateY(8px);
+  transform: translateY(var(--space-2));
   transition: transform 0.4s var(--transition);
 }
 .cat-card-prem:hover .cat-info-prem {
@@ -427,7 +502,7 @@ a {
   font-weight: 300;
   letter-spacing: -0.01em;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 .cat-count-prem {
   font-size: 10px;
@@ -437,10 +512,10 @@ a {
 }
 .cat-arrow-prem {
   position: absolute;
-  bottom: 32px;
-  right: 32px;
-  width: 40px;
-  height: 40px;
+  bottom: var(--space-8);
+  right: var(--space-8);
+  width: var(--space-10);
+  height: var(--space-10);
   border: 1px solid rgba(248, 246, 243, 0.4);
   display: flex;
   align-items: center;
@@ -479,13 +554,13 @@ a {
   font-weight: 300;
   font-style: italic;
   color: var(--white);
-  padding: 0 48px;
+  padding: var(--space-0) var(--space-12);
   opacity: 0.9;
 }
 .marquee-dot-prem {
   display: inline-flex;
   align-items: center;
-  padding: 0 4px;
+  padding: var(--space-0) var(--space-1);
 }
 .marquee-dot-prem::after {
   content: '';
@@ -500,7 +575,8 @@ a {
 .product-grid-prem {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2px;
+  column-gap: var(--space-8);
+  row-gap: var(--space-16);
 }
 .prod-card-prem {
   position: relative;
@@ -510,7 +586,7 @@ a {
 .prod-img-wrap-prem {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 3/4;
+  aspect-ratio: 4/5;
 }
 .prod-img-wrap-prem img {
   width: 100%;
@@ -523,8 +599,8 @@ a {
 }
 .prod-tag-prem {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: var(--space-4);
+  left: var(--space-4);
   background: var(--black);
   color: var(--white);
   font-family: var(--font-ui);
@@ -532,7 +608,7 @@ a {
   font-weight: 500;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: 5px 10px;
+  padding: var(--space-1) var(--space-2);
   z-index: 2;
 }
 .prod-tag-prem.sale {
@@ -549,7 +625,7 @@ a {
   background: var(--black);
   color: var(--white);
   border: none;
-  padding: 14px;
+  padding: var(--space-4);
   font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 500;
@@ -565,12 +641,12 @@ a {
 }
 .prod-wishlist-prem {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: var(--space-4);
+  right: var(--space-4);
   background: var(--white);
   border: none;
-  width: 32px;
-  height: 32px;
+  width: var(--space-8);
+  height: var(--space-8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -587,8 +663,7 @@ a {
   transform: scale(1);
 }
 .prod-info-prem {
-  padding: 20px 20px 28px;
-  border-top: 1px solid var(--border);
+  padding: var(--space-4) var(--space-0) var(--space-0);
 }
 .prod-collection-prem {
   font-family: var(--font-ui);
@@ -597,7 +672,7 @@ a {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--mid);
-  margin-bottom: 6px;
+  margin-bottom: var(--space-1);
 }
 .prod-name-prem {
   font-family: var(--font-ui);
@@ -605,7 +680,7 @@ a {
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.55;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
   color: var(--black);
 }
 .prod-price-prem {
@@ -620,7 +695,7 @@ a {
 .editorial-prem {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
+  gap: var(--space-0);
   min-height: 640px;
   padding: 0 !important; /* Reference: editorial has NO section padding */
 }
@@ -645,7 +720,7 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 80px;
+  padding: var(--space-20);
   background: var(--black);
   color: var(--white);
 }
@@ -654,7 +729,7 @@ a {
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: rgba(248, 246, 243, 0.4);
-  margin-bottom: 10px;
+  margin-bottom: var(--space-3);
 }
 .editorial-title-prem {
   font-family: var(--font-display);
@@ -663,7 +738,7 @@ a {
   line-height: 1;
   letter-spacing: -0.01em;
   color: var(--white);
-  margin-bottom: 28px;
+  margin-bottom: var(--space-8);
 }
 .editorial-title-prem em {
   font-style: italic;
@@ -674,13 +749,13 @@ a {
   font-weight: 300;
   line-height: 1.7;
   color: rgba(248, 246, 243, 0.6);
-  margin-bottom: 48px;
+  margin-bottom: var(--space-12);
 }
 
 /* ═══ TESTIMONIAL ═══ */
 .testimonial-section-prem {
   text-align: center;
-  padding: 120px 64px;
+  padding: var(--space-32) var(--space-20);
 }
 .testimonial-text-prem {
   font-family: var(--font-display);
@@ -696,10 +771,10 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: var(--space-4);
 }
 .author-line-prem {
-  width: 40px;
+  width: var(--space-10);
   height: 1px;
   background: var(--border);
   display: block;
@@ -719,7 +794,7 @@ a {
 .collections-grid-prem {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
+  gap: var(--space-2);
 }
 .coll-card-prem {
   position: relative;
@@ -745,7 +820,7 @@ a {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 48px;
+  padding: var(--space-12);
   color: var(--white);
 }
 .coll-label-prem {
@@ -753,14 +828,14 @@ a {
   letter-spacing: 0.25em;
   text-transform: uppercase;
   opacity: 0.6;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 .coll-name-prem {
   font-family: var(--font-display);
   font-size: clamp(32px, 3vw, 52px);
   font-weight: 300;
   letter-spacing: -0.01em;
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
 }
 .coll-cta-prem {
   font-size: 10px;
@@ -768,7 +843,7 @@ a {
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   opacity: 0;
   transform: translateY(12px);
   transition:
@@ -788,14 +863,14 @@ a {
   transform: translateY(0);
 }
 .coll-card-prem:hover .coll-cta-prem::after {
-  width: 48px;
+  width: var(--space-12);
 }
 
 /* ═══ NEWSLETTER ═══ */
 .newsletter-prem {
   background: var(--black);
   color: var(--white);
-  padding: 120px 64px;
+  padding: var(--space-32) var(--space-20);
   text-align: center;
 }
 .newsletter-eyebrow-prem {
@@ -803,7 +878,7 @@ a {
   letter-spacing: 0.25em;
   text-transform: uppercase;
   color: rgba(248, 246, 243, 0.4);
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 .newsletter-title-prem {
   font-family: var(--font-display);
@@ -811,7 +886,7 @@ a {
   font-weight: 300;
   letter-spacing: -0.02em;
   color: var(--white);
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 .newsletter-title-prem em {
   font-style: italic;
@@ -846,32 +921,32 @@ a {
   letter-spacing: -0.02em;
   color: rgba(248, 246, 243, 0.04);
   line-height: 0.85;
-  margin-bottom: -20px;
+  margin-bottom: calc(var(--space-5) * -1);
   overflow: hidden;
   user-select: none;
 }
 
 /* ═══ PDP — Premium Product Detail ═══ */
 .pdp-prem {
-  padding-top: 96px;
+  padding-top: var(--space-24);
 }
 .pdp-grid-prem {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
-  gap: 2px;
+  gap: var(--space-16);
   min-height: 90vh;
 }
 .pdp-gallery-prem {
   position: sticky;
-  top: 96px;
-  height: calc(100vh - 96px);
+  top: var(--space-24);
+  height: calc(100vh - var(--space-24));
   overflow: hidden;
 }
 .pdp-info-prem {
-  padding: 80px 64px;
+  padding: var(--space-20);
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: var(--space-8);
 }
 .pdp-brand-prem {
   font-family: var(--font-ui);
@@ -895,8 +970,8 @@ a {
 
 /* ─── PDP Size Buttons ─── */
 .size-btn-prem {
-  width: 48px;
-  height: 48px;
+  width: var(--space-12);
+  height: var(--space-12);
   border: 1px solid var(--border);
   background: none;
   font-family: var(--font-ui);
@@ -943,8 +1018,8 @@ a {
 .trust-strip-prem {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  padding: 24px 0;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-0);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
@@ -952,7 +1027,7 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   text-align: center;
 }
 .trust-text-prem {
@@ -977,7 +1052,7 @@ a {
   width: 100%;
   background: none;
   border: none;
-  padding: 20px 0;
+  padding: var(--space-5) var(--space-0);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -996,11 +1071,11 @@ a {
 
 /* ═══ FILTER SIDEBAR ═══ */
 .filters-panel-prem {
-  padding: 48px 40px 48px 0;
+  padding: var(--space-12) var(--space-10) var(--space-12) var(--space-0);
   border-right: 1px solid var(--border);
   position: sticky;
-  top: 96px;
-  height: calc(100vh - 96px);
+  top: var(--space-24);
+  height: calc(100vh - var(--space-24));
   overflow-y: auto;
 }
 .filters-header-prem {
@@ -1009,13 +1084,13 @@ a {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 32px;
-  padding-bottom: 16px;
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--border);
   color: var(--black);
 }
 .filter-group-prem {
-  margin-bottom: 32px;
+  margin-bottom: var(--space-8);
 }
 .filter-group-label-prem {
   font-family: var(--font-ui);
@@ -1023,14 +1098,14 @@ a {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mid);
-  margin-bottom: 14px;
+  margin-bottom: var(--space-4);
   font-weight: 400;
 }
 .filter-option-prem {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 0;
+  padding: var(--space-2) var(--space-0);
   font-family: var(--font-ui);
   font-size: 15px;
   font-weight: 300;
@@ -1056,17 +1131,17 @@ a {
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 0;
-  padding-top: 96px;
+  padding-top: var(--space-24);
 }
 .products-main-prem {
-  padding: 48px 64px 96px 48px;
+  padding: var(--space-12) var(--space-20) var(--space-24) var(--space-12);
 }
 .products-bar-prem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
-  padding-bottom: 20px;
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--border);
 }
 .products-count-prem {
@@ -1081,7 +1156,7 @@ a {
   overflow: hidden;
   display: flex;
   align-items: flex-end;
-  padding: 48px 64px;
+  padding: var(--space-12) var(--space-20);
 }
 .hero-small-content-prem {
   position: relative;
@@ -1092,7 +1167,7 @@ a {
   letter-spacing: 0.25em;
   text-transform: uppercase;
   opacity: 0.5;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 .hero-small-title-prem {
   font-family: var(--font-display);
@@ -1106,8 +1181,8 @@ a {
 .divider-text-prem {
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 32px 64px;
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-20);
   color: var(--mid);
 }
 .divider-text-prem::before,
@@ -1127,12 +1202,12 @@ a {
 /* ═══ TOAST ═══ */
 .toast-prem {
   position: fixed;
-  bottom: 32px;
+  bottom: var(--space-8);
   left: 50%;
-  transform: translateX(-50%) translateY(80px);
+  transform: translateX(-50%) translateY(var(--space-20));
   background: var(--black);
   color: var(--white);
-  padding: 14px 28px;
+  padding: var(--space-4) var(--space-8);
   font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -1233,7 +1308,7 @@ a {
     color 0.4s ease;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-2);
 }
 .nav-logo-premium:hover {
   letter-spacing: 0.28em;
@@ -1257,7 +1332,7 @@ a {
 /* ─── 1.3 Nav Links Premium ─── */
 .nav-link-premium {
   position: relative;
-  padding: 6px 10px;
+  padding: var(--space-2) var(--space-3);
   font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 500;
@@ -1621,10 +1696,12 @@ a:active,
 
   .product-grid-prem {
     grid-template-columns: repeat(2, 1fr) !important;
+    column-gap: var(--space-4);
+    row-gap: var(--space-8);
   }
 
   .prod-info-prem {
-    padding: 12px 12px 16px !important;
+    padding: var(--space-4) var(--space-0) var(--space-0) !important;
   }
 
   .prod-name-prem {
@@ -1639,7 +1716,7 @@ a:active,
     grid-template-columns: 1fr !important;
   }
   .editorial-content-prem {
-    padding: 48px 24px !important;
+    padding: var(--space-12) var(--space-6) !important;
   }
 
   .collections-grid-prem {
@@ -1653,7 +1730,7 @@ a:active,
     display: none;
   }
   .products-main-prem {
-    padding: 32px 24px !important;
+    padding: var(--space-8) var(--space-6) !important;
   }
 
   .pdp-grid-prem {
@@ -1665,33 +1742,33 @@ a:active,
     top: 0 !important;
   }
   .pdp-info-prem {
-    padding: 40px 24px !important;
+    padding: var(--space-10) var(--space-6) !important;
   }
 
   .newsletter-prem {
-    padding: 80px 24px !important;
+    padding: var(--space-16) var(--space-6) !important;
   }
   .testimonial-section-prem {
-    padding: 80px 24px !important;
+    padding: var(--space-16) var(--space-6) !important;
   }
   .hero-small-prem {
-    padding: 32px 24px !important;
+    padding: var(--space-8) var(--space-6) !important;
   }
 
   .stats-bar-prem {
     grid-template-columns: repeat(2, 1fr) !important;
-    padding: 0 16px !important;
+    padding: var(--space-0) var(--space-4) !important;
   }
   .stat-item-prem:nth-child(2n) {
     border-right: none !important;
   }
 
   .divider-text-prem {
-    padding: 24px !important;
+    padding: var(--space-6) !important;
   }
 
   .section-prem {
-    padding: 64px 16px !important;
+    padding: var(--space-12) var(--space-6) !important;
   }
 }
 

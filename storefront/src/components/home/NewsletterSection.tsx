@@ -52,8 +52,8 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
   }
 
   return (
-    <section className="bg-black px-4 py-20 text-white sm:px-6 sm:py-24">
-      <div className="mx-auto max-w-[1280px] text-center">
+    <section className="bg-black py-12 text-white md:py-16 lg:py-32">
+      <div className="mx-auto max-w-[1440px] px-6 text-center md:px-12 lg:px-20">
         <div className="text-[11px] uppercase tracking-[0.25em] text-white/50">
           Newsletter
         </div>
@@ -77,7 +77,7 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="mx-auto mt-8 flex max-w-[480px] flex-col gap-0 sm:flex-row"
+            className="mx-auto mt-8 flex max-w-[480px] flex-col gap-4 sm:flex-row"
           >
             <input
               type="email"

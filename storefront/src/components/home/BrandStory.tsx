@@ -22,8 +22,8 @@ export function BrandStory({ settings }: BrandStoryProps) {
     cloudinaryUrlOrNull(settings.brand_story_image) || '/images/home/atelier-story.jpg';
 
   return (
-    <section className="bg-white px-4 py-0 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-[1280px] gap-0 lg:grid-cols-2">
+    <section className="bg-white py-12 md:py-16 lg:py-32">
+      <div className="mx-auto grid max-w-[1440px] gap-0 px-6 md:px-12 lg:grid-cols-2 lg:px-20">
         <div className="relative overflow-hidden bg-[#f8f1eb]">
           <div className="aspect-[4/5]">
             <OptimizedImage
@@ -36,7 +36,7 @@ export function BrandStory({ settings }: BrandStoryProps) {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center bg-[#f8f1eb] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+        <div className="flex flex-col justify-center bg-[#f8f1eb] px-6 py-12 md:px-12 md:py-16 lg:px-16 lg:py-24">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
             Made in Jaipur, India
           </div>

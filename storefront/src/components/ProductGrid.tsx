@@ -146,23 +146,23 @@ function ProductGrid({
             <div className="prod-info-prem">
               <div
                 style={{
-                  height: '9px',
+                  height: 'var(--space-2)',
                   width: '60%',
                   background: 'var(--border)',
-                  marginBottom: '8px',
+                  marginBottom: 'var(--space-2)',
                 }}
               />
               <div
                 style={{
-                  height: '18px',
+                  height: 'var(--space-4)',
                   width: '80%',
                   background: 'var(--border)',
-                  marginBottom: '8px',
+                  marginBottom: 'var(--space-2)',
                 }}
               />
               <div
                 style={{
-                  height: '13px',
+                  height: 'var(--space-3)',
                   width: '30%',
                   background: 'var(--border)',
                 }}
@@ -178,7 +178,7 @@ function ProductGrid({
     return (
       <div
         style={{
-          padding: '80px 0',
+          padding: 'var(--space-20) var(--space-0)',
           textAlign: 'center',
           color: 'var(--mid)',
           fontStyle: 'italic',
@@ -298,7 +298,7 @@ function ProductGrid({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                marginBottom: '6px',
+                marginBottom: 'var(--space-2)',
               }}
             >
               {[1, 2, 3, 4, 5].map((item) => (
@@ -336,7 +336,7 @@ function ProductGrid({
               Wholesale · {priceInfo.price}
             </p>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
               {(() => {
                 const variant = product.variants?.[0];
                 const compareAt = variant?.compare_at_price;

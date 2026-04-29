@@ -171,7 +171,7 @@ export default function ProductView({ product }: { product: Product }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-7xl px-4 pb-24 pt-4 sm:px-6 sm:pt-4 lg:px-8 lg:pt-6">
+      <div className="mx-auto max-w-[1440px] px-6 pb-24 pt-12 md:px-12 lg:px-20">
         <nav aria-label="Breadcrumb" className="mb-6 hidden items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400 lg:flex">
           <a href="/" className="transition-colors hover:text-stone-900">Home</a>
           <span>/</span>
@@ -184,12 +184,12 @@ export default function ProductView({ product }: { product: Product }) {
           <span className="truncate text-stone-700">{product.title}</span>
         </nav>
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,460px)] lg:gap-12">
-          <div className="-mx-4 sm:-mx-6 lg:mx-0">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,460px)] lg:gap-16">
+          <div className="-mx-6 md:-mx-12 lg:mx-0">
             <ProductGallery media={galleryMedia} title={product.title} videos={product.videos || []} />
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 overflow-x-auto whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.08em] text-stone-400 lg:hidden">
               <a href="/" className="transition-colors hover:text-stone-900">Home</a>
               <span>/</span>
@@ -224,21 +224,21 @@ export default function ProductView({ product }: { product: Product }) {
               )}
             </section>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-4">
               {[{ icon: Truck, label: 'Free Shipping' }, { icon: RotateCcw, label: '30-Day Returns' }, { icon: ShieldCheck, label: 'Secure Payment' }, { icon: Star, label: 'Artisan Authentic' }].map((badge) => (
-                <div key={badge.label} className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-3">
+                <div key={badge.label} className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-4">
                   <badge.icon size={16} className="shrink-0 text-stone-700" />
                   <span className="text-[12px] font-medium leading-tight text-stone-700">{badge.label}</span>
                 </div>
               ))}
             </div>
 
-            <section className="space-y-5 rounded-[28px] border border-stone-200 bg-white p-5">
+            <section className="space-y-6 rounded-[28px] border border-stone-200 bg-white p-4 md:p-6">
               {hasStructuredOptions &&
                 product.options?.map((option: ProductOption) => {
                   const isColor = option.title.toLowerCase() === 'color' || option.title.toLowerCase() === 'colour';
                   return (
-                    <div key={option.title} className="space-y-3">
+                    <div key={option.title} className="space-y-4">
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-500">{option.title}</p>
                         {selectedOptions[option.title] && <p className="text-[13px] text-stone-500">{selectedOptions[option.title]}</p>}
@@ -271,7 +271,7 @@ export default function ProductView({ product }: { product: Product }) {
                 </div>
               )}
 
-              <div className="space-y-5 border-t border-stone-200 pt-5">
+              <div className="space-y-6 border-t border-stone-200 pt-6">
                 {selectedVariant && currentInventory > 0 && currentInventory <= 10 && (
                   <div className="flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-red-700">
                     <span className="h-2 w-2 rounded-full bg-red-500" />
@@ -287,7 +287,7 @@ export default function ProductView({ product }: { product: Product }) {
                   </div>
                   <button id="add-to-cart-btn" type="button" onClick={handleAddToCart} disabled={!selectedVariant || addedToCart || outOfStock} className={`min-h-12 flex-1 rounded-full px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] transition ${addedToCart ? 'bg-green-700 text-white' : outOfStock ? 'cursor-not-allowed bg-stone-300 text-stone-600' : 'bg-stone-900 text-white hover:bg-stone-800'}`}>{outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag' : 'Add to Bag'}</button>
                 </div>
-                <div className="flex items-center gap-3 pt-1">
+                <div className="flex items-center gap-4">
                   <WishlistButton productId={product.id} title={product.title} price={selectedVariant?.prices?.[0]?.amount || 0} currency={currentRegion?.currency_code?.toUpperCase() || 'USD'} thumbnail={product.thumbnail || undefined} handle={product.handle || product.id} variantId={selectedVariant?.id} showLabel className="rounded-full border border-stone-200 px-4" />
                   <ShareButtons title={product.title} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
                 </div>
@@ -334,7 +334,7 @@ export default function ProductView({ product }: { product: Product }) {
               </div>
             </section>
 
-            <section className="rounded-[28px] border border-stone-200 bg-white p-5">
+            <section className="rounded-[28px] border border-stone-200 bg-white p-4 md:p-6">
               {accordions.map((accordion) => (
                 <div key={accordion.key} className="border-b border-stone-100 last:border-b-0">
                   <button type="button" onClick={() => setActiveAccordion((prev) => (prev === accordion.key ? null : accordion.key))} className="flex w-full items-center justify-between py-5 text-left" aria-expanded={activeAccordion === accordion.key}>

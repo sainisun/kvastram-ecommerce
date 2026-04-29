@@ -38,9 +38,9 @@ const ARTISANS = [
 
 export function ArtisanStrip() {
   return (
-    <section className="bg-[#f8f1eb] px-4 py-16 sm:px-6 sm:py-20">
-      <div className="mx-auto max-w-[1280px]">
-        <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+    <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end md:mb-12">
           <div>
             <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
               The hands behind every piece
@@ -58,7 +58,7 @@ export function ArtisanStrip() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:gap-6 lg:gap-8">
           {ARTISANS.map((artisan) => (
             <div
               key={artisan.name}

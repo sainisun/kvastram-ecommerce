@@ -43,9 +43,9 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
     );
 
   return (
-    <section className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1280px]">
-        <div className="mb-10 text-center">
+    <section className="bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <div className="mb-8 text-center md:mb-12">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
             Style Story
           </div>
@@ -54,7 +54,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
           </h2>
         </div>
 
-        <div className="grid gap-12 lg:grid-cols-[1.4fr,1fr] lg:items-center">
+        <div className="grid gap-8 md:gap-12 lg:grid-cols-[1.4fr,1fr] lg:items-center lg:gap-16">
           <div className="relative overflow-hidden">
             <div className="relative aspect-[4/5] bg-stone-100">
               <OptimizedImage
@@ -83,7 +83,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
             </div>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-6">
             <div className="text-[12px] uppercase tracking-[0.2em] text-stone-500">
               Look 01 / 03
             </div>

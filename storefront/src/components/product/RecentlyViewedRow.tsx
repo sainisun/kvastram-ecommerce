@@ -22,8 +22,8 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
   if (filtered.length === 0) return null;
 
   return (
-    <section className="py-16 border-t border-stone-100 bg-stone-50">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="border-t border-stone-100 bg-stone-50 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex items-end justify-between mb-8">
           <div>
             <span className="font-body mb-1 block text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
@@ -42,7 +42,7 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
         </div>
 
         {/* Horizontal scroll on mobile, grid on desktop */}
-        <div className="flex overflow-x-auto gap-5 pb-4 md:grid md:grid-cols-6 md:overflow-visible md:pb-0 scrollbar-hide">
+        <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:pb-0 lg:gap-8 scrollbar-hide">
           {filtered.map((item) => (
             <Link key={item.id} href={`/products/${item.handle}`} className="flex-none w-36 md:w-auto group">
               {/* Image */}

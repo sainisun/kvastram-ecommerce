@@ -29,7 +29,7 @@ export async function CircularCategories() {
   if (circles.length === 0) return null;
 
   return (
-    <section className="flex gap-4 overflow-x-auto bg-white px-4 py-4 no-scrollbar md:hidden">
+    <section className="flex gap-4 overflow-x-auto bg-white px-6 py-4 no-scrollbar md:hidden">
       {circles.map((circle, i) => (
         <Link
           key={circle.id}

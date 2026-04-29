@@ -243,12 +243,12 @@ export function Header() {
         )}
 
         <div
-          className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 ${
-            isScrolled ? 'h-14' : 'h-[72px]'
+          className={`mx-auto flex max-w-[1440px] items-center justify-between px-6 transition-all duration-500 md:px-12 lg:px-20 ${
+            isScrolled ? 'h-16 lg:h-20' : 'h-16 lg:h-20'
           }`}
         >
           {/* Mobile Header Layout */}
-          <div className="flex items-center justify-between w-full md:hidden relative px-2">
+          <div className="relative flex w-full items-center justify-between md:hidden">
             {/* Left: Hamburger Menu */}
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -301,7 +301,7 @@ export function Header() {
             </Link>
 
             {/* Nav - Desktop */}
-            <nav className="font-body flex items-center gap-6 text-stone-600">
+            <nav className="font-body flex items-center gap-8 text-stone-600">
               {navLinks.map((link, index) => {
                 const isActive =
                   pathname === link.url ||
@@ -340,13 +340,13 @@ export function Header() {
 
                       {showShopMenu && (
                         <div className="absolute top-full left-1/2 -translate-x-1/2 w-[900px] max-w-[92vw] bg-white shadow-2xl border border-stone-100 rounded-sm overflow-hidden mega-menu-enter">
-                          <div className="grid grid-cols-12 min-h-[340px]">
+                          <div className="grid min-h-[340px] grid-cols-12">
                             {/* Left: Categories with Subcategories */}
-                            <div className="col-span-5 py-6 px-6 border-r border-stone-100">
+                            <div className="col-span-5 border-r border-stone-100 px-6 py-6">
                               <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-stone-400">
                                 Categories
                               </p>
-                              <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                                 {categories.slice(0, 8).map((cat, idx) => (
                                   <div
                                     key={cat.id}
@@ -431,7 +431,7 @@ export function Header() {
                                       )}
                                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                                     </div>
-                                    <div className="absolute bottom-0 left-0 right-0 p-5">
+                                    <div className="absolute bottom-0 left-0 right-0 p-6">
                                       <span className="font-body mb-1 block text-[12px] font-medium uppercase tracking-[0.08em] text-white/60">
                                         Featured
                                       </span>
@@ -450,7 +450,7 @@ export function Header() {
                             </div>
 
                             {/* Right: Quick Links + Promo */}
-                            <div className="col-span-3 py-6 px-5 bg-stone-50/70">
+                            <div className="col-span-3 bg-stone-50/70 px-6 py-6">
                               <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-stone-400">
                                 Shop By
                               </p>
@@ -504,7 +504,7 @@ export function Header() {
 
             {/* Actions */}
             {/* Actions — Premium icon bar with tooltips & glow */}
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-6">
               <button
                 type="button"
                 onClick={() => setShowSearch(true)}

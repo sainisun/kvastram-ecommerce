@@ -132,7 +132,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
   }, [parsedStats]);
 
   return (
-    <section ref={sectionRef} className="px-4 py-10 sm:px-6 md:px-8 md:py-14">
+    <section ref={sectionRef} className="px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="stats-row-prem">
         {statsData.map((stat, index) => (
           <article key={stat.label} className="stat-entry-prem">
@@ -151,7 +151,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           margin: 0 auto;
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 40px 28px;
+          gap: var(--space-10) var(--space-8);
         }
 
         .stat-entry-prem {
@@ -184,7 +184,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         }
 
         .stat-symbol-prem {
-          margin-bottom: 14px;
+          margin-bottom: var(--space-4);
           font-size: 0.95rem;
           line-height: 1;
           color: #a7773d;
@@ -203,7 +203,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         }
 
         .stat-label-prem {
-          margin-top: 16px;
+          margin-top: var(--space-4);
           font-size: 0.72rem;
           font-weight: 500;
           line-height: 1.6;
@@ -215,7 +215,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         @media (min-width: 768px) {
           .stats-row-prem {
             grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 24px;
+            gap: var(--space-6);
           }
 
           .stat-entry-prem::after {
@@ -228,7 +228,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           }
 
           .stat-symbol-prem {
-            margin-bottom: 18px;
+            margin-bottom: var(--space-5);
           }
         }
 

@@ -17,9 +17,9 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
   ];
 
   return (
-    <section className="bg-[#f8f1eb] px-4 py-20 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1280px]">
-        <div className="mb-10 text-center">
+    <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <div className="mb-8 text-center md:mb-12">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
             Curated for you
           </div>
@@ -28,7 +28,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
           </h2>
         </div>
 
-        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 md:gap-6 lg:gap-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {displayed.map((collection, index) => (
             <Link
               key={collection.id}

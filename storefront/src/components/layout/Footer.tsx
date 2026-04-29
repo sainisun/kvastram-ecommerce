@@ -148,12 +148,12 @@ const socialLinks = [
 function MobileFooter() {
   return (
     <div className="bg-[#f5f0eb] md:hidden">
-      <div className="grid grid-cols-2 gap-8 px-5 py-8">
+      <div className="grid grid-cols-2 gap-8 px-6 py-16">
         <div>
-          <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-700">
+          <h4 className="mb-6 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-700">
             Shop
           </h4>
-          <div className="space-y-1">
+          <div className="space-y-3">
             {mobileShopLinks.map(({ label, href }) => (
               <Link
                 key={label}
@@ -167,10 +167,10 @@ function MobileFooter() {
         </div>
 
         <div>
-          <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-700">
+          <h4 className="mb-6 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-700">
             Help
           </h4>
-          <div className="space-y-1">
+          <div className="space-y-3">
             {mobileHelpLinks.map(({ label, href }) => (
               <Link
                 key={label}
@@ -184,7 +184,7 @@ function MobileFooter() {
         </div>
       </div>
 
-      <div className="border-t border-stone-200 px-5 py-5">
+      <div className="border-t border-stone-200 px-6 py-6">
         <div className="flex items-center justify-center gap-4 text-stone-500">
           {socialLinks.slice(0, 3).map(({ label, href, icon: Icon, color }) => (
             <a
@@ -210,16 +210,12 @@ function MobileFooter() {
 function DesktopFooter() {
   return (
     <div className="hidden bg-[#1a1614] text-white md:block">
-      <div
-        className="footer-watermark-prem"
-        style={{ padding: '40px 48px 0', overflow: 'hidden' }}
-        aria-hidden="true"
-      >
+      <div className="footer-watermark-prem overflow-hidden px-12 pt-10" aria-hidden="true">
         Kvastram
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 pb-12 pt-8 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5 lg:gap-8">
+      <div className="mx-auto max-w-[1440px] px-12 pb-12 pt-12 lg:px-20 lg:pt-24">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-5 lg:col-span-1">
             <Link href="/" className="block">
               <span className="font-body text-[1.45rem] font-semibold uppercase tracking-[0.22em] text-white">
@@ -230,7 +226,7 @@ function DesktopFooter() {
               Handcrafted luxury fashion connecting global citizens with the
               finest artisanal craftsmanship from India and beyond.
             </p>
-            <div className="font-body space-y-1 text-[12px] font-[300] text-stone-500">
+            <div className="font-body space-y-3 text-[12px] font-[300] text-stone-500">
               <p>support@kvastram.com</p>
               <p>Mon-Fri, 9am-6pm IST</p>
             </div>
@@ -251,10 +247,10 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <h4 className="font-body mb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Shop
             </h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {shopLinks.map(({ label, href }) => (
                 <li key={label}>
                   <Link
@@ -269,10 +265,10 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <h4 className="font-body mb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Support
             </h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {supportLinks.map(({ label, href }) => (
                 <li key={label}>
                   <Link
@@ -287,10 +283,10 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <h4 className="font-body mb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Company
             </h4>
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {companyLinks.map(({ label, href, highlight }) => (
                 <li key={label}>
                   <Link
@@ -309,7 +305,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-5 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <h4 className="font-body mb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
               Stay Updated
             </h4>
             <p className="font-body mb-4 text-[15px] font-[300] leading-[1.7] text-stone-500">
@@ -324,11 +320,11 @@ function DesktopFooter() {
       </div>
 
       <div className="border-t border-stone-800">
-        <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
+        <div className="mx-auto max-w-[1440px] px-12 py-12 lg:px-20">
           <PaymentIcons className="mb-4" />
-          <div className="font-body flex flex-col items-center justify-between gap-3 text-[12px] text-stone-600 sm:flex-row">
+          <div className="font-body flex flex-col items-center justify-between gap-6 text-[12px] text-stone-600 sm:flex-row">
             <p>Copyright {new Date().getFullYear()} Kvastram. All rights reserved.</p>
-            <div className="flex gap-4">
+            <div className="flex gap-6">
               <Link
                 href="/pages/privacy-policy"
                 className="font-body transition-colors hover:text-stone-400"

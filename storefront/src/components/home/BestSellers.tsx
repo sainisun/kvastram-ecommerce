@@ -25,9 +25,9 @@ export function BestSellers({ products, isCurated = false }: BestSellersProps) {
   }
 
   return (
-    <section className="bg-white py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center">
+    <section className="bg-white py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <div className="mb-8 text-center md:mb-12">
           <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
             Most Loved
           </div>
@@ -39,7 +39,7 @@ export function BestSellers({ products, isCurated = false }: BestSellersProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
           {displayed.map((product) => (
             <article key={product.id} className="group">
               <Link
@@ -59,14 +59,14 @@ export function BestSellers({ products, isCurated = false }: BestSellersProps) {
                 )}
               </Link>
 
-              <div className="px-1 pt-4">
+              <div className="pt-4">
                   <Link
                     href={`/products/${product.handle || product.id}`}
-                    className="font-body mt-2 line-clamp-2 block text-[15px] font-normal leading-[1.55] text-stone-900 sm:text-[16px]"
+                    className="font-body mt-1 line-clamp-2 block text-[15px] font-normal leading-[1.55] text-stone-900 sm:text-[16px]"
                   >
                     {product.title}
                   </Link>
-                  <div className="mt-3 flex items-center gap-2">
+                  <div className="mt-2 flex items-center gap-2">
                     <span className="font-body text-[15px] font-normal text-stone-950">
                       {getInrAmount(product) ? formatPrice(getInrAmount(product)) : ''}
                     </span>
@@ -76,7 +76,7 @@ export function BestSellers({ products, isCurated = false }: BestSellersProps) {
           ))}
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-12 text-center md:mt-16">
           <Link
             href="/bestsellers"
             className="inline-flex items-center justify-center bg-stone-950 px-8 py-4 text-[12px] font-medium uppercase tracking-[0.12em] text-white transition-colors hover:bg-stone-800"
