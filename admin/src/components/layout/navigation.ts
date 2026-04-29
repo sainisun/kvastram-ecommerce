@@ -11,6 +11,7 @@ import {
   Layers,
   ListTree,
   Megaphone,
+  MessageCircleQuestion,
   MessageSquareQuote,
   Package,
   PanelsTopLeft,
@@ -138,6 +139,12 @@ export const moreNavItems: NavItem[] = [
     href: '/dashboard/reviews',
     icon: Star,
     description: 'Moderate social proof',
+  },
+  {
+    label: 'Studio Inquiries',
+    href: '/dashboard/studio-inquiries',
+    icon: MessageCircleQuestion,
+    description: 'Product questions and sizing',
   },
   {
     label: 'Returns',

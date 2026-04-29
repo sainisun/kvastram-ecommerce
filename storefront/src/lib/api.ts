@@ -54,6 +54,25 @@ function getApiTimeout(): number {
 }
 const API_TIMEOUT = getApiTimeout();
 
+export interface StudioInquiryData {
+  product_id?: string;
+  product_title: string;
+  product_handle?: string;
+  product_url?: string;
+  inquiry_type: 'question' | 'custom_size' | 'shipping';
+  customer_name: string;
+  email?: string;
+  phone?: string;
+  message: string;
+  measurements?: {
+    height?: string;
+    bust?: string;
+    waist?: string;
+    hips?: string;
+    preferredLength?: string;
+  };
+}
+
 function getTime(): number {
   return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
 }
@@ -1062,6 +1081,21 @@ export const api = {
         variant_id: data.variant_id,
         email: data.email,
       }),
+      credentials: 'include',
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async submitStudioInquiry(data: StudioInquiryData) {
+    const csrfHeader = await getCsrfHeader();
+    const res = await fetchWithTrace(`${API_URL}/store/studio-inquiries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...csrfHeader,
+      },
+      body: JSON.stringify(data),
       credentials: 'include',
     });
     if (!res.ok) throw await res.json();

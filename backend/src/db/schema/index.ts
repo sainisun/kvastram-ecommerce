@@ -56,6 +56,7 @@ export {
   webhook_events,
   wholesale_inquiries,
   contacts,
+  studio_inquiries,
   newsletter_subscribers,
 } from '../schema';
 

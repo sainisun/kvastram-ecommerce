@@ -1,10 +1,10 @@
 'use client';
 /* eslint-disable @next/next/no-html-link-for-pages */
 
-import { useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ChevronDown, Minus, Plus, RotateCcw, ShieldCheck, Star, Truck, Wifi, WifiOff } from 'lucide-react';
+import { ChevronDown, MessageCircle, Minus, Plus, Ruler, ShieldCheck, Sparkles, Star, Truck, Wifi, WifiOff } from 'lucide-react';
 
 import ProductGallery from './ProductGallery';
 import { Reviews } from '@/components/product/Reviews';
@@ -17,6 +17,7 @@ import { useCurrency } from '@/context/currency-context';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import { useShop } from '@/context/shop-context';
 import { useInventoryWebSocket } from '@/hooks/useInventoryWebSocket';
+import { api } from '@/lib/api';
 import { buildProductImageAlt, buildProductSeoContent, getCategoryPath, getPrimaryCategory } from '@/lib/seo';
 import type { MoneyAmount, Product, ProductImage, ProductOption, ProductVariant } from '@/types';
 
@@ -24,6 +25,8 @@ function getColorHex(colorName: string) {
   const map: Record<string, string> = { black: '#000000', navy: '#1e3a8a', white: '#ffffff', 'off white': '#faf8f5', cream: '#fdfbf7', terracotta: '#c5523f', olive: '#556b2f', taupe: '#8b8589', red: '#991b1b', blue: '#2563eb', green: '#15803d', yellow: '#ca8a04', beige: '#f5f5dc', brown: '#78350f', pink: '#fbcfe8', grey: '#6b7280', gray: '#6b7280' };
   return map[colorName.toLowerCase()] || '#cccccc';
 }
+
+type InquiryType = 'question' | 'custom_size' | 'shipping';
 
 export default function ProductView({ product }: { product: Product }) {
   const { currentRegion } = useShop();
@@ -36,6 +39,21 @@ export default function ProductView({ product }: { product: Product }) {
   const [activeAccordion, setActiveAccordion] = useState<string | null>('productDetails');
   const [showStickyATC, setShowStickyATC] = useState(false);
   const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
+  const [inquiryOpen, setInquiryOpen] = useState(false);
+  const [inquiryType, setInquiryType] = useState<InquiryType>('question');
+  const [inquiryForm, setInquiryForm] = useState({
+    customer_name: '',
+    email: '',
+    phone: '',
+    message: '',
+    height: '',
+    bust: '',
+    waist: '',
+    hips: '',
+    preferredLength: '',
+  });
+  const [inquirySubmitting, setInquirySubmitting] = useState(false);
+  const [inquiryMessage, setInquiryMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const primaryCategory = getPrimaryCategory(product);
   const primaryCategoryPath = primaryCategory ? getCategoryPath(primaryCategory) : null;
   const seoContent = buildProductSeoContent(product);
@@ -161,6 +179,60 @@ export default function ProductView({ product }: { product: Product }) {
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
+  const handleStudioInquirySubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setInquirySubmitting(true);
+    setInquiryMessage(null);
+
+    try {
+      const productUrl =
+        typeof window !== 'undefined'
+          ? window.location.href
+          : `https://kvastram.com/products/${product.handle || product.id}`;
+
+      await api.submitStudioInquiry({
+        product_id: product.id,
+        product_title: product.title,
+        product_handle: product.handle || product.id,
+        product_url: productUrl,
+        inquiry_type: inquiryType,
+        customer_name: inquiryForm.customer_name.trim(),
+        email: inquiryForm.email.trim(),
+        phone: inquiryForm.phone.trim(),
+        message: inquiryForm.message.trim(),
+        measurements:
+          inquiryType === 'custom_size'
+            ? {
+                height: inquiryForm.height.trim(),
+                bust: inquiryForm.bust.trim(),
+                waist: inquiryForm.waist.trim(),
+                hips: inquiryForm.hips.trim(),
+                preferredLength: inquiryForm.preferredLength.trim(),
+              }
+            : undefined,
+      });
+
+      setInquiryMessage({ type: 'success', text: 'Thanks. Our studio team will reply with product guidance soon.' });
+      setInquiryForm({
+        customer_name: '',
+        email: '',
+        phone: '',
+        message: '',
+        height: '',
+        bust: '',
+        waist: '',
+        hips: '',
+        preferredLength: '',
+      });
+    } catch (error: unknown) {
+      const apiError = error as { details?: string[]; error?: string };
+      const detail = Array.isArray(apiError?.details) ? apiError.details[0] : apiError?.error;
+      setInquiryMessage({ type: 'error', text: detail || 'Could not send your inquiry. Please try again.' });
+    } finally {
+      setInquirySubmitting(false);
+    }
+  };
+
   const accordions = [
     { key: 'productDetails', label: 'Product Details', show: true },
     { key: 'description', label: 'Description', show: true },
@@ -225,13 +297,160 @@ export default function ProductView({ product }: { product: Product }) {
             </section>
 
             <div className="grid grid-cols-2 gap-4">
-              {[{ icon: Truck, label: 'Free Shipping' }, { icon: RotateCcw, label: '30-Day Returns' }, { icon: ShieldCheck, label: 'Secure Payment' }, { icon: Star, label: 'Artisan Authentic' }].map((badge) => (
+              {[{ icon: Truck, label: 'Tracked Shipping' }, { icon: Ruler, label: 'Custom Sizing Help' }, { icon: ShieldCheck, label: 'Secure Payment' }, { icon: Star, label: 'Studio Verified' }].map((badge) => (
                 <div key={badge.label} className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-4">
                   <badge.icon size={16} className="shrink-0 text-stone-700" />
                   <span className="text-[12px] font-medium leading-tight text-stone-700">{badge.label}</span>
                 </div>
               ))}
             </div>
+
+            <section className="space-y-5 rounded-[28px] border border-stone-200 bg-stone-50 p-4 md:p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-500">
+                    <Sparkles size={14} />
+                    Studio Guidance
+                  </p>
+                  <h2 className="font-heading text-[19px] font-normal leading-tight text-stone-950">Ask before you order</h2>
+                  <p className="text-[14px] leading-6 text-stone-600">
+                    Need help with size, fabric, fall, or delivery timing? Send a product question to our studio team.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setInquiryOpen((prev) => !prev)}
+                  className="shrink-0 rounded-full border border-stone-300 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-800 transition hover:border-stone-900"
+                >
+                  {inquiryOpen ? 'Close' : 'Ask'}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 text-[13px] text-stone-700 sm:grid-cols-3">
+                <div className="rounded-2xl bg-white p-4">
+                  <p className="font-medium text-stone-900">Handmade piece</p>
+                  <p className="mt-1 leading-5 text-stone-500">Checked by our studio before dispatch.</p>
+                </div>
+                <div className="rounded-2xl bg-white p-4">
+                  <p className="font-medium text-stone-900">Sizing support</p>
+                  <p className="mt-1 leading-5 text-stone-500">Share measurements for fit guidance.</p>
+                </div>
+                <div className="rounded-2xl bg-white p-4">
+                  <p className="font-medium text-stone-900">Tracked delivery</p>
+                  <p className="mt-1 leading-5 text-stone-500">Clear updates from Jaipur to your door.</p>
+                </div>
+              </div>
+
+              {inquiryOpen && (
+                <form className="space-y-4 border-t border-stone-200 pt-5" onSubmit={handleStudioInquirySubmit}>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: 'question', label: 'Product question' },
+                      { value: 'custom_size', label: 'Custom size' },
+                      { value: 'shipping', label: 'Shipping help' },
+                    ].map((item) => (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() => setInquiryType(item.value as InquiryType)}
+                        className={`rounded-full border px-4 py-2 text-[12px] font-medium transition ${
+                          inquiryType === item.value
+                            ? 'border-stone-900 bg-stone-900 text-white'
+                            : 'border-stone-200 bg-white text-stone-700'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="space-y-2 text-[12px] font-medium uppercase tracking-[0.12em] text-stone-500">
+                      Name
+                      <input
+                        required
+                        value={inquiryForm.customer_name}
+                        onChange={(event) => setInquiryForm((prev) => ({ ...prev, customer_name: event.target.value }))}
+                        className="min-h-12 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                        placeholder="Your name"
+                      />
+                    </label>
+                    <label className="space-y-2 text-[12px] font-medium uppercase tracking-[0.12em] text-stone-500">
+                      Email
+                      <input
+                        type="email"
+                        value={inquiryForm.email}
+                        onChange={(event) => setInquiryForm((prev) => ({ ...prev, email: event.target.value }))}
+                        className="min-h-12 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                        placeholder="you@example.com"
+                      />
+                    </label>
+                    <label className="space-y-2 text-[12px] font-medium uppercase tracking-[0.12em] text-stone-500 sm:col-span-2">
+                      Phone or WhatsApp
+                      <input
+                        value={inquiryForm.phone}
+                        onChange={(event) => setInquiryForm((prev) => ({ ...prev, phone: event.target.value }))}
+                        className="min-h-12 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                        placeholder="+91 98765 43210"
+                      />
+                    </label>
+                  </div>
+
+                  {inquiryType === 'custom_size' && (
+                    <div className="grid gap-3 rounded-2xl bg-white p-4 sm:grid-cols-2">
+                      {[
+                        ['height', 'Height'],
+                        ['bust', 'Bust / Chest'],
+                        ['waist', 'Waist'],
+                        ['hips', 'Hips'],
+                        ['preferredLength', 'Preferred length'],
+                      ].map(([key, label]) => (
+                        <label key={key} className="space-y-2 text-[12px] font-medium uppercase tracking-[0.12em] text-stone-500">
+                          {label}
+                          <input
+                            value={inquiryForm[key as keyof typeof inquiryForm]}
+                            onChange={(event) => setInquiryForm((prev) => ({ ...prev, [key]: event.target.value }))}
+                            className="min-h-11 w-full rounded-xl border border-stone-200 px-3 py-2 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                            placeholder="Optional"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  )}
+
+                  <label className="space-y-2 text-[12px] font-medium uppercase tracking-[0.12em] text-stone-500">
+                    Message
+                    <textarea
+                      required
+                      minLength={10}
+                      rows={4}
+                      value={inquiryForm.message}
+                      onChange={(event) => setInquiryForm((prev) => ({ ...prev, message: event.target.value }))}
+                      className="w-full resize-none rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                      placeholder="Tell us what you need help with."
+                    />
+                  </label>
+
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <button
+                      type="submit"
+                      disabled={inquirySubmitting}
+                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-stone-900 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+                    >
+                      <MessageCircle size={15} />
+                      {inquirySubmitting ? 'Sending' : 'Send Inquiry'}
+                    </button>
+                    <p className="text-[12px] leading-5 text-stone-500">Add email or phone so we can reply.</p>
+                  </div>
+
+                  {inquiryMessage && (
+                    <p className={`rounded-2xl px-4 py-3 text-[13px] ${inquiryMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                      {inquiryMessage.text}
+                    </p>
+                  )}
+                </form>
+              )}
+            </section>
 
             <section className="space-y-6 rounded-[28px] border border-stone-200 bg-white p-4 md:p-6">
               {hasStructuredOptions &&

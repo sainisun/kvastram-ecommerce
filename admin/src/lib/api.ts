@@ -903,6 +903,24 @@ export const api = {
     return res.json();
   },
 
+  patch: async (path: string, data?: unknown) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data || {}),
+    });
+    if (!res.ok) return handleApiError(res, `PATCH ${path} failed`);
+    return res.json();
+  },
+
+  delete: async (path: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) return handleApiError(res, `DELETE ${path} failed`);
+    return res.json();
+  },
+
   get: async (path: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {});
     if (!res.ok) return handleApiError(res, `GET ${path} failed`);

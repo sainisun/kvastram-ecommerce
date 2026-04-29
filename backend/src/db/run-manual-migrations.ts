@@ -29,6 +29,7 @@ const MIGRATION_FILES = [
   '20260423_homepage_merchandising_slots.sql',
   'phase4_returns.sql',
   '20260429_add_trust_items.sql',
+  '20260429_add_studio_inquiries.sql',
 ];
 
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');

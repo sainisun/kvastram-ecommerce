@@ -691,6 +691,28 @@ export const contacts = pgTable('contacts', {
   created_at: timestamp('created_at').defaultNow(),
 });
 
+// --- PRODUCT STUDIO INQUIRIES ---
+export const studio_inquiries = pgTable('studio_inquiries', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  product_id: uuid('product_id').references(() => products.id),
+  product_title: text('product_title').notNull(),
+  product_handle: text('product_handle'),
+  product_url: text('product_url'),
+  inquiry_type: text('inquiry_type').default('question'),
+  customer_name: text('customer_name').notNull(),
+  email: text('email'),
+  phone: text('phone'),
+  message: text('message').notNull(),
+  measurements: jsonb('measurements').default({}),
+  status: text('status').default('new'),
+  admin_notes: text('admin_notes'),
+  ...createdUpdated,
+}, (table) => ({
+  statusIdx: index('idx_studio_inquiries_status').on(table.status),
+  productIdx: index('idx_studio_inquiries_product_id').on(table.product_id),
+  createdAtIdx: index('idx_studio_inquiries_created_at').on(table.created_at),
+}));
+
 // --- NEWSLETTER ---
 export const newsletter_subscribers = pgTable('newsletter_subscribers', {
   id: uuid('id').defaultRandom().primaryKey(),

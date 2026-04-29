@@ -64,8 +64,10 @@ import contactRoutes from './routes/contact';
 import newsletterRoutes from './routes/newsletter';
 import cartRoutes from './routes/store/cart';
 import backInStockRoutes from './routes/store/back-in-stock';
+import storeStudioInquiriesRoutes from './routes/store/studio-inquiries';
 import wishlistRoutes from './routes/store/wishlist';
 import adminBisRoutes from './routes/admin/back-in-stock';
+import adminStudioInquiriesRoutes from './routes/admin/studio-inquiries';
 import adminReturnsRoutes from './routes/admin/returns';
 import storeReturnsRoutes from './routes/store/returns';
 import abandonedCartsRoutes from './routes/admin/abandoned-carts';
@@ -224,6 +226,8 @@ csrfForStateChanging([
   '/admin/category-circles/*',
   '/admin/featured-products',
   '/admin/featured-products/*',
+  '/admin/studio-inquiries',
+  '/admin/studio-inquiries/*',
 ]);
 
 // Health Check Endpoint
@@ -280,6 +284,8 @@ app.use('/store/payments/*', checkoutLimiter);
 // OPT-006: Rate limit public form endpoints (spam prevention)
 app.use('/contact/*', authLimiter); // Strict: same as auth
 app.use('/newsletter/*', authLimiter); // Strict: same as auth
+app.use('/store/studio-inquiries', authLimiter); // Strict: customer inquiry spam prevention
+app.use('/store/studio-inquiries/*', authLimiter); // Strict: customer inquiry spam prevention
 
 // 3. General API Limits (For browsing/products/etc)
 const generalApiRoutes = [
@@ -327,6 +333,8 @@ const generalApiRoutes = [
   '/admin/category-circles/*',
   '/admin/featured-products',
   '/admin/featured-products/*',
+  '/admin/studio-inquiries',
+  '/admin/studio-inquiries/*',
 ];
 
 for (const route of generalApiRoutes) {
@@ -381,8 +389,10 @@ app.route('/store/wholesale', wholesaleOrdersRoutes);
 app.route('/store/settings', storeSettingsRoutes);
 app.route('/store/cart', cartRoutes);
 app.route('/store/back-in-stock', backInStockRoutes);
+app.route('/store/studio-inquiries', storeStudioInquiriesRoutes);
 app.route('/store/wishlist', wishlistRoutes);
 app.route('/admin/back-in-stock', adminBisRoutes);
+app.route('/admin/studio-inquiries', adminStudioInquiriesRoutes);
 app.route('/admin/returns', adminReturnsRoutes);
 app.route('/store/returns', storeReturnsRoutes);
 app.route('/admin/abandoned-carts', abandonedCartsRoutes);

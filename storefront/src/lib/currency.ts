@@ -2,7 +2,7 @@
 
 const DEFAULT_LOCALE = 'en-US';
 
-// ─── Etsy-style local currency detection & conversion ─────────────────────────
+// Local currency detection & conversion
 
 // Browser locale → ISO 4217 currency code
 const LOCALE_CURRENCY_MAP: Record<string, string> = {
