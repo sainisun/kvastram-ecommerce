@@ -7,6 +7,7 @@ import { registerCollectionTools } from './tools/collections.js';
 import { registerBannerTools } from './tools/banners.js';
 import { registerOrderTools } from './tools/orders.js';
 import { registerMarketingTools } from './tools/marketing.js';
+import { registerTrustItemTools } from './tools/trust-items.js';
 
 const server = new McpServer({
   name: 'kvastram-admin',
@@ -20,6 +21,7 @@ registerCollectionTools(server);
 registerBannerTools(server);
 registerOrderTools(server);
 registerMarketingTools(server);
+registerTrustItemTools(server);
 
 // Start the MCP server on stdio (Claude communicates via stdin/stdout)
 const transport = new StdioServerTransport();

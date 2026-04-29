@@ -900,6 +900,18 @@ export const api = {
     }
   },
 
+  async getTrustItems() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/trust-items`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { items: [] };
+      return res.json();
+    } catch {
+      return { items: [] };
+    }
+  },
+
   async getTrendingReels() {
     try {
       const res = await fetchWithTrace(`${API_URL}/trending-reels`, {

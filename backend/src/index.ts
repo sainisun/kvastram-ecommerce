@@ -79,8 +79,10 @@ import homepageCategoriesRoutes from './routes/homepage-categories';
 import adminHomepageBannersRoutes from './routes/admin/homepage-banners';
 import adminCategoryCirclesRoutes from './routes/admin/category-circles';
 import adminFeaturedProductsRoutes from './routes/admin/featured-products';
+import adminTrustItemsRoutes from './routes/admin/trust-items';
 import categoryCirclesRoutes from './routes/category-circles';
 import featuredProductsRoutes from './routes/featured-products';
+import trustItemsRoutes from './routes/trust-items';
 
 import docsApp from './docs';
 import { initSocketServer, io } from './services/socket';
@@ -394,8 +396,10 @@ app.route('/homepage-categories', homepageCategoriesRoutes);
 app.route('/admin/homepage-banners', adminHomepageBannersRoutes);
 app.route('/admin/category-circles', adminCategoryCirclesRoutes);
 app.route('/admin/featured-products', adminFeaturedProductsRoutes);
+app.route('/admin/trust-items', adminTrustItemsRoutes);
 app.route('/category-circles', categoryCirclesRoutes);
 app.route('/featured-products', featuredProductsRoutes);
+app.route('/trust-items', trustItemsRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

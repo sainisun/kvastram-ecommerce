@@ -1,18 +1,23 @@
-const TRUST_ITEMS = [
-  { icon: '✦', label: 'Handmade in India', sub: 'Every stitch by hand' },
-  { icon: '✦', label: 'Ships Worldwide', sub: 'USA · UK · EU · AU' },
-  { icon: '✦', label: 'Ethically Made', sub: 'Fair wages, always' },
-  { icon: '✦', label: '500+ Happy Customers', sub: 'Verified reviews' },
-  { icon: '✦', label: 'Secure Checkout', sub: 'Visa · PayPal · Apple Pay' },
-];
+interface TrustItem {
+  id: string;
+  label: string;
+  sub: string;
+  icon: string;
+}
 
-export function AsSeenOn() {
+interface AsSeenOnProps {
+  items: TrustItem[];
+}
+
+export function AsSeenOn({ items }: AsSeenOnProps) {
+  if (items.length === 0) return null;
+
   return (
-    <section className="border-y border-stone-200 bg-white px-4 py-6 sm:px-6">
-      <div className="mx-auto max-w-[1280px]">
+    <section className="border-y border-stone-200 bg-white py-6">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-12 lg:gap-x-16">
-          {TRUST_ITEMS.map((item) => (
-            <div key={item.label} className="flex flex-col items-center text-center">
+          {items.map((item) => (
+            <div key={item.id} className="flex flex-col items-center text-center">
               <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-stone-900">
                 {item.label}
               </span>

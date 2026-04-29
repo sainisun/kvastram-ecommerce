@@ -852,6 +852,23 @@ export const category_circles = pgTable(
   })
 );
 
+export const trust_items = pgTable(
+  'trust_items',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    label: text('label').notNull(),
+    sub: text('sub').notNull(),
+    icon: text('icon').notNull().default('✦'),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    activeIdx: index('idx_trust_items_is_active').on(table.is_active),
+    sortOrderIdx: index('idx_trust_items_sort_order').on(table.sort_order),
+  })
+);
+
 export const featured_products = pgTable(
   'featured_products',
   {

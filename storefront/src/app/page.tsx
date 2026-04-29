@@ -18,8 +18,6 @@ import { BestSellers } from '@/components/home/BestSellers';
 import { ShopTheLook } from '@/components/home/ShopTheLook';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { AsSeenOn } from '@/components/home/AsSeenOn';
-import { ArtisanStrip } from '@/components/home/ArtisanStrip';
-import { StatsSection } from '@/components/home/StatsSection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { Testimonials } from '@/components/home/Testimonials';
@@ -62,6 +60,7 @@ export default async function Home() {
     newArrivalsResult,
     bestsellersResult,
     heroBannersResult,
+    trustItemsResult,
   ] = await Promise.allSettled([
     api.getHomepageSettings(),
     api.getProducts({ limit: 8, sort: 'newest' }),
@@ -73,6 +72,7 @@ export default async function Home() {
     api.getSpotlightProducts('new_arrivals'),
     api.getSpotlightProducts('bestsellers'),
     api.getHeroBanners(),
+    api.getTrustItems(),
   ]);
 
   const homepageSettings: HomepageSettings =
@@ -308,6 +308,19 @@ export default async function Home() {
           )
       : [];
 
+  const trustItems =
+    trustItemsResult.status === 'fulfilled'
+      ? (trustItemsResult.value.items || []).filter(
+          (item: { id?: string; label?: string; sub?: string }) =>
+            Boolean(item?.id && item?.label && item?.sub)
+        ).map((item: { id: string; label: string; sub: string; icon: string }) => ({
+          id: item.id,
+          label: item.label,
+          sub: item.sub,
+          icon: item.icon || '✦',
+        }))
+      : [];
+
   const heroBanners =
     heroBannersResult.status === 'fulfilled'
       ? (heroBannersResult.value.banners || [])
@@ -377,14 +390,7 @@ export default async function Home() {
         products={bestsellerProducts.length > 0 ? bestsellerProducts : products}
         isCurated={bestsellerProducts.length > 0}
       />
-      <AsSeenOn />
-      <StatsSection statsData={[
-        { num: '500+', label: 'Orders shipped worldwide' },
-        { num: '30', label: 'Artisan women employed' },
-        { num: '300+', label: 'Years of Kantha tradition' },
-        { num: '50+', label: 'Countries we ship to' },
-      ]} />
-      <ArtisanStrip />
+      <AsSeenOn items={trustItems} />
       <BrandStory settings={homepageSettings} />
       <Testimonials testimonials={testimonials} />
       <NewsletterSection settings={homepageSettings} />
