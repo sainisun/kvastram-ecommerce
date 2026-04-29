@@ -27,6 +27,19 @@ function getColorHex(colorName: string) {
 }
 
 type InquiryType = 'question' | 'custom_size' | 'shipping';
+type StudioChatMessage = {
+  id?: string;
+  sender_type: 'customer' | 'admin' | string;
+  sender_name?: string | null;
+  sender_email?: string | null;
+  message: string;
+  created_at?: string;
+};
+
+type StudioConversation = {
+  id: string;
+  token: string;
+};
 
 export default function ProductView({ product }: { product: Product }) {
   const { currentRegion } = useShop();
@@ -54,6 +67,11 @@ export default function ProductView({ product }: { product: Product }) {
   });
   const [inquirySubmitting, setInquirySubmitting] = useState(false);
   const [inquiryMessage, setInquiryMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [studioConversation, setStudioConversation] = useState<StudioConversation | null>(null);
+  const [studioMessages, setStudioMessages] = useState<StudioChatMessage[]>([]);
+  const [studioReply, setStudioReply] = useState('');
+  const [studioLoading, setStudioLoading] = useState(false);
+  const [studioReplySending, setStudioReplySending] = useState(false);
   const primaryCategory = getPrimaryCategory(product);
   const primaryCategoryPath = primaryCategory ? getCategoryPath(primaryCategory) : null;
   const seoContent = buildProductSeoContent(product);
@@ -99,6 +117,49 @@ export default function ProductView({ product }: { product: Product }) {
     if (button) observer.observe(button);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stored = window.localStorage.getItem(`kvastram-studio-chat:${product.id}`);
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored) as StudioConversation;
+      if (parsed?.id && parsed?.token) {
+        setStudioConversation(parsed);
+        setInquiryOpen(true);
+      }
+    } catch {
+      window.localStorage.removeItem(`kvastram-studio-chat:${product.id}`);
+    }
+  }, [product.id]);
+
+  useEffect(() => {
+    if (!studioConversation) return;
+    const conversation = studioConversation;
+    let cancelled = false;
+
+    async function loadConversation() {
+      setStudioLoading(true);
+      try {
+        const data = await api.getStudioInquiryConversation(conversation.id, conversation.token);
+        if (!cancelled) {
+          setStudioMessages(data.messages || []);
+        }
+      } catch {
+        if (!cancelled) {
+          setInquiryMessage({ type: 'error', text: 'Could not load your studio chat. Please start a new message.' });
+        }
+      } finally {
+        if (!cancelled) setStudioLoading(false);
+      }
+    }
+
+    void loadConversation();
+    return () => {
+      cancelled = true;
+    };
+  }, [studioConversation]);
 
   const hasStructuredOptions = Boolean(product.options?.length);
   const defaultOptions = useMemo(() => {
@@ -190,7 +251,7 @@ export default function ProductView({ product }: { product: Product }) {
           ? window.location.href
           : `https://kvastram.com/products/${product.handle || product.id}`;
 
-      await api.submitStudioInquiry({
+      const response = await api.submitStudioInquiry({
         product_id: product.id,
         product_title: product.title,
         product_handle: product.handle || product.id,
@@ -212,7 +273,16 @@ export default function ProductView({ product }: { product: Product }) {
             : undefined,
       });
 
-      setInquiryMessage({ type: 'success', text: 'Thanks. Our studio team will reply with product guidance soon.' });
+      const conversation = {
+        id: response.inquiry.id,
+        token: response.inquiry.conversation_token,
+      };
+      setStudioConversation(conversation);
+      setStudioMessages(response.messages || []);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(`kvastram-studio-chat:${product.id}`, JSON.stringify(conversation));
+      }
+      setInquiryMessage({ type: 'success', text: 'Your chat has started. Our studio team will reply here soon.' });
       setInquiryForm({
         customer_name: '',
         email: '',
@@ -230,6 +300,31 @@ export default function ProductView({ product }: { product: Product }) {
       setInquiryMessage({ type: 'error', text: detail || 'Could not send your inquiry. Please try again.' });
     } finally {
       setInquirySubmitting(false);
+    }
+  };
+
+  const handleStudioReplySubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!studioConversation || !studioReply.trim()) return;
+    setStudioReplySending(true);
+    setInquiryMessage(null);
+
+    try {
+      const response = await api.sendStudioInquiryMessage({
+        id: studioConversation.id,
+        token: studioConversation.token,
+        customer_name: inquiryForm.customer_name.trim() || undefined,
+        email: inquiryForm.email.trim() || undefined,
+        message: studioReply.trim(),
+      });
+      setStudioMessages((prev) => [...prev, response.message]);
+      setStudioReply('');
+    } catch (error: unknown) {
+      const apiError = error as { details?: string[]; error?: string };
+      const detail = Array.isArray(apiError?.details) ? apiError.details[0] : apiError?.error;
+      setInquiryMessage({ type: 'error', text: detail || 'Could not send your message. Please try again.' });
+    } finally {
+      setStudioReplySending(false);
     }
   };
 
@@ -341,7 +436,79 @@ export default function ProductView({ product }: { product: Product }) {
                 </div>
               </div>
 
-              {inquiryOpen && (
+              {inquiryOpen && studioConversation && (
+                <div className="space-y-4 border-t border-stone-200 pt-5">
+                  <div className="rounded-2xl bg-white p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-stone-500">Studio Chat</p>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          setStudioLoading(true);
+                          try {
+                            const data = await api.getStudioInquiryConversation(studioConversation.id, studioConversation.token);
+                            setStudioMessages(data.messages || []);
+                          } finally {
+                            setStudioLoading(false);
+                          }
+                        }}
+                        className="text-[12px] font-medium text-stone-500 underline underline-offset-4 transition hover:text-stone-900"
+                      >
+                        Refresh
+                      </button>
+                    </div>
+                    {studioLoading ? (
+                      <p className="py-6 text-center text-[13px] text-stone-500">Loading chat...</p>
+                    ) : (
+                      <div className="max-h-[320px] space-y-3 overflow-y-auto pr-1">
+                        {studioMessages.map((message, index) => {
+                          const isAdmin = message.sender_type === 'admin';
+                          return (
+                            <div key={message.id || `${message.sender_type}-${index}`} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
+                              <div className={`max-w-[82%] rounded-2xl px-4 py-3 ${isAdmin ? 'bg-stone-100 text-stone-800' : 'bg-stone-900 text-white'}`}>
+                                <p className={`mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${isAdmin ? 'text-stone-500' : 'text-stone-300'}`}>
+                                  {isAdmin ? message.sender_name || 'Kvastram Studio' : 'You'}
+                                </p>
+                                <p className="whitespace-pre-wrap text-[14px] leading-6">{message.message}</p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  <form className="space-y-3" onSubmit={handleStudioReplySubmit}>
+                    <textarea
+                      required
+                      rows={3}
+                      value={studioReply}
+                      onChange={(event) => setStudioReply(event.target.value)}
+                      className="w-full resize-none rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] text-stone-900 outline-none transition focus:border-stone-900"
+                      placeholder="Write a follow-up message..."
+                    />
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                      <button
+                        type="submit"
+                        disabled={studioReplySending}
+                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-stone-900 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+                      >
+                        <MessageCircle size={15} />
+                        {studioReplySending ? 'Sending' : 'Send Message'}
+                      </button>
+                      <p className="text-[12px] leading-5 text-stone-500">Replies from our studio will appear here on this device.</p>
+                    </div>
+                  </form>
+
+                  {inquiryMessage && (
+                    <p className={`rounded-2xl px-4 py-3 text-[13px] ${inquiryMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                      {inquiryMessage.text}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {inquiryOpen && !studioConversation && (
                 <form className="space-y-4 border-t border-stone-200 pt-5" onSubmit={handleStudioInquirySubmit}>
                   <div className="flex flex-wrap gap-2">
                     {[

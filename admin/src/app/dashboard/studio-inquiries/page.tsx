@@ -30,9 +30,21 @@ interface StudioInquiry {
   measurements: Record<string, string> | null;
   status: InquiryStatus;
   admin_notes: string | null;
+  last_message_at: string | null;
+  unread_by_admin: boolean | null;
+  unread_by_customer: boolean | null;
   created_at: string;
   updated_at: string | null;
   product_thumbnail: string | null;
+}
+
+interface StudioMessage {
+  id: string;
+  sender_type: 'customer' | 'admin' | string;
+  sender_name: string | null;
+  sender_email: string | null;
+  message: string;
+  created_at: string;
 }
 
 interface StudioInquiryResponse {
@@ -43,6 +55,7 @@ interface StudioInquiryResponse {
     in_progress: number;
     replied: number;
     custom_size: number;
+    unread?: number;
   };
 }
 
@@ -67,10 +80,13 @@ export default function StudioInquiriesPage() {
     in_progress: 0,
     replied: 0,
     custom_size: 0,
+    unread: 0,
   });
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedInquiry, setSelectedInquiry] = useState<StudioInquiry | null>(null);
+  const [selectedMessages, setSelectedMessages] = useState<StudioMessage[]>([]);
   const [adminNote, setAdminNote] = useState('');
+  const [replyText, setReplyText] = useState('');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +105,7 @@ export default function StudioInquiriesPage() {
           in_progress: 0,
           replied: 0,
           custom_size: 0,
+          unread: 0,
         }
       );
     } catch (err: unknown) {
@@ -111,6 +128,24 @@ export default function StudioInquiriesPage() {
   const handleSelectInquiry = (inquiry: StudioInquiry) => {
     setSelectedInquiry(inquiry);
     setAdminNote(inquiry.admin_notes || '');
+    setReplyText('');
+    void fetchInquiryDetail(inquiry.id);
+  };
+
+  const fetchInquiryDetail = async (id: string) => {
+    try {
+      const data = (await api.get(`/admin/studio-inquiries/${id}`)) as {
+        inquiry: StudioInquiry;
+        messages: StudioMessage[];
+      };
+      setSelectedInquiry(data.inquiry);
+      setSelectedMessages(data.messages || []);
+      setInquiries((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, ...data.inquiry, unread_by_admin: false } : item))
+      );
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load conversation');
+    }
   };
 
   const updateInquiry = async (id: string, status: InquiryStatus) => {
@@ -144,6 +179,27 @@ export default function StudioInquiriesPage() {
       await fetchInquiries();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Could not delete inquiry');
+    } finally {
+      setActionLoading(null);
+      setTimeout(() => setSuccessMsg(null), 3500);
+    }
+  };
+
+  const sendReply = async () => {
+    if (!selectedInquiry || !replyText.trim()) return;
+    setActionLoading(`${selectedInquiry.id}-reply`);
+    setError(null);
+    try {
+      const data = (await api.post(`/admin/studio-inquiries/${selectedInquiry.id}/messages`, {
+        message: replyText.trim(),
+        sender_name: 'Kvastram Studio',
+      })) as { message: StudioMessage };
+      setSelectedMessages((prev) => [...prev, data.message]);
+      setReplyText('');
+      setSuccessMsg('Reply sent to customer chat');
+      await fetchInquiries();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Could not send reply');
     } finally {
       setActionLoading(null);
       setTimeout(() => setSuccessMsg(null), 3500);
@@ -185,7 +241,7 @@ export default function StudioInquiriesPage() {
       <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
           { label: 'Total', value: stats.total, icon: MessageCircleQuestion, color: 'text-gray-700' },
-          { label: 'New', value: stats.new, icon: Clock, color: 'text-yellow-700' },
+          { label: 'Unread', value: stats.unread || 0, icon: Clock, color: 'text-yellow-700' },
           { label: 'In Progress', value: stats.in_progress, icon: RefreshCw, color: 'text-blue-700' },
           { label: 'Custom Size', value: stats.custom_size, icon: Ruler, color: 'text-purple-700' },
         ].map(({ label, value, icon: Icon, color }) => (
@@ -250,7 +306,10 @@ export default function StudioInquiriesPage() {
                     <td className="px-4 py-4">
                       <button type="button" onClick={() => handleSelectInquiry(inquiry)} className="text-left">
                         <p className="font-medium text-gray-900">{inquiry.customer_name}</p>
-                        <p className="mt-1 line-clamp-1 text-xs text-gray-500">{inquiry.email || inquiry.phone || 'No contact'}</p>
+                        <p className="mt-1 line-clamp-1 text-xs text-gray-500">
+                          {inquiry.unread_by_admin && <span className="mr-2 rounded-full bg-yellow-100 px-1.5 py-0.5 text-yellow-700">Unread</span>}
+                          {inquiry.email || inquiry.phone || 'No contact'}
+                        </p>
                       </button>
                     </td>
                     <td className="px-4 py-4">
@@ -268,7 +327,7 @@ export default function StudioInquiriesPage() {
                       </span>
                     </td>
                     <td className="px-4 py-4 text-xs text-gray-500">
-                      {new Date(inquiry.created_at).toLocaleDateString()}
+                      {new Date(inquiry.last_message_at || inquiry.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex gap-2">
@@ -336,10 +395,43 @@ export default function StudioInquiriesPage() {
                 </div>
 
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Customer Message</p>
-                  <p className="whitespace-pre-wrap rounded-lg border border-gray-200 p-4 text-sm leading-6 text-gray-700">
-                    {selectedInquiry.message}
-                  </p>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Conversation</p>
+                  <div className="max-h-[360px] space-y-3 overflow-y-auto rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    {selectedMessages.length === 0 ? (
+                      <p className="text-sm text-gray-500">Loading messages...</p>
+                    ) : (
+                      selectedMessages.map((message) => {
+                        const isAdmin = message.sender_type === 'admin';
+                        return (
+                          <div key={message.id} className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[86%] rounded-2xl px-4 py-3 ${isAdmin ? 'bg-blue-600 text-white' : 'bg-white text-gray-800 shadow-sm'}`}>
+                              <p className={`mb-1 text-[11px] font-semibold uppercase tracking-wider ${isAdmin ? 'text-blue-100' : 'text-gray-400'}`}>
+                                {isAdmin ? message.sender_name || 'Kvastram Studio' : message.sender_name || selectedInquiry.customer_name}
+                              </p>
+                              <p className="whitespace-pre-wrap text-sm leading-6">{message.message}</p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <textarea
+                      value={replyText}
+                      onChange={(event) => setReplyText(event.target.value)}
+                      rows={4}
+                      className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-blue-500"
+                      placeholder="Write a reply for the customer..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => void sendReply()}
+                      disabled={!replyText.trim() || actionLoading === `${selectedInquiry.id}-reply`}
+                      className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                    >
+                      {actionLoading === `${selectedInquiry.id}-reply` ? 'Sending...' : 'Send Reply'}
+                    </button>
+                  </div>
                 </div>
 
                 {selectedInquiry.inquiry_type === 'custom_size' && selectedInquiry.measurements && (

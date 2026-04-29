@@ -57,6 +57,7 @@ export {
   wholesale_inquiries,
   contacts,
   studio_inquiries,
+  studio_inquiry_messages,
   newsletter_subscribers,
 } from '../schema';
 

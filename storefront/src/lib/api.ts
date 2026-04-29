@@ -1102,6 +1102,43 @@ export const api = {
     return res.json();
   },
 
+  async getStudioInquiryConversation(id: string, token: string) {
+    const res = await fetchWithTrace(
+      `${API_URL}/store/studio-inquiries/${id}?token=${encodeURIComponent(token)}`,
+      {
+        credentials: 'include',
+      }
+    );
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
+  async sendStudioInquiryMessage(data: {
+    id: string;
+    token: string;
+    customer_name?: string;
+    email?: string;
+    message: string;
+  }) {
+    const csrfHeader = await getCsrfHeader();
+    const res = await fetchWithTrace(`${API_URL}/store/studio-inquiries/${data.id}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...csrfHeader,
+      },
+      body: JSON.stringify({
+        token: data.token,
+        customer_name: data.customer_name,
+        email: data.email,
+        message: data.message,
+      }),
+      credentials: 'include',
+    });
+    if (!res.ok) throw await res.json();
+    return res.json();
+  },
+
   // --- Returns (Customer-initiated) ---
   async requestReturn(data: {
     order_id: string;

@@ -30,6 +30,7 @@ const MIGRATION_FILES = [
   'phase4_returns.sql',
   '20260429_add_trust_items.sql',
   '20260429_add_studio_inquiries.sql',
+  '20260430_add_studio_inquiry_messages.sql',
 ];
 
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
