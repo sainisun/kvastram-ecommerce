@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { createApiClient, formatResponse } from '../client.js';
+import { createApiClient, formatResponse, getAuthToken } from '../client.js';
 
 export function registerProductTools(server: McpServer) {
 
@@ -8,7 +8,7 @@ export function registerProductTools(server: McpServer) {
     limit: z.number().optional().default(20).describe('Products per page (max 100)'),
     offset: z.number().optional().default(0).describe('Skip N products'),
     search: z.string().optional().describe('Search by name or description'),
-    status: z.string().optional().describe('Filter: active, draft, archived'),
+    status: z.string().optional().describe('Filter: published, draft, archived'),
     category_id: z.string().optional().describe('Filter by category UUID'),
     collection_id: z.string().optional().describe('Filter by collection UUID'),
     sort: z.enum(['newest', 'price_asc', 'price_desc']).optional().describe('Sort order'),
@@ -75,19 +75,49 @@ export function registerProductTools(server: McpServer) {
     title: z.string().optional(),
     description: z.string().optional(),
     price: z.number().optional().describe('New price in INR rupees'),
+    compare_at_price: z.number().optional().describe('Original/MRP price in rupees for showing discount'),
     status: z.enum(['published', 'draft', 'archived']).optional(),
     images: z.array(z.string()).optional(),
     inventory_quantity: z.number().optional(),
     weight: z.number().optional(),
     sku: z.string().optional(),
-  }, async ({ id, price, ...updates }) => {
+    seo_title: z.string().optional().describe('SEO meta title (shown in Google search results)'),
+    seo_description: z.string().optional().describe('SEO meta description (shown in Google search results)'),
+  }, async ({ id, price, compare_at_price, ...updates }) => {
     const api = await createApiClient();
     const payload: Record<string, unknown> = { ...updates };
+    const INDIA_REGION_ID = 'dc27dc4d-e976-4cc8-9748-6323a1c69d4c';
     if (price !== undefined) {
-      payload.prices = [{ amount: Math.round(price * 100), currency_code: 'inr', region_id: 'dc27dc4d-e976-4cc8-9748-6323a1c69d4c' }];
+      payload.prices = [{ amount: Math.round(price * 100), currency_code: 'inr', region_id: INDIA_REGION_ID }];
+    }
+    if (compare_at_price !== undefined) {
+      payload.compare_at_prices = [{ amount: Math.round(compare_at_price * 100), currency_code: 'inr', region_id: INDIA_REGION_ID }];
     }
     const { data } = await api.put(`/products/${id}`, payload);
     return { content: [{ type: 'text', text: `Product updated!\n\n${formatResponse(data)}` }] };
+  });
+
+  server.tool('bulk_update_products', 'Update status or price for multiple products at once', {
+    product_ids: z.array(z.string()).describe('Array of product UUIDs to update'),
+    status: z.enum(['published', 'draft', 'archived']).optional().describe('New status to set on all products'),
+    price: z.number().optional().describe('New price in INR rupees to set on all product variants'),
+    collection_id: z.string().optional().describe('Assign all products to this collection UUID'),
+  }, async ({ product_ids, status, price, collection_id }) => {
+    const api = await createApiClient();
+    const updates: Record<string, unknown> = {};
+    if (status !== undefined) updates.status = status;
+    if (collection_id !== undefined) updates.collection_id = collection_id;
+    if (price !== undefined) updates.price = Math.round(price * 100); // paise
+    const { data } = await api.post('/products/bulk-update', { product_ids, updates });
+    return { content: [{ type: 'text', text: formatResponse(data) }] };
+  });
+
+  server.tool('bulk_delete_products', 'Permanently delete multiple products', {
+    product_ids: z.array(z.string()).describe('Array of product UUIDs to delete'),
+  }, async ({ product_ids }) => {
+    const api = await createApiClient();
+    const { data } = await api.post('/products/bulk-delete', { product_ids });
+    return { content: [{ type: 'text', text: formatResponse(data) }] };
   });
 
   server.tool('delete_product', 'Delete a product permanently', {
@@ -96,6 +126,38 @@ export function registerProductTools(server: McpServer) {
     const api = await createApiClient();
     await api.delete(`/products/${id}`);
     return { content: [{ type: 'text', text: `Product ${id} deleted successfully.` }] };
+  });
+
+  server.tool('upload_product_image', 'Upload an image from a URL to Cloudinary for use in products', {
+    image_url: z.string().url().describe('Public URL of the image to upload (JPG, PNG, WebP, max 10MB)'),
+    filename: z.string().optional().describe('Optional filename hint (e.g. "silk-saree-red.jpg")'),
+  }, async ({ image_url, filename }) => {
+    const token = await getAuthToken();
+
+    // Fetch image from source URL and re-upload to Cloudinary via backend
+    const imgRes = await fetch(image_url);
+    if (!imgRes.ok) throw new Error(`Failed to fetch image from URL: ${imgRes.status}`);
+    const contentType = imgRes.headers.get('content-type') || 'image/jpeg';
+    const arrayBuffer = await imgRes.arrayBuffer();
+    const blob = new Blob([arrayBuffer], { type: contentType });
+
+    const ext = contentType.split('/')[1]?.split(';')[0] || 'jpg';
+    const name = filename || `upload-${Date.now()}.${ext}`;
+
+    const form = new FormData();
+    form.append('file', blob, name);
+
+    const baseUrl = process.env.KVASTRAM_API_URL || 'https://api.kvastram.com';
+    const uploadRes = await fetch(`${baseUrl}/upload`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    });
+
+    const result = await uploadRes.json() as Record<string, unknown>;
+    if (!uploadRes.ok) throw new Error(`Upload failed: ${JSON.stringify(result)}`);
+
+    return { content: [{ type: 'text', text: `Image uploaded successfully!\n\nCloudinary URL: ${(result as any).url || (result as any).secure_url}\n\nFull response:\n${JSON.stringify(result, null, 2)}` }] };
   });
 
   server.tool('update_product_inventory', 'Update stock/inventory for a product', {

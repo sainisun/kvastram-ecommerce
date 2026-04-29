@@ -17,6 +17,14 @@ import {
   ValidationError,
 } from '../middleware/error-handler';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
+import { db } from '../db/client';
+import {
+  product_variants,
+  product_options,
+  product_option_values,
+  money_amounts,
+} from '../db/schema';
+import { eq, inArray } from 'drizzle-orm';
 
 const productsRouter = new Hono();
 
@@ -252,6 +260,7 @@ const BulkUpdateSchema = z.object({
   updates: z.object({
     status: z.enum(['draft', 'published', 'proposed', 'rejected', 'archived']).optional(),
     collection_id: z.string().optional(),
+    price: z.number().int().min(0).optional(), // price in paise
   }),
 });
 
@@ -270,7 +279,26 @@ productsRouter.post(
     }
 
     const { product_ids, updates } = result.data;
-    const count = await productService.bulkUpdate(product_ids, updates);
+    const { price, ...productUpdates } = updates;
+
+    const count = await productService.bulkUpdate(product_ids, productUpdates);
+
+    // Bulk price update: update money_amounts for all variants of these products
+    if (price !== undefined) {
+      const variants = await db
+        .select({ id: product_variants.id })
+        .from(product_variants)
+        .where(inArray(product_variants.product_id, product_ids));
+
+      if (variants.length > 0) {
+        const variantIds = variants.map((v) => v.id);
+        await db
+          .update(money_amounts)
+          .set({ amount: price })
+          .where(inArray(money_amounts.variant_id, variantIds));
+      }
+    }
+
     await triggerStorefrontRevalidation({
       paths: ['/', '/products'],
       tags: ['products'],
@@ -281,6 +309,7 @@ productsRouter.post(
       {
         updated_count: count,
         product_ids,
+        price_updated: price !== undefined,
       },
       `${count} products updated successfully`
     );
@@ -350,15 +379,6 @@ productsRouter.delete(
     );
   })
 );
-
-import { db } from '../db/client';
-import {
-  product_variants,
-  product_options,
-  product_option_values,
-  money_amounts,
-} from '../db/schema';
-import { eq, inArray } from 'drizzle-orm';
 
 // --- VARIANT MANAGEMENT ---
 
