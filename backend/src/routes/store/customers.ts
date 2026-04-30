@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { verifyCustomer } from '../../middleware/customer-auth';
 import { db } from '../../db/client';
-import { customers, orders, line_items, addresses } from '../../db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { customers, orders, addresses, studio_inquiries, studio_inquiry_messages } from '../../db/schema';
+import { eq, desc, and, asc } from 'drizzle-orm';
 import { z } from 'zod';
 import { serializeCustomer } from '../../utils/safe-user';
 
@@ -114,6 +114,136 @@ storeCustomersRouter.get('/me/orders/:id', verifyCustomer, async (c) => {
   if (!order) return c.json({ error: 'Order not found' }, 404);
 
   return c.json({ order });
+});
+
+// Get Customer Studio Messages
+storeCustomersRouter.get('/me/studio-inquiries', verifyCustomer, async (c) => {
+  const payload = c.get('customer' as any) as any;
+  const customer = await db.query.customers.findFirst({
+    where: eq(customers.id, payload.sub),
+  });
+
+  if (!customer?.email) return c.json({ inquiries: [] });
+
+  const inquiries = await db
+    .select({
+      id: studio_inquiries.id,
+      product_title: studio_inquiries.product_title,
+      product_handle: studio_inquiries.product_handle,
+      product_url: studio_inquiries.product_url,
+      inquiry_type: studio_inquiries.inquiry_type,
+      status: studio_inquiries.status,
+      last_message_at: studio_inquiries.last_message_at,
+      unread_by_customer: studio_inquiries.unread_by_customer,
+      created_at: studio_inquiries.created_at,
+    })
+    .from(studio_inquiries)
+    .where(eq(studio_inquiries.email, customer.email.toLowerCase()))
+    .orderBy(desc(studio_inquiries.last_message_at))
+    .limit(100);
+
+  return c.json({ inquiries });
+});
+
+storeCustomersRouter.get('/me/studio-inquiries/:id', verifyCustomer, async (c) => {
+  const payload = c.get('customer' as any) as any;
+  const id = c.req.param('id');
+  const customer = await db.query.customers.findFirst({
+    where: eq(customers.id, payload.sub),
+  });
+
+  if (!customer?.email) return c.json({ error: 'Customer not found' }, 404);
+
+  const [inquiry] = await db
+    .select({
+      id: studio_inquiries.id,
+      product_title: studio_inquiries.product_title,
+      product_handle: studio_inquiries.product_handle,
+      product_url: studio_inquiries.product_url,
+      inquiry_type: studio_inquiries.inquiry_type,
+      status: studio_inquiries.status,
+      last_message_at: studio_inquiries.last_message_at,
+      unread_by_customer: studio_inquiries.unread_by_customer,
+      created_at: studio_inquiries.created_at,
+    })
+    .from(studio_inquiries)
+    .where(and(eq(studio_inquiries.id, id), eq(studio_inquiries.email, customer.email.toLowerCase())))
+    .limit(1);
+
+  if (!inquiry) return c.json({ error: 'Conversation not found' }, 404);
+
+  const messages = await db
+    .select({
+      id: studio_inquiry_messages.id,
+      sender_type: studio_inquiry_messages.sender_type,
+      sender_name: studio_inquiry_messages.sender_name,
+      sender_email: studio_inquiry_messages.sender_email,
+      message: studio_inquiry_messages.message,
+      created_at: studio_inquiry_messages.created_at,
+    })
+    .from(studio_inquiry_messages)
+    .where(eq(studio_inquiry_messages.inquiry_id, id))
+    .orderBy(asc(studio_inquiry_messages.created_at));
+
+  await db
+    .update(studio_inquiries)
+    .set({ unread_by_customer: false, updated_at: new Date() })
+    .where(eq(studio_inquiries.id, id));
+
+  return c.json({ inquiry, messages });
+});
+
+storeCustomersRouter.post('/me/studio-inquiries/:id/messages', verifyCustomer, async (c) => {
+  const payload = c.get('customer' as any) as any;
+  const id = c.req.param('id');
+  const customer = await db.query.customers.findFirst({
+    where: eq(customers.id, payload.sub),
+  });
+
+  if (!customer?.email) return c.json({ error: 'Customer not found' }, 404);
+
+  const body = await c.req.json().catch(() => ({}));
+  const parsed = z.object({ message: z.string().min(2).max(2000) }).safeParse(body);
+  if (!parsed.success) return c.json({ error: 'Validation failed', details: parsed.error.errors }, 400);
+
+  const [inquiry] = await db
+    .select({ id: studio_inquiries.id })
+    .from(studio_inquiries)
+    .where(and(eq(studio_inquiries.id, id), eq(studio_inquiries.email, customer.email.toLowerCase())))
+    .limit(1);
+
+  if (!inquiry) return c.json({ error: 'Conversation not found' }, 404);
+
+  const [message] = await db
+    .insert(studio_inquiry_messages)
+    .values({
+      inquiry_id: id,
+      sender_type: 'customer',
+      sender_name: `${customer.first_name || ''} ${customer.last_name || ''}`.trim() || customer.email,
+      sender_email: customer.email.toLowerCase(),
+      message: parsed.data.message,
+    })
+    .returning({
+      id: studio_inquiry_messages.id,
+      sender_type: studio_inquiry_messages.sender_type,
+      sender_name: studio_inquiry_messages.sender_name,
+      sender_email: studio_inquiry_messages.sender_email,
+      message: studio_inquiry_messages.message,
+      created_at: studio_inquiry_messages.created_at,
+    });
+
+  await db
+    .update(studio_inquiries)
+    .set({
+      status: 'in_progress',
+      message: parsed.data.message,
+      last_message_at: new Date(),
+      unread_by_admin: true,
+      updated_at: new Date(),
+    })
+    .where(eq(studio_inquiries.id, id));
+
+  return c.json({ success: true, message });
 });
 
 // --- ADDRESS ROUTES ---

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Package, Heart, Clock, Headphones } from 'lucide-react';
+import { Package, Heart, Clock, MessageCircle } from 'lucide-react';
 import { useWishlist } from '@/context/wishlist-context';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
 
@@ -32,9 +32,9 @@ export function QuickGrid() {
       active: true,
     },
     {
-      href: '/contact',
-      icon: Headphones,
-      label: 'Help Center',
+      href: '/account/messages',
+      icon: MessageCircle,
+      label: 'Messages',
       count: null,
       active: true,
     },

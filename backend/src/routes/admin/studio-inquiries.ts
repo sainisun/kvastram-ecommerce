@@ -159,7 +159,15 @@ router.post('/:id/messages', verifyAdmin, async (c) => {
     }
 
     const [existing] = await db
-      .select({ id: studio_inquiries.id })
+      .select({
+        id: studio_inquiries.id,
+        email: studio_inquiries.email,
+        customer_name: studio_inquiries.customer_name,
+        product_title: studio_inquiries.product_title,
+        product_handle: studio_inquiries.product_handle,
+        product_url: studio_inquiries.product_url,
+        conversation_token: studio_inquiries.conversation_token,
+      })
       .from(studio_inquiries)
       .where(eq(studio_inquiries.id, id))
       .limit(1);
@@ -196,6 +204,23 @@ router.post('/:id/messages', verifyAdmin, async (c) => {
         updated_at: new Date(),
       })
       .where(eq(studio_inquiries.id, id));
+
+    if (existing.email && existing.conversation_token) {
+      const productPath = existing.product_url || `${process.env.STOREFRONT_URL || process.env.FRONTEND_URL || 'https://kvastram.com'}/products/${existing.product_handle || id}`;
+      const separator = productPath.includes('?') ? '&' : '?';
+      const conversationUrl = `${productPath}${separator}chat=${encodeURIComponent(id)}&token=${encodeURIComponent(existing.conversation_token)}`;
+      import('../../services/email-service')
+        .then(({ emailService }) =>
+          emailService.sendStudioReplyNotification({
+            email: existing.email!,
+            customer_name: existing.customer_name,
+            product_title: existing.product_title,
+            message: parsed.data.message,
+            conversation_url: conversationUrl,
+          })
+        )
+        .catch((emailError) => console.error('[StudioInquiries Admin] Failed to send reply email:', emailError));
+    }
 
     return c.json({ success: true, message });
   } catch (error: any) {

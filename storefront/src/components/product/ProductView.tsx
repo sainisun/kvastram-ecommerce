@@ -120,6 +120,17 @@ export default function ProductView({ product }: { product: Product }) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const chatId = params.get('chat');
+    const token = params.get('token');
+    if (chatId && token) {
+      const conversation = { id: chatId, token };
+      setStudioConversation(conversation);
+      setInquiryOpen(true);
+      window.localStorage.setItem(`kvastram-studio-chat:${product.id}`, JSON.stringify(conversation));
+      return;
+    }
+
     const stored = window.localStorage.getItem(`kvastram-studio-chat:${product.id}`);
     if (!stored) return;
 

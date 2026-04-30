@@ -504,6 +504,47 @@ class EmailService {
   }
 
   // 💌 Bulk Marketing Blast Email
+  async sendStudioReplyNotification(data: {
+    email: string;
+    customer_name?: string | null;
+    product_title: string;
+    message: string;
+    conversation_url: string;
+  }) {
+    const subject = `Kvastram Studio replied about ${data.product_title}`;
+    const safeName = safeString(data.customer_name || 'there');
+    const safeProduct = safeString(data.product_title);
+    const safeMessage = safeString(data.message);
+    const safeUrl = safeString(data.conversation_url);
+    const text = `Hi ${data.customer_name || 'there'},\n\nKvastram Studio replied to your message about ${data.product_title}:\n\n${data.message}\n\nOpen your conversation here:\n${data.conversation_url}\n\nBest regards,\nKvastram Studio`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        <div style="background: #1a1614; padding: 24px; text-align: center;">
+          <h2 style="color: #f5c842; margin: 0; font-size: 22px; letter-spacing: 2px;">KVASTRAM</h2>
+        </div>
+        <div style="padding: 32px 24px;">
+          <h1 style="font-size: 24px; color: #1a1614;">Kvastram Studio replied</h1>
+          <p>Hi ${safeName},</p>
+          <p>We replied to your message about <strong>${safeProduct}</strong>.</p>
+          <div style="background: #f9f7f5; border-left: 4px solid #1a1614; padding: 16px; margin: 24px 0;">
+            ${safeMessage.replace(/\n/g, '<br>')}
+          </div>
+          <p style="text-align: center; margin: 32px 0;">
+            <a href="${safeUrl}"
+               style="background-color: #1a1614; color: white; padding: 14px 32px; text-decoration: none; display: inline-block; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 13px;">
+              Open Conversation
+            </a>
+          </p>
+          <p style="color: #888; font-size: 12px; margin-top: 40px; border-top: 1px solid #eee; padding-top: 16px;">
+            This secure link opens your product conversation. Please do not forward it.
+          </p>
+        </div>
+      </div>
+    `;
+
+    return this.sendEmail({ to: data.email, subject, text, html });
+  }
+
   async sendMarketingBlast(data: {
     to: string[];
     campaign_name: string;
