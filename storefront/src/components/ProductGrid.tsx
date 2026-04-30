@@ -289,6 +289,18 @@ function ProductGrid({
           {addedId === product.id ? 'Added' : 'Quick Add'}
         </button>
 
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            setQuickViewProduct(product);
+          }}
+          className="absolute bottom-14 left-3 right-3 z-20 translate-y-3 border border-stone-200 bg-white px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-950 opacity-0 shadow-[0_12px_34px_rgba(0,0,0,0.12)] transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+          aria-label={`Quick view ${product.title}`}
+        >
+          Quick View
+        </button>
+
         <a
           href={`/products/${product.handle || product.id}`}
           className="prod-info-prem block"

@@ -418,7 +418,19 @@ export default function ProductView({ product }: { product: Product }) {
 
             <section className="space-y-4 border-b border-stone-200 pb-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500">{product.collection?.title || 'Kvastram Collection'}</p>
-              <h1 className="font-heading text-[20px] font-normal leading-[1.1] tracking-[-0.03em] text-stone-950">{product.title}</h1>
+              <h1 className="font-heading text-[clamp(42px,6vw,72px)] font-medium leading-none tracking-[-0.03em] text-stone-950">{product.title}</h1>
+              {product.avg_rating != null && product.avg_rating > 0 ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-amber-500">{'★★★★★'.slice(0, Math.round(product.avg_rating))}</span>
+                  <span className="text-[13px] text-stone-500">
+                    {product.avg_rating.toFixed(1)} / 5
+                    {product.review_count ? ` · ${product.review_count} reviews` : ''}
+                  </span>
+                  <a href="#reviews" className="border border-stone-200 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-900 transition-colors hover:border-stone-900">
+                    Write Review
+                  </a>
+                </div>
+              ) : null}
               {product.subtitle && <p className="text-[15px] leading-7 text-stone-600">{product.subtitle}</p>}
               <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-800">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
@@ -830,7 +842,9 @@ export default function ProductView({ product }: { product: Product }) {
         </div>
       </div>
 
-      <Reviews productId={product.id} />
+      <div id="reviews">
+        <Reviews productId={product.id} />
+      </div>
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} sizeGuide={product.size_guide} />
 
       {/* Sticky ATC: leaves clear room for the mobile bottom nav on small screens */}

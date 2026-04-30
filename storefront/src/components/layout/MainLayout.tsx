@@ -14,6 +14,7 @@ import { ArrowUp } from 'lucide-react';
 import { PageLoader } from '@/components/ui/PageLoader';
 import { CustomCursor } from '@/components/ui/CustomCursor';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
+import { NewsletterModal } from '@/components/ui/NewsletterModal';
 
 function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -94,6 +95,7 @@ export function MainLayout({
       {!hideSiteChrome && <CartRecovery />}
       {/* Cookie Consent */}
       {!hideSiteChrome && !isWholesalePage && <CookieConsent />}
+      {!hideSiteChrome && !isWholesalePage && <NewsletterModal />}
     </>
   );
 }

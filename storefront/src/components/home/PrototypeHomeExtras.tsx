@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import type { MoneyAmount, Product } from '@/types';
@@ -16,6 +17,7 @@ interface PrototypeHomeExtrasProps {
   bestsellerProducts: Product[];
   collections: HomepageCollection[];
   tags: Tag[];
+  children?: ReactNode;
 }
 
 const campaignPlaceholders = [
@@ -144,6 +146,7 @@ export function PrototypeHomeExtras({
   bestsellerProducts,
   collections,
   tags,
+  children,
 }: PrototypeHomeExtrasProps) {
   const saleProducts = products.filter(isSaleProduct);
   const tabProducts = [
@@ -247,6 +250,8 @@ export function PrototypeHomeExtras({
           </div>
         </div>
       </section>
+
+      {children}
 
       <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">

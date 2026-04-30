@@ -11,7 +11,6 @@ import {
 } from '@/lib/seo';
 import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
-import { CategoriesGrid } from '@/components/home/CategoriesGrid';
 import { BrandStory } from '@/components/home/BrandStory';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
 import { BestSellers } from '@/components/home/BestSellers';
@@ -23,7 +22,6 @@ import { Testimonials } from '@/components/home/Testimonials';
 import { PrototypeHomeExtras } from '@/components/home/PrototypeHomeExtras';
 import type { Product } from '@/types';
 import type {
-  HomepageCategoryCard,
   HomepageCollection,
   HomepageTestimonial,
   HomepageTrendingReel,
@@ -60,7 +58,6 @@ export default async function Home() {
     testimonialsResult,
     collectionsResult,
     reelsResult,
-    categoriesResult,
     spotlightsResult,
     newArrivalsResult,
     bestsellersResult,
@@ -72,7 +69,6 @@ export default async function Home() {
     api.getTestimonials(),
     api.getCollections(),
     api.getTrendingReels(),
-    api.getHomepageCategories(),
     api.getSpotlightProducts('spotlight'),
     api.getSpotlightProducts('new_arrivals'),
     api.getSpotlightProducts('bestsellers'),
@@ -212,53 +208,6 @@ export default async function Home() {
           )
       : [];
 
-  const homepageCategories: HomepageCategoryCard[] =
-    categoriesResult.status === 'fulfilled'
-      ? (categoriesResult.value.categories || [])
-          .filter(
-            (item: {
-              id?: string;
-              is_active?: boolean;
-              image_url?: string;
-              link_url?: string;
-              name?: string;
-            }) =>
-              Boolean(
-                item?.id &&
-                  item?.is_active &&
-                  item?.image_url &&
-                  storefrontHrefOrNull(item?.link_url) &&
-                  item?.name
-              )
-          )
-          .filter((item: { image_url?: string | null }) =>
-            Boolean(cloudinaryUrlOrNull(item.image_url))
-          )
-          .sort(
-            (
-              a: { sort_order?: number | null },
-              b: { sort_order?: number | null }
-            ) => (a.sort_order || 0) - (b.sort_order || 0)
-          )
-          .map(
-            (item: {
-              id: string;
-              image_url: string;
-              name: string;
-              link_url: string;
-              is_active: boolean;
-              sort_order: number;
-            }) => ({
-              id: item.id,
-              image_url: cloudinaryUrlOrNull(item.image_url) || '',
-              name: item.name,
-              link_url: storefrontHrefOrNull(item.link_url) || '/collections',
-              is_active: item.is_active,
-              sort_order: item.sort_order,
-            })
-          )
-      : [];
-
   const spotlightProducts: HomepageSpotlightProduct[] =
     spotlightsResult.status === 'fulfilled'
       ? (spotlightsResult.value.featuredProducts || [])
@@ -382,13 +331,11 @@ export default async function Home() {
 
       <CircularCategories />
       <HeroSection banners={heroBanners} />
-      <CategoriesGrid categories={homepageCategories} />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
         isCurated={newArrivalProducts.length > 0}
       />
       <CollectionsSection collections={collections} />
-      <ShopTheLook spotlightProducts={spotlightProducts} />
       <WatchBuyPreview reels={trendingReels} />
       <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
@@ -397,7 +344,9 @@ export default async function Home() {
         bestsellerProducts={bestsellerProducts}
         collections={collections}
         tags={tags}
-      />
+      >
+        <ShopTheLook spotlightProducts={spotlightProducts} />
+      </PrototypeHomeExtras>
       <Testimonials testimonials={testimonials} />
       <NewsletterSection settings={homepageSettings} />
     </>

@@ -99,23 +99,23 @@ export default function TrackOrderPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="border-b border-stone-100 bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="max-w-3xl mx-auto text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-serif text-stone-900">
-            Track Your Order
-          </h1>
-          <p className="text-stone-600 font-light">
-            Enter your order ID to track your shipment
-          </p>
-        </div>
-      </div>
+      <section className="bg-[#f8f1eb] px-6 py-14 md:px-12 md:py-20 lg:px-20">
+        <div className="mx-auto max-w-[860px]">
+          <div className="border border-stone-200 bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.05)] md:p-10">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-stone-500">
+              Order tracking
+            </div>
+            <h1 className="mt-3 font-heading text-[clamp(42px,6vw,72px)] font-medium leading-none tracking-[-0.03em] text-stone-950">
+              Track your order
+            </h1>
+            <p className="mt-4 max-w-2xl text-[15px] leading-7 text-stone-600">
+              Enter your order ID to load real shipment details and see the visual delivery timeline.
+            </p>
 
-      <div className="mx-auto max-w-3xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        {/* Search Form */}
-        <form onSubmit={handleSearch} className="mb-12 space-y-6">
-          <div className="grid md:grid-cols-2 gap-4">
+        <form onSubmit={handleSearch} className="mt-8 space-y-5">
+          <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-xs font-bold uppercase text-stone-500 mb-2">
+              <label className="mb-2 block text-xs font-bold uppercase tracking-[0.16em] text-stone-500">
                 Order ID
               </label>
               <input
@@ -123,12 +123,12 @@ export default function TrackOrderPage() {
                 value={orderId}
                 onChange={(e) => setOrderId(e.target.value)}
                 placeholder="e.g., ORD-12345"
-                className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900"
+                className="w-full border border-stone-200 bg-white px-4 py-3 outline-none transition focus:border-stone-900"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase text-stone-500 mb-2">
+              <label className="mb-2 block text-xs font-bold uppercase tracking-[0.16em] text-stone-500">
                 Email
               </label>
               <input
@@ -136,7 +136,7 @@ export default function TrackOrderPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900"
+                className="w-full border border-stone-200 bg-white px-4 py-3 outline-none transition focus:border-stone-900"
               />
             </div>
           </div>
@@ -156,18 +156,39 @@ export default function TrackOrderPage() {
         </form>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 p-4 text-center text-red-600">
+          <div className="mt-6 border border-red-200 bg-red-50 p-4 text-center text-red-600">
             {error}
           </div>
         )}
 
-        {order && (
-          <div className="space-y-8">
+        <div className="mt-8 overflow-x-auto">
+          <div className="grid min-w-[620px] grid-cols-5 gap-2">
+            {(order ? getStatusSteps(order.status) : getStatusSteps('out_for_delivery')).map((step, index) => (
+              <div key={step.key} className={`text-center text-[12px] ${step.completed || step.current ? 'text-stone-900' : 'text-stone-400'}`}>
+                <div
+                  className={`mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full border-2 ${
+                    step.completed
+                      ? 'border-[#a85d3a] bg-[#a85d3a] text-white'
+                      : step.current
+                        ? 'border-[#a85d3a] bg-white text-[#a85d3a] shadow-[0_0_0_4px_rgba(168,93,58,0.12)]'
+                        : 'border-stone-200 bg-white text-stone-400'
+                  }`}
+                >
+                  {step.completed ? <CheckCircle size={18} /> : index + 1}
+                </div>
+                {step.label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {order ? (
+          <div className="mt-8 space-y-6">
             {/* Order Info */}
-            <div className="bg-stone-50 p-6">
-              <div className="flex items-center justify-between mb-4">
+            <div className="border border-stone-100 bg-stone-50 p-6">
+              <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold uppercase text-stone-500">
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">
                     Order ID
                   </p>
                   <p className="text-lg font-medium text-stone-900">
@@ -175,7 +196,8 @@ export default function TrackOrderPage() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold uppercase text-stone-500">
+                  <div className="mb-2 flex justify-end">{getStatusIcon(order.status)}</div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">
                     Status
                   </p>
                   <p className="text-lg font-medium text-stone-900 capitalize">
@@ -196,50 +218,9 @@ export default function TrackOrderPage() {
               )}
             </div>
 
-            {/* Progress Steps */}
-            <div>
-              <h3 className="text-lg font-serif text-stone-900 mb-6">
-                Delivery Progress
-              </h3>
-              <div className="relative">
-                <div className="absolute top-5 left-0 right-0 h-0.5 bg-stone-200">
-                  <div
-                    className="h-full bg-stone-900 transition-all duration-500"
-                    style={{
-                      width: `${(getStatusSteps(order.status).filter((s) => s.completed).length / 5) * 100}%`,
-                    }}
-                  />
-                </div>
-                <div className="relative flex justify-between">
-                  {getStatusSteps(order.status).map((step, index) => (
-                    <div key={step.key} className="flex flex-col items-center">
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center z-10 ${
-                          step.completed
-                            ? 'bg-stone-900 text-white'
-                            : 'bg-stone-100 text-stone-400'
-                        }`}
-                      >
-                        {step.completed ? (
-                          <CheckCircle size={20} />
-                        ) : (
-                          <span className="text-sm">{index + 1}</span>
-                        )}
-                      </div>
-                      <p
-                        className={`mt-2 text-xs text-center ${step.completed ? 'text-stone-900 font-medium' : 'text-stone-400'}`}
-                      >
-                        {step.label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
             {/* Shipping Address */}
-            <div>
-              <h3 className="text-lg font-serif text-stone-900 mb-4">
+            <div className="border border-stone-100 bg-white p-5">
+              <h3 className="mb-4 font-heading text-[22px] text-stone-900">
                 Shipping Address
               </h3>
               <div className="flex items-start gap-3 text-stone-600">
@@ -260,8 +241,8 @@ export default function TrackOrderPage() {
             </div>
 
             {/* Order Items */}
-            <div>
-              <h3 className="text-lg font-serif text-stone-900 mb-4">
+            <div className="border border-stone-100 bg-white p-5">
+              <h3 className="mb-4 font-heading text-[22px] text-stone-900">
                 Order Items
               </h3>
               <div className="space-y-3">
@@ -284,8 +265,25 @@ export default function TrackOrderPage() {
               </div>
             </div>
           </div>
+        ) : (
+          <div className="mt-6 grid gap-3">
+            <div className="border border-stone-100 bg-stone-50 p-5">
+              <strong className="text-stone-950">Out for Delivery</strong>
+              <p className="mt-1 text-[14px] leading-6 text-stone-600">
+                Your live package status will appear here after a successful lookup.
+              </p>
+            </div>
+            <div className="border border-stone-100 bg-stone-50 p-5">
+              <strong className="text-stone-950">Arrived at Jaipur Hub</strong>
+              <p className="mt-1 text-[14px] leading-6 text-stone-600">
+                Prototype-style milestone cards stay visible as a helpful empty state.
+              </p>
+            </div>
+          </div>
         )}
+          </div>
+        </div>
+      </section>
       </div>
-    </div>
   );
 }
