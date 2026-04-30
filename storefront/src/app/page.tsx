@@ -20,6 +20,7 @@ import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { Testimonials } from '@/components/home/Testimonials';
+import { PrototypeHomeExtras } from '@/components/home/PrototypeHomeExtras';
 import type { Product } from '@/types';
 import type {
   HomepageCategoryCard,
@@ -43,6 +44,11 @@ type HomepageSettings = {
   featured_product_ids?: string | null;
 };
 
+type HomepageTag = {
+  id: string;
+  name: string;
+};
+
 export const revalidate = 60;
 
 export const metadata: Metadata = buildHomepageMetadata();
@@ -59,6 +65,7 @@ export default async function Home() {
     newArrivalsResult,
     bestsellersResult,
     heroBannersResult,
+    tagsResult,
   ] = await Promise.allSettled([
     api.getHomepageSettings(),
     api.getProducts({ limit: 8, sort: 'newest' }),
@@ -70,6 +77,7 @@ export default async function Home() {
     api.getSpotlightProducts('new_arrivals'),
     api.getSpotlightProducts('bestsellers'),
     api.getHeroBanners(),
+    api.getTags(),
   ]);
 
   const homepageSettings: HomepageSettings =
@@ -347,6 +355,18 @@ export default async function Home() {
           )
       : [];
 
+  const tags: HomepageTag[] =
+    tagsResult.status === 'fulfilled'
+      ? (tagsResult.value.tags || [])
+          .filter((tag: { id?: string; name?: string }) =>
+            Boolean(tag?.id && tag?.name)
+          )
+          .map((tag: { id: string; name: string }) => ({
+            id: tag.id,
+            name: tag.name,
+          }))
+      : [];
+
   const homepageSchema = [
     buildOrganizationJsonLd(),
     buildWebsiteJsonLd(),
@@ -372,6 +392,12 @@ export default async function Home() {
       <WatchBuyPreview reels={trendingReels} />
       <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
+      <PrototypeHomeExtras
+        products={products}
+        bestsellerProducts={bestsellerProducts}
+        collections={collections}
+        tags={tags}
+      />
       <Testimonials testimonials={testimonials} />
       <NewsletterSection settings={homepageSettings} />
     </>

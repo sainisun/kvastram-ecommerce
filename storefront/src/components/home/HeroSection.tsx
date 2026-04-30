@@ -22,19 +22,42 @@ interface HeroSectionProps {
 
 interface ResolvedSlide {
   id: string;
-  imageUrl: string;
+  imageUrl?: string;
   alt: string;
+  placeholderClass?: string;
 }
 
 export function HeroSection({ banners = [] }: HeroSectionProps) {
   const slides = useMemo<ResolvedSlide[]>(() => {
-    return banners
-      .map((banner) => ({
+    const realSlides = banners
+      .map((banner): ResolvedSlide => ({
         id: banner.id,
-        imageUrl: cloudinaryUrlOrNull(banner.image_url),
+        imageUrl: cloudinaryUrlOrNull(banner.image_url) || undefined,
         alt: banner.title?.trim() || banner.subtitle?.trim() || 'Kvastram hero',
       }))
-      .filter((banner): banner is ResolvedSlide => Boolean(banner.imageUrl));
+      .filter((banner) => Boolean(banner.imageUrl));
+
+    if (realSlides.length > 0) {
+      return realSlides;
+    }
+
+    return [
+      {
+        id: 'placeholder-kantha',
+        alt: 'Kvastram Kantha placeholder hero',
+        placeholderClass: 'from-[#a85d3a] via-[#c4956a] to-[#f4d4b8]',
+      },
+      {
+        id: 'placeholder-block-print',
+        alt: 'Kvastram block print placeholder hero',
+        placeholderClass: 'from-[#174f70] via-[#7a9b7f] to-[#d5b08a]',
+      },
+      {
+        id: 'placeholder-occasion',
+        alt: 'Kvastram occasion placeholder hero',
+        placeholderClass: 'from-[#7f1d1d] via-[#c4956a] to-[#f4d4b8]',
+      },
+    ];
   }, [banners]);
 
   const autoplay = useMemo(
@@ -83,10 +106,6 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
     [emblaApi]
   );
 
-  if (slides.length === 0) {
-    return null;
-  }
-
   return (
     <section
       data-hero-slider
@@ -102,14 +121,20 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
                 className="relative h-full min-w-0 flex-[0_0_100%]"
               >
                 <div className="absolute inset-0">
-                  <OptimizedImage
-                    src={slide.imageUrl}
-                    alt={slide.alt}
-                    fill
-                    priority={slide.id === slides[0]?.id}
-                    sizes="100vw"
-                    className="object-cover object-center"
-                  />
+                  {slide.imageUrl ? (
+                    <OptimizedImage
+                      src={slide.imageUrl}
+                      alt={slide.alt}
+                      fill
+                      priority={slide.id === slides[0]?.id}
+                      sizes="100vw"
+                      className="object-cover object-center"
+                    />
+                  ) : (
+                    <div
+                      className={`h-full w-full bg-gradient-to-br ${slide.placeholderClass}`}
+                    />
+                  )}
                 </div>
               </div>
             );

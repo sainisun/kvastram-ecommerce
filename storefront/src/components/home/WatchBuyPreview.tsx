@@ -13,11 +13,35 @@ interface WatchBuyPreviewProps {
 export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
   const { formatPrice } = useCurrency();
 
-  if (reels.length === 0) return null;
-
-  const displayed = reels.filter((reel) => reel.thumbnail_url).slice(0, 4);
-
-  if (displayed.length === 0) return null;
+  const displayed =
+    reels.length > 0
+      ? reels.slice(0, 4)
+      : [
+          {
+            id: 'placeholder-style',
+            video_url: '',
+            thumbnail_url: '',
+            product_name: 'Three ways to drape Kantha',
+            price: 'Tap to view and shop',
+            price_amount: null,
+            link_url: '/reels',
+            view_count: 0,
+            is_active: true,
+            sort_order: 0,
+          },
+          {
+            id: 'placeholder-occasion',
+            video_url: '',
+            thumbnail_url: '',
+            product_name: 'Wedding guest saree try-on',
+            price: 'Tap to view and shop',
+            price_amount: null,
+            link_url: '/reels',
+            view_count: 0,
+            is_active: true,
+            sort_order: 1,
+          },
+        ];
 
   return (
     <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
@@ -42,13 +66,17 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
               className="group relative overflow-hidden bg-stone-100"
             >
               <div className="relative aspect-[4/5]">
-                <OptimizedImage
-                  src={reel.thumbnail_url}
-                  alt={reel.product_name}
-                  fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                {reel.thumbnail_url ? (
+                  <OptimizedImage
+                    src={reel.thumbnail_url}
+                    alt={reel.product_name}
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-gradient-to-br from-[#a85d3a] via-[#c4956a] to-[#f4d4b8]" />
+                )}
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.72)_0%,transparent_52%)]" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <PlayCircle

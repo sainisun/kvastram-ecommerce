@@ -7,13 +7,29 @@ interface CollectionsSectionProps {
 }
 
 export function CollectionsSection({ collections }: CollectionsSectionProps) {
-  if (collections.length === 0) return null;
-
-  const displayed = collections
-    .filter((collection) => Boolean(collection.image))
-    .slice(0, 12);
-
-  if (displayed.length === 0) return null;
+  const displayed =
+    collections.length > 0
+      ? collections.slice(0, 12)
+      : [
+          {
+            id: 'placeholder-kantha',
+            title: 'Kantha Stories',
+            handle: 'kantha-stories',
+            image: null,
+          },
+          {
+            id: 'placeholder-block-print',
+            title: 'Block Print Classics',
+            handle: 'block-print-classics',
+            image: null,
+          },
+          {
+            id: 'placeholder-occasion',
+            title: 'Occasion Ready',
+            handle: 'occasion-ready',
+            image: null,
+          },
+        ];
 
   return (
     <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
@@ -35,13 +51,19 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
               className="group relative min-w-[78%] snap-start overflow-hidden bg-stone-100 sm:min-w-[44%] lg:min-w-[31%]"
             >
               <div className="relative aspect-[3/4]">
-                <OptimizedImage
-                  src={collection.image || ''}
-                  alt={collection.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                {collection.image ? (
+                  <OptimizedImage
+                    src={collection.image}
+                    alt={collection.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#a85d3a] via-[#c4956a] to-[#174f70] font-heading text-[72px] text-white/80">
+                    {collection.title.charAt(0)}
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.6)_0%,transparent_50%)]" />
                 <div className="absolute inset-x-0 bottom-0 p-8">
                   <h3 className="font-heading text-[28px] font-medium leading-[0.96] text-white">

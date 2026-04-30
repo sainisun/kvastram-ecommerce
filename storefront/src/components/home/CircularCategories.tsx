@@ -23,13 +23,56 @@ export async function CircularCategories() {
         image_url: cloudinaryUrlOrNull(c.image_url),
       }));
   } catch {
-    return null;
+    circles = [];
   }
 
-  if (circles.length === 0) return null;
+  if (circles.length === 0) {
+    circles = [
+      {
+        id: 'placeholder-kantha',
+        label: 'Kantha',
+        link_url: '/products',
+        image_url: null,
+        sort_order: 0,
+        is_active: true,
+      },
+      {
+        id: 'placeholder-sarees',
+        label: 'Sarees',
+        link_url: '/products',
+        image_url: null,
+        sort_order: 1,
+        is_active: true,
+      },
+      {
+        id: 'placeholder-kurtas',
+        label: 'Kurtas',
+        link_url: '/products',
+        image_url: null,
+        sort_order: 2,
+        is_active: true,
+      },
+      {
+        id: 'placeholder-shawls',
+        label: 'Shawls',
+        link_url: '/products',
+        image_url: null,
+        sort_order: 3,
+        is_active: true,
+      },
+      {
+        id: 'placeholder-accessories',
+        label: 'Accessories',
+        link_url: '/products',
+        image_url: null,
+        sort_order: 4,
+        is_active: true,
+      },
+    ];
+  }
 
   return (
-    <section className="flex gap-4 overflow-x-auto bg-white px-6 py-4 no-scrollbar md:hidden">
+    <section className="flex gap-4 overflow-x-auto bg-white px-6 py-4 no-scrollbar">
       {circles.map((circle, i) => (
         <Link
           key={circle.id}
@@ -52,7 +95,9 @@ export async function CircularCategories() {
                 />
               </div>
             ) : (
-              <div className="h-full w-full rounded-full bg-zinc-200" />
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-[#f4d4b8] to-[#a85d3a] font-heading text-2xl text-white">
+                {circle.label.charAt(0)}
+              </div>
             )}
           </div>
           <span className="mt-2 text-center text-[10px] font-medium uppercase tracking-[0.14em] text-stone-600">

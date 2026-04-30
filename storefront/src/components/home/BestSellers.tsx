@@ -12,7 +12,12 @@ interface BestSellersProps {
 export function BestSellers({ products }: BestSellersProps) {
   const { formatPrice } = useCurrency();
   const displayed = products.slice(0, 4);
-  if (displayed.length === 0) return null;
+  const placeholders = [
+    'Customer Loved Kantha',
+    'Block Print Favorite',
+    'Occasion Saree Edit',
+    'Artisan Gift Pick',
+  ];
 
   function getInrAmount(product: Product): number {
     const prices = product.variants?.[0]?.prices || [];
@@ -38,7 +43,7 @@ export function BestSellers({ products }: BestSellersProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
-          {displayed.map((product) => (
+          {displayed.length > 0 ? displayed.map((product) => (
             <article key={product.id} className="group">
               <Link
                 href={`/products/${product.handle || product.id}`}
@@ -53,7 +58,9 @@ export function BestSellers({ products }: BestSellersProps) {
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-stone-200" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#f4d4b8] to-[#a85d3a] font-heading text-[64px] text-white/80">
+                    {product.title.charAt(0)}
+                  </div>
                 )}
               </Link>
 
@@ -67,6 +74,31 @@ export function BestSellers({ products }: BestSellersProps) {
                   <div className="mt-2 flex items-center gap-2">
                     <span className="font-body text-[15px] font-normal text-stone-950">
                       {getInrAmount(product) ? formatPrice(getInrAmount(product)) : ''}
+                    </span>
+                  </div>
+              </div>
+            </article>
+          )) : placeholders.map((placeholder, index) => (
+            <article key={placeholder} className="group">
+              <Link
+                href="/products"
+                className="relative block aspect-[4/5] overflow-hidden bg-stone-100"
+              >
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#f4d4b8] to-[#a85d3a] font-heading text-[64px] text-white/80">
+                  {placeholder.charAt(0)}
+                </div>
+              </Link>
+
+              <div className="pt-4">
+                  <Link
+                    href="/products"
+                    className="font-body mt-1 line-clamp-2 block text-[15px] font-normal leading-[1.55] text-stone-900 sm:text-[16px]"
+                  >
+                    {placeholder}
+                  </Link>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="font-body text-[15px] font-normal text-stone-950">
+                      {index === 0 ? 'Coming soon' : ''}
                     </span>
                   </div>
               </div>
