@@ -15,6 +15,7 @@ const heroBannerFieldsSchema = z.object({
   subtitle: z.string().trim().max(500).nullable(),
   button_text: z.string().trim().max(100).nullable(),
   button_link: z.string().trim().max(500).nullable(),
+  mobile_image_url: z.string().trim().max(500).nullable().optional(),
   is_active: z.boolean().default(true),
   sort_order: z.number().int().min(0).default(0),
 });
@@ -60,12 +61,15 @@ async function parseHeroBannerForm(
   const body = await c.req.parseBody();
   const image = body.image || body.file;
   const imageFile = image instanceof File ? image : undefined;
+  const mobileImage = body.mobile_image || body.mobile_file;
+  const mobileImageFile = mobileImage instanceof File ? mobileImage : undefined;
 
   const fields = heroBannerFieldsSchema.parse({
     title: normalizeOptionalString(body.title),
     subtitle: normalizeOptionalString(body.subtitle),
     button_text: normalizeOptionalString(body.button_text),
     button_link: normalizeOptionalString(body.button_link),
+    mobile_image_url: normalizeOptionalString(body.mobile_image_url),
     is_active: parseBoolean(body.is_active, defaults?.is_active ?? true),
     sort_order: parseSortOrder(body.sort_order, defaults?.sort_order ?? 0),
   });
@@ -73,6 +77,7 @@ async function parseHeroBannerForm(
   return {
     fields,
     imageFile,
+    mobileImageFile,
   };
 }
 
@@ -92,19 +97,23 @@ app.get('/', async (c) => {
 
 app.post('/', async (c) => {
   try {
-    const { fields, imageFile } = await parseHeroBannerForm(c);
+    const { fields, imageFile, mobileImageFile } = await parseHeroBannerForm(c);
 
     if (!imageFile) {
       return c.json({ error: 'Image is required' }, 400);
     }
 
     const upload = await uploadImageToCloudinary(imageFile);
+    const mobileUpload = mobileImageFile
+      ? await uploadImageToCloudinary(mobileImageFile)
+      : null;
 
     const [banner] = await db
       .insert(hero_banners)
       .values({
         ...fields,
         image_url: upload.secureUrl,
+        mobile_image_url: mobileUpload?.secureUrl || fields.mobile_image_url || null,
       })
       .returning();
 
@@ -139,16 +148,23 @@ app.put('/:id', async (c) => {
       return c.json({ error: 'Hero banner not found' }, 404);
     }
 
-    const { fields, imageFile } = await parseHeroBannerForm(c, {
+    const { fields, imageFile, mobileImageFile } = await parseHeroBannerForm(c, {
       is_active: existingBanner.is_active ?? true,
       sort_order: existingBanner.sort_order ?? 0,
     });
 
     let imageUrl = existingBanner.image_url;
+    let mobileImageUrl = existingBanner.mobile_image_url;
 
     if (imageFile) {
       const upload = await uploadImageToCloudinary(imageFile);
       imageUrl = upload.secureUrl;
+    }
+    if (mobileImageFile) {
+      const upload = await uploadImageToCloudinary(mobileImageFile);
+      mobileImageUrl = upload.secureUrl;
+    } else if (fields.mobile_image_url !== undefined) {
+      mobileImageUrl = fields.mobile_image_url;
     }
 
     const [banner] = await db
@@ -156,6 +172,7 @@ app.put('/:id', async (c) => {
       .set({
         ...fields,
         image_url: imageUrl,
+        mobile_image_url: mobileImageUrl,
       })
       .where(eq(hero_banners.id, id))
       .returning();

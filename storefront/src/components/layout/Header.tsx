@@ -20,7 +20,6 @@ import { usePathname } from 'next/navigation';
 import SearchOverlay from '@/components/search/SearchOverlay';
 import MobileMenu from '@/components/layout/MobileMenu';
 import CartDrawer from '@/components/layout/CartDrawer';
-import MegaMenu from '@/components/layout/MegaMenu';
 
 interface NavLink {
   label: string;
@@ -80,7 +79,6 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCartDrawer, setShowCartDrawer] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -185,7 +183,6 @@ export function Header() {
 
   // Scroll listener for smart sticky header & shrinking
   useEffect(() => {
-    let lastScrollY = globalThis.scrollY || 0;
     let ticking = false;
 
     const handleScroll = () => {
@@ -194,14 +191,6 @@ export function Header() {
           const currentScrollY = globalThis.scrollY;
 
           setIsScrolled(currentScrollY > 50);
-
-          if (currentScrollY > lastScrollY && currentScrollY > 150) {
-            setScrollDirection('down');
-          } else if (currentScrollY < lastScrollY) {
-            setScrollDirection('up');
-          }
-
-          lastScrollY = Math.max(0, currentScrollY);
           ticking = false;
         });
         ticking = true;
@@ -215,9 +204,7 @@ export function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-stone-100 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-          scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
-        }`}
+        className="sticky top-0 z-50 border-b border-[var(--line)] bg-white/95 backdrop-blur-md"
       >
         {/* Announcement Strip — Premium with shimmer & dismiss */}
         {announcementEnabled && announcementText && !announcementDismissed && (
@@ -243,7 +230,7 @@ export function Header() {
         )}
 
         <div
-          className={`mx-auto flex max-w-[1440px] items-center justify-between px-6 transition-all duration-500 md:px-12 lg:px-12 xl:px-20 ${
+          className={`mx-auto flex max-w-[1180px] items-center justify-between px-4 transition-all duration-300 md:px-6 lg:px-8 ${
             isScrolled ? 'h-16 lg:h-20' : 'h-16 lg:h-20'
           }`}
         >
@@ -261,9 +248,9 @@ export function Header() {
             {/* Center: Logo */}
             <Link
               href="/"
-              className="font-body absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[1.05rem] font-semibold uppercase tracking-[0.22em] text-stone-900"
+              className="logo absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             >
-              KVASTRAM
+              Kvast<span className="text-[var(--sienna)]">ram</span>
             </Link>
 
             {/* Right: Search & Cart */}
@@ -297,7 +284,7 @@ export function Header() {
           <div className="hidden w-full items-center justify-between gap-6 xl:gap-8 md:flex">
             {/* Logo — Premium with motif */}
             <Link href="/" className="nav-logo-premium shrink-0">
-              <span className="logo-motif">◆</span> KVASTRAM
+              Kvast<span className="text-[var(--sienna)]">ram</span>
             </Link>
 
             {/* Nav - Desktop */}

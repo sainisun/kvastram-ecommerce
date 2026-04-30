@@ -270,6 +270,7 @@ export default async function Home() {
               id?: string;
               is_active?: boolean;
               image_url?: string;
+              mobile_image_url?: string | null;
               button_link?: string | null;
             }) =>
               Boolean(
@@ -289,6 +290,7 @@ export default async function Home() {
             (item: {
               id: string;
               image_url: string;
+              mobile_image_url?: string | null;
               title?: string | null;
               subtitle?: string | null;
               button_text?: string | null;
@@ -296,6 +298,7 @@ export default async function Home() {
             }) => ({
               id: item.id,
               image_url: cloudinaryUrlOrNull(item.image_url) || '',
+              mobile_image_url: cloudinaryUrlOrNull(item.mobile_image_url),
               title: item.title || null,
               subtitle: item.subtitle || null,
               button_text: item.button_text || null,

@@ -799,6 +799,7 @@ export const hero_banners = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     image_url: text('image_url').notNull(),
+    mobile_image_url: text('mobile_image_url'),
     title: text('title'),
     subtitle: text('subtitle'),
     button_text: text('button_text'),
@@ -819,6 +820,11 @@ export const trending_reels = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     video_url: text('video_url').notNull(),
     thumbnail_url: text('thumbnail_url').notNull(),
+    category: text('category'),
+    caption: text('caption'),
+    product_id: uuid('product_id').references(() => products.id, {
+      onDelete: 'set null',
+    }),
     product_name: text('product_name').notNull(),
     price: text('price').notNull(),
     price_amount: integer('price_amount'),
@@ -928,6 +934,48 @@ export const featured_products = pgTable(
     productIdx: index('idx_featured_products_product_id').on(table.product_id),
     activeIdx: index('idx_featured_products_is_active').on(table.is_active),
     sortOrderIdx: index('idx_featured_products_sort_order').on(table.sort_order),
+  })
+);
+
+export const homepage_merchandising_slots = pgTable(
+  'homepage_merchandising_slots',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    slot_key: text('slot_key').notNull(),
+    eyebrow: text('eyebrow'),
+    title: text('title').notNull(),
+    copy: text('copy'),
+    image_url: text('image_url'),
+    mobile_image_url: text('mobile_image_url'),
+    link_url: text('link_url'),
+    linked_product_id: uuid('linked_product_id').references(() => products.id, {
+      onDelete: 'set null',
+    }),
+    linked_collection_id: uuid('linked_collection_id').references(
+      () => product_collections.id,
+      { onDelete: 'set null' }
+    ),
+    linked_category_id: uuid('linked_category_id').references(() => categories.id, {
+      onDelete: 'set null',
+    }),
+    linked_tag_id: uuid('linked_tag_id').references(() => tags.id, {
+      onDelete: 'set null',
+    }),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    slotKeyIdx: index('idx_homepage_merchandising_slots_slot_key').on(
+      table.slot_key
+    ),
+    activeIdx: index('idx_homepage_merchandising_slots_is_active').on(
+      table.is_active
+    ),
+    sortOrderIdx: index('idx_homepage_merchandising_slots_sort_order').on(
+      table.sort_order
+    ),
   })
 );
 

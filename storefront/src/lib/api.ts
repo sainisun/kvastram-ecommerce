@@ -1004,6 +1004,19 @@ export const api = {
     }
   },
 
+  async getHomepageMerchandising(slot?: string) {
+    try {
+      const suffix = slot ? `?slot=${encodeURIComponent(slot)}` : '';
+      const res = await fetchWithTrace(`${API_URL}/homepage-merchandising${suffix}`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { slots: [] };
+      return res.json();
+    } catch {
+      return { slots: [] };
+    }
+  },
+
   async getPosts() {
     try {
       // Cache for 60 seconds

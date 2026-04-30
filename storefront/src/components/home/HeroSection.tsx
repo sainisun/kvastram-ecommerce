@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { cloudinaryUrlOrNull } from '@/lib/media';
 
 interface HeroBannerSlide {
   id: string;
   image_url?: string | null;
+  mobile_image_url?: string | null;
   title?: string | null;
   subtitle?: string | null;
   button_text?: string | null;
@@ -23,6 +23,7 @@ interface HeroSectionProps {
 interface ResolvedSlide {
   id: string;
   imageUrl?: string;
+  mobileImageUrl?: string;
   alt: string;
   placeholderClass?: string;
 }
@@ -33,6 +34,7 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
       .map((banner): ResolvedSlide => ({
         id: banner.id,
         imageUrl: cloudinaryUrlOrNull(banner.image_url) || undefined,
+        mobileImageUrl: cloudinaryUrlOrNull(banner.mobile_image_url) || undefined,
         alt: banner.title?.trim() || banner.subtitle?.trim() || 'Kvastram hero',
       }))
       .filter((banner) => Boolean(banner.imageUrl));
@@ -91,14 +93,6 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
     };
   }, [emblaApi]);
 
-  const scrollPrev = useCallback(() => {
-    emblaApi?.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    emblaApi?.scrollNext();
-  }, [emblaApi]);
-
   const scrollTo = useCallback(
     (index: number) => {
       emblaApi?.scrollTo(index);
@@ -109,7 +103,7 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
   return (
     <section
       data-hero-slider
-      className="group relative h-[70vh] min-h-[480px] overflow-hidden lg:h-[85vh] lg:min-h-[600px]"
+      className="relative min-h-[420px] overflow-hidden md:min-h-[560px] lg:min-h-[min(70vh,620px)]"
     >
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
@@ -122,14 +116,26 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
               >
                 <div className="absolute inset-0">
                   {slide.imageUrl ? (
-                    <OptimizedImage
-                      src={slide.imageUrl}
-                      alt={slide.alt}
-                      fill
-                      priority={slide.id === slides[0]?.id}
-                      sizes="100vw"
-                      className="object-cover object-center"
-                    />
+                    <>
+                      {slide.mobileImageUrl ? (
+                        <OptimizedImage
+                          src={slide.mobileImageUrl}
+                          alt={slide.alt}
+                          fill
+                          priority={slide.id === slides[0]?.id}
+                          sizes="100vw"
+                          className="object-cover object-center md:hidden"
+                        />
+                      ) : null}
+                      <OptimizedImage
+                        src={slide.imageUrl}
+                        alt={slide.alt}
+                        fill
+                        priority={slide.id === slides[0]?.id}
+                        sizes="100vw"
+                        className={`object-cover object-center ${slide.mobileImageUrl ? 'hidden md:block' : ''}`}
+                      />
+                    </>
                   ) : (
                     <div
                       className={`h-full w-full bg-gradient-to-br ${slide.placeholderClass}`}
@@ -141,28 +147,6 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
           })}
         </div>
       </div>
-
-      {slides.length > 1 ? (
-        <>
-          <button
-            type="button"
-            onClick={scrollPrev}
-            aria-label="Previous slide"
-            className="absolute left-6 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-black md:flex md:opacity-0 md:group-hover:opacity-100 lg:left-20"
-          >
-            <ChevronLeft size={20} />
-          </button>
-
-          <button
-            type="button"
-            onClick={scrollNext}
-            aria-label="Next slide"
-            className="absolute right-6 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-black md:flex md:opacity-0 md:group-hover:opacity-100 lg:right-20"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </>
-      ) : null}
 
       <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 gap-2">
         {slides.map((slide, index) => (

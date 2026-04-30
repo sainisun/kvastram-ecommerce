@@ -11,8 +11,6 @@ import { WholesaleFooter } from '@/components/layout/WholesaleFooter';
 import { CartRecovery } from '@/components/cart/CartRecovery';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { ArrowUp } from 'lucide-react';
-import { PageLoader } from '@/components/ui/PageLoader';
-import { CustomCursor } from '@/components/ui/CustomCursor';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { NewsletterModal } from '@/components/ui/NewsletterModal';
 
@@ -74,12 +72,7 @@ export function MainLayout({
 
   return (
     <>
-      {/* Premium Global UI */}
-      <PageLoader />
       <ScrollProgress />
-      <CustomCursor />
-      {/* Subtle noise texture overlay */}
-      <div className="noise-overlay" aria-hidden="true" />
       {!isReelsPage && (isWholesalePage ? <WholesaleHeader /> : <Header />)}
       <main id="main-content" tabIndex={-1} className="page-transition">
         {children}

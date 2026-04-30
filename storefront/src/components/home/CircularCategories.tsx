@@ -72,39 +72,49 @@ export async function CircularCategories() {
   }
 
   return (
-    <section className="flex gap-4 overflow-x-auto bg-white px-6 py-4 no-scrollbar">
-      {circles.map((circle, i) => (
-        <Link
-          key={circle.id}
-          href={circle.link_url}
-          className="flex min-w-[80px] flex-col items-center"
-        >
-          <div
-            className={`h-[72px] w-[72px] rounded-full p-[2px] ${
-              i === 0 ? 'border border-black' : 'border border-transparent'
-            }`}
-          >
-            {circle.image_url ? (
-              <div className="relative h-full w-full overflow-hidden rounded-full">
-                <OptimizedImage
-                  src={circle.image_url}
-                  alt={circle.label}
-                  fill
-                  sizes="72px"
-                  className="object-cover rounded-full"
-                />
-              </div>
-            ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-[#f4d4b8] to-[#a85d3a] font-heading text-2xl text-white">
-                {circle.label.charAt(0)}
-              </div>
-            )}
+    <section className="kv-section bg-[var(--cream)]">
+      <div className="kv-container">
+        <div className="kv-section-head">
+          <div>
+            <div className="kv-tag">Shop by category</div>
+            <h2 className="kv-title">Craft-led discovery</h2>
           </div>
-          <span className="mt-2 text-center text-[10px] font-medium uppercase tracking-[0.14em] text-stone-600">
-            {circle.label}
-          </span>
-        </Link>
-      ))}
+          <p className="kv-sub max-w-xl">
+            Explore Kvastram edits through admin-managed category circles.
+          </p>
+        </div>
+
+        <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+          {circles.map((circle) => (
+            <Link
+              key={circle.id}
+              href={circle.link_url}
+              className="flex min-w-[86px] flex-col items-center"
+            >
+              <div className="h-[78px] w-[78px] rounded-full border border-[var(--line)] bg-white p-[4px] shadow-sm">
+                {circle.image_url ? (
+                  <div className="relative h-full w-full overflow-hidden rounded-full">
+                    <OptimizedImage
+                      src={circle.image_url}
+                      alt={circle.label}
+                      fill
+                      sizes="78px"
+                      className="rounded-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-[#f4d4b8] to-[#a85d3a] font-heading text-2xl text-white">
+                    {circle.label.charAt(0)}
+                  </div>
+                )}
+              </div>
+              <span className="mt-2 text-center text-[12px] font-black leading-tight text-[var(--ink)]">
+                {circle.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

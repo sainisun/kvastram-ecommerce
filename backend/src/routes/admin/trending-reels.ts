@@ -14,6 +14,9 @@ const app = new Hono();
 app.use('*', verifyAdmin);
 
 const trendingReelFieldsSchema = z.object({
+  category: z.string().trim().max(100).nullable().optional(),
+  caption: z.string().trim().max(1000).nullable().optional(),
+  product_id: z.string().uuid().nullable().optional(),
   product_name: z.string().trim().min(1).max(255),
   price: z.string().trim().min(1).max(100),
   price_amount: z.number().int().min(0).optional().nullable(),
@@ -89,6 +92,9 @@ async function parseTrendingReelForm(
 
   const fields = trendingReelFieldsSchema.parse({
     product_name: normalizeRequiredString(body.product_name),
+    category: normalizeOptionalString(body.category),
+    caption: normalizeOptionalString(body.caption),
+    product_id: normalizeOptionalString(body.product_id),
     price: normalizeRequiredString(body.price),
     price_amount: parsedPriceAmount,
     link_url: normalizeRequiredString(body.link_url),
@@ -150,6 +156,9 @@ app.post('/', async (c) => {
       .insert(trending_reels)
       .values({
         product_name: fields.product_name,
+        category: fields.category ?? null,
+        caption: fields.caption ?? null,
+        product_id: fields.product_id ?? null,
         price: fields.price,
         price_amount: fields.price_amount ?? null,
         link_url: fields.link_url,
@@ -228,6 +237,9 @@ app.put('/:id', async (c) => {
       .update(trending_reels)
       .set({
         product_name: fields.product_name,
+        category: fields.category ?? null,
+        caption: fields.caption ?? null,
+        product_id: fields.product_id ?? null,
         price: fields.price,
         price_amount: fields.price_amount ?? null,
         link_url: fields.link_url,

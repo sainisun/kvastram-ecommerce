@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Amiri, Cardo } from 'next/font/google';
+import { Lato, Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 
 import './globals.css';
@@ -19,16 +19,16 @@ import { WishlistProvider } from '@/context/wishlist-context';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 
-const cardo = Cardo({
+const lato = Lato({
   subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-cardo',
+  weight: ['300', '400', '700', '900'],
+  variable: '--font-lato',
 });
 
-const amiri = Amiri({
+const playfair = Playfair_Display({
   subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-amiri',
+  weight: ['500', '600', '700'],
+  variable: '--font-playfair',
 });
 
 export const metadata: Metadata = {
@@ -86,7 +86,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
       </head>
-      <body className={`${cardo.variable} ${amiri.variable} font-body antialiased`}>
+      <body className={`${lato.variable} ${playfair.variable} font-body antialiased`}>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"

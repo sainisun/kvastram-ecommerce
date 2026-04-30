@@ -48,6 +48,7 @@ export {
   homepage_banners,
   category_circles,
   featured_products,
+  homepage_merchandising_slots,
 } from '../schema';
 
 // Other

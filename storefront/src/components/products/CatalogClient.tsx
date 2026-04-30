@@ -16,7 +16,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import CategoryBannerCarousel from '@/components/products/CategoryBannerCarousel';
 import CategoryCircleStrip from '@/components/products/CategoryCircleStrip';
 import FilterSidebar from '@/components/products/FilterSidebar';
-import PageHero from '@/components/hero/PageHero';
 import ProductGrid from '@/components/ProductGrid';
 import { api } from '@/lib/api';
 import { Product } from '@/types';
@@ -77,18 +76,12 @@ const SORT_OPTIONS = [
 
 function findCategoryById(categories: Category[], id: string): Category | null {
   for (const category of categories) {
-    if (category.id === id) {
-      return category;
-    }
-
+    if (category.id === id) return category;
     if (category.children?.length) {
       const match = findCategoryById(category.children, id);
-      if (match) {
-        return match;
-      }
+      if (match) return match;
     }
   }
-
   return null;
 }
 
@@ -161,277 +154,288 @@ export default function CatalogClient({
     [limit, currentSort, currentCategoryId, currentTagId, currentCollectionId]
   );
 
+  const updateQuery = (mutate: (params: URLSearchParams) => void) => {
+    const params = new URLSearchParams(searchParams.toString());
+    mutate(params);
+    router.push(`/products?${params.toString()}`);
+  };
+
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages && newPage !== page) {
-      setPage(newPage);
-      fetchProducts(newPage);
-      window.scrollTo({ top: 300, behavior: 'smooth' });
-    }
+    if (newPage < 1 || newPage > totalPages || newPage === page) return;
+    setPage(newPage);
+    fetchProducts(newPage);
+    window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
   const handleSortChange = (newSort: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (newSort && newSort !== 'newest') {
-      params.set('sort', newSort);
-    } else {
-      params.delete('sort');
-    }
-    router.push(`/products?${params.toString()}`);
+    updateQuery((params) => {
+      if (newSort && newSort !== 'newest') {
+        params.set('sort', newSort);
+      } else {
+        params.delete('sort');
+      }
+    });
     setPage(1);
     fetchProducts(1, newSort);
+  };
+
+  const clearFilter = (key: 'category_id' | 'tag_id' | 'collection_id') => {
+    updateQuery((params) => params.delete(key));
   };
 
   const startItem = total > 0 ? (page - 1) * limit + 1 : 0;
   const endItem = Math.min(page * limit, total);
 
-  const clearFilter = (key: 'category_id' | 'tag_id' | 'collection_id') => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete(key);
-    router.push(`/products?${params.toString()}`);
-  };
-
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--cream)]">
       {categoryPageBanners.length > 0 ? (
         <CategoryBannerCarousel banners={categoryPageBanners} />
       ) : null}
 
-      {categoryCircles.length > 0 ? <CategoryCircleStrip circles={categoryCircles} /> : null}
+      {categoryCircles.length > 0 ? (
+        <CategoryCircleStrip circles={categoryCircles} />
+      ) : null}
 
-      <PageHero
-        title="Shop All"
-        subtitle="The Collection"
-        description="Browse the full Kvastram edit. Sort by newest, filter by admin-managed categories, tags, and collections, and discover pieces ready to wear now."
-      />
-
-      <div className="mx-auto max-w-[1440px] px-6 pb-12 pt-12 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
-        <div className="flex flex-wrap items-center justify-between gap-6 border-b border-stone-100 pb-6">
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => {
-                const params = new URLSearchParams(searchParams.toString());
-                params.delete('category_id');
-                params.delete('tag_id');
-                params.delete('collection_id');
-                router.push(`/products?${params.toString()}`);
-              }}
-              className={`inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors ${
-                !currentCategoryId && !currentTagId && !currentCollectionId
-                  ? 'border-stone-950 bg-stone-950 text-white'
-                  : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
-              }`}
-            >
-              All
-            </button>
-
-            {topCategories.map((category) => {
-              const isActive = currentCategoryId === category.id;
-
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => {
-                    const params = new URLSearchParams(searchParams.toString());
-                    if (isActive) {
-                      params.delete('category_id');
-                    } else {
-                      params.set('category_id', category.id);
-                      params.delete('tag_id');
-                      params.delete('collection_id');
-                    }
-                    router.push(`/products?${params.toString()}`);
-                  }}
-                  className={`inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors ${
-                    isActive
-                      ? 'border-stone-950 bg-stone-950 text-white'
-                      : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
-                  }`}
-                >
-                  {category.name}
-                </button>
-              );
-            })}
-
-            {featuredCollections.map((collection) => (
-              <Link
-                key={collection.id}
-                href={`/collections/${collection.handle}`}
-                className="inline-flex items-center rounded-full border border-stone-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
-              >
-                {collection.title}
-              </Link>
-            ))}
-          </div>
-
-          <button
-            onClick={() => setMobileFilterOpen(true)}
-            className="inline-flex items-center gap-2 border border-stone-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
-            aria-label="Open filters"
-          >
-            <SlidersHorizontal size={14} />
-            Filters
-          </button>
+      <div className="border-b border-[var(--line)] bg-white py-4">
+        <div className="kv-container flex flex-wrap gap-2 text-[13px] text-[var(--muted)]">
+          <Link href="/">Home</Link>
+          <span>{'>'}</span>
+          <span className="font-bold text-[var(--ink)]">Shop All</span>
         </div>
+      </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            {activeCategory ? (
-              <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
-                {activeCategory.name}
-                <button
-                  onClick={() => clearFilter('category_id')}
-                  aria-label="Remove category filter"
-                  className="text-stone-400 transition-colors hover:text-stone-900"
-                >
-                  ×
-                </button>
-              </span>
-            ) : null}
-
-            {activeTag ? (
-              <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
-                {activeTag.name}
-                <button
-                  onClick={() => clearFilter('tag_id')}
-                  aria-label="Remove tag filter"
-                  className="text-stone-400 transition-colors hover:text-stone-900"
-                >
-                  ×
-                </button>
-              </span>
-            ) : null}
-
-            {activeCollection ? (
-              <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
-                {activeCollection.title}
-                <button
-                  onClick={() => clearFilter('collection_id')}
-                  aria-label="Remove collection filter"
-                  className="text-stone-400 transition-colors hover:text-stone-900"
-                >
-                  ×
-                </button>
-              </span>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="font-body text-[13px] font-[300] text-stone-500">
-              {total > 0 ? `${startItem}-${endItem} of ${total} Items` : `${total} Items`}
-            </div>
-
-            <div
-              className="hidden items-center overflow-hidden rounded-full border border-stone-200 bg-white sm:flex"
-              aria-label="Product grid density"
-            >
-              <button
-                type="button"
-                onClick={() => setGridDensity('grid')}
-                className={`flex h-9 w-9 items-center justify-center transition-colors ${
-                  gridDensity === 'grid'
-                    ? 'bg-stone-900 text-white'
-                    : 'text-stone-500 hover:text-stone-900'
-                }`}
-                aria-label="Grid view"
-                title="Grid view"
-              >
-                <Grid2X2 size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setGridDensity('compact')}
-                className={`flex h-9 w-9 items-center justify-center transition-colors ${
-                  gridDensity === 'compact'
-                    ? 'bg-stone-900 text-white'
-                    : 'text-stone-500 hover:text-stone-900'
-                }`}
-                aria-label="Compact view"
-                title="Compact view"
-              >
-                <Rows3 size={15} />
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <ArrowUpDown size={14} className="text-stone-400" />
-              <select
-                value={currentSort}
-                onChange={(e) => handleSortChange(e.target.value)}
-                className="cursor-pointer border-none bg-transparent text-[13px] font-[300] text-stone-600 focus:outline-none hover:text-black"
-              >
-                {SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+      <section className="kv-section-sm">
+        <div className="kv-container">
+          <div className="kv-tag">Shop All</div>
+          <h1 className="kv-title max-w-2xl">Complete artisan catalog</h1>
+          <p className="kv-sub mt-2 max-w-3xl">
+            Browse real Kvastram products with backend-backed filters only.
+          </p>
         </div>
+      </section>
 
-        <main className="mt-12">
-          <ProductGrid
-            initialProducts={products}
-            loading={loading}
-            spotlightProducts={spotlightProducts}
-            density={gridDensity}
-          />
-
-          {totalPages > 1 ? (
-            <div className="mt-16 flex items-center justify-center gap-2">
+      <div className="bg-white py-6">
+        <div className="kv-container pb-12 md:pb-16 lg:pb-24">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
+            <div className="filter-chips flex gap-3 overflow-x-auto pb-1 no-scrollbar">
               <button
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1 || loading}
-                className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Previous page"
-              >
-                <ChevronLeft size={20} />
-              </button>
-
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum: number;
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (page <= 3) {
-                  pageNum = i + 1;
-                } else if (page >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = page - 2 + i;
+                onClick={() =>
+                  updateQuery((params) => {
+                    params.delete('category_id');
+                    params.delete('tag_id');
+                    params.delete('collection_id');
+                  })
                 }
+                className={!currentCategoryId && !currentTagId && !currentCollectionId ? 'bg-stone-950' : ''}
+              >
+                All
+              </button>
+
+              {topCategories.map((category) => {
+                const isActive = currentCategoryId === category.id;
 
                 return (
                   <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    disabled={loading}
-                    className={`h-10 w-10 rounded-md text-sm font-medium transition-colors ${
-                      page === pageNum
-                        ? 'bg-stone-900 text-white'
-                        : 'text-stone-600 hover:bg-stone-50 hover:text-black'
-                    }`}
-                    aria-label={`Page ${pageNum}`}
-                    aria-current={page === pageNum ? 'page' : undefined}
+                    key={category.id}
+                    onClick={() =>
+                      updateQuery((params) => {
+                        if (isActive) {
+                          params.delete('category_id');
+                        } else {
+                          params.set('category_id', category.id);
+                          params.delete('tag_id');
+                          params.delete('collection_id');
+                        }
+                      })
+                    }
+                    className={isActive ? 'bg-stone-950' : ''}
                   >
-                    {pageNum}
+                    {category.name}
                   </button>
                 );
               })}
 
-              <button
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages || loading}
-                className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Next page"
-              >
-                <ChevronRight size={20} />
-              </button>
+              {featuredCollections.map((collection) => (
+                <Link
+                  key={collection.id}
+                  href={`/collections/${collection.handle}`}
+                  className="inline-flex items-center rounded-full border border-[var(--line)] bg-white px-4 py-2 text-[12px] font-bold text-[var(--ink)]"
+                >
+                  {collection.title}
+                </Link>
+              ))}
             </div>
-          ) : null}
-        </main>
+
+            <button
+              onClick={() => setMobileFilterOpen(true)}
+              className="kv-btn"
+              aria-label="Open filters"
+            >
+              <SlidersHorizontal size={14} />
+              Filters
+            </button>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              {activeCategory ? (
+                <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                  {activeCategory.name}
+                  <button
+                    onClick={() => clearFilter('category_id')}
+                    aria-label="Remove category filter"
+                    className="text-stone-400 transition-colors hover:text-stone-900"
+                  >
+                    {'×'}
+                  </button>
+                </span>
+              ) : null}
+
+              {activeTag ? (
+                <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                  {activeTag.name}
+                  <button
+                    onClick={() => clearFilter('tag_id')}
+                    aria-label="Remove tag filter"
+                    className="text-stone-400 transition-colors hover:text-stone-900"
+                  >
+                    {'×'}
+                  </button>
+                </span>
+              ) : null}
+
+              {activeCollection ? (
+                <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                  {activeCollection.title}
+                  <button
+                    onClick={() => clearFilter('collection_id')}
+                    aria-label="Remove collection filter"
+                    className="text-stone-400 transition-colors hover:text-stone-900"
+                  >
+                    {'×'}
+                  </button>
+                </span>
+              ) : null}
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="font-body text-[13px] font-[300] text-stone-500">
+                {total > 0 ? `${startItem}-${endItem} of ${total} Items` : `${total} Items`}
+              </div>
+
+              <div
+                className="hidden items-center overflow-hidden rounded-full border border-stone-200 bg-white sm:flex"
+                aria-label="Product grid density"
+              >
+                <button
+                  type="button"
+                  onClick={() => setGridDensity('grid')}
+                  className={`flex h-9 w-9 items-center justify-center transition-colors ${
+                    gridDensity === 'grid'
+                      ? 'bg-stone-900 text-white'
+                      : 'text-stone-500 hover:text-stone-900'
+                  }`}
+                  aria-label="Grid view"
+                  title="Grid view"
+                >
+                  <Grid2X2 size={15} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGridDensity('compact')}
+                  className={`flex h-9 w-9 items-center justify-center transition-colors ${
+                    gridDensity === 'compact'
+                      ? 'bg-stone-900 text-white'
+                      : 'text-stone-500 hover:text-stone-900'
+                  }`}
+                  aria-label="Compact view"
+                  title="Compact view"
+                >
+                  <Rows3 size={15} />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <ArrowUpDown size={14} className="text-stone-400" />
+                <select
+                  value={currentSort}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                  className="cursor-pointer border-none bg-transparent text-[13px] font-[300] text-stone-600 focus:outline-none hover:text-black"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <main className="mt-6">
+            <ProductGrid
+              initialProducts={products}
+              loading={loading}
+              spotlightProducts={spotlightProducts}
+              density={gridDensity}
+            />
+
+            {totalPages > 1 ? (
+              <div className="mt-16 flex items-center justify-center gap-2">
+                <button
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1 || loading}
+                  className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (page <= 3) {
+                    pageNum = i + 1;
+                  } else if (page >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = page - 2 + i;
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      disabled={loading}
+                      className={`h-10 w-10 rounded-md text-sm font-medium transition-colors ${
+                        page === pageNum
+                          ? 'bg-stone-900 text-white'
+                          : 'text-stone-600 hover:bg-stone-50 hover:text-black'
+                      }`}
+                      aria-label={`Page ${pageNum}`}
+                      aria-current={page === pageNum ? 'page' : undefined}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page === totalPages || loading}
+                  className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Next page"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            ) : null}
+          </main>
+        </div>
       </div>
 
-      {mobileFilterOpen && (
+      {mobileFilterOpen ? (
         <>
           <div
             className="fixed inset-0 z-40 bg-black/50"
@@ -462,7 +466,7 @@ export default function CatalogClient({
             </div>
           </div>
         </>
-      )}
+      ) : null}
     </div>
   );
 }
