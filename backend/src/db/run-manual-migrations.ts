@@ -35,6 +35,17 @@ const MIGRATION_FILES = [
 
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
 
+function isIdempotentRerunError(message: string) {
+  const normalized = message.toLowerCase();
+  return (
+    normalized.includes('already exists') ||
+    normalized.includes('duplicate key value violates unique constraint') ||
+    (normalized.includes('constraint') && normalized.includes('already exists')) ||
+    (normalized.includes('column') && normalized.includes('already exists')) ||
+    (normalized.includes('relation') && normalized.includes('already exists'))
+  );
+}
+
 async function runManualMigrations() {
   const connectionString =
     process.env.DATABASE_URL ||
@@ -72,6 +83,11 @@ async function runManualMigrations() {
       applied++;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
+      if (isIdempotentRerunError(msg)) {
+        console.warn(`Already applied or safe to skip ${file}: ${msg}`);
+        applied++;
+        continue;
+      }
       console.error(`❌  ${file} failed: ${msg}`);
       failed++;
       // Continue with remaining migrations — don't abort on a single failure
