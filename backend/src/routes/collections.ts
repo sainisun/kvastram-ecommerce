@@ -38,7 +38,7 @@ collectionsRouter.get('/', async (c) => {
         created_at: product_collections.created_at,
         updated_at: product_collections.updated_at,
         deleted_at: product_collections.deleted_at,
-        product_count: sql<number>\`count(\${products.id})\`.mapWith(Number),
+        product_count: sql<number>`count(${products.id})`.mapWith(Number),
       })
       .from(product_collections)
       .leftJoin(products, eq(product_collections.id, products.collection_id))
