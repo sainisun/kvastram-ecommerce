@@ -21,7 +21,15 @@ type CollectionSummary = {
   handle: string;
   image?: string | null;
   description?: string | null;
+  product_count?: number | string | null;
 };
+
+const COLLECTION_GRADIENTS = [
+  'from-[#7d3f25] via-[#a85d3a] to-[#d8b295]',
+  'from-[#3f5945] via-[#7a9b7f] to-[#d7dfd1]',
+  'from-[#2c2c2c] via-[#6b6258] to-[#d8b295]',
+  'from-[#8b4d42] via-[#bd7a5a] to-[#f1ede7]',
+];
 
 export const metadata: Metadata = buildBasicPageMetadata({
   title: 'Collections | Handcrafted Ethnic Wear for Women',
@@ -39,13 +47,17 @@ export const metadata: Metadata = buildBasicPageMetadata({
 function CollectionCard({
   collection,
   count,
+  index,
 }: {
   collection: CollectionSummary;
   count: number;
+  index: number;
 }) {
+  const gradient = COLLECTION_GRADIENTS[index % COLLECTION_GRADIENTS.length];
+
   return (
     <Link href={`/collections/${collection.handle}`} className="group block">
-      <div className="relative aspect-[3/4] overflow-hidden bg-stone-100">
+      <div className={`relative aspect-[3/4] overflow-hidden rounded-[12px] bg-gradient-to-br ${gradient}`}>
         {collection.image ? (
           <OptimizedImage
             src={collection.image}
@@ -54,12 +66,16 @@ function CollectionCard({
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-stone-200">
-            <span className="font-heading text-3xl font-semibold uppercase tracking-[0.02em] text-stone-400">
+          <div className="absolute inset-0 flex items-center justify-center px-5 text-center">
+            <span className="font-heading text-3xl font-semibold uppercase tracking-[0.02em] text-white/70">
               {collection.title}
             </span>
           </div>
         )}
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.02),rgba(0,0,0,0.36))]" />
+        <div className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--ink)]">
+          {count} products
+        </div>
       </div>
       <div className="px-1 pt-4">
         <h2 className="font-heading text-[20px] font-medium leading-tight text-stone-950">
@@ -68,12 +84,19 @@ function CollectionCard({
         <p className="mt-1 line-clamp-2 text-[12px] uppercase tracking-[0.16em] text-stone-500">
           {collection.description || 'View collection'}
         </p>
-        <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-stone-400">
-          {count} products
-        </p>
       </div>
     </Link>
   );
+}
+
+function getProductCount(collection: CollectionSummary) {
+  const rawCount = collection.product_count;
+  if (typeof rawCount === 'number') return rawCount;
+  if (typeof rawCount === 'string') {
+    const parsed = Number.parseInt(rawCount, 10);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+  return 0;
 }
 
 export default async function CollectionsPage({
@@ -89,24 +112,6 @@ export default async function CollectionsPage({
   const featuredCollections = collections.slice(0, 3);
   const visibleCollections = showAll ? collections : collections.slice(0, 12);
   const heroImage = collections.find((collection) => collection.image)?.image;
-
-  const collectionCounts = await Promise.allSettled(
-    visibleCollections.map(async (collection: CollectionSummary) => {
-      const result = await api.getProducts({
-        limit: 1,
-        collection_id: collection.id,
-      });
-      return { id: collection.id, total: result.total || 0 };
-    })
-  );
-  const counts = new Map(
-    collectionCounts
-      .filter(
-        (item): item is PromiseFulfilledResult<{ id: string; total: number }> =>
-          item.status === 'fulfilled'
-      )
-      .map((item) => [item.value.id, item.value.total])
-  );
 
   const schema = [
     buildCollectionPageJsonLd({
@@ -242,11 +247,12 @@ export default async function CollectionsPage({
         </section>
 
         <section className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {visibleCollections.map((collection) => (
+          {visibleCollections.map((collection, index) => (
             <CollectionCard
               key={collection.id}
               collection={collection}
-              count={counts.get(collection.id) || 0}
+              count={getProductCount(collection)}
+              index={index}
             />
           ))}
         </section>

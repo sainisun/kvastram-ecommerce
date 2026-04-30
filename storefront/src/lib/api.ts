@@ -1016,7 +1016,6 @@ export const api = {
       return { slots: [] };
     }
   },
-
   async getPosts() {
     try {
       // Cache for 60 seconds

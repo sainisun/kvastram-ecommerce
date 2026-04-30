@@ -206,43 +206,36 @@ export function Header() {
       <header
         className="sticky top-0 z-50 border-b border-[var(--line)] bg-white/95 backdrop-blur-md"
       >
-        {/* Announcement Strip — Premium with shimmer & dismiss */}
+        {/* Announcement Strip — Mobile-First Prototype Design */}
         {announcementEnabled && announcementText && !announcementDismissed && (
-          <div className="announcement-bar flex h-8 items-center overflow-hidden text-white">
-            <div className="animate-marquee">
+          <div className="announce flex h-[34px] items-center justify-center overflow-hidden bg-[var(--sienna)] text-white relative px-9 text-[12px] font-bold tracking-[0.08em] uppercase">
+            <div className="animate-marquee whitespace-nowrap">
               {Array.from({ length: 4 }).map((_, i) => (
                 <span key={`ticker-${i}`} className="px-8 whitespace-nowrap">
-                  <span className="ticker-shimmer font-medium">
-                    {announcementText}
-                  </span>
-                  <span className="ticker-gem">✦</span>
+                  <span>{announcementText}</span>
                 </span>
               ))}
             </div>
             <button
               onClick={handleDismissAnnouncement}
-              className="announcement-dismiss"
+              className="absolute right-3 top-1/2 -translate-y-1/2 border-0 bg-transparent text-white text-[18px] p-1 cursor-pointer flex items-center justify-center"
               aria-label="Dismiss announcement"
             >
-              <X size={14} />
+              <X size={16} strokeWidth={2.5} />
             </button>
           </div>
         )}
 
-        <div
-          className={`mx-auto flex max-w-[1180px] items-center justify-between px-4 transition-all duration-300 md:px-6 lg:px-8 ${
-            isScrolled ? 'h-16 lg:h-20' : 'h-16 lg:h-20'
-          }`}
-        >
+        <div className="header-inner container mx-auto">
           {/* Mobile Header Layout */}
           <div className="relative flex w-full items-center justify-between md:hidden">
             {/* Left: Hamburger Menu */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors rounded flex items-center justify-center"
+              className="icon-btn"
               aria-label="Open menu"
             >
-              <Menu size={24} />
+              <Menu size={22} />
             </button>
 
             {/* Center: Logo */}
@@ -254,25 +247,25 @@ export function Header() {
             </Link>
 
             {/* Right: Search & Cart */}
-            <div className="flex items-center gap-2">
+            <div className="header-actions">
               <button
                 type="button"
                 onClick={() => setShowSearch(true)}
-                className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors flex items-center justify-center"
+                className="icon-btn"
                 aria-label="Search"
                 style={{ touchAction: 'manipulation' }}
               >
-                <Search size={22} />
+                <Search size={20} />
               </button>
               <button
                 type="button"
                 onClick={() => setShowCartDrawer(true)}
-                className="p-2 min-h-[44px] min-w-[44px] text-stone-900 hover:text-stone-600 transition-colors relative flex items-center justify-center"
+                className="icon-btn"
                 aria-label="Open cart"
               >
-                <ShoppingBag size={22} />
+                <ShoppingBag size={20} />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-stone-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="badge bg-[var(--sienna)]">
                     {totalItems}
                   </span>
                 )}
@@ -282,8 +275,8 @@ export function Header() {
 
           {/* Desktop Header Layout */}
           <div className="hidden w-full items-center justify-between gap-6 xl:gap-8 md:flex">
-            {/* Logo — Premium with motif */}
-            <Link href="/" className="nav-logo-premium shrink-0">
+            {/* Logo */}
+            <Link href="/" className="logo shrink-0">
               Kvast<span className="text-[var(--sienna)]">ram</span>
             </Link>
 
@@ -307,7 +300,7 @@ export function Header() {
                       onBlur={closeShopMenu}
                     >
                       <button
-                        className={`nav-link-premium nav-link-stagger flex items-center gap-1 py-2 focus:outline-none rounded ${isActive ? 'active text-stone-900' : ''}`}
+                        className={`flex items-center gap-1 py-2 text-[15px] font-medium transition-colors focus:outline-none rounded ${isActive ? 'text-stone-900' : 'hover:text-stone-900'}`}
                         style={{ animationDelay: `${index * 60}ms` }}
                         aria-label="Shop menu"
                         aria-expanded={showShopMenu}
@@ -480,7 +473,7 @@ export function Header() {
                   <Link
                     key={link.label}
                     href={link.url}
-                    className={`nav-link-premium nav-link-stagger ${isActive ? 'active text-stone-900' : ''} ${link.highlight ? 'text-amber-600 font-medium' : ''}`}
+                    className={`block py-2 text-[15px] transition-colors ${isActive ? 'font-medium text-stone-900' : 'text-stone-600 hover:text-stone-900'} ${link.highlight ? 'text-[var(--sienna)] font-bold' : ''}`}
                     style={{ animationDelay: `${index * 60}ms` }}
                   >
                     {link.label}
@@ -490,12 +483,11 @@ export function Header() {
             </nav>
 
             {/* Actions */}
-            {/* Actions — Premium icon bar with tooltips & glow */}
-            <div className="flex shrink-0 items-center gap-4 xl:gap-6">
+            <div className="header-actions">
               <button
                 type="button"
                 onClick={() => setShowSearch(true)}
-                className="header-icon-wrap text-stone-600 hover:text-black p-1 min-h-[44px] min-w-[44px]"
+                className="icon-btn"
                 aria-label="Search products"
                 data-tooltip="Search"
               >
@@ -504,7 +496,7 @@ export function Header() {
 
               <Link
                 href="/account"
-                className="header-icon-wrap text-stone-600 hover:text-black p-1 min-h-[44px] min-w-[44px]"
+                className="icon-btn"
                 aria-label="My Account"
                 data-tooltip="Account"
               >
@@ -514,13 +506,13 @@ export function Header() {
               {/* Wishlist Icon */}
               <Link
                 href="/wishlist"
-                className="header-icon-wrap text-stone-600 hover:text-black relative p-1 min-h-[44px] min-w-[44px]"
+                className="icon-btn"
                 aria-label={`Wishlist with ${wishlistCount} items`}
                 data-tooltip="Wishlist"
               >
                 <Heart size={20} />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="badge bg-[var(--sienna)]">
                     {wishlistCount}
                   </span>
                 )}
@@ -574,14 +566,14 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setShowCartDrawer(true)}
-                className="header-icon-wrap text-stone-600 hover:text-black relative p-1"
+                className="icon-btn"
                 aria-label={`Shopping cart with ${totalItems} items`}
                 data-tooltip="Cart"
               >
                 <ShoppingBag size={20} />
                 {totalItems > 0 && (
                   <span
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-black text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+                    className="badge bg-[var(--sienna)]"
                     aria-label={`${totalItems} items in cart`}
                   >
                     {totalItems}

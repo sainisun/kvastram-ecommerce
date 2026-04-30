@@ -184,19 +184,19 @@ export default function MobileMenu({
           aria-label="Mobile menu"
         >
           {/* Header - Fixed */}
-          <div className="sticky top-0 bg-white z-10 border-b border-gray-100">
+          <div className="sticky top-0 bg-white z-10 border-b border-[var(--line)]">
             <div className="flex items-center justify-between px-4 py-4">
               <Link
                 href="/"
                 onClick={handleLinkClick}
-                className="font-heading text-lg font-semibold uppercase tracking-[0.18em] text-black"
+                className="logo"
               >
-                KVASTRAM
+                Kvast<span className="text-[var(--sienna)]">ram</span>
               </Link>
               <button
                 ref={closeButtonRef}
                 onClick={handleClose}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-600 hover:text-black transition-colors rounded-full hover:bg-gray-100"
+                className="icon-btn"
                 aria-label="Close menu"
               >
                 <X size={24} />

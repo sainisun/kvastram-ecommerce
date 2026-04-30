@@ -21,9 +21,10 @@ const config: Config = {
         '40': '160px',
       },
       fontFamily: {
-        heading: ['var(--font-amiri)', 'Georgia', 'serif'],
-        body: ['var(--font-cardo)', 'Georgia', 'serif'],
-        serif: ['var(--font-amiri)', 'Georgia', 'serif'],
+        heading: ['var(--font-playfair)', 'Georgia', 'serif'],
+        body: ['var(--font-lato)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
+        sans: ['var(--font-lato)', 'system-ui', 'sans-serif'],
       },
     },
   },

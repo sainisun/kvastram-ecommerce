@@ -847,11 +847,15 @@ export default function ProductView({ product }: { product: Product }) {
       </div>
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} sizeGuide={product.size_guide} />
 
-      {/* Sticky ATC: leaves clear room for the mobile bottom nav on small screens */}
       <div className={`fixed bottom-20 left-0 right-0 z-40 flex items-center gap-3 border-t border-[var(--line)] bg-[rgba(252,248,243,0.97)] px-4 py-3 shadow-2xl backdrop-blur-md transition-transform duration-300 md:bottom-0 md:hidden ${showStickyATC ? 'translate-y-0' : 'translate-y-full'}`} aria-hidden={!showStickyATC}>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">{product.title}</p>
           <p className="text-[14px] font-medium text-stone-900">{formattedPrice}</p>
+          {selectedVariant ? (
+            <p className="truncate text-[11px] text-stone-500">
+              {selectedVariant.title !== 'Default Variant' ? selectedVariant.title : 'Selected'} - Qty {quantity}
+            </p>
+          ) : null}
         </div>
         <button type="button" onClick={handleAddToCart} disabled={!selectedVariant || addedToCart || outOfStock} className={`min-h-12 whitespace-nowrap rounded-[12px] px-6 py-3 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors ${addedToCart ? 'bg-green-600 text-white' : outOfStock ? 'cursor-not-allowed bg-stone-300 text-stone-600' : 'bg-[var(--ink)] text-white hover:bg-[var(--sienna-dark)]'}`}>{outOfStock ? 'Sold Out' : addedToCart ? 'Added' : 'Add to Bag'}</button>
       </div>

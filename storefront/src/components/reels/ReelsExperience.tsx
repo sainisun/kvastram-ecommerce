@@ -53,62 +53,25 @@ function getReelGridHref(basePath: string, viewMode?: string) {
 }
 
 function matchesReelTab(reel: TrendingReelItem, tab: string) {
-  const text = `${reel.product_name} ${reel.link_url} ${reel.category || ''}`.toLowerCase();
-
-  switch (tab) {
-    case 'bridal':
-      return /bridal|wedding|lehenga/.test(text);
-    case 'festive':
-      return /festive|party|occasion|celebration/.test(text);
-    case 'everyday':
-      return /everyday|cotton|kurta|daily|office/.test(text);
-    case 'tutorials':
-      return /tutorial|how to|how-to|guide|demo/.test(text);
-    case 'styling tips':
-      return /style|styling|look|tips/.test(text);
-    default:
-      return true;
-  }
+  if (tab === 'all') return true;
+  return (reel.category || '').toLowerCase() === tab.toLowerCase();
 }
 
-const placeholderReels: TrendingReelItem[] = [
-  {
-    id: 'placeholder-style',
-    video_url: '',
-    thumbnail_url: '',
-    product_name: 'Three ways to drape Kantha',
-    price: 'Tap to view and shop',
-    link_url: '/products',
-    category: 'styling',
-  },
-  {
-    id: 'placeholder-occasion',
-    video_url: '',
-    thumbnail_url: '',
-    product_name: 'Wedding guest saree try-on',
-    price: 'Tap to view and shop',
-    link_url: '/products',
-    category: 'occasion',
-  },
-  {
-    id: 'placeholder-new',
-    video_url: '',
-    thumbnail_url: '',
-    product_name: 'Fresh studio drop preview',
-    price: 'Tap to view and shop',
-    link_url: '/products?sort=newest',
-    category: 'new drops',
-  },
-  {
-    id: 'placeholder-craft',
-    video_url: '',
-    thumbnail_url: '',
-    product_name: 'Craft details up close',
-    price: 'Tap to view and shop',
-    link_url: '/products',
-    category: 'craft',
-  },
-];
+function formatCategoryLabel(category: string) {
+  return category
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function getShowAllHref(basePath: string, tab: string, showAll: boolean) {
+  const params = new URLSearchParams();
+  if (tab && tab !== 'all') params.set('tab', tab);
+  if (!showAll) params.set('show', 'all');
+  const query = params.toString();
+  return query ? `${basePath}?${query}` : basePath;
+}
 
 function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const router = useRouter();
@@ -164,7 +127,24 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     () => (showAll ? filteredReels : filteredReels.slice(0, 12)),
     [filteredReels, showAll]
   );
-  const displayReels = visibleReels.length > 0 ? visibleReels : placeholderReels;
+
+  const reelChips = useMemo(() => {
+    const categories = Array.from(
+      new Set(
+        reels
+          .map((reel) => reel.category?.trim())
+          .filter((category): category is string => Boolean(category))
+      )
+    );
+
+    return [
+      { label: 'All Reels', value: 'all' },
+      ...categories.map((category) => ({
+        label: formatCategoryLabel(category),
+        value: category,
+      })),
+    ];
+  }, [reels]);
 
   function openReel(index: number) {
     const selectedReel = visibleReels[index];
@@ -202,6 +182,8 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 
   function handleViewModeChange(nextMode: string) {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete('show');
+    params.delete('reel');
     if (!nextMode || nextMode === 'all') {
       params.delete('tab');
     } else {
@@ -217,15 +199,6 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 
     router.push(`/search?q=${encodeURIComponent(query)}`);
   }
-
-  const reelChips = [
-    { label: 'All Reels', value: 'all' },
-    { label: 'Styling', value: 'styling tips' },
-    { label: 'Occasion', value: 'festive' },
-    { label: 'New Drops', value: 'everyday' },
-    { label: 'Craft', value: 'tutorials' },
-    { label: 'Gifting', value: 'bridal' },
-  ];
 
   return (
     <div className="min-h-screen bg-[var(--cream)] pb-24 md:pb-16 lg:pb-20">
@@ -285,10 +258,13 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           </div>
         ) : (
            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
-            {displayReels.map((reel, idx) => {
-              const isPlaceholder = !reel.video_url || !reel.thumbnail_url;
-              const card = (
-                <>
+            {visibleReels.map((reel, idx) => (
+                <button
+                  key={reel.id}
+                  type="button"
+                  onClick={() => openReel(idx)}
+                  className="group relative aspect-[3/5] overflow-hidden rounded-[12px] bg-stone-200 text-left shadow-sm"
+                >
                   {reel.thumbnail_url ? (
                     <OptimizedImage
                       src={reel.thumbnail_url}
@@ -315,50 +291,39 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                       <span className="text-[11px] font-semibold sm:text-sm">
                         {reel.price}
                       </span>
-                      {!isPlaceholder ? (
-                        <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.12em] sm:text-[10px]">
-                          <Eye size={12} />
-                          {reel.view_count || 0}
-                        </span>
-                      ) : null}
+                      <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.12em] sm:text-[10px]">
+                        <Eye size={12} />
+                        {reel.view_count || 0}
+                      </span>
+                      </div>
                     </div>
-                  </div>
-                </>
-              );
-
-              if (isPlaceholder) {
-                return (
-                  <Link
-                    key={reel.id}
-                    href={reel.link_url}
-                    className="group relative aspect-[3/5] overflow-hidden rounded-[12px] bg-stone-200 text-left shadow-sm"
-                  >
-                    {card}
-                  </Link>
-                );
-              }
-
-              return (
-                <button
-                  key={reel.id}
-                  type="button"
-                  onClick={() => openReel(idx)}
-                  className="group relative aspect-[3/5] overflow-hidden rounded-[12px] bg-stone-200 text-left shadow-sm"
-                >
-                  {card}
                 </button>
-              );
-            })}
+            ))}
            </div>
         )}
 
-          {visibleReels.length > 0 && reels.length > visibleReels.length ? (
+          {!loading && visibleReels.length === 0 ? (
+            <div className="rounded-[12px] border border-[var(--line)] bg-white px-6 py-14 text-center">
+              <p className="kv-tag">No Reels</p>
+              <h2 className="mt-2 font-heading text-[30px] font-bold text-[var(--ink)]">
+                Nothing published here yet
+              </h2>
+              <p className="mx-auto mt-2 max-w-md text-[14px] leading-6 text-stone-500">
+                Reels will appear as soon as they are added from the backend.
+              </p>
+              <Link href="/products" className="kv-btn mt-5">
+                Browse Products
+              </Link>
+            </div>
+          ) : null}
+
+          {visibleReels.length > 0 && filteredReels.length > visibleReels.length ? (
             <div className="mt-10 text-center">
               <Link
-                href={showAll ? '/reels' : '/reels?show=all'}
+                href={getShowAllHref(basePath, selectedTab, showAll)}
                 className="kv-btn"
               >
-                Load More Reels
+                {showAll ? 'View Fewer Reels' : 'Load More Reels'}
               </Link>
             </div>
           ) : null}

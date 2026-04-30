@@ -16,11 +16,10 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
-  const hasCustomTitle = Boolean(settings.newsletter_title);
-  const title = settings.newsletter_title || 'New pieces, every month.';
+  const title = settings.newsletter_title || 'Get craft stories and launch alerts';
   const subtitle =
     settings.newsletter_subtitle ||
-    'Each collection is small-batch and sells out fast. Get first access — plus 10% off your first order.';
+    'A footer/newsletter section is useful, but popup frequency should be controlled.';
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,57 +51,53 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
   }
 
   return (
-    <section className="bg-black py-12 text-white md:py-16 lg:py-32">
-      <div className="mx-auto max-w-[1440px] px-6 text-center md:px-12 lg:px-20">
-        <div className="text-[11px] uppercase tracking-[0.25em] text-white/50">
-          Newsletter
-        </div>
-        <h2 className="mt-4 font-heading text-[clamp(40px,4vw,72px)] font-medium leading-[0.96] tracking-[-0.03em] text-white">
-          {hasCustomTitle ? (
-            title
+    <section className="kv-section" style={{ background: 'var(--sienna)', color: 'white' }}>
+      <div className="kv-container">
+        <div className="newsletter-form" style={{ maxWidth: 640, margin: 'auto', textAlign: 'center' }}>
+          <div className="kv-tag" style={{ color: 'rgba(255,255,255,.72)' }}>Newsletter</div>
+          <h2 className="kv-title">{title}</h2>
+          <p style={{ color: 'rgba(255,255,255,.78)' }}>{subtitle}</p>
+
+          {status === 'success' ? (
+            <p className="mt-4 text-sm text-white/90" role="status">
+              {message}
+            </p>
           ) : (
-            <>
-              New pieces, <em className="italic">every month.</em>
-            </>
+            <div className="newsletter-form">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                  placeholder="Email address"
+                  className="form-input flex-1"
+                  style={{
+                    border: '1px solid var(--line)',
+                    borderRadius: 'var(--radius-md)',
+                    background: 'white',
+                    color: 'var(--ink)',
+                    padding: '12px 13px',
+                  }}
+                  disabled={status === 'loading'}
+                />
+                <button
+                  type="submit"
+                  className="kv-btn kv-btn-white"
+                  disabled={status === 'loading'}
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
           )}
-        </h2>
-        <p className="mx-auto mt-4 max-w-[420px] text-[15px] leading-7 text-white/70">
-          {subtitle}
-        </p>
 
-        {status === 'success' ? (
-          <p className="mt-8 text-sm text-emerald-300" role="status">
-            {message}
-          </p>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="mx-auto mt-8 flex max-w-[480px] flex-col gap-4 sm:flex-row"
-          >
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              placeholder="Your email address"
-              className="flex-1 border border-white/30 bg-transparent px-5 py-4 text-[14px] text-white outline-none placeholder:text-white/50 sm:border-r-0"
-              disabled={status === 'loading'}
-            />
-            <button
-              type="submit"
-              className="border border-white bg-white px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-black transition-colors hover:bg-stone-200 disabled:opacity-60"
-              disabled={status === 'loading'}
-            >
-              Subscribe
-            </button>
-          </form>
-        )}
-
-        {status === 'error' ? (
-          <p className="mt-3 text-sm text-red-300" role="alert">
-            {message}
-          </p>
-        ) : null}
+          {status === 'error' ? (
+            <p className="mt-3 text-sm text-white/80" role="alert">
+              {message}
+            </p>
+          ) : null}
+        </div>
       </div>
     </section>
   );

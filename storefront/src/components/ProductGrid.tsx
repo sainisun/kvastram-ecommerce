@@ -51,8 +51,8 @@ function ProductGrid({
   const resolvedLoading = externalLoading === true;
   const gridClassName =
     density === 'compact'
-      ? 'product-grid-prem product-grid-prem--compact'
-      : 'product-grid-prem';
+      ? 'products-grid compact'
+      : 'products-grid';
 
   useEffect(() => {
     if (
@@ -142,39 +142,19 @@ function ProductGrid({
     return (
       <div className={gridClassName}>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-          <div key={item} className="prod-card-prem">
+          <div key={item} className="product-card">
             <div
-              className="prod-img-wrap-prem"
+              className="product-media animate-pulse"
               style={{
                 background:
                   'linear-gradient(90deg, #ede9e4 25%, #e5e0da 50%, #ede9e4 75%)',
                 backgroundSize: '200% 100%',
               }}
             />
-            <div className="prod-info-prem">
-              <div
-                style={{
-                  height: 'var(--space-2)',
-                  width: '60%',
-                  background: 'var(--border)',
-                  marginBottom: 'var(--space-2)',
-                }}
-              />
-              <div
-                style={{
-                  height: 'var(--space-4)',
-                  width: '80%',
-                  background: 'var(--border)',
-                  marginBottom: 'var(--space-2)',
-                }}
-              />
-              <div
-                style={{
-                  height: 'var(--space-3)',
-                  width: '30%',
-                  background: 'var(--border)',
-                }}
-              />
+            <div className="product-info">
+              <div style={{ height: 8, width: '60%', background: 'var(--line)', marginBottom: 8, borderRadius: 4 }} />
+              <div style={{ height: 14, width: '80%', background: 'var(--line)', marginBottom: 8, borderRadius: 4 }} />
+              <div style={{ height: 10, width: '30%', background: 'var(--line)', borderRadius: 4 }} />
             </div>
           </div>
         ))}
@@ -215,10 +195,10 @@ function ProductGrid({
     const priceInfo = getPrice(product);
 
     renderedItems.push(
-      <div key={product.id} className="prod-card-prem group relative">
+      <div key={product.id} className="product-card group relative">
         <a
           href={`/products/${product.handle || product.id}`}
-          className="block prod-img-wrap-prem"
+          className="product-media block"
         >
           {product.thumbnail ? (
             <OptimizedImage
@@ -226,22 +206,10 @@ function ProductGrid({
               alt={buildProductImageAlt(product, 0)}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              className="object-cover"
             />
           ) : (
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                background: 'var(--off-white)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--mid)',
-                fontFamily: 'var(--font-display)',
-                fontStyle: 'italic',
-              }}
-            >
+            <div className="flex h-full w-full items-center justify-center bg-[var(--soft)] text-[var(--muted)] font-serif italic">
               No Image
             </div>
           )}
@@ -256,17 +224,26 @@ function ProductGrid({
             />
           ) : null}
 
-          <div className="absolute left-4 top-4 z-10 flex flex-col gap-2">
-            {isNew && !isOnSale ? <span className="prod-tag-prem">New</span> : null}
-            {isOnSale ? <span className="prod-tag-prem sale">Sale</span> : null}
-            {isLowStock ? (
-              <span className="prod-tag-prem low-stock">Almost Gone</span>
-            ) : null}
-          </div>
+          {isNew && !isOnSale ? <span className="product-badge">New</span> : null}
+          {isOnSale ? <span className="product-badge sale">Sale</span> : null}
+          {isLowStock ? (
+            <span className="product-badge low-stock">Almost Gone</span>
+          ) : null}
 
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              setQuickViewProduct(product);
+            }}
+            className="quick-view-btn"
+            aria-label={`Quick view ${product.title}`}
+          >
+            Quick View
+          </button>
         </a>
 
-        <div className="prod-wishlist-prem">
+        <div className="product-wish">
           <WishlistButton
             productId={product.id}
             title={product.title}
@@ -279,48 +256,18 @@ function ProductGrid({
           />
         </div>
 
-        <button
-          onClick={(e) => handleAddToCart(e, product)}
-          className="prod-quick-add-prem"
-          aria-label={
-            addedId === product.id ? 'Added to cart' : 'Quick Add to cart'
-          }
-        >
-          {addedId === product.id ? 'Added' : 'Quick Add'}
-        </button>
-
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault();
-            setQuickViewProduct(product);
-          }}
-          className="absolute bottom-14 left-3 right-3 z-20 translate-y-3 border border-stone-200 bg-white px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-950 opacity-0 shadow-[0_12px_34px_rgba(0,0,0,0.12)] transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
-          aria-label={`Quick view ${product.title}`}
-        >
-          Quick View
-        </button>
-
-        <a
-          href={`/products/${product.handle || product.id}`}
-          className="prod-info-prem block"
-        >
-          <p className="prod-collection-prem">
+        <div className="product-info">
+          <p className="product-cat">
             {product.collection?.title || 'Kvastram'}
           </p>
-          <h3 className="prod-name-prem truncate" title={product.title}>
-            {product.title}
-          </h3>
+          <a href={`/products/${product.handle || product.id}`}>
+            <h3 className="product-name truncate" title={product.title}>
+              {product.title}
+            </h3>
+          </a>
 
           {product.avg_rating != null && product.avg_rating > 0 ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                marginBottom: 'var(--space-2)',
-              }}
-            >
+            <div className="flex items-center gap-1 mb-2">
               {[1, 2, 3, 4, 5].map((item) => (
                 <svg
                   key={item}
@@ -328,62 +275,52 @@ function ProductGrid({
                   height="10"
                   viewBox="0 0 24 24"
                   fill={
-                    item <= Math.round(product.avg_rating || 0) ? '#080808' : '#ddd'
+                    item <= Math.round(product.avg_rating || 0) ? 'var(--sienna)' : '#ddd'
                   }
                 >
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
               ))}
               {product.review_count != null && product.review_count > 0 ? (
-                <span style={{ fontSize: '10px', color: 'var(--mid)' }}>
+                <span className="text-[10px] text-[var(--muted)]">
                   ({product.review_count})
                 </span>
               ) : null}
             </div>
           ) : null}
 
-          {priceInfo.isWholesale ? (
-            <p
-              style={{
-                fontFamily: 'var(--font-ui)',
-                fontSize: '12px',
-                fontWeight: 500,
-                color: '#2a7a2a',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-              }}
-            >
-              Wholesale · {priceInfo.price}
-            </p>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              {(() => {
-                const variant = product.variants?.[0];
-                const compareAt = variant?.compare_at_price;
-                const inrPrices = variant?.prices || [];
-                const inrPriceAmt =
-                  (inrPrices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || inrPrices[0])?.amount || 0;
-                if (compareAt && compareAt > inrPriceAmt) {
-                  return (
-                    <span
-                      className="prod-price-prem"
-                      style={{
-                        color: 'var(--mid)',
-                        textDecoration: 'line-through',
-                        fontFamily: 'var(--font-ui)',
-                        fontSize: '14px',
-                      }}
-                    >
-                      {formatPrice(compareAt)}
-                    </span>
-                  );
-                }
-                return null;
-              })()}
-              <p className="prod-price-prem">{priceInfo.price}</p>
+          <div className="product-row">
+            <div className="flex items-center gap-1">
+              {priceInfo.isWholesale ? (
+                <span className="text-[12px] font-medium text-green-700 uppercase tracking-wider">
+                  Wholesale · {priceInfo.price}
+                </span>
+              ) : (
+                <>
+                  {(() => {
+                    const variant = product.variants?.[0];
+                    const compareAt = variant?.compare_at_price;
+                    const inrPrices = variant?.prices || [];
+                    const inrPriceAmt =
+                      (inrPrices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || inrPrices[0])?.amount || 0;
+                    if (compareAt && compareAt > inrPriceAmt) {
+                      return <span className="orig">{formatPrice(compareAt)}</span>;
+                    }
+                    return null;
+                  })()}
+                  <span className="price">{priceInfo.price}</span>
+                </>
+              )}
             </div>
-          )}
-        </a>
+            <button
+              onClick={(e) => handleAddToCart(e, product)}
+              className="mini-cart"
+              aria-label={addedId === product.id ? 'Added to cart' : 'Add to cart'}
+            >
+              {addedId === product.id ? '✓' : '+'}
+            </button>
+          </div>
+        </div>
       </div>
     );
 

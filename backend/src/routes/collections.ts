@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
 import { product_collections, products } from '../db/schema';
-import { eq, desc, inArray } from 'drizzle-orm';
+import { eq, desc, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 
@@ -29,8 +29,20 @@ const ProductAssignmentSchema = z.object({
 collectionsRouter.get('/', async (c) => {
   try {
     const list = await db
-      .select()
+      .select({
+        id: product_collections.id,
+        title: product_collections.title,
+        handle: product_collections.handle,
+        image: product_collections.image,
+        metadata: product_collections.metadata,
+        created_at: product_collections.created_at,
+        updated_at: product_collections.updated_at,
+        deleted_at: product_collections.deleted_at,
+        product_count: sql<number>\`count(\${products.id})\`.mapWith(Number),
+      })
       .from(product_collections)
+      .leftJoin(products, eq(product_collections.id, products.collection_id))
+      .groupBy(product_collections.id)
       .orderBy(desc(product_collections.created_at));
     return c.json({ collections: list });
   } catch (error: any) {

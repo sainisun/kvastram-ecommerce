@@ -8,8 +8,6 @@ import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import type { Product, MoneyAmount } from '@/types';
 import WishlistButton from '@/components/ui/WishlistButton';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { Product as ProductType } from '@/types';
 import { useCurrency } from '@/context/currency-context';
 
 interface ProductCarouselProps {
@@ -23,17 +21,12 @@ interface ProductCarouselProps {
 function ProductCarousel({
   products = [],
   loading: externalLoading,
-  showNavigation = true,
-  autoPlay = false,
-  autoPlayInterval = 5000,
 }: ProductCarouselProps) {
   const { currentRegion } = useShop();
   const { formatPrice } = useCurrency();
   const { addItem } = useCart();
   const { showNotification } = useNotification();
   const [addedId, setAddedId] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
   const loading = externalLoading || products.length === 0;
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
@@ -43,7 +36,6 @@ function ProductCarousel({
       return;
     }
     const variant = product.variants[0];
-
     const prices = variant.prices || [];
     const inrPrice =
       prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') ||
@@ -77,72 +69,22 @@ function ProductCarousel({
     const inrPrice =
       prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') ||
       prices[0];
-
     if (inrPrice) {
       return formatPrice(inrPrice.amount);
     }
-
     return 'Contact for price';
-  };
-
-  const scrollToIndex = (index: number) => {
-    if (carouselRef.current) {
-      const cardWidth = carouselRef.current.children[0]?.clientWidth || 280;
-      const gap = 32; // gap-8 = 32px
-      carouselRef.current.scrollTo({
-        left: index * (cardWidth + gap),
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  const handlePrev = () => {
-    const newIndex =
-      currentIndex > 0 ? currentIndex - 1 : Math.max(0, products.length - 4);
-    setCurrentIndex(newIndex);
-    scrollToIndex(newIndex);
-  };
-
-  const handleNext = () => {
-    const maxIndex = Math.max(0, products.length - 4);
-    const newIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
-    setCurrentIndex(newIndex);
-    scrollToIndex(newIndex);
   };
 
   if (loading) {
     return (
-      <div className="product-grid-prem">
+      <div className="products-grid">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="prod-card-prem animate-pulse">
-            <div
-              className="prod-img-wrap-prem"
-              style={{ background: 'var(--off-white)' }}
-            />
-            <div className="prod-info-prem">
-              <div
-                style={{
-                  height: '8px',
-                  background: 'var(--off-white)',
-                  width: '40%',
-                  marginBottom: '8px',
-                }}
-              />
-              <div
-                style={{
-                  height: '14px',
-                  background: 'var(--off-white)',
-                  width: '70%',
-                  marginBottom: '6px',
-                }}
-              />
-              <div
-                style={{
-                  height: '12px',
-                  background: 'var(--off-white)',
-                  width: '30%',
-                }}
-              />
+          <div key={i} className="product-card animate-pulse">
+            <div className="product-media" style={{ background: 'var(--soft)' }} />
+            <div className="product-info">
+              <div style={{ height: 8, background: 'var(--line)', width: '40%', marginBottom: 8, borderRadius: 4 }} />
+              <div style={{ height: 14, background: 'var(--line)', width: '70%', marginBottom: 6, borderRadius: 4 }} />
+              <div style={{ height: 12, background: 'var(--line)', width: '30%', borderRadius: 4 }} />
             </div>
           </div>
         ))}
@@ -159,47 +101,28 @@ function ProductCarousel({
   }
 
   return (
-    <div className="product-grid-prem">
+    <div className="products-grid">
       {products.map((product) => (
-        <div key={product.id} className="prod-card-prem">
-          {/* Image + Quick Add + wishlist */}
+        <div key={product.id} className="product-card group relative">
           <Link
             href={`/products/${product.handle || product.id}`}
-            style={{ display: 'block' }}
+            className="product-media block"
           >
-            <div className="prod-img-wrap-prem">
-              {product.thumbnail ? (
-                <OptimizedImage
-                  src={product.thumbnail}
-                  alt={product.title}
-                  fill
-                  sizes="(max-width: 640px) 50vw, 25vw"
-                  className="object-cover"
-                />
-              ) : (
-                <div
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'var(--off-white)',
-                  }}
-                />
-              )}
-              <span className="prod-tag-prem">New</span>
-              <button
-                className="prod-quick-add-prem"
-                tabIndex={-1}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleAddToCart(e as unknown as React.MouseEvent, product);
-                }}
-              >
-                {addedId === product.id ? '✓ Added' : 'Add to Bag'}
-              </button>
-            </div>
+            {product.thumbnail ? (
+              <OptimizedImage
+                src={product.thumbnail}
+                alt={product.title}
+                fill
+                sizes="(max-width: 640px) 50vw, 25vw"
+                className="object-cover"
+              />
+            ) : (
+              <div className="h-full w-full bg-[var(--soft)]" />
+            )}
+            <span className="product-badge">New</span>
           </Link>
-          {/* Wishlist absolute */}
-          <div className="prod-wishlist-prem">
+          {/* Wishlist */}
+          <div className="product-wish">
             <WishlistButton
               productId={product.id}
               title={product.title}
@@ -212,17 +135,24 @@ function ProductCarousel({
             />
           </div>
           {/* Info */}
-          <Link
-            href={`/products/${product.handle || product.id}`}
-            className="prod-info-prem"
-            style={{ display: 'block' }}
-          >
-            <p className="prod-collection-prem">
+          <div className="product-info">
+            <p className="product-cat">
               {product.subtitle || product.collection?.title || 'Kvastram'}
             </p>
-            <h3 className="prod-name-prem truncate" title={product.title}>{product.title}</h3>
-            <p className="prod-price-prem">{getPrice(product)}</p>
-          </Link>
+            <Link href={`/products/${product.handle || product.id}`}>
+              <h3 className="product-name truncate" title={product.title}>{product.title}</h3>
+            </Link>
+            <div className="product-row">
+              <span className="price">{getPrice(product)}</span>
+              <button
+                className="mini-cart"
+                onClick={(e) => handleAddToCart(e, product)}
+                aria-label={addedId === product.id ? 'Added to cart' : 'Add to cart'}
+              >
+                {addedId === product.id ? '✓' : '+'}
+              </button>
+            </div>
+          </div>
         </div>
       ))}
     </div>
