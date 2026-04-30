@@ -26,6 +26,7 @@ import type {
   HomepageTestimonial,
   HomepageTrendingReel,
   HomepageSpotlightProduct,
+  HomepageMerchandisingSlot,
 } from '@/types/homepage';
 
 type HomepageSettings = {
@@ -63,6 +64,7 @@ export default async function Home() {
     bestsellersResult,
     heroBannersResult,
     tagsResult,
+    merchandisingResult,
   ] = await Promise.allSettled([
     api.getHomepageSettings(),
     api.getProducts({ limit: 8, sort: 'newest' }),
@@ -74,6 +76,7 @@ export default async function Home() {
     api.getSpotlightProducts('bestsellers'),
     api.getHeroBanners(),
     api.getTags(),
+    api.getHomepageMerchandising(),
   ]);
 
   const homepageSettings: HomepageSettings =
@@ -319,6 +322,20 @@ export default async function Home() {
           }))
       : [];
 
+  const merchandisingSlots: HomepageMerchandisingSlot[] =
+    merchandisingResult.status === 'fulfilled'
+      ? (merchandisingResult.value.slots || [])
+          .filter((slot: { id?: string; slot_key?: string; title?: string }) =>
+            Boolean(slot?.id && slot?.slot_key && slot?.title)
+          )
+          .map((slot: HomepageMerchandisingSlot) => ({
+            ...slot,
+            image_url: cloudinaryUrlOrNull(slot.image_url),
+            mobile_image_url: cloudinaryUrlOrNull(slot.mobile_image_url),
+            link_url: storefrontHrefOrNull(slot.link_url) || null,
+          }))
+      : [];
+
   const homepageSchema = [
     buildOrganizationJsonLd(),
     buildWebsiteJsonLd(),
@@ -347,6 +364,7 @@ export default async function Home() {
         bestsellerProducts={bestsellerProducts}
         collections={collections}
         tags={tags}
+        merchandisingSlots={merchandisingSlots}
       >
         <ShopTheLook spotlightProducts={spotlightProducts} />
       </PrototypeHomeExtras>

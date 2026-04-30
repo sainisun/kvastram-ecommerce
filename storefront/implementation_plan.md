@@ -99,6 +99,13 @@ Rebuild homepage sections using the new design system and data from the backend 
 ### Automated Tests
 - Run `npm run lint` and `npm run build` in the `storefront/` directory.
 
+### Post-Audit Fixes
+- Removed fake homepage commerce/reel/product placeholder data from production components.
+- Wired homepage extra merchandising sections to `GET /homepage-merchandising`.
+- Converted missing homepage content into clear non-commerce empty states.
+- Rebuilt catalog filter sidebar without legacy `*-prem` classes and made the mobile filter sheet full-screen.
+- Verified code search for old product/filter/logo premium selectors and fake placeholder commerce arrays.
+
 ### Manual Verification
 - Test viewport behavior around 390px width for mobile-first layout.
 - Verify the following pages for visual parity and accurate data fetching:

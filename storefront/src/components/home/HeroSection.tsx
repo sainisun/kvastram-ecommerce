@@ -25,7 +25,6 @@ interface ResolvedSlide {
   imageUrl?: string;
   mobileImageUrl?: string;
   alt: string;
-  placeholderClass?: string;
 }
 
 export function HeroSection({ banners = [] }: HeroSectionProps) {
@@ -39,28 +38,7 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
       }))
       .filter((banner) => Boolean(banner.imageUrl));
 
-    if (realSlides.length > 0) {
-      return realSlides;
-    }
-
-    // Prototype placeholder slides with matching gradients
-    return [
-      {
-        id: 'placeholder-kantha',
-        alt: 'Kvastram Kantha placeholder hero',
-        placeholderClass: 'bg-gradient-to-br from-[#2a1208] via-[#5c2a12] to-[#a85d3a]',
-      },
-      {
-        id: 'placeholder-block-print',
-        alt: 'Kvastram block print placeholder hero',
-        placeholderClass: 'bg-gradient-to-br from-[#174f70] via-[#7a9b7f] to-[#d5b08a]',
-      },
-      {
-        id: 'placeholder-occasion',
-        alt: 'Kvastram occasion placeholder hero',
-        placeholderClass: 'bg-gradient-to-br from-[#7f1d1d] via-[#c4956a] to-[#f4d4b8]',
-      },
-    ];
+    return realSlides;
   }, [banners]);
 
   const autoplay = useMemo(
@@ -101,6 +79,10 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
     [emblaApi]
   );
 
+  if (slides.length === 0) {
+    return null;
+  }
+
   return (
     <section
       className="hero relative block overflow-hidden"
@@ -114,7 +96,7 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
           {slides.map((slide) => (
             <div
               key={slide.id}
-              className={`hero-slide relative min-w-0 flex-[0_0_100%] ${slide.placeholderClass || ''}`}
+              className="hero-slide relative min-w-0 flex-[0_0_100%]"
               style={{ scrollSnapAlign: 'start', minHeight: '100%' }}
             >
               {slide.imageUrl ? (

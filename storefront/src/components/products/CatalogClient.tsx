@@ -461,7 +461,7 @@ export default function CatalogClient({
             onClick={() => setMobileFilterOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl transition-transform duration-300">
+          <div className="fixed inset-0 z-50 bg-white shadow-xl transition-transform duration-300 sm:inset-y-0 sm:left-0 sm:right-auto sm:w-[420px]">
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between border-b border-stone-100 p-4">
                 <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-stone-900">

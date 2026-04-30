@@ -56,6 +56,23 @@ export interface HomepageTestimonial {
   content: string;
 }
 
+export interface HomepageMerchandisingSlot {
+  id: string;
+  slot_key: string;
+  eyebrow?: string | null;
+  title: string;
+  copy?: string | null;
+  image_url?: string | null;
+  mobile_image_url?: string | null;
+  link_url?: string | null;
+  linked_product_id?: string | null;
+  linked_collection_id?: string | null;
+  linked_category_id?: string | null;
+  linked_tag_id?: string | null;
+  is_active: boolean;
+  sort_order: number;
+}
+
 export interface HomepageViewModel {
   products: Product[];
   isCuratedProducts: boolean;
@@ -63,4 +80,5 @@ export interface HomepageViewModel {
   categories: HomepageCategoryCard[];
   collections: HomepageCollection[];
   testimonials: HomepageTestimonial[];
+  merchandisingSlots?: HomepageMerchandisingSlot[];
 }

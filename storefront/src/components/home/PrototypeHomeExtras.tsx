@@ -4,7 +4,10 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import type { MoneyAmount, Product } from '@/types';
-import type { HomepageCollection } from '@/types/homepage';
+import type {
+  HomepageCollection,
+  HomepageMerchandisingSlot,
+} from '@/types/homepage';
 import { useCurrency } from '@/context/currency-context';
 
 interface Tag {
@@ -17,39 +20,9 @@ interface PrototypeHomeExtrasProps {
   bestsellerProducts: Product[];
   collections: HomepageCollection[];
   tags: Tag[];
+  merchandisingSlots: HomepageMerchandisingSlot[];
   children?: ReactNode;
 }
-
-const campaignPlaceholders = [
-  {
-    eyebrow: 'Summer craft',
-    title: 'Lightweight Kantha Layers',
-    copy: 'Breathable cottons for rituals, brunches, and warm evenings.',
-    href: '/products',
-    className: 'from-[#a85d3a] to-[#c4956a]',
-  },
-  {
-    eyebrow: 'New launch',
-    title: 'Block Print Classics',
-    copy: 'Everyday sets with Jaipur-inspired print stories.',
-    href: '/products',
-    className: 'from-[#174f70] to-[#7a9b7f]',
-  },
-  {
-    eyebrow: 'Occasion edit',
-    title: 'Wedding Guest Ready',
-    copy: 'Sarees, accessories, and occasion-ready craft pieces.',
-    href: '/collections',
-    className: 'from-[#7f1d1d] to-[#c4956a]',
-  },
-];
-
-const fabricNames = ['Cotton', 'Silk', 'Wool', 'Handloom', 'Block Print', 'Embroidery'];
-const occasionPlaceholders = [
-  'Haldi & Mehendi',
-  'Workday Craft',
-  'Gifting Under Rs. 2000',
-];
 
 function getPrice(product: Product) {
   const prices = product.variants?.[0]?.prices || [];
@@ -63,48 +36,6 @@ function isSaleProduct(product: Product) {
   const currentPrice = getPrice(product);
   const compareAt = product.variants?.[0]?.compare_at_price || 0;
   return compareAt > currentPrice && currentPrice > 0;
-}
-
-function ProductTile({
-  product,
-  placeholder,
-}: {
-  product?: Product;
-  placeholder: string;
-}) {
-  const { formatPrice } = useCurrency();
-  const href = product ? `/products/${product.handle || product.id}` : '/products';
-  const title = product?.title || placeholder;
-  const price = product ? getPrice(product) : 0;
-
-  return (
-    <article className="group">
-      <Link href={href} className="relative block aspect-[4/5] overflow-hidden bg-stone-100">
-        {product?.thumbnail ? (
-          <OptimizedImage
-            src={product.thumbnail}
-            alt={product.title}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#f4d4b8] to-[#a85d3a] font-heading text-[64px] text-white/80">
-            {title.charAt(0)}
-          </div>
-        )}
-      </Link>
-      <Link
-        href={href}
-        className="mt-4 line-clamp-2 block text-[15px] leading-6 text-stone-950"
-      >
-        {title}
-      </Link>
-      <p className="mt-1 text-[12px] uppercase tracking-[0.16em] text-stone-500">
-        {price ? formatPrice(price) : 'Placeholder edit'}
-      </p>
-    </article>
-  );
 }
 
 function SectionHead({
@@ -124,7 +55,7 @@ function SectionHead({
         <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
           {eyebrow}
         </div>
-        <h2 className="mt-3 font-heading text-[clamp(34px,4vw,54px)] font-medium leading-[0.96] tracking-[-0.02em] text-stone-950">
+        <h2 className="mt-3 font-heading text-[clamp(34px,4vw,54px)] font-medium leading-[0.96] text-stone-950">
           {title}
         </h2>
       </div>
@@ -132,7 +63,7 @@ function SectionHead({
       {action ? (
         <Link
           href={action.href}
-          className="inline-flex items-center justify-center border border-stone-200 bg-white px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-900 transition-colors hover:border-stone-900"
+          className="inline-flex items-center justify-center rounded-[8px] border border-stone-200 bg-white px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-900 transition-colors hover:border-stone-900"
         >
           {action.label}
         </Link>
@@ -141,13 +72,115 @@ function SectionHead({
   );
 }
 
+function EmptyMerchState({ label }: { label: string }) {
+  return (
+    <div className="rounded-[12px] border border-dashed border-stone-300 bg-white/70 px-6 py-10 text-center">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-500">
+        {label}
+      </p>
+      <p className="mx-auto mt-2 max-w-md text-[14px] leading-6 text-stone-600">
+        Add active homepage merchandising slots in admin to publish this section.
+      </p>
+    </div>
+  );
+}
+
+function slotHref(slot: HomepageMerchandisingSlot) {
+  if (slot.link_url) return slot.link_url;
+  if (slot.linked_product_id) return `/products/${slot.linked_product_id}`;
+  if (slot.linked_collection_id) return `/products?collection_id=${slot.linked_collection_id}`;
+  if (slot.linked_category_id) return `/products?category_id=${slot.linked_category_id}`;
+  if (slot.linked_tag_id) return `/products?tag_id=${slot.linked_tag_id}`;
+  return '/products';
+}
+
+function MerchSlotCard({ slot }: { slot: HomepageMerchandisingSlot }) {
+  return (
+    <Link
+      href={slotHref(slot)}
+      className="relative min-h-[320px] min-w-[78%] snap-start overflow-hidden rounded-[12px] bg-gradient-to-br from-[#7d3f25] via-[#a85d3a] to-[#d8b295] p-8 text-white sm:min-w-[42%] lg:min-w-[31%]"
+    >
+      {slot.image_url ? (
+        <OptimizedImage
+          src={slot.image_url}
+          alt={slot.title}
+          fill
+          sizes="(max-width: 768px) 78vw, 31vw"
+          className="object-cover"
+        />
+      ) : null}
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.06),rgba(0,0,0,0.54))]" />
+      <div className="relative z-10 flex h-full flex-col justify-end">
+        <div className="text-[11px] uppercase tracking-[0.22em] text-white/75">
+          {slot.eyebrow || 'Kvastram Edit'}
+        </div>
+        <h3 className="mt-3 font-heading text-[32px] leading-none">
+          {slot.title}
+        </h3>
+        {slot.copy ? (
+          <p className="mt-3 max-w-[18rem] text-[14px] leading-7 text-white/82">
+            {slot.copy}
+          </p>
+        ) : null}
+      </div>
+    </Link>
+  );
+}
+
+function ProductTile({ product }: { product: Product }) {
+  const { formatPrice } = useCurrency();
+  const price = getPrice(product);
+
+  return (
+    <article className="group">
+      <Link
+        href={`/products/${product.handle || product.id}`}
+        className="relative block aspect-[4/5] overflow-hidden rounded-[12px] bg-stone-100"
+      >
+        {product.thumbnail ? (
+          <OptimizedImage
+            src={product.thumbnail}
+            alt={product.title}
+            fill
+            sizes="(max-width: 768px) 50vw, 25vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-[var(--soft)] text-[var(--muted)]">
+            No Image
+          </div>
+        )}
+      </Link>
+      <Link
+        href={`/products/${product.handle || product.id}`}
+        className="mt-4 line-clamp-2 block text-[15px] leading-6 text-stone-950"
+      >
+        {product.title}
+      </Link>
+      <p className="mt-1 text-[12px] uppercase tracking-[0.16em] text-stone-500">
+        {price ? formatPrice(price) : 'Contact for price'}
+      </p>
+    </article>
+  );
+}
+
+function groupSlots(slots: HomepageMerchandisingSlot[], key: string) {
+  return slots
+    .filter((slot) => slot.slot_key === key && slot.is_active)
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+}
+
 export function PrototypeHomeExtras({
   products,
   bestsellerProducts,
   collections,
   tags,
+  merchandisingSlots,
   children,
 }: PrototypeHomeExtrasProps) {
+  const seasonalSlots = groupSlots(merchandisingSlots, 'seasonal_edits');
+  const fabricSlots = groupSlots(merchandisingSlots, 'fabric_edits');
+  const occasionSlots = groupSlots(merchandisingSlots, 'occasion_edits');
   const saleProducts = products.filter(isSaleProduct);
   const tabProducts = [
     ...products.slice(0, 2),
@@ -155,31 +188,33 @@ export function PrototypeHomeExtras({
     ...saleProducts.slice(0, 1),
   ].slice(0, 4);
 
-  const fabricTags = tags
-    .filter((tag) =>
-      fabricNames.some((name) => tag.name.toLowerCase().includes(name.toLowerCase()))
-    )
-    .slice(0, 6);
   const fabricCards =
-    fabricTags.length > 0
-      ? fabricTags.map((tag) => ({
-          label: tag.name,
-          href: `/products?tag_id=${encodeURIComponent(tag.id)}`,
-        }))
-      : fabricNames.slice(0, 3).map((name) => ({
-          label: name,
-          href: '/products',
+    fabricSlots.length > 0
+      ? fabricSlots
+      : tags.slice(0, 6).map((tag, index) => ({
+          id: tag.id,
+          slot_key: 'fabric_edits',
+          title: tag.name,
+          eyebrow: 'Fabric',
+          copy: 'Browse live products tagged with this fabric or craft.',
+          link_url: `/products?tag_id=${encodeURIComponent(tag.id)}`,
+          is_active: true,
+          sort_order: index,
         }));
 
   const occasionCards =
-    collections.length > 0
-      ? collections.slice(0, 3).map((collection) => ({
-          label: collection.title,
-          href: `/collections/${collection.handle}`,
-        }))
-      : occasionPlaceholders.map((label) => ({
-          label,
-          href: '/collections',
+    occasionSlots.length > 0
+      ? occasionSlots
+      : collections.slice(0, 3).map((collection, index) => ({
+          id: collection.id,
+          slot_key: 'occasion_edits',
+          title: collection.title,
+          eyebrow: 'Occasion',
+          copy: 'Explore this live collection edit.',
+          link_url: `/collections/${collection.handle}`,
+          image_url: collection.image,
+          is_active: true,
+          sort_order: index,
         }));
 
   return (
@@ -187,67 +222,38 @@ export function PrototypeHomeExtras({
       <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
           <SectionHead
-            eyebrow="Extra section"
+            eyebrow="Homepage merchandising"
             title="Seasonal edits"
-            copy="Prototype-inspired campaign rail. Real links are used where matching catalog data exists; otherwise it stays as a visual merchandising placeholder."
+            copy="Published from active homepage merchandising slots."
           />
-          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {campaignPlaceholders.map((campaign) => (
-              <Link
-                key={campaign.title}
-                href={campaign.href}
-                className={`relative min-h-[320px] min-w-[78%] snap-start overflow-hidden bg-gradient-to-br p-8 text-white sm:min-w-[42%] lg:min-w-[31%] ${campaign.className}`}
-              >
-                <div className="absolute inset-0 bg-black/10" />
-                <div className="relative z-10 flex h-full flex-col justify-end">
-                  <div className="text-[11px] uppercase tracking-[0.22em] text-white/75">
-                    {campaign.eyebrow}
-                  </div>
-                  <h3 className="mt-3 font-heading text-[32px] leading-none">
-                    {campaign.title}
-                  </h3>
-                  <p className="mt-3 max-w-[18rem] text-[14px] leading-7 text-white/80">
-                    {campaign.copy}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {seasonalSlots.length > 0 ? (
+            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {seasonalSlots.map((slot) => (
+                <MerchSlotCard key={slot.id} slot={slot} />
+              ))}
+            </div>
+          ) : (
+            <EmptyMerchState label="No seasonal edits live" />
+          )}
         </div>
       </section>
 
       <section className="bg-white py-12 md:py-16 lg:py-24">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
           <SectionHead
-            eyebrow="Extra section"
+            eyebrow="Live catalog"
             title="Pieces we love"
-            copy="Tabbed-product direction from the prototype, filled with newest, bestseller, and sale products when the live catalog has them."
+            copy="Filled only from live newest, bestseller, and sale products."
           />
-          <div className="mb-8 flex flex-wrap gap-2">
-            {['New Arrivals', 'Bestsellers', 'On Sale'].map((label, index) => (
-              <span
-                key={label}
-                className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] ${
-                  index === 0
-                    ? 'border-stone-950 bg-stone-950 text-white'
-                    : 'border-stone-200 bg-white text-stone-700'
-                }`}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8">
-            {[0, 1, 2, 3].map((index) => (
-              <ProductTile
-                key={tabProducts[index]?.id || `placeholder-product-${index}`}
-                product={tabProducts[index]}
-                placeholder={
-                  ['Handwoven Kantha Dupatta', 'Indigo Block Print Kurta', 'Rajasthani Saree', 'Zardozi Potli Bag'][index]
-                }
-              />
-            ))}
-          </div>
+          {tabProducts.length > 0 ? (
+            <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8">
+              {tabProducts.map((product) => (
+                <ProductTile key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <EmptyMerchState label="No live products available" />
+          )}
         </div>
       </section>
 
@@ -256,61 +262,38 @@ export function PrototypeHomeExtras({
       <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
           <SectionHead
-            eyebrow="Extra section"
+            eyebrow="Live taxonomy"
             title="Shop by fabric"
-            copy="Uses admin tags when fabric/craft tags exist; otherwise it preserves the prototype layout with placeholder fabric cards."
+            copy="Uses active merchandising slots first, then live backend tags."
           />
-          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {fabricCards.map((card) => (
-              <Link
-                key={card.label}
-                href={card.href}
-                className="min-w-[72%] snap-start border border-stone-200 bg-white p-6 transition-colors hover:border-stone-900 sm:min-w-[36%] lg:min-w-[24%]"
-              >
-                <div className="text-[11px] uppercase tracking-[0.22em] text-stone-500">
-                  {card.label}
-                </div>
-                <h3 className="mt-4 font-heading text-[28px] leading-none text-stone-950">
-                  {card.label === 'Cotton'
-                    ? 'Everyday breathable'
-                    : card.label === 'Silk'
-                      ? 'Festive drape'
-                      : card.label === 'Wool'
-                        ? 'Shawl season'
-                        : 'Craft-led edit'}
-                </h3>
-                <p className="mt-3 text-[14px] leading-7 text-stone-600">
-                  Browse live products when this taxonomy is available.
-                </p>
-              </Link>
-            ))}
-          </div>
+          {fabricCards.length > 0 ? (
+            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {fabricCards.map((slot) => (
+                <MerchSlotCard key={slot.id} slot={slot} />
+              ))}
+            </div>
+          ) : (
+            <EmptyMerchState label="No fabric edits live" />
+          )}
         </div>
       </section>
 
       <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
           <SectionHead
-            eyebrow="Extra section"
+            eyebrow="Live collections"
             title="Occasion finder"
-            copy="Collection-backed when real collections exist, placeholder-backed when the occasion taxonomy still needs admin support."
+            copy="Uses active merchandising slots first, then live collections."
           />
-          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {occasionCards.map((card) => (
-              <Link
-                key={card.label}
-                href={card.href}
-                className="min-w-[78%] snap-start border border-stone-200 bg-white p-6 transition-colors hover:border-stone-900 sm:min-w-[42%] lg:min-w-[31%]"
-              >
-                <h3 className="font-heading text-[30px] leading-none text-stone-950">
-                  {card.label}
-                </h3>
-                <p className="mt-4 text-[14px] leading-7 text-stone-600">
-                  Light, joyful, movement-friendly pieces for the moment.
-                </p>
-              </Link>
-            ))}
-          </div>
+          {occasionCards.length > 0 ? (
+            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {occasionCards.map((slot) => (
+                <MerchSlotCard key={slot.id} slot={slot} />
+              ))}
+            </div>
+          ) : (
+            <EmptyMerchState label="No occasion edits live" />
+          )}
         </div>
       </section>
     </>

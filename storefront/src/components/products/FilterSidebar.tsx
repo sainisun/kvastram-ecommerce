@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface Category {
@@ -46,6 +47,7 @@ export default function FilterSidebar({
     value: string | null
   ) => {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete('page');
     if (value) {
       params.set(type, value);
     } else {
@@ -56,7 +58,9 @@ export default function FilterSidebar({
 
   const toggleCategory = (id: string) => {
     setExpandedCats((prev) =>
-      prev.includes(id) ? prev.filter((categoryId) => categoryId !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((categoryId) => categoryId !== id)
+        : [...prev, id]
     );
   };
 
@@ -64,38 +68,16 @@ export default function FilterSidebar({
     currentCategoryId || currentTagId || currentCollectionId;
 
   return (
-    <div className={`filters-panel-prem ${className}`}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '32px',
-          paddingBottom: '16px',
-          borderBottom: '1px solid var(--border)',
-        }}
-      >
-        <h3
-          className="filters-header-prem"
-          style={{ margin: 0, padding: 0, border: 'none' }}
-        >
+    <div className={`space-y-7 ${className}`}>
+      <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
+        <h3 className="font-heading text-[26px] font-bold leading-none text-[var(--ink)]">
           Filters
         </h3>
         {hasActiveFilters ? (
           <button
+            type="button"
             onClick={() => router.push('/products')}
-            style={{
-              fontSize: '9px',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              color: 'var(--mid)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              paddingBottom: '2px',
-              borderBottom: '1px solid var(--mid)',
-              transition: 'color 0.2s, border-color 0.2s',
-            }}
+            className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--muted)] underline underline-offset-4 transition hover:text-[var(--ink)]"
           >
             Clear All
           </button>
@@ -103,152 +85,152 @@ export default function FilterSidebar({
       </div>
 
       {categories.length > 0 ? (
-        <div className="filter-group-prem">
-          <p className="filter-group-label-prem">Categories</p>
-          {categories.map((cat) => (
-            <div key={cat.id}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <button
-                  onClick={() =>
-                    updateFilter(
-                      'category_id',
-                      currentCategoryId === cat.id ? null : cat.id
-                    )
-                  }
-                  className="filter-option-prem"
-                  style={{
-                    opacity: currentCategoryId === cat.id ? 1 : undefined,
-                    fontWeight: currentCategoryId === cat.id ? 500 : 400,
-                  }}
-                >
-                  <span>{cat.name}</span>
-                </button>
-                {cat.children && cat.children.length > 0 ? (
-                  <button
-                    onClick={() => toggleCategory(cat.id)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: 'var(--mid)',
-                      padding: '4px',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                    aria-label={`${expandedCats.includes(cat.id) ? 'Collapse' : 'Expand'} ${cat.name}`}
+        <FilterGroup label="Categories">
+          {categories.map((cat) => {
+            const isActive = currentCategoryId === cat.id;
+            const isExpanded = expandedCats.includes(cat.id);
+
+            return (
+              <div key={cat.id}>
+                <div className="flex items-center justify-between gap-2">
+                  <FilterButton
+                    active={isActive}
+                    onClick={() =>
+                      updateFilter('category_id', isActive ? null : cat.id)
+                    }
                   >
-                    {expandedCats.includes(cat.id) ? (
-                      <ChevronDown size={12} />
-                    ) : (
-                      <ChevronRight size={12} />
-                    )}
-                  </button>
+                    {cat.name}
+                  </FilterButton>
+                  {cat.children?.length ? (
+                    <button
+                      type="button"
+                      onClick={() => toggleCategory(cat.id)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--ink)]"
+                      aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
+                    >
+                      {isExpanded ? (
+                        <ChevronDown size={14} />
+                      ) : (
+                        <ChevronRight size={14} />
+                      )}
+                    </button>
+                  ) : null}
+                </div>
+
+                {cat.children?.length && isExpanded ? (
+                  <div className="ml-3 mt-2 space-y-1 border-l border-[var(--line)] pl-3">
+                    {cat.children.map((sub) => (
+                      <FilterButton
+                        key={sub.id}
+                        active={currentCategoryId === sub.id}
+                        onClick={() =>
+                          updateFilter(
+                            'category_id',
+                            currentCategoryId === sub.id ? null : sub.id
+                          )
+                        }
+                        small
+                      >
+                        {sub.name}
+                      </FilterButton>
+                    ))}
+                  </div>
                 ) : null}
               </div>
-
-              {cat.children &&
-              cat.children.length > 0 &&
-              expandedCats.includes(cat.id) ? (
-                <div
-                  style={{
-                    paddingLeft: '16px',
-                    borderLeft: '1px solid var(--border)',
-                    marginTop: '4px',
-                    marginBottom: '8px',
-                  }}
-                >
-                  {cat.children.map((sub) => (
-                    <button
-                      key={sub.id}
-                      onClick={() =>
-                        updateFilter(
-                          'category_id',
-                          currentCategoryId === sub.id ? null : sub.id
-                        )
-                      }
-                      className="filter-option-prem"
-                      style={{
-                        fontSize: '12px',
-                        opacity: currentCategoryId === sub.id ? 1 : 0.7,
-                        fontWeight: currentCategoryId === sub.id ? 500 : 400,
-                      }}
-                    >
-                      <span>{sub.name}</span>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ))}
-        </div>
+            );
+          })}
+        </FilterGroup>
       ) : null}
 
       {collections.length > 0 ? (
-        <div className="filter-group-prem">
-          <p className="filter-group-label-prem">Collections</p>
+        <FilterGroup label="Collections">
           {collections.map((col) => (
-            <button
+            <FilterButton
               key={col.id}
+              active={currentCollectionId === col.id}
               onClick={() =>
                 updateFilter(
                   'collection_id',
                   currentCollectionId === col.id ? null : col.id
                 )
               }
-              className="filter-option-prem"
-              style={{
-                fontWeight: currentCollectionId === col.id ? 500 : 400,
-                opacity: currentCollectionId === col.id ? 1 : undefined,
-              }}
             >
               {col.title}
-            </button>
+            </FilterButton>
           ))}
-        </div>
+        </FilterGroup>
       ) : null}
 
       {tags.length > 0 ? (
-        <div className="filter-group-prem">
-          <p className="filter-group-label-prem">Tags</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-            {tags.map((tag) => (
-              <button
-                key={tag.id}
-                onClick={() =>
-                  updateFilter(
-                    'tag_id',
-                    currentTagId === tag.id ? null : tag.id
-                  )
-                }
-                style={{
-                  padding: '6px 12px',
-                  fontSize: '9px',
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  border: '1px solid',
-                  borderColor:
-                    currentTagId === tag.id ? 'var(--black)' : 'var(--border)',
-                  background:
-                    currentTagId === tag.id ? 'var(--black)' : 'transparent',
-                  color:
-                    currentTagId === tag.id ? 'var(--white)' : 'var(--black)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  fontFamily: 'var(--font-body)',
-                }}
-              >
-                {tag.name}
-              </button>
-            ))}
+        <FilterGroup label="Tags">
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => {
+              const isActive = currentTagId === tag.id;
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() =>
+                    updateFilter('tag_id', isActive ? null : tag.id)
+                  }
+                  className={`rounded-full border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em] transition ${
+                    isActive
+                      ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
+                      : 'border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--ink)]'
+                  }`}
+                >
+                  {tag.name}
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </FilterGroup>
       ) : null}
     </div>
+  );
+}
+
+function FilterGroup({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="space-y-3">
+      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">
+        {label}
+      </p>
+      <div className="space-y-1">{children}</div>
+    </section>
+  );
+}
+
+function FilterButton({
+  active,
+  onClick,
+  small,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  small?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center justify-between rounded-[8px] px-3 py-2 text-left transition ${
+        small ? 'text-[13px]' : 'text-[14px]'
+      } ${
+        active
+          ? 'bg-[var(--ink)] font-bold text-white'
+          : 'text-[var(--ink)] hover:bg-[var(--soft)]'
+      }`}
+    >
+      <span className="line-clamp-1">{children}</span>
+    </button>
   );
 }

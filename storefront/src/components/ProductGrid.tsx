@@ -336,7 +336,7 @@ function ProductGrid({
           <a
             key={`spotlight-${spotlight.id}-${index}`}
             href={`/products/${spotlightProduct.handle || spotlightProduct.id}`}
-            className="product-spotlight-prem md:hidden"
+            className="product-spotlight md:hidden"
           >
             <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
               {spotlight.custom_image_url || spotlightProduct.thumbnail ? (

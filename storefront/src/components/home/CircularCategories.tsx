@@ -26,16 +26,6 @@ export async function CircularCategories() {
     circles = [];
   }
 
-  if (circles.length === 0) {
-    circles = [
-      { id: 'placeholder-kantha', label: 'Kantha', link_url: '/products', image_url: null, sort_order: 0, is_active: true },
-      { id: 'placeholder-sarees', label: 'Sarees', link_url: '/products', image_url: null, sort_order: 1, is_active: true },
-      { id: 'placeholder-kurtas', label: 'Kurtas', link_url: '/products', image_url: null, sort_order: 2, is_active: true },
-      { id: 'placeholder-shawls', label: 'Shawls', link_url: '/products', image_url: null, sort_order: 3, is_active: true },
-      { id: 'placeholder-accessories', label: 'Accessories', link_url: '/products', image_url: null, sort_order: 4, is_active: true },
-    ];
-  }
-
   return (
     <section className="kv-section bg-[var(--cream)]">
       <div className="kv-container">
@@ -49,39 +39,38 @@ export async function CircularCategories() {
           </p>
         </div>
 
-        <div className="circle-row">
-          {circles.map((circle) => (
-            <Link
-              key={circle.id}
-              href={circle.link_url}
-              className="circle-cat"
-            >
-              <div className="circle-cat-art">
-                {circle.image_url ? (
+        {circles.length > 0 ? (
+          <div className="circle-row">
+            {circles.map((circle) => (
+              <Link
+                key={circle.id}
+                href={circle.link_url}
+                className="circle-cat"
+              >
+                <div className="circle-cat-art">
                   <div className="relative h-full w-full overflow-hidden rounded-full">
                     <OptimizedImage
-                      src={circle.image_url}
+                      src={circle.image_url || ''}
                       alt={circle.label}
                       fill
                       sizes="78px"
                       className="rounded-full object-cover"
                     />
                   </div>
-                ) : (
-                  <div
-                    className="flex h-full w-full items-center justify-center rounded-full"
-                    style={{ background: 'linear-gradient(135deg, #f4d4b8, #a85d3a)' }}
-                  >
-                    {circle.label.charAt(0)}
-                  </div>
-                )}
-              </div>
-              <span className="circle-cat-name">
-                {circle.label}
-              </span>
-            </Link>
-          ))}
-        </div>
+                </div>
+                <span className="circle-cat-name">
+                  {circle.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[12px] border border-dashed border-[var(--line)] bg-white px-6 py-10 text-center">
+            <p className="text-[14px] text-[var(--muted)]">
+              Add active category circles in admin to show this discovery row.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
