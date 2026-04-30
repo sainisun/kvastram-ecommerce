@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MessageCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import { useStudioChatSocket } from '@/hooks/useStudioChatSocket';
 import { api } from '@/lib/api';
 
 interface StudioInquirySummary {
@@ -37,6 +38,29 @@ export default function AccountMessagesPage() {
       .finally(() => setLoadingMessages(false));
   }, [customer, loading]);
 
+  const mergeMessageSummary = useCallback((incoming: StudioInquirySummary) => {
+    setMessages((prev) => {
+      const exists = prev.some((item) => item.id === incoming.id);
+      const next = exists
+        ? prev.map((item) => (item.id === incoming.id ? { ...item, ...incoming } : item))
+        : [incoming, ...prev];
+      return next.sort((a, b) =>
+        new Date(b.last_message_at || b.created_at).getTime() -
+        new Date(a.last_message_at || a.created_at).getTime()
+      );
+    });
+  }, []);
+
+  const live = useStudioChatSocket({
+    authMode: 'account-inbox',
+    enabled: Boolean(customer && !loading),
+    onMessage: ({ inquiry }) => {
+      if (inquiry && typeof inquiry === 'object' && 'id' in inquiry) {
+        mergeMessageSummary(inquiry as StudioInquirySummary);
+      }
+    },
+  });
+
   if (loading || !customer) {
     return <div className="min-h-screen bg-stone-50 px-6 py-12 md:px-12 lg:px-20" />;
   }
@@ -51,6 +75,9 @@ export default function AccountMessagesPage() {
             </Link>
             <h1 className="mt-2 font-serif text-3xl text-stone-900">Messages</h1>
             <p className="mt-2 text-sm text-stone-500">Your product conversations with Kvastram Studio.</p>
+            <p className={`mt-2 text-xs ${live.isConnected ? 'text-green-700' : 'text-stone-400'}`}>
+              {live.isConnected ? 'Live inbox connected' : 'Live inbox connecting...'}
+            </p>
           </div>
           <MessageCircle className="text-stone-300" size={34} />
         </div>

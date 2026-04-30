@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable @next/next/no-html-link-for-pages */
 
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ChevronDown, MessageCircle, Minus, Plus, Ruler, ShieldCheck, Sparkles, Star, Truck, Wifi, WifiOff } from 'lucide-react';
@@ -17,6 +17,7 @@ import { useCurrency } from '@/context/currency-context';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import { useShop } from '@/context/shop-context';
 import { useInventoryWebSocket } from '@/hooks/useInventoryWebSocket';
+import { useStudioChatSocket } from '@/hooks/useStudioChatSocket';
 import { api } from '@/lib/api';
 import { buildProductImageAlt, buildProductSeoContent, getCategoryPath, getPrimaryCategory } from '@/lib/seo';
 import type { MoneyAmount, Product, ProductImage, ProductOption, ProductVariant } from '@/types';
@@ -72,6 +73,8 @@ export default function ProductView({ product }: { product: Product }) {
   const [studioReply, setStudioReply] = useState('');
   const [studioLoading, setStudioLoading] = useState(false);
   const [studioReplySending, setStudioReplySending] = useState(false);
+  const [studioTyping, setStudioTyping] = useState(false);
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const primaryCategory = getPrimaryCategory(product);
   const primaryCategoryPath = primaryCategory ? getCategoryPath(primaryCategory) : null;
   const seoContent = buildProductSeoContent(product);
@@ -81,10 +84,35 @@ export default function ProductView({ product }: { product: Product }) {
       setRealTimeInventory((prev) => ({ ...prev, [update.variantId]: update.quantity })),
   });
 
+  const appendStudioMessage = useCallback((message: StudioChatMessage) => {
+    setStudioMessages((prev) => {
+      if (message.id && prev.some((item) => item.id === message.id)) return prev;
+      return [...prev, message];
+    });
+  }, []);
+
+  const { isConnected: studioLiveConnected, sendTyping: sendStudioTyping } = useStudioChatSocket({
+    inquiryId: studioConversation?.id,
+    token: studioConversation?.token,
+    enabled: Boolean(studioConversation),
+    onMessage: ({ message }) => {
+      appendStudioMessage(message);
+    },
+    onTyping: ({ senderType, isTyping }) => {
+      if (senderType === 'admin') setStudioTyping(isTyping);
+    },
+  });
+
   useEffect(() => {
     product.variants?.forEach((variant) => subscribeToInventory(variant.id));
     return () => product.variants?.forEach((variant) => unsubscribeFromInventory(variant.id));
   }, [product.variants, subscribeToInventory, unsubscribeFromInventory]);
+
+  useEffect(() => {
+    return () => {
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    };
+  }, []);
 
   const deliveryWindow = useMemo(() => {
     const regionId = currentRegion?.id?.toLowerCase() || '';
@@ -328,8 +356,9 @@ export default function ProductView({ product }: { product: Product }) {
         email: inquiryForm.email.trim() || undefined,
         message: studioReply.trim(),
       });
-      setStudioMessages((prev) => [...prev, response.message]);
+      appendStudioMessage(response.message);
       setStudioReply('');
+      sendStudioTyping(false);
     } catch (error: unknown) {
       const apiError = error as { details?: string[]; error?: string };
       const detail = Array.isArray(apiError?.details) ? apiError.details[0] : apiError?.error;
@@ -337,6 +366,13 @@ export default function ProductView({ product }: { product: Product }) {
     } finally {
       setStudioReplySending(false);
     }
+  };
+
+  const handleStudioReplyChange = (value: string) => {
+    setStudioReply(value);
+    sendStudioTyping(Boolean(value.trim()));
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = setTimeout(() => sendStudioTyping(false), 1200);
   };
 
   const accordions = [
@@ -451,7 +487,12 @@ export default function ProductView({ product }: { product: Product }) {
                 <div className="space-y-4 border-t border-stone-200 pt-5">
                   <div className="rounded-2xl bg-white p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
-                      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-stone-500">Studio Chat</p>
+                      <div>
+                        <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-stone-500">Studio Chat</p>
+                        <p className={`mt-1 text-[11px] ${studioLiveConnected ? 'text-green-700' : 'text-stone-400'}`}>
+                          {studioLiveConnected ? 'Live chat connected' : 'Connecting live chat...'}
+                        </p>
+                      </div>
                       <button
                         type="button"
                         onClick={async () => {
@@ -485,6 +526,13 @@ export default function ProductView({ product }: { product: Product }) {
                             </div>
                           );
                         })}
+                        {studioTyping && (
+                          <div className="flex justify-start">
+                            <div className="rounded-2xl bg-stone-100 px-4 py-3 text-[13px] text-stone-500">
+                              Studio is typing...
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -494,7 +542,7 @@ export default function ProductView({ product }: { product: Product }) {
                       required
                       rows={3}
                       value={studioReply}
-                      onChange={(event) => setStudioReply(event.target.value)}
+                      onChange={(event) => handleStudioReplyChange(event.target.value)}
                       className="w-full resize-none rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] text-stone-900 outline-none transition focus:border-stone-900"
                       placeholder="Write a follow-up message..."
                     />

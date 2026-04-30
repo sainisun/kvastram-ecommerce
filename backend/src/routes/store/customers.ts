@@ -5,6 +5,7 @@ import { customers, orders, addresses, studio_inquiries, studio_inquiry_messages
 import { eq, desc, and, asc } from 'drizzle-orm';
 import { z } from 'zod';
 import { serializeCustomer } from '../../utils/safe-user';
+import { broadcastStudioMessage } from '../../services/socket';
 
 const AddressSchema = z.object({
   first_name: z.string().min(1).max(100).optional(),
@@ -207,7 +208,17 @@ storeCustomersRouter.post('/me/studio-inquiries/:id/messages', verifyCustomer, a
   if (!parsed.success) return c.json({ error: 'Validation failed', details: parsed.error.errors }, 400);
 
   const [inquiry] = await db
-    .select({ id: studio_inquiries.id })
+    .select({
+      id: studio_inquiries.id,
+      product_title: studio_inquiries.product_title,
+      product_handle: studio_inquiries.product_handle,
+      inquiry_type: studio_inquiries.inquiry_type,
+      customer_name: studio_inquiries.customer_name,
+      email: studio_inquiries.email,
+      phone: studio_inquiries.phone,
+      unread_by_customer: studio_inquiries.unread_by_customer,
+      created_at: studio_inquiries.created_at,
+    })
     .from(studio_inquiries)
     .where(and(eq(studio_inquiries.id, id), eq(studio_inquiries.email, customer.email.toLowerCase())))
     .limit(1);
@@ -242,6 +253,22 @@ storeCustomersRouter.post('/me/studio-inquiries/:id/messages', verifyCustomer, a
       updated_at: new Date(),
     })
     .where(eq(studio_inquiries.id, id));
+
+  broadcastStudioMessage(id, message, {
+    id,
+    product_title: inquiry.product_title,
+    product_handle: inquiry.product_handle,
+    inquiry_type: inquiry.inquiry_type,
+    status: 'in_progress',
+    customer_name: inquiry.customer_name,
+    email: inquiry.email,
+    phone: inquiry.phone,
+    message: parsed.data.message,
+    last_message_at: new Date(),
+    unread_by_admin: true,
+    unread_by_customer: inquiry.unread_by_customer,
+    created_at: inquiry.created_at,
+  });
 
   return c.json({ success: true, message });
 });

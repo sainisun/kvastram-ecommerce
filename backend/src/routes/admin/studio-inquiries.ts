@@ -4,6 +4,7 @@ import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { products, studio_inquiries, studio_inquiry_messages } from '../../db/schema';
 import { verifyAdmin } from '../../middleware/auth';
+import { broadcastStudioMessage } from '../../services/socket';
 
 const router = new Hono();
 
@@ -166,7 +167,10 @@ router.post('/:id/messages', verifyAdmin, async (c) => {
         product_title: studio_inquiries.product_title,
         product_handle: studio_inquiries.product_handle,
         product_url: studio_inquiries.product_url,
+        inquiry_type: studio_inquiries.inquiry_type,
         conversation_token: studio_inquiries.conversation_token,
+        phone: studio_inquiries.phone,
+        created_at: studio_inquiries.created_at,
       })
       .from(studio_inquiries)
       .where(eq(studio_inquiries.id, id))
@@ -204,6 +208,22 @@ router.post('/:id/messages', verifyAdmin, async (c) => {
         updated_at: new Date(),
       })
       .where(eq(studio_inquiries.id, id));
+
+    broadcastStudioMessage(id, message, {
+      id,
+      product_title: existing.product_title,
+      product_handle: existing.product_handle,
+      inquiry_type: existing.inquiry_type,
+      status: 'replied',
+      customer_name: existing.customer_name,
+      email: existing.email,
+      phone: existing.phone,
+      message: parsed.data.message,
+      last_message_at: new Date(),
+      unread_by_admin: false,
+      unread_by_customer: true,
+      created_at: existing.created_at,
+    });
 
     if (existing.email && existing.conversation_token) {
       const productPath = existing.product_url || `${process.env.STOREFRONT_URL || process.env.FRONTEND_URL || 'https://kvastram.com'}/products/${existing.product_handle || id}`;

@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { products, studio_inquiries, studio_inquiry_messages } from '../../db/schema';
+import { broadcastStudioInquiryCreated, broadcastStudioMessage } from '../../services/socket';
 
 const router = new Hono();
 
@@ -142,15 +143,39 @@ router.post('/', async (c) => {
       .returning({
         id: studio_inquiries.id,
         conversation_token: studio_inquiries.conversation_token,
+        product_title: studio_inquiries.product_title,
+        product_handle: studio_inquiries.product_handle,
+        inquiry_type: studio_inquiries.inquiry_type,
+        status: studio_inquiries.status,
+        customer_name: studio_inquiries.customer_name,
+        email: studio_inquiries.email,
+        phone: studio_inquiries.phone,
+        message: studio_inquiries.message,
+        last_message_at: studio_inquiries.last_message_at,
+        unread_by_admin: studio_inquiries.unread_by_admin,
+        unread_by_customer: studio_inquiries.unread_by_customer,
+        created_at: studio_inquiries.created_at,
       });
 
-    await db.insert(studio_inquiry_messages).values({
-      inquiry_id: inquiry.id,
-      sender_type: 'customer',
-      sender_name: data.customer_name,
-      sender_email: data.email ? data.email.toLowerCase() : null,
-      message: data.message,
-    });
+    const [message] = await db
+      .insert(studio_inquiry_messages)
+      .values({
+        inquiry_id: inquiry.id,
+        sender_type: 'customer',
+        sender_name: data.customer_name,
+        sender_email: data.email ? data.email.toLowerCase() : null,
+        message: data.message,
+      })
+      .returning({
+        id: studio_inquiry_messages.id,
+        sender_type: studio_inquiry_messages.sender_type,
+        sender_name: studio_inquiry_messages.sender_name,
+        sender_email: studio_inquiry_messages.sender_email,
+        message: studio_inquiry_messages.message,
+        created_at: studio_inquiry_messages.created_at,
+      });
+
+    broadcastStudioInquiryCreated(inquiry);
 
     return c.json(
       {
@@ -159,15 +184,7 @@ router.post('/', async (c) => {
           id: inquiry.id,
           conversation_token: inquiry.conversation_token,
         },
-        messages: [
-          {
-            sender_type: 'customer',
-            sender_name: data.customer_name,
-            sender_email: data.email ? data.email.toLowerCase() : null,
-            message: data.message,
-            created_at: new Date().toISOString(),
-          },
-        ],
+        messages: [message],
         message: 'Thanks. Your studio chat has started.',
       },
       201
@@ -256,6 +273,22 @@ router.post('/:id/messages', async (c) => {
         updated_at: new Date(),
       })
       .where(eq(studio_inquiries.id, id));
+
+    broadcastStudioMessage(id, message, {
+      id,
+      product_title: conversation.inquiry.product_title,
+      product_handle: conversation.inquiry.product_handle,
+      inquiry_type: conversation.inquiry.inquiry_type,
+      status: 'in_progress',
+      customer_name: conversation.inquiry.customer_name,
+      email: conversation.inquiry.email,
+      phone: conversation.inquiry.phone,
+      message: parsed.data.message,
+      last_message_at: new Date(),
+      unread_by_admin: true,
+      unread_by_customer: conversation.inquiry.unread_by_customer,
+      created_at: conversation.inquiry.created_at,
+    });
 
     return c.json({ success: true, message });
   } catch (error: any) {

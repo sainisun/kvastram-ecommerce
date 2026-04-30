@@ -1,10 +1,11 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { MessageCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import { useStudioChatSocket } from '@/hooks/useStudioChatSocket';
 import { api } from '@/lib/api';
 
 interface StudioMessage {
@@ -32,10 +33,29 @@ export default function AccountMessageDetailPage() {
   const [reply, setReply] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [studioTyping, setStudioTyping] = useState(false);
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!loading && !customer) router.push(`/login?redirect=/account/messages/${params.id}`);
   }, [customer, loading, params.id, router]);
+
+  const appendMessage = useCallback((message: StudioMessage) => {
+    setMessages((prev) => {
+      if (message.id && prev.some((item) => item.id === message.id)) return prev;
+      return [...prev, message];
+    });
+  }, []);
+
+  const { isConnected: liveConnected, sendTyping } = useStudioChatSocket({
+    inquiryId: params.id,
+    authMode: 'account',
+    enabled: Boolean(customer && !loading),
+    onMessage: ({ message }) => appendMessage(message),
+    onTyping: ({ senderType, isTyping }) => {
+      if (senderType === 'admin') setStudioTyping(isTyping);
+    },
+  });
 
   const loadConversation = async () => {
     setIsLoading(true);
@@ -60,12 +80,26 @@ export default function AccountMessageDetailPage() {
     setSending(true);
     try {
       const data = await api.sendCustomerStudioMessage(params.id, reply.trim());
-      setMessages((prev) => [...prev, data.message]);
+      appendMessage(data.message);
       setReply('');
+      sendTyping(false);
     } finally {
       setSending(false);
     }
   };
+
+  const handleReplyChange = (value: string) => {
+    setReply(value);
+    sendTyping(Boolean(value.trim()));
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = setTimeout(() => sendTyping(false), 1200);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    };
+  }, []);
 
   if (loading || !customer) {
     return <div className="min-h-screen bg-stone-50 px-6 py-12 md:px-12 lg:px-20" />;
@@ -80,6 +114,9 @@ export default function AccountMessageDetailPage() {
               Messages
             </Link>
             <h1 className="mt-2 font-serif text-3xl text-stone-900">{inquiry?.product_title || 'Studio Chat'}</h1>
+            <p className={`mt-2 text-xs ${liveConnected ? 'text-green-700' : 'text-stone-400'}`}>
+              {liveConnected ? 'Live chat connected' : 'Connecting live chat...'}
+            </p>
             {inquiry?.product_url && (
               <a href={inquiry.product_url} className="mt-2 inline-block text-sm text-stone-500 underline underline-offset-4">
                 View product
@@ -112,6 +149,13 @@ export default function AccountMessageDetailPage() {
                   </div>
                 );
               })}
+              {studioTyping && (
+                <div className="flex justify-start">
+                  <div className="rounded-2xl bg-stone-100 px-4 py-3 text-sm text-stone-500">
+                    Studio is typing...
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -120,7 +164,7 @@ export default function AccountMessageDetailPage() {
               required
               rows={4}
               value={reply}
-              onChange={(event) => setReply(event.target.value)}
+              onChange={(event) => handleReplyChange(event.target.value)}
               className="w-full resize-none border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-900"
               placeholder="Write a message..."
             />

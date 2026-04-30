@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   CheckCircle,
@@ -13,6 +13,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useStudioAdminSocket } from '@/hooks/useStudioAdminSocket';
 
 type InquiryStatus = 'new' | 'in_progress' | 'replied' | 'closed';
 
@@ -91,6 +92,8 @@ export default function StudioInquiriesPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [customerTyping, setCustomerTyping] = useState(false);
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchInquiries = useCallback(async () => {
     setLoading(true);
@@ -118,6 +121,61 @@ export default function StudioInquiriesPage() {
   useEffect(() => {
     void fetchInquiries();
   }, [fetchInquiries]);
+
+  useEffect(() => {
+    return () => {
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    };
+  }, []);
+
+  const mergeInquiry = useCallback((incoming: StudioInquiry) => {
+    setInquiries((prev) => {
+      const exists = prev.some((item) => item.id === incoming.id);
+      const next = exists
+        ? prev.map((item) => (item.id === incoming.id ? { ...item, ...incoming } : item))
+        : [incoming, ...prev];
+      return next.sort((a, b) =>
+        new Date(b.last_message_at || b.created_at).getTime() -
+        new Date(a.last_message_at || a.created_at).getTime()
+      );
+    });
+    setSelectedInquiry((prev) => (prev?.id === incoming.id ? { ...prev, ...incoming } : prev));
+  }, []);
+
+  const appendSelectedMessage = useCallback((message: StudioMessage) => {
+    setSelectedMessages((prev) => {
+      if (message.id && prev.some((item) => item.id === message.id)) return prev;
+      return [...prev, message];
+    });
+  }, []);
+
+  const { isConnected: liveConnected, sendTyping } = useStudioAdminSocket<StudioInquiry>({
+    inquiryId: selectedInquiry?.id,
+    onInquiryCreated: ({ inquiry }) => {
+      mergeInquiry(inquiry);
+      setStats((prev) => ({
+        ...prev,
+        total: prev.total + 1,
+        new: prev.new + 1,
+        unread: (prev.unread || 0) + 1,
+      }));
+    },
+    onMessage: ({ inquiryId, message, inquiry }) => {
+      if (inquiry) mergeInquiry(inquiry);
+      if (selectedInquiry?.id === inquiryId) {
+        appendSelectedMessage(message);
+        if (message.sender_type === 'customer') setCustomerTyping(false);
+      }
+      if (message.sender_type === 'customer') {
+        setStats((prev) => ({ ...prev, unread: (prev.unread || 0) + 1 }));
+      }
+    },
+    onTyping: ({ inquiryId, senderType, isTyping }) => {
+      if (selectedInquiry?.id === inquiryId && senderType === 'customer') {
+        setCustomerTyping(isTyping);
+      }
+    },
+  });
 
   const filtered = useMemo(() => {
     if (activeFilter === 'all') return inquiries;
@@ -194,8 +252,9 @@ export default function StudioInquiriesPage() {
         message: replyText.trim(),
         sender_name: 'Kvastram Studio',
       })) as { message: StudioMessage };
-      setSelectedMessages((prev) => [...prev, data.message]);
+      appendSelectedMessage(data.message);
       setReplyText('');
+      sendTyping(false);
       setSuccessMsg('Reply sent to customer chat');
       await fetchInquiries();
     } catch (err: unknown) {
@@ -206,6 +265,13 @@ export default function StudioInquiriesPage() {
     }
   };
 
+  const handleReplyTextChange = (value: string) => {
+    setReplyText(value);
+    sendTyping(Boolean(value.trim()));
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = setTimeout(() => sendTyping(false), 1200);
+  };
+
   return (
     <div className="mx-auto max-w-7xl p-6">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -213,6 +279,9 @@ export default function StudioInquiriesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Studio Inquiries</h1>
           <p className="mt-1 text-sm text-gray-500">
             Product questions, custom size requests, and shipping help from storefront shoppers.
+          </p>
+          <p className={`mt-2 text-xs ${liveConnected ? 'text-green-700' : 'text-gray-400'}`}>
+            {liveConnected ? 'Live chat connected' : 'Live chat connecting...'}
           </p>
         </div>
         <button
@@ -414,11 +483,18 @@ export default function StudioInquiriesPage() {
                         );
                       })
                     )}
+                    {customerTyping && (
+                      <div className="flex justify-start">
+                        <div className="rounded-2xl bg-white px-4 py-3 text-sm text-gray-500 shadow-sm">
+                          Customer is typing...
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="mt-3 space-y-2">
                     <textarea
                       value={replyText}
-                      onChange={(event) => setReplyText(event.target.value)}
+                      onChange={(event) => handleReplyTextChange(event.target.value)}
                       rows={4}
                       className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-blue-500"
                       placeholder="Write a reply for the customer..."
