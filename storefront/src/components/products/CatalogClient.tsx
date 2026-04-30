@@ -6,6 +6,8 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
+  Grid2X2,
+  Rows3,
   SlidersHorizontal,
   X,
 } from 'lucide-react';
@@ -108,6 +110,7 @@ export default function CatalogClient({
   const [page, setPage] = useState(1);
   const [limit] = useState(DEFAULT_LIMIT);
   const [loading, setLoading] = useState(false);
+  const [gridDensity, setGridDensity] = useState<'grid' | 'compact'>('grid');
 
   const currentSort = searchParams.get('sort') || 'newest';
   const currentCategoryId = searchParams.get('category_id');
@@ -199,7 +202,6 @@ export default function CatalogClient({
         title="Shop All"
         subtitle="The Collection"
         description="Browse the full Kvastram edit. Sort by newest, filter by admin-managed categories, tags, and collections, and discover pieces ready to wear now."
-        image="/images/home/hero-main.jpg"
       />
 
       <div className="mx-auto max-w-[1440px] px-6 pb-12 pt-12 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
@@ -318,6 +320,38 @@ export default function CatalogClient({
               {total > 0 ? `${startItem}-${endItem} of ${total} Items` : `${total} Items`}
             </div>
 
+            <div
+              className="hidden items-center overflow-hidden rounded-full border border-stone-200 bg-white sm:flex"
+              aria-label="Product grid density"
+            >
+              <button
+                type="button"
+                onClick={() => setGridDensity('grid')}
+                className={`flex h-9 w-9 items-center justify-center transition-colors ${
+                  gridDensity === 'grid'
+                    ? 'bg-stone-900 text-white'
+                    : 'text-stone-500 hover:text-stone-900'
+                }`}
+                aria-label="Grid view"
+                title="Grid view"
+              >
+                <Grid2X2 size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setGridDensity('compact')}
+                className={`flex h-9 w-9 items-center justify-center transition-colors ${
+                  gridDensity === 'compact'
+                    ? 'bg-stone-900 text-white'
+                    : 'text-stone-500 hover:text-stone-900'
+                }`}
+                aria-label="Compact view"
+                title="Compact view"
+              >
+                <Rows3 size={15} />
+              </button>
+            </div>
+
             <div className="flex items-center gap-2">
               <ArrowUpDown size={14} className="text-stone-400" />
               <select
@@ -340,6 +374,7 @@ export default function CatalogClient({
             initialProducts={products}
             loading={loading}
             spotlightProducts={spotlightProducts}
+            density={gridDensity}
           />
 
           {totalPages > 1 ? (

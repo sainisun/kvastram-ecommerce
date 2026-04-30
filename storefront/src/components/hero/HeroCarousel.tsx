@@ -12,7 +12,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
  *
  * Implements a full-screen carousel using Embla Carousel.
  * Slides come from admin-managed banners (section='hero') via API.
- * Falls back to STATIC_SLIDES if no banners are configured.
  */
 
 interface Banner {
@@ -23,40 +22,6 @@ interface Banner {
   button_text?: string;
   section?: string;
 }
-
-// Static fallback slides (shown when no hero banners in admin)
-const STATIC_SLIDES = [
-  {
-    id: 'static-1',
-    image: '/images/home/hero-main.jpg',
-    subtitle: 'Artisan Crafted Since 1985',
-    title: 'Where Tradition \nMeets Modern',
-    description:
-      'Discover handcrafted elegance from master artisans in India and Italy. Each piece tells a story of generations of expertise.',
-    ctaText: 'Shop New Arrivals',
-    ctaLink: '/products',
-  },
-  {
-    id: 'static-2',
-    image: '/images/home/category-sarees.jpg',
-    subtitle: 'The Silk Road Collection',
-    title: 'Timeless \nElegance',
-    description:
-      'Exquisite silk sarees hand-woven in Varanasi. A tribute to the golden era of craftsmanship.',
-    ctaText: 'View Collection',
-    ctaLink: '/collections/sarees',
-  },
-  {
-    id: 'static-3',
-    image: '/images/home/collection-bridal.jpg',
-    subtitle: 'Bridal Edit 2025',
-    title: 'Your Moment \nIn History',
-    description:
-      'Intricate embroidery and luxurious fabrics for the most important day of your life.',
-    ctaText: 'Explore Bridal',
-    ctaLink: '/collections/bridal',
-  },
-];
 
 interface HeroCarouselProps {
   banners?: Banner[];
@@ -75,19 +40,18 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  // Use admin banners if available, otherwise fallback to static
   const slides =
-    banners && banners.length > 0
-      ? banners.map((b) => ({
-          id: b.id,
-          image: b.image_url,
-          subtitle: 'Kvastram Collection',
-          title: b.title,
-          description: '',
-          ctaText: b.button_text || 'Shop Now',
-          ctaLink: b.link || '/products',
-        }))
-      : STATIC_SLIDES;
+    banners?.map((b) => ({
+      id: b.id,
+      image: b.image_url,
+      title: b.title,
+      ctaText: b.button_text || '',
+      ctaLink: b.link || '/products',
+    })) || [];
+
+  if (slides.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative group overflow-hidden bg-stone-900 border-b border-stone-800">
@@ -103,32 +67,22 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
               <div className="w-full md:w-1/2 h-1/2 md:h-full bg-[#1a1614] flex items-center justify-center p-8 md:p-16 lg:p-24 z-10">
                 <div className="max-w-xl w-full animate-fade-in-up">
                   <span className="text-amber-500 text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4 md:mb-6 block">
-                    {slide.subtitle}
+                    Kvastram Collection
                   </span>
 
                   <h1 className="text-4xl md:text-6xl lg:text-[5.5rem] font-serif text-white mb-6 leading-[1.05] whitespace-pre-line">
                     {slide.title}
                   </h1>
 
-                  {slide.description && (
-                    <p className="text-stone-300 text-base md:text-lg mb-8 md:mb-12 font-light max-w-md leading-relaxed">
-                      {slide.description}
-                    </p>
-                  )}
-
                   <div className="flex flex-wrap items-center gap-4">
-                    <Link
-                      href={slide.ctaLink}
-                      className="bg-white text-stone-900 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-200 transition-colors shadow-xl"
-                    >
-                      {slide.ctaText}
-                    </Link>
-                    <Link
-                      href="/collections"
-                      className="bg-transparent text-white border border-stone-600 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
-                    >
-                      View Collections
-                    </Link>
+                    {slide.ctaText ? (
+                      <Link
+                        href={slide.ctaLink}
+                        className="bg-white text-stone-900 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-200 transition-colors shadow-xl"
+                      >
+                        {slide.ctaText}
+                      </Link>
+                    ) : null}
                   </div>
                 </div>
               </div>

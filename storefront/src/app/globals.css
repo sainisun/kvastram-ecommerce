@@ -578,6 +578,14 @@ a {
   column-gap: var(--space-8);
   row-gap: var(--space-16);
 }
+.product-grid-prem--compact {
+  grid-template-columns: repeat(5, 1fr);
+  column-gap: var(--space-5);
+  row-gap: var(--space-10);
+}
+.product-grid-prem--compact .prod-img-wrap-prem {
+  aspect-ratio: 3/4;
+}
 .prod-card-prem {
   position: relative;
   overflow: hidden;
@@ -1702,6 +1710,12 @@ a:active,
     grid-template-columns: repeat(2, 1fr) !important;
     column-gap: var(--space-4);
     row-gap: var(--space-8);
+  }
+
+  .product-grid-prem--compact {
+    grid-template-columns: repeat(3, 1fr) !important;
+    column-gap: var(--space-3);
+    row-gap: var(--space-6);
   }
 
   .prod-info-prem {

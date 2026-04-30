@@ -7,13 +7,11 @@ import { useCurrency } from '@/context/currency-context';
 
 interface BestSellersProps {
   products: Product[];
-  isCurated?: boolean;
 }
 
-export function BestSellers({ products, isCurated = false }: BestSellersProps) {
+export function BestSellers({ products }: BestSellersProps) {
   const { formatPrice } = useCurrency();
-  const curated = isCurated ? products : products.slice(4, 8);
-  const displayed = curated.length > 0 ? curated.slice(0, 4) : products.slice(0, 4);
+  const displayed = products.slice(0, 4);
   if (displayed.length === 0) return null;
 
   function getInrAmount(product: Product): number {

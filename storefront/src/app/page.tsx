@@ -361,7 +361,7 @@ export default async function Home() {
       />
 
       <CircularCategories />
-      <HeroSection settings={homepageSettings} banners={heroBanners} />
+      <HeroSection banners={heroBanners} />
       <CategoriesGrid categories={homepageCategories} />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
@@ -370,10 +370,7 @@ export default async function Home() {
       <CollectionsSection collections={collections} />
       <ShopTheLook spotlightProducts={spotlightProducts} />
       <WatchBuyPreview reels={trendingReels} />
-      <BestSellers
-        products={bestsellerProducts.length > 0 ? bestsellerProducts : products}
-        isCurated={bestsellerProducts.length > 0}
-      />
+      <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
       <Testimonials testimonials={testimonials} />
       <NewsletterSection settings={homepageSettings} />

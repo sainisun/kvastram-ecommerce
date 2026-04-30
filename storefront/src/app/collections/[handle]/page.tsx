@@ -181,7 +181,7 @@ export default async function CollectionPage({
               title={landing.title}
               subtitle={landing.kind === 'category' ? 'Category' : 'Collection'}
               description={landing.description}
-              image={landing.image || '/images/home/collection-bridal.jpg'}
+              image={landing.image || undefined}
             />
           </div>
         </>
@@ -190,7 +190,7 @@ export default async function CollectionPage({
           title={landing.title}
           subtitle={landing.kind === 'category' ? 'Category' : 'Collection'}
           description={landing.description}
-          image={landing.image || '/images/home/collection-bridal.jpg'}
+          image={landing.image || undefined}
         />
       )}
 

@@ -23,12 +23,16 @@ interface ProductGridProps {
   initialProducts?: Product[];
   loading?: boolean;
   spotlightProducts?: SpotlightProduct[];
+  density?: 'grid' | 'compact';
+  emptyMessage?: string;
 }
 
 function ProductGrid({
   initialProducts = [],
   loading: externalLoading,
   spotlightProducts = [],
+  density = 'grid',
+  emptyMessage = 'No products found in this collection.',
 }: ProductGridProps) {
   const { currentRegion } = useShop();
   const { formatPrice } = useCurrency();
@@ -44,7 +48,11 @@ function ProductGrid({
     null
   );
   const products = initialProducts;
-  const resolvedLoading = externalLoading || initialProducts.length === 0;
+  const resolvedLoading = externalLoading === true;
+  const gridClassName =
+    density === 'compact'
+      ? 'product-grid-prem product-grid-prem--compact'
+      : 'product-grid-prem';
 
   useEffect(() => {
     if (
@@ -132,7 +140,7 @@ function ProductGrid({
 
   if (resolvedLoading) {
     return (
-      <div className="product-grid-prem">
+      <div className={gridClassName}>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
           <div key={item} className="prod-card-prem">
             <div
@@ -187,7 +195,7 @@ function ProductGrid({
           fontWeight: 300,
         }}
       >
-        No products found in this collection.
+        {emptyMessage}
       </div>
     );
   }
@@ -423,7 +431,7 @@ function ProductGrid({
   });
 
   return (
-    <div className="product-grid-prem">
+    <div className={gridClassName}>
       {renderedItems}
       <QuickViewModal
         product={quickViewProduct || ({} as Product)}

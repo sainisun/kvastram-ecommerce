@@ -3,7 +3,24 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import ProductGrid from '@/components/ProductGrid';
-import type { Product } from '@/types';
+import type { MoneyAmount, Product } from '@/types';
+
+function getCurrentPrice(product: Product) {
+  const prices = product.variants?.[0]?.prices || [];
+  const inrPrice =
+    prices.find((price: MoneyAmount) => price.currency_code?.toLowerCase() === 'inr') ||
+    prices[0];
+
+  return inrPrice?.amount || 0;
+}
+
+function hasSalePrice(product: Product) {
+  const variant = product.variants?.[0];
+  const compareAt = variant?.compare_at_price || 0;
+  const currentPrice = getCurrentPrice(product);
+
+  return compareAt > 0 && currentPrice > 0 && compareAt > currentPrice;
+}
 
 export default function SalePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -11,10 +28,9 @@ export default function SalePage() {
 
   useEffect(() => {
     api
-      .getProducts({ limit: 50, sort: 'price' })
+      .getProducts({ limit: 50, sort: 'newest' })
       .then((data) => {
-        // Filter for discounted products (would need backend to properly filter sale items)
-        const saleProducts = (data.products || []).slice(0, 12);
+        const saleProducts = (data.products || []).filter(hasSalePrice).slice(0, 24);
         setProducts(saleProducts);
       })
       .finally(() => setLoading(false));
@@ -37,16 +53,11 @@ export default function SalePage() {
       </div>
 
       <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <ProductGrid initialProducts={products} loading={loading} />
-
-        {!loading && products.length === 0 && (
-          <div className="py-12 text-center md:py-16 lg:py-20">
-            <p className="text-stone-500">No sale items currently available.</p>
-            <p className="text-stone-400 text-sm mt-2">
-              Check back soon for new arrivals!
-            </p>
-          </div>
-        )}
+        <ProductGrid
+          initialProducts={products}
+          loading={loading}
+          emptyMessage="No sale items currently available."
+        />
       </div>
     </div>
   );

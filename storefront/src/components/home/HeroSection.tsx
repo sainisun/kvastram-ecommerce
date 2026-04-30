@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -17,60 +16,26 @@ interface HeroBannerSlide {
   button_link?: string | null;
 }
 
-interface HomepageSettings {
-  hero_title?: string | null;
-  hero_subtitle?: string | null;
-  hero_cta_text?: string | null;
-  hero_cta_link?: string | null;
-  hero_image?: string | null;
-}
-
 interface HeroSectionProps {
-  settings: HomepageSettings;
   banners?: HeroBannerSlide[];
 }
 
 interface ResolvedSlide {
   id: string;
   imageUrl: string;
-  title: string;
-  subtitle: string;
-  ctaText: string;
-  ctaLink: string;
-  isFallback: boolean;
+  alt: string;
 }
 
-export function HeroSection({ settings, banners = [] }: HeroSectionProps) {
+export function HeroSection({ banners = [] }: HeroSectionProps) {
   const slides = useMemo<ResolvedSlide[]>(() => {
-    const validBanners = banners
+    return banners
       .map((banner) => ({
         id: banner.id,
         imageUrl: cloudinaryUrlOrNull(banner.image_url),
-        title: banner.title?.trim() || '',
-        subtitle: banner.subtitle?.trim() || '',
-        ctaText: banner.button_text?.trim() || '',
-        ctaLink: banner.button_link?.trim() || '/products',
-        isFallback: false,
+        alt: banner.title?.trim() || banner.subtitle?.trim() || 'Kvastram hero',
       }))
       .filter((banner): banner is ResolvedSlide => Boolean(banner.imageUrl));
-
-    if (validBanners.length > 0) {
-      return validBanners;
-    }
-
-    return [
-      {
-        id: 'hero-settings-fallback',
-        imageUrl:
-          cloudinaryUrlOrNull(settings.hero_image) || '/images/home/hero-main.jpg',
-        title: settings.hero_title?.trim() || '',
-        subtitle: settings.hero_subtitle?.trim() || 'Handcrafted in Jaipur, India',
-        ctaText: settings.hero_cta_text?.trim() || 'Shop the Collection',
-        ctaLink: settings.hero_cta_link?.trim() || '/products',
-        isFallback: true,
-      },
-    ];
-  }, [banners, settings]);
+  }, [banners]);
 
   const autoplay = useMemo(
     () =>
@@ -118,6 +83,10 @@ export function HeroSection({ settings, banners = [] }: HeroSectionProps) {
     [emblaApi]
   );
 
+  if (slides.length === 0) {
+    return null;
+  }
+
   return (
     <section
       data-hero-slider
@@ -135,67 +104,13 @@ export function HeroSection({ settings, banners = [] }: HeroSectionProps) {
                 <div className="absolute inset-0">
                   <OptimizedImage
                     src={slide.imageUrl}
-                    alt={slide.title || 'Kvastram hero'}
+                    alt={slide.alt}
                     fill
                     priority={slide.id === slides[0]?.id}
                     sizes="100vw"
                     className="object-cover object-center"
                   />
                 </div>
-
-                {(slide.isFallback || slide.title || slide.subtitle || slide.ctaText) && (
-                  <div className="absolute inset-0">
-                    <div className="mx-auto flex h-full max-w-[1440px] items-end px-6 pb-12 pt-16 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
-                      <div className="max-w-2xl text-left">
-                        {slide.subtitle && (
-                          <div className="text-[11px] uppercase tracking-[0.25em] text-white drop-shadow-sm">
-                            {slide.subtitle}
-                          </div>
-                        )}
-
-                        {slide.title ? (
-                          <h1 className="mt-4 max-w-3xl font-heading text-[clamp(42px,9vw,84px)] font-normal leading-[0.94] tracking-[-0.03em] text-white drop-shadow-sm">
-                            {slide.title}
-                          </h1>
-                        ) : slide.isFallback ? (
-                          <h1 className="mt-4 max-w-3xl font-heading text-[clamp(42px,9vw,84px)] font-normal leading-[0.94] tracking-[-0.03em] text-white drop-shadow-sm">
-                            Made by hand.
-                            <br />
-                            Carried <em className="italic">across the world.</em>
-                          </h1>
-                        ) : null}
-
-                        {(slide.title || slide.isFallback) && (
-                          <p className="mt-4 max-w-xl text-[15px] leading-7 text-white/90 drop-shadow-sm sm:text-[17px] sm:leading-8">
-                            Kantha quilts, block-printed clothing and artisan bags, each piece
-                            hand-stitched by skilled women in Jaipur. Ships to 50+ countries.
-                          </p>
-                        )}
-
-                        {(slide.ctaText || slide.isFallback) && (
-                          <div className="mt-8 flex flex-wrap gap-4">
-                            {(slide.ctaText || slide.isFallback) && (
-                              <Link
-                                href={slide.ctaLink}
-                                className="inline-flex items-center justify-center bg-white px-6 py-3 text-[11px] font-medium uppercase tracking-[0.16em] text-black transition-colors duration-300 hover:bg-stone-200 sm:px-8 sm:py-4 sm:text-[12px]"
-                              >
-                                {slide.ctaText || 'Shop the Collection'}
-                              </Link>
-                            )}
-                            {slide.isFallback && (
-                              <Link
-                                href="/about"
-                                className="inline-flex items-center justify-center border border-white px-6 py-3 text-[11px] font-medium uppercase tracking-[0.16em] text-white transition-colors duration-300 hover:bg-white hover:text-black sm:px-8 sm:py-4 sm:text-[12px]"
-                              >
-                                Our Story
-                              </Link>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}

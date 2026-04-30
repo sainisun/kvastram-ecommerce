@@ -66,7 +66,7 @@ function CollectionCard({
           {collection.title}
         </h2>
         <p className="mt-1 line-clamp-2 text-[12px] uppercase tracking-[0.16em] text-stone-500">
-          {collection.description || 'Real collection stories from the catalog'}
+          {collection.description || 'View collection'}
         </p>
         <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-stone-400">
           {count} products
@@ -88,6 +88,7 @@ export default async function CollectionsPage({
   const collections: CollectionSummary[] = data.collections || [];
   const featuredCollections = collections.slice(0, 3);
   const visibleCollections = showAll ? collections : collections.slice(0, 12);
+  const heroImage = collections.find((collection) => collection.image)?.image;
 
   const collectionCounts = await Promise.allSettled(
     visibleCollections.map(async (collection: CollectionSummary) => {
@@ -113,7 +114,7 @@ export default async function CollectionsPage({
       path: '/collections',
       description:
         'Explore handcrafted ethnic wear collections, from festive kurtis to artisanal shawls and occasion-ready silhouettes.',
-      image: '/images/home/collection-bridal.jpg',
+      image: heroImage || '',
       items: collections.map((collection: CollectionSummary) => ({
         name: collection.title,
         path: `/collections/${collection.handle}`,
@@ -129,14 +130,6 @@ export default async function CollectionsPage({
     return (
       <div className="min-h-screen bg-white">
         <section className="relative h-[360px] overflow-hidden bg-stone-100 sm:h-[420px]">
-          <OptimizedImage
-            src="/images/home/collection-bridal.jpg"
-            alt="Collections"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
           <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.2),rgba(0,0,0,0.3))]" />
           <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
             <div className="max-w-3xl">
@@ -166,14 +159,16 @@ export default async function CollectionsPage({
       />
 
       <section className="relative h-[360px] overflow-hidden bg-stone-100 sm:h-[420px]">
-        <OptimizedImage
-          src="/images/home/collection-bridal.jpg"
-          alt="Collections"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        {heroImage ? (
+          <OptimizedImage
+            src={heroImage}
+            alt="Collections"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        ) : null}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.2),rgba(0,0,0,0.3))]" />
         <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
           <div className="max-w-3xl">
@@ -231,9 +226,11 @@ export default async function CollectionsPage({
                   <h2 className="font-heading text-[28px] font-normal leading-none tracking-[-0.03em]">
                     {collection.title}
                   </h2>
-                  <p className="mt-3 max-w-[18rem] text-[13px] leading-6 text-white/85">
-                    {collection.description || 'Timeless edits crafted for the modern wardrobe.'}
-                  </p>
+                  {collection.description ? (
+                    <p className="mt-3 max-w-[18rem] text-[13px] leading-6 text-white/85">
+                      {collection.description}
+                    </p>
+                  ) : null}
                   <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em]">
                     Shop Now
                     <ArrowRight size={14} />
@@ -243,26 +240,6 @@ export default async function CollectionsPage({
             </Link>
           ))}
         </section>
-
-        <div className="sticky top-[72px] z-20 -mx-4 mt-10 border-b border-stone-100 bg-white/95 px-4 py-5 backdrop-blur-sm sm:mx-0 sm:px-0">
-          <div className="flex flex-wrap justify-center gap-3">
-            <span className="inline-flex rounded-full border border-stone-950 bg-stone-950 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-white">
-              All
-            </span>
-            <span className="inline-flex rounded-full border border-stone-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-stone-700">
-              By Occasion
-            </span>
-            <span className="inline-flex rounded-full border border-stone-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-stone-700">
-              By Season
-            </span>
-            <span className="inline-flex rounded-full border border-stone-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-stone-700">
-              By Fabric
-            </span>
-            <span className="inline-flex rounded-full border border-stone-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-stone-700">
-              By Silhouette
-            </span>
-          </div>
-        </div>
 
         <section className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {visibleCollections.map((collection) => (
@@ -296,55 +273,6 @@ export default async function CollectionsPage({
           </div>
         ) : null}
 
-        <section className="mt-16 rounded-[36px] border border-stone-100 bg-stone-50 px-6 py-10 sm:px-8">
-          <div className="max-w-2xl">
-            <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
-              Need help
-            </div>
-            <h2 className="mt-3 font-heading text-[clamp(32px,4vw,52px)] font-normal leading-none tracking-[-0.03em] text-stone-950">
-              Need help <em className="italic">choosing?</em>
-            </h2>
-            <p className="mt-4 max-w-xl font-heading text-[18px] font-normal italic leading-8 text-stone-700">
-              Pick the right edit with real humans, quick answers, and styling support rooted in the live catalog.
-            </p>
-          </div>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <Link
-              href="/contact"
-              className="rounded-[24px] border border-stone-200 bg-white p-5 transition-colors hover:border-stone-900"
-            >
-              <div className="text-[11px] uppercase tracking-[0.2em] text-stone-500">
-                Book a Stylist
-              </div>
-              <h3 className="mt-3 font-heading text-[22px] font-medium text-stone-950">
-                Personal 1-on-1 consultation
-              </h3>
-            </Link>
-            <Link
-              href="https://wa.me/message/kvastram"
-              className="rounded-[24px] border border-stone-200 bg-white p-5 transition-colors hover:border-stone-900"
-            >
-              <div className="text-[11px] uppercase tracking-[0.2em] text-stone-500">
-                WhatsApp Us
-              </div>
-              <h3 className="mt-3 font-heading text-[22px] font-medium text-stone-950">
-                Quick answers, real humans
-              </h3>
-            </Link>
-            <Link
-              href="/faq"
-              className="rounded-[24px] border border-stone-200 bg-white p-5 transition-colors hover:border-stone-900"
-            >
-              <div className="text-[11px] uppercase tracking-[0.2em] text-stone-500">
-                Size Guide
-              </div>
-              <h3 className="mt-3 font-heading text-[22px] font-medium text-stone-950">
-                Find your perfect fit
-              </h3>
-            </Link>
-          </div>
-        </section>
       </div>
     </div>
   );

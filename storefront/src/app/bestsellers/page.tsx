@@ -24,8 +24,8 @@ export const metadata: Metadata = buildBasicPageMetadata({
   keywords: ['bestsellers', 'most loved', 'kvastram bestsellers'],
 });
 
-function formatStat(value?: string | number | null, fallback = '') {
-  if (value === null || value === undefined || value === '') return fallback;
+function formatStat(value?: string | number | null) {
+  if (value === null || value === undefined || value === '') return '';
   return String(value);
 }
 
@@ -86,9 +86,10 @@ export default async function BestsellersPage({
   const params = await searchParams;
   const selectedSize = typeof params.size === 'string' ? params.size : 'all';
 
-  const [homepageResult, tagsResult] = await Promise.allSettled([
+  const [homepageResult, tagsResult, curatedResult] = await Promise.allSettled([
     api.getHomepageSettings(),
     api.getTags(),
+    api.getSpotlightProducts('bestseller'),
   ]);
 
   const homepageSettings =
@@ -104,6 +105,15 @@ export default async function BestsellersPage({
             tag.name?.toLowerCase() === 'best seller'
         )
       : null;
+
+  const curatedProducts =
+    curatedResult.status === 'fulfilled'
+      ? (curatedResult.value.featuredProducts || [])
+          .map((item: { product?: Product | null }) => item.product)
+          .filter((product: Product | null | undefined): product is Product =>
+            Boolean(product?.id)
+          )
+      : [];
 
   const [taggedProductsResult, fallbackProductsResult] = await Promise.allSettled([
     bestsellerTag
@@ -121,42 +131,39 @@ export default async function BestsellersPage({
       ? fallbackProductsResult.value.products || []
       : [];
 
-  const products = (taggedProducts.length > 0 ? taggedProducts : fallbackProducts)
+  const sourceProducts =
+    curatedProducts.length > 0
+      ? curatedProducts
+      : taggedProducts.length > 0
+        ? taggedProducts
+        : fallbackProducts;
+
+  const products: Product[] = sourceProducts
     .filter((product: Product) => productMatchesSize(product, selectedSize))
     .slice(0, 9);
 
-  const sizes = extractSizes(taggedProducts.length > 0 ? taggedProducts : fallbackProducts);
+  const sizes = extractSizes(sourceProducts);
 
   const stats = [
     {
-      value: formatStat(
-        homepageSettings.stat_customer_rating,
-        '4.9'
-      ),
+      value: formatStat(homepageSettings.stat_customer_rating),
       label: 'Average Rating',
     },
     {
-      value: formatStat(
-        homepageSettings.stat_happy_customers,
-        '12,500+'
-      ),
+      value: formatStat(homepageSettings.stat_happy_customers),
       label: 'Happy Customers',
     },
     {
-      value: formatStat(
-        homepageSettings.stat_return_policy,
-        '98%'
-      ),
+      value: formatStat(homepageSettings.stat_return_policy),
       label: 'Would Recommend',
     },
     {
-      value: formatStat(
-        homepageSettings.stat_five_star_reviews,
-        '5,000+'
-      ),
+      value: formatStat(homepageSettings.stat_five_star_reviews),
       label: 'Five-Star Reviews',
     },
-  ];
+  ].filter((stat) => stat.value);
+
+  const heroImage = products.find((product) => product.thumbnail)?.thumbnail;
 
   const schema = [
     buildBreadcrumbJsonLd([
@@ -173,7 +180,16 @@ export default async function BestsellersPage({
       />
 
       <section className="relative h-[480px] overflow-hidden bg-gradient-to-br from-stone-950 via-stone-800 to-stone-700">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1619715770663-8fb95ff9d0b5?w=1920&q=80')] bg-cover bg-center opacity-70" />
+        {heroImage ? (
+          <OptimizedImage
+            src={heroImage}
+            alt="Kvastram bestseller"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-70"
+          />
+        ) : null}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.3),rgba(0,0,0,0.5))]" />
         <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center px-6 text-center text-white md:px-12 lg:px-20">
           <h1 className="font-heading text-[clamp(48px,6vw,76px)] font-normal leading-none tracking-[-0.03em] text-white">
@@ -197,21 +213,23 @@ export default async function BestsellersPage({
           <span className="text-stone-700">Bestsellers</span>
         </nav>
 
-        <section className="grid gap-0 border-b border-stone-100 py-10 sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="border-r border-stone-100 px-4 py-4 text-center last:border-r-0 sm:border-b sm:border-r xl:border-b-0"
-            >
-              <div className="font-heading text-[clamp(28px,3vw,42px)] leading-none text-stone-950">
-                {stat.value}
+        {stats.length > 0 ? (
+          <section className="grid gap-0 border-b border-stone-100 py-10 sm:grid-cols-2 xl:grid-cols-4">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="border-r border-stone-100 px-4 py-4 text-center last:border-r-0 sm:border-b sm:border-r xl:border-b-0"
+              >
+                <div className="font-heading text-[clamp(28px,3vw,42px)] leading-none text-stone-950">
+                  {stat.value}
+                </div>
+                <div className="mt-2 text-[11px] uppercase tracking-[0.2em] text-stone-500">
+                  {stat.label}
+                </div>
               </div>
-              <div className="mt-2 text-[11px] uppercase tracking-[0.2em] text-stone-500">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </section>
+            ))}
+          </section>
+        ) : null}
 
         {sizes.length > 0 ? (
           <div className="mt-10 flex flex-wrap justify-center gap-3">
@@ -304,8 +322,7 @@ export default async function BestsellersPage({
           ) : (
             <div className="py-12 text-center md:py-16 lg:py-24">
               <p className="text-lg text-stone-500">
-                No bestselling products found right now. Add products to the
-                `bestseller` tag in admin or use featured products as fallback.
+                No bestselling products found right now.
               </p>
             </div>
           )}

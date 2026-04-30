@@ -15,7 +15,9 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
 
   if (reels.length === 0) return null;
 
-  const displayed = reels.slice(0, 4);
+  const displayed = reels.filter((reel) => reel.thumbnail_url).slice(0, 4);
+
+  if (displayed.length === 0) return null;
 
   return (
     <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
@@ -41,7 +43,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
             >
               <div className="relative aspect-[4/5]">
                 <OptimizedImage
-                  src={reel.thumbnail_url || '/images/home/atelier-story.jpg'}
+                  src={reel.thumbnail_url}
                   alt={reel.product_name}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 20vw"
@@ -68,7 +70,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                 <span className="line-clamp-1 text-[16px] font-semibold text-stone-950">
                   {reel.price_amount != null
                     ? formatPrice(reel.price_amount)
-                    : reel.price || '₹ —'}
+                    : reel.price || ''}
                 </span>
                 <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-700 transition-colors group-hover:text-stone-950">
                   View
@@ -84,7 +86,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
             href="/reels"
             className="inline-flex items-center justify-center bg-stone-950 px-7 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-stone-800"
           >
-            View All Reels →
+            View All Reels
           </Link>
         </div>
       </div>

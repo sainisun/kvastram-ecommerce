@@ -9,12 +9,11 @@ interface CollectionsSectionProps {
 export function CollectionsSection({ collections }: CollectionsSectionProps) {
   if (collections.length === 0) return null;
 
-  const displayed = collections.slice(0, 12);
-  const descriptions = [
-    'Timeless pieces for your forever moments',
-    'Dress up every celebration',
-    'Comfort meets craft, every day',
-  ];
+  const displayed = collections
+    .filter((collection) => Boolean(collection.image))
+    .slice(0, 12);
+
+  if (displayed.length === 0) return null;
 
   return (
     <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
@@ -29,7 +28,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
         </div>
 
         <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 md:gap-6 lg:gap-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {displayed.map((collection, index) => (
+          {displayed.map((collection) => (
             <Link
               key={collection.id}
               href={`/collections/${collection.handle}`}
@@ -37,15 +36,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
             >
               <div className="relative aspect-[3/4]">
                 <OptimizedImage
-                  src={
-                    collection.image ||
-                    [
-                      '/images/home/collection-bridal.jpg',
-                      '/images/home/collection-summer.jpg',
-                      '/images/home/atelier-story.jpg',
-                    ][index] ||
-                    '/images/home/collection-bridal.jpg'
-                  }
+                  src={collection.image || ''}
                   alt={collection.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -56,9 +47,6 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
                   <h3 className="font-heading text-[28px] font-medium leading-[0.96] text-white">
                     {collection.title}
                   </h3>
-                  <p className="mt-3 max-w-[260px] text-[14px] leading-7 text-white/80">
-                    {descriptions[index] || descriptions[0]}
-                  </p>
                   <span className="mt-5 inline-flex text-[10px] font-medium uppercase tracking-[0.2em] text-white/90">
                     Shop Now →
                   </span>

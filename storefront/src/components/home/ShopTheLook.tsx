@@ -19,23 +19,19 @@ function formatCurrency(amount?: number, currencyCode = 'INR') {
 export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
   if (spotlightProducts.length === 0) return null;
 
-  const fallbackProducts = [
-    { title: 'Aaroh Supima Cotton Kurta', price: '₹ 10,900' },
-    { title: 'Cotton Pant — Off White', price: '₹ 4,200' },
-    { title: 'Organza Dupatta — Embroidered', price: '₹ 6,800' },
-  ];
+  const items = spotlightProducts
+    .map((item) => ({
+      id: item.id,
+      product: item.product,
+      image:
+        cloudinaryUrlOrNull(item.custom_image_url) ||
+        cloudinaryUrlOrNull(item.product.thumbnail),
+    }))
+    .filter((item) => Boolean(item.product?.id && item.product?.title && item.image))
+    .slice(0, 3);
 
-  const items = spotlightProducts.slice(0, 3).map((item, index) => ({
-    id: item.id,
-    product: item.product,
-    image:
-      cloudinaryUrlOrNull(item.custom_image_url) ||
-      cloudinaryUrlOrNull(item.product.thumbnail) ||
-      '/images/home/atelier-story.jpg',
-    fallback: fallbackProducts[index],
-  }));
+  if (items.length === 0) return null;
 
-  const heroImage = items[0]?.image || '/images/home/atelier-story.jpg';
   const productHref = (index: number) =>
     `/products/${items[index]?.product.handle || items[index]?.product.id || ''}`.replace(
       /\/$/,
@@ -58,34 +54,32 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
           <div className="relative overflow-hidden">
             <div className="relative aspect-[4/5] bg-stone-100">
               <OptimizedImage
-                src={heroImage}
-                alt={items[0]?.product.title || 'Full look'}
+                src={items[0].image || ''}
+                alt={items[0].product.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 58vw"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.16),transparent_55%)]" />
-              <Link
-                href={productHref(0)}
-                className="absolute top-[20%] left-[45%] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-white/90"
-                aria-label={items[0]?.product.title || 'Hotspot product 1'}
-              />
-              <Link
-                href={productHref(1)}
-                className="absolute top-[55%] left-[42%] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-white/90"
-                aria-label={items[1]?.product.title || 'Hotspot product 2'}
-              />
-              <Link
-                href={productHref(2)}
-                className="absolute top-[32%] left-[58%] h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-white/90"
-                aria-label={items[2]?.product.title || 'Hotspot product 3'}
-              />
+              {items.map((item, index) => (
+                <Link
+                  key={item.id}
+                  href={productHref(index)}
+                  className={[
+                    'absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25 bg-white/90',
+                    index === 0 ? 'left-[45%] top-[20%]' : '',
+                    index === 1 ? 'left-[42%] top-[55%]' : '',
+                    index === 2 ? 'left-[58%] top-[32%]' : '',
+                  ].join(' ')}
+                  aria-label={item.product.title}
+                />
+              ))}
             </div>
           </div>
 
           <div className="space-y-6">
             <div className="text-[12px] uppercase tracking-[0.2em] text-stone-500">
-              Look 01 / 03
+              Look 01 / {String(items.length).padStart(2, '0')}
             </div>
             <h3 className="font-heading text-[clamp(28px,3vw,42px)] font-medium leading-[0.96] tracking-[-0.03em] text-stone-950">
               The Festive <em className="italic">Look</em>
@@ -97,6 +91,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
             <div className="space-y-4">
               {items.map((item) => {
                 const price = item.product.variants?.[0]?.prices?.[0];
+                const href = `/products/${item.product.handle || item.product.id}`;
 
                 return (
                   <div
@@ -104,14 +99,11 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                     className="flex items-center gap-4 border-b border-stone-200 pb-4"
                   >
                     <Link
-                      href={`/products/${item.product.handle || item.product.id || ''}`.replace(
-                        /\/$/,
-                        '/products'
-                      )}
+                      href={href}
                       className="relative h-20 w-16 shrink-0 overflow-hidden bg-stone-100"
                     >
                       <OptimizedImage
-                        src={item.image}
+                        src={item.image || ''}
                         alt={item.product.title}
                         fill
                         sizes="64px"
@@ -120,19 +112,21 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                     </Link>
                     <div className="min-w-0 flex-1">
                       <h4 className="line-clamp-1 text-[13px] font-medium text-stone-950">
-                        {item.product.title || item.fallback.title}
+                        {item.product.title}
                       </h4>
-                      <p className="mt-1 text-[12px] uppercase tracking-[0.14em] text-stone-500">
-                        {price ? formatCurrency(price.amount, price.currency_code) : item.fallback.price}
-                      </p>
+                      {price ? (
+                        <p className="mt-1 text-[12px] uppercase tracking-[0.14em] text-stone-500">
+                          {formatCurrency(price.amount, price.currency_code)}
+                        </p>
+                      ) : null}
                     </div>
-                    <button
-                      type="button"
-                      className="h-10 w-10 border border-stone-300 text-[18px] leading-none text-stone-900 transition-colors hover:bg-stone-900 hover:text-white"
-                      aria-label={`Add ${item.product.title || item.fallback.title}`}
+                    <Link
+                      href={href}
+                      className="flex h-10 w-10 items-center justify-center border border-stone-300 text-[18px] leading-none text-stone-900 transition-colors hover:bg-stone-900 hover:text-white"
+                      aria-label={`View ${item.product.title}`}
                     >
                       +
-                    </button>
+                    </Link>
                   </div>
                 );
               })}
@@ -142,7 +136,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
               href="/products"
               className="inline-flex items-center justify-center bg-stone-950 px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-stone-800"
             >
-              Shop Complete Look — ₹21,900
+              Shop Complete Look
             </Link>
           </div>
         </div>
