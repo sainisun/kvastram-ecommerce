@@ -83,15 +83,16 @@ export default async function ProductPage({ params }: Props) {
 
       <ProductView product={product} />
 
-      <div className="mx-auto max-w-[1440px] border-t border-stone-100 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-container border-t border-[var(--line)] py-12 md:py-16 lg:py-20">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <h2 className="font-heading text-[clamp(28px,3vw,44px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
+          <p className="kv-tag">Keep Browsing</p>
+          <h2 className="font-heading text-[clamp(34px,4vw,54px)] font-bold leading-[0.98] text-[var(--ink)]">
             You May Also Like
           </h2>
           {primaryCategoryPath && primaryCategory && (
             <a
               href={primaryCategoryPath}
-              className="font-body text-[12px] font-medium uppercase tracking-[0.08em] text-amber-700 transition-colors hover:text-stone-900"
+              className="kv-btn"
             >
               Shop More {primaryCategory.name}
             </a>

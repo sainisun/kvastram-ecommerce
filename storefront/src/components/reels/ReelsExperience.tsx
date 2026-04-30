@@ -32,6 +32,8 @@ interface TrendingReelItem {
   link_url: string;
   view_count?: number;
   created_at?: string;
+  category?: string | null;
+  caption?: string | null;
 }
 
 interface ReelsExperienceProps {
@@ -51,7 +53,7 @@ function getReelGridHref(basePath: string, viewMode?: string) {
 }
 
 function matchesReelTab(reel: TrendingReelItem, tab: string) {
-  const text = `${reel.product_name} ${reel.link_url}`.toLowerCase();
+  const text = `${reel.product_name} ${reel.link_url} ${reel.category || ''}`.toLowerCase();
 
   switch (tab) {
     case 'bridal':
@@ -68,6 +70,45 @@ function matchesReelTab(reel: TrendingReelItem, tab: string) {
       return true;
   }
 }
+
+const placeholderReels: TrendingReelItem[] = [
+  {
+    id: 'placeholder-style',
+    video_url: '',
+    thumbnail_url: '',
+    product_name: 'Three ways to drape Kantha',
+    price: 'Tap to view and shop',
+    link_url: '/products',
+    category: 'styling',
+  },
+  {
+    id: 'placeholder-occasion',
+    video_url: '',
+    thumbnail_url: '',
+    product_name: 'Wedding guest saree try-on',
+    price: 'Tap to view and shop',
+    link_url: '/products',
+    category: 'occasion',
+  },
+  {
+    id: 'placeholder-new',
+    video_url: '',
+    thumbnail_url: '',
+    product_name: 'Fresh studio drop preview',
+    price: 'Tap to view and shop',
+    link_url: '/products?sort=newest',
+    category: 'new drops',
+  },
+  {
+    id: 'placeholder-craft',
+    video_url: '',
+    thumbnail_url: '',
+    product_name: 'Craft details up close',
+    price: 'Tap to view and shop',
+    link_url: '/products',
+    category: 'craft',
+  },
+];
 
 function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const router = useRouter();
@@ -123,6 +164,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     () => (showAll ? filteredReels : filteredReels.slice(0, 12)),
     [filteredReels, showAll]
   );
+  const displayReels = visibleReels.length > 0 ? visibleReels : placeholderReels;
 
   function openReel(index: number) {
     const selectedReel = visibleReels[index];
@@ -177,18 +219,18 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   }
 
   const reelChips = [
-    { label: 'All', value: 'all' },
-    { label: 'Bridal', value: 'bridal' },
-    { label: 'Festive', value: 'festive' },
-    { label: 'Everyday', value: 'everyday' },
-    { label: 'Tutorials', value: 'tutorials' },
-    { label: 'Styling Tips', value: 'styling tips' },
+    { label: 'All Reels', value: 'all' },
+    { label: 'Styling', value: 'styling tips' },
+    { label: 'Occasion', value: 'festive' },
+    { label: 'New Drops', value: 'everyday' },
+    { label: 'Craft', value: 'tutorials' },
+    { label: 'Gifting', value: 'bridal' },
   ];
 
   return (
-    <div className="min-h-screen bg-white pb-24 md:pb-16 lg:pb-20">
+    <div className="min-h-screen bg-[var(--cream)] pb-24 md:pb-16 lg:pb-20">
       <div className="sticky top-0 z-40 border-b border-stone-100 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto max-w-[1440px] px-4 py-3 md:px-12 lg:px-20">
+        <div className="kv-container py-3">
           <form
             onSubmit={handleSearchSubmit}
             className="flex h-11 items-center gap-3 rounded-full bg-stone-100 px-4 text-stone-900 ring-1 ring-transparent transition focus-within:bg-white focus-within:ring-stone-200"
@@ -206,7 +248,14 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1440px] px-3 pt-4 md:px-12 md:pt-6 lg:px-20">
+      <section className="kv-section-sm">
+        <div className="kv-container">
+          <div className="kv-tag">Watch &amp; Buy</div>
+          <h1 className="kv-title">Reels that sell the story</h1>
+        </div>
+      </section>
+
+      <div className="kv-container pt-1">
         <div className="filter-chips flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:justify-center md:gap-4">
           {reelChips.map((chip) => (
             <button
@@ -226,58 +275,88 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 
         <div className="mt-4 md:mt-8">
         {loading ? (
-          <div className="grid grid-cols-3 gap-1 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="aspect-[9/16] animate-pulse bg-stone-200 md:rounded-[2px]"
+                className="aspect-[3/5] animate-pulse rounded-[12px] bg-stone-200"
               />
             ))}
           </div>
         ) : (
-           <div className="grid grid-cols-3 gap-1 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
-            {visibleReels.map((reel, idx) => (
-              <button
-                key={reel.id}
-                type="button"
-                onClick={() => openReel(idx)}
-                className="group relative aspect-[9/16] overflow-hidden bg-stone-200 text-left md:rounded-[2px]"
-              >
-                <OptimizedImage
-                  src={reel.thumbnail_url}
-                  alt={reel.product_name}
-                  fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                <div className="absolute right-1.5 top-1.5 flex items-center gap-1 rounded-full bg-black/35 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm md:right-2 md:top-2">
-                  <Play size={12} fill="currentColor" />
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
-                  <p className="line-clamp-2 text-xs font-semibold text-white sm:text-base">
-                    {reel.product_name}
-                  </p>
-                  <div className="mt-2 flex items-center justify-between gap-2 text-white/90">
-                    <span className="text-[11px] font-semibold sm:text-sm">
-                      {reel.price}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.12em] sm:text-[10px]">
-                      <Eye size={12} />
-                      {reel.view_count || 0}
-                    </span>
+           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+            {displayReels.map((reel, idx) => {
+              const isPlaceholder = !reel.video_url || !reel.thumbnail_url;
+              const card = (
+                <>
+                  {reel.thumbnail_url ? (
+                    <OptimizedImage
+                      src={reel.thumbnail_url}
+                      alt={reel.product_name}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#a85d3a] via-[#c4956a] to-[#d8b295]" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-black/35 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                    <Play size={12} fill="currentColor" />
                   </div>
-                </div>
-              </button>
-            ))}
-          </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
+                    <p className="text-[11px] font-black uppercase tracking-[0.14em] text-white/72">
+                      {reel.category || 'watch & buy'}
+                    </p>
+                    <p className="mt-1 line-clamp-2 font-heading text-[18px] font-bold leading-tight text-white sm:text-[20px]">
+                      {reel.product_name}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between gap-2 text-white/90">
+                      <span className="text-[11px] font-semibold sm:text-sm">
+                        {reel.price}
+                      </span>
+                      {!isPlaceholder ? (
+                        <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.12em] sm:text-[10px]">
+                          <Eye size={12} />
+                          {reel.view_count || 0}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                </>
+              );
+
+              if (isPlaceholder) {
+                return (
+                  <Link
+                    key={reel.id}
+                    href={reel.link_url}
+                    className="group relative aspect-[3/5] overflow-hidden rounded-[12px] bg-stone-200 text-left shadow-sm"
+                  >
+                    {card}
+                  </Link>
+                );
+              }
+
+              return (
+                <button
+                  key={reel.id}
+                  type="button"
+                  onClick={() => openReel(idx)}
+                  className="group relative aspect-[3/5] overflow-hidden rounded-[12px] bg-stone-200 text-left shadow-sm"
+                >
+                  {card}
+                </button>
+              );
+            })}
+           </div>
         )}
 
-          {reels.length > visibleReels.length ? (
+          {visibleReels.length > 0 && reels.length > visibleReels.length ? (
             <div className="mt-10 text-center">
               <Link
                 href={showAll ? '/reels' : '/reels?show=all'}
-                className="inline-flex items-center gap-2 rounded-none border border-stone-200 bg-white px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-900 transition-colors hover:border-stone-900"
+                className="kv-btn"
               >
                 Load More Reels
               </Link>

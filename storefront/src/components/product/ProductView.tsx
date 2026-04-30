@@ -384,8 +384,8 @@ export default function ProductView({ product }: { product: Product }) {
   ].filter((accordion) => accordion.show);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-[1440px] px-6 pb-24 pt-12 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--cream)]">
+      <div className="kv-container pb-24 pt-8 md:pt-10">
         <nav aria-label="Breadcrumb" className="mb-6 hidden items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400 lg:flex">
           <a href="/" className="transition-colors hover:text-stone-900">Home</a>
           <span>/</span>
@@ -417,27 +417,27 @@ export default function ProductView({ product }: { product: Product }) {
             </nav>
 
             <section className="space-y-4 border-b border-stone-200 pb-6">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500">{product.collection?.title || 'Kvastram Collection'}</p>
-              <h1 className="font-heading text-[clamp(42px,6vw,72px)] font-medium leading-none tracking-[-0.03em] text-stone-950">{product.title}</h1>
+              <p className="kv-tag">{product.collection?.title || 'Kvastram Collection'}</p>
+              <h1 className="font-heading text-[clamp(42px,6vw,72px)] font-bold leading-[0.96] text-[var(--ink)]">{product.title}</h1>
               {product.avg_rating != null && product.avg_rating > 0 ? (
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-amber-500">{'★★★★★'.slice(0, Math.round(product.avg_rating))}</span>
+                  <span className="text-[var(--sienna)]">{'★★★★★'.slice(0, Math.round(product.avg_rating))}</span>
                   <span className="text-[13px] text-stone-500">
                     {product.avg_rating.toFixed(1)} / 5
                     {product.review_count ? ` · ${product.review_count} reviews` : ''}
                   </span>
-                  <a href="#reviews" className="border border-stone-200 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-900 transition-colors hover:border-stone-900">
+                  <a href="#reviews" className="kv-btn">
                     Write Review
                   </a>
                 </div>
               ) : null}
-              {product.subtitle && <p className="text-[15px] leading-7 text-stone-600">{product.subtitle}</p>}
-              <p className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-medium text-amber-800">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                One of a kind — handmade in Jaipur, India
+              {product.subtitle && <p className="kv-sub">{product.subtitle}</p>}
+              <p className="inline-flex items-center gap-1.5 rounded-full bg-[#f8ede4] px-3 py-1 text-[11px] font-medium text-[var(--sienna-dark)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--sienna)]" />
+                One of a kind, handmade in Jaipur, India
               </p>
               <div className="flex flex-wrap items-center gap-3">
-                <p className="font-body text-[18px] font-normal text-stone-950">{formattedPrice}</p>
+                <p className="font-body text-[28px] font-black text-[var(--sienna)]">{formattedPrice}</p>
                 {formattedComparePrice && <p className="text-[15px] text-stone-400 line-through">{formattedComparePrice}</p>}
                 {formattedComparePrice && compareAtAmount && amount < compareAtAmount && (
                   <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
@@ -452,14 +452,14 @@ export default function ProductView({ product }: { product: Product }) {
 
             <div className="grid grid-cols-2 gap-4">
               {[{ icon: Truck, label: 'Tracked Shipping' }, { icon: Ruler, label: 'Custom Sizing Help' }, { icon: ShieldCheck, label: 'Secure Payment' }, { icon: Star, label: 'Studio Verified' }].map((badge) => (
-                <div key={badge.label} className="flex items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-4">
+                <div key={badge.label} className="flex items-center gap-2 rounded-[12px] border border-[var(--line)] bg-white px-4 py-4">
                   <badge.icon size={16} className="shrink-0 text-stone-700" />
                   <span className="text-[12px] font-medium leading-tight text-stone-700">{badge.label}</span>
                 </div>
               ))}
             </div>
 
-            <section className="space-y-5 rounded-[28px] border border-stone-200 bg-stone-50 p-4 md:p-6">
+            <section className="space-y-5 rounded-[12px] border border-[var(--line)] bg-white p-4 md:p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-2">
                   <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-500">
@@ -474,22 +474,22 @@ export default function ProductView({ product }: { product: Product }) {
                 <button
                   type="button"
                   onClick={() => setInquiryOpen((prev) => !prev)}
-                  className="shrink-0 rounded-full border border-stone-300 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-800 transition hover:border-stone-900"
+                  className="kv-btn shrink-0"
                 >
                   {inquiryOpen ? 'Close' : 'Ask'}
                 </button>
               </div>
 
               <div className="grid grid-cols-1 gap-3 text-[13px] text-stone-700 sm:grid-cols-3">
-                <div className="rounded-2xl bg-white p-4">
+                <div className="rounded-[12px] border border-[var(--line)] bg-[var(--sand)] p-4">
                   <p className="font-medium text-stone-900">Handmade piece</p>
                   <p className="mt-1 leading-5 text-stone-500">Checked by our studio before dispatch.</p>
                 </div>
-                <div className="rounded-2xl bg-white p-4">
+                <div className="rounded-[12px] border border-[var(--line)] bg-[var(--sand)] p-4">
                   <p className="font-medium text-stone-900">Sizing support</p>
                   <p className="mt-1 leading-5 text-stone-500">Share measurements for fit guidance.</p>
                 </div>
-                <div className="rounded-2xl bg-white p-4">
+                <div className="rounded-[12px] border border-[var(--line)] bg-[var(--sand)] p-4">
                   <p className="font-medium text-stone-900">Tracked delivery</p>
                   <p className="mt-1 leading-5 text-stone-500">Clear updates from Jaipur to your door.</p>
                 </div>
@@ -497,7 +497,7 @@ export default function ProductView({ product }: { product: Product }) {
 
               {inquiryOpen && studioConversation && (
                 <div className="space-y-4 border-t border-stone-200 pt-5">
-                  <div className="rounded-2xl bg-white p-4">
+                  <div className="rounded-[12px] border border-[var(--line)] bg-[var(--sand)] p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <div>
                         <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-stone-500">Studio Chat</p>
@@ -529,7 +529,7 @@ export default function ProductView({ product }: { product: Product }) {
                           const isAdmin = message.sender_type === 'admin';
                           return (
                             <div key={message.id || `${message.sender_type}-${index}`} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                              <div className={`max-w-[82%] rounded-2xl px-4 py-3 ${isAdmin ? 'bg-stone-100 text-stone-800' : 'bg-stone-900 text-white'}`}>
+                              <div className={`max-w-[82%] rounded-[12px] px-4 py-3 ${isAdmin ? 'bg-[var(--sand)] text-stone-800' : 'bg-[var(--ink)] text-white'}`}>
                                 <p className={`mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${isAdmin ? 'text-stone-500' : 'text-stone-300'}`}>
                                   {isAdmin ? message.sender_name || 'Kvastram Studio' : 'You'}
                                 </p>
@@ -540,7 +540,7 @@ export default function ProductView({ product }: { product: Product }) {
                         })}
                         {studioTyping && (
                           <div className="flex justify-start">
-                            <div className="rounded-2xl bg-stone-100 px-4 py-3 text-[13px] text-stone-500">
+                            <div className="rounded-[12px] bg-[var(--sand)] px-4 py-3 text-[13px] text-stone-500">
                               Studio is typing...
                             </div>
                           </div>
@@ -555,14 +555,14 @@ export default function ProductView({ product }: { product: Product }) {
                       rows={3}
                       value={studioReply}
                       onChange={(event) => handleStudioReplyChange(event.target.value)}
-                      className="w-full resize-none rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] text-stone-900 outline-none transition focus:border-stone-900"
+                      className="w-full resize-none rounded-[12px] border border-[var(--line)] bg-white px-4 py-3 text-[14px] text-stone-900 outline-none transition focus:border-[var(--ink)]"
                       placeholder="Write a follow-up message..."
                     />
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                       <button
                         type="submit"
                         disabled={studioReplySending}
-                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-stone-900 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+                        className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[12px] bg-[var(--ink)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[var(--sienna-dark)] disabled:cursor-not-allowed disabled:bg-stone-300"
                       >
                         <MessageCircle size={15} />
                         {studioReplySending ? 'Sending' : 'Send Message'}
@@ -572,7 +572,7 @@ export default function ProductView({ product }: { product: Product }) {
                   </form>
 
                   {inquiryMessage && (
-                    <p className={`rounded-2xl px-4 py-3 text-[13px] ${inquiryMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                    <p className={`rounded-[12px] px-4 py-3 text-[13px] ${inquiryMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                       {inquiryMessage.text}
                     </p>
                   )}
@@ -591,10 +591,10 @@ export default function ProductView({ product }: { product: Product }) {
                         key={item.value}
                         type="button"
                         onClick={() => setInquiryType(item.value as InquiryType)}
-                        className={`rounded-full border px-4 py-2 text-[12px] font-medium transition ${
+                        className={`rounded-full border px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] transition ${
                           inquiryType === item.value
-                            ? 'border-stone-900 bg-stone-900 text-white'
-                            : 'border-stone-200 bg-white text-stone-700'
+                            ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
+                            : 'border-[var(--line)] bg-white text-stone-700'
                         }`}
                       >
                         {item.label}
@@ -609,7 +609,7 @@ export default function ProductView({ product }: { product: Product }) {
                         required
                         value={inquiryForm.customer_name}
                         onChange={(event) => setInquiryForm((prev) => ({ ...prev, customer_name: event.target.value }))}
-                        className="min-h-12 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                        className="min-h-12 w-full rounded-[12px] border border-[var(--line)] bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-[var(--ink)]"
                         placeholder="Your name"
                       />
                     </label>
@@ -619,7 +619,7 @@ export default function ProductView({ product }: { product: Product }) {
                         type="email"
                         value={inquiryForm.email}
                         onChange={(event) => setInquiryForm((prev) => ({ ...prev, email: event.target.value }))}
-                        className="min-h-12 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                        className="min-h-12 w-full rounded-[12px] border border-[var(--line)] bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-[var(--ink)]"
                         placeholder="you@example.com"
                       />
                     </label>
@@ -628,14 +628,14 @@ export default function ProductView({ product }: { product: Product }) {
                       <input
                         value={inquiryForm.phone}
                         onChange={(event) => setInquiryForm((prev) => ({ ...prev, phone: event.target.value }))}
-                        className="min-h-12 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                        className="min-h-12 w-full rounded-[12px] border border-[var(--line)] bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-[var(--ink)]"
                         placeholder="+91 98765 43210"
                       />
                     </label>
                   </div>
 
                   {inquiryType === 'custom_size' && (
-                    <div className="grid gap-3 rounded-2xl bg-white p-4 sm:grid-cols-2">
+                    <div className="grid gap-3 rounded-[12px] border border-[var(--line)] bg-[var(--sand)] p-4 sm:grid-cols-2">
                       {[
                         ['height', 'Height'],
                         ['bust', 'Bust / Chest'],
@@ -648,7 +648,7 @@ export default function ProductView({ product }: { product: Product }) {
                           <input
                             value={inquiryForm[key as keyof typeof inquiryForm]}
                             onChange={(event) => setInquiryForm((prev) => ({ ...prev, [key]: event.target.value }))}
-                            className="min-h-11 w-full rounded-xl border border-stone-200 px-3 py-2 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                            className="min-h-11 w-full rounded-[10px] border border-[var(--line)] px-3 py-2 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-[var(--ink)]"
                             placeholder="Optional"
                           />
                         </label>
@@ -664,7 +664,7 @@ export default function ProductView({ product }: { product: Product }) {
                       rows={4}
                       value={inquiryForm.message}
                       onChange={(event) => setInquiryForm((prev) => ({ ...prev, message: event.target.value }))}
-                      className="w-full resize-none rounded-2xl border border-stone-200 bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-stone-900"
+                      className="w-full resize-none rounded-[12px] border border-[var(--line)] bg-white px-4 py-3 text-[14px] normal-case tracking-normal text-stone-900 outline-none transition focus:border-[var(--ink)]"
                       placeholder="Tell us what you need help with."
                     />
                   </label>
@@ -673,7 +673,7 @@ export default function ProductView({ product }: { product: Product }) {
                     <button
                       type="submit"
                       disabled={inquirySubmitting}
-                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-stone-900 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[12px] bg-[var(--ink)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[var(--sienna-dark)] disabled:cursor-not-allowed disabled:bg-stone-300"
                     >
                       <MessageCircle size={15} />
                       {inquirySubmitting ? 'Sending' : 'Send Inquiry'}
@@ -682,7 +682,7 @@ export default function ProductView({ product }: { product: Product }) {
                   </div>
 
                   {inquiryMessage && (
-                    <p className={`rounded-2xl px-4 py-3 text-[13px] ${inquiryMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                    <p className={`rounded-[12px] px-4 py-3 text-[13px] ${inquiryMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
                       {inquiryMessage.text}
                     </p>
                   )}
@@ -690,7 +690,7 @@ export default function ProductView({ product }: { product: Product }) {
               )}
             </section>
 
-            <section className="space-y-6 rounded-[28px] border border-stone-200 bg-white p-4 md:p-6">
+            <section className="space-y-6 rounded-[12px] border border-[var(--line)] bg-white p-4 md:p-6">
               {hasStructuredOptions &&
                 product.options?.map((option: ProductOption) => {
                   const isColor = option.title.toLowerCase() === 'color' || option.title.toLowerCase() === 'colour';
@@ -706,7 +706,7 @@ export default function ProductView({ product }: { product: Product }) {
                           return isColor ? (
                             <button key={value.value} type="button" onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))} className={`h-12 w-12 rounded-full border-2 transition ${isSelected ? 'scale-105 border-stone-900 ring-4 ring-stone-200' : 'border-stone-200'}`} style={{ backgroundColor: getColorHex(value.value) }} aria-label={value.value} />
                           ) : (
-                            <button key={value.value} type="button" onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))} className={`min-h-12 rounded-2xl border px-4 text-[13px] font-medium transition ${isSelected ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-700'}`}>{value.value}</button>
+                            <button key={value.value} type="button" onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))} className={`min-h-12 rounded-full border px-4 text-[13px] font-medium transition ${isSelected ? 'border-[var(--ink)] bg-[var(--ink)] text-white' : 'border-[var(--line)] bg-white text-stone-700'}`}>{value.value}</button>
                           );
                         })}
                       </div>
@@ -721,7 +721,7 @@ export default function ProductView({ product }: { product: Product }) {
                     {product.variants.map((variant: ProductVariant) => {
                       const isSelected = selectedVariant?.id === variant.id;
                       return (
-                        <button key={variant.id} type="button" onClick={() => setSelectedVariantId(variant.id)} className={`min-h-12 rounded-2xl border px-4 text-[13px] font-medium transition ${isSelected ? 'border-stone-900 bg-stone-900 text-white' : 'border-stone-200 bg-white text-stone-700'}`}>{variant.title}</button>
+                        <button key={variant.id} type="button" onClick={() => setSelectedVariantId(variant.id)} className={`min-h-12 rounded-full border px-4 text-[13px] font-medium transition ${isSelected ? 'border-[var(--ink)] bg-[var(--ink)] text-white' : 'border-[var(--line)] bg-white text-stone-700'}`}>{variant.title}</button>
                       );
                     })}
                   </div>
@@ -737,22 +737,22 @@ export default function ProductView({ product }: { product: Product }) {
                   </div>
                 )}
                 <div className="flex items-center gap-4">
-                  <div className="flex h-14 w-[120px] items-center justify-between border border-stone-200 px-4">
+                  <div className="flex h-14 w-[120px] items-center justify-between rounded-[12px] border border-[var(--line)] bg-[var(--sand)] px-4">
                     <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity"><Minus size={14} /></button>
                     <span aria-live="polite">{quantity}</span>
                     <button type="button" onClick={() => quantity < currentInventory && setQuantity(quantity + 1)} disabled={currentInventory <= quantity} aria-label="Increase quantity" className="disabled:opacity-30"><Plus size={14} /></button>
                   </div>
-                  <button id="add-to-cart-btn" type="button" onClick={handleAddToCart} disabled={!selectedVariant || addedToCart || outOfStock} className={`min-h-12 flex-1 rounded-full px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] transition ${addedToCart ? 'bg-green-700 text-white' : outOfStock ? 'cursor-not-allowed bg-stone-300 text-stone-600' : 'bg-stone-900 text-white hover:bg-stone-800'}`}>{outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag' : 'Add to Bag'}</button>
+                  <button id="add-to-cart-btn" type="button" onClick={handleAddToCart} disabled={!selectedVariant || addedToCart || outOfStock} className={`min-h-12 flex-1 rounded-[12px] px-6 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] transition ${addedToCart ? 'bg-green-700 text-white' : outOfStock ? 'cursor-not-allowed bg-stone-300 text-stone-600' : 'bg-[var(--ink)] text-white hover:bg-[var(--sienna-dark)]'}`}>{outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag' : 'Add to Bag'}</button>
                 </div>
                 <div className="flex items-center gap-4">
-                  <WishlistButton productId={product.id} title={product.title} price={selectedVariant?.prices?.[0]?.amount || 0} currency={currentRegion?.currency_code?.toUpperCase() || 'USD'} thumbnail={product.thumbnail || undefined} handle={product.handle || product.id} variantId={selectedVariant?.id} showLabel className="rounded-full border border-stone-200 px-4" />
+                  <WishlistButton productId={product.id} title={product.title} price={selectedVariant?.prices?.[0]?.amount || 0} currency={currentRegion?.currency_code?.toUpperCase() || 'USD'} thumbnail={product.thumbnail || undefined} handle={product.handle || product.id} variantId={selectedVariant?.id} showLabel className="rounded-full border border-[var(--line)] px-4" />
                   <ShareButtons title={product.title} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
                 </div>
                 <a
                   href={`https://wa.me/message/kvastram?text=${encodeURIComponent(`Hi, I'm interested in: ${product.title} — ${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-full border border-[#25D366] bg-white py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
+                  className="flex w-full items-center justify-center gap-2 rounded-[12px] border border-[#25D366] bg-white py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
                 >
                   <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden="true">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -783,7 +783,7 @@ export default function ProductView({ product }: { product: Product }) {
                     <BackInStock productId={product.id} variantId={selectedVariant.id} productTitle={product.title} />
                   </div>
                 )}
-                <div className="space-y-2 bg-stone-50 p-4">
+                <div className="space-y-2 rounded-[12px] border border-[var(--line)] bg-[var(--sand)] p-4">
                   <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-stone-900">Shipping from Jaipur, India</p>
                   <p className="text-[15px] font-[300] leading-[1.7] text-stone-600">Estimated delivery: <span className="font-medium text-stone-900">{deliveryWindow || '10–18 business days'}</span>.</p>
                   <p className="text-[12px] text-stone-400">Free worldwide shipping on orders over $75. Tracked courier, signature on delivery.</p>
@@ -791,7 +791,7 @@ export default function ProductView({ product }: { product: Product }) {
               </div>
             </section>
 
-            <section className="rounded-[28px] border border-stone-200 bg-white p-4 md:p-6">
+            <section className="rounded-[12px] border border-[var(--line)] bg-white p-4 md:p-6">
               {accordions.map((accordion) => (
                 <div key={accordion.key} className="border-b border-stone-100 last:border-b-0">
                   <button type="button" onClick={() => setActiveAccordion((prev) => (prev === accordion.key ? null : accordion.key))} className="flex w-full items-center justify-between py-5 text-left" aria-expanded={activeAccordion === accordion.key}>
@@ -848,12 +848,12 @@ export default function ProductView({ product }: { product: Product }) {
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} sizeGuide={product.size_guide} />
 
       {/* Sticky ATC: leaves clear room for the mobile bottom nav on small screens */}
-      <div className={`fixed bottom-20 left-0 right-0 z-40 flex items-center gap-3 border-t border-stone-200 bg-white px-4 py-3 shadow-2xl transition-transform duration-300 md:bottom-0 md:hidden ${showStickyATC ? 'translate-y-0' : 'translate-y-full'}`} aria-hidden={!showStickyATC}>
+      <div className={`fixed bottom-20 left-0 right-0 z-40 flex items-center gap-3 border-t border-[var(--line)] bg-[rgba(252,248,243,0.97)] px-4 py-3 shadow-2xl backdrop-blur-md transition-transform duration-300 md:bottom-0 md:hidden ${showStickyATC ? 'translate-y-0' : 'translate-y-full'}`} aria-hidden={!showStickyATC}>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">{product.title}</p>
           <p className="text-[14px] font-medium text-stone-900">{formattedPrice}</p>
         </div>
-        <button type="button" onClick={handleAddToCart} disabled={!selectedVariant || addedToCart || outOfStock} className={`min-h-12 whitespace-nowrap rounded-full px-6 py-3 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors ${addedToCart ? 'bg-green-600 text-white' : outOfStock ? 'cursor-not-allowed bg-stone-300 text-stone-600' : 'bg-stone-900 text-white hover:bg-stone-800'}`}>{outOfStock ? 'Sold Out' : addedToCart ? 'Added' : 'Add to Bag'}</button>
+        <button type="button" onClick={handleAddToCart} disabled={!selectedVariant || addedToCart || outOfStock} className={`min-h-12 whitespace-nowrap rounded-[12px] px-6 py-3 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors ${addedToCart ? 'bg-green-600 text-white' : outOfStock ? 'cursor-not-allowed bg-stone-300 text-stone-600' : 'bg-[var(--ink)] text-white hover:bg-[var(--sienna-dark)]'}`}>{outOfStock ? 'Sold Out' : addedToCart ? 'Added' : 'Add to Bag'}</button>
       </div>
     </div>
   );
