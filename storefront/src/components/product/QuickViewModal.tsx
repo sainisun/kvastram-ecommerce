@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { X, ShoppingBag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
@@ -36,32 +35,32 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [reviewSummary, setReviewSummary] = useState<{ rating: number; count: number } | null>(null);
+  const [reviewAvg, setReviewAvg] = useState<number | null>(null);
+  const [reviewCount, setReviewCount] = useState(0);
   const { addItem } = useCart();
   const { formatPrice } = useCurrency();
   const addedTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // Reset when product changes
   useEffect(() => {
     setSelectedVariant(product.variants?.[0]);
     setImgIndex(0);
     setAdded(false);
     setError(null);
-    setReviewSummary(null);
+    setReviewAvg(null);
+    setReviewCount(0);
   }, [product.id]);
 
   useEffect(() => () => { if (addedTimer.current) clearTimeout(addedTimer.current); }, []);
 
-  // Fetch reviews
   useEffect(() => {
     if (!isOpen || !product.id) return;
     let cancelled = false;
     api.getReviews(product.id).then((data) => {
       if (cancelled) return;
-      const list = data.reviews || [];
+      const list: Array<{ rating: number }> = data.reviews || [];
       if (list.length > 0) {
-        const avg = list.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / list.length;
-        setReviewSummary({ rating: avg, count: list.length });
+        setReviewAvg(list.reduce((s, r) => s + r.rating, 0) / list.length);
+        setReviewCount(list.length);
       }
     }).catch(() => {});
     return () => { cancelled = true; };
@@ -69,7 +68,11 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   // Lock scroll
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden';
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
@@ -85,16 +88,19 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onClose]);
 
-  const images: string[] = (
-    product.images?.length
-      ? product.images.map((img) => (typeof img === 'string' ? img : img.url)).filter(Boolean)
-      : []
-  ) as string[];
+  // Build images array
+  const images: string[] = [];
+  if (product.images?.length) {
+    for (const img of product.images) {
+      const url = typeof img === 'string' ? img : img.url;
+      if (url) images.push(url);
+    }
+  }
   if (!images.length && product.thumbnail) images.push(product.thumbnail);
 
-  const variantPrices = selectedVariant?.prices || [];
   const priceObj =
-    variantPrices.find((p) => p.currency_code?.toLowerCase() === 'inr') || variantPrices[0];
+    (selectedVariant?.prices || []).find((p) => p.currency_code?.toLowerCase() === 'inr') ||
+    selectedVariant?.prices?.[0];
   const price = priceObj?.amount || 0;
 
   async function handleAddToCart() {
@@ -112,7 +118,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
       });
       setAdded(true);
       if (addedTimer.current) clearTimeout(addedTimer.current);
-      addedTimer.current = setTimeout(() => setAdded(false), 2000);
+      addedTimer.current = setTimeout(() => setAdded(false), 2200);
     } catch {
       setError('Could not add to cart. Please try again.');
     } finally {
@@ -120,179 +126,177 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     }
   }
 
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+    /*
+     * Overlay: fixed inset-0, high z-index, dark backdrop.
+     * Clicking the overlay (but not the modal box) closes.
+     * Modal box: centered, max-width 760px, max-height 90vh, scrollable.
+     * Matches prototype .modal-overlay + .modal-box pattern exactly.
+     */
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.55)' }}
+      onClick={onClose}
+    >
+      <div
+        className="relative flex w-full max-w-[760px] flex-col overflow-hidden rounded-[var(--radius-lg)] bg-white shadow-2xl"
+        style={{ maxHeight: '90dvh' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--line)] px-5 py-4">
+          <h3 className="line-clamp-1 font-heading text-[18px] font-semibold text-[var(--ink)]">
+            {product.title}
+          </h3>
+          <button
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-          />
-
-          {/* Modal — bottom sheet on mobile, centered card on desktop */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
-            className="fixed inset-x-0 bottom-0 z-50 max-h-[92dvh] overflow-y-auto rounded-t-2xl bg-white shadow-2xl md:inset-4 md:bottom-auto md:top-1/2 md:max-h-[85dvh] md:-translate-y-1/2 md:rounded-2xl lg:inset-x-auto lg:left-1/2 lg:w-full lg:max-w-[900px] lg:-translate-x-1/2"
+            aria-label="Close"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--sienna)]"
           >
-            {/* Header */}
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--line)] bg-white px-5 py-4">
-              <h2 className="line-clamp-1 font-heading text-[17px] font-semibold text-[var(--ink)]">
-                {product.title}
-              </h2>
-              <button
-                onClick={onClose}
-                className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--ink)]"
-                aria-label="Close"
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="overflow-y-auto">
+          {/* Two-column layout: image | details (stacked on mobile, side-by-side on md+) */}
+          <div className="grid gap-0 md:grid-cols-2">
+
+            {/* Image */}
+            <div className="relative min-h-[260px] bg-[var(--soft)] md:min-h-[360px]">
+              {images.length > 0 ? (
+                <>
+                  <div className="relative h-full min-h-[260px] w-full md:min-h-[360px]">
+                    <OptimizedImage
+                      src={images[imgIndex]}
+                      alt={product.title}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setImgIndex((p) => Math.max(0, p - 1))}
+                        disabled={imgIndex === 0}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
+                      >
+                        <ChevronLeft size={16} />
+                      </button>
+                      <button
+                        onClick={() => setImgIndex((p) => Math.min(images.length - 1, p + 1))}
+                        disabled={imgIndex === images.length - 1}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
+                      >
+                        <ChevronRight size={16} />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+                        {images.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setImgIndex(i)}
+                            className={`h-1.5 rounded-full transition-all ${i === imgIndex ? 'w-4 bg-[var(--ink)]' : 'w-1.5 bg-[var(--ink)]/25'}`}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <div className="flex min-h-[260px] w-full items-center justify-center font-heading text-[64px] text-[var(--muted)] md:min-h-[360px]">
+                  {product.title.charAt(0)}
+                </div>
+              )}
+            </div>
+
+            {/* Details */}
+            <div className="flex flex-col gap-5 p-6 md:p-8">
+
+              {/* Stars */}
+              {reviewAvg !== null && (
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px] text-[var(--sienna)]">
+                    {'★'.repeat(Math.round(reviewAvg))}{'☆'.repeat(5 - Math.round(reviewAvg))}
+                  </span>
+                  <span className="text-[12px] text-[var(--muted)]">
+                    {reviewAvg.toFixed(1)} ({reviewCount} reviews)
+                  </span>
+                </div>
+              )}
+
+              {/* Price — sienna, bold, large — matches prototype .pd-price */}
+              <div
+                className="font-heading font-black text-[var(--sienna)]"
+                style={{ fontSize: 28 }}
               >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Body — stacked on mobile, side-by-side on desktop */}
-            <div className="md:grid md:grid-cols-[1fr,1fr]">
-
-              {/* Image column */}
-              <div className="relative bg-[var(--soft)]">
-                {images.length > 0 ? (
-                  <>
-                    <div className="relative aspect-square w-full">
-                      <OptimizedImage
-                        src={images[imgIndex] || ''}
-                        alt={product.title}
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                    </div>
-                    {images.length > 1 && (
-                      <>
-                        <button
-                          onClick={() => setImgIndex((p) => Math.max(0, p - 1))}
-                          disabled={imgIndex === 0}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
-                        >
-                          <ChevronLeft size={18} />
-                        </button>
-                        <button
-                          onClick={() => setImgIndex((p) => Math.min(images.length - 1, p + 1))}
-                          disabled={imgIndex === images.length - 1}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
-                        >
-                          <ChevronRight size={18} />
-                        </button>
-                        {/* Dot indicators */}
-                        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
-                          {images.map((_, i) => (
-                            <button
-                              key={i}
-                              onClick={() => setImgIndex(i)}
-                              className={`h-1.5 rounded-full transition-all ${i === imgIndex ? 'w-4 bg-[var(--ink)]' : 'w-1.5 bg-[var(--ink)]/30'}`}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <div className="flex aspect-square w-full items-center justify-center text-[var(--muted)]">
-                    No image
-                  </div>
-                )}
+                {price ? formatPrice(price) : '—'}
               </div>
 
-              {/* Details column */}
-              <div className="flex flex-col gap-5 p-6 md:overflow-y-auto md:p-8">
+              {/* Description */}
+              {product.description ? (
+                <p className="line-clamp-4 text-[14px] leading-[1.75] text-[var(--muted)]">
+                  {product.description}
+                </p>
+              ) : null}
 
-                {/* Rating */}
-                {reviewSummary && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-semibold text-[var(--sienna)]">
-                      {'★'.repeat(Math.round(reviewSummary.rating))}{'☆'.repeat(5 - Math.round(reviewSummary.rating))}
-                    </span>
-                    <span className="text-[12px] text-[var(--muted)]">
-                      {reviewSummary.rating.toFixed(1)} ({reviewSummary.count})
-                    </span>
-                  </div>
-                )}
-
-                {/* Price */}
+              {/* Variants */}
+              {product.variants && product.variants.length > 1 && (
                 <div>
-                  <p className="font-heading text-[28px] font-semibold text-[var(--ink)]">
-                    {price ? formatPrice(price) : '—'}
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+                    Variant
                   </p>
-                </div>
-
-                {/* Description */}
-                {product.description && (
-                  <p className="line-clamp-4 text-[14px] leading-[1.75] text-[var(--muted)]">
-                    {product.description}
-                  </p>
-                )}
-
-                {/* Variants */}
-                {product.variants && product.variants.length > 1 && (
-                  <div>
-                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-                      Variant
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {product.variants.map((v) => (
-                        <button
-                          key={v.id}
-                          onClick={() => setSelectedVariant(v)}
-                          className={`rounded-md border px-3 py-1.5 text-[13px] transition-colors ${
-                            selectedVariant?.id === v.id
-                              ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
-                              : 'border-[var(--line)] text-[var(--ink)] hover:border-[var(--ink)]'
-                          }`}
-                        >
-                          {v.title}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.map((v) => (
+                      <button
+                        key={v.id}
+                        onClick={() => setSelectedVariant(v)}
+                        className={`rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                          selectedVariant?.id === v.id
+                            ? 'border-[var(--sienna)] bg-[var(--sienna)]/8 text-[var(--sienna)]'
+                            : 'border-[var(--line)] text-[var(--ink)] hover:border-[var(--sienna)] hover:text-[var(--sienna)]'
+                        }`}
+                      >
+                        {v.title}
+                      </button>
+                    ))}
                   </div>
-                )}
-
-                {/* Error */}
-                {error && (
-                  <p className="text-[13px] text-[var(--danger)]">{error}</p>
-                )}
-
-                {/* CTAs */}
-                <div className="mt-auto flex flex-col gap-3 pt-2">
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={adding}
-                    className={`kv-btn w-full justify-center gap-2 ${added ? 'bg-green-600 border-green-600 text-white hover:bg-green-700' : 'kv-btn-primary'} disabled:opacity-50`}
-                  >
-                    {adding ? (
-                      <span className="animate-spin">↻</span>
-                    ) : added ? (
-                      <><Check size={16} /> Added to Cart</>
-                    ) : (
-                      <><ShoppingBag size={16} /> Add to Cart</>
-                    )}
-                  </button>
-                  <Link
-                    href={`/products/${product.handle || product.id}`}
-                    onClick={onClose}
-                    className="kv-btn kv-btn-outline w-full justify-center"
-                  >
-                    View Full Details
-                  </Link>
                 </div>
+              )}
+
+              {error && (
+                <p className="text-[13px] text-red-600">{error}</p>
+              )}
+
+              {/* CTAs */}
+              <div className="mt-auto flex flex-col gap-3 pt-2">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={adding}
+                  className={`kv-btn w-full justify-center gap-2 ${added ? 'border-green-600 bg-green-600 text-white' : 'kv-btn-primary'} disabled:opacity-50`}
+                >
+                  {adding ? (
+                    <span className="inline-block animate-spin">↻</span>
+                  ) : added ? (
+                    <><Check size={16} /> Added to Cart</>
+                  ) : (
+                    <><ShoppingBag size={16} /> Add to Cart</>
+                  )}
+                </button>
+                <Link
+                  href={`/products/${product.handle || product.id}`}
+                  onClick={onClose}
+                  className="kv-btn kv-btn-outline w-full justify-center"
+                >
+                  View Full Details
+                </Link>
               </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
