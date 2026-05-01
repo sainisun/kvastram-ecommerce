@@ -279,22 +279,22 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                     <Play size={34} fill="white" className="text-white" />
                   </div>
                   <div className="relative z-[3]">
-                    <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/75">
+                    <div className="text-[9px] font-black uppercase tracking-[0.14em] text-white/75 sm:text-[11px]">
                       {reel.category || 'Watch & Buy'}
                     </div>
-                    <div className="reel-title mt-1 line-clamp-2 text-[17px] leading-tight text-white">
+                    <div className="reel-title mt-0.5 line-clamp-2 leading-tight text-white">
                       {reel.product_name}
                     </div>
                   </div>
                 </div>
                 <div className="reel-info">
-                  <div className="reel-title line-clamp-2 text-[16px] leading-snug text-[var(--ink)]">
+                  <div className="reel-title line-clamp-2 leading-snug text-[var(--ink)]">
                     {reel.product_name}
                   </div>
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <p className="kv-sub text-sm">{reel.price ? `₹${reel.price}` : 'Tap to view and shop'}</p>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-[var(--muted)]">
-                      <Eye size={11} />
+                  <div className="mt-1 flex items-center justify-between gap-1">
+                    <p className="kv-sub text-[11px] sm:text-sm">{reel.price ? `₹${reel.price}` : 'Tap to shop'}</p>
+                    <span className="inline-flex items-center gap-0.5 text-[9px] text-[var(--muted)] sm:text-[10px]">
+                      <Eye size={10} />
                       {reel.view_count || 0}
                     </span>
                   </div>

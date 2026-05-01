@@ -47,19 +47,19 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                     <Play size={34} fill="white" className="text-white" />
                   </div>
                   <div className="relative z-[3]">
-                    <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/75">
+                    <div className="text-[9px] font-black uppercase tracking-[0.14em] text-white/75 sm:text-[11px]">
                       Watch &amp; Buy
                     </div>
-                    <div className="mt-1 line-clamp-2 font-heading text-[17px] font-bold leading-tight">
+                    <div className="reel-title mt-0.5 line-clamp-2 leading-tight text-white">
                       {reel.product_name}
                     </div>
                   </div>
                 </div>
                 <div className="reel-info">
-                  <h3 className="reel-title line-clamp-2 text-[16px] leading-snug text-[var(--ink)]">
+                  <h3 className="reel-title line-clamp-2 leading-snug text-[var(--ink)]">
                     {reel.product_name}
                   </h3>
-                  <p className="kv-sub mt-1 text-sm">Tap to view and shop</p>
+                  <p className="kv-sub mt-1 text-[11px] sm:text-sm">Tap to view and shop</p>
                 </div>
               </Link>
             ))}
