@@ -145,10 +145,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
           {/* Two-col on md+, single col on mobile — prototype: .quickview-layout */}
           <div className="quickview-layout">
 
-            {/* Image — prototype: .quickview-img */}
-            <div className="quickview-img" style={{ padding: 0, overflow: 'hidden' }}>
+            {/* Image — aspect-ratio box so height is always defined */}
+            <div className="quickview-img" style={{ padding: 0 }}>
               {images.length > 0 ? (
-                <div style={{ position: 'relative', width: '100%', minHeight: 280 }}>
+                <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5' }}>
                   <OptimizedImage
                     src={images[0]}
                     alt={product.title}
@@ -158,9 +158,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                   />
                 </div>
               ) : (
-                <span style={{ fontSize: 86, fontFamily: 'Georgia, serif' }}>
-                  {product.title.charAt(0)}
-                </span>
+                <span>{product.title.charAt(0)}</span>
               )}
             </div>
 
