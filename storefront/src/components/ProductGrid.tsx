@@ -362,14 +362,16 @@ function ProductGrid({
   });
 
   return (
-    <div className={gridClassName}>
-      {renderedItems}
+    <>
+      <div className={gridClassName}>
+        {renderedItems}
+      </div>
       <QuickViewModal
         product={quickViewProduct || ({} as Product)}
         isOpen={!!quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
       />
-    </div>
+    </>
   );
 }
 
