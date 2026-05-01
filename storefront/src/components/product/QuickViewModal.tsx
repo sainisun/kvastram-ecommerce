@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, ShoppingBag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { X, ShoppingBag, Check } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
@@ -32,7 +32,6 @@ interface QuickViewModalProps {
 
 export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps) {
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0]);
-  const [imgIndex, setImgIndex] = useState(0);
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +43,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   useEffect(() => {
     setSelectedVariant(product.variants?.[0]);
-    setImgIndex(0);
     setAdded(false);
     setError(null);
     setReviewAvg(null);
@@ -67,29 +65,19 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     return () => { cancelled = true; };
   }, [isOpen, product.id]);
 
-  // Lock scroll
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // Keyboard nav
   useEffect(() => {
     if (!isOpen) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft') setImgIndex((p) => Math.max(0, p - 1));
-      if (e.key === 'ArrowRight') setImgIndex((p) => Math.min(images.length - 1, p + 1));
-    }
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onClose]);
 
-  // Build images array
   const images: string[] = [];
   if (product.images?.length) {
     for (const img of product.images) {
@@ -129,114 +117,76 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   if (!isOpen) return null;
 
-  // createPortal renders directly into document.body, escaping any ancestor
-  // stacking context (e.g. Header's backdrop-blur-md creates one that would
-  // trap position:fixed children rendered inside the React tree).
+  // Renders into document.body via portal — escapes any ancestor stacking
+  // context (e.g. Header's backdrop-blur-md) so fixed positioning works correctly.
   return createPortal(
-    (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.55)' }}
+      className="modal-overlay open"
       onClick={onClose}
     >
       <div
-        className="relative flex w-full max-w-[760px] flex-col overflow-hidden rounded-[var(--radius-lg)] bg-white shadow-2xl"
-        style={{ maxHeight: '90dvh' }}
+        className="modal-box"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--line)] px-5 py-4">
-          <h3 className="line-clamp-1 font-heading text-[18px] font-semibold text-[var(--ink)]">
-            {product.title}
-          </h3>
+        <div className="modal-head">
+          <h3 className="serif line-clamp-1 text-[18px]">{product.title}</h3>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--sienna)]"
+            className="icon-btn"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* Scrollable body */}
-        <div className="overflow-y-auto">
-          {/* Two-column layout: image | details (stacked on mobile, side-by-side on md+) */}
-          <div className="grid gap-0 md:grid-cols-2">
+        {/* Scrollable body — prototype: .modal-body */}
+        <div className="modal-body">
+          {/* Two-col on md+, single col on mobile — prototype: .quickview-layout */}
+          <div className="quickview-layout">
 
-            {/* Image */}
-            <div className="relative min-h-[260px] bg-[var(--soft)] md:min-h-[360px]">
+            {/* Image — prototype: .quickview-img */}
+            <div className="quickview-img" style={{ padding: 0, overflow: 'hidden' }}>
               {images.length > 0 ? (
-                <>
-                  <div className="relative h-full min-h-[260px] w-full md:min-h-[360px]">
-                    <OptimizedImage
-                      src={images[imgIndex]}
-                      alt={product.title}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  </div>
-                  {images.length > 1 && (
-                    <>
-                      <button
-                        onClick={() => setImgIndex((p) => Math.max(0, p - 1))}
-                        disabled={imgIndex === 0}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
-                      >
-                        <ChevronLeft size={16} />
-                      </button>
-                      <button
-                        onClick={() => setImgIndex((p) => Math.min(images.length - 1, p + 1))}
-                        disabled={imgIndex === images.length - 1}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
-                      >
-                        <ChevronRight size={16} />
-                      </button>
-                      <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
-                        {images.map((_, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setImgIndex(i)}
-                            className={`h-1.5 rounded-full transition-all ${i === imgIndex ? 'w-4 bg-[var(--ink)]' : 'w-1.5 bg-[var(--ink)]/25'}`}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </>
-              ) : (
-                <div className="flex min-h-[260px] w-full items-center justify-center font-heading text-[64px] text-[var(--muted)] md:min-h-[360px]">
-                  {product.title.charAt(0)}
+                <div style={{ position: 'relative', width: '100%', minHeight: 280 }}>
+                  <OptimizedImage
+                    src={images[0]}
+                    alt={product.title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
                 </div>
+              ) : (
+                <span style={{ fontSize: 86, fontFamily: 'Georgia, serif' }}>
+                  {product.title.charAt(0)}
+                </span>
               )}
             </div>
 
             {/* Details */}
-            <div className="flex flex-col gap-5 p-6 md:p-8">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
               {/* Stars */}
               {reviewAvg !== null && (
-                <div className="flex items-center gap-2">
-                  <span className="text-[14px] text-[var(--sienna)]">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ color: '#f6ad55', fontSize: 15 }}>
                     {'★'.repeat(Math.round(reviewAvg))}{'☆'.repeat(5 - Math.round(reviewAvg))}
                   </span>
-                  <span className="text-[12px] text-[var(--muted)]">
-                    {reviewAvg.toFixed(1)} ({reviewCount} reviews)
+                  <span className="section-sub" style={{ fontSize: 12 }}>
+                    {reviewAvg.toFixed(1)} / 5 · {reviewCount} reviews
                   </span>
                 </div>
               )}
 
-              {/* Price — sienna, bold, large — matches prototype .pd-price */}
-              <div
-                className="font-heading font-black text-[var(--sienna)]"
-                style={{ fontSize: 28 }}
-              >
+              {/* Price */}
+              <div className="pd-price">
                 {price ? formatPrice(price) : '—'}
               </div>
 
               {/* Description */}
               {product.description ? (
-                <p className="line-clamp-4 text-[14px] leading-[1.75] text-[var(--muted)]">
+                <p className="section-sub" style={{ fontSize: 14, lineHeight: 1.75, WebkitLineClamp: 4, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {product.description}
                 </p>
               ) : null}
@@ -244,19 +194,13 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               {/* Variants */}
               {product.variants && product.variants.length > 1 && (
                 <div>
-                  <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-                    Variant
-                  </p>
-                  <div className="flex flex-wrap gap-2">
+                  <strong style={{ fontSize: 13 }}>Variant</strong>
+                  <div className="option-row">
                     {product.variants.map((v) => (
                       <button
                         key={v.id}
                         onClick={() => setSelectedVariant(v)}
-                        className={`rounded-md border px-3 py-1.5 text-[13px] font-medium transition-colors ${
-                          selectedVariant?.id === v.id
-                            ? 'border-[var(--sienna)] bg-[var(--sienna)]/8 text-[var(--sienna)]'
-                            : 'border-[var(--line)] text-[var(--ink)] hover:border-[var(--sienna)] hover:text-[var(--sienna)]'
-                        }`}
+                        className={`option-btn${selectedVariant?.id === v.id ? ' active' : ''}`}
                       >
                         {v.title}
                       </button>
@@ -266,22 +210,23 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               )}
 
               {error && (
-                <p className="text-[13px] text-red-600">{error}</p>
+                <p style={{ fontSize: 13, color: '#dc2626' }}>{error}</p>
               )}
 
-              {/* CTAs */}
-              <div className="mt-auto flex flex-col gap-3 pt-2">
+              {/* CTAs — prototype style */}
+              <div style={{ display: 'grid', gap: 10, marginTop: 'auto' }}>
                 <button
                   onClick={handleAddToCart}
                   disabled={adding}
-                  className={`kv-btn w-full justify-center gap-2 ${added ? 'border-green-600 bg-green-600 text-white' : 'kv-btn-primary'} disabled:opacity-50`}
+                  className={`kv-btn w-full justify-center ${added ? 'border-green-600 bg-green-600 text-white' : 'kv-btn-primary'}`}
+                  style={{ opacity: adding ? 0.6 : 1 }}
                 >
                   {adding ? (
-                    <span className="inline-block animate-spin">↻</span>
+                    <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>↻</span>
                   ) : added ? (
-                    <><Check size={16} /> Added to Cart</>
+                    <><Check size={15} />Added to Cart</>
                   ) : (
-                    <><ShoppingBag size={16} /> Add to Cart</>
+                    <><ShoppingBag size={15} />Add to Cart</>
                   )}
                 </button>
                 <Link
@@ -289,14 +234,14 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                   onClick={onClose}
                   className="kv-btn kv-btn-outline w-full justify-center"
                 >
-                  View Full Details
+                  Full Details
                 </Link>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    ), document.body
+    </div>,
+    document.body
   );
 }
