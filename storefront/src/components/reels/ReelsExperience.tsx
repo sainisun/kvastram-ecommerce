@@ -282,7 +282,8 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : null}
-                    <div className="play">
+                    <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <div className="play z-[2]">
                       <Play size={gridCols === 3 ? 22 : 28} fill="white" className="text-white drop-shadow-lg" />
                     </div>
                     <div className="relative z-[3]">

@@ -34,9 +34,6 @@ export async function CircularCategories() {
             <div className="kv-tag">Shop by category</div>
             <h2 className="kv-title">Craft-led discovery</h2>
           </div>
-          <p className="kv-sub max-w-xl">
-            These circular categories stay as-is from the Kvastram direction and map to real categories/tags.
-          </p>
         </div>
 
         {circles.length > 0 ? (

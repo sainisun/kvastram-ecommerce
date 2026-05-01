@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 
 const ARTISANS = [
   {
@@ -8,7 +7,7 @@ const ARTISANS = [
     region: 'Jaipur, Rajasthan',
     years: '22 years',
     initials: 'SD',
-    color: 'bg-amber-100',
+    color: 'bg-[var(--soft)]',
   },
   {
     name: 'Rekha Kumari',
@@ -16,7 +15,7 @@ const ARTISANS = [
     region: 'Sanganer, Rajasthan',
     years: '15 years',
     initials: 'RK',
-    color: 'bg-rose-100',
+    color: 'bg-[var(--soft)]',
   },
   {
     name: 'Champa Bai',
@@ -24,7 +23,7 @@ const ARTISANS = [
     region: 'Murshidabad, West Bengal',
     years: '30 years',
     initials: 'CB',
-    color: 'bg-emerald-100',
+    color: 'bg-[var(--soft)]',
   },
   {
     name: 'Geeta Sharma',
@@ -32,29 +31,21 @@ const ARTISANS = [
     region: 'Jaipur, Rajasthan',
     years: '18 years',
     initials: 'GS',
-    color: 'bg-indigo-100',
+    color: 'bg-[var(--soft)]',
   },
 ];
 
 export function ArtisanStrip() {
   return (
-    <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
-        <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end md:mb-12">
+    <section className="kv-section bg-[var(--cream)]">
+      <div className="kv-container">
+        <div className="kv-section-head mb-8 md:mb-12">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
-              The hands behind every piece
-            </div>
-            <h2 className="mt-3 font-heading text-[clamp(30px,3.5vw,48px)] font-medium leading-[0.97] tracking-[-0.03em] text-stone-950">
-              Meet our <em className="italic">artisans</em>
-            </h2>
+            <div className="kv-tag">The hands behind every piece</div>
+            <h2 className="kv-title">Meet our <em className="italic">artisans</em></h2>
           </div>
-          <Link
-            href="/about#artisans"
-            className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-700 transition-colors hover:text-stone-900"
-          >
+          <Link href="/about#artisans" className="kv-btn kv-btn-outline">
             All artisans
-            <ArrowRight size={13} />
           </Link>
         </div>
 
@@ -62,27 +53,26 @@ export function ArtisanStrip() {
           {ARTISANS.map((artisan) => (
             <div
               key={artisan.name}
-              className="group relative overflow-hidden bg-white p-6 transition-shadow hover:shadow-md"
+              className="group relative overflow-hidden rounded-[var(--radius-lg)] bg-white p-6 transition-shadow hover:shadow-md"
             >
-              {/* Avatar placeholder — replace with real photo via Cloudinary */}
               <div
-                className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-[15px] font-semibold text-stone-700`}
+                className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-[14px] font-semibold text-[var(--ink)]`}
               >
                 {artisan.initials}
               </div>
 
-              <p className="font-body text-[13px] font-semibold text-stone-900">
+              <p className="text-[13px] font-semibold text-[var(--ink)]">
                 {artisan.name}
               </p>
-              <p className="font-body mt-1 text-[12px] text-stone-500">
+              <p className="mt-1 text-[12px] text-[var(--muted)]">
                 {artisan.craft}
               </p>
-              <p className="font-body mt-1 text-[11px] uppercase tracking-[0.1em] text-stone-400">
+              <p className="mt-1 text-[11px] uppercase tracking-[0.1em] text-[var(--muted)]">
                 {artisan.region}
               </p>
 
-              <div className="mt-4 border-t border-stone-100 pt-4">
-                <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-amber-700">
+              <div className="mt-4 border-t border-[var(--line)] pt-4">
+                <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--sienna)]">
                   {artisan.years} of craft
                 </span>
               </div>
@@ -90,9 +80,9 @@ export function ArtisanStrip() {
           ))}
         </div>
 
-        <p className="mt-8 text-[13px] leading-7 text-stone-500">
+        <p className="mt-8 text-[13px] leading-7 text-[var(--muted)]">
           Every Kvastram piece is signed by the artisan who made it — their name is on the care label inside.{' '}
-          <Link href="/about" className="underline underline-offset-4 hover:text-stone-800">
+          <Link href="/about" className="text-[var(--ink)] underline underline-offset-4 hover:text-[var(--sienna)]">
             Learn about our makers →
           </Link>
         </p>

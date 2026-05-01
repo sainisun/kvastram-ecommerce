@@ -13,7 +13,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
   const displayed = reels.slice(0, 4);
 
   return (
-    <section className="kv-section bg-white">
+    <section className="kv-section bg-[var(--cream)]">
       <div className="kv-container">
         <div className="kv-section-head">
           <div>
@@ -43,7 +43,8 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                       className="object-cover"
                     />
                   ) : null}
-                  <div className="play">
+                  <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="play z-[2]">
                     <Play size={34} fill="white" className="text-white" />
                   </div>
                   <div className="relative z-[3]">

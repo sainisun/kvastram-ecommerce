@@ -22,7 +22,7 @@ export function BestSellers({ products }: BestSellersProps) {
             <h2 className="kv-title">Customer-loved pieces</h2>
           </div>
           <Link href="/bestsellers" className="kv-btn">
-            View Edit
+            View All
           </Link>
         </div>
         <ProductGrid initialProducts={displayed} />

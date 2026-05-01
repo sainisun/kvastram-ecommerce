@@ -335,7 +335,7 @@ export function Header() {
                                   >
                                     <Link
                                       href={`/collections/${cat.slug}`}
-                                      className="font-body -ml-2 block border-l-2 border-transparent py-1.5 pl-2 text-[15px] font-medium text-stone-800 transition-colors hover:border-amber-500 hover:text-black"
+                                      className="font-body -ml-2 block border-l-2 border-transparent py-1.5 pl-2 text-[15px] font-medium text-[var(--ink)] transition-colors hover:border-[var(--sienna)] hover:text-[var(--sienna)]"
                                       onClick={closeShopMenu}
                                       onMouseEnter={() =>
                                         setHoveredCategory(cat.id)
@@ -373,7 +373,7 @@ export function Header() {
                               <div className="h-px bg-stone-100 my-3" />
                               <Link
                                 href="/products"
-                                className="font-body flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.1em] text-stone-900 transition-colors hover:text-amber-700"
+                                className="font-body flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.1em] text-[var(--ink)] transition-colors hover:text-[var(--sienna)]"
                                 onClick={closeShopMenu}
                               >
                                 Shop All Products →
@@ -439,7 +439,7 @@ export function Header() {
                                   <Link
                                     key={qLink.label}
                                     href={qLink.url}
-                                    className={`font-body block text-[15px] transition-colors ${qLink.highlight ? 'font-medium text-amber-600 hover:text-amber-700' : 'font-[300] text-stone-700 hover:text-black'}`}
+                                    className={`font-body block text-[15px] transition-colors ${qLink.highlight ? 'font-medium text-[var(--sienna)] hover:text-[var(--sienna-dark)]' : 'font-[300] text-[var(--muted)] hover:text-[var(--ink)]'}`}
                                     onClick={closeShopMenu}
                                   >
                                     {qLink.label}

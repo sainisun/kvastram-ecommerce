@@ -8,7 +8,7 @@ interface TestimonialsProps {
 function renderStars(rating?: number) {
   const filled = Math.max(0, Math.min(5, Math.round(rating || 5)));
   return Array.from({ length: 5 }, (_, index) => (
-    <span key={index} className={index < filled ? 'text-stone-950' : 'text-stone-300'}>
+    <span key={index} className={index < filled ? 'text-[var(--sienna)]' : 'text-[var(--line)]'}>
       ★
     </span>
   ));
@@ -45,31 +45,27 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
         ];
 
   return (
-    <section className="bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <section className="kv-section bg-white">
+      <div className="kv-container">
         <div className="mb-8 text-center md:mb-12">
-          <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
-            Love shared by customers
-          </div>
-          <h2 className="mt-3 font-heading text-[clamp(34px,4vw,54px)] font-normal leading-[0.96] tracking-[-0.02em] text-stone-950">
-            What they&apos;re <em>saying</em>
-          </h2>
+          <div className="kv-tag">Love shared by customers</div>
+          <h2 className="kv-title mt-3">What they&apos;re <em>saying</em></h2>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
           {displayed.map((testimonial) => (
-            <article key={testimonial.id} className="bg-[#f8f1eb] p-8 text-center sm:p-10">
+            <article key={testimonial.id} className="rounded-[var(--radius-lg)] bg-[var(--soft)] p-8 text-center sm:p-10">
               <div className="flex items-center justify-center gap-1 text-[14px]">
                 {renderStars(testimonial.rating)}
               </div>
 
-              <p className="font-body mt-6 min-h-[108px] text-[17px] italic leading-[1.7] text-stone-800 sm:text-[18px]">
-                “{testimonial.content}”
+              <p className="font-body mt-6 min-h-[108px] text-[16px] italic leading-[1.7] text-[var(--ink)] sm:text-[17px]">
+                &ldquo;{testimonial.content}&rdquo;
               </p>
 
               <div className="mt-6 flex items-center justify-center gap-3">
                 {testimonial.avatar_url ? (
-                  <div className="relative h-11 w-11 overflow-hidden rounded-full bg-stone-100">
+                  <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[var(--soft)]">
                     <OptimizedImage
                       src={testimonial.avatar_url}
                       alt={testimonial.name}
@@ -80,11 +76,11 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
                   </div>
                 ) : null}
                 <div className="text-left">
-                  <p className="font-body text-[14px] font-semibold uppercase tracking-[0.08em] text-stone-900">
+                  <p className="font-body text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--ink)]">
                     {testimonial.name}
                   </p>
                   {testimonial.location ? (
-                    <p className="font-body text-[12px] uppercase tracking-[0.14em] text-stone-500">
+                    <p className="font-body text-[11px] uppercase tracking-[0.14em] text-[var(--muted)]">
                       {testimonial.location}
                     </p>
                   ) : null}

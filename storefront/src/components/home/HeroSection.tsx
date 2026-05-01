@@ -86,7 +86,7 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
   return (
     <section
       className="hero relative block overflow-hidden"
-      style={{ minHeight: 'min(70svh, 620px)', background: '#5c2a12' }}
+      style={{ minHeight: 'min(70svh, 620px)', background: 'var(--sienna-dark)' }}
     >
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div

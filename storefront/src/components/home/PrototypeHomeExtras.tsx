@@ -41,7 +41,6 @@ function isSaleProduct(product: Product) {
 function SectionHead({
   eyebrow,
   title,
-  copy,
   action,
 }: {
   eyebrow: string;
@@ -50,21 +49,13 @@ function SectionHead({
   action?: { label: string; href: string };
 }) {
   return (
-    <div className="mb-8 grid gap-4 md:mb-12 md:grid-cols-[1fr_auto] md:items-end">
+    <div className="kv-section-head mb-8 md:mb-12">
       <div>
-        <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
-          {eyebrow}
-        </div>
-        <h2 className="mt-3 font-heading text-[clamp(34px,4vw,54px)] font-medium leading-[0.96] text-stone-950">
-          {title}
-        </h2>
+        <div className="kv-tag">{eyebrow}</div>
+        <h2 className="kv-title">{title}</h2>
       </div>
-      {copy ? <p className="max-w-xl text-[14px] leading-7 text-stone-600">{copy}</p> : null}
       {action ? (
-        <Link
-          href={action.href}
-          className="inline-flex items-center justify-center rounded-[8px] border border-stone-200 bg-white px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-900 transition-colors hover:border-stone-900"
-        >
+        <Link href={action.href} className="kv-btn kv-btn-outline">
           {action.label}
         </Link>
       ) : null}
@@ -74,13 +65,8 @@ function SectionHead({
 
 function EmptyMerchState({ label }: { label: string }) {
   return (
-    <div className="rounded-[12px] border border-dashed border-stone-300 bg-white/70 px-6 py-10 text-center">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-500">
-        {label}
-      </p>
-      <p className="mx-auto mt-2 max-w-md text-[14px] leading-6 text-stone-600">
-        Add active homepage merchandising slots in admin to publish this section.
-      </p>
+    <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white px-6 py-10 text-center">
+      <p className="kv-tag">{label}</p>
     </div>
   );
 }
@@ -153,11 +139,11 @@ function ProductTile({ product }: { product: Product }) {
       </Link>
       <Link
         href={`/products/${product.handle || product.id}`}
-        className="mt-4 line-clamp-2 block text-[15px] leading-6 text-stone-950"
+        className="mt-4 line-clamp-2 block text-[15px] leading-6 text-[var(--ink)]"
       >
         {product.title}
       </Link>
-      <p className="mt-1 text-[12px] uppercase tracking-[0.16em] text-stone-500">
+      <p className="mt-1 text-[12px] uppercase tracking-[0.16em] text-[var(--muted)]">
         {price ? formatPrice(price) : 'Contact for price'}
       </p>
     </article>
@@ -219,12 +205,11 @@ export function PrototypeHomeExtras({
 
   return (
     <>
-      <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <section className="kv-section bg-[var(--cream)]">
+        <div className="kv-container">
           <SectionHead
-            eyebrow="Homepage merchandising"
+            eyebrow="Limited editions"
             title="Seasonal edits"
-            copy="Published from active homepage merchandising slots."
           />
           {seasonalSlots.length > 0 ? (
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -238,12 +223,11 @@ export function PrototypeHomeExtras({
         </div>
       </section>
 
-      <section className="bg-white py-12 md:py-16 lg:py-24">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <section className="kv-section bg-white">
+        <div className="kv-container">
           <SectionHead
-            eyebrow="Live catalog"
+            eyebrow="Curated for you"
             title="Pieces we love"
-            copy="Filled only from live newest, bestseller, and sale products."
           />
           {tabProducts.length > 0 ? (
             <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8">
@@ -259,12 +243,11 @@ export function PrototypeHomeExtras({
 
       {children}
 
-      <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <section className="kv-section bg-[var(--cream)]">
+        <div className="kv-container">
           <SectionHead
-            eyebrow="Live taxonomy"
+            eyebrow="Craft &amp; material"
             title="Shop by fabric"
-            copy="Uses active merchandising slots first, then live backend tags."
           />
           {fabricCards.length > 0 ? (
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -278,12 +261,11 @@ export function PrototypeHomeExtras({
         </div>
       </section>
 
-      <section className="bg-[#f8f1eb] py-12 md:py-16 lg:py-24">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <section className="kv-section bg-[var(--cream)]">
+        <div className="kv-container">
           <SectionHead
-            eyebrow="Live collections"
+            eyebrow="Dress for the moment"
             title="Occasion finder"
-            copy="Uses active merchandising slots first, then live collections."
           />
           {occasionCards.length > 0 ? (
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
