@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ShoppingBag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
@@ -128,13 +129,11 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   if (!isOpen) return null;
 
-  return (
-    /*
-     * Overlay: fixed inset-0, high z-index, dark backdrop.
-     * Clicking the overlay (but not the modal box) closes.
-     * Modal box: centered, max-width 760px, max-height 90vh, scrollable.
-     * Matches prototype .modal-overlay + .modal-box pattern exactly.
-     */
+  // createPortal renders directly into document.body, escaping any ancestor
+  // stacking context (e.g. Header's backdrop-blur-md creates one that would
+  // trap position:fixed children rendered inside the React tree).
+  return createPortal(
+    (
     <div
       className="fixed inset-0 z-[200] flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.55)' }}
@@ -298,5 +297,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
         </div>
       </div>
     </div>
+    ), document.body
   );
 }

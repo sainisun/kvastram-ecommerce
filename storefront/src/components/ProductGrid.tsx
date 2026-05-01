@@ -239,6 +239,7 @@ function ProductGrid({
             type="button"
             onClick={(event) => {
               event.preventDefault();
+              event.stopPropagation();
               setQuickViewProduct(product);
             }}
             className="quick-view-btn"
