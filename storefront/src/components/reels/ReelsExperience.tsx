@@ -257,14 +257,15 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
             ))}
           </div>
         ) : (
-           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+          <div className="reels-grid">
             {visibleReels.map((reel, idx) => (
-                <button
-                  key={reel.id}
-                  type="button"
-                  onClick={() => openReel(idx)}
-                  className="group relative aspect-[3/5] overflow-hidden rounded-[12px] bg-stone-200 text-left shadow-sm"
-                >
+              <button
+                key={reel.id}
+                type="button"
+                onClick={() => openReel(idx)}
+                className="reel-card group"
+              >
+                <div className="reel-media">
                   {reel.thumbnail_url ? (
                     <OptimizedImage
                       src={reel.thumbnail_url}
@@ -273,33 +274,34 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#a85d3a] via-[#c4956a] to-[#d8b295]" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                  <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-black/35 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
-                    <Play size={12} fill="currentColor" />
+                  ) : null}
+                  <div className="play">
+                    <Play size={34} fill="white" className="text-white" />
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
-                    <p className="text-[11px] font-black uppercase tracking-[0.14em] text-white/72">
-                      {reel.category || 'watch & buy'}
-                    </p>
-                    <p className="mt-1 line-clamp-2 font-heading text-[18px] font-bold leading-tight text-white sm:text-[20px]">
-                      {reel.product_name}
-                    </p>
-                    <div className="mt-2 flex items-center justify-between gap-2 text-white/90">
-                      <span className="text-[11px] font-semibold sm:text-sm">
-                        {reel.price}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-[9px] uppercase tracking-[0.12em] sm:text-[10px]">
-                        <Eye size={12} />
-                        {reel.view_count || 0}
-                      </span>
-                      </div>
+                  <div className="relative z-[3]">
+                    <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/75">
+                      {reel.category || 'Watch & Buy'}
                     </div>
-                </button>
+                    <div className="reel-title mt-1 line-clamp-2 text-[17px] leading-tight text-white">
+                      {reel.product_name}
+                    </div>
+                  </div>
+                </div>
+                <div className="reel-info">
+                  <div className="reel-title line-clamp-2 text-[16px] leading-snug text-[var(--ink)]">
+                    {reel.product_name}
+                  </div>
+                  <div className="mt-1 flex items-center justify-between gap-2">
+                    <p className="kv-sub text-sm">{reel.price ? `₹${reel.price}` : 'Tap to view and shop'}</p>
+                    <span className="inline-flex items-center gap-1 text-[10px] text-[var(--muted)]">
+                      <Eye size={11} />
+                      {reel.view_count || 0}
+                    </span>
+                  </div>
+                </div>
+              </button>
             ))}
-           </div>
+          </div>
         )}
 
           {!loading && visibleReels.length === 0 ? (
