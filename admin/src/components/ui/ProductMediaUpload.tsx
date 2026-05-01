@@ -246,7 +246,7 @@ function SortableMediaCard({
               Poster
               <input
                 type="file"
-                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                accept=".jpg,.jpeg,.png,.webp,.heic,.heif,image/jpeg,image/png,image/webp,image/heic,image/heif"
                 className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
@@ -481,6 +481,8 @@ export default function ProductMediaUpload({
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/png': ['.png'],
       'image/webp': ['.webp'],
+      'image/heic': ['.heic'],
+      'image/heif': ['.heif'],
       'video/mp4': ['.mp4'],
       'video/quicktime': ['.mov'],
     },
