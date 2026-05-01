@@ -105,7 +105,12 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           return;
         }
 
-        setActiveReelIndex(null);
+        // Auto-open first reel on mobile (Instagram-like experience)
+        if (nextReels.length > 0 && window.innerWidth < 768) {
+          setActiveReelIndex(0);
+        } else {
+          setActiveReelIndex(null);
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -534,13 +539,35 @@ function ReelPlayerModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-center bg-black">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+      {/* Desktop side nav */}
+      <button
+        type="button"
+        onClick={handleSwipeDown}
+        disabled={currentIndex === 0}
+        aria-label="Previous reel"
+        className="absolute left-6 top-1/2 z-50 hidden -translate-y-1/2 rounded-full border border-white/20 bg-white/10 p-3 text-white backdrop-blur-md transition hover:bg-white/25 disabled:opacity-20 md:flex"
+      >
+        <ChevronLeft size={28} className="rotate-90" />
+      </button>
+      <button
+        type="button"
+        onClick={handleSwipeUp}
+        disabled={currentIndex === currentReels.length - 1}
+        aria-label="Next reel"
+        className="absolute right-6 top-1/2 z-50 hidden -translate-y-1/2 rounded-full border border-white/20 bg-white/10 p-3 text-white backdrop-blur-md transition hover:bg-white/25 disabled:opacity-20 md:flex"
+      >
+        <ChevronLeft size={28} className="-rotate-90" />
+      </button>
+
+      {/* Player */}
       <div
-        className="relative flex h-[100dvh] w-full max-w-[430px] flex-col justify-between overflow-hidden bg-zinc-950"
+        className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-black md:h-[92dvh] md:max-w-[390px] md:rounded-2xl"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        {/* Video — object-contain so nothing gets cut */}
         <video
           key={currentReel.id}
           ref={videoRef}
@@ -550,121 +577,113 @@ function ReelPlayerModal({
           loop
           playsInline
           autoPlay
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-contain"
         />
 
-        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+        {/* Gradients */}
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/60 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
 
-        <div className="relative z-10 flex items-start justify-between gap-4 p-4 pt-5">
+        {/* Progress dots */}
+        {currentReels.length > 1 && (
+          <div className="absolute inset-x-0 top-3 z-20 flex justify-center gap-1 px-4">
+            {currentReels.map((_, i) => (
+              <div
+                key={i}
+                className={`h-[3px] flex-1 max-w-[32px] rounded-full transition-all duration-300 ${
+                  i === currentIndex ? 'bg-white' : 'bg-white/30'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Top bar */}
+        <div className="relative z-10 flex items-center gap-3 p-4 pt-8">
           <button
             type="button"
             onClick={onClose}
-            aria-label="Back to reels"
-            className="mt-1 rounded-full bg-black/25 p-2 text-white backdrop-blur-md transition hover:bg-black/45"
+            aria-label="Close"
+            className="rounded-full bg-black/30 p-2 text-white backdrop-blur-md transition hover:bg-black/50"
           >
-            <ArrowLeft size={24} />
+            <ArrowLeft size={22} />
           </button>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/70">
-              Reels
-            </p>
-            <p className="mt-1 truncate text-lg font-semibold text-white">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">Watch &amp; Buy</p>
+            <p className="mt-0.5 truncate text-[15px] font-semibold text-white">
               {currentReel.product_name}
             </p>
           </div>
+          <span className="text-[11px] font-medium text-white/50">{currentIndex + 1}/{currentReels.length}</span>
         </div>
 
-        <div className="relative z-10 flex items-end justify-between gap-4 px-4 pb-6">
-          <div className="flex-1 space-y-4">
-            <Link
-              href={currentReel.link_url}
-              className="flex items-center gap-3 rounded-[22px] border border-white/20 bg-white/10 p-3 backdrop-blur-xl"
-            >
-              <div className="relative h-14 w-12 shrink-0 overflow-hidden rounded-lg bg-white/10">
-                <OptimizedImage
-                  src={currentReel.thumbnail_url}
-                  alt={currentReel.product_name}
-                  fill
-                  sizes="48px"
-                  className="object-cover"
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-white">
-                  {currentReel.product_name}
-                </p>
-                <p className="mt-1 text-xs font-medium text-white/80">
-                  {currentReel.price}
-                </p>
-              </div>
-              <span className="rounded-full bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-black">
-                Buy Now
-              </span>
-            </Link>
-          </div>
-
-          <div className="flex shrink-0 flex-col items-center gap-5 pb-2">
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="rounded-full bg-black/25 p-2.5 text-white backdrop-blur-md">
-                <Eye size={24} />
-              </div>
-              <span className="text-xs font-semibold text-white">
-                {currentReel.view_count || 0}
-              </span>
+        {/* Bottom — product card + actions */}
+        <div className="relative z-10 mt-auto flex items-end gap-3 px-4 pb-8">
+          {/* Product card */}
+          <Link
+            href={currentReel.link_url}
+            className="flex flex-1 items-center gap-3 rounded-2xl border border-white/15 bg-black/40 p-3 backdrop-blur-xl transition hover:bg-black/55"
+          >
+            <div className="relative h-14 w-11 shrink-0 overflow-hidden rounded-xl bg-white/10">
+              <OptimizedImage
+                src={currentReel.thumbnail_url}
+                alt={currentReel.product_name}
+                fill
+                sizes="44px"
+                className="object-cover"
+              />
             </div>
+            <div className="min-w-0 flex-1">
+              <p className="line-clamp-1 text-[13px] font-semibold text-white">
+                {currentReel.product_name}
+              </p>
+              <p className="mt-0.5 text-[12px] font-medium text-white/70">
+                ₹{currentReel.price}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full bg-white px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-black">
+              Buy Now
+            </span>
+          </Link>
 
-            <button
-              type="button"
-              onClick={() => setLiked(!liked)}
-              className="flex flex-col items-center gap-1.5"
-            >
-              <div className="rounded-full bg-black/25 p-2.5 text-white backdrop-blur-md">
+          {/* Action buttons */}
+          <div className="flex shrink-0 flex-col items-center gap-4">
+            <button type="button" onClick={() => setLiked(!liked)} className="flex flex-col items-center gap-1">
+              <div className="rounded-full bg-black/30 p-2.5 backdrop-blur-md">
                 <Heart
-                  size={24}
+                  size={22}
                   fill={liked ? '#ef4444' : 'transparent'}
                   color={liked ? '#ef4444' : 'white'}
-                  className={
-                    liked ? 'scale-110 transition-transform' : 'transition-transform'
-                  }
+                  className="transition-transform"
                 />
               </div>
-              <span className="text-xs font-semibold text-white">
-                {liked ? 'Liked' : 'Like'}
-              </span>
+              <span className="text-[10px] font-semibold text-white/80">{liked ? 'Liked' : 'Like'}</span>
             </button>
 
-            <button
-              type="button"
-              onClick={handleShare}
-              className="flex flex-col items-center gap-1.5"
-            >
-              <div className="rounded-full bg-black/25 p-2.5 text-white backdrop-blur-md">
-                <Share2 size={24} />
+            <button type="button" onClick={handleShare} className="flex flex-col items-center gap-1">
+              <div className="rounded-full bg-black/30 p-2.5 backdrop-blur-md">
+                <Share2 size={22} className="text-white" />
               </div>
-              <span className="text-xs font-semibold text-white">Share</span>
+              <span className="text-[10px] font-semibold text-white/80">Share</span>
             </button>
+
+            <div className="flex flex-col items-center gap-1">
+              <div className="rounded-full bg-black/30 p-2.5 backdrop-blur-md">
+                <Eye size={22} className="text-white" />
+              </div>
+              <span className="text-[10px] font-semibold text-white/80">{currentReel.view_count || 0}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="fixed right-8 top-1/2 z-50 hidden -translate-y-1/2 flex-col gap-4 text-white sm:flex">
-        <button
-          type="button"
-          onClick={handleSwipeDown}
-          disabled={currentIndex === 0}
-          className="rounded-full border border-white/10 bg-white/10 p-3 backdrop-blur-md transition hover:bg-white/20 disabled:opacity-30"
-        >
-          <ChevronLeft size={24} className="rotate-90" />
-        </button>
-        <button
-          type="button"
-          onClick={handleSwipeUp}
-          disabled={currentIndex === currentReels.length - 1}
-          className="rounded-full border border-white/10 bg-white/10 p-3 backdrop-blur-md transition hover:bg-white/20 disabled:opacity-30"
-        >
-          <ChevronLeft size={24} className="-rotate-90" />
-        </button>
+        {/* Swipe hint on mobile (shows once) */}
+        {currentReels.length > 1 && currentIndex === 0 && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-28 z-10 flex justify-center md:hidden">
+            <p className="rounded-full bg-black/30 px-3 py-1 text-[10px] text-white/60 backdrop-blur-sm">
+              Swipe up for next
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
