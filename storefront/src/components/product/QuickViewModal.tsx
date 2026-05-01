@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, ShoppingBag, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ShoppingBag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { useCurrency } from '@/context/currency-context';
-import { StarRating } from '@/components/ui/StarRating';
 import { api } from '@/lib/api';
 
 interface QuickViewProduct {
@@ -16,16 +15,11 @@ interface QuickViewProduct {
   handle: string;
   description?: string;
   thumbnail?: string | null;
-  images?: Array<{ url: string }> | string[];
-  rating?: number;
-  review_count?: number;
+  images?: Array<{ url: string | null }> | string[];
   variants?: Array<{
     id: string;
     title: string;
-    prices?: Array<{
-      amount: number;
-      currency_code: string;
-    }>;
+    prices?: Array<{ amount: number; currency_code: string }>;
     inventory_quantity?: number;
   }>;
 }
@@ -36,150 +30,95 @@ interface QuickViewModalProps {
   onClose: () => void;
 }
 
-export function QuickViewModal({
-  product,
-  isOpen,
-  onClose,
-}: QuickViewModalProps) {
+export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps) {
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+  const [imgIndex, setImgIndex] = useState(0);
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [reviews, setReviews] = useState<{
-    rating: number;
-    review_count: number;
-  }>({ rating: 0, review_count: 0 });
+  const [reviewSummary, setReviewSummary] = useState<{ rating: number; count: number } | null>(null);
   const { addItem } = useCart();
   const { formatPrice } = useCurrency();
-  const addedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const addedTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // Reset state when product changes
+  // Reset when product changes
   useEffect(() => {
-    setSelectedVariant(product.variants?.[0] ?? undefined);
-    setCurrentImageIndex(0);
-    setQuantity(1);
-    setAdding(false);
+    setSelectedVariant(product.variants?.[0]);
+    setImgIndex(0);
     setAdded(false);
     setError(null);
-    setReviews({ rating: 0, review_count: 0 });
-  }, [product]);
+    setReviewSummary(null);
+  }, [product.id]);
 
-  // Cleanup timeout on unmount
+  useEffect(() => () => { if (addedTimer.current) clearTimeout(addedTimer.current); }, []);
+
+  // Fetch reviews
   useEffect(() => {
-    return () => {
-      if (addedTimeoutRef.current) {
-        clearTimeout(addedTimeoutRef.current);
+    if (!isOpen || !product.id) return;
+    let cancelled = false;
+    api.getReviews(product.id).then((data) => {
+      if (cancelled) return;
+      const list = data.reviews || [];
+      if (list.length > 0) {
+        const avg = list.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / list.length;
+        setReviewSummary({ rating: avg, count: list.length });
       }
-    };
-  }, []);
-
-  // Fetch reviews summary
-  useEffect(() => {
-    if (isOpen && product.id) {
-      let cancelled = false;
-      api
-        .getReviews(product.id)
-        .then((data) => {
-          if (cancelled) return;
-          const reviewList = data.reviews || [];
-          if (reviewList.length > 0) {
-            const avgRating =
-              reviewList.reduce(
-                (acc: number, r: { rating: number }) => acc + r.rating,
-                0
-              ) / reviewList.length;
-            setReviews({ rating: avgRating, review_count: reviewList.length });
-          }
-        })
-        .catch((err) => {
-          if (cancelled) return;
-          console.error('Failed to fetch reviews:', err);
-        });
-      return () => {
-        cancelled = true;
-      };
-    }
+    }).catch(() => {});
+    return () => { cancelled = true; };
   }, [isOpen, product.id]);
 
-  const images = product.images?.length
-    ? product.images.map((img: string | { url?: string | null }) =>
-        typeof img === 'string' ? img : img.url
-      )
-    : ([product.thumbnail].filter(Boolean) as string[]);
-  const variantPrices = selectedVariant?.prices || [];
-  const inrPriceObj =
-    variantPrices.find((p) => p.currency_code?.toLowerCase() === 'inr') ||
-    variantPrices[0];
-  const displayPrice = inrPriceObj?.amount || 0;
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % (images.length || 1));
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex(
-      (prev) => (prev - 1 + (images.length || 1)) % (images.length || 1)
-    );
-  };
-
-  // Handle keyboard navigation
+  // Lock scroll
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
-
-      if (e.key === 'Escape') {
-        onClose();
-      } else if (e.key === 'ArrowLeft') {
-        prevImage();
-      } else if (e.key === 'ArrowRight') {
-        nextImage();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, prevImage, nextImage]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    if (isOpen) document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  const handleAddToCart = async () => {
+  // Keyboard nav
+  useEffect(() => {
+    if (!isOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') setImgIndex((p) => Math.max(0, p - 1));
+      if (e.key === 'ArrowRight') setImgIndex((p) => Math.min(images.length - 1, p + 1));
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
+  const images: string[] = (
+    product.images?.length
+      ? product.images.map((img) => (typeof img === 'string' ? img : img.url)).filter(Boolean)
+      : []
+  ) as string[];
+  if (!images.length && product.thumbnail) images.push(product.thumbnail);
+
+  const variantPrices = selectedVariant?.prices || [];
+  const priceObj =
+    variantPrices.find((p) => p.currency_code?.toLowerCase() === 'inr') || variantPrices[0];
+  const price = priceObj?.amount || 0;
+
+  async function handleAddToCart() {
     setAdding(true);
     setError(null);
     try {
       await addItem({
         id: selectedVariant?.id || product.id,
         variantId: selectedVariant?.id || product.id,
-        quantity,
+        quantity: 1,
         title: product.title,
-        price: displayPrice,
+        price,
         currency: 'INR',
         thumbnail: product.thumbnail || undefined,
       });
       setAdded(true);
-      // Clear previous timeout if exists
-      if (addedTimeoutRef.current) {
-        clearTimeout(addedTimeoutRef.current);
-      }
-      addedTimeoutRef.current = setTimeout(() => setAdded(false), 2000);
-    } catch (err) {
-      console.error('Failed to add to cart:', err);
-      setError('Failed to add to cart. Please try again.');
+      if (addedTimer.current) clearTimeout(addedTimer.current);
+      addedTimer.current = setTimeout(() => setAdded(false), 2000);
+    } catch {
+      setError('Could not add to cart. Please try again.');
     } finally {
       setAdding(false);
     }
-  };
+  }
 
   return (
     <AnimatePresence>
@@ -191,205 +130,163 @@ export function QuickViewModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
           />
 
-          {/* Modal */}
+          {/* Modal — bottom sheet on mobile, centered card on desktop */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-4 md:inset-10 lg:inset-16 bg-white z-50 overflow-hidden rounded-lg shadow-2xl"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+            className="fixed inset-x-0 bottom-0 z-50 max-h-[92dvh] overflow-y-auto rounded-t-2xl bg-white shadow-2xl md:inset-4 md:bottom-auto md:top-1/2 md:max-h-[85dvh] md:-translate-y-1/2 md:rounded-2xl lg:inset-x-auto lg:left-1/2 lg:w-full lg:max-w-[900px] lg:-translate-x-1/2"
           >
-            <div className="h-full flex flex-col">
-              {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
-                <h2 className="text-lg font-serif text-stone-900 truncate">
-                  {product.title}
-                </h2>
-                <button
-                  onClick={onClose}
-                  className="p-2 min-h-[44px] min-w-[44px] hover:bg-stone-100 rounded-full transition-colors flex items-center justify-center"
-                  aria-label="Close modal"
-                >
-                  <X size={20} className="text-stone-600" />
-                </button>
-              </div>
+            {/* Header */}
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--line)] bg-white px-5 py-4">
+              <h2 className="line-clamp-1 font-heading text-[17px] font-semibold text-[var(--ink)]">
+                {product.title}
+              </h2>
+              <button
+                onClick={onClose}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--ink)]"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-              {/* Content */}
-              <div className="flex-1 overflow-auto">
-                <div className="grid md:grid-cols-2 h-full">
-                  {/* Image Gallery */}
-                  <div className="relative bg-stone-50 p-6 flex items-center justify-center">
-                    {images.length > 0 ? (
-                      <>
-                        <div className="relative w-full max-w-md aspect-square">
-                          <OptimizedImage
-                            src={
-                              images[currentImageIndex] ||
-                              '/images/placeholder.jpg'
-                            }
-                            alt={product.title}
-                            fill
-                            className="object-cover rounded-lg"
-                            priority
-                          />
-                        </div>
+            {/* Body — stacked on mobile, side-by-side on desktop */}
+            <div className="md:grid md:grid-cols-[1fr,1fr]">
 
-                        {/* Navigation Arrows */}
-                        {images.length > 1 && (
-                          <>
-                            <button
-                              onClick={prevImage}
-                              className="absolute left-4 p-2 min-h-[44px] min-w-[44px] bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors flex items-center justify-center"
-                              aria-label="Previous image"
-                            >
-                              <ChevronLeft size={20} />
-                            </button>
-                            <button
-                              onClick={nextImage}
-                              className="absolute right-4 p-2 min-h-[44px] min-w-[44px] bg-white/80 hover:bg-white rounded-full shadow-lg transition-colors flex items-center justify-center"
-                              aria-label="Next image"
-                            >
-                              <ChevronRight size={20} />
-                            </button>
-                          </>
-                        )}
-
-                        {/* Image Counter */}
-                        {images.length > 1 && (
-                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                            {currentImageIndex + 1} / {images.length}
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="w-full max-w-md aspect-square bg-stone-200 rounded-lg flex items-center justify-center">
-                        <span className="text-stone-400">No image</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product Details */}
-                  <div className="p-6 md:p-8 flex flex-col">
-                    {/* Rating */}
-                    {reviews.review_count > 0 && (
-                      <div className="flex items-center gap-2 mb-4">
-                        <StarRating rating={reviews.rating} size={16} />
-                        <span className="text-sm text-stone-500">
-                          {reviews.rating.toFixed(1)} ({reviews.review_count}{' '}
-                          reviews)
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Price */}
-                    <div className="mb-6">
-                      <span className="text-2xl font-serif text-stone-900">
-                        {displayPrice ? formatPrice(displayPrice) : ''}
-                      </span>
+              {/* Image column */}
+              <div className="relative bg-[var(--soft)]">
+                {images.length > 0 ? (
+                  <>
+                    <div className="relative aspect-square w-full">
+                      <OptimizedImage
+                        src={images[imgIndex] || ''}
+                        alt={product.title}
+                        fill
+                        className="object-cover"
+                        priority
+                      />
                     </div>
-
-                    {/* Description */}
-                    {product.description && (
-                      <p className="text-stone-600 text-sm leading-relaxed mb-6 line-clamp-4">
-                        {product.description}
-                      </p>
-                    )}
-
-                    {/* Variants */}
-                    {product.variants && product.variants.length > 1 && (
-                      <div className="mb-6">
-                        <label className="text-xs uppercase font-bold text-stone-500 mb-2 block">
-                          Select Variant
-                        </label>
-                        <div className="flex flex-wrap gap-2">
-                          {product.variants.map((variant) => (
+                    {images.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => setImgIndex((p) => Math.max(0, p - 1))}
+                          disabled={imgIndex === 0}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
+                        >
+                          <ChevronLeft size={18} />
+                        </button>
+                        <button
+                          onClick={() => setImgIndex((p) => Math.min(images.length - 1, p + 1))}
+                          disabled={imgIndex === images.length - 1}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
+                        >
+                          <ChevronRight size={18} />
+                        </button>
+                        {/* Dot indicators */}
+                        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+                          {images.map((_, i) => (
                             <button
-                              key={variant.id}
-                              onClick={() => setSelectedVariant(variant)}
-                              className={`px-4 py-2 border text-sm transition-colors ${
-                                selectedVariant?.id === variant.id
-                                  ? 'border-stone-900 bg-stone-900 text-white'
-                                  : 'border-stone-300 hover:border-stone-500'
-                              }`}
-                            >
-                              {variant.title}
-                            </button>
+                              key={i}
+                              onClick={() => setImgIndex(i)}
+                              className={`h-1.5 rounded-full transition-all ${i === imgIndex ? 'w-4 bg-[var(--ink)]' : 'w-1.5 bg-[var(--ink)]/30'}`}
+                            />
                           ))}
                         </div>
-                      </div>
+                      </>
                     )}
+                  </>
+                ) : (
+                  <div className="flex aspect-square w-full items-center justify-center text-[var(--muted)]">
+                    No image
+                  </div>
+                )}
+              </div>
 
-                    {/* Quantity */}
-                    <div className="mb-6">
-                      <label className="text-xs uppercase font-bold text-stone-500 mb-2 block">
-                        Quantity
-                      </label>
-                      <div className="flex items-center border border-stone-300 w-fit">
+              {/* Details column */}
+              <div className="flex flex-col gap-5 p-6 md:overflow-y-auto md:p-8">
+
+                {/* Rating */}
+                {reviewSummary && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-semibold text-[var(--sienna)]">
+                      {'★'.repeat(Math.round(reviewSummary.rating))}{'☆'.repeat(5 - Math.round(reviewSummary.rating))}
+                    </span>
+                    <span className="text-[12px] text-[var(--muted)]">
+                      {reviewSummary.rating.toFixed(1)} ({reviewSummary.count})
+                    </span>
+                  </div>
+                )}
+
+                {/* Price */}
+                <div>
+                  <p className="font-heading text-[28px] font-semibold text-[var(--ink)]">
+                    {price ? formatPrice(price) : '—'}
+                  </p>
+                </div>
+
+                {/* Description */}
+                {product.description && (
+                  <p className="line-clamp-4 text-[14px] leading-[1.75] text-[var(--muted)]">
+                    {product.description}
+                  </p>
+                )}
+
+                {/* Variants */}
+                {product.variants && product.variants.length > 1 && (
+                  <div>
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+                      Variant
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {product.variants.map((v) => (
                         <button
-                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="px-4 py-2 hover:bg-stone-100 transition-colors"
+                          key={v.id}
+                          onClick={() => setSelectedVariant(v)}
+                          className={`rounded-md border px-3 py-1.5 text-[13px] transition-colors ${
+                            selectedVariant?.id === v.id
+                              ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
+                              : 'border-[var(--line)] text-[var(--ink)] hover:border-[var(--ink)]'
+                          }`}
                         >
-                          -
+                          {v.title}
                         </button>
-                        <span className="px-4 py-2 min-w-[3rem] text-center">
-                          {quantity}
-                        </span>
-                        <button
-                          onClick={() => setQuantity(quantity + 1)}
-                          className="px-4 py-2 hover:bg-stone-100 transition-colors"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="space-y-3 mt-auto">
-                      <button
-                        onClick={handleAddToCart}
-                        disabled={adding}
-                        className={`w-full py-4 font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 ${
-                          added
-                            ? 'bg-green-600 text-white'
-                            : 'bg-stone-900 text-white hover:bg-stone-800'
-                        } disabled:opacity-50`}
-                      >
-                        {adding ? (
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 1,
-                              repeat: Infinity,
-                              ease: 'linear',
-                            }}
-                          >
-                            <ShoppingBag size={18} />
-                          </motion.div>
-                        ) : added ? (
-                          <>
-                            <Star size={18} />
-                            Added to Cart
-                          </>
-                        ) : (
-                          <>
-                            <ShoppingBag size={18} />
-                            Add to Cart
-                          </>
-                        )}
-                      </button>
-
-                      <Link
-                        href={`/products/${product.handle}`}
-                        onClick={onClose}
-                        className="w-full py-4 border border-stone-300 text-stone-700 font-bold uppercase tracking-widest text-xs hover:border-stone-900 hover:text-stone-900 transition-colors text-center block"
-                      >
-                        View Full Details
-                      </Link>
+                      ))}
                     </div>
                   </div>
+                )}
+
+                {/* Error */}
+                {error && (
+                  <p className="text-[13px] text-[var(--danger)]">{error}</p>
+                )}
+
+                {/* CTAs */}
+                <div className="mt-auto flex flex-col gap-3 pt-2">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={adding}
+                    className={`kv-btn w-full justify-center gap-2 ${added ? 'bg-green-600 border-green-600 text-white hover:bg-green-700' : 'kv-btn-primary'} disabled:opacity-50`}
+                  >
+                    {adding ? (
+                      <span className="animate-spin">↻</span>
+                    ) : added ? (
+                      <><Check size={16} /> Added to Cart</>
+                    ) : (
+                      <><ShoppingBag size={16} /> Add to Cart</>
+                    )}
+                  </button>
+                  <Link
+                    href={`/products/${product.handle || product.id}`}
+                    onClick={onClose}
+                    className="kv-btn kv-btn-outline w-full justify-center"
+                  >
+                    View Full Details
+                  </Link>
                 </div>
               </div>
             </div>
