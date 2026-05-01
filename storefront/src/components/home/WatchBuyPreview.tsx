@@ -30,7 +30,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
             {displayed.map((reel) => (
               <Link
                 key={reel.id}
-                href={`/reels?reel=${encodeURIComponent(reel.id)}`}
+                href="/reels"
                 className="reel-card"
               >
                 <div className="reel-media">
