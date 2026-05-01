@@ -2738,16 +2738,23 @@ a:active,
   color: white;
   font-size: 12px;
   font-weight: 900;
-  opacity: 0;
-  transform: translateY(6px);
+  opacity: 1;
+  transform: translateY(0);
   transition: .2s ease;
   cursor: pointer;
   z-index: 3;
 }
-.product-card:hover .quick-view-btn,
-.product-card:focus-within .quick-view-btn {
-  opacity: 1;
-  transform: translateY(0);
+/* Desktop: hide by default, show on hover for cleaner look */
+@media (hover: hover) and (pointer: fine) {
+  .quick-view-btn {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  .product-card:hover .quick-view-btn,
+  .product-card:focus-within .quick-view-btn {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ═══════════════════════════════════════════════════
