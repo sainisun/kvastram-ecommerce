@@ -55,7 +55,7 @@ export function registerCategoryTools(server: McpServer) {
     product_ids: z.array(z.string()).describe('Array of product UUIDs to assign'),
   }, async ({ category_id, product_ids }) => {
     const api = await createApiClient();
-    const { data } = await api.post(`/categories/${category_id}/products`, { product_ids });
+    const { data } = await api.put(`/categories/${category_id}/products`, { product_ids });
     return { content: [{ type: 'text', text: `Products assigned to category!\n\n${formatResponse(data)}` }] };
   });
 

@@ -46,7 +46,7 @@ export function registerCollectionTools(server: McpServer) {
     product_ids: z.array(z.string()).describe('Array of product UUIDs'),
   }, async ({ collection_id, product_ids }) => {
     const api = await createApiClient();
-    const { data } = await api.post(`/collections/${collection_id}/products`, { product_ids });
+    const { data } = await api.put(`/collections/${collection_id}/products`, { product_ids });
     return { content: [{ type: 'text', text: `Products assigned to collection!\n\n${formatResponse(data)}` }] };
   });
 }

@@ -31,7 +31,7 @@ export async function getAuthToken(): Promise<string> {
 
 export async function createApiClient(): Promise<AxiosInstance> {
   const token = await getAuthToken();
-  return axios.create({
+  const client = axios.create({
     baseURL: API_BASE,
     headers: {
       Authorization: `Bearer ${token}`,
@@ -39,6 +39,20 @@ export async function createApiClient(): Promise<AxiosInstance> {
     },
     timeout: 15000,
   });
+
+  // Convert axios errors into readable messages so Claude AI sees the actual error
+  client.interceptors.response.use(
+    (res) => res,
+    (err) => {
+      const status = err.response?.status;
+      const body = err.response?.data;
+      const message = body?.message || body?.error || JSON.stringify(body) || err.message;
+      const enhanced = new Error(`API Error ${status ?? 'NETWORK'}: ${message}`);
+      return Promise.reject(enhanced);
+    }
+  );
+
+  return client;
 }
 
 export function formatResponse(data: unknown): string {
