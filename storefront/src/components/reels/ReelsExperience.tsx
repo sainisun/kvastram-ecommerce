@@ -133,12 +133,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
       const selectedId = searchParams.get('reel');
       if (selectedId) {
         const idx = nextReels.findIndex((r) => r.id === selectedId);
-        setActiveReelIndex(idx >= 0 ? idx : nextReels.length > 0 ? 0 : null);
-        return;
-      }
-      // Auto-open first reel on mobile
-      if (nextReels.length > 0 && window.innerWidth < 768) {
-        setActiveReelIndex(0);
+        if (idx >= 0) setActiveReelIndex(idx);
       }
     }).finally(() => { if (!cancelled) setLoading(false); });
 
@@ -537,12 +532,12 @@ function ReelPlayerModal({
 
       {/* Player container — Instagram proportions */}
       <div
-        className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-black md:h-[92dvh] md:max-w-[400px] md:rounded-2xl"
+        className="relative flex h-[100svh] w-full flex-col overflow-hidden bg-black md:h-[92dvh] md:max-w-[400px] md:rounded-2xl"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* VIDEO */}
+        {/* VIDEO — cover like Instagram */}
         <video
           key={currentReel.id}
           ref={videoRef}
@@ -552,7 +547,7 @@ function ReelPlayerModal({
           loop
           playsInline
           autoPlay
-          className="absolute inset-0 h-full w-full object-contain"
+          className="absolute inset-0 h-full w-full object-cover"
         />
 
         {/* Top gradient */}
@@ -594,7 +589,7 @@ function ReelPlayerModal({
         </div>
 
         {/* BOTTOM — product + actions side-by-side like Instagram */}
-        <div className="relative z-10 mt-auto flex items-end gap-3 px-4 pb-10 md:pb-6">
+        <div className="relative z-10 mt-auto flex items-end gap-3 px-4 pb-[max(2.5rem,env(safe-area-inset-bottom,2.5rem))] md:pb-6">
 
           {/* Product card */}
           <Link
@@ -672,7 +667,7 @@ function ReelPlayerModal({
 
         {/* Swipe hint — first reel only */}
         {currentReels.length > 1 && currentIndex === 0 && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-32 z-10 flex justify-center md:hidden">
+          <div className="pointer-events-none absolute inset-x-0 bottom-40 z-10 flex justify-center md:hidden">
             <span className="rounded-full bg-black/35 px-3 py-1 text-[10px] text-white/70 backdrop-blur-sm">
               Swipe up for next ↑
             </span>
