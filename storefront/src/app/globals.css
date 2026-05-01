@@ -2979,6 +2979,124 @@ a:active,
 .soft-card h3 { margin-top: 0; }
 
 /* ═══════════════════════════════════════════════════
+   PROTOTYPE PARITY — TRUST GRID
+   ═══════════════════════════════════════════════════ */
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ═══════════════════════════════════════════════════
+   PROTOTYPE PARITY — BUTTONS (btn, btn-primary, etc.)
+   ═══════════════════════════════════════════════════ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .15s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--ink); }
+.btn-primary {
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+}
+.btn-primary:hover { background: var(--sienna-dark, #8b3e20); border-color: var(--sienna-dark, #8b3e20); }
+.btn-outline { background: white; color: var(--ink); border-color: var(--ink); }
+.btn-outline:hover { background: var(--ink); color: white; }
+.btn-full { width: 100%; }
+.btn-white { background: white; color: var(--ink); border-color: white; }
+
+/* ═══════════════════════════════════════════════════
+   PROTOTYPE PARITY — PRODUCT DETAIL PAGE (PDP)
+   ═══════════════════════════════════════════════════ */
+
+.pd-layout {
+  display: grid;
+  gap: 24px;
+}
+.pd-main {
+  aspect-ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-lg);
+  background: var(--soft);
+  font-size: 90px;
+  overflow: hidden;
+  position: relative;
+}
+.pd-thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.pd-thumb {
+  aspect-ratio: 1;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: white;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: border-color .15s ease;
+}
+.pd-thumb.active { border-color: var(--sienna); }
+.pd-thumb:hover { border-color: var(--sienna); }
+.pd-price {
+  font-size: 28px;
+  color: var(--sienna);
+  font-weight: 900;
+}
+.pd-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  margin-top: 32px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.pd-tabs::-webkit-scrollbar { display: none; }
+.pd-tab {
+  flex: 0 0 auto;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  padding: 12px 10px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: .15s ease;
+  white-space: nowrap;
+}
+.pd-tab:hover { color: var(--ink); }
+.pd-tab.active { color: var(--sienna); border-bottom-color: var(--sienna); }
+.pd-tab-panel { display: none; padding: 22px 0; }
+.pd-tab-panel.active { display: block; }
+
+@media (min-width: 860px) {
+  .pd-layout { grid-template-columns: 1.05fr 0.95fr; gap: 48px; }
+}
+
+/* ═══════════════════════════════════════════════════
    PROTOTYPE PARITY — FOOTER
    ═══════════════════════════════════════════════════ */
 
