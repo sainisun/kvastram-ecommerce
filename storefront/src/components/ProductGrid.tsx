@@ -11,6 +11,7 @@ import OptimizedImage from '@/components/ui/OptimizedImage';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { useCurrency } from '@/context/currency-context';
 import { buildProductImageAlt } from '@/lib/seo';
+import Link from 'next/link';
 
 interface SpotlightProduct {
   id: string;
@@ -195,11 +196,13 @@ function ProductGrid({
     const priceInfo = getPrice(product);
 
     renderedItems.push(
-      <div key={product.id} className="product-card group relative">
-        <a
-          href={`/products/${product.handle || product.id}`}
-          className="product-media block"
-        >
+      <article key={product.id} className="product-card group">
+        <div className="product-media">
+          <Link
+            href={`/products/${product.handle || product.id}`}
+            className="absolute inset-0 block"
+            aria-label={`View ${product.title}`}
+          >
           {product.thumbnail ? (
             <OptimizedImage
               src={product.thumbnail}
@@ -230,6 +233,8 @@ function ProductGrid({
             <span className="product-badge low-stock">Almost Gone</span>
           ) : null}
 
+          </Link>
+
           <button
             type="button"
             onClick={(event) => {
@@ -241,7 +246,7 @@ function ProductGrid({
           >
             Quick View
           </button>
-        </a>
+        </div>
 
         <div className="product-wish">
           <WishlistButton
@@ -260,34 +265,11 @@ function ProductGrid({
           <p className="product-cat">
             {product.collection?.title || 'Kvastram'}
           </p>
-          <a href={`/products/${product.handle || product.id}`}>
-            <h3 className="product-name truncate" title={product.title}>
+          <Link href={`/products/${product.handle || product.id}`}>
+            <h3 className="product-name" title={product.title}>
               {product.title}
             </h3>
-          </a>
-
-          {product.avg_rating != null && product.avg_rating > 0 ? (
-            <div className="flex items-center gap-1 mb-2">
-              {[1, 2, 3, 4, 5].map((item) => (
-                <svg
-                  key={item}
-                  width="10"
-                  height="10"
-                  viewBox="0 0 24 24"
-                  fill={
-                    item <= Math.round(product.avg_rating || 0) ? 'var(--sienna)' : '#ddd'
-                  }
-                >
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-              ))}
-              {product.review_count != null && product.review_count > 0 ? (
-                <span className="text-[10px] text-[var(--muted)]">
-                  ({product.review_count})
-                </span>
-              ) : null}
-            </div>
-          ) : null}
+          </Link>
 
           <div className="product-row">
             <div className="flex items-center gap-1">
@@ -297,6 +279,7 @@ function ProductGrid({
                 </span>
               ) : (
                 <>
+                  <span className="price">{priceInfo.price}</span>
                   {(() => {
                     const variant = product.variants?.[0];
                     const compareAt = variant?.compare_at_price;
@@ -308,7 +291,6 @@ function ProductGrid({
                     }
                     return null;
                   })()}
-                  <span className="price">{priceInfo.price}</span>
                 </>
               )}
             </div>
@@ -321,7 +303,7 @@ function ProductGrid({
             </button>
           </div>
         </div>
-      </div>
+      </article>
     );
 
     if (spotlightProducts.length > 0 && (index + 1) % 4 === 0) {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useShop } from '@/context/shop-context';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
@@ -140,7 +140,7 @@ function ProductCarousel({
               {product.subtitle || product.collection?.title || 'Kvastram'}
             </p>
             <Link href={`/products/${product.handle || product.id}`}>
-              <h3 className="product-name truncate" title={product.title}>{product.title}</h3>
+              <h3 className="product-name" title={product.title}>{product.title}</h3>
             </Link>
             <div className="product-row">
               <span className="price">{getPrice(product)}</span>
