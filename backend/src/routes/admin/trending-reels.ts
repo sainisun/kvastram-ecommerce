@@ -33,6 +33,14 @@ function normalizeRequiredString(value: unknown): string {
   return value.trim();
 }
 
+function normalizeOptionalString(value: unknown): string | null {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return null;
+  }
+
+  return value.trim();
+}
+
 function parseBoolean(value: unknown, defaultValue: boolean): boolean {
   if (typeof value !== 'string') {
     return defaultValue;

@@ -19,6 +19,7 @@ interface TrendingReel {
   id: string;
   video_url: string;
   thumbnail_url: string;
+  product_id: string | null;
   product_name: string;
   price: string;
   price_amount: number | null;
@@ -46,6 +47,7 @@ interface ProductSummary {
 
 interface ReelFormState {
   productName: string;
+  productId: string;
   price: string;
   priceAmount: string;
   linkUrl: string;
@@ -59,6 +61,7 @@ interface ReelFormState {
 
 const emptyForm = (): ReelFormState => ({
   productName: '',
+  productId: '',
   price: '',
   priceAmount: '',
   linkUrl: '',
@@ -134,6 +137,7 @@ export default function TrendingReelsManager() {
     setEditingReel(reel);
     setForm({
       productName: reel.product_name,
+      productId: reel.product_id ?? '',
       price: reel.price,
       priceAmount: reel.price_amount != null ? String(reel.price_amount) : '',
       linkUrl: reel.link_url,
@@ -189,6 +193,9 @@ export default function TrendingReelsManager() {
   function buildFormData() {
     const formData = new FormData();
     formData.append('product_name', form.productName);
+    if (form.productId) {
+      formData.append('product_id', form.productId);
+    }
     formData.append('price', form.price);
     if (form.priceAmount.trim()) {
       formData.append('price_amount', form.priceAmount.trim());
@@ -534,6 +541,7 @@ export default function TrendingReelsManager() {
                     </label>
                     <select
                       className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 mb-4"
+                      value={form.productId}
                       onChange={(e) => {
                         const product = products.find((p) => p.id === e.target.value);
                         if (product) {
@@ -541,6 +549,7 @@ export default function TrendingReelsManager() {
                           setForm((cur) => ({
                             ...cur,
                             productName: product.title,
+                            productId: product.id,
                             linkUrl: `/products/${product.handle}`,
                             price:
                               typeof firstPrice === 'number'
@@ -551,6 +560,8 @@ export default function TrendingReelsManager() {
                                 ? String(firstPrice)
                                 : '',
                           }));
+                        } else {
+                          setForm((cur) => ({ ...cur, productId: '' }));
                         }
                       }}
                     >
