@@ -9,6 +9,8 @@ import {
   CheckCircle,
   AlertCircle,
 } from 'lucide-react';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -192,116 +194,50 @@ export default function ContactPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs uppercase font-bold text-stone-500">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    aria-invalid={errors.firstName ? 'true' : 'false'}
-                    aria-describedby={
-                      errors.firstName ? 'firstName-error' : undefined
-                    }
-                    className={`w-full bg-white border-b p-3 focus:outline-none transition-colors ${errors.firstName ? 'border-red-500 focus:border-red-500' : 'border-stone-200 focus:border-stone-900'}`}
-                  />
-                  {errors.firstName && touched.firstName && (
-                    <p
-                      id="firstName-error"
-                      className="text-red-500 text-xs mt-1"
-                      role="alert"
-                    >
-                      {errors.firstName}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase font-bold text-stone-500">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    aria-invalid={errors.lastName ? 'true' : 'false'}
-                    aria-describedby={
-                      errors.lastName ? 'lastName-error' : undefined
-                    }
-                    className={`w-full bg-white border-b p-3 focus:outline-none transition-colors ${errors.lastName ? 'border-red-500 focus:border-red-500' : 'border-stone-200 focus:border-stone-900'}`}
-                  />
-                  {errors.lastName && touched.lastName && (
-                    <p
-                      id="lastName-error"
-                      className="text-red-500 text-xs mt-1"
-                      role="alert"
-                    >
-                      {errors.lastName}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs uppercase font-bold text-stone-500">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                <Input
+                  type="text"
+                  name="firstName"
+                  label="First Name"
+                  value={formData.firstName}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   required
-                  aria-invalid={errors.email ? 'true' : 'false'}
-                  aria-describedby={errors.email ? 'email-error' : undefined}
-                  className={`w-full bg-white border-b p-3 focus:outline-none transition-colors ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-stone-200 focus:border-stone-900'}`}
+                  error={touched.firstName ? errors.firstName : undefined}
                 />
-                {errors.email && touched.email && (
-                  <p
-                    id="email-error"
-                    className="text-red-500 text-xs mt-1"
-                    role="alert"
-                  >
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs uppercase font-bold text-stone-500">
-                  Message
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
+                <Input
+                  type="text"
+                  name="lastName"
+                  label="Last Name"
+                  value={formData.lastName}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   required
-                  minLength={10}
-                  rows={4}
-                  aria-invalid={errors.message ? 'true' : 'false'}
-                  aria-describedby={
-                    errors.message ? 'message-error' : undefined
-                  }
-                  className={`w-full bg-white border-b p-3 focus:outline-none transition-colors resize-none ${errors.message ? 'border-red-500 focus:border-red-500' : 'border-stone-200 focus:border-stone-900'}`}
-                ></textarea>
-                {errors.message && touched.message && (
-                  <p
-                    id="message-error"
-                    className="text-red-500 text-xs mt-1"
-                    role="alert"
-                  >
-                    {errors.message}
-                  </p>
-                )}
+                  error={touched.lastName ? errors.lastName : undefined}
+                />
               </div>
+
+              <Input
+                type="email"
+                name="email"
+                label="Email"
+                value={formData.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                error={touched.email ? errors.email : undefined}
+              />
+
+              <Textarea
+                name="message"
+                label="Message"
+                value={formData.message}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                required
+                minLength={10}
+                rows={4}
+                error={touched.message ? errors.message : undefined}
+              />
 
               {status === 'error' && (
                 <div className="flex items-center gap-2 text-red-600 text-sm">

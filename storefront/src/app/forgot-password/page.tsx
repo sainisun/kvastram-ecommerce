@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { Loader2, ArrowLeft } from 'lucide-react';
+import Input from '@/components/ui/Input';
 
 function SuccessView({ email }: { readonly email: string }) {
   return (
@@ -108,23 +109,15 @@ export default function ForgotPasswordPage() {
             </div>
           )}
 
-          <div className="space-y-2">
-            <label
-              htmlFor="forgot-email"
-              className="text-xs uppercase font-bold text-stone-500"
-            >
-              Email Address
-            </label>
-            <input
-              id="forgot-email"
-              type="email"
-              required
-              className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-            />
-          </div>
+          <Input
+            id="forgot-email"
+            type="email"
+            required
+            label="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+          />
 
           <button
             type="submit"

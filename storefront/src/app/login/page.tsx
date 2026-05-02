@@ -5,6 +5,7 @@ import { useAuth } from '@/context/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import Input from '@/components/ui/Input';
 import { api } from '@/lib/api';
 import {
   GoogleOAuthProvider,
@@ -293,45 +294,35 @@ function LoginContent() {
             </div>
           )}
 
-          <div className="space-y-2">
-            <label className="text-xs uppercase font-bold text-stone-500">
-              Email Address
-            </label>
-            <input
-              type="email"
-              required
-              className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-            />
-          </div>
+          <Input
+            type="email"
+            label="Email Address"
+            required
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+          />
 
-          <div className="space-y-2">
-            <label className="text-xs uppercase font-bold text-stone-500">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                required
-                className="w-full border-b border-stone-200 py-2 pr-10 focus:outline-none focus:border-stone-900 transition-colors"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-              />
+          <Input
+            type={showPassword ? 'text' : 'password'}
+            label="Password"
+            required
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+            suffix={
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors"
+                className="text-stone-400 hover:text-stone-600 transition-colors"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
-            </div>
-          </div>
+            }
+          />
 
           <div className="flex justify-end">
             <Link

@@ -9,6 +9,7 @@ import { useCurrency } from '@/context/currency-context';
 import { useShop } from '@/context/shop-context';
 import { useCart } from '@/context/cart-context';
 import { Loader2, Filter, ArrowLeft } from 'lucide-react';
+import Input from '@/components/ui/Input';
 import type { Product, MoneyAmount } from '@/types';
 
 function SearchContent() {
@@ -163,18 +164,16 @@ function SearchContent() {
               <div className="absolute top-full left-0 mt-4 w-64 bg-white shadow-xl z-20 border border-stone-100 p-6">
                 <h4 className="font-serif text-lg mb-4">Price Range</h4>
                 <div className="flex items-center gap-2 mb-4">
-                  <input
+                  <Input
                     type="number"
                     placeholder="Min"
-                    className="w-full border p-2 text-sm"
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
                   />
                   <span>-</span>
-                  <input
+                  <Input
                     type="number"
                     placeholder="Max"
-                    className="w-full border p-2 text-sm"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
                   />
