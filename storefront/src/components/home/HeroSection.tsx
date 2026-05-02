@@ -135,7 +135,7 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
             onClick={() => scrollTo(index)}
             aria-label={`Go to slide ${index + 1}`}
             className={`hero-dot h-2 w-2 rounded-full transition-all ${
-              selectedIndex === index ? 'bg-white' : 'bg-white/50'
+              selectedIndex === index ? 'bg-brand-cream' : 'bg-brand-cream/50'
             }`}
           />
         ))}
