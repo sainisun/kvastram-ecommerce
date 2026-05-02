@@ -1,6 +1,7 @@
 'use client';
 
 import Image, { type ImageProps } from 'next/image';
+import { optimizeCloudinaryUrl } from '@/lib/media';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'onError' | 'onLoad'> {
   fallbackSrc?: string;
@@ -13,6 +14,10 @@ export default function OptimizedImage({
   sizes,
   ...props
 }: OptimizedImageProps) {
+  // Auto-convert HEIC/HEIF and optimize format for browser via Cloudinary
+  if (typeof props.src === 'string') {
+    props = { ...props, src: optimizeCloudinaryUrl(props.src) };
+  }
   // Default loading behavior: lazy unless explicitly priority
   const resolvedLoading: NonNullable<ImageProps['loading']> =
     loading ?? (props.priority ? 'eager' : 'lazy');
