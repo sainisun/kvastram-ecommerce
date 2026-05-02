@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -55,6 +55,7 @@ app.use((req, res, next) => {
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', server: 'kvastram-mcp' });
 });
+
 
 // ── OAuth 2.0 metadata (required by claude.ai) ───────────────
 
@@ -157,11 +158,11 @@ app.post('/token', (req, res) => {
   });
 });
 
-// ── MCP endpoint (requires Bearer token) ─────────────────────
-app.post('/mcp', async (req, res) => {
+// ── MCP POST handler (shared between / and /mcp) ─────────────
+async function handleMcpPost(req: Request, res: Response): Promise<void> {
   const auth = req.headers['authorization'];
   if (!auth || auth !== `Bearer ${SECRET}`) {
-    // RFC 6750 §3.1 — must include WWW-Authenticate so clients can discover OAuth server
+    // RFC 6750 §3.1 — WWW-Authenticate lets clients discover OAuth server
     res.setHeader(
       'WWW-Authenticate',
       `Bearer realm="kvastram-admin", resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`
@@ -194,7 +195,12 @@ app.post('/mcp', async (req, res) => {
   }
 
   res.status(400).json({ error: 'Bad request: missing or invalid session' });
-});
+}
+
+// Register on both / (base URL) and /mcp so it works regardless of what
+// URL the user entered in claude.ai (with or without /mcp suffix)
+app.post('/', handleMcpPost);
+app.post('/mcp', handleMcpPost);
 
 // GET /mcp for SSE stream (some clients use this)
 app.get('/mcp', async (req, res) => {
