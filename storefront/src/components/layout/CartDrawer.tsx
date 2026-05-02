@@ -95,7 +95,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       {/* Drawer Panel */}
       <aside
         ref={drawerRef}
-        className={`fixed top-0 right-0 h-full w-full sm:w-[400px] z-[61] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+        className={`fixed top-0 right-0 h-full w-full sm:max-w-[400px] z-[61] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         aria-label="Shopping cart"

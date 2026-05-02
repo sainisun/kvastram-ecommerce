@@ -293,7 +293,8 @@ a {
   animation: loaderFade 0.6s ease 0.2s forwards;
 }
 .loader-bar-wrap {
-  width: 200px;
+  width: 60vw;
+  max-width: 200px;
   height: 1px;
   background: rgba(var(--cream-rgb), 0.15);
   overflow: hidden;

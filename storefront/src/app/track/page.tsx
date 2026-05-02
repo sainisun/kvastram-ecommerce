@@ -162,7 +162,7 @@ export default function TrackOrderPage() {
         )}
 
         <div className="mt-8 overflow-x-auto">
-          <div className="grid min-w-[620px] grid-cols-5 gap-2">
+          <div className="grid w-full min-w-0 grid-cols-5 gap-2">
             {(order ? getStatusSteps(order.status) : getStatusSteps('out_for_delivery')).map((step, index) => (
               <div key={step.key} className={`text-center text-[12px] ${step.completed || step.current ? 'text-stone-900' : 'text-stone-400'}`}>
                 <div
