@@ -281,7 +281,7 @@ export function Header() {
             </Link>
 
             {/* Nav - Desktop */}
-            <nav className="font-body flex min-w-0 flex-1 items-center justify-center gap-3 text-stone-600 xl:gap-6 2xl:gap-8">
+            <nav className="font-body flex min-w-0 flex-1 items-center justify-center gap-3 text-[var(--muted)] xl:gap-6 2xl:gap-8">
               {navLinks.map((link, index) => {
                 const isActive =
                   pathname === link.url ||
@@ -300,7 +300,7 @@ export function Header() {
                       onBlur={closeShopMenu}
                     >
                       <button
-                        className={`flex items-center gap-1 py-2 text-[15px] font-medium transition-colors focus:outline-none rounded ${isActive ? 'text-stone-900' : 'hover:text-stone-900'}`}
+                        className={`flex items-center gap-1 py-2 text-[15px] font-medium transition-colors focus:outline-none rounded ${isActive ? 'text-[var(--ink)]' : 'hover:text-[var(--ink)]'}`}
                         style={{ animationDelay: `${index * 60}ms` }}
                         aria-label="Shop menu"
                         aria-expanded={showShopMenu}
@@ -319,11 +319,11 @@ export function Header() {
                       </button>
 
                       {showShopMenu && (
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-[900px] max-w-[92vw] bg-white shadow-2xl border border-stone-100 rounded-sm overflow-hidden mega-menu-enter">
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-full max-w-[900px] bg-[var(--paper)] shadow-2xl border border-[var(--soft)] rounded-[var(--radius-sm)] overflow-hidden mega-menu-enter">
                           <div className="grid min-h-[340px] grid-cols-12">
                             {/* Left: Categories with Subcategories */}
-                            <div className="col-span-5 border-r border-stone-100 px-6 py-6">
-                              <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-stone-400">
+                            <div className="col-span-5 border-r border-[var(--soft)] px-6 py-6">
+                              <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-[var(--muted)]">
                                 Categories
                               </p>
                               <div className="grid grid-cols-2 gap-x-6 gap-y-2">
@@ -358,7 +358,7 @@ export function Header() {
                                               <li key={child.id}>
                                                 <Link
                                                   href={`/collections/${child.slug}`}
-                                                  className="font-body block py-0.5 pl-2 text-[15px] font-[300] text-stone-500 transition-colors hover:text-black"
+                                                  className="font-body block py-0.5 pl-2 text-[15px] font-[300] text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
                                                   onClick={closeShopMenu}
                                                 >
                                                   {child.name}
@@ -370,7 +370,7 @@ export function Header() {
                                   </div>
                                 ))}
                               </div>
-                              <div className="h-px bg-stone-100 my-3" />
+                              <div className="h-px bg-[var(--soft)] my-3" />
                               <Link
                                 href="/products"
                                 className="font-body flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.1em] text-[var(--ink)] transition-colors hover:text-[var(--sienna)]"
@@ -381,7 +381,7 @@ export function Header() {
                             </div>
 
                             {/* Center: Featured Image (changes on category hover) */}
-                            <div className="col-span-4 relative overflow-hidden bg-stone-100">
+                            <div className="col-span-4 relative overflow-hidden bg-[var(--soft)]">
                               {(() => {
                                 const featured = hoveredCategory
                                   ? categories.find(
@@ -402,8 +402,8 @@ export function Header() {
                                           sizes="300px"
                                         />
                                       ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200">
-                                          <span className="text-stone-300 text-6xl font-serif">
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--soft)] to-[var(--line)]">
+                                          <span className="text-[var(--muted)] text-6xl font-serif">
                                             {featured.emoji ||
                                               featured.name?.charAt(0)}
                                           </span>
@@ -430,8 +430,8 @@ export function Header() {
                             </div>
 
                             {/* Right: Quick Links + Promo */}
-                            <div className="col-span-3 bg-stone-50/70 px-6 py-6">
-                              <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-stone-400">
+                            <div className="col-span-3 bg-[var(--cream)] px-6 py-6">
+                              <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-[var(--muted)]">
                                 Shop By
                               </p>
                               <div className="space-y-2.5">
@@ -446,17 +446,17 @@ export function Header() {
                                   </Link>
                                 ))}
                               </div>
-                              <div className="h-px bg-stone-200/60 my-4" />
+                              <div className="h-px bg-[var(--line)] my-4" />
                               <Link
                                 href="/collections"
-                                className="font-body block text-[15px] font-[300] text-stone-700 transition-colors hover:text-black"
+                                className="font-body block text-[15px] font-[300] text-[var(--ink)] transition-colors hover:text-[var(--sienna)]"
                                 onClick={closeShopMenu}
                               >
                                 All Collections
                               </Link>
                               <Link
                                 href="/products?sort=newest"
-                                className="font-body mt-2.5 block text-[15px] font-[300] text-stone-700 transition-colors hover:text-black"
+                                className="font-body mt-2.5 block text-[15px] font-[300] text-[var(--ink)] transition-colors hover:text-[var(--sienna)]"
                                 onClick={closeShopMenu}
                               >
                                 New Arrivals ✦
@@ -473,7 +473,7 @@ export function Header() {
                   <Link
                     key={link.label}
                     href={link.url}
-                    className={`block py-2 text-[15px] transition-colors ${isActive ? 'font-medium text-stone-900' : 'text-stone-600 hover:text-stone-900'} ${link.highlight ? 'text-[var(--sienna)] font-bold' : ''}`}
+                    className={`block py-2 text-[15px] transition-colors ${isActive ? 'font-medium text-[var(--ink)]' : 'text-[var(--muted)] hover:text-[var(--ink)]'} ${link.highlight ? 'text-[var(--sienna)] font-bold' : ''}`}
                     style={{ animationDelay: `${index * 60}ms` }}
                   >
                     {link.label}
@@ -522,7 +522,7 @@ export function Header() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setShowRegionMenu(!showRegionMenu)}
-                  className="font-body flex items-center gap-2 rounded-full px-3 py-1.5 text-[13px] font-medium uppercase tracking-[0.08em] text-stone-600 transition-colors hover:bg-stone-100 hover:text-black focus:outline-none"
+                  className="font-body flex items-center gap-2 rounded-full px-3 py-1.5 text-[13px] font-medium uppercase tracking-[0.08em] text-[var(--muted)] transition-colors hover:bg-[var(--soft)] hover:text-[var(--ink)] focus:outline-none"
                   aria-label="Select region and currency"
                   aria-expanded={showRegionMenu}
                   aria-haspopup="true"
@@ -536,8 +536,8 @@ export function Header() {
                 </button>
 
                 {showRegionMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-stone-100 py-1 overflow-hidden">
-                    <div className="font-body border-b border-stone-100 bg-stone-50 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
+                  <div className="absolute right-0 mt-2 w-48 bg-[var(--paper)] rounded-[var(--radius-md)] shadow-xl border border-[var(--soft)] py-1 overflow-hidden">
+                    <div className="font-body border-b border-[var(--soft)] bg-[var(--cream)] px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--muted)]">
                       Select Region
                     </div>
                     {regions.map((region) => (
@@ -547,14 +547,14 @@ export function Header() {
                           setRegion(region);
                           setShowRegionMenu(false);
                         }}
-                        className={`font-body group flex w-full items-center justify-between px-4 py-2.5 text-left text-[15px] hover:bg-stone-50 focus:outline-none ${
+                        className={`font-body group flex w-full items-center justify-between px-4 py-2.5 text-left text-[15px] hover:bg-[var(--cream)] focus:outline-none ${
                           currentRegion?.id === region.id
-                            ? 'font-medium text-blue-600'
-                            : 'text-stone-600'
+                            ? 'font-medium text-[var(--sienna)]'
+                            : 'text-[var(--muted)]'
                         }`}
                       >
                         <span>{region.name}</span>
-                        <span className="text-xs font-mono text-stone-400 group-hover:text-stone-600 uppercase">
+                        <span className="text-xs font-mono text-[var(--muted)] group-hover:text-[var(--ink)] uppercase">
                           {region.currency_code}
                         </span>
                       </button>
