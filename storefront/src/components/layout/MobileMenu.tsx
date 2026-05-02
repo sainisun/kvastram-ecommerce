@@ -203,7 +203,7 @@ export default function MobileMenu({
               </button>
             </div>
 
-            {/* Search Bar - Bagisto Style */}
+            {/* Search Bar */}
             <div className="px-4 pb-4">
               <form onSubmit={handleSearch} className="relative">
                 <input
@@ -212,17 +212,17 @@ export default function MobileMenu({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search products..."
-                  className="font-body w-full rounded-full border border-gray-200 bg-gray-50 py-3 pl-10 pr-10 text-[15px] font-[300] text-black transition-colors placeholder:text-gray-400"
+                  className="font-body w-full rounded-[var(--radius-sm)] border border-brand-line bg-brand-cream py-3 pl-10 pr-10 text-[15px] font-[300] text-brand-ink transition-colors placeholder:text-brand-muted focus:border-brand-sienna focus:outline-none"
                 />
                 <Search
                   size={18}
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted"
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-muted hover:text-brand-ink p-1"
                   >
                     <X size={16} />
                   </button>
@@ -235,7 +235,7 @@ export default function MobileMenu({
           <div className="flex-1 overflow-y-auto overflow-x-hidden">
             {/* Navigation - Categories Flat List */}
             <div className="py-2">
-              <h3 className="font-body px-4 py-3 text-[12px] font-medium uppercase tracking-[0.08em] text-gray-500">
+              <h3 className="font-body px-4 py-3 text-[12px] font-medium uppercase tracking-[0.08em] text-brand-muted">
                 Categories
               </h3>
 
@@ -243,11 +243,11 @@ export default function MobileMenu({
                 <div className="space-y-1">
                   {categories.map((category) => (
                     <div key={category.id}>
-                      <div className="flex items-center justify-between hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center justify-between hover:bg-brand-cream transition-colors">
                         <Link
                           href={`/collections/${category.slug}`}
                           onClick={handleLinkClick}
-                          className="font-body flex min-h-[44px] flex-1 items-center gap-3 px-4 py-3.5 text-[15px] font-[300] text-gray-700 hover:text-black"
+                          className="font-body flex min-h-[44px] flex-1 items-center gap-3 px-4 py-3.5 text-[15px] font-[300] text-brand-muted hover:text-brand-ink"
                         >
                           {category.name}
                         </Link>
@@ -267,7 +267,7 @@ export default function MobileMenu({
                                 icon.style.transform = 'rotate(180deg)';
                               }
                             }}
-                            className="p-3 text-gray-400 hover:text-black transition-colors"
+                            className="p-3 text-brand-muted hover:text-brand-ink transition-colors"
                             aria-label={`Toggle ${category.name} subcategories`}
                           >
                             <ChevronDown
@@ -279,7 +279,7 @@ export default function MobileMenu({
                       </div>
                       {category.children && category.children.length > 0 && (
                         <div
-                          className="overflow-hidden transition-all duration-300 ease-out max-h-0 bg-gray-50/50"
+                          className="overflow-hidden transition-all duration-300 ease-out max-h-0 bg-brand-cream/50"
                           style={{ maxHeight: '' }}
                         >
                           <div className="pl-8 py-1 pb-2 space-y-1">
@@ -288,7 +288,7 @@ export default function MobileMenu({
                                 key={child.id}
                                 href={`/collections/${child.slug}`}
                                 onClick={handleLinkClick}
-                                className="font-body block py-2.5 text-[15px] font-[300] text-gray-600 transition-colors hover:text-black"
+                                className="font-body block py-2.5 text-[15px] font-[300] text-brand-muted transition-colors hover:text-brand-ink"
                               >
                                 {child.name}
                               </Link>
@@ -300,7 +300,7 @@ export default function MobileMenu({
                   ))}
                 </div>
               ) : (
-                <p className="px-4 py-4 text-sm text-gray-400">
+                <p className="px-4 py-4 text-sm text-brand-muted">
                   No categories available
                 </p>
               )}
@@ -346,11 +346,11 @@ export default function MobileMenu({
               </div>
             </div>
 
-            <div className="h-px bg-gray-100 mx-4" />
+            <div className="h-px bg-brand-soft mx-4" />
 
             {/* Quick Links */}
             <div className="py-2">
-              <h3 className="font-body px-4 py-3 text-[12px] font-medium uppercase tracking-[0.08em] text-gray-500">
+              <h3 className="font-body px-4 py-3 text-[12px] font-medium uppercase tracking-[0.08em] text-brand-muted">
                 Explore
               </h3>
               <div className="space-y-1">
@@ -387,16 +387,16 @@ export default function MobileMenu({
           </div>
 
           {/* Bottom Section */}
-          <div className="border-t border-gray-100 bg-gray-50 p-4 space-y-4">
-            {/* User Account - Bagisto Style (at bottom) */}
+          <div className="border-t border-brand-line bg-brand-cream p-4 space-y-4">
+            {/* User Account */}
             {!authLoading && (
               <div className="space-y-2">
-                <h3 className="font-body px-1 text-[12px] font-medium uppercase tracking-[0.08em] text-gray-500">
+                <h3 className="font-body px-1 text-[12px] font-medium uppercase tracking-[0.08em] text-brand-muted">
                   Account
                 </h3>
                 {customer ? (
                   <div className="space-y-1">
-                    <p className="font-body px-1 py-2 text-[15px] font-[300] text-gray-600">
+                    <p className="font-body px-1 py-2 text-[15px] font-[300] text-brand-muted">
                       Welcome, {customer.first_name || 'Customer'}
                     </p>
                     <MobileNavLink
@@ -425,9 +425,9 @@ export default function MobileMenu({
                         logout();
                         handleClose();
                       }}
-                      className="font-body flex min-h-[44px] w-full items-center gap-3 rounded-lg px-4 py-3 text-[15px] font-[300] text-gray-700 transition-colors hover:bg-gray-100 hover:text-black"
+                      className="font-body flex min-h-[44px] w-full items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 text-[15px] font-[300] text-brand-muted transition-colors hover:bg-brand-soft hover:text-brand-ink"
                     >
-                      <LogOut size={18} className="text-gray-400" />
+                      <LogOut size={18} className="text-brand-muted" />
                       <span className="text-[15px]">Logout</span>
                     </button>
                   </div>
@@ -436,7 +436,7 @@ export default function MobileMenu({
                     <Link
                       href="/login"
                       onClick={handleLinkClick}
-                      className="font-body flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-full bg-black px-4 py-3 text-[12px] font-medium uppercase tracking-[0.1em] text-white transition-colors hover:bg-gray-800"
+                      className="font-body flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-brand-ink px-4 py-3 text-[12px] font-medium uppercase tracking-[0.1em] text-white transition-colors hover:bg-brand-dark"
                     >
                       <User size={18} />
                       Sign In
@@ -444,7 +444,7 @@ export default function MobileMenu({
                     <Link
                       href="/register"
                       onClick={handleLinkClick}
-                      className="font-body flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-[12px] font-medium uppercase tracking-[0.1em] text-black transition-colors hover:bg-gray-50"
+                      className="font-body flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-brand-line bg-white px-4 py-3 text-[12px] font-medium uppercase tracking-[0.1em] text-brand-ink transition-colors hover:bg-brand-cream"
                     >
                       Register
                     </Link>
@@ -457,17 +457,17 @@ export default function MobileMenu({
             <div>
               <button
                 onClick={() => setShowRegionMenu(!showRegionMenu)}
-                className="font-body flex min-h-[44px] w-full items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 text-[13px] font-medium uppercase tracking-[0.08em]"
+                className="font-body flex min-h-[44px] w-full items-center justify-between rounded-[var(--radius-md)] border border-brand-line bg-white px-4 py-3 text-[13px] font-medium uppercase tracking-[0.08em]"
               >
-                <span className="flex items-center gap-3 text-gray-700">
-                  <Globe size={18} className="text-gray-400" />
+                <span className="flex items-center gap-3 text-brand-muted">
+                  <Globe size={18} className="text-brand-muted" />
                   {currentRegion
                     ? `${currentRegion.name} (${currentRegion.currency_code})`
                     : 'Select Region'}
                 </span>
                 <ChevronDown
                   size={18}
-                  className={`text-gray-400 transition-transform ${
+                  className={`text-brand-muted transition-transform ${
                     showRegionMenu ? 'rotate-180' : ''
                   }`}
                 />
@@ -478,7 +478,7 @@ export default function MobileMenu({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="mt-2 bg-white border border-gray-200 rounded-lg overflow-hidden"
+                  className="mt-2 bg-white border border-brand-line rounded-[var(--radius-md)] overflow-hidden"
                 >
                   {regions.map((region) => (
                     <button
@@ -487,14 +487,14 @@ export default function MobileMenu({
                         onRegionChange(region);
                         setShowRegionMenu(false);
                       }}
-                        className={`font-body flex min-h-[44px] w-full items-center justify-between px-4 py-3 text-left text-[15px] hover:bg-gray-50 transition-colors ${
+                        className={`font-body flex min-h-[44px] w-full items-center justify-between px-4 py-3 text-left text-[15px] hover:bg-brand-cream transition-colors ${
                           currentRegion?.id === region.id
-                            ? 'bg-gray-50 font-medium text-black'
-                            : 'text-gray-700'
+                            ? 'bg-brand-cream font-medium text-brand-ink'
+                            : 'text-brand-muted'
                         }`}
                     >
                       <span>{region.name}</span>
-                      <span className="text-xs font-mono text-gray-400 uppercase">
+                      <span className="text-xs font-mono text-brand-muted uppercase">
                         {region.currency_code}
                       </span>
                     </button>
@@ -503,7 +503,7 @@ export default function MobileMenu({
               )}
             </div>
 
-            {/* Social Links */}
+            {/* Social Links — rounded-full kept: circular icon buttons */}
             <div className="flex items-center justify-center gap-4">
               {socialLinks.map((social) => (
                 <a
@@ -511,7 +511,7 @@ export default function MobileMenu({
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-full transition-colors"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center text-brand-muted hover:text-brand-ink hover:bg-white rounded-full transition-colors"
                   aria-label={social.label}
                 >
                   <social.icon size={20} />
@@ -523,7 +523,7 @@ export default function MobileMenu({
             <Link
               href="/contact"
               onClick={handleLinkClick}
-              className="font-body flex items-center justify-center gap-2 text-[15px] font-[300] text-gray-600 transition-colors hover:text-black"
+              className="font-body flex items-center justify-center gap-2 text-[15px] font-[300] text-brand-muted transition-colors hover:text-brand-ink"
             >
               <HelpCircle size={16} />
               Need Help?
@@ -560,15 +560,15 @@ function MobileNavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`font-body flex min-h-[44px] items-center gap-3 rounded-lg px-4 py-3 text-[15px] transition-colors ${
+      className={`font-body flex min-h-[44px] items-center gap-3 rounded-[var(--radius-md)] px-4 py-3 text-[15px] transition-colors ${
         isActive
-          ? 'text-black font-semibold bg-gray-50'
+          ? 'text-brand-ink font-semibold bg-brand-cream'
           : highlight
             ? 'text-amber-600 font-medium hover:bg-amber-50'
-            : 'text-gray-700 hover:bg-gray-50 hover:text-black'
+            : 'text-brand-muted hover:bg-brand-cream hover:text-brand-ink'
       }`}
     >
-      <span className={isActive ? 'text-black' : 'text-gray-400'}>{icon}</span>
+      <span className={isActive ? 'text-brand-ink' : 'text-brand-muted'}>{icon}</span>
       {label}
     </Link>
   );
