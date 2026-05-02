@@ -222,7 +222,7 @@ export default function ImageUpload({
               : 'Click to upload or drag and drop'}
         </p>
         <p className="text-sm text-gray-500 mt-1">
-          SVG, PNG, JPG or GIF (Max 5MB)
+          PNG, JPG, WebP, HEIC or GIF (Max 50MB)
         </p>
       </div>
 

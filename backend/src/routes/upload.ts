@@ -11,6 +11,7 @@ import {
 import {
   uploadImageToCloudinary,
   uploadVideoToCloudinary,
+  uploadFromUrl,
 } from '../utils/cloudinary';
 
 const uploadRouter = new Hono();
@@ -32,9 +33,15 @@ uploadRouter.post('/', async (c) => {
       return c.json({ error: 'No file uploaded' }, 400);
     }
 
+    // Normalize MIME type for HEIC/HEIF — browsers often send empty string for these
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    const effectiveMimeType =
+      file.type ||
+      (ext === 'heic' ? 'image/heic' : ext === 'heif' ? 'image/heif' : file.type);
+
     const validationResult = FileUploadSchema.safeParse({
       filename: file.name,
-      mimeType: file.type,
+      mimeType: effectiveMimeType,
       size: file.size,
     });
 
@@ -45,7 +52,7 @@ uploadRouter.post('/', async (c) => {
       );
     }
 
-    const maxFileSize = getMaxFileSize(file.name, file.type);
+    const maxFileSize = getMaxFileSize(file.name, effectiveMimeType);
     if (file.size > maxFileSize) {
       return c.json(
         { error: `File too large. Maximum size is ${maxFileSize / 1024 / 1024}MB` },
@@ -53,13 +60,13 @@ uploadRouter.post('/', async (c) => {
       );
     }
 
-    const validation = validateFileUpload(file.name, file.type, file.size);
+    const validation = validateFileUpload(file.name, effectiveMimeType, file.size);
     if (!validation.valid) {
       return c.json({ error: validation.error }, 400);
     }
 
     // Determine resource type from mime type
-    const isVideo = file.type.startsWith('video/');
+    const isVideo = effectiveMimeType.startsWith('video/');
     const folder = isVideo ? 'kvastram/products/videos' : 'kvastram/products/images';
 
     // Upload to Cloudinary
@@ -95,6 +102,34 @@ uploadRouter.post('/', async (c) => {
   } catch (error: any) {
     console.error('❌ Upload error:', error);
     return c.json({ error: 'Failed to upload file', details: error.message }, 500);
+  }
+});
+
+// POST /upload/from-url — upload to Cloudinary from a remote public URL
+uploadRouter.post('/from-url', async (c) => {
+  try {
+    const { url, filename } = await c.req.json() as { url?: string; filename?: string };
+
+    if (!url || typeof url !== 'string') {
+      return c.json({ error: 'url field is required' }, 400);
+    }
+
+    // Basic URL validation — must be http/https
+    if (!/^https?:\/\//i.test(url)) {
+      return c.json({ error: 'url must start with http:// or https://' }, 400);
+    }
+
+    const result = await uploadFromUrl(url, { folder: 'kvastram/products/images' });
+
+    return c.json({
+      url: result.secureUrl,
+      publicId: result.publicId,
+      originalUrl: url,
+      filename: filename || url.split('/').pop() || 'image',
+    });
+  } catch (error: any) {
+    console.error('❌ URL upload error:', error);
+    return c.json({ error: 'Failed to upload from URL', details: error.message }, 500);
   }
 });
 

@@ -3011,13 +3011,13 @@ a:active,
 }
 .btn:hover { border-color: var(--ink); }
 .btn-primary {
-  background: var(--ink);
+  background: var(--sienna);
   color: white;
-  border-color: var(--ink);
+  border-color: var(--sienna);
 }
-.btn-primary:hover { background: var(--sienna-dark, #8b3e20); border-color: var(--sienna-dark, #8b3e20); }
-.btn-outline { background: white; color: var(--ink); border-color: var(--ink); }
-.btn-outline:hover { background: var(--ink); color: white; }
+.btn-primary:hover { background: var(--sienna-dark); border-color: var(--sienna-dark); }
+.btn-outline { background: white; color: var(--ink); border-color: var(--line); }
+.btn-outline:hover { border-color: var(--sienna); color: var(--sienna); }
 .btn-full { width: 100%; }
 .btn-white { background: white; color: var(--ink); border-color: white; }
 

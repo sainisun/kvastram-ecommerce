@@ -549,7 +549,7 @@ export default function ProductMediaUpload({
             : 'Drag and drop media, or click to browse'}
         </p>
         <p className="mt-2 text-sm text-gray-500">
-          JPG, PNG, WEBP up to 50MB each. MP4 or MOV up to 50MB each.
+          JPG, PNG, WEBP, HEIC up to 50MB each. MP4 or MOV up to 50MB each.
         </p>
         <p className="mt-1 text-sm text-gray-500">
           Portrait media works best for the new mobile-first product page.

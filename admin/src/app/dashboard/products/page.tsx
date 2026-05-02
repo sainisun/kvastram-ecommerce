@@ -12,6 +12,7 @@ import {
   RefreshCw,
   Search,
   Trash2,
+  Upload,
 } from 'lucide-react';
 import { exportToCSV, formatProductsForExport } from '@/lib/csv-export';
 import { api } from '@/lib/api';
@@ -269,6 +270,12 @@ export default function ProductsPage() {
           >
             <Download size={13} /> Export
           </button>
+          <Link
+            href="/dashboard/products/bulk-import"
+            className="flex items-center gap-1.5 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors"
+          >
+            <Upload size={13} /> Bulk Import
+          </Link>
           <Link
             href="/dashboard/products/new"
             className="flex items-center gap-1.5 rounded-full bg-[var(--primary)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white hover:opacity-90 transition-opacity"

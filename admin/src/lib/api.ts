@@ -320,6 +320,17 @@ export const api = {
     return response.data;
   },
 
+  bulkCreateProducts: async (products: unknown[]) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/bulk-create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ products }),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to bulk create products');
+    const response = await res.json();
+    return response.data;
+  },
+
   bulkUpdateProducts: async (productIds: string[], updates: unknown) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/products/bulk-update`, {
       method: 'POST',

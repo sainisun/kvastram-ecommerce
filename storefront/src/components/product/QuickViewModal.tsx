@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, ShoppingBag, Check } from 'lucide-react';
+import { X, ShoppingBag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
@@ -32,6 +32,7 @@ interface QuickViewModalProps {
 
 export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps) {
   const [selectedVariant, setSelectedVariant] = useState(product.variants?.[0]);
+  const [imgIndex, setImgIndex] = useState(0);
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,11 +44,12 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   useEffect(() => {
     setSelectedVariant(product.variants?.[0]);
+    setImgIndex(0);
     setAdded(false);
     setError(null);
     setReviewAvg(null);
     setReviewCount(0);
-  }, [product.id]);
+  }, [product.id, product.variants]);
 
   useEffect(() => () => { if (addedTimer.current) clearTimeout(addedTimer.current); }, []);
 
@@ -71,13 +73,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, onClose]);
-
   const images: string[] = [];
   if (product.images?.length) {
     for (const img of product.images) {
@@ -86,6 +81,20 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     }
   }
   if (!images.length && product.thumbnail) images.push(product.thumbnail);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+      if (images.length <= 1) return;
+      if (e.key === 'ArrowLeft') setImgIndex((current) => Math.max(0, current - 1));
+      if (e.key === 'ArrowRight') {
+        setImgIndex((current) => Math.min(images.length - 1, current + 1));
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [images.length, isOpen, onClose]);
 
   const priceObj =
     (selectedVariant?.prices || []).find((p) => p.currency_code?.toLowerCase() === 'inr') ||
@@ -148,15 +157,54 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             {/* Image — aspect-ratio box so height is always defined */}
             <div className="quickview-img" style={{ padding: 0 }}>
               {images.length > 0 ? (
-                <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5' }}>
-                  <OptimizedImage
-                    src={images[0]}
-                    alt={product.title}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
+                <>
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5' }}>
+                    <OptimizedImage
+                      src={images[imgIndex] || images[0]}
+                      alt={product.title}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setImgIndex((current) => Math.max(0, current - 1))}
+                        disabled={imgIndex === 0}
+                        aria-label="Show previous product image"
+                        className="absolute left-3 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
+                      >
+                        <ChevronLeft size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setImgIndex((current) => Math.min(images.length - 1, current + 1))
+                        }
+                        disabled={imgIndex === images.length - 1}
+                        aria-label="Show next product image"
+                        className="absolute right-3 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
+                      >
+                        <ChevronRight size={16} />
+                      </button>
+                      <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
+                        {images.map((image, index) => (
+                          <button
+                            key={`${image}-${index}`}
+                            type="button"
+                            onClick={() => setImgIndex(index)}
+                            aria-label={`Show product image ${index + 1}`}
+                            className={`rounded-full transition-all ${
+                              index === imgIndex ? 'h-1.5 w-4 bg-[var(--ink)]' : 'h-1.5 w-1.5 bg-[var(--ink)]/25'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
               ) : (
                 <span>{product.title.charAt(0)}</span>
               )}

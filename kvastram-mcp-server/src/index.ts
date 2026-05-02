@@ -101,7 +101,23 @@ app.get('/authorize', (req, res) => {
   if (state) url.searchParams.set('state', state);
 
   console.log(`[OAuth] Authorizing client_id="${client_id}" → redirecting with code`);
-  res.redirect(url.toString());
+
+  // Return HTML that redirects after a short delay so the OAuth client
+  // can set up its callback listener before the redirect fires.
+  const callbackUrl = url.toString();
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Kvastram Admin – Connecting…</title>
+<style>body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background:#faf9f7;}
+h2{color:#8b5e3c;}p{color:#555;}</style>
+</head>
+<body>
+<h2>Kvastram Admin</h2>
+<p>Authorizing Claude AI access…</p>
+<script>setTimeout(()=>{window.location.href=${JSON.stringify(callbackUrl)};},500);</script>
+</body>
+</html>`);
 });
 
 // ── OAuth: Token endpoint ─────────────────────────────────────

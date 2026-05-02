@@ -112,3 +112,40 @@ export async function uploadVideoToCloudinary(
     resourceType: 'video',
   });
 }
+
+// Upload to Cloudinary from a remote URL (e.g. public Google Drive link)
+export async function uploadFromUrl(
+  url: string,
+  options: CloudinaryUploadOptions = {}
+): Promise<CloudinaryUploadResult> {
+  const cloudName = getRequiredEnv('CLOUDINARY_CLOUD_NAME');
+  const apiKey = getRequiredEnv('CLOUDINARY_API_KEY');
+  const apiSecret = getRequiredEnv('CLOUDINARY_API_SECRET');
+  const folder = options.folder || 'kvastram/products/images';
+  const resourceType = options.resourceType || 'image';
+  const timestamp = Math.floor(Date.now() / 1000);
+
+  const signature = createSignature({ folder, timestamp }, apiSecret);
+
+  const formData = new FormData();
+  formData.append('file', url);          // Cloudinary accepts URL as file
+  formData.append('api_key', apiKey);
+  formData.append('timestamp', String(timestamp));
+  formData.append('signature', signature);
+  formData.append('folder', folder);
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+    { method: 'POST', body: formData, signal: AbortSignal.timeout(120000) }
+  );
+
+  const payload = (await response.json().catch(() => null)) as
+    | { secure_url?: string; public_id?: string; error?: { message?: string } }
+    | null;
+
+  if (!response.ok || !payload?.secure_url || !payload.public_id) {
+    throw new Error(payload?.error?.message || 'Failed to upload from URL to Cloudinary');
+  }
+
+  return { secureUrl: payload.secure_url, publicId: payload.public_id };
+}
