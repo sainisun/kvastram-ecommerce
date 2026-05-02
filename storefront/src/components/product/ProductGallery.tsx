@@ -156,7 +156,7 @@ export default function ProductGallery({
 
   if (items.length === 0) {
     return (
-      <div className="flex aspect-[4/5] items-center justify-center rounded-[28px] bg-stone-100 text-stone-400">
+      <div className="flex aspect-[4/5] items-center justify-center rounded-[var(--radius-lg)] bg-stone-100 text-stone-400">
         No media
       </div>
     );
@@ -241,7 +241,7 @@ export default function ProductGallery({
                 )}
 
                 {item.type === 'video' && (
-                  <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                  <div className="absolute left-4 top-4 flex items-center gap-2 rounded-[var(--radius-sm)] bg-black/45 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
                     <Play size={12} fill="currentColor" />
                     Reel
                   </div>
@@ -273,7 +273,7 @@ export default function ProductGallery({
                   key={`${item.id}-thumb`}
                   type="button"
                   onClick={() => scrollToIndex(index)}
-                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-xl border bg-stone-100 ${
+                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-[var(--radius-md)] border bg-stone-100 ${
                     activeIndex === index
                       ? 'border-stone-900'
                       : 'border-transparent opacity-70'
@@ -317,7 +317,7 @@ export default function ProductGallery({
 
       <div className="hidden lg:block">
         <div className="space-y-4">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] bg-[#fafafa] lg:h-[calc(100vh-8rem)] lg:min-h-[720px] lg:aspect-auto">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-lg)] bg-[#fafafa] lg:h-[calc(100vh-8rem)] lg:min-h-[720px] lg:aspect-auto">
             {activeItem.type === 'video' ? (
               <>
                 <video
@@ -340,7 +340,7 @@ export default function ProductGallery({
                 >
                   {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                 </button>
-                <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                <div className="absolute left-5 top-5 flex items-center gap-2 rounded-[var(--radius-sm)] bg-black/45 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
                   <Play size={12} fill="currentColor" />
                   Reel
                 </div>
@@ -407,7 +407,7 @@ export default function ProductGallery({
                     key={`${item.id}-desktop-thumb`}
                     type="button"
                     onClick={() => goToIndex(index)}
-                    className={`relative aspect-[4/5] overflow-hidden rounded-2xl border ${
+                    className={`relative aspect-[4/5] overflow-hidden rounded-[var(--radius-md)] border ${
                       activeIndex === index
                         ? 'border-stone-900'
                         : 'border-transparent opacity-75'
