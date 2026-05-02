@@ -169,7 +169,7 @@ function ProductGrid({
         style={{
           padding: 'var(--space-20) var(--space-0)',
           textAlign: 'center',
-          color: 'var(--mid)',
+          color: 'var(--muted)',
           fontStyle: 'italic',
           fontFamily: 'var(--font-display)',
           fontSize: '20px',
