@@ -54,6 +54,12 @@ interface CollectionOption {
 }
 
 /* ── Status helpers ── */
+function toDisplayUrl(url: string): string {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  if (url.includes('/f_auto')) return url;
+  return url.replace('/upload/', '/upload/f_auto,q_auto/');
+}
+
 const STATUS_STYLE: Record<string, { badge: string; border: string }> = {
   published: { badge: 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]', border: 'border-[var(--tertiary-container)]' },
   draft:     { badge: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]', border: 'border-[var(--secondary-container)]' },
@@ -436,7 +442,7 @@ export default function ProductsPage() {
                   </button>
                   {product.thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={product.thumbnail} alt={product.title} className="h-full w-full object-cover"
+                    <img src={toDisplayUrl(product.thumbnail)} alt={product.title} className="h-full w-full object-cover"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-[var(--on-surface-variant)]">
@@ -497,7 +503,7 @@ export default function ProductsPage() {
                   className="h-4 w-4 rounded border-[var(--outline-variant)]" />
                 <div className="h-14 w-14 flex-shrink-0 rounded-xl overflow-hidden bg-[var(--surface-container-low)] flex items-center justify-center">
                   {product.thumbnail
-                    ? <img src={product.thumbnail} alt={product.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> // eslint-disable-line @next/next/no-img-element
+                    ? <img src={toDisplayUrl(product.thumbnail)} alt={product.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> // eslint-disable-line @next/next/no-img-element
                     : <Package size={18} className="text-[var(--on-surface-variant)]" />}
                 </div>
                 <div className="flex-1 min-w-0">

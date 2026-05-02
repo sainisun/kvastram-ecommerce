@@ -2,6 +2,14 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useCallback, useMemo, useState } from 'react';
+
+// Cloudinary HEIC/HEIF images can't be displayed by browsers directly.
+// Adding f_auto makes Cloudinary serve WebP/JPEG instead.
+function toDisplayUrl(url: string): string {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  if (url.includes('/f_auto')) return url;
+  return url.replace('/upload/', '/upload/f_auto,q_auto/');
+}
 import { useDropzone } from 'react-dropzone';
 import {
   closestCenter,
@@ -166,7 +174,7 @@ function SortableMediaCard({
     useSortable({ id: item.id });
   const mediaType = getMediaType(item);
   const previewUrl =
-    mediaType === 'video' ? item.metadata?.thumbnail_url || '' : item.url;
+    mediaType === 'video' ? item.metadata?.thumbnail_url || '' : toDisplayUrl(item.url);
 
   return (
     <div

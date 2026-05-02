@@ -73,10 +73,28 @@ app.get('/.well-known/oauth-authorization-server', (_req, res) => {
     issuer: BASE_URL,
     authorization_endpoint: `${BASE_URL}/authorize`,
     token_endpoint: `${BASE_URL}/token`,
+    registration_endpoint: `${BASE_URL}/register`,
     response_types_supported: ['code'],
     grant_types_supported: ['authorization_code'],
     code_challenge_methods_supported: ['S256'],
     token_endpoint_auth_methods_supported: ['none'],
+    scopes_supported: ['mcp'],
+  });
+});
+
+// ── OAuth: Dynamic Client Registration (RFC 7591) ─────────────
+// claude.ai requires this before it will start the OAuth browser flow
+app.post('/register', (req, res) => {
+  const { client_name, redirect_uris, grant_types, response_types } = req.body as Record<string, unknown>;
+  const clientId = `mcp-client-${randomUUID()}`;
+  console.log(`[OAuth] Client registered: ${client_name} → ${clientId}`);
+  res.status(201).json({
+    client_id: clientId,
+    client_name: client_name || 'MCP Client',
+    redirect_uris: redirect_uris || [],
+    grant_types: grant_types || ['authorization_code'],
+    response_types: response_types || ['code'],
+    token_endpoint_auth_method: 'none',
   });
 });
 
@@ -103,22 +121,7 @@ app.get('/authorize', (req, res) => {
 
   console.log(`[OAuth] Authorizing client_id="${client_id}" → redirecting with code`);
 
-  // Return HTML that redirects after a short delay so the OAuth client
-  // can set up its callback listener before the redirect fires.
-  const callbackUrl = url.toString();
-  res.setHeader('Content-Type', 'text/html');
-  res.send(`<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>Kvastram Admin – Connecting…</title>
-<style>body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background:#faf9f7;}
-h2{color:#8b5e3c;}p{color:#555;}</style>
-</head>
-<body>
-<h2>Kvastram Admin</h2>
-<p>Authorizing Claude AI access…</p>
-<script>setTimeout(()=>{window.location.href=${JSON.stringify(callbackUrl)};},500);</script>
-</body>
-</html>`);
+  res.redirect(302, url.toString());
 });
 
 // ── OAuth: Token endpoint ─────────────────────────────────────

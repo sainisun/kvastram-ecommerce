@@ -27,14 +27,20 @@ interface Region {
   currency_code: string;
 }
 
+function toDisplayUrl(url: string): string {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  if (url.includes('/f_auto')) return url;
+  return url.replace('/upload/', '/upload/f_auto,q_auto/');
+}
+
 function getCoverThumbnail(mediaItems: ProductMediaItem[]) {
   const coverItem = mediaItems.find((item) => item.is_thumbnail) || mediaItems[0];
   if (!coverItem) return '';
   if (coverItem.metadata?.media_type === 'video') {
     const firstImage = mediaItems.find((item) => item.metadata?.media_type !== 'video');
-    return coverItem.metadata.thumbnail_url || firstImage?.url || coverItem.url;
+    return coverItem.metadata.thumbnail_url || toDisplayUrl(firstImage?.url || '') || toDisplayUrl(coverItem.url);
   }
-  return coverItem.url;
+  return toDisplayUrl(coverItem.url);
 }
 
 // ─── Live Preview Card ────────────────────────────────────────────────────────

@@ -184,6 +184,88 @@ export function registerProductTools(server: McpServer) {
     return { content: [{ type: 'text', text: `Image uploaded successfully!\n\nCloudinary URL: ${(result as any).url || (result as any).secure_url}\n\nFull response:\n${JSON.stringify(result, null, 2)}` }] };
   });
 
+  server.tool('upload_product_image_base64', 'Upload an image from base64 data to Cloudinary — use this when fetching images from Google Drive or other sources that provide raw file content', {
+    base64_data: z.string().describe('Base64-encoded image data (with or without data URI prefix like "data:image/jpeg;base64,...")'),
+    filename: z.string().describe('Filename with extension, e.g. "red-kurta.jpg" — used to detect image type and name the Cloudinary asset'),
+  }, async ({ base64_data, filename }) => {
+    const token = await getAuthToken();
+
+    // Strip data URI prefix if present
+    const base64Clean = base64_data.replace(/^data:[^;]+;base64,/, '');
+    const buffer = Buffer.from(base64Clean, 'base64');
+
+    const ext = filename.split('.').pop()?.toLowerCase() || 'jpg';
+    const mimeMap: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif', gif: 'image/gif' };
+    const contentType = mimeMap[ext] || 'image/jpeg';
+
+    const blob = new Blob([buffer], { type: contentType });
+    const form = new FormData();
+    form.append('file', blob, filename);
+
+    const baseUrl = process.env.KVASTRAM_API_URL || 'https://api.kvastram.com';
+    const uploadRes = await fetch(`${baseUrl}/upload`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    });
+
+    const result = await uploadRes.json() as Record<string, unknown>;
+    if (!uploadRes.ok) throw new Error(`Upload failed: ${JSON.stringify(result)}`);
+
+    const url = (result as any).url || (result as any).secure_url;
+    return { content: [{ type: 'text', text: `Image uploaded!\n\nCloudinary URL: ${url}\n\n${JSON.stringify(result, null, 2)}` }] };
+  });
+
+  server.tool('create_product_with_drive_image', 'Create a product in one step using a Google Drive image (base64) — uploads image to Cloudinary then creates the product automatically', {
+    // Image data
+    base64_data: z.string().describe('Base64-encoded image data downloaded from Google Drive'),
+    filename: z.string().describe('Image filename with extension, e.g. "red-kurta.jpg"'),
+    // Product details
+    title: z.string().describe('Product title'),
+    description: z.string().optional().describe('Product description (HTML supported)'),
+    price: z.number().describe('Price in INR (e.g. 599 for ₹599)'),
+    compare_at_price: z.number().optional().describe('MRP/original price for showing discount'),
+    status: z.enum(['published', 'draft']).optional().default('draft'),
+    category_ids: z.array(z.string()).optional(),
+    tag_ids: z.array(z.string()).optional(),
+    sku: z.string().optional(),
+    inventory_quantity: z.number().optional().default(0),
+    weight: z.number().optional().describe('Weight in grams'),
+    seo_title: z.string().optional(),
+    seo_description: z.string().optional(),
+  }, async ({ base64_data, filename, title, price, compare_at_price, status, ...rest }) => {
+    const token = await getAuthToken();
+    const api = await createApiClient();
+    const INDIA_REGION_ID = 'dc27dc4d-e976-4cc8-9748-6323a1c69d4c';
+
+    // Step 1: Upload image
+    const base64Clean = base64_data.replace(/^data:[^;]+;base64,/, '');
+    const buffer = Buffer.from(base64Clean, 'base64');
+    const ext = filename.split('.').pop()?.toLowerCase() || 'jpg';
+    const mimeMap: Record<string, string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif', gif: 'image/gif' };
+    const blob = new Blob([buffer], { type: mimeMap[ext] || 'image/jpeg' });
+    const form = new FormData();
+    form.append('file', blob, filename);
+    const baseUrl = process.env.KVASTRAM_API_URL || 'https://api.kvastram.com';
+    const uploadRes = await fetch(`${baseUrl}/upload`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+    const uploadResult = await uploadRes.json() as Record<string, unknown>;
+    if (!uploadRes.ok) throw new Error(`Image upload failed: ${JSON.stringify(uploadResult)}`);
+    const imageUrl = (uploadResult as any).url || (uploadResult as any).secure_url;
+
+    // Step 2: Create product
+    const handle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').substring(0, 200);
+    const payload: Record<string, unknown> = {
+      title, handle,
+      status: status ?? 'draft',
+      images: [imageUrl],
+      prices: [{ amount: Math.round(price * 100), currency_code: 'inr', region_id: INDIA_REGION_ID }],
+      ...(compare_at_price && { compare_at_prices: [{ amount: Math.round(compare_at_price * 100), currency_code: 'inr', region_id: INDIA_REGION_ID }] }),
+      ...rest,
+    };
+    const { data } = await api.post('/products', payload);
+    return { content: [{ type: 'text', text: `✅ Product created with image!\n\nImage URL: ${imageUrl}\n\n${formatResponse(data)}` }] };
+  });
+
   server.tool('update_product_inventory', 'Update stock/inventory for a product', {
     id: z.string().describe('Product UUID'),
     inventory_quantity: z.number().describe('New stock count'),
