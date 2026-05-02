@@ -321,7 +321,7 @@ function ProductGrid({
             href={`/products/${spotlightProduct.handle || spotlightProduct.id}`}
             className="product-spotlight md:hidden"
           >
-            <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
+            <div className="relative aspect-[16/10] overflow-hidden bg-[var(--soft)]">
               {spotlight.custom_image_url || spotlightProduct.thumbnail ? (
                 <OptimizedImage
                   src={spotlight.custom_image_url || spotlightProduct.thumbnail || ''}
@@ -333,25 +333,25 @@ function ProductGrid({
               ) : null}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               {spotlight.badge_text ? (
-                <span className="absolute left-4 top-4 z-10 rounded-full bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-stone-900">
+                <span className="absolute left-4 top-4 z-10 rounded-[var(--radius-xs)] bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ink)]">
                   {spotlight.badge_text}
                 </span>
               ) : null}
             </div>
-            <div className="space-y-3 bg-[#f5f0eb] px-4 py-5">
+            <div className="space-y-3 bg-[var(--cream)] px-4 py-5">
               <div>
-                <p className="font-body text-[11px] font-medium uppercase tracking-[0.18em] text-stone-500">
+                <p className="font-body text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--muted)]">
                   Spotlight Pick
                 </p>
-                <h3 className="font-heading mt-2 text-[28px] font-semibold uppercase leading-[1.05] text-stone-900">
+                <h3 className="font-heading mt-2 text-[28px] font-semibold uppercase leading-[1.05] text-[var(--ink)]">
                   {spotlightProduct.title}
                 </h3>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="font-body text-[15px] font-medium text-stone-900">
+                <p className="font-body text-[15px] font-medium text-[var(--ink)]">
                   {spotlightPrice.price}
                 </p>
-              <span className="inline-flex items-center rounded-full bg-stone-900 px-5 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-white">
+              <span className="inline-flex items-center rounded-[var(--radius-xs)] bg-[var(--ink)] px-5 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-white">
                   View
                 </span>
               </div>

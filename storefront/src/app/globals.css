@@ -43,6 +43,7 @@
   --sienna-light: #F2E8E1;
   --gold: #C9943A;
   --shadow: 0 10px 34px rgba(var(--ink-rgb), 0.12);
+  --radius-xs: 2px;
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
