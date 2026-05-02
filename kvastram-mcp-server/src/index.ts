@@ -161,6 +161,11 @@ app.post('/token', (req, res) => {
 app.post('/mcp', async (req, res) => {
   const auth = req.headers['authorization'];
   if (!auth || auth !== `Bearer ${SECRET}`) {
+    // RFC 6750 §3.1 — must include WWW-Authenticate so clients can discover OAuth server
+    res.setHeader(
+      'WWW-Authenticate',
+      `Bearer realm="kvastram-admin", resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`
+    );
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
@@ -195,6 +200,10 @@ app.post('/mcp', async (req, res) => {
 app.get('/mcp', async (req, res) => {
   const auth = req.headers['authorization'];
   if (!auth || auth !== `Bearer ${SECRET}`) {
+    res.setHeader(
+      'WWW-Authenticate',
+      `Bearer realm="kvastram-admin", resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`
+    );
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
