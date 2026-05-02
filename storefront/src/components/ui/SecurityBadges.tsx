@@ -51,7 +51,7 @@ export function PaymentIcons({ className = '' }: { className?: string }) {
 
       {/* Amex */}
       <div className="h-8 w-12 bg-white rounded border border-stone-200 flex items-center justify-center">
-        <span className="text-[8px] font-bold text-blue-800">AMEX</span>
+        <span className="text-[11px] font-bold text-blue-800">AMEX</span>
       </div>
 
       {/* PayPal */}

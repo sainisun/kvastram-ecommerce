@@ -473,7 +473,7 @@ function ReelPlayerModal({
             <ArrowLeft size={18} />
           </button>
           <div className="min-w-0 flex-1">
-            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">
               {currentIndex + 1} / {localReels.length}
             </p>
             <p className="mt-0.5 line-clamp-1 text-[13px] font-semibold text-white">

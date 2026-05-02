@@ -48,7 +48,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                     <Play size={34} fill="white" className="text-white" />
                   </div>
                   <div className="relative z-[3]">
-                    <div className="text-[9px] font-black uppercase tracking-[0.14em] text-white/75 sm:text-[11px]">
+                    <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/75 sm:text-[11px]">
                       Watch &amp; Buy
                     </div>
                     <div className="reel-title mt-0.5 line-clamp-2 leading-tight text-white">
