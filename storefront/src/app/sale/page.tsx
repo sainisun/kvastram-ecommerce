@@ -60,7 +60,7 @@ export default function SalePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#7f1d1d] via-[#c53030] to-[#e35b4f] px-6 py-16 text-white md:px-12 md:py-20 lg:px-20 lg:py-28">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[var(--sienna-dark)] via-[var(--sienna)] to-[var(--soft)] px-6 py-16 text-white md:px-12 md:py-20 lg:px-20 lg:py-28">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.22),transparent_28%),linear-gradient(to_bottom,rgba(0,0,0,0.08),rgba(0,0,0,0.24))]" />
         <div className="relative mx-auto max-w-[1440px] space-y-6 text-center">
           <span className="text-xs font-bold uppercase tracking-[0.24em] text-white/75">
