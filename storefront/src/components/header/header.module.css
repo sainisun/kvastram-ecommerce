@@ -1,0 +1,23 @@
+.scrollbarNone {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbarNone::-webkit-scrollbar {
+  display: none;
+}
+
+.mmLink {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--kv-ink-2);
+  padding: 6px 0;
+  transition: color 150ms, padding-left 150ms;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mmLink:hover {
+  color: var(--kv-coral);
+  padding-left: 4px;
+}

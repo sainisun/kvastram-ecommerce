@@ -75,6 +75,25 @@
   --space-xl: clamp(3.5rem, 7vw, 6rem);
   --space-2xl: clamp(5rem, 9vw, 8rem);
 
+  /* ─── Kvastram Header Design Tokens (kv-*) ─── */
+  --kv-ink:          #1a1714;
+  --kv-ink-2:        #3d3a36;
+  --kv-ink-3:        #7a7570;
+  --kv-ink-4:        #b5b0a8;
+  --kv-coral:        #c94e2a;
+  --kv-coral-dark:   #a03d20;
+  --kv-parchment:    #f7f4ef;
+  --kv-parchment-2:  #ede8e0;
+  --kv-warm:         #e8e2d9;
+  --kv-white:        #ffffff;
+  --kv-border:       #d8d2c8;
+  --kv-border-dark:  #1a1714;
+  --kv-radius-sm:    4px;
+  --kv-radius-md:    8px;
+  --kv-radius-lg:    12px;
+  --kv-radius-pill:  999px;
+  --font-ui:         var(--font-body);
+
   /* ─── Tailwind compat aliases ─── */
   --sienna: #a85d3a;
   --sienna-dark: #7d3f25;

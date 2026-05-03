@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Header } from '@/components/layout/Header';
+import { SiteHeader } from '@/components/header';
 import { Footer } from '@/components/layout/Footer';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { ChatWidget } from '@/components/ui/ChatWidget';
@@ -73,7 +73,7 @@ export function MainLayout({
   return (
     <>
       <ScrollProgress />
-      {!isReelsPage && (isWholesalePage ? <WholesaleHeader /> : <Header />)}
+      {!isReelsPage && (isWholesalePage ? <WholesaleHeader /> : <SiteHeader />)}
       <main id="main-content" tabIndex={-1} className="page-transition">
         {children}
       </main>
