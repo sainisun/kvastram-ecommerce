@@ -56,12 +56,33 @@ jobs:
               echo "  Waiting... (${i}/20) backend=${STATUS}"
               sleep 3
             done
+            echo "=== Waiting for storefront to be healthy ==="
+            for i in $(seq 1 40); do
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/health 2>/dev/null || echo "000")
+              if [ "$STATUS" = "200" ]; then
+                echo "Storefront healthy after ${i}s"
+                break
+              fi
+              echo "  Waiting... (${i}/40) storefront=${STATUS}"
+              sleep 3
+            done
+            echo "=== Waiting for admin to be healthy ==="
+            for i in $(seq 1 40); do
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health 2>/dev/null || echo "000")
+              if [ "$STATUS" = "200" ]; then
+                echo "Admin healthy after ${i}s"
+                break
+              fi
+              echo "  Waiting... (${i}/40) admin=${STATUS}"
+              sleep 3
+            done
             echo "=== Running manual backend migrations ==="
             docker compose -f deploy/hostinger/docker-compose.yml exec -T backend node dist/run-manual-migrations.js
             echo "=== Health Check ==="
-            curl -sf http://localhost:4000/health || { echo "Backend health check FAILED"; exit 1; }
-            curl -sf http://localhost:3000 > /dev/null || { echo "Storefront health check FAILED"; exit 1; }
-            curl -sf http://localhost:3001 > /dev/null || { echo "Admin health check FAILED"; exit 1; }
+            docker compose -f deploy/hostinger/docker-compose.yml ps
+            curl -sf http://localhost:4000/health || { echo "Backend health check FAILED"; docker compose -f deploy/hostinger/docker-compose.yml logs --tail=120 backend; exit 1; }
+            curl -sf http://localhost:3000/health > /dev/null || { echo "Storefront health check FAILED"; docker compose -f deploy/hostinger/docker-compose.yml logs --tail=160 storefront; exit 1; }
+            curl -sf http://localhost:3001/health > /dev/null || { echo "Admin health check FAILED"; docker compose -f deploy/hostinger/docker-compose.yml logs --tail=160 admin; exit 1; }
             echo "All services healthy"
             echo "=== Removing unused Docker images ==="
             docker image prune -f --filter "until=24h"
