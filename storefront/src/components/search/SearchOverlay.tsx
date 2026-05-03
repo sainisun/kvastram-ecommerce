@@ -8,6 +8,9 @@ import { useDebounce } from 'use-debounce';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
 import { useCurrency } from '@/context/currency-context';
+import type { Product } from '@/types';
+
+type SearchResult = Pick<Product, 'id' | 'title' | 'handle' | 'thumbnail' | 'variants'>;
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -17,8 +20,7 @@ interface SearchOverlayProps {
 export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const [query, setQuery] = useState('');
   const [debouncedQuery] = useDebounce(query, 300);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [suggestions, setSuggestions] = useState<
     Array<{ id: string; title: string; handle: string }>
   >([]);

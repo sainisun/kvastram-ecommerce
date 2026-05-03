@@ -78,15 +78,6 @@ function SearchContent() {
     setShowFilters(false);
   };
 
-  const formatPrice = (product: Product) => {
-    if (!product.variants || product.variants.length === 0) return 'Unavailable';
-    const prices = product.variants[0].prices || [];
-    // Prefer INR base price for conversion, fall back to first available
-    const inrPrice = prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || prices[0];
-    if (inrPrice) return formatCurrencyPrice(inrPrice.amount);
-    return 'Contact for price';
-  };
-
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     const btn = e.currentTarget as HTMLButtonElement;
@@ -292,7 +283,11 @@ function SearchContent() {
                     {displayTitle}
                   </h3>
                   <p className="text-sm font-medium text-stone-900 pt-1">
-                    {formatPrice(product)}
+                    {(() => {
+                      const prices = product.variants?.[0]?.prices || [];
+                      const p = prices.find((x: MoneyAmount) => x.currency_code?.toLowerCase() === 'inr') || prices[0];
+                      return p ? formatCurrencyPrice(p.amount) : 'Contact for price';
+                    })()}
                   </p>
                 </div>
               </Link>

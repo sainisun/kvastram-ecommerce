@@ -42,6 +42,12 @@
   --success: #3e8a5f;
   --sienna-light: #F2E8E1;
   --gold: #C9943A;
+  --rating-star: #f6ad55;
+  --success-bg: #f0fdf4;
+  --success-text: #166534;
+  --success-dark: #15803d;
+  --online: #16a34a;
+  --danger-dot: #ef4444;
   --shadow: 0 10px 34px rgba(var(--ink-rgb), 0.12);
   --radius-xs: 2px;
   --radius-sm: 4px;

@@ -174,19 +174,19 @@ export default function CartPage() {
         <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
           {/* Hero empty message */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-stone-100 mb-6">
-              <ShoppingBag className="h-10 w-10 text-stone-400" />
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[var(--soft)] mb-6">
+              <ShoppingBag className="h-10 w-10 text-[var(--muted)]" />
             </div>
-            <h1 className="text-4xl font-serif text-stone-900 mb-3">
+            <h1 className="text-4xl font-serif text-[var(--ink)] mb-3">
               Your Bag Is Empty
             </h1>
-            <p className="text-stone-500 font-light text-lg mb-8">
+            <p className="text-[var(--muted)] font-light text-lg mb-8">
               Looks like you haven&apos;t added anything yet. Let us inspire
               you.
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-stone-900 text-white px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--ink)] text-white px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-[var(--ink)] transition-colors"
             >
               Explore Collection <ArrowRight size={16} />
             </Link>
@@ -197,7 +197,7 @@ export default function CartPage() {
             <div>
               <div className="flex items-center gap-3 mb-8">
                 <Sparkles size={18} className="text-amber-500" />
-                <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-stone-700">
+                <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--ink)]">
                   You Might Love
                 </h2>
               </div>
@@ -214,7 +214,7 @@ export default function CartPage() {
                     <div key={product.id} className="group flex flex-col">
                       <Link
                         href={`/products/${product.handle || product.id}`}
-                        className="block relative aspect-[3/4] bg-stone-100 overflow-hidden mb-4 rounded-sm"
+                        className="block relative aspect-[3/4] bg-[var(--soft)] overflow-hidden mb-4 rounded-sm"
                       >
                         {product.thumbnail ? (
                           <OptimizedImage
@@ -224,7 +224,7 @@ export default function CartPage() {
                             className="object-cover group-hover:scale-105 transition-transform duration-700"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-stone-400">
+                          <div className="w-full h-full flex items-center justify-center text-[var(--muted)]">
                             <ShoppingBag size={32} />
                           </div>
                         )}
@@ -233,14 +233,14 @@ export default function CartPage() {
                         href={`/products/${product.handle || product.id}`}
                         className="space-y-1 mb-3"
                       >
-                        <p className="text-xs text-stone-500 font-bold tracking-widest uppercase">
+                        <p className="text-xs text-[var(--muted)] font-bold tracking-widest uppercase">
                           {product.collection?.title || 'Kvastram'}
                         </p>
-                        <h3 className="font-serif text-base text-stone-900 leading-tight group-hover:text-stone-600 transition-colors">
+                        <h3 className="font-serif text-base text-[var(--ink)] leading-tight group-hover:text-[var(--muted)] transition-colors">
                           {product.title}
                         </h3>
                         {price && (
-                          <p className="text-sm font-medium text-stone-800">
+                          <p className="text-sm font-medium text-[var(--ink)]">
                             {price}
                           </p>
                         )}
@@ -251,7 +251,7 @@ export default function CartPage() {
                         className={`w-full py-2.5 text-xs font-bold uppercase tracking-widest border transition-all ${
                           addingRec === product.id
                             ? 'bg-green-600 text-white border-green-600'
-                            : 'border-stone-200 text-stone-700 hover:border-stone-900 hover:bg-stone-900 hover:text-white'
+                            : 'border-[var(--line)] text-[var(--ink)] hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white'
                         }`}
                       >
                         {addingRec === product.id ? '✓ Added!' : 'Quick Add'}
@@ -268,11 +268,11 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[var(--cream)]">
       <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-serif text-stone-900">Shopping Cart</h1>
+          <h1 className="text-3xl font-serif text-[var(--ink)]">Shopping Cart</h1>
           <button
             onClick={() => {
               if (confirm('Are you sure you want to clear your cart?')) {
@@ -280,7 +280,7 @@ export default function CartPage() {
                 showNotification('success', 'Cart cleared');
               }
             }}
-            className="text-sm text-stone-500 hover:text-stone-700 underline"
+            className="text-sm text-[var(--muted)] hover:text-[var(--ink)] underline"
           >
             Clear Cart
           </button>
@@ -289,12 +289,12 @@ export default function CartPage() {
         <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-16">
           {/* Cart Items */}
           <div className="lg:col-span-7">
-            <ul className="divide-y divide-stone-200 border-t border-b border-stone-200">
+            <ul className="divide-y divide-[var(--line)] border-t border-b border-[var(--line)]">
               {items.map((item) => (
                 <li key={item.variantId} className="flex py-6 sm:py-10">
                   {/* Product Image */}
                   <div className="flex-shrink-0">
-                    <div className="relative h-24 w-24 sm:h-32 sm:w-32 bg-stone-100 overflow-hidden">
+                    <div className="relative h-24 w-24 sm:h-32 sm:w-32 bg-[var(--soft)] overflow-hidden">
                       {item.thumbnail ? (
                         <OptimizedImage
                           src={item.thumbnail}
@@ -303,7 +303,7 @@ export default function CartPage() {
                           className="object-cover object-center"
                         />
                       ) : (
-                        <div className="h-full w-full flex items-center justify-center text-stone-400">
+                        <div className="h-full w-full flex items-center justify-center text-[var(--muted)]">
                           <ShoppingBag size={32} />
                         </div>
                       )}
@@ -315,7 +315,7 @@ export default function CartPage() {
                     <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
                       <div>
                         <div className="flex justify-between">
-                          <h3 className="text-sm font-medium text-stone-900">
+                          <h3 className="text-sm font-medium text-[var(--ink)]">
                             {item.handle ? (
                               <Link
                                 href={`/products/${item.handle}`}
@@ -328,15 +328,15 @@ export default function CartPage() {
                             )}
                           </h3>
                         </div>
-                        <p className="mt-1 text-sm text-stone-500">
+                        <p className="mt-1 text-sm text-[var(--muted)]">
                           {formatCartPrice(item.price)}
                         </p>
                         {(item.material || item.origin || item.sku) && (
-                          <div className="mt-2 space-y-1 text-xs text-stone-400">
+                          <div className="mt-2 space-y-1 text-xs text-[var(--muted)]">
                             {item.material && <p>Material: {item.material}</p>}
                             {item.origin && <p>Origin: {item.origin}</p>}
                             {item.sku && (
-                              <p className="text-stone-300">SKU: {item.sku}</p>
+                              <p className="text-[var(--line)]">SKU: {item.sku}</p>
                             )}
                           </div>
                         )}
@@ -349,7 +349,7 @@ export default function CartPage() {
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity - 1)
                             }
-                            className="p-1 min-h-[44px] min-w-[44px] text-stone-400 hover:text-stone-600 flex items-center justify-center"
+                            className="p-1 min-h-[44px] min-w-[44px] text-[var(--muted)] hover:text-[var(--muted)] flex items-center justify-center"
                             aria-label="Decrease quantity"
                           >
                             <Minus size={16} />
@@ -361,14 +361,14 @@ export default function CartPage() {
                               const qty = parseInt(e.target.value) || 1;
                               updateQuantity(item.variantId, qty);
                             }}
-                            className="w-16 text-center border-0 bg-transparent py-1 text-stone-900 focus:ring-0 sm:text-sm"
+                            className="w-16 text-center border-0 bg-transparent py-1 text-[var(--ink)] focus:ring-0 sm:text-sm"
                             min="1"
                           />
                           <button
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity + 1)
                             }
-                            className="p-1 min-h-[44px] min-w-[44px] text-stone-400 hover:text-stone-600 flex items-center justify-center"
+                            className="p-1 min-h-[44px] min-w-[44px] text-[var(--muted)] hover:text-[var(--muted)] flex items-center justify-center"
                             aria-label="Increase quantity"
                           >
                             <Plus size={16} />
@@ -379,7 +379,7 @@ export default function CartPage() {
                         <div className="absolute right-0 top-0">
                           <button
                             onClick={() => removeItem(item.variantId)}
-                            className="p-2 min-h-[44px] min-w-[44px] text-stone-400 hover:text-red-500 transition-colors flex items-center justify-center"
+                            className="p-2 min-h-[44px] min-w-[44px] text-[var(--muted)] hover:text-red-500 transition-colors flex items-center justify-center"
                             aria-label="Remove item"
                           >
                             <Trash2 size={18} />
@@ -389,7 +389,7 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex items-end justify-between pt-4">
-                      <p className="text-base font-medium text-stone-900">
+                      <p className="text-base font-medium text-[var(--ink)]">
                         Subtotal: {formatCartPrice(item.price * item.quantity)}
                       </p>
                     </div>
@@ -402,7 +402,7 @@ export default function CartPage() {
             <div className="mt-6">
               <Link
                 href="/products"
-                className="text-sm text-stone-600 hover:text-stone-900 flex items-center gap-2"
+                className="text-sm text-[var(--muted)] hover:text-[var(--ink)] flex items-center gap-2"
               >
                 <ArrowRight size={16} className="rotate-180" />
                 Continue Shopping
@@ -412,8 +412,8 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="mt-16 lg:col-span-5 lg:mt-0">
-            <div className="bg-white rounded-lg border border-stone-200 p-6">
-              <h2 className="text-lg font-medium text-stone-900 mb-6">
+            <div className="bg-white rounded-lg border border-[var(--line)] p-6">
+              <h2 className="text-lg font-medium text-[var(--ink)] mb-6">
                 Order Summary
               </h2>
 
@@ -443,12 +443,12 @@ export default function CartPage() {
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
                       placeholder="Promo code"
-                      className="flex-1 border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-stone-900"
+                      className="flex-1 border border-[var(--line)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--ink)]"
                     />
                     <button
                       onClick={handleApplyPromo}
                       disabled={promoLoading || !promoCode.trim()}
-                      className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-md hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-[var(--ink)] text-white text-sm font-medium rounded-md hover:bg-[var(--ink)] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {promoLoading ? 'Applying...' : 'Apply'}
                     </button>
@@ -458,13 +458,13 @@ export default function CartPage() {
 
               {/* Country Selector for Shipping */}
               <div className="mb-6">
-                <label className="block text-xs font-medium text-stone-500 mb-2">
+                <label className="block text-xs font-medium text-[var(--muted)] mb-2">
                   Shipping to
                 </label>
                 <select
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
-                  className="w-full border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-stone-900"
+                  className="w-full border border-[var(--line)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--ink)]"
                 >
                   <option value="">Select country</option>
                   <option value="US">United States</option>
@@ -520,7 +520,7 @@ export default function CartPage() {
                   <option value="NP">Nepal</option>
                 </select>
                 {shippingLoading && (
-                  <p className="text-xs text-stone-500 mt-1">
+                  <p className="text-xs text-[var(--muted)] mt-1">
                     Loading shipping options...
                   </p>
                 )}
@@ -528,7 +528,7 @@ export default function CartPage() {
                 {/* Shipping Options Radio Group */}
                 {_shippingOptions.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <label className="block text-xs font-medium text-stone-500 mb-2">
+                    <label className="block text-xs font-medium text-[var(--muted)] mb-2">
                       Select shipping method
                     </label>
                     {_shippingOptions.map((option) => (
@@ -536,8 +536,8 @@ export default function CartPage() {
                         key={option.id}
                         className={`flex items-center justify-between p-3 border rounded-md cursor-pointer transition-colors ${
                           selectedShippingOption === option.id
-                            ? 'border-stone-900 bg-stone-50'
-                            : 'border-stone-200 hover:border-stone-400'
+                            ? 'border-[var(--ink)] bg-[var(--cream)]'
+                            : 'border-[var(--line)] hover:border-[var(--muted)]'
                         }`}
                       >
                         <div className="flex items-center">
@@ -549,13 +549,13 @@ export default function CartPage() {
                             onChange={() =>
                               handleShippingOptionChange(option.id)
                             }
-                            className="h-4 w-4 text-stone-900 focus:ring-stone-900"
+                            className="h-4 w-4 text-[var(--ink)] focus:ring-[var(--ink)]"
                           />
                           <div className="ml-3">
-                            <p className="text-sm font-medium text-stone-900">
+                            <p className="text-sm font-medium text-[var(--ink)]">
                               {option.name}
                             </p>
-                            <p className="text-xs text-stone-500">
+                            <p className="text-xs text-[var(--muted)]">
                               {option.description}
                               {option.estimated_days &&
                               option.estimated_days.trim() !== ''
@@ -564,7 +564,7 @@ export default function CartPage() {
                             </p>
                           </div>
                         </div>
-                        <span className="text-sm font-medium text-stone-900">
+                        <span className="text-sm font-medium text-[var(--ink)]">
                           {subtotal >= freeShippingThreshold
                             ? 'Free'
                             : formatCartPrice(option.price)}
@@ -577,23 +577,23 @@ export default function CartPage() {
 
               {/* Summary Details */}
               <div className="flow-root">
-                <dl className="-my-4 divide-y divide-stone-100">
+                <dl className="-my-4 divide-y divide-[var(--soft)]">
                   <div className="flex items-center justify-between py-4">
-                    <dt className="text-stone-600">Subtotal</dt>
-                    <dd className="font-medium text-stone-900">
+                    <dt className="text-[var(--muted)]">Subtotal</dt>
+                    <dd className="font-medium text-[var(--ink)]">
                       {formatCartPrice(subtotal)}
                     </dd>
                   </div>
                   {discountAmount > 0 && (
                     <div className="flex items-center justify-between py-4">
-                      <dt className="text-stone-600">Discount</dt>
+                      <dt className="text-[var(--muted)]">Discount</dt>
                       <dd className="font-medium text-green-600">
                         -{formatCartPrice(discountAmount)}
                       </dd>
                     </div>
                   )}
                   <div className="flex items-center justify-between py-4">
-                    <dt className="text-stone-600">
+                    <dt className="text-[var(--muted)]">
                       Shipping
                       {shippingCost === 0 &&
                         subtotal >= freeShippingThreshold && (
@@ -602,17 +602,17 @@ export default function CartPage() {
                           </span>
                         )}
                     </dt>
-                    <dd className="font-medium text-stone-900">
+                    <dd className="font-medium text-[var(--ink)]">
                       {!countryCode ? (
-                        <span className="text-stone-400 text-sm">
+                        <span className="text-[var(--muted)] text-sm">
                           Calculated at checkout
                         </span>
                       ) : countryCode && _shippingOptions.length === 0 ? (
-                        <span className="text-stone-400 text-sm">
+                        <span className="text-[var(--muted)] text-sm">
                           Shipping unavailable
                         </span>
                       ) : !selectedShipping ? (
-                        <span className="text-stone-400 text-sm">
+                        <span className="text-[var(--muted)] text-sm">
                           Not available
                         </span>
                       ) : shippingCost === 0 ? (
@@ -623,10 +623,10 @@ export default function CartPage() {
                     </dd>
                   </div>
                   <div className="flex items-center justify-between py-4">
-                    <dt className="text-base font-medium text-stone-900">
+                    <dt className="text-base font-medium text-[var(--ink)]">
                       Total
                     </dt>
-                    <dd className="text-xl font-medium text-stone-900">
+                    <dd className="text-xl font-medium text-[var(--ink)]">
                       {formatCartPrice(total)}
                     </dd>
                   </div>
@@ -636,7 +636,7 @@ export default function CartPage() {
               {/* Free Shipping Notice */}
               {(shippingCost === null || shippingCost > 0) &&
                 subtotal < freeShippingThreshold && (
-                  <div className="mt-4 flex items-center gap-2 text-sm text-stone-500 bg-stone-50 p-3 rounded-md">
+                  <div className="mt-4 flex items-center gap-2 text-sm text-[var(--muted)] bg-[var(--cream)] p-3 rounded-md">
                     <AlertCircle size={16} />
                     <span>
                       Add {formatCartPrice(freeShippingThreshold - subtotal)}{' '}
@@ -648,13 +648,13 @@ export default function CartPage() {
               {/* Checkout Button */}
               <Link
                 href="/checkout"
-                className="mt-6 block w-full bg-stone-900 text-white text-center py-4 text-sm font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+                className="mt-6 block w-full bg-[var(--ink)] text-white text-center py-4 text-sm font-bold uppercase tracking-widest hover:bg-[var(--ink)] transition-colors"
               >
                 Proceed to Checkout
               </Link>
 
               {/* Secure Checkout Notice */}
-              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-stone-500">
+              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[var(--muted)]">
                 <svg
                   className="w-4 h-4"
                   fill="currentColor"

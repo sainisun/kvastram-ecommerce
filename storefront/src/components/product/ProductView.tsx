@@ -166,11 +166,11 @@ export default function ProductView({ product }: { product: Product }) {
 
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', marginBottom: 24 }}>
-          <a href="/" style={{ color: 'var(--muted)', textDecoration: 'none' }} className="hover:text-stone-900">Home</a>
+          <a href="/" style={{ color: 'var(--muted)', textDecoration: 'none' }} className="hover:text-[var(--ink)]">Home</a>
           <span>/</span>
           {primaryCategoryPath && primaryCategory ? (
             <>
-              <a href={primaryCategoryPath} style={{ color: 'var(--muted)', textDecoration: 'none' }} className="hover:text-stone-900">{primaryCategory.name}</a>
+              <a href={primaryCategoryPath} style={{ color: 'var(--muted)', textDecoration: 'none' }} className="hover:text-[var(--ink)]">{primaryCategory.name}</a>
               <span>/</span>
             </>
           ) : null}
@@ -203,7 +203,7 @@ export default function ProductView({ product }: { product: Product }) {
             {/* Rating */}
             {product.avg_rating != null && product.avg_rating > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <span style={{ color: '#f6ad55' }}>{'★★★★★'.slice(0, Math.round(product.avg_rating))}</span>
+                <span style={{ color: 'var(--rating-star)' }}>{'★★★★★'.slice(0, Math.round(product.avg_rating))}</span>
                 <span className="kv-sub" style={{ margin: 0 }}>
                   {product.avg_rating.toFixed(1)} / 5
                   {product.review_count ? ` · ${product.review_count} reviews` : ''}
@@ -222,7 +222,7 @@ export default function ProductView({ product }: { product: Product }) {
               <span className="pd-price">{formattedPrice}</span>
               {formattedComparePrice && <span className="orig">{formattedComparePrice}</span>}
               {formattedComparePrice && compareAtAmount && amount < compareAtAmount && (
-                <span style={{ background: '#f0fdf4', color: '#166534', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                <span style={{ background: 'var(--success-bg)', color: 'var(--success-text)', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
                   Save {Math.round((1 - amount / compareAtAmount) * 100)}%
                 </span>
               )}
@@ -305,10 +305,10 @@ export default function ProductView({ product }: { product: Product }) {
 
             {/* Low stock warning */}
             {selectedVariant && currentInventory > 0 && currentInventory <= 10 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: '#b91c1c', marginBottom: 12 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--danger)', marginBottom: 12 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--danger-dot)', display: 'inline-block' }} />
                 Only {currentInventory} left
-                {isConnected ? <Wifi size={11} style={{ color: '#16a34a' }} /> : <WifiOff size={11} style={{ color: 'var(--muted)' }} />}
+                {isConnected ? <Wifi size={11} style={{ color: 'var(--online)' }} /> : <WifiOff size={11} style={{ color: 'var(--muted)' }} />}
               </div>
             )}
 
@@ -320,7 +320,7 @@ export default function ProductView({ product }: { product: Product }) {
                 onClick={handleAddToCart}
                 disabled={!selectedVariant || addedToCart || outOfStock}
                 className={`btn btn-full${addedToCart ? '' : outOfStock ? '' : ' btn-primary'}`}
-                style={addedToCart ? { background: '#15803d', color: 'white', borderColor: '#15803d' } : outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : {}}
+                style={addedToCart ? { background: 'var(--success-dark)', color: 'white', borderColor: 'var(--success-dark)' } : outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : {}}
               >
                 {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag ✓' : 'Add to Bag'}
               </button>
@@ -329,7 +329,7 @@ export default function ProductView({ product }: { product: Product }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline btn-full"
-                style={{ color: '#16a34a', borderColor: '#16a34a', gap: 8 }}
+                style={{ color: 'var(--online)', borderColor: 'var(--online)', gap: 8 }}
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -381,11 +381,11 @@ export default function ProductView({ product }: { product: Product }) {
               {selectedVariant?.sku && <p className="kv-sub" style={{ margin: '4px 0 0', fontSize: 12 }}>SKU: {selectedVariant.sku}</p>}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 12, color: 'var(--muted)' }}>
                 {selectedVariant && currentInventory > 0 ? (
-                  <><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />{currentInventory <= 5 ? `Only ${currentInventory} left` : 'In Stock, Ready to Ship'}</>
+                  <><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success-dark)', display: 'inline-block' }} />{currentInventory <= 5 ? `Only ${currentInventory} left` : 'In Stock, Ready to Ship'}</>
                 ) : (
-                  <><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />Out of Stock</>
+                  <><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--danger-dot)', display: 'inline-block' }} />Out of Stock</>
                 )}
-                {isConnected ? <Wifi size={10} style={{ color: '#16a34a' }} /> : <WifiOff size={10} style={{ color: 'var(--muted)' }} />}
+                {isConnected ? <Wifi size={10} style={{ color: 'var(--online)' }} /> : <WifiOff size={10} style={{ color: 'var(--muted)' }} />}
               </div>
             </div>
 
