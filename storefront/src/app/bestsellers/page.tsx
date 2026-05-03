@@ -89,7 +89,7 @@ export default async function BestsellersPage({
   const [homepageResult, tagsResult, curatedResult] = await Promise.allSettled([
     api.getHomepageSettings(),
     api.getTags(),
-    api.getSpotlightProducts('bestseller'),
+    api.getSpotlightProducts('bestsellers'),
   ]);
 
   const homepageSettings =

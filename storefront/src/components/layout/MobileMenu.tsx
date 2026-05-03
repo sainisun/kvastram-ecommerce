@@ -23,6 +23,7 @@ import {
   Phone,
   Info,
   Package,
+  Clapperboard,
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { useShop } from '@/context/shop-context';
@@ -133,7 +134,7 @@ export default function MobileMenu({
     e.preventDefault();
     if (searchQuery.trim()) {
       handleClose();
-      router.push(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
@@ -332,6 +333,13 @@ export default function MobileMenu({
                   href="/bestsellers"
                   icon={<Tag size={18} />}
                   label="Bestsellers"
+                  pathname={pathname}
+                  onClick={handleLinkClick}
+                />
+                <MobileNavLink
+                  href="/reels"
+                  icon={<Clapperboard size={18} />}
+                  label="Reels"
                   pathname={pathname}
                   onClick={handleLinkClick}
                 />

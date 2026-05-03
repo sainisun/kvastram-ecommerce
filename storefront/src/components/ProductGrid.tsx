@@ -11,6 +11,7 @@ import OptimizedImage from '@/components/ui/OptimizedImage';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { useCurrency } from '@/context/currency-context';
 import { buildProductImageAlt } from '@/lib/seo';
+import { getProductDisplayTitle } from '@/lib/product-title';
 import Link from 'next/link';
 
 interface SpotlightProduct {
@@ -93,7 +94,7 @@ function ProductGrid({
       id: variant.id,
       variantId: variant.id,
       quantity: 1,
-      title: product.title,
+      title: getProductDisplayTitle(product.title),
       price: inrPrice.amount,
       currency: 'INR',
       thumbnail: product.thumbnail || undefined,
@@ -194,14 +195,15 @@ function ProductGrid({
     const isLowStock = stockQty > 0 && stockQty <= 5;
     const secondImage = product.images?.[1]?.url;
     const priceInfo = getPrice(product);
+    const displayTitle = getProductDisplayTitle(product.title);
 
     renderedItems.push(
       <article key={product.id} className="product-card group">
         <div className="product-media">
           <Link
             href={`/products/${product.handle || product.id}`}
-            className="absolute inset-0 block"
-            aria-label={`View ${product.title}`}
+            className="relative block h-full w-full"
+            aria-label={`View ${displayTitle}`}
           >
           {product.thumbnail ? (
             <OptimizedImage
@@ -243,7 +245,7 @@ function ProductGrid({
               setQuickViewProduct(product);
             }}
             className="quick-view-btn"
-            aria-label={`Quick view ${product.title}`}
+            aria-label={`Quick view ${displayTitle}`}
           >
             Quick View
           </button>
@@ -252,7 +254,7 @@ function ProductGrid({
         <div className="product-wish">
           <WishlistButton
             productId={product.id}
-            title={product.title}
+            title={displayTitle}
             price={product.variants?.[0]?.prices?.[0]?.amount || 0}
             currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
             thumbnail={product.thumbnail || undefined}
@@ -267,8 +269,8 @@ function ProductGrid({
             {product.collection?.title || 'Kvastram'}
           </p>
           <Link href={`/products/${product.handle || product.id}`}>
-            <h3 className="product-name" title={product.title}>
-              {product.title}
+            <h3 className="product-name" title={displayTitle}>
+              {displayTitle}
             </h3>
           </Link>
 

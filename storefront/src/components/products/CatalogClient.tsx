@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowUpDown,
   ChevronLeft,
@@ -98,6 +98,8 @@ export default function CatalogClient({
   const searchParams = useSearchParams();
   const router = useRouter();
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const filterDrawerRef = useRef<HTMLDivElement | null>(null);
+  const filterButtonRef = useRef<HTMLButtonElement | null>(null);
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [total, setTotal] = useState(totalProducts || initialProducts.length);
   const [page, setPage] = useState(1);
@@ -132,6 +134,25 @@ export default function CatalogClient({
     setTotal(totalProducts || initialProducts.length);
     setPage(1);
   }, [initialProducts, totalProducts]);
+
+  useEffect(() => {
+    if (!mobileFilterOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    filterDrawerRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileFilterOpen(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+      filterButtonRef.current?.focus();
+    };
+  }, [mobileFilterOpen]);
 
   const fetchProducts = useCallback(
     async (pageNum: number, sortValue?: string) => {
@@ -273,6 +294,7 @@ export default function CatalogClient({
             </div>
 
             <button
+              ref={filterButtonRef}
               onClick={() => setMobileFilterOpen(true)}
               className="kv-btn lg:hidden"
               aria-label="Open filters"
@@ -461,10 +483,17 @@ export default function CatalogClient({
             onClick={() => setMobileFilterOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed inset-0 z-50 w-full bg-white shadow-xl transition-transform duration-300 sm:inset-y-0 sm:left-0 sm:right-auto sm:max-w-[420px]">
+          <div
+            ref={filterDrawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mobile-filter-title"
+            tabIndex={-1}
+            className="fixed inset-0 z-50 w-full bg-white shadow-xl transition-transform duration-300 sm:inset-y-0 sm:left-0 sm:right-auto sm:max-w-[420px]"
+          >
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between border-b border-stone-100 p-4">
-                <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-stone-900">
+                <h2 id="mobile-filter-title" className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-stone-900">
                   Filters
                 </h2>
                 <button

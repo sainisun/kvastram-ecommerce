@@ -60,7 +60,10 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   trailingSlash: false,
-  output: 'standalone', 
+  output: 'standalone',
+  turbopack: {
+    root: process.cwd(),
+  },
   logging: {
     fetches: {
       fullUrl: process.env.NODE_ENV === 'development',

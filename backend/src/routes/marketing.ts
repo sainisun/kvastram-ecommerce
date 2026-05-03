@@ -46,7 +46,7 @@ app.get('/campaigns/active', async (c) => {
     const now = new Date();
     // Filter to active campaigns within date range
     const activeCampaigns = allCampaigns.filter((campaign: any) => {
-      if (!campaign.is_active) return false;
+      if (campaign.status !== 'active') return false;
       if (campaign.start_date && new Date(campaign.start_date) > now) return false;
       if (campaign.end_date && new Date(campaign.end_date) < now) return false;
       return true;

@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Minus, Plus, Wifi, WifiOff } from 'lucide-react';
 
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import ProductGallery from '@/components/product/ProductGallery';
 import { Reviews } from '@/components/product/Reviews';
 import { BackInStock } from '@/components/product/BackInStock';
 import { SizeGuide } from '@/components/product/SizeGuide';
@@ -17,27 +17,12 @@ import { useRecentlyViewed } from '@/context/recently-viewed-context';
 import { useShop } from '@/context/shop-context';
 import { useInventoryWebSocket } from '@/hooks/useInventoryWebSocket';
 import { buildProductImageAlt, getCategoryPath, getPrimaryCategory } from '@/lib/seo';
-import type { MoneyAmount, Product, ProductImage, ProductOption, ProductVariant, ProductVideo } from '@/types';
+import { getProductDisplayTitle } from '@/lib/product-title';
+import type { MoneyAmount, Product, ProductImage, ProductOption, ProductVariant } from '@/types';
 
 function getColorHex(colorName: string) {
   const map: Record<string, string> = { black: '#000000', navy: '#1e3a8a', white: '#ffffff', 'off white': '#faf8f5', cream: '#fdfbf7', terracotta: '#c5523f', olive: '#556b2f', taupe: '#8b8589', red: '#991b1b', blue: '#2563eb', green: '#15803d', yellow: '#ca8a04', beige: '#f5f5dc', brown: '#78350f', pink: '#fbcfe8', grey: '#6b7280', gray: '#6b7280' };
   return map[colorName.toLowerCase()] || '#cccccc';
-}
-
-type GalleryItem = { id: string; type: 'image' | 'video'; src: string; thumbnail?: string; alt: string; };
-
-function buildGalleryItems(media: ProductImage[], title: string, videos: ProductVideo[] = []): GalleryItem[] {
-  const mediaItems: GalleryItem[] = media.map((item, i) => ({
-    id: item.id || `${item.url}-${i}`,
-    type: item.metadata?.media_type === 'video' ? 'video' : 'image',
-    src: item.url,
-    thumbnail: item.metadata?.thumbnail_url,
-    alt: item.alt_text || item.alt || buildProductImageAlt({ title } as Product, i),
-  }));
-  const fallbackVideos: GalleryItem[] = (videos || [])
-    .filter((v) => !mediaItems.some((m) => m.type === 'video' && m.src === v.url))
-    .map((v, i) => ({ id: v.id || `vid-${i}`, type: 'video', src: v.url, thumbnail: v.thumbnail, alt: `${title} video ${i + 1}` }));
-  return [...mediaItems, ...fallbackVideos];
 }
 
 type TabKey = 'description' | 'specs' | 'shipping' | 'returns' | 'reviews';
@@ -52,12 +37,12 @@ export default function ProductView({ product }: { product: Product }) {
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('description');
-  const [activeImage, setActiveImage] = useState(0);
   const [showStickyATC, setShowStickyATC] = useState(false);
   const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
 
   const primaryCategory = getPrimaryCategory(product);
   const primaryCategoryPath = primaryCategory ? getCategoryPath(primaryCategory) : null;
+  const displayTitle = getProductDisplayTitle(product.title);
 
   const { isConnected, subscribeToInventory, unsubscribeFromInventory } = useInventoryWebSocket({
     onInventoryUpdate: (update) =>
@@ -75,7 +60,7 @@ export default function ProductView({ product }: { product: Product }) {
     addToRecentlyViewed({
       id: product.id,
       handle: product.handle || product.id,
-      title: product.title,
+      title: displayTitle,
       thumbnail: product.thumbnail || undefined,
       price: price?.amount || 0,
       currency: price?.currency_code?.toUpperCase() || 'USD',
@@ -133,8 +118,8 @@ export default function ProductView({ product }: { product: Product }) {
   const formattedComparePrice = compareAtAmount ? formatPrice(compareAtAmount) : null;
   const outOfStock = currentInventory <= 0;
 
-  const galleryItems = useMemo(() => {
-    const media = product.images?.length
+  const galleryMedia = useMemo(() => {
+    return product.images?.length
       ? product.images
           .sort((a: ProductImage, b: ProductImage) => (a.position || 0) - (b.position || 0))
           .map((img: ProductImage, i: number) => ({
@@ -143,10 +128,9 @@ export default function ProductView({ product }: { product: Product }) {
             alt_text: img.alt_text || buildProductImageAlt(product, i, img.alt),
           }))
       : product.thumbnail
-        ? [{ id: 'thumb', url: product.thumbnail, alt: product.title, alt_text: product.title, is_thumbnail: true, position: 0 }]
+        ? [{ id: 'thumb', url: product.thumbnail, alt: displayTitle, alt_text: displayTitle, is_thumbnail: true, position: 0 }]
         : [];
-    return buildGalleryItems(media, product.title, product.videos || []);
-  }, [product]);
+  }, [displayTitle, product]);
 
   const handleAddToCart = () => {
     if (!selectedVariant) return;
@@ -154,7 +138,7 @@ export default function ProductView({ product }: { product: Product }) {
       id: selectedVariant.id,
       variantId: selectedVariant.id,
       quantity,
-      title: `${product.title}${selectedVariant.title !== 'Default Variant' ? ` - ${selectedVariant.title}` : ''}`,
+      title: `${displayTitle}${selectedVariant.title !== 'Default Variant' ? ` - ${selectedVariant.title}` : ''}`,
       price: amount,
       currency: 'INR',
       thumbnail: product.thumbnail || undefined,
@@ -176,8 +160,6 @@ export default function ProductView({ product }: { product: Product }) {
     { key: 'reviews', label: 'Reviews' },
   ];
 
-  const activeImg = galleryItems[activeImage];
-
   return (
     <div style={{ background: 'var(--cream)', minHeight: '100vh' }}>
       <div className="kv-container" style={{ paddingTop: 32, paddingBottom: 80 }}>
@@ -192,7 +174,7 @@ export default function ProductView({ product }: { product: Product }) {
               <span>/</span>
             </>
           ) : null}
-          <span style={{ color: 'var(--ink)' }}>{product.title}</span>
+          <span style={{ color: 'var(--ink)' }}>{displayTitle}</span>
         </nav>
 
         {/* Main PD layout */}
@@ -201,49 +183,11 @@ export default function ProductView({ product }: { product: Product }) {
           {/* LEFT — Gallery */}
           <div>
             {/* Main image */}
-            <div className="pd-main">
-              {activeImg ? (
-                activeImg.type === 'video' ? (
-                  <video
-                    src={activeImg.src}
-                    controls
-                    playsInline
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                ) : (
-                  <OptimizedImage
-                    src={activeImg.src}
-                    alt={activeImg.alt}
-                    fill
-                    sizes="(max-width: 860px) 100vw, 55vw"
-                    className="object-cover"
-                  />
-                )
-              ) : (
-                <div style={{ color: 'var(--muted)', fontFamily: 'var(--font-display)', fontSize: 18 }}>No Image</div>
-              )}
-            </div>
-
-            {/* Thumbnails */}
-            {galleryItems.length > 1 && (
-              <div className="pd-thumbs">
-                {galleryItems.slice(0, 4).map((item, i) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setActiveImage(i)}
-                    className={`pd-thumb${activeImage === i ? ' active' : ''}`}
-                    aria-label={`View image ${i + 1}`}
-                  >
-                    {item.type === 'video' ? (
-                      <div style={{ width: '100%', height: '100%', background: 'var(--soft)', display: 'grid', placeItems: 'center', fontSize: 20 }}>▶</div>
-                    ) : (
-                      <OptimizedImage src={item.thumbnail || item.src} alt={item.alt} fill sizes="80px" className="object-cover" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <ProductGallery
+              media={galleryMedia}
+              title={displayTitle}
+              videos={product.videos || []}
+            />
           </div>
 
           {/* RIGHT — Product info */}
@@ -254,7 +198,7 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             {/* Title */}
-            <h1 className="section-title" style={{ marginBottom: 12 }}>{product.title}</h1>
+            <h1 className="section-title" style={{ marginBottom: 12 }}>{displayTitle}</h1>
 
             {/* Rating */}
             {product.avg_rating != null && product.avg_rating > 0 ? (
@@ -381,7 +325,7 @@ export default function ProductView({ product }: { product: Product }) {
                 {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag ✓' : 'Add to Bag'}
               </button>
               <a
-                href={`https://wa.me/message/kvastram?text=${encodeURIComponent(`Hi, I'm interested in: ${product.title}`)}`}
+                href={`https://wa.me/message/kvastram?text=${encodeURIComponent(`Hi, I'm interested in: ${displayTitle}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline btn-full"
@@ -399,7 +343,7 @@ export default function ProductView({ product }: { product: Product }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
               <WishlistButton
                 productId={product.id}
-                title={product.title}
+                title={displayTitle}
                 price={selectedVariant?.prices?.[0]?.amount || 0}
                 currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
                 thumbnail={product.thumbnail || undefined}
@@ -408,7 +352,7 @@ export default function ProductView({ product }: { product: Product }) {
                 showLabel
                 className="btn btn-outline"
               />
-              <ShareButtons title={product.title} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
+              <ShareButtons title={displayTitle} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
             </div>
 
             {/* Trust grid */}
@@ -447,7 +391,7 @@ export default function ProductView({ product }: { product: Product }) {
 
             {outOfStock && selectedVariant && (
               <div style={{ marginTop: 12 }}>
-                <BackInStock productId={product.id} variantId={selectedVariant.id} productTitle={product.title} />
+                <BackInStock productId={product.id} variantId={selectedVariant.id} productTitle={displayTitle} />
               </div>
             )}
           </div>
@@ -547,7 +491,7 @@ export default function ProductView({ product }: { product: Product }) {
         aria-hidden={!showStickyATC}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.title}</p>
+          <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayTitle}</p>
           <p style={{ fontSize: 14, fontWeight: 900, color: 'var(--sienna)' }}>{formattedPrice}</p>
         </div>
         <button

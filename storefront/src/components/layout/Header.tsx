@@ -59,9 +59,10 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
     highlight: true,
   },
   { label: 'Collections', url: '/collections', order: 5 },
-  { label: 'Sale', url: '/sale', order: 6, highlight: true },
-  { label: 'About', url: '/about', order: 7 },
-  { label: 'Contact', url: '/contact', order: 8 },
+  { label: 'Reels', url: '/reels', order: 6 },
+  { label: 'Sale', url: '/sale', order: 7, highlight: true },
+  { label: 'About', url: '/about', order: 8 },
+  { label: 'Contact', url: '/contact', order: 9 },
 ];
 
 const DEFAULT_QUICK_LINKS: NavLink[] = [

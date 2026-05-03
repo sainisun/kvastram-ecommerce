@@ -1048,16 +1048,14 @@ export const api = {
   },
 
   async getReviews(productId: string) {
-    try {
-      const res = await fetchWithTrace(
-        `${API_URL}/reviews/store/products/${productId}`,
-        { next: { revalidate: 60 } }
-      );
-      if (!res.ok) return { reviews: [] };
-      return res.json();
-    } catch {
-      return { reviews: [] };
+    const res = await fetchWithTrace(
+      `${API_URL}/reviews/store/products/${productId}`,
+      { next: { revalidate: 60 } }
+    );
+    if (!res.ok) {
+      throw new Error(`Failed to load reviews (${res.status})`);
     }
+    return res.json();
   },
 
   async createReview(productId: string, data: ReviewCreateData) {

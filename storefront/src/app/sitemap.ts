@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 import { api } from '@/lib/api';
-import { flattenCategories, SITE_URL } from '@/lib/seo';
+import { flattenCategories, getProductPath, SITE_URL } from '@/lib/seo';
 import type { Product } from '@/types';
 
 async function fetchAllProducts() {
@@ -108,12 +108,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       }));
 
-    const productEntries = products.map((product) => ({
-      url: `${SITE_URL}/products/${product.handle}`,
-      lastModified: product.created_at ? new Date(product.created_at) : new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.8,
-    }));
+    const productEntries = products
+      .filter((product) => product.handle || product.id)
+      .map((product) => {
+        const updatedAt = (product as Product & { updated_at?: string }).updated_at;
+        return {
+        url: `${SITE_URL}${getProductPath(product)}`,
+        lastModified: updatedAt
+          ? new Date(updatedAt)
+          : product.created_at
+            ? new Date(product.created_at)
+            : new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.8,
+      };
+      });
 
     const pageEntries = (pagesData.pages || [])
       .filter((page: { slug?: string; is_visible?: boolean }) => page.slug && page.is_visible)

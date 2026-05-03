@@ -83,6 +83,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [gridCols, setGridCols] = useState<2 | 3>(2);
   const [showAll, setShowAll] = useState(false);
+  const requestedReelId = searchParams.get('reel');
 
   // Restore grid preference from localStorage
   useEffect(() => {
@@ -105,6 +106,16 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     return () => { cancelled = true; };
   }, []);
 
+  useEffect(() => {
+    if (loading || !requestedReelId || activeIndex !== null) return;
+
+    const requestedIndex = reels.findIndex((reel) => reel.id === requestedReelId);
+    if (requestedIndex < 0) return;
+
+    if (requestedIndex >= 12) setShowAll(true);
+    setActiveIndex(requestedIndex);
+  }, [activeIndex, loading, reels, requestedReelId]);
+
   const visibleReels = useMemo(
     () => (showAll ? reels : reels.slice(0, 12)),
     [reels, showAll]
@@ -112,16 +123,20 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 
   function openReel(index: number) {
     setActiveIndex(index);
-    // Clean URL — no ?reel= param, player is purely in-memory state
-    router.replace(basePath, { scroll: false });
+    // Keep the active reel shareable without a full navigation.
+    const reelId = visibleReels[index]?.id;
+    router.replace(reelId ? `${basePath}?reel=${reelId}` : basePath, { scroll: false });
   }
 
   function closeReel() {
     setActiveIndex(null);
+    router.replace(basePath, { scroll: false });
   }
 
   function handleReelChange(index: number, updatedReel?: TrendingReelItem) {
     setActiveIndex(index);
+    const reelId = visibleReels[index]?.id;
+    if (reelId) router.replace(`${basePath}?reel=${reelId}`, { scroll: false });
     if (updatedReel) {
       setReels((prev) => prev.map((r) => r.id === updatedReel.id ? updatedReel : r));
     }

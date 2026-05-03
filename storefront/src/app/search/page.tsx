@@ -11,6 +11,7 @@ import { useCart } from '@/context/cart-context';
 import { Loader2, Filter, ArrowLeft } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import type { Product, MoneyAmount } from '@/types';
+import { getProductDisplayTitle } from '@/lib/product-title';
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -105,7 +106,7 @@ function SearchContent() {
       id: variant.id,
       variantId: variant.id,
       quantity: 1,
-      title: product.title,
+      title: getProductDisplayTitle(product.title),
       price: priceObj.amount,
       currency: priceObj.currency_code,
       thumbnail: product.thumbnail || undefined,
@@ -253,9 +254,11 @@ function SearchContent() {
           </div>
         ) : products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-            {products.map((product) => (
+            {products.map((product) => {
+              const displayTitle = getProductDisplayTitle(product.title);
+              return (
               <Link
-                href={`/products/${product.handle}`}
+                href={`/products/${product.handle || product.id}`}
                 key={product.id}
                 className="group block"
               >
@@ -263,7 +266,7 @@ function SearchContent() {
                   {product.thumbnail ? (
                     <OptimizedImage
                       src={product.thumbnail}
-                      alt={product.title}
+                      alt={displayTitle}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
                     />
@@ -286,14 +289,15 @@ function SearchContent() {
 
                 <div className="space-y-1 text-center">
                   <h3 className="font-serif text-lg text-stone-900 leading-tight group-hover:text-stone-600 transition-colors">
-                    {product.title}
+                    {displayTitle}
                   </h3>
                   <p className="text-sm font-medium text-stone-900 pt-1">
                     {formatPrice(product)}
                   </p>
                 </div>
               </Link>
-            ))}
+            );
+            })}
           </div>
         ) : (
           <div className="text-center py-20 bg-stone-50 rounded-lg">

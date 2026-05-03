@@ -24,6 +24,7 @@ export function Reviews({ productId }: ReviewsProps) {
     }>
   >([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const { customer } = useAuth();
 
@@ -49,10 +50,12 @@ export function Reviews({ productId }: ReviewsProps) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
+        setLoadError(null);
         const data = await api.getReviews(productId);
         setReviews(data.reviews || []);
       } catch (err) {
         console.error(err);
+        setLoadError('Reviews are temporarily unavailable.');
       } finally {
         setLoading(false);
       }
@@ -346,6 +349,10 @@ export function Reviews({ productId }: ReviewsProps) {
         {loading ? (
           <div className="text-center py-12 text-stone-400">
             Loading reviews...
+          </div>
+        ) : loadError ? (
+          <div className="text-center py-12 bg-red-50 text-red-700">
+            {loadError}
           </div>
         ) : reviews.length === 0 ? (
           <div className="text-center py-12 bg-stone-50 text-stone-500 italic">

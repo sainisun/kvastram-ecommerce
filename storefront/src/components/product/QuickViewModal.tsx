@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { useCurrency } from '@/context/currency-context';
 import { api } from '@/lib/api';
+import { getProductDisplayTitle } from '@/lib/product-title';
 
 interface QuickViewProduct {
   id: string;
@@ -40,6 +41,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
   const [reviewCount, setReviewCount] = useState(0);
   const { addItem } = useCart();
   const { formatPrice } = useCurrency();
+  const displayTitle = getProductDisplayTitle(product.title);
   const addedTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -109,7 +111,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
         id: selectedVariant?.id || product.id,
         variantId: selectedVariant?.id || product.id,
         quantity: 1,
-        title: product.title,
+        title: displayTitle,
         price,
         currency: 'INR',
         thumbnail: product.thumbnail || undefined,
@@ -139,7 +141,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
       >
         {/* Header */}
         <div className="modal-head">
-          <h3 className="serif line-clamp-1 text-[18px]">{product.title}</h3>
+          <h3 className="serif line-clamp-1 text-[18px]">{displayTitle}</h3>
           <button
             onClick={onClose}
             aria-label="Close"
@@ -161,7 +163,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                   <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5' }}>
                     <OptimizedImage
                       src={images[imgIndex] || images[0]}
-                      alt={product.title}
+                      alt={displayTitle}
                       fill
                       className="object-cover"
                       priority
@@ -206,7 +208,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                   )}
                 </>
               ) : (
-                <span>{product.title.charAt(0)}</span>
+                <span>{displayTitle.charAt(0)}</span>
               )}
             </div>
 

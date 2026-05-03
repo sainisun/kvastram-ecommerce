@@ -281,12 +281,12 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         {
                           label: 'Accessories',
                           emoji: '💍',
-                          href: '/search?query=accessories',
+                          href: '/search?q=accessories',
                         },
                         {
                           label: 'Wedding',
                           emoji: '💛',
-                          href: '/search?query=wedding',
+                          href: '/search?q=wedding',
                         },
                         { label: 'Sale', emoji: '🔖', href: '/sale' },
                       ].map(({ label, emoji, href }) => (

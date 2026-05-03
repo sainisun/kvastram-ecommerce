@@ -1,5 +1,5 @@
 import type { AnchorHTMLAttributes } from 'react';
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { QuickViewModal } from './QuickViewModal';
 
@@ -75,18 +75,22 @@ describe('QuickViewModal', () => {
       'https://example.com/1.jpg'
     );
 
-    view.getByLabelText('Show next product image').click();
+    fireEvent.click(view.getByLabelText('Show next product image'));
 
-    expect(view.getByTestId('quickview-image')).toHaveAttribute(
-      'data-src',
-      'https://example.com/2.jpg'
+    await waitFor(() =>
+      expect(view.getByTestId('quickview-image')).toHaveAttribute(
+        'data-src',
+        'https://example.com/2.jpg'
+      )
     );
 
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+    fireEvent.keyDown(window, { key: 'ArrowLeft' });
 
-    expect(view.getByTestId('quickview-image')).toHaveAttribute(
-      'data-src',
-      'https://example.com/1.jpg'
+    await waitFor(() =>
+      expect(view.getByTestId('quickview-image')).toHaveAttribute(
+        'data-src',
+        'https://example.com/1.jpg'
+      )
     );
   });
 });

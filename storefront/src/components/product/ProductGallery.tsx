@@ -283,10 +283,12 @@ export default function ProductGallery({
                   {item.type === 'video' ? (
                     <>
                       {item.thumbnail ? (
-                        <img
+                        <OptimizedImage
                           src={item.thumbnail}
                           alt={item.alt}
-                          className="h-full w-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="64px"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-stone-200 text-stone-500">
@@ -417,10 +419,12 @@ export default function ProductGallery({
                     {item.type === 'video' ? (
                       <>
                         {item.thumbnail ? (
-                          <img
+                          <OptimizedImage
                             src={item.thumbnail}
                             alt={item.alt}
-                            className="h-full w-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="120px"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center bg-stone-200 text-stone-500">

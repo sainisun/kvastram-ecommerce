@@ -7,6 +7,10 @@ export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
 export const DEFAULT_OG_IMAGE = '/images/home/hero-main.jpg';
 
+export function getProductPath(product: Pick<Product, 'handle' | 'id'>): string {
+  return `/products/${product.handle || product.id}`;
+}
+
 export type TaxonomyNode = {
   id: string;
   name?: string;
@@ -436,7 +440,7 @@ export function createMetadata({
       title: trimmedTitle,
       description: trimmedDescription,
       siteName: SITE_NAME,
-      locale: 'en_US',
+      locale: 'en_IN',
       images: [
         {
           url: imageUrl,
@@ -541,7 +545,7 @@ export function buildProductMetadata(product: Product): Metadata {
   return createMetadata({
     title: buildProductSeoTitle(product),
     description: buildProductMetaDescription(product),
-    path: `/products/${product.handle}`,
+    path: getProductPath(product),
     image: product.thumbnail || product.images?.[0]?.url || DEFAULT_OG_IMAGE,
     keywords: buildProductKeywords(product),
   });
@@ -575,7 +579,7 @@ export function buildWebsiteJsonLd() {
     url: SITE_URL,
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${SITE_URL}/search?query={search_term_string}`,
+      target: `${SITE_URL}/search?q={search_term_string}`,
       'query-input': 'required name=search_term_string',
     },
   };
@@ -612,20 +616,22 @@ export function buildProductJsonLd(product: Product) {
       name: SITE_NAME,
     },
     category: getProductCategoryLabel(product),
-    offers: {
-      '@type': 'Offer',
-      url: toAbsoluteUrl(`/products/${product.handle}`),
-      priceCurrency: price?.currencyCode || 'INR',
-      price: price?.amountInMajor || 0,
-      availability:
-        (product.variants?.[0]?.inventory_quantity || 0) > 0
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/OutOfStock',
-      seller: {
-        '@type': 'Organization',
-        name: SITE_NAME,
-      },
-    },
+    offers: price
+      ? {
+          '@type': 'Offer',
+          url: toAbsoluteUrl(getProductPath(product)),
+          priceCurrency: price.currencyCode,
+          price: price.amountInMajor,
+          availability:
+            (product.variants?.[0]?.inventory_quantity || 0) > 0
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock',
+          seller: {
+            '@type': 'Organization',
+            name: SITE_NAME,
+          },
+        }
+      : undefined,
     aggregateRating:
       product.avg_rating && product.review_count
         ? {
