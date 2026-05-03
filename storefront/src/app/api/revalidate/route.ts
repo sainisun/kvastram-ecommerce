@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     paths.add(`/products/${body.handle}`);
   }
 
-  tags.forEach((tag) => revalidateTag(tag));
+  tags.forEach((tag) => revalidateTag(tag, 'default'));
   paths.forEach((path) => revalidatePath(path, 'page'));
 
   return NextResponse.json({
