@@ -53,8 +53,7 @@ export async function POST(request: NextRequest) {
     paths.add(`/products/${body.handle}`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tags.forEach((tag) => (revalidateTag as any)(tag));
+  tags.forEach((tag) => revalidateTag(tag));
   paths.forEach((path) => revalidatePath(path, 'page'));
 
   return NextResponse.json({

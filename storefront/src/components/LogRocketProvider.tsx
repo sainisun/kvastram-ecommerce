@@ -150,7 +150,6 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
       });
 
       initialized.current = true;
-      console.log('[LogRocket] Initialized successfully');
     } catch (error) {
       console.error('[LogRocket] Failed to initialize:', error);
     }
@@ -175,7 +174,6 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
       }
 
       LogRocket.identify(customer.id, traits);
-      console.log('[LogRocket] User identified:', customer.id);
     } else {
       // User logged out - anonymize
       LogRocket.identify('anonymous');
