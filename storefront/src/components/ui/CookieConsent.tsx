@@ -45,10 +45,10 @@ export function CookieConsent() {
           <div className="flex items-center gap-2.5">
             <Cookie size={20} className="text-amber-500 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-stone-900 text-sm">
+              <p className="type-semibold text-stone-900 text-body-sm">
                 We value your privacy
               </p>
-              <p className="text-xs text-stone-500 font-light mt-0.5 leading-relaxed">
+              <p className="text-body-xs text-stone-500 type-light mt-0.5 leading-token-relaxed">
                 Choose which categories of cookies & tracking you allow.{' '}
                 <Link
                   href="/privacy-policy"
@@ -72,19 +72,19 @@ export function CookieConsent() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleAcceptAll}
-            className="flex-1 bg-stone-900 text-white text-xs font-bold uppercase tracking-widest py-2.5 rounded-sm hover:bg-stone-700 transition-colors"
+            className="flex-1 bg-stone-900 text-white text-body-xs type-bold uppercase tracking-token-wider py-2.5 rounded-sm hover:bg-stone-700 transition-colors"
           >
             Accept All
           </button>
           <button
             onClick={handleRejectAll}
-            className="flex-1 border border-stone-200 text-stone-600 text-xs font-bold uppercase tracking-widest py-2.5 rounded-sm hover:bg-stone-50 hover:border-stone-400 transition-colors"
+            className="flex-1 border border-stone-200 text-stone-600 text-body-xs type-bold uppercase tracking-token-wider py-2.5 rounded-sm hover:bg-stone-50 hover:border-stone-400 transition-colors"
           >
             Reject All
           </button>
           <Link
             href="/cookie-settings"
-            className="flex-1 text-center text-stone-900 underline text-xs font-bold uppercase tracking-widest py-2.5 rounded-sm hover:text-amber-600 transition-colors"
+            className="flex-1 text-center text-stone-900 underline text-body-xs type-bold uppercase tracking-token-wider py-2.5 rounded-sm hover:text-amber-600 transition-colors"
           >
             Customize
           </Link>
@@ -93,3 +93,4 @@ export function CookieConsent() {
     </div>
   );
 }
+

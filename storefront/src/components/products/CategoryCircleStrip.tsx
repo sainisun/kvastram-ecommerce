@@ -35,7 +35,7 @@ export default function CategoryCircleStrip({ circles }: Props) {
                 className="object-cover"
               />
             </div>
-            <span className="font-body text-center text-[11px] font-medium uppercase tracking-[0.08em] text-stone-700">
+            <span className="category-circle-label text-center">
               {circle.label}
             </span>
           </Link>

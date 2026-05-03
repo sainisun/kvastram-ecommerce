@@ -185,8 +185,8 @@ export function StatsSection({ statsData }: StatsSectionProps) {
 
         .stat-symbol-prem {
           margin-bottom: var(--space-4);
-          font-size: 0.95rem;
-          line-height: 1;
+          font-size: var(--text-body-lg);
+          line-height: var(--leading-tight);
           color: #a7773d;
           text-shadow: 0 0 18px rgba(167, 119, 61, 0.14);
           animation: symbolFloat 4.2s ease-in-out infinite;
@@ -195,19 +195,19 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         .stat-num-prem {
           font-family: var(--font-display);
           font-size: clamp(2.2rem, 4.6vw, 4rem);
-          font-weight: 500;
-          line-height: 0.95;
-          letter-spacing: -0.04em;
+          font-weight: var(--weight-medium);
+          line-height: var(--leading-tight);
+          letter-spacing: var(--tracking-tight);
           color: #18120e;
           white-space: nowrap;
         }
 
         .stat-label-prem {
           margin-top: var(--space-4);
-          font-size: 0.72rem;
-          font-weight: 500;
-          line-height: 1.6;
-          letter-spacing: 0.3em;
+          font-size: var(--text-body-xs);
+          font-weight: var(--weight-medium);
+          line-height: var(--leading-relaxed);
+          letter-spacing: var(--tracking-wider);
           text-transform: uppercase;
           color: rgba(63, 49, 34, 0.72);
         }

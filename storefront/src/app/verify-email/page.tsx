@@ -57,7 +57,7 @@ function VerifyContent() {
         {status === 'loading' && (
           <>
             <Loader2 className="animate-spin mx-auto" size={48} />
-            <h1 className="text-2xl font-serif text-stone-900">
+            <h1 className="text-display-md font-serif text-stone-900">
               Verifying your email...
             </h1>
           </>
@@ -80,13 +80,13 @@ function VerifyContent() {
                 />
               </svg>
             </div>
-            <h1 className="text-2xl font-serif text-stone-900">
+            <h1 className="text-display-md font-serif text-stone-900">
               Email Verified!
             </h1>
             <p className="text-stone-500">{message}</p>
             <button
               onClick={() => router.push('/login')}
-              className="bg-stone-900 text-white px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-800"
+              className="bg-stone-900 text-white px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800"
             >
               Go to Login
             </button>
@@ -110,13 +110,13 @@ function VerifyContent() {
                 />
               </svg>
             </div>
-            <h1 className="text-2xl font-serif text-stone-900">
+            <h1 className="text-display-md font-serif text-stone-900">
               Verification Failed
             </h1>
             <p className="text-stone-500">{message}</p>
             <button
               onClick={() => router.push('/login')}
-              className="bg-stone-900 text-white px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-800"
+              className="bg-stone-900 text-white px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800"
             >
               Back to Login
             </button>
@@ -140,3 +140,4 @@ export default function VerifyEmailPage() {
     </Suspense>
   );
 }
+

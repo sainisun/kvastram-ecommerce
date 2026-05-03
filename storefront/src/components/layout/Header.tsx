@@ -209,7 +209,7 @@ export function Header() {
       >
         {/* Announcement Strip — Mobile-First Prototype Design */}
         {announcementEnabled && announcementText && !announcementDismissed && (
-          <div className="announce flex h-[34px] items-center justify-center overflow-hidden bg-[var(--sienna)] text-white relative px-9 text-[12px] font-bold tracking-[0.08em] uppercase">
+          <div className="announcement-bar announce relative flex h-[34px] items-center justify-center overflow-hidden bg-[var(--sienna)] px-9">
             <div className="animate-marquee whitespace-nowrap">
               {Array.from({ length: 4 }).map((_, i) => (
                 <span key={`ticker-${i}`} className="px-8 whitespace-nowrap">
@@ -219,7 +219,7 @@ export function Header() {
             </div>
             <button
               onClick={handleDismissAnnouncement}
-              className="absolute right-3 top-1/2 -translate-y-1/2 border-0 bg-transparent text-white text-[18px] p-1 cursor-pointer flex items-center justify-center"
+              className="announcement-dismiss absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center border-0 bg-transparent p-1"
               aria-label="Dismiss announcement"
             >
               <X size={16} strokeWidth={2.5} />
@@ -242,9 +242,9 @@ export function Header() {
             {/* Center: Logo */}
             <Link
               href="/"
-              className="logo absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              className="nav-logo logo absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             >
-              Kvast<span className="text-[var(--sienna)]">ram</span>
+              Kvast<span>ram</span>
             </Link>
 
             {/* Right: Search & Cart */}
@@ -254,7 +254,6 @@ export function Header() {
                 onClick={() => setShowSearch(true)}
                 className="icon-btn"
                 aria-label="Search"
-                style={{ touchAction: 'manipulation' }}
               >
                 <Search size={20} />
               </button>
@@ -277,12 +276,12 @@ export function Header() {
           {/* Desktop Header Layout */}
           <div className="hidden w-full items-center justify-between gap-6 xl:gap-8 md:flex">
             {/* Logo */}
-            <Link href="/" className="logo shrink-0">
-              Kvast<span className="text-[var(--sienna)]">ram</span>
+            <Link href="/" className="nav-logo logo shrink-0">
+              Kvast<span>ram</span>
             </Link>
 
             {/* Nav - Desktop */}
-            <nav className="font-body flex min-w-0 flex-1 items-center justify-center gap-3 text-[var(--muted)] xl:gap-6 2xl:gap-8">
+            <nav className="flex min-w-0 flex-1 items-center justify-center gap-3 xl:gap-6 2xl:gap-8">
               {navLinks.map((link, index) => {
                 const isActive =
                   pathname === link.url ||
@@ -301,7 +300,7 @@ export function Header() {
                       onBlur={closeShopMenu}
                     >
                       <button
-                        className={`flex items-center gap-1 py-2 text-[15px] font-medium transition-colors focus:outline-none rounded ${isActive ? 'text-[var(--ink)]' : 'hover:text-[var(--ink)]'}`}
+                        className={`nav-link flex items-center gap-1 rounded py-2 transition-colors focus:outline-none ${isActive ? 'nav-link-active' : ''}`}
                         style={{ animationDelay: `${index * 60}ms` }}
                         aria-label="Shop menu"
                         aria-expanded={showShopMenu}
@@ -324,7 +323,7 @@ export function Header() {
                           <div className="grid min-h-[340px] grid-cols-12">
                             {/* Left: Categories with Subcategories */}
                             <div className="col-span-5 border-r border-[var(--soft)] px-6 py-6">
-                              <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-[var(--muted)]">
+                              <p className="mega-menu-heading mb-4">
                                 Categories
                               </p>
                               <div className="grid grid-cols-2 gap-x-6 gap-y-2">
@@ -336,7 +335,7 @@ export function Header() {
                                   >
                                     <Link
                                       href={`/collections/${cat.slug}`}
-                                      className="font-body -ml-2 block border-l-2 border-transparent py-1.5 pl-2 text-[15px] font-medium text-[var(--ink)] transition-colors hover:border-[var(--sienna)] hover:text-[var(--sienna)]"
+                                      className="nav-link -ml-2 block border-l-2 border-transparent py-1.5 pl-2 transition-colors hover:border-[var(--sienna)]"
                                       onClick={closeShopMenu}
                                       onMouseEnter={() =>
                                         setHoveredCategory(cat.id)
@@ -359,7 +358,7 @@ export function Header() {
                                               <li key={child.id}>
                                                 <Link
                                                   href={`/collections/${child.slug}`}
-                                                  className="font-body block py-0.5 pl-2 text-[15px] font-[300] text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+                                                  className="nav-dropdown-item block py-0.5 pl-2 transition-colors"
                                                   onClick={closeShopMenu}
                                                 >
                                                   {child.name}
@@ -374,7 +373,7 @@ export function Header() {
                               <div className="h-px bg-[var(--soft)] my-3" />
                               <Link
                                 href="/products"
-                                className="font-body flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.1em] text-[var(--ink)] transition-colors hover:text-[var(--sienna)]"
+                                className="nav-icon-label hover-text-accent flex items-center gap-1.5 transition-colors"
                                 onClick={closeShopMenu}
                               >
                                 Shop All Products →
@@ -404,7 +403,7 @@ export function Header() {
                                         />
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[var(--soft)] to-[var(--line)]">
-                                          <span className="text-[var(--muted)] text-6xl font-serif">
+                                          <span className="mega-menu-featured-title">
                                             {featured.emoji ||
                                               featured.name?.charAt(0)}
                                           </span>
@@ -413,10 +412,10 @@ export function Header() {
                                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                                     </div>
                                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                                      <span className="font-body mb-1 block text-[12px] font-medium uppercase tracking-[0.08em] text-white/60">
+                                      <span className="mega-menu-featured-label mb-1 block">
                                         Featured
                                       </span>
-                                      <span className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-white">
+                                      <span className="mega-menu-featured-title">
                                         {featured.emoji && (
                                           <span className="mr-2">
                                             {featured.emoji}
@@ -432,7 +431,7 @@ export function Header() {
 
                             {/* Right: Quick Links + Promo */}
                             <div className="col-span-3 bg-[var(--cream)] px-6 py-6">
-                              <p className="font-body mb-4 text-[13px] font-medium uppercase tracking-[0.08em] text-[var(--muted)]">
+                              <p className="mega-menu-heading mb-4">
                                 Shop By
                               </p>
                               <div className="space-y-2.5">
@@ -440,7 +439,7 @@ export function Header() {
                                   <Link
                                     key={qLink.label}
                                     href={qLink.url}
-                                    className={`font-body block text-[15px] transition-colors ${qLink.highlight ? 'font-medium text-[var(--sienna)] hover:text-[var(--sienna-dark)]' : 'font-[300] text-[var(--muted)] hover:text-[var(--ink)]'}`}
+                                    className={`nav-dropdown-item block transition-colors ${qLink.highlight ? 'nav-link-highlight' : ''}`}
                                     onClick={closeShopMenu}
                                   >
                                     {qLink.label}
@@ -450,14 +449,14 @@ export function Header() {
                               <div className="h-px bg-[var(--line)] my-4" />
                               <Link
                                 href="/collections"
-                                className="font-body block text-[15px] font-[300] text-[var(--ink)] transition-colors hover:text-[var(--sienna)]"
+                                className="nav-dropdown-item nav-dropdown-item-active hover-text-accent block transition-colors"
                                 onClick={closeShopMenu}
                               >
                                 All Collections
                               </Link>
                               <Link
                                 href="/products?sort=newest"
-                                className="font-body mt-2.5 block text-[15px] font-[300] text-[var(--ink)] transition-colors hover:text-[var(--sienna)]"
+                                className="nav-dropdown-item nav-dropdown-item-active hover-text-accent mt-2.5 block transition-colors"
                                 onClick={closeShopMenu}
                               >
                                 New Arrivals ✦
@@ -474,7 +473,7 @@ export function Header() {
                   <Link
                     key={link.label}
                     href={link.url}
-                    className={`block py-2 text-[15px] transition-colors ${isActive ? 'font-medium text-[var(--ink)]' : 'text-[var(--muted)] hover:text-[var(--ink)]'} ${link.highlight ? 'text-[var(--sienna)] font-bold' : ''}`}
+                    className={`nav-link block py-2 transition-colors ${isActive ? 'nav-link-active' : ''} ${link.highlight ? 'nav-link-highlight' : ''}`}
                     style={{ animationDelay: `${index * 60}ms` }}
                   >
                     {link.label}
@@ -523,14 +522,14 @@ export function Header() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setShowRegionMenu(!showRegionMenu)}
-                  className="font-body flex items-center gap-2 rounded-full px-3 py-1.5 text-[13px] font-medium uppercase tracking-[0.08em] text-[var(--muted)] transition-colors hover:bg-[var(--soft)] hover:text-[var(--ink)] focus:outline-none"
+                  className="nav-icon-label hover-text-primary flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-[var(--soft)] focus:outline-none"
                   aria-label="Select region and currency"
                   aria-expanded={showRegionMenu}
                   aria-haspopup="true"
                   title="Select Region"
                 >
                   <Globe size={20} />
-                  <span className="uppercase">
+                  <span>
                     {currentRegion?.currency_code || 'USD'}
                   </span>
                   <ChevronDown size={14} />
@@ -538,7 +537,7 @@ export function Header() {
 
                 {showRegionMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-[var(--paper)] rounded-[var(--radius-md)] shadow-xl border border-[var(--soft)] py-1 overflow-hidden">
-                    <div className="font-body border-b border-[var(--soft)] bg-[var(--cream)] px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-[var(--muted)]">
+                    <div className="mega-menu-heading border-b border-[var(--soft)] bg-[var(--cream)] px-4 py-2">
                       Select Region
                     </div>
                     {regions.map((region) => (
@@ -548,14 +547,14 @@ export function Header() {
                           setRegion(region);
                           setShowRegionMenu(false);
                         }}
-                        className={`font-body group flex w-full items-center justify-between px-4 py-2.5 text-left text-[15px] hover:bg-[var(--cream)] focus:outline-none ${
+                        className={`nav-dropdown-item group flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-[var(--cream)] focus:outline-none ${
                           currentRegion?.id === region.id
-                            ? 'font-medium text-[var(--sienna)]'
-                            : 'text-[var(--muted)]'
+                            ? 'nav-link-highlight'
+                            : ''
                         }`}
                       >
                         <span>{region.name}</span>
-                        <span className="text-xs font-mono text-[var(--muted)] group-hover:text-[var(--ink)] uppercase">
+                        <span className="nav-icon-label hover-text-primary">
                           {region.currency_code}
                         </span>
                       </button>

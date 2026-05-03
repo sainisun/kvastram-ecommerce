@@ -136,7 +136,7 @@ export default function WholesaleCheckoutPage() {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
-            <h1 className="text-2xl font-bold text-stone-900 mb-4">
+            <h1 className="text-display-md type-bold text-stone-900 mb-4">
               Order Submitted Successfully!
             </h1>
             <p className="text-stone-600 mb-2">
@@ -147,7 +147,7 @@ export default function WholesaleCheckoutPage() {
             </p>
 
             <div className="bg-stone-50 p-4 rounded-lg mb-6">
-              <p className="text-sm text-stone-600">
+              <p className="text-body-sm text-stone-600">
                 Payment terms:{' '}
                 <strong>
                   {
@@ -157,7 +157,7 @@ export default function WholesaleCheckoutPage() {
                   }
                 </strong>
               </p>
-              <p className="text-sm text-stone-500 mt-1">
+              <p className="text-body-sm text-stone-500 mt-1">
                 An invoice will be sent to your email shortly.
               </p>
             </div>
@@ -165,13 +165,13 @@ export default function WholesaleCheckoutPage() {
             <div className="flex gap-4 justify-center">
               <Link
                 href="/account/orders"
-                className="bg-stone-900 text-white px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors"
+                className="bg-stone-900 text-white px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors"
               >
                 View Orders
               </Link>
               <Link
                 href="/products"
-                className="border border-stone-900 text-stone-900 px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-50 transition-colors"
+                className="border border-stone-900 text-stone-900 px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-50 transition-colors"
               >
                 Continue Shopping
               </Link>
@@ -186,7 +186,7 @@ export default function WholesaleCheckoutPage() {
     return (
       <div className="min-h-screen bg-stone-50 py-20">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <h1 className="text-2xl font-bold text-stone-900 mb-4">
+          <h1 className="text-display-md type-bold text-stone-900 mb-4">
             Your cart is empty
           </h1>
           <Link
@@ -215,10 +215,10 @@ export default function WholesaleCheckoutPage() {
           <div className="flex items-center gap-3">
             <Building2 className="w-8 h-8 text-stone-700" />
             <div>
-              <h1 className="text-2xl font-bold text-stone-900">
+              <h1 className="text-display-md type-bold text-stone-900">
                 Wholesale Checkout
               </h1>
-              <p className="text-stone-600 text-sm">
+              <p className="text-stone-600 text-body-sm">
                 {wholesaleInfo.companyName} - {wholesaleInfo.tier} tier
               </p>
             </div>
@@ -234,9 +234,9 @@ export default function WholesaleCheckoutPage() {
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-red-700 mb-2">
                     <AlertCircle className="w-5 h-5" />
-                    <h3 className="font-bold">Cart Validation Errors</h3>
+                    <h3 className="type-bold">Cart Validation Errors</h3>
                   </div>
-                  <ul className="text-sm text-red-600 space-y-1">
+                  <ul className="text-body-sm text-red-600 space-y-1">
                     {validation.errors.map((error, idx) => (
                       <li key={idx}>{error.message}</li>
                     ))}
@@ -246,13 +246,13 @@ export default function WholesaleCheckoutPage() {
 
               {/* PO Number */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-lg font-bold text-stone-900 mb-4 flex items-center">
+                <h2 className="text-body-xl type-bold text-stone-900 mb-4 flex items-center">
                   <FileText className="w-5 h-5 mr-2" />
                   Purchase Order
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       PO Number{' '}
                       <span className="text-stone-400">(Optional)</span>
                     </label>
@@ -271,7 +271,7 @@ export default function WholesaleCheckoutPage() {
 
               {/* Payment Terms */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-lg font-bold text-stone-900 mb-4 flex items-center">
+                <h2 className="text-body-xl type-bold text-stone-900 mb-4 flex items-center">
                   <Calendar className="w-5 h-5 mr-2" />
                   Payment Terms
                 </h2>
@@ -299,10 +299,10 @@ export default function WholesaleCheckoutPage() {
                         className="w-4 h-4 text-stone-900 focus:ring-stone-500"
                       />
                       <div className="ml-3">
-                        <p className="font-medium text-stone-900">
+                        <p className="type-medium text-stone-900">
                           {term.label}
                         </p>
-                        <p className="text-sm text-stone-500">
+                        <p className="text-body-sm text-stone-500">
                           {term.description}
                         </p>
                       </div>
@@ -313,12 +313,12 @@ export default function WholesaleCheckoutPage() {
 
               {/* Shipping Address */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-lg font-bold text-stone-900 mb-4">
+                <h2 className="text-body-xl type-bold text-stone-900 mb-4">
                   Shipping Address
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       First Name
                     </label>
                     <input
@@ -338,7 +338,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       Last Name
                     </label>
                     <input
@@ -358,7 +358,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       Company
                     </label>
                     <input
@@ -378,7 +378,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       Address
                     </label>
                     <input
@@ -416,7 +416,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       City
                     </label>
                     <input
@@ -436,7 +436,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       Postal Code
                     </label>
                     <input
@@ -456,7 +456,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       Country
                     </label>
                     <CountrySelect
@@ -474,7 +474,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
                       Phone
                     </label>
                     <input
@@ -497,7 +497,7 @@ export default function WholesaleCheckoutPage() {
 
               {/* Order Notes */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-lg font-bold text-stone-900 mb-4">
+                <h2 className="text-body-xl type-bold text-stone-900 mb-4">
                   Order Notes
                 </h2>
                 <textarea
@@ -520,7 +520,7 @@ export default function WholesaleCheckoutPage() {
               <button
                 type="submit"
                 disabled={loading || validation.errors.length > 0}
-                className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Processing...' : 'Submit Wholesale Order'}
               </button>
@@ -530,7 +530,7 @@ export default function WholesaleCheckoutPage() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white p-6 rounded-lg shadow-sm sticky top-6">
-              <h2 className="text-lg font-bold text-stone-900 mb-4">
+              <h2 className="text-body-xl type-bold text-stone-900 mb-4">
                 Order Summary
               </h2>
 
@@ -548,22 +548,22 @@ export default function WholesaleCheckoutPage() {
                       </div>
                     )}
                     <div className="flex-1">
-                      <p className="font-medium text-stone-900 text-sm">
+                      <p className="type-medium text-stone-900 text-body-sm">
                         {item.title}
                       </p>
-                      <p className="text-xs text-stone-500">SKU: {item.sku}</p>
-                      <p className="text-xs text-stone-600 mt-1">
+                      <p className="text-body-xs text-stone-500">SKU: {item.sku}</p>
+                      <p className="text-body-xs text-stone-600 mt-1">
                         Qty: {item.quantity} × $
                         {((item.finalPrice || item.price) / 100).toFixed(2)}
                       </p>
                       {item.moq && item.moq > 1 && (
-                        <p className="text-xs text-amber-600">
+                        <p className="text-body-xs text-amber-600">
                           MOQ: {item.moq}
                         </p>
                       )}
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-stone-900">
+                      <p className="type-medium text-stone-900">
                         $
                         {(
                           ((item.finalPrice || item.price) * item.quantity) /
@@ -571,12 +571,12 @@ export default function WholesaleCheckoutPage() {
                         ).toFixed(2)}
                       </p>
                       {(item.tierDiscount ?? 0) > 0 && (
-                        <p className="text-xs text-green-600">
+                        <p className="text-body-xs text-green-600">
                           -{item.tierDiscount}% tier
                         </p>
                       )}
                       {(item.bulkDiscount ?? 0) > 0 && (
-                        <p className="text-xs text-blue-600">
+                        <p className="text-body-xs text-blue-600">
                           -{item.bulkDiscount}% bulk
                         </p>
                       )}
@@ -586,37 +586,37 @@ export default function WholesaleCheckoutPage() {
               </div>
 
               <div className="border-t border-stone-200 pt-4 space-y-2">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-body-sm">
                   <span className="text-stone-600">Subtotal</span>
-                  <span className="font-medium">
+                  <span className="type-medium">
                     ${(cartSummary.subtotal / 100).toFixed(2)}
                   </span>
                 </div>
                 {cartSummary.tierDiscount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
+                  <div className="flex justify-between text-body-sm text-green-600">
                     <span>Tier Discount</span>
                     <span>-${(cartSummary.tierDiscount / 100).toFixed(2)}</span>
                   </div>
                 )}
                 {cartSummary.bulkDiscount > 0 && (
-                  <div className="flex justify-between text-sm text-blue-600">
+                  <div className="flex justify-between text-body-sm text-blue-600">
                     <span>Bulk Discount</span>
                     <span>-${(cartSummary.bulkDiscount / 100).toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-lg font-bold pt-2 border-t border-stone-200">
+                <div className="flex justify-between text-body-xl type-bold pt-2 border-t border-stone-200">
                   <span>Total</span>
                   <span>${(cartSummary.total / 100).toFixed(2)}</span>
                 </div>
                 {cartSummary.savings > 0 && (
-                  <p className="text-sm text-green-600 text-center">
+                  <p className="text-body-sm text-green-600 text-center">
                     You saved ${(cartSummary.savings / 100).toFixed(2)}!
                   </p>
                 )}
               </div>
 
               <div className="mt-6 p-4 bg-stone-50 rounded-lg">
-                <p className="text-xs text-stone-600 text-center">
+                <p className="text-body-xs text-stone-600 text-center">
                   Payment terms:{' '}
                   <strong>
                     {
@@ -634,3 +634,4 @@ export default function WholesaleCheckoutPage() {
     </div>
   );
 }
+

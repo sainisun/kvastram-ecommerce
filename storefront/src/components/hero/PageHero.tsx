@@ -40,15 +40,15 @@ export default function PageHero({
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-[1440px] space-y-4 px-6 text-center md:px-12 lg:px-20">
         {subtitle && (
-          <span className="font-body block text-[13px] font-medium uppercase tracking-[0.08em] text-white/80">
+          <span className="font-body block text-body-sm type-medium uppercase tracking-token-wide text-white/80">
             {subtitle}
           </span>
         )}
-        <h1 className="font-heading text-[clamp(40px,5vw,72px)] font-normal tracking-[-0.03em] text-white leading-[1.02]">
+        <h1 className="font-heading text-display-xl type-regular tracking-token-tight text-white leading-token-tight">
           {title}
         </h1>
         {description && (
-          <p className="font-body mx-auto max-w-xl text-[15px] font-[300] leading-[1.7] text-white/80 md:text-lg">
+          <p className="font-body mx-auto max-w-xl text-body-md type-light leading-token-relaxed text-white/80 md:text-body-xl">
             {description}
           </p>
         )}
@@ -56,3 +56,4 @@ export default function PageHero({
     </section>
   );
 }
+

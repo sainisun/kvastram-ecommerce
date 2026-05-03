@@ -50,8 +50,8 @@ export function BackInStock({
         <div className="flex items-center gap-3 text-green-800">
           <CheckCircle size={20} />
           <div>
-            <p className="font-medium text-sm">You&apos;re on the list!</p>
-            <p className="text-xs text-green-700 mt-1">
+            <p className="back-in-stock-title">You&apos;re on the list!</p>
+            <p className="back-in-stock-success-copy mt-1">
               We&apos;ll notify you when {productTitle} is back in stock.
             </p>
           </div>
@@ -64,7 +64,7 @@ export function BackInStock({
     <div className="space-y-3">
       <div className="flex items-center gap-2 text-stone-600">
         <Bell size={18} />
-        <span className="text-sm font-medium">Notify me when available</span>
+        <span className="back-in-stock-title">Notify me when available</span>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-2">
@@ -80,13 +80,13 @@ export function BackInStock({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full pl-10 pr-4 py-3 border border-stone-200 text-sm focus:outline-none focus:border-stone-900"
+              className="input-field w-full border border-stone-200 py-3 pl-10 pr-4 focus:border-stone-900 focus:outline-none"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 bg-stone-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-stone-800 transition-colors disabled:opacity-50 sm:w-auto"
+            className="btn-primary-typography w-full bg-stone-900 px-4 py-3 transition-colors hover:bg-stone-800 disabled:opacity-50 sm:w-auto"
           >
             {loading ? (
               <Loader2 size={16} className="animate-spin mx-auto" />
@@ -95,8 +95,8 @@ export function BackInStock({
             )}
           </button>
         </div>
-        {error && <p className="text-red-500 text-xs">{error}</p>}
-        <p className="text-[10px] text-stone-400">
+        {error && <p className="input-error-message">{error}</p>}
+        <p className="input-helper-text">
           We&apos;ll email you when this item is back in stock.
         </p>
       </form>

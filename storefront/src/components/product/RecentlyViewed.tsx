@@ -14,7 +14,7 @@ export function RecentlyViewedSection() {
   return (
     <section className="border-t border-stone-100 py-12 md:py-16 lg:py-24">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
-        <h2 className="text-xl font-semibold uppercase tracking-[0.06em] text-stone-900 mb-6 lg:text-2xl lg:mb-8">
+        <h2 className="recently-section-heading mb-6 lg:mb-8">
           Recently Viewed
         </h2>
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:grid-cols-6 lg:gap-x-8 lg:gap-y-16">
@@ -34,15 +34,15 @@ export function RecentlyViewedSection() {
                     sizes="(max-width: 768px) 50vw, 16vw"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-stone-400 text-xs">
+                  <div className="recently-empty-image flex h-full w-full items-center justify-center">
                     No Image
                   </div>
                 )}
               </div>
-              <h3 className="text-sm text-stone-900 font-medium line-clamp-1 group-hover:text-stone-600 transition-colors">
+              <h3 className="recently-name line-clamp-1 transition-colors">
                 {item.title}
               </h3>
-              <p className="text-sm text-stone-500 mt-1">
+              <p className="recently-price mt-1">
                 {formatPrice(item.price)}
               </p>
             </Link>

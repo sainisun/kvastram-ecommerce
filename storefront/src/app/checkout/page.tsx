@@ -86,7 +86,7 @@ function PaymentForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-[var(--cream)] p-6 border border-[var(--line)]">
-        <h4 className="text-sm font-bold uppercase tracking-wider text-[var(--muted)] mb-4">
+        <h4 className="text-body-sm type-bold uppercase tracking-token-wider color-muted mb-4">
           Payment Details
         </h4>
         <PaymentElement />
@@ -95,7 +95,7 @@ function PaymentForm({
       <button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full bg-[var(--ink)] text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-[var(--ink)] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full bg-[var(--ink)] text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ink)] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
       >
         <CreditCard size={16} />
         {isProcessing ? 'Processing Payment...' : 'Pay Now'}
@@ -162,7 +162,7 @@ function ExpressCheckoutForm({
         }}
       />
       {isLoading && (
-        <div className="mt-2 text-center text-sm text-[var(--muted)]">
+        <div className="mt-2 text-center text-body-sm color-muted">
           Processing payment...
         </div>
       )}
@@ -340,19 +340,19 @@ export default function CheckoutPage() {
   }
 
   const inputClasses =
-    'w-full bg-transparent border-b border-[var(--line)] py-3 text-[var(--ink)] placeholder-[var(--muted)] focus:outline-none focus:border-[var(--ink)] transition-colors font-light';
+    'w-full bg-transparent border-b border-[var(--line)] py-3 color-ink placeholder-[var(--muted)] focus:outline-none focus:border-[var(--ink)] transition-colors type-light';
   const labelClasses =
-    'block text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-1';
+    'block text-body-xs type-bold uppercase tracking-token-wider color-muted mb-1';
 
   if (items.length === 0 && step !== 'success') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-white">
-        <h1 className="text-3xl font-serif mb-4 text-[var(--ink)]">
+        <h1 className="text-display-lg font-serif mb-4 color-ink">
           Your cart is empty
         </h1>
         <Link
           href="/"
-          className="text-[var(--muted)] hover:text-black border-b border-[var(--line)] pb-1 transition-colors"
+          className="color-muted hover:text-black border-b border-[var(--line)] pb-1 transition-colors"
         >
           Return to Shop
         </Link>
@@ -373,45 +373,45 @@ export default function CheckoutPage() {
             />
           </div>
         </div>
-        <span className="text-xs text-[var(--muted)] font-bold uppercase tracking-[0.2em] mb-3 block">
+        <span className="text-body-xs color-muted type-bold uppercase tracking-token-wider mb-3 block">
           Order Placed Successfully
         </span>
-        <h1 className="text-4xl font-serif mb-3 text-[var(--ink)]">Thank You!</h1>
-        <p className="text-[var(--muted)] mb-2 max-w-md font-light text-lg">
+        <h1 className="text-display-xl font-serif mb-3 color-ink">Thank You!</h1>
+        <p className="color-muted mb-2 max-w-md type-light text-body-xl">
           Your order{' '}
-          <span className="font-semibold text-[var(--ink)]">#{orderId}</span> has
+          <span className="type-semibold color-ink">#{orderId}</span> has
           been confirmed.
         </p>
-        <p className="text-[var(--muted)] text-sm mb-10 max-w-md font-light">
+        <p className="color-muted text-body-sm mb-10 max-w-md type-light">
           We&apos;re preparing your order for shipment. You&apos;ll receive an
           email confirmation shortly.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 mb-10">
           <Link
             href="/"
-            className="bg-[var(--ink)] text-white px-8 py-3 uppercase tracking-widest text-xs font-bold hover:bg-[var(--ink)] transition-colors"
+            className="bg-[var(--ink)] text-white px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold hover:bg-[var(--ink)] transition-colors"
           >
             Continue Shopping
           </Link>
           <Link
             href="/account"
-            className="border border-[var(--line)] text-[var(--ink)] px-8 py-3 uppercase tracking-widest text-xs font-bold hover:bg-[var(--cream)] transition-colors"
+            className="border border-[var(--line)] color-ink px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold hover:bg-[var(--cream)] transition-colors"
           >
             Track My Order
           </Link>
         </div>
         {/* WhatsApp support */}
         <div className="mt-4 pt-6 border-t border-[var(--soft)] w-full max-w-md">
-          <p className="text-xs text-[var(--muted)] mb-3">
+          <p className="text-body-xs color-muted mb-3">
             Need help with your order?
           </p>
           <a
             href="https://wa.me/message/kvastram"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-xs text-green-700 font-bold hover:text-green-800 transition-colors"
+            className="inline-flex items-center gap-2 text-body-xs text-green-700 type-bold hover:text-green-800 transition-colors"
           >
-            <span className="text-base">💬</span> Chat with us on WhatsApp
+            <span className="text-body-md">💬</span> Chat with us on WhatsApp
           </a>
         </div>
       </div>
@@ -561,7 +561,7 @@ export default function CheckoutPage() {
           <div className="max-w-lg mx-auto">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-[var(--muted)] hover:text-black mb-6 md:mb-12 text-sm transition-colors"
+              className="inline-flex items-center gap-2 color-muted hover:text-black mb-6 md:mb-12 text-body-sm transition-colors"
             >
               <ArrowLeft size={16} />
               <span className="hidden sm:inline">Back to Shop</span>
@@ -569,10 +569,10 @@ export default function CheckoutPage() {
             </Link>
 
             <div className="mb-12">
-              <h2 className="text-3xl font-serif text-[var(--ink)] mb-2">
+              <h2 className="text-display-lg font-serif color-ink mb-2">
                 Checkout
               </h2>
-              <p className="text-[var(--muted)] font-light text-sm flex items-center gap-2">
+              <p className="color-muted type-light text-body-sm flex items-center gap-2">
                 <Lock size={14} /> Secure Checkout
               </p>
             </div>
@@ -583,7 +583,7 @@ export default function CheckoutPage() {
                 {/* Step 1: Shipping */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-body-xs type-bold border-2 transition-all ${
                       step === 'shipping'
                         ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
                         : 'border-[var(--ink)] bg-[var(--ink)] text-white'
@@ -592,8 +592,8 @@ export default function CheckoutPage() {
                     {step === 'payment' ? '✓' : '1'}
                   </div>
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${
-                      step === 'shipping' ? 'text-[var(--ink)]' : 'text-[var(--muted)]'
+                    className={`text-body-xs type-bold uppercase tracking-token-wider mt-1 ${
+                      step === 'shipping' ? 'color-ink' : 'color-muted'
                     }`}
                   >
                     Shipping
@@ -608,17 +608,17 @@ export default function CheckoutPage() {
                 {/* Step 2: Payment */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-body-xs type-bold border-2 transition-all ${
                       step === 'payment'
                         ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
-                        : 'border-[var(--line)] bg-white text-[var(--muted)]'
+                        : 'border-[var(--line)] bg-white color-muted'
                     }`}
                   >
                     {'2'}
                   </div>
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${
-                      step === 'payment' ? 'text-[var(--ink)]' : 'text-[var(--muted)]'
+                    className={`text-body-xs type-bold uppercase tracking-token-wider mt-1 ${
+                      step === 'payment' ? 'color-ink' : 'color-muted'
                     }`}
                   >
                     Payment
@@ -627,10 +627,10 @@ export default function CheckoutPage() {
                 <div className={`flex-1 h-0.5 mx-2 bg-[var(--line)]`} />
                 {/* Step 3: Confirmation */}
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 border-[var(--line)] bg-white text-[var(--muted)]">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-body-xs type-bold border-2 border-[var(--line)] bg-white color-muted">
                     3
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest mt-1 text-[var(--muted)]">
+                  <span className="text-body-xs type-bold uppercase tracking-token-wider mt-1 color-muted">
                     Confirm
                   </span>
                 </div>
@@ -638,7 +638,7 @@ export default function CheckoutPage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 p-4 mb-6 text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-600 p-4 mb-6 text-body-sm">
                 {error}
               </div>
             )}
@@ -646,7 +646,7 @@ export default function CheckoutPage() {
             {step === 'shipping' ? (
               <form onSubmit={handleShippingSubmit} className="space-y-8">
                 <div>
-                  <h3 className="text-lg font-serif text-[var(--ink)] mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
                     Contact
                   </h3>
                   <div className="space-y-4">
@@ -672,7 +672,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-serif text-[var(--ink)] mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
                     Shipping Address
                   </h3>
                   {/* PHASE 3.2: Mobile-first responsive grid */}
@@ -789,12 +789,12 @@ export default function CheckoutPage() {
 
                 {/* PHASE 1.3: Shipping Method Selection */}
                 <div className="mt-8">
-                  <h3 className="text-lg font-serif text-[var(--ink)] mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
                     Shipping Method
                   </h3>
 
                   {shippingLoading ? (
-                    <div className="py-4 text-center text-[var(--muted)]">
+                    <div className="py-4 text-center color-muted">
                       Loading shipping options...
                     </div>
                   ) : shippingOptions.length > 0 ? (
@@ -821,19 +821,19 @@ export default function CheckoutPage() {
                                 value={option.id}
                                 checked={selectedShipping?.id === option.id}
                                 onChange={() => setSelectedShipping(option)}
-                                className="w-4 h-4 text-[var(--ink)] focus:ring-[var(--ink)]"
+                                className="w-4 h-4 color-ink focus:ring-[var(--ink)]"
                               />
                               <div>
-                                <p className="font-medium text-[var(--ink)]">
+                                <p className="type-medium color-ink">
                                   {option.name}
                                 </p>
-                                <p className="text-sm text-[var(--muted)]">
+                                <p className="text-body-sm color-muted">
                                   {option.description}
                                 </p>
                               </div>
                             </div>
                             <span
-                              className={`font-medium ${isFree ? 'text-green-600' : 'text-[var(--ink)]'}`}
+                              className={`type-medium ${isFree ? 'text-green-600' : 'color-ink'}`}
                             >
                               {isFree
                                 ? 'FREE'
@@ -845,17 +845,17 @@ export default function CheckoutPage() {
 
                       {cartTotal >= freeShippingThreshold &&
                         selectedShipping && (
-                          <p className="text-sm text-green-600 bg-green-50 p-3 border border-green-200">
+                          <p className="text-body-sm text-green-600 bg-green-50 p-3 border border-green-200">
                             🎉 You&apos;ve unlocked FREE shipping!
                           </p>
                         )}
                     </div>
                   ) : formData.country_code ? (
-                    <div className="py-4 text-center text-[var(--muted)]">
+                    <div className="py-4 text-center color-muted">
                       No shipping options available for this country
                     </div>
                   ) : (
-                    <div className="py-4 text-center text-[var(--muted)]">
+                    <div className="py-4 text-center color-muted">
                       Select your country to see available shipping methods
                     </div>
                   )}
@@ -863,7 +863,7 @@ export default function CheckoutPage() {
 
                 {/* D3: Gift Wrapping */}
                 <div className="mt-8">
-                  <h3 className="text-lg font-serif text-[var(--ink)] mb-4 border-b border-[var(--soft)] pb-2">
+                  <h3 className="text-body-xl font-serif color-ink mb-4 border-b border-[var(--soft)] pb-2">
                     Gift Options
                   </h3>
                   <label
@@ -874,18 +874,18 @@ export default function CheckoutPage() {
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="text-2xl">🎁</div>
+                      <div className="text-display-md">🎁</div>
                       <div>
-                        <p className="font-medium text-[var(--ink)] text-sm">
+                        <p className="type-medium color-ink text-body-sm">
                           Premium Gift Wrapping
                         </p>
-                        <p className="text-xs text-[var(--muted)] font-light">
+                        <p className="text-body-xs color-muted type-light">
                           Signature Kvastram box with ribbon &amp; message card
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-[var(--muted)]">
+                      <span className="text-body-sm type-medium color-muted">
                         +$2.99
                       </span>
                       <div
@@ -910,7 +910,7 @@ export default function CheckoutPage() {
                   </label>
                   {giftWrapping && (
                     <div className="mt-3 animate-fade-in">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-2">
+                      <label className="block text-body-xs type-bold uppercase tracking-token-wider color-muted mb-2">
                         Gift Message (Optional)
                       </label>
                       <textarea
@@ -919,9 +919,9 @@ export default function CheckoutPage() {
                         placeholder="Write a personal message for the recipient..."
                         maxLength={200}
                         rows={3}
-                        className="w-full border border-[var(--line)] rounded-md px-4 py-3 text-sm text-[var(--ink)] placeholder-[var(--muted)] focus:outline-none focus:border-[var(--ink)] resize-none transition-colors font-light"
+                        className="w-full border border-[var(--line)] rounded-md px-4 py-3 text-body-sm color-ink placeholder-[var(--muted)] focus:outline-none focus:border-[var(--ink)] resize-none transition-colors type-light"
                       />
-                      <p className="text-[10px] text-[var(--muted)] text-right mt-1">
+                      <p className="text-body-xs color-muted text-right mt-1">
                         {giftMessage.length}/200
                       </p>
                     </div>
@@ -935,15 +935,15 @@ export default function CheckoutPage() {
                       type="checkbox"
                       checked={acceptTerms}
                       onChange={(e) => setAcceptTerms(e.target.checked)}
-                      className="w-5 h-5 mt-0.5 rounded border-[var(--line)] text-[var(--ink)] focus:ring-[var(--ink)]"
+                      className="w-5 h-5 mt-0.5 rounded border-[var(--line)] color-ink focus:ring-[var(--ink)]"
                     />
-                    <span className="text-sm text-[var(--muted)] group-hover:text-[var(--ink)]">
+                    <span className="text-body-sm color-muted group-hover:color-ink">
                       I agree to the{' '}
                       <Link
                         href="/pages/terms-of-service"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline hover:text-[var(--ink)]"
+                        className="underline hover:color-ink"
                       >
                         Terms of Service
                       </Link>{' '}
@@ -952,7 +952,7 @@ export default function CheckoutPage() {
                         href="/pages/privacy-policy"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline hover:text-[var(--ink)]"
+                        className="underline hover:color-ink"
                       >
                         Privacy Policy
                       </Link>
@@ -963,7 +963,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading || !acceptTerms}
-                  className="w-full bg-[var(--ink)] text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-[var(--ink)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[var(--ink)] text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ink)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-live="polite"
                   aria-busy={loading}
                 >
@@ -972,7 +972,7 @@ export default function CheckoutPage() {
               </form>
             ) : (
               <div>
-                <h3 className="text-lg font-serif text-[var(--ink)] mb-6 border-b border-[var(--soft)] pb-2">
+                <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
                   Payment
                 </h3>
 
@@ -980,7 +980,7 @@ export default function CheckoutPage() {
                 {currency.toLowerCase() === 'inr' &&
                   process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && (
                     <ErrorBoundary fallback={
-                      <p className="text-sm text-red-600 py-2">Payment failed to load. Please refresh.</p>
+                      <p className="text-body-sm text-red-600 py-2">Payment failed to load. Please refresh.</p>
                     }>
                       <RazorpayButton
                         orderId={orderUUID}
@@ -999,7 +999,7 @@ export default function CheckoutPage() {
                 {currency.toLowerCase() !== 'inr' &&
                   process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID && (
                     <ErrorBoundary fallback={
-                      <p className="text-sm text-red-600 py-2">PayPal failed to load. Please use card below.</p>
+                      <p className="text-body-sm text-red-600 py-2">PayPal failed to load. Please use card below.</p>
                     }>
                       <PayPalButton
                         orderId={orderUUID}
@@ -1017,12 +1017,12 @@ export default function CheckoutPage() {
                       <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-[var(--line)]"></div>
                       </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white text-[var(--muted)]">or express checkout</span>
+                      <div className="relative flex justify-center text-body-sm">
+                        <span className="px-2 bg-white color-muted">or express checkout</span>
                       </div>
                     </div>
                     <ErrorBoundary fallback={
-                      <p className="text-sm text-[var(--muted)] py-2">Express checkout unavailable.</p>
+                      <p className="text-body-sm color-muted py-2">Express checkout unavailable.</p>
                     }>
                       <Elements stripe={stripePromise} options={{ clientSecret }}>
                         <ExpressCheckoutForm
@@ -1037,12 +1037,12 @@ export default function CheckoutPage() {
                       <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-[var(--line)]"></div>
                       </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white text-[var(--muted)]">or pay with card</span>
+                      <div className="relative flex justify-center text-body-sm">
+                        <span className="px-2 bg-white color-muted">or pay with card</span>
                       </div>
                     </div>
                     <ErrorBoundary fallback={
-                      <div className="p-4 border border-red-200 bg-red-50 rounded text-sm text-red-700">
+                      <div className="p-4 border border-red-200 bg-red-50 rounded text-body-sm text-red-700">
                         Payment form failed to load. Please refresh the page.
                       </div>
                     }>
@@ -1059,7 +1059,7 @@ export default function CheckoutPage() {
 
                 <button
                   onClick={() => setStep('shipping')}
-                  className="w-full mt-4 border border-[var(--line)] text-[var(--muted)] py-3 font-medium text-sm hover:bg-[var(--cream)] transition-colors"
+                  className="w-full mt-4 border border-[var(--line)] color-muted py-3 type-medium text-body-sm hover:bg-[var(--cream)] transition-colors"
                 >
                   Back to Shipping
                 </button>
@@ -1071,7 +1071,7 @@ export default function CheckoutPage() {
         {/* Right: Summary - Mobile on top, Desktop on right */}
         <div className="bg-[var(--cream)] p-4 md:p-8 lg:p-20 order-1 lg:order-2">
           <div className="max-w-lg mx-auto sticky top-24">
-            <h2 className="text-xl font-serif text-[var(--ink)] mb-8">
+            <h2 className="text-display-sm font-serif color-ink mb-8">
               Order Summary
             </h2>
 
@@ -1089,21 +1089,21 @@ export default function CheckoutPage() {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full bg-[var(--line)] flex items-center justify-center text-[var(--muted)] text-xs text-center p-1">
+                      <div className="w-full h-full bg-[var(--line)] flex items-center justify-center color-muted text-body-xs text-center p-1">
                         No Image
                       </div>
                     )}
-                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-[var(--ink)] text-white text-[10px] flex items-center justify-center rounded-full">
+                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-[var(--ink)] text-white text-body-xs flex items-center justify-center rounded-full">
                       {item.quantity}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-serif text-[var(--ink)]">{item.title}</p>
-                    <p className="text-xs text-[var(--muted)] mt-1 uppercase tracking-wider">
+                    <p className="font-serif color-ink">{item.title}</p>
+                    <p className="text-body-xs color-muted mt-1 uppercase tracking-token-wider">
                       Qty: {item.quantity}
                     </p>
                     {(item.material || item.origin || item.sku) && (
-                      <div className="mt-1 text-[10px] text-[var(--muted)]">
+                      <div className="mt-1 text-body-xs color-muted">
                         {item.material && <span>{item.material}</span>}
                         {item.material && (item.origin || item.sku) && (
                           <span> · </span>
@@ -1114,7 +1114,7 @@ export default function CheckoutPage() {
                       </div>
                     )}
                   </div>
-                  <p className="font-medium text-[var(--ink)]">
+                  <p className="type-medium color-ink">
                     {new Intl.NumberFormat(undefined, {
                       style: 'currency',
                       currency: item.currency?.toUpperCase() || 'USD',
@@ -1127,7 +1127,7 @@ export default function CheckoutPage() {
             {/* Promo Code Input */}
             {step === 'shipping' && (
               <div className="mb-6 pb-6 border-b border-[var(--soft)]">
-                <label className="text-xs uppercase tracking-widest text-[var(--muted)] font-bold mb-2 block">
+                <label className="text-body-xs uppercase tracking-token-wider color-muted type-bold mb-2 block">
                   Promo Code
                 </label>
                 <div className="flex gap-0 border-b border-[var(--line)] focus-within:border-[var(--ink)] transition-colors">
@@ -1136,20 +1136,20 @@ export default function CheckoutPage() {
                     placeholder="ENTER CODE"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
-                    className="flex-1 bg-transparent py-2 text-sm font-serif text-[var(--ink)] placeholder-[var(--muted)] focus:outline-none uppercase"
+                    className="flex-1 bg-transparent py-2 text-body-sm font-serif color-ink placeholder-[var(--muted)] focus:outline-none uppercase"
                   />
                   <button
                     type="button"
                     onClick={handleApplyPromo}
                     disabled={promoLoading || !promoCode}
-                    className="text-[var(--ink)] text-xs font-bold uppercase tracking-widest hover:text-[var(--muted)] disabled:opacity-30 transition-colors px-2"
+                    className="color-ink text-body-xs type-bold uppercase tracking-token-wider hover:color-muted disabled:opacity-30 transition-colors px-2"
                   >
                     {promoLoading ? 'Adjusting...' : 'Apply'}
                   </button>
                 </div>
                 {promoMessage && (
                   <p
-                    className={`text-xs mt-2 ${promoMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}
+                    className={`text-body-xs mt-2 ${promoMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}
                   >
                     {promoMessage.text}
                   </p>
@@ -1157,8 +1157,8 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            <div className="border-t border-[var(--line)] pt-6 space-y-3 text-sm">
-              <div className="flex justify-between text-[var(--muted)]">
+            <div className="border-t border-[var(--line)] pt-6 space-y-3 text-body-sm">
+              <div className="flex justify-between color-muted">
                 <span>Subtotal</span>
                 <span>
                   {new Intl.NumberFormat(undefined, {
@@ -1171,7 +1171,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-green-600">
                   <div className="flex items-center gap-2">
                     <span>Discount</span>
-                    <span className="text-xs bg-[var(--soft)] px-1 py-0.5 rounded text-[var(--muted)]">
+                    <span className="text-body-xs bg-[var(--soft)] px-1 py-0.5 rounded color-muted">
                       {discount.code}
                     </span>
                   </div>
@@ -1186,7 +1186,7 @@ export default function CheckoutPage() {
               )}
               {/* PHASE 1.3: Shipping Cost Display */}
               {step === 'payment' || selectedShipping ? (
-                <div className="flex justify-between text-[var(--muted)]">
+                <div className="flex justify-between color-muted">
                   <span>
                     Shipping
                     {selectedShipping ? ` (${selectedShipping.name})` : ''}
@@ -1201,18 +1201,18 @@ export default function CheckoutPage() {
                   </span>
                 </div>
               ) : (
-                <div className="flex justify-between text-[var(--muted)]">
+                <div className="flex justify-between color-muted">
                   <span>Shipping</span>
                   <span>Calculated at next step</span>
                 </div>
               )}
               {/* PHASE 1.4: Tax Display */}
               {(taxLoading || taxAmount > 0) && (
-                <div className="flex justify-between text-[var(--muted)]">
+                <div className="flex justify-between color-muted">
                   <span>{taxName}</span>
                   <span>
                     {taxLoading ? (
-                      <span className="text-[var(--muted)]">Calculating...</span>
+                      <span className="color-muted">Calculating...</span>
                     ) : (
                       new Intl.NumberFormat(undefined, {
                         style: 'currency',
@@ -1224,7 +1224,7 @@ export default function CheckoutPage() {
               )}
               \n\n {/* D3: Gift Wrapping line */}
               {giftWrapping && (
-                <div className="flex justify-between text-[var(--muted)]">
+                <div className="flex justify-between color-muted">
                   <span className="flex items-center gap-1.5">
                     <span>🎁</span> Gift Wrapping
                   </span>
@@ -1236,7 +1236,7 @@ export default function CheckoutPage() {
                   </span>
                 </div>
               )}
-              <div className="flex justify-between text-lg font-serif text-[var(--ink)] pt-4 border-t border-[var(--line)]">
+              <div className="flex justify-between text-body-xl font-serif color-ink pt-4 border-t border-[var(--line)]">
                 <span>Total</span>
                 <span>
                   {new Intl.NumberFormat(undefined, {
@@ -1247,8 +1247,8 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="mt-8 bg-white p-4 border border-[var(--soft)] flex gap-3 text-[var(--muted)] text-xs">
-              <ShieldCheck size={32} className="text-[var(--line)] shrink-0" />
+            <div className="mt-8 bg-white p-4 border border-[var(--soft)] flex gap-3 color-muted text-body-xs">
+              <ShieldCheck size={32} className="color-muted shrink-0" />
               <p>
                 Every purchase is backed by our Authenticity Guarantee. We
                 ensure the highest standards of craftsmanship.
@@ -1257,7 +1257,7 @@ export default function CheckoutPage() {
 
             {/* PHASE 7.3: Payment Icons */}
             <div className="mt-6">
-              <p className="text-xs text-[var(--muted)] text-center mb-3 uppercase tracking-wider">
+              <p className="text-body-xs color-muted text-center mb-3 uppercase tracking-token-wider">
                 Accepted Payment Methods
               </p>
               <PaymentIcons />
@@ -1273,3 +1273,4 @@ export default function CheckoutPage() {
     </div>
   );
 }
+

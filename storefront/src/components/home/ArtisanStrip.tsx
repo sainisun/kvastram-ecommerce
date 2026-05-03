@@ -56,23 +56,23 @@ export function ArtisanStrip() {
               className="group relative overflow-hidden rounded-[var(--radius-lg)] bg-white p-6 transition-shadow hover:shadow-md"
             >
               <div
-                className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-[14px] font-semibold text-[var(--ink)]`}
+                className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-body-sm type-semibold color-ink`}
               >
                 {artisan.initials}
               </div>
 
-              <p className="text-[13px] font-semibold text-[var(--ink)]">
+              <p className="text-body-sm type-semibold color-ink">
                 {artisan.name}
               </p>
-              <p className="mt-1 text-[12px] text-[var(--muted)]">
+              <p className="mt-1 text-body-xs color-muted">
                 {artisan.craft}
               </p>
-              <p className="mt-1 text-[11px] uppercase tracking-[0.1em] text-[var(--muted)]">
+              <p className="mt-1 text-body-xs uppercase tracking-token-wider color-muted">
                 {artisan.region}
               </p>
 
               <div className="mt-4 border-t border-[var(--line)] pt-4">
-                <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--sienna)]">
+                <span className="text-body-xs type-medium uppercase tracking-token-wider color-sienna">
                   {artisan.years} of craft
                 </span>
               </div>
@@ -80,9 +80,9 @@ export function ArtisanStrip() {
           ))}
         </div>
 
-        <p className="mt-8 text-[13px] leading-7 text-[var(--muted)]">
+        <p className="mt-8 text-body-sm leading-7 color-muted">
           Every Kvastram piece is signed by the artisan who made it — their name is on the care label inside.{' '}
-          <Link href="/about" className="text-[var(--ink)] underline underline-offset-4 hover:text-[var(--sienna)]">
+          <Link href="/about" className="color-ink underline underline-offset-4 hover:color-sienna">
             Learn about our makers →
           </Link>
         </p>
@@ -90,3 +90,4 @@ export function ArtisanStrip() {
     </section>
   );
 }
+

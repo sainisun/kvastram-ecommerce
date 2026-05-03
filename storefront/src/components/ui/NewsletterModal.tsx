@@ -38,7 +38,7 @@ export function NewsletterModal() {
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-stone-100 px-5 py-4">
-          <h3 className="font-heading text-[24px] leading-none text-stone-950">
+          <h3 className="font-heading text-display-md leading-token-tight text-stone-950">
             Get 15% off your first order
           </h3>
           <button
@@ -51,10 +51,10 @@ export function NewsletterModal() {
           </button>
         </div>
         <div className="space-y-4 p-6">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500">
+          <div className="text-body-xs type-semibold uppercase tracking-token-wider text-stone-500">
             Welcome gift
           </div>
-          <p className="text-[14px] leading-7 text-stone-600">
+          <p className="text-body-sm leading-7 text-stone-600">
             Subscribe for artisan stories, launches, and a welcome discount code.
           </p>
           <input
@@ -73,14 +73,14 @@ export function NewsletterModal() {
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="w-full bg-stone-950 px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-stone-800"
+            className="w-full bg-stone-950 px-6 py-4 text-body-xs type-semibold uppercase tracking-token-wider text-white transition hover:bg-stone-800"
           >
             Claim Discount
           </button>
           <Link
             href="/products"
             onClick={() => setOpen(false)}
-            className="block w-full border border-stone-200 px-6 py-4 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-950 transition hover:border-stone-900"
+            className="block w-full border border-stone-200 px-6 py-4 text-center text-body-xs type-semibold uppercase tracking-token-wider text-stone-950 transition hover:border-stone-900"
           >
             No Thanks
           </Link>
@@ -89,3 +89,4 @@ export function NewsletterModal() {
     </div>
   );
 }
+

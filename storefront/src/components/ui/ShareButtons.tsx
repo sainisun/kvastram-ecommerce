@@ -81,7 +81,7 @@ export default function ShareButtons({
 
           setShowDropdown(!showDropdown);
         }}
-        className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-sm"
+        className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-body-sm"
         aria-label="Share product"
         aria-expanded={showDropdown}
       >
@@ -102,22 +102,22 @@ export default function ShareButtons({
             <div className="py-1">
               <button
                 onClick={() => handleShare('facebook')}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-stone-700 hover:bg-stone-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-stone-700 hover:bg-stone-50 transition-colors"
               >
-                <Facebook size={18} className="text-[#1877F2]" />
+                <Facebook size={18} className="color-facebook" />
                 Facebook
               </button>
               <button
                 onClick={() => handleShare('twitter')}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-stone-700 hover:bg-stone-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-stone-700 hover:bg-stone-50 transition-colors"
               >
-                <Twitter size={18} className="text-[#1DA1F2]" />
+                <Twitter size={18} className="color-twitter" />
                 Twitter
               </button>
               <hr className="my-1 border-stone-100" />
               <button
                 onClick={() => handleShare('whatsapp')}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-stone-700 hover:bg-stone-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-stone-700 hover:bg-stone-50 transition-colors"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -130,7 +130,7 @@ export default function ShareButtons({
               </button>
               <button
                 onClick={() => handleShare('email')}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-stone-700 hover:bg-stone-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-stone-700 hover:bg-stone-50 transition-colors"
               >
                 <svg
                   className="w-[18px] h-[18px]"
@@ -154,3 +154,4 @@ export default function ShareButtons({
     </div>
   );
 }
+

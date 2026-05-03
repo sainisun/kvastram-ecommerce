@@ -15,10 +15,10 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
     <section className="bg-white py-12 md:py-16 lg:py-24">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="mb-8 text-center md:mb-12">
-          <div className="text-[11px] uppercase tracking-[0.25em] text-stone-500">
+          <div className="text-body-xs uppercase tracking-token-wider text-stone-500">
             Shop by Category
           </div>
-          <h2 className="mt-3 font-heading text-[clamp(36px,4vw,54px)] font-medium leading-[0.98] tracking-[-0.02em] text-stone-950">
+          <h2 className="mt-3 font-heading text-display-xl type-medium leading-token-tight tracking-token-tight text-stone-950">
             Find your <em className="italic">silhouette</em>
           </h2>
         </div>
@@ -39,7 +39,7 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
               />
               <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.12)_0%,transparent_52%)]" />
               <div className="absolute inset-x-0 bottom-6 flex justify-center px-4">
-                <span className="inline-flex bg-white px-4 py-2 text-[12px] font-medium uppercase tracking-[0.14em] text-stone-950 shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+                <span className="inline-flex bg-white px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider text-stone-950 shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
                   {cat.name}
                 </span>
               </div>
@@ -50,3 +50,4 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
     </section>
   );
 }
+

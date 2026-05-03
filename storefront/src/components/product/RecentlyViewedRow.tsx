@@ -26,16 +26,16 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
       <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <span className="font-body mb-1 block text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <span className="recently-eyebrow mb-1 block">
               Your Journey
             </span>
-            <h2 className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-stone-900 md:text-[36px]">
+            <h2 className="recently-section-heading">
               Recently Viewed
             </h2>
           </div>
           <Link
             href="/products"
-            className="font-body flex items-center gap-1 text-[12px] font-medium uppercase tracking-[0.1em] text-stone-500 transition-colors hover:text-stone-900"
+            className="recently-link flex items-center gap-1 transition-colors"
           >
             View All →
           </Link>
@@ -57,7 +57,7 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-stone-200">
-                    <span className="font-heading text-xs italic text-stone-400">
+                    <span className="recently-empty-image">
                       No image
                     </span>
                   </div>
@@ -65,12 +65,12 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
               </div>
               {/* Info */}
               <p
-                className="font-body mb-1 truncate text-[14px] font-medium leading-[1.45] tracking-[0.03em] text-stone-900 transition-colors group-hover:text-stone-600"
+                className="recently-name mb-1 truncate transition-colors"
                 title={item.title}
               >
                 {item.title}
               </p>
-              <p className="font-body text-[14px] font-normal text-stone-500">
+              <p className="recently-price">
                 {formatPrice(item.price)}
               </p>
             </Link>

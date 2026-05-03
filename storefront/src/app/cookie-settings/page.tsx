@@ -37,7 +37,7 @@ export default function CookieSettingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-      <h1 className="text-2xl font-bold mb-6">Cookie & Privacy Settings</h1>
+      <h1 className="text-display-md type-bold mb-6">Cookie & Privacy Settings</h1>
       <p className="mb-8">
         Adjust which categories of cookies and tracking technologies you allow.
       </p>
@@ -79,3 +79,4 @@ export default function CookieSettingsPage() {
     </div>
   );
 }
+

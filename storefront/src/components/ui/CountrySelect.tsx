@@ -76,7 +76,7 @@ export default function CountrySelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-transparent border-b border-stone-200 py-3 text-left text-stone-900 focus:outline-none focus:border-stone-900 transition-colors font-light flex items-center justify-between"
+        className="w-full bg-transparent border-b border-stone-200 py-3 text-left text-stone-900 focus:outline-none focus:border-stone-900 transition-colors type-light flex items-center justify-between"
         aria-label={required ? `${name}, required` : name}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -100,7 +100,7 @@ export default function CountrySelect({
               placeholder="Search country..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-stone-200 focus:outline-none focus:border-stone-400"
+              className="w-full px-3 py-2 text-body-sm border border-stone-200 focus:outline-none focus:border-stone-400"
             />
           </div>
 
@@ -109,7 +109,7 @@ export default function CountrySelect({
             {/* Common Countries */}
             {common.length > 0 && (
               <>
-                <div className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400 bg-stone-50">
+                <div className="px-3 py-1.5 text-body-xs type-bold uppercase tracking-token-wider text-stone-400 bg-stone-50">
                   Popular
                 </div>
                 {common.map((country) => (
@@ -117,9 +117,9 @@ export default function CountrySelect({
                     key={country.code}
                     type="button"
                     onClick={() => handleSelect(country.code)}
-                    className={`w-full px-4 py-2.5 text-left text-sm flex items-center justify-between hover:bg-stone-50 ${
+                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-stone-50 ${
                       value === country.code
-                        ? 'bg-stone-100 text-stone-900 font-medium'
+                        ? 'bg-stone-100 text-stone-900 type-medium'
                         : 'text-stone-700'
                     }`}
                   >
@@ -135,7 +135,7 @@ export default function CountrySelect({
             {/* All Countries */}
             {others.length > 0 && (
               <>
-                <div className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-stone-400 bg-stone-50">
+                <div className="px-3 py-1.5 text-body-xs type-bold uppercase tracking-token-wider text-stone-400 bg-stone-50">
                   {common.length > 0 ? 'All Countries' : 'Countries'}
                 </div>
                 {others.map((country) => (
@@ -143,9 +143,9 @@ export default function CountrySelect({
                     key={country.code}
                     type="button"
                     onClick={() => handleSelect(country.code)}
-                    className={`w-full px-4 py-2.5 text-left text-sm flex items-center justify-between hover:bg-stone-50 ${
+                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-stone-50 ${
                       value === country.code
-                        ? 'bg-stone-100 text-stone-900 font-medium'
+                        ? 'bg-stone-100 text-stone-900 type-medium'
                         : 'text-stone-700'
                     }`}
                   >
@@ -159,7 +159,7 @@ export default function CountrySelect({
             )}
 
             {filteredCountries.length === 0 && (
-              <div className="px-4 py-6 text-center text-stone-400 text-sm">
+              <div className="px-4 py-6 text-center text-stone-400 text-body-sm">
                 No countries found
               </div>
             )}
@@ -169,3 +169,4 @@ export default function CountrySelect({
     </div>
   );
 }
+

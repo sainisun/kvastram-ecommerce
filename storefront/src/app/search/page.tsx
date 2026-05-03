@@ -120,11 +120,11 @@ function SearchContent() {
         <div className="mb-12">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs text-stone-500 hover:text-black mb-6 uppercase tracking-widest pl-1"
+            className="search-back-link mb-6 inline-flex items-center gap-2 pl-1 hover:text-black"
           >
             <ArrowLeft size={14} /> Back to Home
           </Link>
-          <h1 className="text-3xl md:text-4xl font-serif text-stone-900 mb-4">
+          <h1 className="search-title mb-4">
             Search Results
           </h1>
           <p className="text-stone-500">
@@ -136,7 +136,7 @@ function SearchContent() {
             ) : (
               <span>
                 Found {products.length} results for &quot;
-                <span className="text-black font-medium">{query}</span>&quot;
+                <span className="search-query">{query}</span>&quot;
               </span>
             )}
           </p>
@@ -147,14 +147,14 @@ function SearchContent() {
           <div className="relative">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-stone-600"
+              className="search-toolbar-button flex items-center gap-2 hover:text-stone-600"
             >
               <Filter size={16} /> Filters
             </button>
 
             {showFilters && (
               <div className="absolute top-full left-0 mt-4 w-64 bg-white shadow-xl z-20 border border-stone-100 p-6">
-                <h4 className="font-serif text-lg mb-4">Price Range</h4>
+                <h4 className="search-filter-title mb-4">Price Range</h4>
                 <div className="flex items-center gap-2 mb-4">
                   <Input
                     type="number"
@@ -172,7 +172,7 @@ function SearchContent() {
                 </div>
                 <button
                   onClick={() => handleFilterApply()}
-                  className="w-full bg-stone-900 text-white py-2 text-xs font-bold uppercase"
+                  className="search-apply-button w-full bg-stone-900 py-2"
                 >
                   Apply
                 </button>
@@ -183,7 +183,7 @@ function SearchContent() {
           <div className="relative">
             <button
               onClick={() => setShowSortMenu(!showSortMenu)}
-              className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-stone-600"
+              className="search-toolbar-button flex items-center gap-2 hover:text-stone-600"
             >
               Sort by:{' '}
               {sort === 'relevance'
@@ -202,7 +202,7 @@ function SearchContent() {
                     setSort('relevance');
                     setShowSortMenu(false);
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-stone-50 text-sm"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-stone-50"
                 >
                   Featured
                 </button>
@@ -211,7 +211,7 @@ function SearchContent() {
                     setSort('newest');
                     setShowSortMenu(false);
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-stone-50 text-sm"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-stone-50"
                 >
                   Newest Arrivals
                 </button>
@@ -220,7 +220,7 @@ function SearchContent() {
                     setSort('price_asc');
                     setShowSortMenu(false);
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-stone-50 text-sm"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-stone-50"
                 >
                   Price: Low to High
                 </button>
@@ -229,7 +229,7 @@ function SearchContent() {
                     setSort('price_desc');
                     setShowSortMenu(false);
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-stone-50 text-sm"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-stone-50"
                 >
                   Price: High to Low
                 </button>
@@ -262,7 +262,7 @@ function SearchContent() {
                       className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-stone-400 italic">
+                    <div className="search-no-image flex h-full w-full items-center justify-center italic">
                       No Image
                     </div>
                   )}
@@ -271,7 +271,7 @@ function SearchContent() {
                   <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                     <button
                       onClick={(e) => handleAddToCart(e, product)}
-                      className="w-full bg-white text-stone-900 py-3 text-xs font-bold uppercase tracking-wider hover:bg-stone-900 hover:text-white transition-colors shadow-lg"
+                      className="search-quick-add w-full bg-white py-3 shadow-lg transition-colors hover:bg-stone-900 hover:text-white"
                     >
                       Add to Cart
                     </button>
@@ -279,10 +279,10 @@ function SearchContent() {
                 </div>
 
                 <div className="space-y-1 text-center">
-                  <h3 className="font-serif text-lg text-stone-900 leading-tight group-hover:text-stone-600 transition-colors">
+                  <h3 className="search-product-title transition-colors group-hover:text-stone-600">
                     {displayTitle}
                   </h3>
-                  <p className="text-sm font-medium text-stone-900 pt-1">
+                  <p className="search-product-price pt-1">
                     {(() => {
                       const prices = product.variants?.[0]?.prices || [];
                       const p = prices.find((x: MoneyAmount) => x.currency_code?.toLowerCase() === 'inr') || prices[0];
@@ -296,12 +296,12 @@ function SearchContent() {
           </div>
         ) : (
           <div className="text-center py-20 bg-stone-50 rounded-lg">
-            <p className="text-stone-500 mb-4">
+            <p className="search-empty-copy mb-4">
               No products found matching your search.
             </p>
             <Link
               href="/products"
-              className="inline-block bg-stone-900 text-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-800"
+              className="search-empty-action inline-block bg-stone-900 px-8 py-3 hover:bg-stone-800"
             >
               Browse All Products
             </Link>

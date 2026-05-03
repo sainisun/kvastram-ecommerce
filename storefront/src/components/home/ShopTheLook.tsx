@@ -76,10 +76,10 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
           </div>
 
           <div className="space-y-6">
-            <div className="kv-tag text-[var(--muted)]">
+            <div className="kv-tag color-muted">
               Look 01 / {String(items.length).padStart(2, '0')}
             </div>
-            <h3 className="kv-title text-[clamp(26px,3vw,40px)]">
+            <h3 className="kv-title text-display-xl">
               The Festive <em className="italic">Look</em>
             </h3>
             <p className="kv-sub">
@@ -109,18 +109,18 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                       />
                     </Link>
                     <div className="min-w-0 flex-1">
-                      <h4 className="line-clamp-1 text-[13px] font-medium text-[var(--ink)]">
+                      <h4 className="line-clamp-1 text-body-sm type-medium color-ink">
                         {item.product.title}
                       </h4>
                       {price ? (
-                        <p className="mt-1 text-[12px] uppercase tracking-[0.14em] text-[var(--muted)]">
+                        <p className="mt-1 text-body-xs uppercase tracking-token-wider color-muted">
                           {formatCurrency(price.amount, price.currency_code)}
                         </p>
                       ) : null}
                     </div>
                     <Link
                       href={href}
-                      className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-[16px] leading-none text-[var(--ink)] transition-colors hover:border-[var(--sienna)] hover:bg-[var(--sienna)] hover:text-white"
+                      className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-body-lg leading-token-tight color-ink transition-colors hover:border-[var(--sienna)] hover:bg-[var(--sienna)] hover:text-white"
                       aria-label={`View ${item.product.title}`}
                     >
                       +
@@ -139,3 +139,4 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
     </section>
   );
 }
+

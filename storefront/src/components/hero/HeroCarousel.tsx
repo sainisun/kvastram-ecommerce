@@ -66,11 +66,11 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
               {/* Left Content Half (Dark Editorial) */}
               <div className="w-full md:w-1/2 h-1/2 md:h-full bg-[#1a1614] flex items-center justify-center p-8 md:p-16 lg:p-24 z-10">
                 <div className="max-w-xl w-full animate-fade-in-up">
-                  <span className="text-amber-500 text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-4 md:mb-6 block">
+                  <span className="text-amber-500 text-body-xs md:text-body-sm type-bold tracking-token-wider uppercase mb-4 md:mb-6 block">
                     Kvastram Collection
                   </span>
 
-                  <h1 className="text-4xl md:text-6xl lg:text-[5.5rem] font-serif text-white mb-6 leading-[1.05] whitespace-pre-line">
+                  <h1 className="text-display-xl md:text-display-xl lg:text-display-xl font-serif text-white mb-6 leading-token-tight whitespace-pre-line">
                     {slide.title}
                   </h1>
 
@@ -78,7 +78,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
                     {slide.ctaText ? (
                       <Link
                         href={slide.ctaLink}
-                        className="bg-white text-stone-900 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-200 transition-colors shadow-xl"
+                        className="bg-white text-stone-900 px-8 py-4 text-body-xs type-bold uppercase tracking-token-wider hover:bg-stone-200 transition-colors shadow-xl"
                       >
                         {slide.ctaText}
                       </Link>
@@ -127,3 +127,4 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
     </div>
   );
 }
+

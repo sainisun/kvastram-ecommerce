@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Minus, Plus, Wifi, WifiOff } from 'lucide-react';
+import Link from 'next/link';
 
 import ProductGallery from '@/components/product/ProductGallery';
 import { Reviews } from '@/components/product/Reviews';
@@ -161,20 +162,20 @@ export default function ProductView({ product }: { product: Product }) {
   ];
 
   return (
-    <div style={{ background: 'var(--cream)', minHeight: '100vh' }}>
-      <div className="kv-container" style={{ paddingTop: 32, paddingBottom: 80 }}>
+    <div className="pdp-page">
+      <div className="kv-container pdp-container">
 
         {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', marginBottom: 24 }}>
-          <a href="/" style={{ color: 'var(--muted)', textDecoration: 'none' }} className="hover:text-[var(--ink)]">Home</a>
-          <span>/</span>
+        <nav aria-label="Breadcrumb" className="breadcrumb">
+          <Link href="/">Home</Link>
+          <span className="breadcrumb-separator">/</span>
           {primaryCategoryPath && primaryCategory ? (
             <>
-              <a href={primaryCategoryPath} style={{ color: 'var(--muted)', textDecoration: 'none' }} className="hover:text-[var(--ink)]">{primaryCategory.name}</a>
-              <span>/</span>
+              <Link href={primaryCategoryPath}>{primaryCategory.name}</Link>
+              <span className="breadcrumb-separator">/</span>
             </>
           ) : null}
-          <span style={{ color: 'var(--ink)' }}>{displayTitle}</span>
+          <span className="breadcrumb-current">{displayTitle}</span>
         </nav>
 
         {/* Main PD layout */}
@@ -193,36 +194,36 @@ export default function ProductView({ product }: { product: Product }) {
           {/* RIGHT — Product info */}
           <div>
             {/* Category tag */}
-            <div className="kv-tag" style={{ marginBottom: 10 }}>
+            <div className="kv-tag">
               {product.collection?.title || 'Kvastram Collection'}
             </div>
 
             {/* Title */}
-            <h1 className="section-title" style={{ marginBottom: 12 }}>{displayTitle}</h1>
+            <h1 className="pdp-title">{displayTitle}</h1>
 
             {/* Rating */}
             {product.avg_rating != null && product.avg_rating > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div className="pdp-rating-row">
                 <span style={{ color: 'var(--rating-star)' }}>{'★★★★★'.slice(0, Math.round(product.avg_rating))}</span>
-                <span className="kv-sub" style={{ margin: 0 }}>
+                <span className="kv-sub">
                   {product.avg_rating.toFixed(1)} / 5
                   {product.review_count ? ` · ${product.review_count} reviews` : ''}
                 </span>
-                <button type="button" className="btn btn-outline" style={{ minHeight: 30, padding: '0 12px', fontSize: 11 }} onClick={() => setActiveTab('reviews')}>
+                <button type="button" className="btn btn-outline pdp-review-button" onClick={() => setActiveTab('reviews')}>
                   Write Review
                 </button>
               </div>
             ) : null}
 
             {/* Short description */}
-            {product.subtitle && <p className="kv-sub" style={{ marginBottom: 12 }}>{product.subtitle}</p>}
+            {product.subtitle && <p className="kv-sub pdp-subtitle">{product.subtitle}</p>}
 
             {/* Price */}
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, margin: '18px 0' }}>
+            <div className="pdp-price-row">
               <span className="pd-price">{formattedPrice}</span>
               {formattedComparePrice && <span className="orig">{formattedComparePrice}</span>}
               {formattedComparePrice && compareAtAmount && amount < compareAtAmount && (
-                <span style={{ background: 'var(--success-bg)', color: 'var(--success-text)', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                <span className="pdp-save-badge">
                   Save {Math.round((1 - amount / compareAtAmount) * 100)}%
                 </span>
               )}
@@ -232,11 +233,11 @@ export default function ProductView({ product }: { product: Product }) {
             {hasStructuredOptions && product.options?.map((option: ProductOption) => {
               const isColor = option.title.toLowerCase() === 'color' || option.title.toLowerCase() === 'colour';
               return (
-                <div key={option.title} style={{ marginBottom: 4 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                    <strong style={{ fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{option.title}</strong>
+                <div key={option.title} className="pdp-option-block">
+                  <div className="pdp-option-head">
+                    <strong className="pdp-option-label">{option.title}</strong>
                     {!isColor && option.title.toLowerCase().includes('size') && (
-                      <button type="button" className="btn btn-outline" style={{ minHeight: 28, padding: '0 10px', fontSize: 11 }} onClick={() => setShowSizeGuide(true)}>
+                      <button type="button" className="btn btn-outline pdp-size-guide" onClick={() => setShowSizeGuide(true)}>
                         Size Guide
                       </button>
                     )}
@@ -272,8 +273,8 @@ export default function ProductView({ product }: { product: Product }) {
 
             {/* Variant list (non-structured) */}
             {!hasStructuredOptions && product.variants && product.variants.length > 1 && (
-              <div style={{ marginBottom: 4 }}>
-                <strong style={{ fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Option</strong>
+              <div className="pdp-option-block">
+                <strong className="pdp-option-label">Option</strong>
                 <div className="option-row">
                   {product.variants.map((v: ProductVariant) => (
                     <button
@@ -290,13 +291,13 @@ export default function ProductView({ product }: { product: Product }) {
             )}
 
             {/* Quantity */}
-            <div style={{ marginBottom: 4 }}>
-              <strong style={{ fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Quantity</strong>
+            <div className="pdp-option-block">
+              <strong className="pdp-option-label">Quantity</strong>
               <div className="option-row">
                 <button type="button" className="option-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease">
                   <Minus size={14} />
                 </button>
-                <span className="option-btn" style={{ display: 'grid', placeItems: 'center', cursor: 'default', minWidth: 44 }}>{quantity}</span>
+                <span className="option-btn pdp-quantity-value">{quantity}</span>
                 <button type="button" className="option-btn" onClick={() => quantity < currentInventory && setQuantity(quantity + 1)} disabled={currentInventory <= quantity} aria-label="Increase" style={{ opacity: currentInventory <= quantity ? 0.35 : 1 }}>
                   <Plus size={14} />
                 </button>
@@ -305,7 +306,7 @@ export default function ProductView({ product }: { product: Product }) {
 
             {/* Low stock warning */}
             {selectedVariant && currentInventory > 0 && currentInventory <= 10 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--danger)', marginBottom: 12 }}>
+              <div className="pdp-low-stock">
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--danger-dot)', display: 'inline-block' }} />
                 Only {currentInventory} left
                 {isConnected ? <Wifi size={11} style={{ color: 'var(--online)' }} /> : <WifiOff size={11} style={{ color: 'var(--muted)' }} />}
@@ -313,7 +314,7 @@ export default function ProductView({ product }: { product: Product }) {
             )}
 
             {/* CTA Buttons */}
-            <div style={{ display: 'grid', gap: 10, marginBottom: 18 }}>
+            <div className="pdp-cta-grid">
               <button
                 id="pdp-atc-btn"
                 type="button"
@@ -328,8 +329,7 @@ export default function ProductView({ product }: { product: Product }) {
                 href={`https://wa.me/message/kvastram?text=${encodeURIComponent(`Hi, I'm interested in: ${displayTitle}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-outline btn-full"
-                style={{ color: 'var(--online)', borderColor: 'var(--online)', gap: 8 }}
+                className="btn btn-outline btn-full pdp-whatsapp"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -340,7 +340,7 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             {/* Wishlist + Share */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+            <div className="pdp-actions-row">
               <WishlistButton
                 productId={product.id}
                 title={displayTitle}
@@ -357,29 +357,29 @@ export default function ProductView({ product }: { product: Product }) {
 
             {/* Trust grid */}
             <div className="trust-grid">
-              <div className="soft-card" style={{ padding: '12px 14px', fontSize: 13 }}>
-                <strong>Free shipping</strong>
-                <p className="kv-sub" style={{ margin: '4px 0 0', fontSize: 12 }}>Above Rs. 999 in India</p>
+              <div className="soft-card pdp-trust-card">
+                <strong className="pdp-trust-label">Free shipping</strong>
+                <p className="pdp-trust-sublabel">Above Rs. 999 in India</p>
               </div>
-              <div className="soft-card" style={{ padding: '12px 14px', fontSize: 13 }}>
-                <strong>Easy returns</strong>
-                <p className="kv-sub" style={{ margin: '4px 0 0', fontSize: 12 }}>30-day return window</p>
+              <div className="soft-card pdp-trust-card">
+                <strong className="pdp-trust-label">Easy returns</strong>
+                <p className="pdp-trust-sublabel">30-day return window</p>
               </div>
-              <div className="soft-card" style={{ padding: '12px 14px', fontSize: 13 }}>
-                <strong>Secure payment</strong>
-                <p className="kv-sub" style={{ margin: '4px 0 0', fontSize: 12 }}>UPI, Card, COD</p>
+              <div className="soft-card pdp-trust-card">
+                <strong className="pdp-trust-label">Secure payment</strong>
+                <p className="pdp-trust-sublabel">UPI, Card, COD</p>
               </div>
-              <div className="soft-card" style={{ padding: '12px 14px', fontSize: 13 }}>
-                <strong>Handmade</strong>
-                <p className="kv-sub" style={{ margin: '4px 0 0', fontSize: 12 }}>Made in Jaipur, India</p>
+              <div className="soft-card pdp-trust-card">
+                <strong className="pdp-trust-label">Handmade</strong>
+                <p className="pdp-trust-sublabel">Made in Jaipur, India</p>
               </div>
             </div>
 
             {/* Delivery info */}
-            <div className="soft-card" style={{ marginTop: 12, padding: '12px 14px', fontSize: 13 }}>
-              <p style={{ color: 'var(--ink)' }}>Estimated delivery: <strong>{deliveryWindow}</strong></p>
-              {selectedVariant?.sku && <p className="kv-sub" style={{ margin: '4px 0 0', fontSize: 12 }}>SKU: {selectedVariant.sku}</p>}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 12, color: 'var(--muted)' }}>
+            <div className="soft-card pdp-delivery-card">
+              <p className="pdp-delivery-estimate">Estimated delivery: <strong>{deliveryWindow}</strong></p>
+              {selectedVariant?.sku && <p className="pdp-trust-sublabel">SKU: {selectedVariant.sku}</p>}
+              <div className="pdp-delivery-status">
                 {selectedVariant && currentInventory > 0 ? (
                   <><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success-dark)', display: 'inline-block' }} />{currentInventory <= 5 ? `Only ${currentInventory} left` : 'In Stock, Ready to Ship'}</>
                 ) : (
@@ -390,7 +390,7 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             {outOfStock && selectedVariant && (
-              <div style={{ marginTop: 12 }}>
+              <div className="pdp-back-in-stock">
                 <BackInStock productId={product.id} variantId={selectedVariant.id} productTitle={displayTitle} />
               </div>
             )}
@@ -414,7 +414,7 @@ export default function ProductView({ product }: { product: Product }) {
         {/* Description */}
         <div className={`pd-tab-panel${activeTab === 'description' ? ' active' : ''}`}>
           {product.description ? (
-            <div className="prose prose-stone prose-sm max-w-none" style={{ fontWeight: 300, lineHeight: 1.8 }}>
+            <div className="pdp-description">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{product.description}</ReactMarkdown>
             </div>
           ) : (
@@ -424,12 +424,12 @@ export default function ProductView({ product }: { product: Product }) {
 
         {/* Specifications */}
         <div className={`pd-tab-panel${activeTab === 'specs' ? ' active' : ''}`}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+          <table className="pdp-spec-table">
             <tbody>
-              {product.material && <tr style={{ borderBottom: '1px solid var(--line)' }}><td style={{ padding: '10px 0', color: 'var(--muted)', width: '40%', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Material</td><td style={{ padding: '10px 0' }}>{product.material}</td></tr>}
-              {product.origin_country && <tr style={{ borderBottom: '1px solid var(--line)' }}><td style={{ padding: '10px 0', color: 'var(--muted)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Origin</td><td style={{ padding: '10px 0' }}>{product.origin_country}</td></tr>}
-              {product.care_instructions && <tr style={{ borderBottom: '1px solid var(--line)' }}><td style={{ padding: '10px 0', color: 'var(--muted)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Care</td><td style={{ padding: '10px 0' }}>{product.care_instructions}</td></tr>}
-              {selectedVariant?.sku && <tr style={{ borderBottom: '1px solid var(--line)' }}><td style={{ padding: '10px 0', color: 'var(--muted)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>SKU</td><td style={{ padding: '10px 0' }}>{selectedVariant.sku}</td></tr>}
+              {product.material && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Material</td><td className="pdp-spec-cell">{product.material}</td></tr>}
+              {product.origin_country && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Origin</td><td className="pdp-spec-cell">{product.origin_country}</td></tr>}
+              {product.care_instructions && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Care</td><td className="pdp-spec-cell">{product.care_instructions}</td></tr>}
+              {selectedVariant?.sku && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">SKU</td><td className="pdp-spec-cell">{selectedVariant.sku}</td></tr>}
               {!product.material && !product.origin_country && !product.care_instructions && !selectedVariant?.sku && (
                 <tr><td colSpan={2}><p className="kv-sub">No specifications available.</p></td></tr>
               )}
@@ -471,28 +471,14 @@ export default function ProductView({ product }: { product: Product }) {
       {/* Sticky ATC bar (mobile) */}
       <div
         style={{
-          position: 'fixed',
-          bottom: 72,
-          left: 0,
-          right: 0,
-          zIndex: 40,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          borderTop: '1px solid var(--line)',
-          background: 'rgba(252,248,243,0.97)',
-          padding: '10px 16px',
-          boxShadow: '0 -4px 24px rgba(0,0,0,.08)',
-          backdropFilter: 'blur(8px)',
           transform: showStickyATC ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform .3s ease',
         }}
-        className="md:hidden"
+        className="pdp-sticky-bar md:hidden"
         aria-hidden={!showStickyATC}
       >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayTitle}</p>
-          <p style={{ fontSize: 14, fontWeight: 900, color: 'var(--sienna)' }}>{formattedPrice}</p>
+        <div className="pdp-sticky-info">
+          <p className="pdp-sticky-title">{displayTitle}</p>
+          <p className="pdp-sticky-price">{formattedPrice}</p>
         </div>
         <button
           type="button"

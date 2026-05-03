@@ -42,7 +42,7 @@ export default function WholesaleLoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Wholesale Login</h1>
+          <h1 className="text-display-md type-bold text-gray-900">Wholesale Login</h1>
           <p className="text-gray-600 mt-2">
             Sign in to access your wholesale account
           </p>
@@ -52,7 +52,7 @@ export default function WholesaleLoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-body-sm type-medium text-gray-700 mb-2"
             >
               Email Address
             </label>
@@ -72,7 +72,7 @@ export default function WholesaleLoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-body-sm type-medium text-gray-700 mb-2"
             >
               Password
             </label>
@@ -111,7 +111,7 @@ export default function WholesaleLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg type-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {loading ? (
               <>
@@ -125,11 +125,11 @@ export default function WholesaleLoginPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-body-sm text-gray-600">
             New to Kvastram Wholesale?{' '}
             <Link
               href="/wholesale"
-              className="text-blue-600 hover:underline font-medium"
+              className="text-blue-600 hover:underline type-medium"
             >
               Apply Now
             </Link>
@@ -139,7 +139,7 @@ export default function WholesaleLoginPage() {
         <div className="mt-4 text-center">
           <Link
             href="/wholesale"
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-body-sm text-gray-500 hover:text-gray-700"
           >
             ← Back to Wholesale
           </Link>
@@ -148,3 +148,4 @@ export default function WholesaleLoginPage() {
     </div>
   );
 }
+

@@ -97,14 +97,14 @@ function MerchSlotCard({ slot }: { slot: HomepageMerchandisingSlot }) {
       ) : null}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.06),rgba(0,0,0,0.54))]" />
       <div className="relative z-10 flex h-full flex-col justify-end">
-        <div className="text-[11px] uppercase tracking-[0.22em] text-white/75">
+        <div className="text-body-xs uppercase tracking-token-wider text-white/75">
           {slot.eyebrow || 'Kvastram Edit'}
         </div>
-        <h3 className="mt-3 font-heading text-[32px] leading-none">
+        <h3 className="mt-3 font-heading text-display-md leading-token-tight">
           {slot.title}
         </h3>
         {slot.copy ? (
-          <p className="mt-3 max-w-[18rem] text-[14px] leading-7 text-white/82">
+          <p className="mt-3 max-w-[18rem] text-body-sm leading-7 text-white/82">
             {slot.copy}
           </p>
         ) : null}
@@ -132,18 +132,18 @@ function ProductTile({ product }: { product: Product }) {
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-[var(--soft)] text-[var(--muted)]">
+          <div className="flex h-full w-full items-center justify-center bg-[var(--soft)] color-muted">
             No Image
           </div>
         )}
       </Link>
       <Link
         href={`/products/${product.handle || product.id}`}
-        className="mt-4 line-clamp-2 block text-[15px] leading-6 text-[var(--ink)]"
+        className="mt-4 line-clamp-2 block text-body-md leading-6 color-ink"
       >
         {product.title}
       </Link>
-      <p className="mt-1 text-[12px] uppercase tracking-[0.16em] text-[var(--muted)]">
+      <p className="mt-1 text-body-xs uppercase tracking-token-wider color-muted">
         {price ? formatPrice(price) : 'Contact for price'}
       </p>
     </article>
@@ -281,3 +281,4 @@ export function PrototypeHomeExtras({
     </>
   );
 }
+

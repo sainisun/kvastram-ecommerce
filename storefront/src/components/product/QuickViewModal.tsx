@@ -141,7 +141,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
       >
         {/* Header */}
         <div className="modal-head">
-          <h3 className="serif line-clamp-1 text-[18px]">{displayTitle}</h3>
+          <h3 className="quickview-title line-clamp-1">{displayTitle}</h3>
           <button
             onClick={onClose}
             aria-label="Close"
@@ -218,10 +218,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               {/* Stars */}
               {reviewAvg !== null && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ color: '#f6ad55', fontSize: 15 }}>
+                  <span className="pdp-rating-stars">
                     {'★'.repeat(Math.round(reviewAvg))}{'☆'.repeat(5 - Math.round(reviewAvg))}
                   </span>
-                  <span className="section-sub" style={{ fontSize: 12 }}>
+                  <span className="quickview-rating-count">
                     {reviewAvg.toFixed(1)} / 5 · {reviewCount} reviews
                   </span>
                 </div>
@@ -234,7 +234,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
               {/* Description */}
               {product.description ? (
-                <p className="section-sub" style={{ fontSize: 14, lineHeight: 1.75, WebkitLineClamp: 4, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                <p className="quickview-description">
                   {product.description}
                 </p>
               ) : null}
@@ -242,7 +242,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               {/* Variants */}
               {product.variants && product.variants.length > 1 && (
                 <div>
-                  <strong style={{ fontSize: 13 }}>Variant</strong>
+                  <strong className="quickview-variant-label">Variant</strong>
                   <div className="option-row">
                     {product.variants.map((v) => (
                       <button
@@ -258,7 +258,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               )}
 
               {error && (
-                <p style={{ fontSize: 13, color: '#dc2626' }}>{error}</p>
+                <p className="input-error-message">{error}</p>
               )}
 
               {/* CTAs — prototype style */}

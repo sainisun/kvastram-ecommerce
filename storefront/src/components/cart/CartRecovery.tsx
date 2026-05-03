@@ -103,11 +103,11 @@ export function CartRecovery() {
             <div>
               <h3
                 id="recovery-title"
-                className="text-lg font-serif text-stone-900"
+                className="text-body-xl font-serif text-stone-900"
               >
                 Welcome Back!
               </h3>
-              <p className="text-sm text-stone-500">
+              <p className="text-body-sm text-stone-500">
                 You have items in your saved cart
               </p>
             </div>
@@ -122,20 +122,20 @@ export function CartRecovery() {
         </div>
 
         <div className="bg-stone-50 p-4 rounded-lg mb-6">
-          <p className="text-stone-600 text-sm">
+          <p className="text-stone-600 text-body-sm">
             You have{' '}
-            <span className="font-semibold text-stone-900">
+            <span className="type-semibold text-stone-900">
               {savedCartCount} item{savedCartCount > 1 ? 's' : ''}
             </span>{' '}
             in your cart from your last visit.
           </p>
-          <p className="text-stone-400 text-xs mt-2">
+          <p className="text-stone-400 text-body-xs mt-2">
             Would you like to restore them?
           </p>
         </div>
 
         {recoverError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-sm mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-body-sm mb-4">
             {recoverError}
           </div>
         )}
@@ -143,7 +143,7 @@ export function CartRecovery() {
         <div className="flex gap-3">
           <button
             onClick={handleDismiss}
-            className="flex-1 py-3 border border-stone-200 text-stone-600 font-medium text-sm hover:bg-stone-50 transition-colors"
+            className="flex-1 py-3 border border-stone-200 text-stone-600 type-medium text-body-sm hover:bg-stone-50 transition-colors"
             disabled={isRecovering}
           >
             No, start fresh
@@ -151,7 +151,7 @@ export function CartRecovery() {
           <button
             onClick={handleRecover}
             disabled={isRecovering}
-            className="flex-1 py-3 bg-stone-900 text-white font-medium text-sm flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors disabled:opacity-50"
+            className="flex-1 py-3 bg-stone-900 text-white type-medium text-body-sm flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors disabled:opacity-50"
           >
             {isRecovering ? (
               <>Restoring...</>
@@ -167,3 +167,4 @@ export function CartRecovery() {
     </div>
   );
 }
+

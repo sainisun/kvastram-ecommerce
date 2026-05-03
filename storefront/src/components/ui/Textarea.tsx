@@ -17,13 +17,10 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           <label
             htmlFor={inputId}
             style={{
-              fontFamily: 'var(--font-ui)',
-              fontSize: '11px',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
               textTransform: 'uppercase',
               color: 'var(--muted)',
             }}
+            className="form-label-typography"
           >
             {label}
             {rest.required && <span style={{ color: 'var(--danger)', marginLeft: '3px' }}>*</span>}
@@ -38,8 +35,6 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             width: '100%',
             minHeight: '120px',
             padding: '12px',
-            fontFamily: 'var(--font-ui)',
-            fontSize: '14px',
             color: 'var(--ink)',
             background: 'var(--paper)',
             border: `1px solid ${error ? 'var(--danger)' : 'var(--line)'}`,
@@ -58,17 +53,17 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             e.target.style.borderColor = error ? 'var(--danger)' : 'var(--line)';
             rest.onBlur?.(e);
           }}
-          className={`placeholder:text-[color:var(--muted)] ${className}`}
+          className={`form-control-typography placeholder-muted ${className}`}
         />
 
         {error && (
           <p
             role="alert"
             style={{
-              fontSize: '11px',
               color: 'var(--danger)',
               marginTop: '2px',
             }}
+            className="input-error-message"
           >
             {error}
           </p>

@@ -55,7 +55,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
-          <h2 className="text-lg font-medium text-stone-900">
+          <h2 className="text-body-xl type-medium text-stone-900">
             Your Cart ({items.length})
           </h2>
           <button
@@ -75,7 +75,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
               <Link
                 href="/products"
                 onClick={onClose}
-                className="text-sm font-medium text-stone-900 underline"
+                className="text-body-sm type-medium text-stone-900 underline"
               >
                 Continue Shopping
               </Link>
@@ -95,14 +95,14 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                       />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center text-stone-400">
-                        <span className="text-xs">No Image</span>
+                        <span className="text-body-xs">No Image</span>
                       </div>
                     )}
                   </div>
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-stone-900 truncate">
+                    <h3 className="text-body-sm type-medium text-stone-900 truncate">
                       <Link
                         href={`/products/${item.handle || item.id}`}
                         onClick={onClose}
@@ -110,11 +110,11 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                         {item.title}
                       </Link>
                     </h3>
-                    <p className="text-sm text-stone-500 mt-1">
+                    <p className="text-body-sm text-stone-500 mt-1">
                       {formatPrice(item.price)}
                     </p>
                     {(item.material || item.origin) && (
-                      <div className="mt-1 text-xs text-stone-400">
+                      <div className="mt-1 text-body-xs text-stone-400">
                         {item.material && <span>{item.material}</span>}
                         {item.material && item.origin && <span> · </span>}
                         {item.origin && <span>{item.origin}</span>}
@@ -134,7 +134,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                         >
                           <Minus size={14} />
                         </button>
-                        <span className="text-sm w-6 text-center">
+                        <span className="text-body-sm w-6 text-center">
                           {item.quantity}
                         </span>
                         <button
@@ -159,7 +159,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                   </div>
 
                   {/* Item Total */}
-                  <div className="text-sm font-medium text-stone-900">
+                  <div className="text-body-sm type-medium text-stone-900">
                     {formatPrice(item.price * item.quantity)}
                   </div>
                 </li>
@@ -174,11 +174,11 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
             {/* Subtotal */}
             <div className="flex items-center justify-between">
               <span className="text-stone-600">Subtotal</span>
-              <span className="text-lg font-medium text-stone-900">
+              <span className="text-body-xl type-medium text-stone-900">
                 {formatPrice(cartTotal)}
               </span>
             </div>
-            <p className="text-xs text-stone-500">
+            <p className="text-body-xs text-stone-500">
               Shipping and taxes calculated at checkout
             </p>
 
@@ -187,14 +187,14 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
               <Link
                 href="/cart"
                 onClick={onClose}
-                className="block w-full text-center py-3 border border-stone-300 text-stone-900 text-sm font-medium hover:bg-stone-50 transition-colors"
+                className="block w-full text-center py-3 border border-stone-300 text-stone-900 text-body-sm type-medium hover:bg-stone-50 transition-colors"
               >
                 View Cart
               </Link>
               <Link
                 href="/checkout"
                 onClick={onClose}
-                className="block w-full text-center py-3 bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors"
+                className="block w-full text-center py-3 bg-stone-900 text-white text-body-sm type-medium hover:bg-stone-800 transition-colors"
               >
                 Checkout
               </Link>
@@ -205,3 +205,4 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
     </div>
   );
 }
+

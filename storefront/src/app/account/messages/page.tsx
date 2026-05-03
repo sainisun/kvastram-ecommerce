@@ -70,12 +70,12 @@ export default function AccountMessagesPage() {
       <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <Link href="/account" className="text-sm text-stone-500 hover:text-stone-900">
+            <Link href="/account" className="account-muted hover:text-stone-900">
               Account
             </Link>
-            <h1 className="mt-2 font-serif text-3xl text-stone-900">Messages</h1>
-            <p className="mt-2 text-sm text-stone-500">Your product conversations with Kvastram Studio.</p>
-            <p className={`mt-2 text-xs ${live.isConnected ? 'text-green-700' : 'text-stone-400'}`}>
+            <h1 className="account-page-title mt-2">Messages</h1>
+            <p className="account-muted mt-2">Your product conversations with Kvastram Studio.</p>
+            <p className={`account-caption mt-2 ${live.isConnected ? 'text-green-700' : 'text-stone-400'}`}>
               {live.isConnected ? 'Live inbox connected' : 'Live inbox connecting...'}
             </p>
           </div>
@@ -90,9 +90,9 @@ export default function AccountMessagesPage() {
         ) : messages.length === 0 ? (
           <div className="border border-stone-200 bg-white px-6 py-16 text-center">
             <MessageCircle className="mx-auto mb-4 text-stone-300" size={44} />
-            <p className="font-medium text-stone-900">No messages yet</p>
-            <p className="mt-2 text-sm text-stone-500">Ask a question from any product page to start a studio chat.</p>
-            <Link href="/products" className="mt-6 inline-block bg-stone-900 px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white">
+            <p className="account-name">No messages yet</p>
+            <p className="account-muted mt-2">Ask a question from any product page to start a studio chat.</p>
+            <Link href="/products" className="account-primary-action mt-6 inline-block bg-stone-900 px-6 py-3">
               Browse Products
             </Link>
           </div>
@@ -107,14 +107,14 @@ export default function AccountMessagesPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-medium text-stone-900">{message.product_title}</h2>
+                      <h2 className="account-name">{message.product_title}</h2>
                       {message.unread_by_customer && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">New reply</span>
+                        <span className="account-status-badge rounded-full bg-amber-100 px-2 py-0.5 text-amber-800">New reply</span>
                       )}
                     </div>
-                    <p className="mt-1 text-sm capitalize text-stone-500">{message.inquiry_type.replace('_', ' ')}</p>
+                    <p className="account-muted mt-1 capitalize">{message.inquiry_type.replace('_', ' ')}</p>
                   </div>
-                  <div className="text-right text-xs text-stone-400">
+                  <div className="account-caption text-right">
                     <p className="capitalize">{message.status.replace('_', ' ')}</p>
                     <p className="mt-1">{new Date(message.last_message_at || message.created_at).toLocaleDateString()}</p>
                   </div>

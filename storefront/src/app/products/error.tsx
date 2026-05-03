@@ -15,16 +15,16 @@ export default function ProductsError({
       <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-900 mb-8 text-sm transition-colors"
+          className="error-back-link mb-8 inline-flex items-center gap-2 transition-colors hover:text-stone-900"
         >
           <ArrowLeft size={16} /> Back to Home
         </Link>
 
         <div className="bg-white p-12 border border-stone-200 text-center max-w-2xl mx-auto">
-          <h1 className="text-3xl font-serif text-stone-900 mb-4">
+          <h1 className="error-title mb-4">
             Unable to Load Products
           </h1>
-          <p className="text-stone-600 mb-8 leading-relaxed">
+          <p className="error-copy mb-8">
             We&apos;re having trouble loading the products right now. This might
             be a temporary issue. Please try again.
           </p>
@@ -32,20 +32,20 @@ export default function ProductsError({
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={reset}
-              className="inline-flex items-center justify-center gap-2 bg-stone-900 text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+              className="error-primary-action inline-flex items-center justify-center gap-2 bg-stone-900 px-8 py-3 transition-colors hover:bg-stone-800"
             >
               <RefreshCw size={16} /> Try Again
             </button>
             <Link
               href="/"
-              className="inline-flex items-center justify-center border border-stone-900 text-stone-900 px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-stone-100 transition-colors"
+              className="error-secondary-action inline-flex items-center justify-center border border-stone-900 px-8 py-3 transition-colors hover:bg-stone-100"
             >
               Browse Homepage
             </Link>
           </div>
 
           {error.digest && (
-            <p className="mt-8 text-xs text-stone-400">
+            <p className="error-digest mt-8">
               Error ID: {error.digest}
             </p>
           )}

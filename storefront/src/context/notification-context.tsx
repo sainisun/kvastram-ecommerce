@@ -55,7 +55,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`px-4 py-3 rounded shadow-lg text-white text-sm font-medium animate-fade-in
+            className={`px-4 py-3 rounded shadow-lg text-white text-body-sm type-medium animate-fade-in
                             ${notification.type === 'success' ? 'bg-green-600' : ''}
                             ${notification.type === 'error' ? 'bg-red-600' : ''}
                             ${notification.type === 'info' ? 'bg-blue-600' : ''}
@@ -87,3 +87,4 @@ export function useNotification() {
   }
   return context;
 }
+

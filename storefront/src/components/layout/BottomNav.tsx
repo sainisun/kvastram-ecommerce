@@ -116,13 +116,13 @@ export function BottomNav() {
                   <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
                   {/* Badge */}
                   {item.badge > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-stone-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-stone-900 text-white text-body-xs type-bold rounded-full flex items-center justify-center leading-token-tight">
                       {item.badge > 9 ? '9+' : item.badge}
                     </span>
                   )}
                 </div>
                 <span
-                  className={`text-[11px] mt-1 font-medium tracking-wide ${
+                  className={`text-body-xs mt-1 type-medium tracking-token-wide ${
                     isActive ? 'text-stone-900' : 'text-stone-400'
                   }`}
                 >
@@ -140,3 +140,4 @@ export function BottomNav() {
     </>
   );
 }
+

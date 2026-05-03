@@ -143,8 +143,8 @@ export function ChatWidget() {
                   <MessageCircle size={16} />
                 </div>
                 <div>
-                  <h3 className="font-medium text-sm">Customer Support</h3>
-                  <p className="text-xs text-white/70">
+                  <h3 className="type-medium text-body-sm">Customer Support</h3>
+                  <p className="text-body-xs text-white/70">
                     We&apos;re here to help
                   </p>
                 </div>
@@ -176,7 +176,7 @@ export function ChatWidget() {
                     {/* Welcome Message */}
                     <div className="flex justify-start">
                       <div className="bg-white border border-stone-200 rounded-lg rounded-tl-sm px-4 py-3 max-w-[80%]">
-                        <p className="text-sm text-stone-700">
+                        <p className="text-body-sm text-stone-700">
                           Hello! Welcome to Kvastram. How can we help you today?
                         </p>
                       </div>
@@ -184,13 +184,13 @@ export function ChatWidget() {
 
                     {/* Quick Replies */}
                     <div className="flex flex-wrap gap-2">
-                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-xs text-stone-600 hover:border-stone-400 transition-colors">
+                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-body-xs text-stone-600 hover:border-stone-400 transition-colors">
                         Track my order
                       </button>
-                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-xs text-stone-600 hover:border-stone-400 transition-colors">
+                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-body-xs text-stone-600 hover:border-stone-400 transition-colors">
                         Return an item
                       </button>
-                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-xs text-stone-600 hover:border-stone-400 transition-colors">
+                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-body-xs text-stone-600 hover:border-stone-400 transition-colors">
                         Shipping info
                       </button>
                     </div>
@@ -203,7 +203,7 @@ export function ChatWidget() {
                     <input
                       type="text"
                       placeholder="Type your message..."
-                      className="flex-1 px-4 py-2 border border-stone-200 rounded-full text-sm focus:outline-none focus:border-stone-900"
+                      className="flex-1 px-4 py-2 border border-stone-200 rounded-full text-body-sm focus:outline-none focus:border-stone-900"
                     />
                     <button className="w-10 h-10 bg-stone-900 text-white rounded-full flex items-center justify-center hover:bg-stone-800 transition-colors">
                       <svg
@@ -221,7 +221,7 @@ export function ChatWidget() {
                       </svg>
                     </button>
                   </div>
-                  <p className="text-[10px] text-stone-400 text-center mt-2">
+                  <p className="text-body-xs text-stone-400 text-center mt-2">
                     Typically replies within minutes
                   </p>
                 </div>
@@ -233,3 +233,4 @@ export function ChatWidget() {
     </>
   );
 }
+

@@ -5,25 +5,25 @@ export default function NotFound() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="text-center max-w-lg">
-        <h1 className="text-8xl font-serif text-stone-900 mb-4">404</h1>
-        <h2 className="text-2xl font-serif text-stone-700 mb-4">
+        <h1 className="text-display-xl font-serif text-stone-900 mb-4">404</h1>
+        <h2 className="text-display-md font-serif text-stone-700 mb-4">
           Page Not Found
         </h2>
-        <p className="text-stone-600 mb-8 leading-relaxed">
+        <p className="text-stone-600 mb-8 leading-token-relaxed">
           Sorry, the page you are looking for does not exist. It might have been
           moved or deleted.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/"
-            className="bg-stone-900 text-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors inline-flex items-center justify-center gap-2"
+            className="bg-stone-900 text-white px-8 py-3 text-body-sm type-bold uppercase tracking-token-wider hover:bg-stone-800 transition-colors inline-flex items-center justify-center gap-2"
           >
             <Home size={16} />
             Go Home
           </Link>
           <Link
             href="/search"
-            className="border border-stone-900 text-stone-900 px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-stone-100 transition-colors inline-flex items-center justify-center gap-2"
+            className="border border-stone-900 text-stone-900 px-8 py-3 text-body-sm type-bold uppercase tracking-token-wider hover:bg-stone-100 transition-colors inline-flex items-center justify-center gap-2"
           >
             <Search size={16} />
             Search
@@ -32,7 +32,7 @@ export default function NotFound() {
         <div className="mt-8">
           <Link
             href="/"
-            className="text-stone-500 hover:text-stone-700 inline-flex items-center gap-2 text-sm"
+            className="text-stone-500 hover:text-stone-700 inline-flex items-center gap-2 text-body-sm"
           >
             <ArrowLeft size={16} />
             Or go back to homepage
@@ -42,3 +42,4 @@ export default function NotFound() {
     </div>
   );
 }
+

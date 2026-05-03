@@ -24,18 +24,18 @@ function SuccessView({ email }: { readonly email: string }) {
             />
           </svg>
         </div>
-        <h1 className="text-2xl font-serif text-stone-900">Check Your Email</h1>
+        <h1 className="text-display-md font-serif text-stone-900">Check Your Email</h1>
         <p className="text-stone-500">
           If an account exists with <strong>{email}</strong>, you will receive a
           password reset link.
         </p>
-        <p className="text-stone-400 text-sm">
+        <p className="text-stone-400 text-body-sm">
           Check your spam folder if you don&apos;t receive the email within a
           few minutes.
         </p>
         <Link
           href="/login"
-          className="inline-block text-stone-900 font-medium underline"
+          className="inline-block text-stone-900 type-medium underline"
         >
           Back to Login
         </Link>
@@ -93,10 +93,10 @@ export default function ForgotPasswordPage() {
             <ArrowLeft size={16} className="mr-1" />
             Back to Login
           </Link>
-          <h1 className="text-3xl font-serif text-stone-900">
+          <h1 className="text-display-lg font-serif text-stone-900">
             Forgot Password?
           </h1>
-          <p className="mt-2 text-stone-500 font-light">
+          <p className="mt-2 text-stone-500 type-light">
             Enter your email address and we&apos;ll send you a link to reset
             your password.
           </p>
@@ -105,7 +105,7 @@ export default function ForgotPasswordPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              <p className="text-sm">{error}</p>
+              <p className="text-body-sm">{error}</p>
             </div>
           )}
 
@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <Loader2 className="animate-spin" size={16} />}
             {loading ? 'Sending...' : 'Send Reset Link'}
@@ -132,3 +132,4 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+

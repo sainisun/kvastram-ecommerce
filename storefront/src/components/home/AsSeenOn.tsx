@@ -18,10 +18,10 @@ export function AsSeenOn({ items }: AsSeenOnProps) {
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-12 lg:gap-x-16">
           {items.map((item) => (
             <div key={item.id} className="flex flex-col items-center text-center">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-stone-900">
+              <span className="text-body-xs type-semibold uppercase tracking-token-wider text-stone-900">
                 {item.label}
               </span>
-              <span className="mt-0.5 text-[10px] tracking-[0.1em] text-stone-400">
+              <span className="mt-0.5 text-body-xs tracking-token-wider text-stone-400">
                 {item.sub}
               </span>
             </div>
@@ -31,3 +31,4 @@ export function AsSeenOn({ items }: AsSeenOnProps) {
     </section>
   );
 }
+

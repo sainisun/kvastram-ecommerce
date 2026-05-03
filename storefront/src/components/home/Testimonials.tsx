@@ -8,7 +8,7 @@ interface TestimonialsProps {
 function renderStars(rating?: number) {
   const filled = Math.max(0, Math.min(5, Math.round(rating || 5)));
   return Array.from({ length: 5 }, (_, index) => (
-    <span key={index} className={index < filled ? 'text-[var(--sienna)]' : 'text-[var(--line)]'}>
+    <span key={index} className={index < filled ? 'color-sienna' : 'color-muted'}>
       ★
     </span>
   ));
@@ -55,11 +55,11 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
         <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
           {displayed.map((testimonial) => (
             <article key={testimonial.id} className="rounded-[var(--radius-lg)] bg-[var(--soft)] p-8 text-center sm:p-10">
-              <div className="flex items-center justify-center gap-1 text-[14px]">
+              <div className="flex items-center justify-center gap-1 text-body-sm">
                 {renderStars(testimonial.rating)}
               </div>
 
-              <p className="font-body mt-6 min-h-[108px] text-[16px] italic leading-[1.7] text-[var(--ink)] sm:text-[17px]">
+              <p className="font-body mt-6 min-h-[108px] text-body-lg italic leading-token-relaxed color-ink sm:text-body-lg">
                 &ldquo;{testimonial.content}&rdquo;
               </p>
 
@@ -76,11 +76,11 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
                   </div>
                 ) : null}
                 <div className="text-left">
-                  <p className="font-body text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--ink)]">
+                  <p className="font-body text-body-sm type-semibold uppercase tracking-token-wide color-ink">
                     {testimonial.name}
                   </p>
                   {testimonial.location ? (
-                    <p className="font-body text-[11px] uppercase tracking-[0.14em] text-[var(--muted)]">
+                    <p className="font-body text-body-xs uppercase tracking-token-wider color-muted">
                       {testimonial.location}
                     </p>
                   ) : null}
@@ -93,3 +93,4 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
     </section>
   );
 }
+

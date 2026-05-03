@@ -150,7 +150,7 @@ function MobileFooter() {
     <div className="bg-[#f5f0eb] md:hidden">
       <div className="grid grid-cols-2 gap-8 px-6 py-16">
         <div>
-          <h4 className="mb-6 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-700">
+          <h4 className="mb-6 text-body-xs type-semibold uppercase tracking-token-wide text-stone-700">
             Shop
           </h4>
           <div className="space-y-3">
@@ -158,7 +158,7 @@ function MobileFooter() {
               <Link
                 key={label}
                 href={href}
-                className="block text-[15px] font-normal leading-[2] text-stone-900 transition-colors hover:text-stone-600"
+                className="block text-body-md type-regular leading-token-relaxed text-stone-900 transition-colors hover:text-stone-600"
               >
                 {label}
               </Link>
@@ -167,7 +167,7 @@ function MobileFooter() {
         </div>
 
         <div>
-          <h4 className="mb-6 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-700">
+          <h4 className="mb-6 text-body-xs type-semibold uppercase tracking-token-wide text-stone-700">
             Help
           </h4>
           <div className="space-y-3">
@@ -175,7 +175,7 @@ function MobileFooter() {
               <Link
                 key={label}
                 href={href}
-                className="block text-[15px] font-normal leading-[2] text-stone-900 transition-colors hover:text-stone-600"
+                className="block text-body-md type-regular leading-token-relaxed text-stone-900 transition-colors hover:text-stone-600"
               >
                 {label}
               </Link>
@@ -199,7 +199,7 @@ function MobileFooter() {
             </a>
           ))}
         </div>
-        <p className="mt-4 text-center text-[12px] text-stone-500">
+        <p className="mt-4 text-center text-body-xs text-stone-500">
           Copyright {new Date().getFullYear()} Kvastram. All rights reserved.
         </p>
       </div>
@@ -218,15 +218,15 @@ function DesktopFooter() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-5 lg:col-span-1">
             <Link href="/" className="block">
-              <span className="font-body text-[1.45rem] font-semibold uppercase tracking-[0.22em] text-white">
+              <span className="font-body text-display-sm type-semibold uppercase tracking-token-wider text-white">
                 KVASTRAM
               </span>
             </Link>
-            <p className="font-body text-[15px] font-[300] leading-[1.7] text-stone-400">
+            <p className="font-body text-body-md type-light leading-token-relaxed text-stone-400">
               Handcrafted luxury fashion connecting global citizens with the
               finest artisanal craftsmanship from India and beyond.
             </p>
-            <div className="font-body space-y-3 text-[12px] font-[300] text-stone-500">
+            <div className="font-body space-y-3 text-body-xs type-light text-stone-500">
               <p>support@kvastram.com</p>
               <p>Mon-Fri, 9am-6pm IST</p>
             </div>
@@ -247,7 +247,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <h4 className="font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-stone-400">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -255,7 +255,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="font-body text-[15px] font-[300] text-stone-400 transition-colors hover:text-white"
+                    className="font-body text-body-md type-light text-stone-400 transition-colors hover:text-white"
                   >
                     {label}
                   </Link>
@@ -265,7 +265,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <h4 className="font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-stone-400">
               Support
             </h4>
             <ul className="space-y-3">
@@ -273,7 +273,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="font-body text-[15px] font-[300] text-stone-400 transition-colors hover:text-white"
+                    className="font-body text-body-md type-light text-stone-400 transition-colors hover:text-white"
                   >
                     {label}
                   </Link>
@@ -283,7 +283,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <h4 className="font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-stone-400">
               Company
             </h4>
             <ul className="space-y-3">
@@ -291,10 +291,10 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className={`font-body text-[15px] transition-colors ${
+                    className={`font-body text-body-md transition-colors ${
                       highlight
-                        ? 'font-medium text-amber-400 hover:text-amber-300'
-                        : 'font-[300] text-stone-400 hover:text-white'
+                        ? 'type-medium text-amber-400 hover:text-amber-300'
+                        : 'type-light text-stone-400 hover:text-white'
                     }`}
                   >
                     {label}
@@ -305,14 +305,14 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-6 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400">
+            <h4 className="font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-stone-400">
               Stay Updated
             </h4>
-            <p className="font-body mb-4 text-[15px] font-[300] leading-[1.7] text-stone-500">
+            <p className="font-body mb-4 text-body-md type-light leading-token-relaxed text-stone-500">
               Get 10% off your first order plus early access to new collections.
             </p>
             <NewsletterForm minimal />
-            <div className="font-body mt-4 text-[12px] text-stone-600">
+            <div className="font-body mt-4 text-body-xs text-stone-600">
               No spam. Unsubscribe anytime.
             </div>
           </div>
@@ -322,7 +322,7 @@ function DesktopFooter() {
       <div className="border-t border-stone-800">
         <div className="mx-auto max-w-[1440px] px-12 py-12 lg:px-20">
           <PaymentIcons className="mb-4" />
-          <div className="font-body flex flex-col items-center justify-between gap-6 text-[12px] text-stone-600 sm:flex-row">
+          <div className="font-body flex flex-col items-center justify-between gap-6 text-body-xs text-stone-600 sm:flex-row">
             <p>Copyright {new Date().getFullYear()} Kvastram. All rights reserved.</p>
             <div className="flex gap-6">
               <Link
@@ -359,3 +359,4 @@ export function Footer() {
     </footer>
   );
 }
+

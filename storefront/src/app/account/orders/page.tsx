@@ -67,14 +67,14 @@ export default function OrdersListPage() {
         <div className="flex items-center gap-4 mb-8">
           <Link
             href="/account"
-            className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors"
+            className="account-muted flex items-center gap-2 transition-colors hover:text-stone-900"
           >
             <ChevronLeft size={20} />
-            <span className="text-sm">Back to Account</span>
+            <span>Back to Account</span>
           </Link>
         </div>
 
-        <h1 className="text-3xl font-serif text-stone-900 mb-8">My Orders</h1>
+        <h1 className="account-page-title mb-8">My Orders</h1>
 
         {/* Orders List */}
         <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
@@ -93,10 +93,10 @@ export default function OrdersListPage() {
           ) : orders.length === 0 ? (
             <div className="p-12 text-center">
               <Package size={48} className="mx-auto text-stone-300 mb-4" />
-              <p className="text-stone-500 mb-4">No orders yet</p>
+              <p className="account-empty-copy mb-4">No orders yet</p>
               <Link
                 href="/"
-                className="inline-block bg-stone-900 text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+                className="account-primary-action inline-block bg-stone-900 px-6 py-3 transition-colors hover:bg-stone-800"
               >
                 Start Shopping
               </Link>
@@ -112,11 +112,11 @@ export default function OrdersListPage() {
                     <div>
                       <Link
                         href={`/account/orders/${order.id}`}
-                        className="font-medium text-stone-900 hover:text-stone-600"
+                        className="account-name hover:text-stone-600"
                       >
                         Order #{order.display_id}
                       </Link>
-                      <p className="text-sm text-stone-500 mt-1">
+                      <p className="account-muted mt-1">
                         {new Date(order.created_at).toLocaleDateString(
                           'en-US',
                           {
@@ -126,19 +126,19 @@ export default function OrdersListPage() {
                           }
                         )}
                       </p>
-                      <p className="text-xs text-stone-400 mt-1">
+                      <p className="account-caption mt-1">
                         {order.items?.length || 0} items
                       </p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm font-medium text-stone-900">
+                      <span className="account-name">
                         {new Intl.NumberFormat(undefined, {
                           style: 'currency',
                           currency: order.currency_code?.toUpperCase() || 'INR',
                         }).format(order.total / 100)}
                       </span>
                       <span
-                        className={`px-3 py-1 text-xs font-bold uppercase tracking-widest ${
+                        className={`account-status-badge px-3 py-1 ${
                           order.status === 'completed'
                             ? 'bg-green-50 text-green-700 border border-green-200'
                             : order.status === 'canceled'
@@ -156,7 +156,7 @@ export default function OrdersListPage() {
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="px-6 py-4 border-t border-stone-100 flex items-center justify-between">
-                  <p className="text-sm text-stone-500">
+                  <p className="account-muted">
                     Showing {startIndex + 1}-
                     {Math.min(startIndex + ORDERS_PER_PAGE, orders.length)} of{' '}
                     {orders.length} orders
@@ -176,7 +176,7 @@ export default function OrdersListPage() {
                         <button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`w-10 h-10 text-sm font-medium transition-colors ${
+                          className={`account-page-button h-10 w-10 transition-colors ${
                             currentPage === page
                               ? 'bg-stone-900 text-white'
                               : 'border border-stone-200 text-stone-600 hover:bg-stone-50'

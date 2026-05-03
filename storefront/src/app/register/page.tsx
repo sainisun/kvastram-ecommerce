@@ -73,27 +73,27 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-serif text-stone-900">Join Kvastram</h1>
-          <p className="mt-2 text-stone-500 font-light">
+          <h1 className="text-display-lg font-serif text-stone-900">Join Kvastram</h1>
+          <p className="mt-2 text-stone-500 type-light">
             Create an account to track orders and more
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {success && (
-            <div className="bg-green-50 text-green-600 p-3 text-sm text-center">
+            <div className="bg-green-50 text-green-600 p-3 text-body-sm text-center">
               Registration successful! Please check your email to verify your account.
             </div>
           )}
           {error && (
-            <div className="bg-red-50 text-red-500 p-4 text-sm text-center space-y-3">
+            <div className="bg-red-50 text-red-500 p-4 text-body-sm text-center space-y-3">
               <p>{error}</p>
               {error.includes('not verified') && (
                 <button
                   type="button"
                   onClick={handleResendVerification}
                   disabled={resendLoading}
-                  className="text-stone-900 underline font-medium hover:text-stone-600 disabled:opacity-50"
+                  className="text-stone-900 underline type-medium hover:text-stone-600 disabled:opacity-50"
                 >
                   {resendLoading ? 'Sending...' : 'Click here to resend verification link'}
                 </button>
@@ -101,14 +101,14 @@ export default function RegisterPage() {
             </div>
           )}
           {resendSuccess && (
-            <div className="bg-green-50 text-green-600 p-3 text-sm text-center">
+            <div className="bg-green-50 text-green-600 p-3 text-body-sm text-center">
               Verification link sent! Please check your inbox.
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="first_name" className="text-xs uppercase font-bold text-stone-500">
+              <label htmlFor="first_name" className="text-body-xs uppercase type-bold text-stone-500">
                 First Name
               </label>
               <input
@@ -123,7 +123,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="last_name" className="text-xs uppercase font-bold text-stone-500">
+              <label htmlFor="last_name" className="text-body-xs uppercase type-bold text-stone-500">
                 Last Name
               </label>
               <input
@@ -140,7 +140,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="email" className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="email" className="text-body-xs uppercase type-bold text-stone-500">
               Email Address
             </label>
             <input
@@ -156,7 +156,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="phone" className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="phone" className="text-body-xs uppercase type-bold text-stone-500">
               Phone (Optional)
             </label>
             <input
@@ -171,7 +171,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-xs uppercase font-bold text-stone-500">
+            <label htmlFor="password" className="text-body-xs uppercase type-bold text-stone-500">
               Password
             </label>
             <div className="relative">
@@ -195,7 +195,7 @@ export default function RegisterPage() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <p className="text-[10px] text-stone-400">
+            <p className="text-body-xs text-stone-400">
               Must be at least 12 characters with uppercase, lowercase, number,
               and special character.
             </p>
@@ -203,15 +203,15 @@ export default function RegisterPage() {
 
           <button
             disabled={loading}
-            className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <Loader2 className="animate-spin" size={16} />}
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
 
-          <div className="text-center text-sm text-stone-500">
+          <div className="text-center text-body-sm text-stone-500">
             Already have an account?{' '}
-            <Link href="/login" className="text-stone-900 font-medium underline">
+            <Link href="/login" className="text-stone-900 type-medium underline">
               Sign In
             </Link>
           </div>
@@ -220,3 +220,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Lato, Playfair_Display } from 'next/font/google';
+import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 
 import './globals.css';
 import { Analytics } from '@/components/Analytics';
@@ -19,16 +19,19 @@ import { LogRocketProvider } from '@/components/LogRocketProvider';
 import { TawkToWidget } from '@/components/ui/TawkToWidget';
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 
-const lato = Lato({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['300', '400', '700', '900'],
-  variable: '--font-lato',
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-display',
+  display: 'swap',
 });
 
-const playfair = Playfair_Display({
+const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['500', '600', '700'],
-  variable: '--font-playfair',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-body',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -70,7 +73,11 @@ export default async function RootLayout({
   );
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${cormorant.variable} ${dmSans.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <link
           rel="preconnect"
@@ -86,10 +93,10 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
       </head>
-      <body className={`${lato.variable} ${playfair.variable} font-body antialiased`}>
+      <body className="font-body antialiased">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-body-sm focus:type-medium focus:text-white"
         >
           Skip to main content
         </a>
@@ -124,3 +131,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

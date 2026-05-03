@@ -49,20 +49,20 @@ export function WholesaleFooter() {
             {/* Company Info */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-6">
-                <div className="text-2xl font-bold tracking-tighter">
+                <div className="text-display-md type-bold tracking-token-tight">
                   KVASTRAM
                 </div>
                 <div className="h-6 w-px bg-stone-700"></div>
-                <div className="text-xs uppercase tracking-widest text-amber-400 font-bold">
+                <div className="text-body-xs uppercase tracking-token-wider text-amber-400 type-bold">
                   Wholesale
                 </div>
               </div>
-              <p className="text-sm text-stone-400 leading-relaxed">
+              <p className="text-body-sm text-stone-400 leading-token-relaxed">
                 Your trusted partner for authentic artisanal luxury products.
                 Serving retailers and distributors worldwide since 2020.
               </p>
               <div className="pt-4">
-                <div className="inline-flex items-center gap-2 text-xs text-amber-400 font-bold uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 text-body-xs text-amber-400 type-bold uppercase tracking-token-wider">
                   <Building2 size={16} />
                   B2B Division
                 </div>
@@ -71,10 +71,10 @@ export function WholesaleFooter() {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-sm font-bold uppercase tracking-wider mb-6 text-amber-400">
+              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-amber-400">
                 Quick Links
               </h4>
-              <ul className="space-y-3 text-sm text-stone-400">
+              <ul className="space-y-3 text-body-sm text-stone-400">
                 <li>
                   <Link
                     href="/wholesale#benefits"
@@ -114,7 +114,7 @@ export function WholesaleFooter() {
                 <li className="pt-2 border-t border-stone-800">
                   <Link
                     href="/"
-                    className="hover:text-amber-400 transition-colors text-xs"
+                    className="hover:text-amber-400 transition-colors text-body-xs"
                   >
                     Visit Retail Store →
                   </Link>
@@ -124,10 +124,10 @@ export function WholesaleFooter() {
 
             {/* Resources */}
             <div>
-              <h4 className="text-sm font-bold uppercase tracking-wider mb-6 text-amber-400">
+              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-amber-400">
                 Resources
               </h4>
-              <ul className="space-y-3 text-sm text-stone-400">
+              <ul className="space-y-3 text-body-sm text-stone-400">
                 <li>
                   {footerSettings.wholesale_footer_catalog_link ? (
                     <a
@@ -217,17 +217,17 @@ export function WholesaleFooter() {
 
             {/* Contact */}
             <div>
-              <h4 className="text-sm font-bold uppercase tracking-wider mb-6 text-amber-400">
+              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-amber-400">
                 Contact B2B Team
               </h4>
-              <ul className="space-y-4 text-sm text-stone-400">
+              <ul className="space-y-4 text-body-sm text-stone-400">
                 <li className="flex items-start gap-3">
                   <Mail
                     size={16}
                     className="text-amber-400 mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-white font-medium mb-1">Email</div>
+                    <div className="text-white type-medium mb-1">Email</div>
                     <a
                       href="mailto:wholesale@kvastram.com"
                       className="hover:text-white transition-colors"
@@ -242,14 +242,14 @@ export function WholesaleFooter() {
                     className="text-amber-400 mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-white font-medium mb-1">Phone</div>
+                    <div className="text-white type-medium mb-1">Phone</div>
                     <a
                       href="tel:+1234567890"
                       className="hover:text-white transition-colors"
                     >
                       +1 (234) 567-890
                     </a>
-                    <div className="text-xs text-stone-500 mt-1">
+                    <div className="text-body-xs text-stone-500 mt-1">
                       Mon-Fri, 9AM-6PM EST
                     </div>
                   </div>
@@ -260,7 +260,7 @@ export function WholesaleFooter() {
                     className="text-amber-400 mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-white font-medium mb-1">Office</div>
+                    <div className="text-white type-medium mb-1">Office</div>
                     <div className="text-stone-400">
                       123 Business District
                       <br />
@@ -279,7 +279,7 @@ export function WholesaleFooter() {
       {/* Bottom Bar */}
       <div className="bg-black py-6">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-body-xs text-stone-500">
             <div className="flex items-center gap-6">
               <span>
                 &copy; {new Date().getFullYear()} Kvastram Wholesale. All rights
@@ -308,7 +308,7 @@ export function WholesaleFooter() {
       {/* Trust Badges */}
       <div className="bg-stone-950 py-8 border-t border-stone-900">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-stone-600 text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-stone-600 text-body-xs">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-stone-800 rounded-full flex items-center justify-center">
                 <Building2 size={14} className="text-amber-600" />
@@ -342,3 +342,4 @@ export function WholesaleFooter() {
     </footer>
   );
 }
+

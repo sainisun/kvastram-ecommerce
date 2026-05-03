@@ -55,7 +55,7 @@ export function SettingsList() {
   return (
     <div className="bg-white">
       <div className="p-4">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3">
+        <h2 className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500 mb-3">
           Account Settings
         </h2>
       </div>
@@ -72,13 +72,13 @@ export function SettingsList() {
             >
               <div className="flex items-center gap-3">
                 <Icon size={18} className="text-stone-500" />
-                <span className="text-sm font-medium text-stone-700">
+                <span className="text-body-sm type-medium text-stone-700">
                   {item.label}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 {item.badge && (
-                  <span className="text-[10px] bg-stone-200 text-stone-600 px-2 py-0.5 rounded">
+                  <span className="text-body-xs bg-stone-200 text-stone-600 px-2 py-0.5 rounded">
                     {item.badge}
                   </span>
                 )}
@@ -110,7 +110,7 @@ export function SettingsList() {
         >
           <div className="flex items-center gap-3">
             <LogOut size={18} className="text-red-600" />
-            <span className="text-sm font-medium text-red-700">Sign Out</span>
+            <span className="text-body-sm type-medium text-red-700">Sign Out</span>
           </div>
           <ChevronRight size={16} className="text-red-400" />
         </button>
@@ -118,3 +118,4 @@ export function SettingsList() {
     </div>
   );
 }
+

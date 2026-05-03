@@ -37,7 +37,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
           {/* Subcategories Column */}
           {hasChildren && (
             <div className="col-span-1">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-900 mb-4">
+              <h3 className="text-body-sm type-bold uppercase tracking-token-wider text-gray-900 mb-4">
                 {category.emoji && (
                   <span className="mr-2">{category.emoji}</span>
                 )}
@@ -48,10 +48,10 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                   <Link
                     key={child.id}
                     href={`/collections/${child.slug}`}
-                    className="block text-sm text-gray-700 hover:text-black transition-colors py-1"
+                    className="block text-body-sm text-gray-700 hover:text-black transition-colors py-1"
                   >
                     {child.emoji && (
-                      <span className="mr-2 text-base">
+                      <span className="mr-2 text-body-md">
                         {child.emoji}
                       </span>
                     )}
@@ -82,7 +82,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
               <div className="absolute inset-0 bg-black/30 flex items-end p-6">
                 <Link
                   href={`/collections/${category.slug}`}
-                  className="text-white text-lg font-semibold hover:opacity-80 transition-opacity"
+                  className="text-white text-body-xl type-semibold hover:opacity-80 transition-opacity"
                 >
                   Explore {category.name}
                 </Link>
@@ -100,11 +100,11 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                   className="p-4 border border-gray-200 rounded-lg hover:border-black transition-colors"
                 >
                   {child.emoji && (
-                    <div className="text-2xl mb-2">
+                    <div className="text-display-md mb-2">
                       {child.emoji}
                     </div>
                   )}
-                  <h4 className="font-medium text-gray-900">
+                  <h4 className="type-medium text-gray-900">
                     {child.name}
                   </h4>
                 </Link>
@@ -116,3 +116,4 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
     </div>
   );
 }
+

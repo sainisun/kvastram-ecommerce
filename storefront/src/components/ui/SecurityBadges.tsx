@@ -14,19 +14,19 @@ export default function SecurityBadges({
       {/* SSL Secure */}
       <div className="flex items-center gap-2 text-stone-500">
         <Lock size={16} className="text-green-600" />
-        <span className="text-xs font-medium">SSL Secure</span>
+        <span className="text-body-xs type-medium">SSL Secure</span>
       </div>
 
       {/* PCI Compliant */}
       <div className="flex items-center gap-2 text-stone-500">
         <CreditCard size={16} className="text-green-600" />
-        <span className="text-xs font-medium">PCI Compliant</span>
+        <span className="text-body-xs type-medium">PCI Compliant</span>
       </div>
 
       {/* Authenticity */}
       <div className="flex items-center gap-2 text-stone-500">
         <ShieldCheck size={16} className="text-green-600" />
-        <span className="text-xs font-medium">Authenticity Guaranteed</span>
+        <span className="text-body-xs type-medium">Authenticity Guaranteed</span>
       </div>
     </div>
   );
@@ -38,7 +38,7 @@ export function PaymentIcons({ className = '' }: { className?: string }) {
     <div className={`flex items-center justify-center gap-3 ${className}`}>
       {/* Visa */}
       <div className="h-8 w-12 bg-white rounded border border-stone-200 flex items-center justify-center">
-        <span className="text-xs font-bold text-blue-900 italic">VISA</span>
+        <span className="text-body-xs type-bold text-blue-900 italic">VISA</span>
       </div>
 
       {/* Mastercard */}
@@ -51,18 +51,19 @@ export function PaymentIcons({ className = '' }: { className?: string }) {
 
       {/* Amex */}
       <div className="h-8 w-12 bg-white rounded border border-stone-200 flex items-center justify-center">
-        <span className="text-[11px] font-bold text-blue-800">AMEX</span>
+        <span className="text-body-xs type-bold text-blue-800">AMEX</span>
       </div>
 
       {/* PayPal */}
       <div className="h-8 w-14 bg-white rounded border border-stone-200 flex items-center justify-center">
-        <span className="text-[10px] font-bold text-blue-700">PayPal</span>
+        <span className="text-body-xs type-bold text-blue-700">PayPal</span>
       </div>
 
       {/* Apple Pay */}
       <div className="h-8 w-10 bg-black rounded flex items-center justify-center">
-        <span className="text-white text-xs font-medium">Pay</span>
+        <span className="text-white text-body-xs type-medium">Pay</span>
       </div>
     </div>
   );
 }
+

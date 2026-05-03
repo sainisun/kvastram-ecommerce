@@ -224,10 +224,10 @@ export default function CatalogClient({
       ) : null}
 
       <div className="border-b border-[var(--line)] bg-white py-4">
-        <div className="kv-container flex flex-wrap gap-2 text-[13px] text-[var(--muted)]">
+        <div className="catalog-breadcrumb kv-container flex flex-wrap gap-2">
           <Link href="/">Home</Link>
           <span>{'>'}</span>
-          <span className="font-bold text-[var(--ink)]">Shop All</span>
+          <span className="catalog-breadcrumb-current">Shop All</span>
         </div>
       </div>
 
@@ -286,7 +286,7 @@ export default function CatalogClient({
                 <Link
                   key={collection.id}
                   href={`/collections/${collection.handle}`}
-                  className="inline-flex items-center rounded-full border border-[var(--line)] bg-white px-4 py-2 text-[12px] font-bold text-[var(--ink)]"
+                  className="catalog-filter-link inline-flex items-center rounded-full border border-[var(--line)] bg-white px-4 py-2"
                 >
                   {collection.title}
                 </Link>
@@ -307,47 +307,47 @@ export default function CatalogClient({
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               {activeCategory ? (
-                <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
                   {activeCategory.name}
                   <button
                     onClick={() => clearFilter('category_id')}
                     aria-label="Remove category filter"
                     className="text-stone-400 transition-colors hover:text-stone-900"
                   >
-                    {'×'}
+                    {'X'}
                   </button>
                 </span>
               ) : null}
 
               {activeTag ? (
-                <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
                   {activeTag.name}
                   <button
                     onClick={() => clearFilter('tag_id')}
                     aria-label="Remove tag filter"
                     className="text-stone-400 transition-colors hover:text-stone-900"
                   >
-                    {'×'}
+                    {'X'}
                   </button>
                 </span>
               ) : null}
 
               {activeCollection ? (
-                <span className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-stone-700">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
                   {activeCollection.title}
                   <button
                     onClick={() => clearFilter('collection_id')}
                     aria-label="Remove collection filter"
                     className="text-stone-400 transition-colors hover:text-stone-900"
                   >
-                    {'×'}
+                    {'X'}
                   </button>
                 </span>
               ) : null}
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="font-body text-[13px] font-[300] text-stone-500">
+              <div className="catalog-count">
                 {total > 0 ? `${startItem}-${endItem} of ${total} Items` : `${total} Items`}
               </div>
 
@@ -388,7 +388,7 @@ export default function CatalogClient({
                 <select
                   value={currentSort}
                   onChange={(e) => handleSortChange(e.target.value)}
-                  className="cursor-pointer border-none bg-transparent text-[13px] font-[300] text-stone-600 focus:outline-none hover:text-black"
+                  className="catalog-sort-select cursor-pointer border-none bg-transparent focus:outline-none hover:text-black"
                 >
                   {SORT_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -448,7 +448,7 @@ export default function CatalogClient({
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
                         disabled={loading}
-                        className={`h-10 w-10 rounded-md text-sm font-medium transition-colors ${
+                        className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
                           page === pageNum
                             ? 'bg-stone-900 text-white'
                             : 'text-stone-600 hover:bg-stone-50 hover:text-black'
@@ -493,7 +493,7 @@ export default function CatalogClient({
           >
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between border-b border-stone-100 p-4">
-                <h2 id="mobile-filter-title" className="font-heading text-[28px] font-semibold uppercase tracking-[0.02em] text-stone-900">
+                <h2 id="mobile-filter-title" className="catalog-filter-title">
                   Filters
                 </h2>
                 <button

@@ -48,19 +48,19 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                     <Play size={34} fill="white" className="text-white" />
                   </div>
                   <div className="relative z-[3]">
-                    <div className="text-[11px] font-black uppercase tracking-[0.14em] text-white/75 sm:text-[11px]">
+                    <div className="text-body-xs type-bold uppercase tracking-token-wider text-white/75 sm:text-body-xs">
                       Watch &amp; Buy
                     </div>
-                    <div className="reel-title mt-0.5 line-clamp-2 leading-tight text-white">
+                    <div className="reel-title mt-0.5 line-clamp-2 leading-token-tight text-white">
                       {reel.product_name}
                     </div>
                   </div>
                 </div>
                 <div className="reel-info">
-                  <h3 className="reel-title line-clamp-2 leading-snug text-[var(--ink)]">
+                  <h3 className="reel-title line-clamp-2 leading-token-snug color-ink">
                     {reel.product_name}
                   </h3>
-                  <p className="kv-sub mt-1 text-[11px] sm:text-sm">Tap to view and shop</p>
+                  <p className="kv-sub mt-1 text-body-xs sm:text-body-sm">Tap to view and shop</p>
                 </div>
               </Link>
             ))}
@@ -68,7 +68,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
         ) : (
           <div className="rounded-lg border border-dashed border-[var(--line)] bg-[var(--cream)] px-6 py-12 text-center">
             <p className="kv-tag">No reels live</p>
-            <p className="mx-auto mt-2 max-w-md text-[14px] leading-6 text-[var(--muted)]">
+            <p className="mx-auto mt-2 max-w-md text-body-sm leading-6 color-muted">
               Publish active reels from the backend to show Watch &amp; Buy previews here.
             </p>
           </div>
@@ -77,3 +77,4 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
     </section>
   );
 }
+

@@ -97,10 +97,10 @@ export default function StoreLocatorPage() {
     <div className="min-h-screen bg-white">
       <div className="border-b border-stone-100 bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mx-auto max-w-[1440px] space-y-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif text-stone-900">
+          <h1 className="text-display-xl md:text-display-xl font-serif text-stone-900">
             Store Locator
           </h1>
-          <p className="text-stone-600 font-light max-w-2xl mx-auto">
+          <p className="text-stone-600 type-light max-w-2xl mx-auto">
             Visit our flagship stores to experience our collection in person.
             Our concierge team is ready to assist you.
           </p>
@@ -115,7 +115,7 @@ export default function StoreLocatorPage() {
             placeholder="Search by city or country..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full md:w-96 border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 text-lg"
+            className="w-full md:w-96 border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 text-body-xl"
           />
         </div>
 
@@ -134,19 +134,19 @@ export default function StoreLocatorPage() {
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-serif text-lg text-stone-900">
+                    <h3 className="font-serif text-body-xl text-stone-900">
                       {store.name}
                     </h3>
                     <p className="text-stone-600 mt-1">{store.address}</p>
                     <p className="text-stone-600">{store.city}</p>
-                    <p className="text-stone-500 text-sm mt-2">
+                    <p className="text-stone-500 text-body-sm mt-2">
                       {store.country}
                     </p>
                   </div>
                   <MapPin size={20} className="text-stone-400" />
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-stone-100 flex gap-4 text-sm text-stone-500">
+                <div className="mt-4 pt-4 border-t border-stone-100 flex gap-4 text-body-sm text-stone-500">
                   <span className="flex items-center gap-1">
                     <Clock size={14} /> {store.hours}
                   </span>
@@ -163,25 +163,25 @@ export default function StoreLocatorPage() {
                 <p className="text-stone-500 text-center px-8">
                   Map view requires Google Maps API integration.
                   <br />
-                  <span className="text-sm">
+                  <span className="text-body-sm">
                     Configure NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable.
                   </span>
                 </p>
                 <div className="mt-6 bg-white p-6 shadow-lg max-w-sm">
-                  <h4 className="font-serif text-lg text-stone-900">
+                  <h4 className="font-serif text-body-xl text-stone-900">
                     {selectedStore.name}
                   </h4>
-                  <p className="text-stone-600 text-sm mt-2">
+                  <p className="text-stone-600 text-body-sm mt-2">
                     {selectedStore.address}
                   </p>
-                  <p className="text-stone-600 text-sm">{selectedStore.city}</p>
-                  <p className="text-stone-500 text-sm mt-2">
+                  <p className="text-stone-600 text-body-sm">{selectedStore.city}</p>
+                  <p className="text-stone-500 text-body-sm mt-2">
                     {selectedStore.phone}
                   </p>
 
                   <button
                     onClick={() => handleDirections(selectedStore)}
-                    className="mt-4 w-full bg-stone-900 text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 flex items-center justify-center gap-2"
+                    className="mt-4 w-full bg-stone-900 text-white py-3 text-body-xs type-bold uppercase tracking-token-wider hover:bg-stone-800 flex items-center justify-center gap-2"
                   >
                     Get Directions <ArrowRight size={16} />
                   </button>
@@ -198,3 +198,4 @@ export default function StoreLocatorPage() {
     </div>
   );
 }
+

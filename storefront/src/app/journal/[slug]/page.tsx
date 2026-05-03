@@ -100,19 +100,19 @@ export default async function ArticlePage({ params }: Props) {
         <div className="absolute inset-0 mx-auto flex w-full max-w-[1440px] flex-col justify-between p-6 md:p-12 lg:px-20">
           <Link
             href="/journal"
-            className="flex w-fit items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-stone-300"
+            className="flex w-fit items-center gap-2 text-body-sm type-bold uppercase tracking-token-wider hover:text-stone-300"
           >
             <ArrowLeft size={16} />
             Back to Journal
           </Link>
 
           <div className="max-w-4xl space-y-4">
-            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-[0.2em] opacity-80">
+            <div className="flex items-center gap-4 text-body-xs type-bold uppercase tracking-token-wider opacity-80">
               <span>{new Date(post.published_at).toLocaleDateString()}</span>
               <span>&bull;</span>
               <span>Kvastram Editorial</span>
             </div>
-            <h1 className="font-heading text-4xl font-semibold uppercase tracking-[0.02em] md:text-6xl">
+            <h1 className="font-heading text-display-xl type-semibold uppercase tracking-token-wide md:text-display-xl">
               {post.title}
             </h1>
           </div>
@@ -121,12 +121,12 @@ export default async function ArticlePage({ params }: Props) {
 
       <div className="mx-auto max-w-3xl px-6 py-12 md:py-16 lg:py-24">
         {post.excerpt && (
-          <p className="mb-12 border-l-4 border-stone-900 pl-6 font-heading text-2xl font-medium leading-relaxed text-stone-600">
+          <p className="mb-12 border-l-4 border-stone-900 pl-6 font-heading text-display-md type-medium leading-token-relaxed text-stone-600">
             {post.excerpt}
           </p>
         )}
 
-        <div className="prose prose-stone prose-lg max-w-none whitespace-pre-wrap font-light text-stone-800">
+        <div className="prose prose-stone prose-lg max-w-none whitespace-pre-wrap type-light text-stone-800">
           {post.content}
         </div>
       </div>

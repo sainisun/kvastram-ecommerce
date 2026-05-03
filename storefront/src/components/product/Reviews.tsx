@@ -182,12 +182,12 @@ export function Reviews({ productId }: ReviewsProps) {
       <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
           <div>
-            <h2 className="text-2xl font-semibold uppercase tracking-[0.06em] text-stone-900 mb-2">
+            <h2 className="review-heading mb-2">
               Client Reviews
             </h2>
             <div className="flex items-center gap-2">
               <StarRating rating={Number(averageRating)} size={18} />
-              <span className="text-sm text-stone-500 font-medium">
+              <span className="review-rating-count">
                 {averageRating} ({reviews.length} Reviews)
               </span>
             </div>
@@ -196,7 +196,7 @@ export function Reviews({ productId }: ReviewsProps) {
           {!submitted && (
             <button
               onClick={() => setShowForm(!showForm)}
-              className="px-6 py-3 border border-stone-700 text-stone-800 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors"
+              className="review-button border border-stone-700 px-6 py-3 transition-colors hover:bg-stone-900 hover:text-white"
             >
               {showForm ? 'Cancel' : 'Write a Review'}
             </button>
@@ -209,10 +209,10 @@ export function Reviews({ productId }: ReviewsProps) {
             onSubmit={handleSubmit}
             className="max-w-xl bg-stone-50 p-8 mb-12 rounded-lg space-y-4"
           >
-            <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-stone-800 mb-4">Share Your Experience</h3>
+            <h3 className="review-form-heading mb-4">Share Your Experience</h3>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+              <label className="review-label mb-2 block">
                 Rating
               </label>
               <StarRating
@@ -225,13 +225,13 @@ export function Reviews({ productId }: ReviewsProps) {
 
             {!customer && (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+                <label className="review-label mb-2 block">
                   Name
                 </label>
                 <input
                   type="text"
                   required
-                  className="w-full border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-900"
+                  className="input-field w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="Your Name"
@@ -240,13 +240,13 @@ export function Reviews({ productId }: ReviewsProps) {
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+              <label className="review-label mb-2 block">
                 Title
               </label>
               <input
                 type="text"
                 required
-                className="w-full border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-900"
+                className="input-field w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Summary of your experience"
@@ -254,12 +254,12 @@ export function Reviews({ productId }: ReviewsProps) {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+              <label className="review-label mb-2 block">
                 Review
               </label>
               <textarea
                 required
-                className="w-full border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-900 min-h-[100px]"
+                className="input-field min-h-[100px] w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="How was the quality, fit, and delivery?"
@@ -268,7 +268,7 @@ export function Reviews({ productId }: ReviewsProps) {
 
             {/* Image Upload */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+              <label className="review-label mb-2 block">
                 Add Photos (Optional)
               </label>
 
@@ -307,14 +307,14 @@ export function Reviews({ productId }: ReviewsProps) {
                     onChange={handleImageSelect}
                     className="hidden"
                   />
-                  <div className="flex items-center gap-2 px-4 py-2 border border-stone-300 rounded text-stone-600 hover:bg-stone-50 transition-colors text-sm">
+                  <div className="review-upload-button flex items-center gap-2 rounded border border-stone-300 px-4 py-2 transition-colors hover:bg-stone-50">
                     <Upload size={16} />
                     <span>Upload Images</span>
                   </div>
                 </label>
               )}
 
-              <p className="text-[10px] text-stone-400 mt-1">
+              <p className="review-helper mt-1">
                 {selectedImages.length}/5 images • Max 5MB each • JPG, PNG, WebP
               </p>
             </div>
@@ -322,7 +322,7 @@ export function Reviews({ productId }: ReviewsProps) {
             <button
               type="submit"
               disabled={submitting || uploadingImages}
-              className="w-full bg-stone-900 text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="review-button flex w-full items-center justify-center gap-2 bg-stone-900 py-3 text-text-inverse hover:bg-stone-800 disabled:opacity-50"
             >
               {(submitting || uploadingImages) && (
                 <Loader2 className="animate-spin" size={16} />
@@ -338,8 +338,8 @@ export function Reviews({ productId }: ReviewsProps) {
 
         {submitted && (
           <div className="bg-green-50 text-green-800 p-6 mb-12 rounded-lg text-center">
-            <h3 className="font-bold mb-2">Thank you!</h3>
-            <p className="text-sm">
+            <h3 className="review-success-title mb-2">Thank you!</h3>
+            <p className="review-success-copy">
               Your review has been submitted and is pending approval.
             </p>
           </div>
@@ -367,15 +367,15 @@ export function Reviews({ productId }: ReviewsProps) {
                     <div className="mb-2">
                       <StarRating rating={review.rating} size={14} />
                     </div>
-                    <h3 className="font-bold text-stone-900 border-b border-transparent group-hover:border-stone-200 inline-block pb-1 transition-colors">
+                    <h3 className="review-title inline-block border-b border-transparent pb-1 transition-colors group-hover:border-stone-200">
                       {review.title}
                     </h3>
                   </div>
-                  <span className="text-xs text-stone-400">
+                  <span className="review-date">
                     {new Date(review.created_at).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="text-stone-600 font-light text-sm leading-relaxed mb-4">
+                <p className="review-text mb-4">
                   &quot;{review.content}&quot;
                 </p>
 
@@ -399,15 +399,15 @@ export function Reviews({ productId }: ReviewsProps) {
                 )}
 
                 <div className="flex items-center justify-between border-t border-stone-200 pt-4">
-                  <div className="text-xs">
-                    <span className="font-bold text-stone-900">
+                  <div className="review-rating-count">
+                    <span className="review-author">
                       {review.author_name}
                     </span>
-                    <span className="text-stone-400 ml-2 text-[10px] uppercase tracking-wider">
+                    <span className="review-verified ml-2">
                       • Verified Buyer
                     </span>
                   </div>
-                  <button className="text-stone-400 hover:text-stone-600 flex items-center gap-1 text-xs">
+                  <button className="review-action-subtle flex items-center gap-1">
                     <ThumbsUp size={12} /> Helpful
                   </button>
                 </div>
@@ -419,3 +419,4 @@ export function Reviews({ productId }: ReviewsProps) {
     </div>
   );
 }
+

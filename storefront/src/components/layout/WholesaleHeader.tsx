@@ -6,7 +6,7 @@ export function WholesaleHeader() {
     <header className="sticky top-0 z-50 bg-stone-900 text-white border-b border-stone-700">
       {/* Top Bar */}
       <div className="bg-amber-600 text-stone-900 py-2">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 text-xs font-bold md:px-12 lg:px-20">
+        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 text-body-xs type-bold md:px-12 lg:px-20">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-2">
               <Building2 size={14} />
@@ -39,15 +39,15 @@ export function WholesaleHeader() {
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-6 md:px-12 lg:h-20 lg:px-20">
         {/* Logo */}
         <Link href="/wholesale" className="flex items-center gap-3">
-          <div className="text-2xl font-bold tracking-tighter">KVASTRAM</div>
+          <div className="text-display-md type-bold tracking-token-tight">KVASTRAM</div>
           <div className="h-8 w-px bg-stone-700"></div>
-          <div className="text-xs uppercase tracking-widest text-amber-400 font-bold">
+          <div className="text-body-xs uppercase tracking-token-wider text-amber-400 type-bold">
             Wholesale
           </div>
         </Link>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-8 text-body-sm type-medium">
           <Link
             href="/wholesale#benefits"
             className="hover:text-amber-400 transition-colors"
@@ -74,7 +74,7 @@ export function WholesaleHeader() {
           </Link>
           <Link
             href="/"
-            className="text-stone-400 hover:text-white transition-colors text-xs"
+            className="text-stone-400 hover:text-white transition-colors text-body-xs"
           >
             ← Retail Store
           </Link>
@@ -84,7 +84,7 @@ export function WholesaleHeader() {
         <div className="flex items-center gap-4">
           <a
             href="#inquiry"
-            className="hidden lg:block bg-amber-500 text-stone-900 px-6 py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-amber-400 transition-colors"
+            className="hidden lg:block bg-amber-500 text-stone-900 px-6 py-2.5 text-body-xs type-bold uppercase tracking-token-wider hover:bg-amber-400 transition-colors"
           >
             Request Pricing
           </a>
@@ -96,3 +96,4 @@ export function WholesaleHeader() {
     </header>
   );
 }
+

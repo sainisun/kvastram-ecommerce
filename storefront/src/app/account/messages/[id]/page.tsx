@@ -110,15 +110,15 @@ export default function AccountMessageDetailPage() {
       <div className="mx-auto max-w-4xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <Link href="/account/messages" className="text-sm text-stone-500 hover:text-stone-900">
+            <Link href="/account/messages" className="account-muted hover:text-stone-900">
               Messages
             </Link>
-            <h1 className="mt-2 font-serif text-3xl text-stone-900">{inquiry?.product_title || 'Studio Chat'}</h1>
-            <p className={`mt-2 text-xs ${liveConnected ? 'text-green-700' : 'text-stone-400'}`}>
+            <h1 className="account-page-title mt-2">{inquiry?.product_title || 'Studio Chat'}</h1>
+            <p className={`account-caption mt-2 ${liveConnected ? 'text-green-700' : 'text-stone-400'}`}>
               {liveConnected ? 'Live chat connected' : 'Connecting live chat...'}
             </p>
             {inquiry?.product_url && (
-              <a href={inquiry.product_url} className="mt-2 inline-block text-sm text-stone-500 underline underline-offset-4">
+              <a href={inquiry.product_url} className="account-muted mt-2 inline-block underline underline-offset-4">
                 View product
               </a>
             )}
@@ -141,17 +141,17 @@ export default function AccountMessageDetailPage() {
                 return (
                   <div key={message.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
                     <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-stone-100 text-stone-800' : 'bg-stone-900 text-white'}`}>
-                      <p className={`mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${isAdmin ? 'text-stone-500' : 'text-stone-300'}`}>
+                      <p className={`account-message-meta mb-1 ${isAdmin ? 'text-stone-500' : 'text-stone-300'}`}>
                         {isAdmin ? message.sender_name || 'Kvastram Studio' : 'You'}
                       </p>
-                      <p className="whitespace-pre-wrap text-sm leading-6">{message.message}</p>
+                      <p className="account-message-body whitespace-pre-wrap">{message.message}</p>
                     </div>
                   </div>
                 );
               })}
               {studioTyping && (
                 <div className="flex justify-start">
-                  <div className="rounded-lg bg-stone-100 px-4 py-3 text-sm text-stone-500">
+                  <div className="account-muted rounded-lg bg-stone-100 px-4 py-3">
                     Studio is typing...
                   </div>
                 </div>
@@ -165,13 +165,13 @@ export default function AccountMessageDetailPage() {
               rows={4}
               value={reply}
               onChange={(event) => handleReplyChange(event.target.value)}
-              className="w-full resize-none border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-900"
+              className="account-input w-full resize-none border border-stone-200 px-4 py-3 outline-none focus:border-stone-900"
               placeholder="Write a message..."
             />
             <button
               type="submit"
               disabled={sending || !reply.trim()}
-              className="mt-4 inline-flex items-center gap-2 bg-stone-900 px-6 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white disabled:bg-stone-300"
+              className="account-primary-action mt-4 inline-flex items-center gap-2 bg-stone-900 px-6 py-3 disabled:bg-stone-300"
             >
               <MessageCircle size={15} />
               {sending ? 'Sending' : 'Send Message'}

@@ -21,6 +21,19 @@ const config: Config = {
         '40': '160px',
       },
       colors: {
+        text: {
+          primary: 'var(--color-text-primary)',
+          secondary: 'var(--color-text-secondary)',
+          muted: 'var(--color-text-muted)',
+          disabled: 'var(--color-text-disabled)',
+          inverse: 'var(--color-text-inverse)',
+          accent: 'var(--color-text-accent)',
+          error: 'var(--color-text-error)',
+          success: 'var(--color-text-success)',
+          price: 'var(--color-text-price)',
+          'price-old': 'var(--color-text-price-old)',
+          sale: 'var(--color-text-sale)',
+        },
         brand: {
           sienna:  'var(--sienna)',        // #A85D3A — primary action
           dark:    'var(--sienna-dark)',   // #7D3F25 — hover
@@ -38,9 +51,28 @@ const config: Config = {
       },
       fontFamily: {
         heading: ['var(--font-display)', 'Georgia', 'serif'],
-        body:    ['var(--font-ui)', 'system-ui', 'sans-serif'],
-        serif:   ['var(--font-playfair)', 'Georgia', 'serif'],
-        sans:    ['var(--font-lato)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
+        body:    ['var(--font-body)', 'system-ui', 'sans-serif'],
+        serif:   ['var(--font-display)', 'Georgia', 'serif'],
+        sans:    ['var(--font-body)', 'system-ui', 'sans-serif'],
+      },
+      fontSize: {
+        'display-xl': ['var(--text-display-xl)', { lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)' }],
+        'display-lg': ['var(--text-display-lg)', { lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)' }],
+        'display-md': ['var(--text-display-md)', { lineHeight: 'var(--leading-tight)', letterSpacing: 'var(--tracking-tight)' }],
+        'display-sm': ['var(--text-display-sm)', { lineHeight: 'var(--leading-snug)', letterSpacing: 'var(--tracking-tight)' }],
+        'body-xl': ['var(--text-body-xl)', { lineHeight: 'var(--leading-relaxed)' }],
+        'body-lg': ['var(--text-body-lg)', { lineHeight: 'var(--leading-normal)' }],
+        'body-md': ['var(--text-body-md)', { lineHeight: 'var(--leading-normal)' }],
+        'body-sm': ['var(--text-body-sm)', { lineHeight: 'var(--leading-normal)' }],
+        'body-xs': ['var(--text-body-xs)', { lineHeight: 'var(--leading-normal)', letterSpacing: 'var(--tracking-wide)' }],
+      },
+      maxWidth: {
+        prose: 'var(--prose-width)',
+        heading: 'var(--heading-width)',
+        caption: 'var(--caption-width)',
+        content: 'var(--content-width)',
+        narrow: 'var(--narrow-width)',
       },
       borderRadius: {
         sm: 'var(--radius-sm)', // 4px — buttons, badges

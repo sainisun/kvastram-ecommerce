@@ -85,7 +85,7 @@ function SetPasswordContent() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1 className="text-display-md type-bold text-gray-900 mb-4">
               Invalid Link
             </h1>
             <p className="text-gray-600 mb-6">
@@ -108,7 +108,7 @@ function SetPasswordContent() {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Check className="w-8 h-8 text-green-600" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-display-md type-bold text-gray-900 mb-2">
               Password Set!
             </h1>
             <p className="text-gray-600 mb-6">
@@ -128,7 +128,7 @@ function SetPasswordContent() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-display-md type-bold text-gray-900">
             Set Up Your Password
           </h1>
           <p className="text-gray-600 mt-2">
@@ -140,7 +140,7 @@ function SetPasswordContent() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-body-sm type-medium text-gray-700 mb-2"
             >
               Password
             </label>
@@ -171,7 +171,7 @@ function SetPasswordContent() {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-body-sm type-medium text-gray-700 mb-2"
             >
               Confirm Password
             </label>
@@ -187,12 +187,12 @@ function SetPasswordContent() {
           </div>
 
           <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">
+            <p className="text-body-sm type-medium text-gray-700 mb-2">
               Password Requirements:
             </p>
             <ul className="space-y-1">
               {passwordRequirements.map((req, index) => (
-                <li key={index} className="flex items-center text-sm">
+                <li key={index} className="flex items-center text-body-sm">
                   {req.valid ? (
                     <Check className="w-4 h-4 text-green-500 mr-2" />
                   ) : (
@@ -217,7 +217,7 @@ function SetPasswordContent() {
           <button
             type="submit"
             disabled={loading || !allRequirementsMet}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg type-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {loading ? (
               <>
@@ -233,7 +233,7 @@ function SetPasswordContent() {
         <div className="mt-6 text-center">
           <Link
             href="/wholesale"
-            className="text-sm text-gray-600 hover:text-gray-900"
+            className="text-body-sm text-gray-600 hover:text-gray-900"
           >
             ← Back to Wholesale
           </Link>
@@ -256,3 +256,4 @@ export default function SetPasswordPage() {
     </Suspense>
   );
 }
+

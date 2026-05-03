@@ -123,13 +123,13 @@ export default function ContactPage() {
         {/* Info Text */}
         <div className="space-y-12">
           <div className="space-y-6">
-            <span className="text-xs font-bold tracking-[0.2em] text-stone-500 uppercase">
+            <span className="text-body-xs type-bold tracking-token-wider text-stone-500 uppercase">
               Get in Touch
             </span>
-            <h1 className="text-5xl font-serif text-stone-900 leading-tight">
+            <h1 className="text-display-xl font-serif text-stone-900 leading-token-tight">
               We&apos;d Love to <br /> Hear From You
             </h1>
-            <p className="text-lg text-stone-600 font-light max-w-md">
+            <p className="text-body-xl text-stone-600 type-light max-w-md">
               Whether you have a question about sizing, custom orders, or just
               want to tell us about your recent travels, our concierge team is
               here.
@@ -140,9 +140,9 @@ export default function ContactPage() {
             <div className="flex items-start gap-4">
               <Mail className="text-stone-400 mt-1" />
               <div>
-                <h3 className="font-semibold text-stone-900">Email Us</h3>
+                <h3 className="type-semibold text-stone-900">Email Us</h3>
                 <p className="text-stone-500">concierge@kvastram.com</p>
-                <p className="text-stone-400 text-sm mt-1">
+                <p className="text-stone-400 text-body-sm mt-1">
                   Replies within 2 hours.
                 </p>
               </div>
@@ -150,11 +150,11 @@ export default function ContactPage() {
             <div className="flex items-start gap-4">
               <Phone className="text-stone-400 mt-1" />
               <div>
-                <h3 className="font-semibold text-stone-900">
+                <h3 className="type-semibold text-stone-900">
                   Call or WhatsApp
                 </h3>
                 <p className="text-stone-500">+91 98765 43210</p>
-                <p className="text-stone-400 text-sm mt-1">
+                <p className="text-stone-400 text-body-sm mt-1">
                   Mon-Fri, 9am - 6pm IST
                 </p>
               </div>
@@ -162,7 +162,7 @@ export default function ContactPage() {
             <div className="flex items-start gap-4">
               <MapPin className="text-stone-400 mt-1" />
               <div>
-                <h3 className="font-semibold text-stone-900">Atelier</h3>
+                <h3 className="type-semibold text-stone-900">Atelier</h3>
                 <p className="text-stone-500">
                   12, Heritage Lane, Hauz Khas Village
                   <br />
@@ -178,7 +178,7 @@ export default function ContactPage() {
           {status === 'success' ? (
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h3 className="text-2xl font-serif text-stone-900 mb-2">
+              <h3 className="text-display-md font-serif text-stone-900 mb-2">
                 Message Sent!
               </h3>
               <p className="text-stone-600 mb-6">
@@ -186,7 +186,7 @@ export default function ContactPage() {
               </p>
               <button
                 onClick={() => setStatus('idle')}
-                className="bg-stone-900 text-white py-3 px-8 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors"
+                className="bg-stone-900 text-white py-3 px-8 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors"
               >
                 Send Another Message
               </button>
@@ -240,7 +240,7 @@ export default function ContactPage() {
               />
 
               {status === 'error' && (
-                <div className="flex items-center gap-2 text-red-600 text-sm">
+                <div className="flex items-center gap-2 text-red-600 text-body-sm">
                   <AlertCircle size={16} />
                   <span>{errorMessage}</span>
                 </div>
@@ -249,7 +249,7 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={status === 'loading' || !isFormValid}
-                className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {status === 'loading' ? (
                   <>
@@ -267,3 +267,4 @@ export default function ContactPage() {
     </div>
   );
 }
+

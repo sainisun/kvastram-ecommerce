@@ -154,9 +154,9 @@ function ProductGrid({
               }}
             />
             <div className="product-info">
-              <div style={{ height: 8, width: '60%', background: 'var(--line)', marginBottom: 8, borderRadius: 4 }} />
-              <div style={{ height: 14, width: '80%', background: 'var(--line)', marginBottom: 8, borderRadius: 4 }} />
-              <div style={{ height: 10, width: '30%', background: 'var(--line)', borderRadius: 4 }} />
+              <div className="skeleton-line skeleton-line-brand" />
+              <div className="skeleton-line skeleton-line-name" />
+              <div className="skeleton-line skeleton-line-price" />
             </div>
           </div>
         ))}
@@ -166,17 +166,7 @@ function ProductGrid({
 
   if (products.length === 0) {
     return (
-      <div
-        style={{
-          padding: 'var(--space-20) var(--space-0)',
-          textAlign: 'center',
-          color: 'var(--muted)',
-          fontStyle: 'italic',
-          fontFamily: 'var(--font-display)',
-          fontSize: '20px',
-          fontWeight: 300,
-        }}
-      >
+      <div className="product-empty-state">
         {emptyMessage}
       </div>
     );
@@ -214,7 +204,7 @@ function ProductGrid({
               className="object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-[var(--soft)] text-[var(--muted)] font-serif italic">
+            <div className="product-no-image flex h-full w-full items-center justify-center bg-[var(--soft)]">
               No Image
             </div>
           )}
@@ -277,7 +267,7 @@ function ProductGrid({
           <div className="product-row">
             <div className="flex items-center gap-1">
               {priceInfo.isWholesale ? (
-                <span className="text-[12px] font-medium text-green-700 uppercase tracking-wider">
+                <span className="wholesale-price">
                   Wholesale · {priceInfo.price}
                 </span>
               ) : (
@@ -335,25 +325,25 @@ function ProductGrid({
               ) : null}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               {spotlight.badge_text ? (
-                <span className="absolute left-4 top-4 z-10 rounded-[var(--radius-xs)] bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ink)]">
+                <span className="spotlight-badge absolute left-4 top-4 z-10 rounded-[var(--radius-xs)] bg-white/90 px-3 py-1">
                   {spotlight.badge_text}
                 </span>
               ) : null}
             </div>
             <div className="space-y-3 bg-[var(--cream)] px-4 py-5">
               <div>
-                <p className="font-body text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--muted)]">
+                <p className="spotlight-eyebrow">
                   Spotlight Pick
                 </p>
-                <h3 className="font-heading mt-2 text-[28px] font-semibold uppercase leading-[1.05] text-[var(--ink)]">
+                <h3 className="spotlight-title mt-2">
                   {spotlightProduct.title}
                 </h3>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="font-body text-[15px] font-medium text-[var(--ink)]">
+                <p className="spotlight-price">
                   {spotlightPrice.price}
                 </p>
-              <span className="inline-flex items-center rounded-[var(--radius-xs)] bg-[var(--ink)] px-5 py-2 text-[11px] font-medium uppercase tracking-[0.14em] text-white">
+              <span className="spotlight-action inline-flex items-center rounded-[var(--radius-xs)] bg-[var(--ink)] px-5 py-2">
                   View
                 </span>
               </div>

@@ -192,10 +192,10 @@ export default async function BestsellersPage({
         ) : null}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.3),rgba(0,0,0,0.5))]" />
         <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center px-6 text-center text-white md:px-12 lg:px-20">
-          <h1 className="font-heading text-[clamp(48px,6vw,76px)] font-normal leading-none tracking-[-0.03em] text-white">
+          <h1 className="font-heading text-display-xl type-regular leading-token-tight tracking-token-tight text-white">
             Most <em className="italic">Loved</em>
           </h1>
-          <p className="mt-4 max-w-[600px] font-heading text-[18px] font-normal italic leading-8 text-white/90">
+          <p className="mt-4 max-w-[600px] font-heading text-display-sm type-regular italic leading-8 text-white/90">
             These are the pieces the Kavastram community can&apos;t stop talking about. Curated from thousands of orders and five-star reviews.
           </p>
         </div>
@@ -204,7 +204,7 @@ export default async function BestsellersPage({
       <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
-          className="mb-10 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
+          className="mb-10 flex items-center gap-2 text-body-xs type-medium uppercase tracking-token-wide text-stone-400"
         >
           <Link href="/" className="transition-colors hover:text-stone-900">
             Home
@@ -220,10 +220,10 @@ export default async function BestsellersPage({
                 key={stat.label}
                 className="border-r border-stone-100 px-4 py-4 text-center last:border-r-0 sm:border-b sm:border-r xl:border-b-0"
               >
-                <div className="font-heading text-[clamp(28px,3vw,42px)] leading-none text-stone-950">
+                <div className="font-heading text-display-xl leading-token-tight text-stone-950">
                   {stat.value}
                 </div>
-                <div className="mt-2 text-[11px] uppercase tracking-[0.2em] text-stone-500">
+                <div className="mt-2 text-body-xs uppercase tracking-token-wider text-stone-500">
                   {stat.label}
                 </div>
               </div>
@@ -235,7 +235,7 @@ export default async function BestsellersPage({
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
               href="/bestsellers"
-              className={`inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors ${
+              className={`inline-flex items-center rounded-full border px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider transition-colors ${
                 selectedSize === 'all'
                   ? 'border-stone-950 bg-stone-950 text-white'
                   : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
@@ -247,7 +247,7 @@ export default async function BestsellersPage({
               <Link
                 key={size}
                 href={`/bestsellers?size=${encodeURIComponent(size)}`}
-                className={`inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors ${
+                className={`inline-flex items-center rounded-full border px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider transition-colors ${
                   selectedSize === size
                     ? 'border-stone-950 bg-stone-950 text-white'
                     : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
@@ -284,26 +284,26 @@ export default async function BestsellersPage({
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center bg-stone-200">
-                            <span className="font-heading text-3xl font-semibold uppercase tracking-[0.02em] text-stone-400">
+                            <span className="font-heading text-display-lg type-semibold uppercase tracking-token-wide text-stone-400">
                               {product.title}
                             </span>
                           </div>
                         )}
 
-                        <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-stone-950 font-heading text-[18px] font-medium text-white">
+                        <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-stone-950 font-heading text-display-sm type-medium text-white">
                           {index + 1}
                         </span>
                       </div>
 
-                      <h2 className="mt-3 font-heading text-[20px] font-medium leading-tight text-stone-950">
+                      <h2 className="mt-3 font-heading text-display-sm type-medium leading-token-tight text-stone-950">
                         {product.title}
                       </h2>
-                      <p className="mt-1 text-[12px] uppercase tracking-[0.16em] text-stone-500">
+                      <p className="mt-1 text-body-xs uppercase tracking-token-wider text-stone-500">
                         {formatPrice(product)}
                       </p>
 
                       {rating && rating > 0 ? (
-                        <div className="mt-1 flex items-center gap-1 text-[12px] uppercase tracking-[0.05em] text-stone-500">
+                        <div className="mt-1 flex items-center gap-1 text-body-xs uppercase tracking-token-wide text-stone-500">
                           <span className="flex items-center gap-0.5 text-stone-900">
                             {renderStars(rating)}
                           </span>
@@ -321,7 +321,7 @@ export default async function BestsellersPage({
             </div>
           ) : (
             <div className="py-12 text-center md:py-16 lg:py-24">
-              <p className="text-lg text-stone-500">
+              <p className="text-body-xl text-stone-500">
                 No bestselling products found right now.
               </p>
             </div>
@@ -332,3 +332,4 @@ export default async function BestsellersPage({
     </div>
   );
 }
+

@@ -102,20 +102,20 @@ export default function TrackOrderPage() {
       <section className="bg-[#f8f1eb] px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="mx-auto max-w-[860px]">
           <div className="border border-stone-200 bg-white p-6 shadow-[0_20px_60px_rgba(0,0,0,0.05)] md:p-10">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.25em] text-stone-500">
+            <div className="text-body-xs type-semibold uppercase tracking-token-wider text-stone-500">
               Order tracking
             </div>
-            <h1 className="mt-3 font-heading text-[clamp(42px,6vw,72px)] font-medium leading-none tracking-[-0.03em] text-stone-950">
+            <h1 className="mt-3 font-heading text-display-xl type-medium leading-token-tight tracking-token-tight text-stone-950">
               Track your order
             </h1>
-            <p className="mt-4 max-w-2xl text-[15px] leading-7 text-stone-600">
+            <p className="mt-4 max-w-2xl text-body-md leading-7 text-stone-600">
               Enter your order ID to load real shipment details and see the visual delivery timeline.
             </p>
 
         <form onSubmit={handleSearch} className="mt-8 space-y-5">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-xs font-bold uppercase tracking-[0.16em] text-stone-500">
+              <label className="mb-2 block text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
                 Order ID
               </label>
               <input
@@ -128,7 +128,7 @@ export default function TrackOrderPage() {
               />
             </div>
             <div>
-              <label className="mb-2 block text-xs font-bold uppercase tracking-[0.16em] text-stone-500">
+              <label className="mb-2 block text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
                 Email
               </label>
               <input
@@ -143,7 +143,7 @@ export default function TrackOrderPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               'Searching...'
@@ -164,13 +164,13 @@ export default function TrackOrderPage() {
         <div className="mt-8 overflow-x-auto">
           <div className="grid w-full min-w-0 grid-cols-5 gap-2">
             {(order ? getStatusSteps(order.status) : getStatusSteps('out_for_delivery')).map((step, index) => (
-              <div key={step.key} className={`text-center text-[12px] ${step.completed || step.current ? 'text-stone-900' : 'text-stone-400'}`}>
+              <div key={step.key} className={`text-center text-body-xs ${step.completed || step.current ? 'text-stone-900' : 'text-stone-400'}`}>
                 <div
                   className={`mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full border-2 ${
                     step.completed
                       ? 'border-[#a85d3a] bg-[#a85d3a] text-white'
                       : step.current
-                        ? 'border-[#a85d3a] bg-white text-[#a85d3a] shadow-[0_0_0_4px_rgba(168,93,58,0.12)]'
+                        ? 'border-[#a85d3a] bg-white color-sienna shadow-[0_0_0_4px_rgba(168,93,58,0.12)]'
                         : 'border-stone-200 bg-white text-stone-400'
                   }`}
                 >
@@ -188,19 +188,19 @@ export default function TrackOrderPage() {
             <div className="border border-stone-100 bg-stone-50 p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">
+                  <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
                     Order ID
                   </p>
-                  <p className="text-lg font-medium text-stone-900">
+                  <p className="text-body-xl type-medium text-stone-900">
                     {order.id}
                   </p>
                 </div>
                 <div className="text-right">
                   <div className="mb-2 flex justify-end">{getStatusIcon(order.status)}</div>
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-stone-500">
+                  <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
                     Status
                   </p>
-                  <p className="text-lg font-medium text-stone-900 capitalize">
+                  <p className="text-body-xl type-medium text-stone-900 capitalize">
                     {order.status}
                   </p>
                 </div>
@@ -208,7 +208,7 @@ export default function TrackOrderPage() {
 
               {order.tracking_number && (
                 <div className="pt-4 border-t border-stone-200">
-                  <p className="text-xs font-bold uppercase text-stone-500 mb-1">
+                  <p className="text-body-xs type-bold uppercase text-stone-500 mb-1">
                     Tracking
                   </p>
                   <p className="text-stone-700">
@@ -220,7 +220,7 @@ export default function TrackOrderPage() {
 
             {/* Shipping Address */}
             <div className="border border-stone-100 bg-white p-5">
-              <h3 className="mb-4 font-heading text-[22px] text-stone-900">
+              <h3 className="mb-4 font-heading text-display-sm text-stone-900">
                 Shipping Address
               </h3>
               <div className="flex items-start gap-3 text-stone-600">
@@ -242,7 +242,7 @@ export default function TrackOrderPage() {
 
             {/* Order Items */}
             <div className="border border-stone-100 bg-white p-5">
-              <h3 className="mb-4 font-heading text-[22px] text-stone-900">
+              <h3 className="mb-4 font-heading text-display-sm text-stone-900">
                 Order Items
               </h3>
               <div className="space-y-3">
@@ -252,12 +252,12 @@ export default function TrackOrderPage() {
                     className="flex justify-between items-center py-3 border-b border-stone-100"
                   >
                     <div>
-                      <p className="font-medium text-stone-900">{item.title}</p>
-                      <p className="text-sm text-stone-500">
+                      <p className="type-medium text-stone-900">{item.title}</p>
+                      <p className="text-body-sm text-stone-500">
                         Qty: {item.quantity}
                       </p>
                     </div>
-                    <p className="font-medium text-stone-900">
+                    <p className="type-medium text-stone-900">
                       ${(item.price / 100).toFixed(2)}
                     </p>
                   </div>
@@ -269,13 +269,13 @@ export default function TrackOrderPage() {
           <div className="mt-6 grid gap-3">
             <div className="border border-stone-100 bg-stone-50 p-5">
               <strong className="text-stone-950">Out for Delivery</strong>
-              <p className="mt-1 text-[14px] leading-6 text-stone-600">
+              <p className="mt-1 text-body-sm leading-6 text-stone-600">
                 Your live package status will appear here after a successful lookup.
               </p>
             </div>
             <div className="border border-stone-100 bg-stone-50 p-5">
               <strong className="text-stone-950">Arrived at Jaipur Hub</strong>
-              <p className="mt-1 text-[14px] leading-6 text-stone-600">
+              <p className="mt-1 text-body-sm leading-6 text-stone-600">
                 Prototype-style milestone cards stay visible as a helpful empty state.
               </p>
             </div>
@@ -287,3 +287,4 @@ export default function TrackOrderPage() {
       </div>
   );
 }
+

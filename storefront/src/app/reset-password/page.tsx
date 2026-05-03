@@ -37,7 +37,7 @@ function SuccessView() {
             />
           </svg>
         </div>
-        <h1 className="text-2xl font-serif text-stone-900">
+        <h1 className="text-display-md font-serif text-stone-900">
           Password Reset Successfully
         </h1>
         <p className="text-stone-500">
@@ -46,7 +46,7 @@ function SuccessView() {
         </p>
         <Link
           href="/login"
-          className="inline-block bg-stone-900 text-white px-8 py-3 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors"
+          className="inline-block bg-stone-900 text-white px-8 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors"
         >
           Go to Login
         </Link>
@@ -150,8 +150,8 @@ function ResetPasswordContent() {
             <ArrowLeft size={16} className="mr-1" />
             Back
           </Link>
-          <h1 className="text-3xl font-serif text-stone-900">Reset Password</h1>
-          <p className="mt-2 text-stone-500 font-light">
+          <h1 className="text-display-lg font-serif text-stone-900">Reset Password</h1>
+          <p className="mt-2 text-stone-500 type-light">
             Enter your new password below.
           </p>
         </div>
@@ -159,14 +159,14 @@ function ResetPasswordContent() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              <p className="text-sm">{error}</p>
+              <p className="text-body-sm">{error}</p>
             </div>
           )}
 
           <div className="space-y-2">
             <label
               htmlFor="reset-password"
-              className="text-xs uppercase font-bold text-stone-500"
+              className="text-body-xs uppercase type-bold text-stone-500"
             >
               New Password
             </label>
@@ -192,10 +192,10 @@ function ResetPasswordContent() {
 
             {/* Password requirements */}
             <div className="space-y-1 mt-2">
-              <p className="text-xs text-stone-500 mb-2">
+              <p className="text-body-xs text-stone-500 mb-2">
                 Password must contain:
               </p>
-              <div className="grid grid-cols-2 gap-1 text-xs">
+              <div className="grid grid-cols-2 gap-1 text-body-xs">
                 <PasswordRequirement
                   label="At least 12 characters"
                   isValid={passwordValid.length}
@@ -223,7 +223,7 @@ function ResetPasswordContent() {
           <div className="space-y-2">
             <label
               htmlFor="reset-confirm-password"
-              className="text-xs uppercase font-bold text-stone-500"
+              className="text-body-xs uppercase type-bold text-stone-500"
             >
               Confirm Password
             </label>
@@ -247,14 +247,14 @@ function ResetPasswordContent() {
               </button>
             </div>
             {confirmPassword && !passwordsMatch && (
-              <p className="text-xs text-red-500">Passwords do not match</p>
+              <p className="text-body-xs text-red-500">Passwords do not match</p>
             )}
           </div>
 
           <button
             type="submit"
             disabled={loading || !isPasswordValid || !passwordsMatch}
-            className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <Loader2 className="animate-spin" size={16} />}
             {loading ? 'Resetting...' : 'Reset Password'}
@@ -278,3 +278,4 @@ export default function ResetPasswordPage() {
     </Suspense>
   );
 }
+

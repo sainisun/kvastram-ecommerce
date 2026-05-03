@@ -89,7 +89,7 @@ export default function WishlistButton({
       {showLabel && (
         <span
           className={cn(
-            'ml-2 font-medium',
+            'ml-2 type-medium',
             isWishlisted ? 'text-red-500' : 'text-stone-600'
           )}
         >
@@ -99,3 +99,4 @@ export default function WishlistButton({
     </button>
   );
 }
+

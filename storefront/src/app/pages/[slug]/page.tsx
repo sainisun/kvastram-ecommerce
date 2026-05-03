@@ -75,7 +75,7 @@ export default async function DynamicPage({ params }: Props) {
       <div className="mx-auto max-w-4xl px-6">
         <nav
           aria-label="Breadcrumb"
-          className="font-body mb-8 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
+          className="font-body mb-8 flex items-center gap-2 text-body-xs type-medium uppercase tracking-token-wide text-stone-400"
         >
           <Link href="/" className="transition-colors hover:text-stone-900">
             Home
@@ -84,11 +84,11 @@ export default async function DynamicPage({ params }: Props) {
           <span className="text-stone-700">{page.title}</span>
         </nav>
 
-        <h1 className="mb-12 text-center font-heading text-4xl font-semibold uppercase tracking-[0.02em] text-stone-900 md:text-5xl">
+        <h1 className="mb-12 text-center font-heading text-display-xl type-semibold uppercase tracking-token-wide text-stone-900 md:text-display-xl">
           {page.title}
         </h1>
         <div
-          className="prose prose-stone prose-lg max-w-none font-light text-stone-800"
+          className="prose prose-stone prose-lg max-w-none type-light text-stone-800"
           dangerouslySetInnerHTML={{ __html: page.content }}
         />
       </div>

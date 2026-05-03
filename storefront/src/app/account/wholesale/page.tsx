@@ -69,16 +69,16 @@ export default function WholesaleDashboardPage() {
       <div className="flex min-h-screen items-center justify-center bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="text-center max-w-md">
           <Building2 size={48} className="mx-auto text-stone-400 mb-4" />
-          <h2 className="text-xl font-serif text-stone-900 mb-2">
+          <h2 className="account-section-title mb-2">
             No Wholesale Access
           </h2>
-          <p className="text-stone-600 mb-6">
+          <p className="account-body mb-6">
             You don&apos;t have wholesale access yet. Apply for a wholesale
             account to get started.
           </p>
           <Link
             href="/wholesale"
-            className="inline-block bg-stone-900 text-white px-6 py-3 text-sm font-medium tracking-wider uppercase hover:bg-stone-800 transition-colors"
+            className="account-primary-action inline-block bg-stone-900 px-6 py-3 transition-colors hover:bg-stone-800"
           >
             Apply for Wholesale
           </Link>
@@ -103,13 +103,13 @@ export default function WholesaleDashboardPage() {
         <div className="mb-6">
           <Link
             href="/account"
-            className="inline-flex items-center gap-2 text-sm text-stone-500 hover:text-stone-900 transition-colors"
+            className="account-muted inline-flex items-center gap-2 transition-colors hover:text-stone-900"
           >
             <ArrowLeft size={16} /> Back to Account
           </Link>
         </div>
 
-        <h1 className="text-2xl font-serif text-stone-900 mb-8">
+        <h1 className="account-detail-title mb-8">
           Wholesale Dashboard
         </h1>
 
@@ -117,13 +117,13 @@ export default function WholesaleDashboardPage() {
           <div className="bg-white border border-stone-200 p-6">
             <div className="flex items-center gap-3 mb-3">
               <Tag size={20} className="text-stone-400" />
-              <span className="text-xs font-bold uppercase tracking-widest text-stone-500">
+              <span className="account-form-label">
                 Your Tier
               </span>
             </div>
             <div className="flex items-center gap-3">
               <span
-                className={`px-3 py-1 text-sm font-bold uppercase tracking-wider border ${tierColor}`}
+                className={`account-status-badge border px-3 py-1 ${tierColor}`}
               >
                 {wholesaleInfo.tier || 'N/A'}
               </span>
@@ -133,24 +133,24 @@ export default function WholesaleDashboardPage() {
           <div className="bg-white border border-stone-200 p-6">
             <div className="flex items-center gap-3 mb-3">
               <TrendingUp size={20} className="text-stone-400" />
-              <span className="text-xs font-bold uppercase tracking-widest text-stone-500">
+              <span className="account-form-label">
                 Discount
               </span>
             </div>
-            <p className="text-2xl font-bold text-stone-900">
+            <p className="account-detail-title">
               {wholesaleInfo.discountPercent}%
             </p>
-            <p className="text-xs text-stone-500 mt-1">Off retail prices</p>
+            <p className="account-caption mt-1">Off retail prices</p>
           </div>
 
           <div className="bg-white border border-stone-200 p-6">
             <div className="flex items-center gap-3 mb-3">
               <Building2 size={20} className="text-stone-400" />
-              <span className="text-xs font-bold uppercase tracking-widest text-stone-500">
+              <span className="account-form-label">
                 Company
               </span>
             </div>
-            <p className="text-lg font-medium text-stone-900">
+            <p className="account-section-title">
               {wholesaleInfo.companyName || 'N/A'}
             </p>
           </div>
@@ -159,12 +159,12 @@ export default function WholesaleDashboardPage() {
         <div className="bg-white border border-stone-200">
           <div className="p-6 border-b border-stone-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-stone-900 flex items-center gap-2">
+              <h2 className="account-kicker flex items-center gap-2">
                 <Package size={16} /> Recent Orders
               </h2>
               <Link
                 href="/account/orders"
-                className="text-xs text-stone-500 hover:text-stone-900 transition-colors uppercase tracking-wider"
+                className="account-caption uppercase transition-colors hover:text-stone-900"
               >
                 View All
               </Link>
@@ -176,11 +176,11 @@ export default function WholesaleDashboardPage() {
               <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-stone-900 mx-auto"></div>
             </div>
           ) : orders.length === 0 ? (
-            <div className="p-8 text-center text-stone-500">
+            <div className="account-muted p-8 text-center">
               <p>No orders yet</p>
               <Link
                 href="/collections"
-                className="text-stone-900 underline text-sm mt-2 inline-block"
+                className="account-name mt-2 inline-block underline"
               >
                 Browse Products
               </Link>
@@ -195,16 +195,16 @@ export default function WholesaleDashboardPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div>
-                      <p className="text-sm font-medium text-stone-900">
+                      <p className="account-name">
                         Order #{order.display_id || order.id.slice(0, 8)}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
                         <Clock size={12} className="text-stone-400" />
-                        <span className="text-xs text-stone-500">
+                        <span className="account-caption">
                           {new Date(order.created_at).toLocaleDateString()}
                         </span>
                         {order.metadata?.po_number && (
-                          <span className="text-xs text-stone-400">
+                          <span className="account-caption">
                             PO: {order.metadata.po_number}
                           </span>
                         )}
@@ -212,14 +212,14 @@ export default function WholesaleDashboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-stone-900">
+                    <p className="account-name">
                       {new Intl.NumberFormat(undefined, {
                         style: 'currency',
                         currency: order.currency_code?.toUpperCase() || 'INR',
                       }).format(order.total / 100)}
                     </p>
                     <span
-                      className={`text-xs uppercase tracking-wider ${order.status === 'completed' ? 'text-green-600' : order.status === 'canceled' ? 'text-red-600' : 'text-yellow-600'}`}
+                      className={`account-caption uppercase ${order.status === 'completed' ? 'text-green-600' : order.status === 'canceled' ? 'text-red-600' : 'text-yellow-600'}`}
                     >
                       {order.status}
                     </span>

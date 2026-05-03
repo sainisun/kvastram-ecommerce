@@ -33,16 +33,16 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
         </div>
         <div className="absolute inset-0 flex items-center justify-center text-center">
           <div className="max-w-4xl px-6 space-y-8 text-white">
-            <h1 className="text-6xl md:text-8xl font-serif tracking-tight leading-none drop-shadow-lg">
+            <h1 className="text-display-xl md:text-display-xl font-serif tracking-token-tight leading-token-tight drop-shadow-lg">
               KVASTRAM
             </h1>
-            <p className="text-lg md:text-2xl font-light tracking-wide max-w-2xl mx-auto drop-shadow-md">
+            <p className="text-body-xl md:text-display-md type-light tracking-token-wide max-w-2xl mx-auto drop-shadow-md">
               Bridging Heritage & Avant-Garde
             </p>
             <div className="pt-8">
               <Link
                 href="/products"
-                className="inline-block bg-white text-black px-12 py-4 text-sm uppercase tracking-widest font-semibold hover:bg-black hover:text-white transition-all duration-300"
+                className="inline-block bg-white text-black px-12 py-4 text-body-sm uppercase tracking-token-wider type-semibold hover:bg-black hover:text-white transition-all duration-300"
               >
                 Shop The Collection
               </Link>
@@ -81,7 +81,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
 
           <div className="absolute inset-0 flex items-center justify-center text-center">
             <div className="max-w-4xl px-6 space-y-8 text-white animate-in fade-in zoom-in duration-1000">
-              <h1 className="text-6xl md:text-8xl font-serif tracking-tight leading-none drop-shadow-lg">
+              <h1 className="text-display-xl md:text-display-xl font-serif tracking-token-tight leading-token-tight drop-shadow-lg">
                 {banner.title}
               </h1>
               {/* If we had subtitle in schema, we'd use it. For now, empty or hardcoded logic if needed */}
@@ -89,7 +89,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
                 <div className="pt-8">
                   <Link
                     href={banner.link}
-                    className="inline-block bg-white text-black px-12 py-4 text-sm uppercase tracking-widest font-semibold hover:bg-black hover:text-white transition-all duration-300"
+                    className="inline-block bg-white text-black px-12 py-4 text-body-sm uppercase tracking-token-wider type-semibold hover:bg-black hover:text-white transition-all duration-300"
                   >
                     {banner.button_text || 'Shop Now'}
                   </Link>
@@ -132,3 +132,4 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
     </section>
   );
 }
+

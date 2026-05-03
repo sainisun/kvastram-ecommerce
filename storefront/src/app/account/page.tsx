@@ -48,7 +48,7 @@ export default function AccountPage() {
         {/* Header */}
         <div className="bg-white border-b border-stone-200 sticky top-0 z-10">
           <div className="px-4 h-14 flex items-center justify-center">
-            <h1 className="text-lg font-medium text-stone-900">Profile</h1>
+            <h1 className="account-mobile-title">Profile</h1>
           </div>
         </div>
 
@@ -82,39 +82,39 @@ export default function AccountPage() {
                   <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mb-4">
                     <User size={24} className="text-stone-400" />
                   </div>
-                  <p className="font-medium text-stone-900">
+                  <p className="account-name">
                     {customer.first_name} {customer.last_name}
                   </p>
-                  <p className="text-sm text-stone-500">{customer.email}</p>
+                  <p className="account-muted">{customer.email}</p>
                 </div>
                 <nav className="p-4">
                   <Link
                     href="/account"
-                    className="block px-4 py-2 text-sm font-medium bg-stone-50 text-stone-900 mb-1"
+                    className="account-nav-link block bg-stone-50 px-4 py-2 mb-1"
                   >
                     Overview
                   </Link>
                   <Link
                     href="/account/orders"
-                    className="block px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-50 hover:text-stone-900 mb-1"
+                    className="account-nav-link block px-4 py-2 hover:bg-stone-50 hover:text-stone-900 mb-1"
                   >
                     Orders
                   </Link>
                   <Link
                     href="/account/profile"
-                    className="block px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-50 hover:text-stone-900 mb-1"
+                    className="account-nav-link block px-4 py-2 hover:bg-stone-50 hover:text-stone-900 mb-1"
                   >
                     Profile
                   </Link>
                   <Link
                     href="/account/addresses"
-                    className="block px-4 py-2 text-sm font-medium text-stone-600 hover:bg-stone-50 hover:text-stone-900 mb-1 flex items-center gap-2"
+                    className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-stone-50 hover:text-stone-900"
                   >
                     <MapPin size={14} /> Addresses
                   </Link>
                   <button
                     onClick={logout}
-                    className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 mt-4"
+                    className="account-nav-danger mt-4 flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-red-50"
                   >
                     <LogOut size={14} /> Sign Out
                   </button>
@@ -124,7 +124,7 @@ export default function AccountPage() {
 
             {/* Main Content */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-serif text-stone-900 mb-8">
+              <h1 className="account-page-title mb-8">
                 My Account
               </h1>
 
@@ -133,22 +133,22 @@ export default function AccountPage() {
                 <div className="bg-white border border-stone-200 p-6">
                   <div className="flex items-center gap-3 mb-2">
                     <Package size={20} className="text-stone-400" />
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-stone-500">
+                    <h3 className="account-kicker">
                       Total Orders
                     </h3>
                   </div>
-                  <p className="text-3xl font-serif text-stone-900">
+                  <p className="account-stat-value">
                     {orders.length}
                   </p>
                 </div>
                 <div className="bg-white border border-stone-200 p-6">
                   <div className="flex items-center gap-3 mb-2">
                     <User size={20} className="text-stone-400" />
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-stone-500">
+                    <h3 className="account-kicker">
                       Member Since
                     </h3>
                   </div>
-                  <p className="text-lg font-serif text-stone-900">
+                  <p className="account-stat-date">
                     {customer.created_at
                       ? new Date(customer.created_at).toLocaleDateString(
                           'en-US',
@@ -162,12 +162,12 @@ export default function AccountPage() {
               {/* Recent Orders */}
               <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-stone-100 flex items-center justify-between">
-                  <h2 className="text-lg font-serif text-stone-900">
+                  <h2 className="account-section-title">
                     Recent Orders
                   </h2>
                   <Link
                     href="/account/orders"
-                    className="text-sm text-stone-500 hover:text-stone-900"
+                    className="account-muted hover:text-stone-900"
                   >
                     View All →
                   </Link>
@@ -183,10 +183,10 @@ export default function AccountPage() {
                       size={48}
                       className="mx-auto text-stone-300 mb-4"
                     />
-                    <p className="text-stone-500 mb-4">No orders yet</p>
+                    <p className="account-empty-copy mb-4">No orders yet</p>
                     <Link
                       href="/"
-                      className="inline-block bg-stone-900 text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+                      className="account-primary-action inline-block bg-stone-900 px-6 py-3 transition-colors hover:bg-stone-800"
                     >
                       Start Shopping
                     </Link>
@@ -201,11 +201,11 @@ export default function AccountPage() {
                         <div>
                           <Link
                             href={`/account/orders/${order.id}`}
-                            className="font-medium text-stone-900 hover:text-stone-600"
+                            className="account-name hover:text-stone-600"
                           >
                             Order #{order.display_id}
                           </Link>
-                          <p className="text-sm text-stone-500 mt-1">
+                          <p className="account-muted mt-1">
                             {new Date(order.created_at).toLocaleDateString(
                               'en-US',
                               { month: 'long', day: 'numeric', year: 'numeric' }
@@ -213,7 +213,7 @@ export default function AccountPage() {
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="text-sm font-medium text-stone-900">
+                          <span className="account-name">
                             {new Intl.NumberFormat(undefined, {
                               style: 'currency',
                               currency:
@@ -221,7 +221,7 @@ export default function AccountPage() {
                             }).format(order.total / 100)}
                           </span>
                           <span
-                            className={`px-3 py-1 text-xs font-bold uppercase tracking-widest ${
+                            className={`account-status-badge px-3 py-1 ${
                               order.status === 'completed'
                                 ? 'bg-green-50 text-green-700 border border-green-200'
                                 : order.status === 'canceled'

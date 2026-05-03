@@ -86,7 +86,7 @@ export default async function ProductPage({ params }: Props) {
       <div className="kv-container border-t border-[var(--line)] py-12 md:py-16 lg:py-20">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <p className="kv-tag">Keep Browsing</p>
-          <h2 className="font-heading text-[clamp(34px,4vw,54px)] font-bold leading-[0.98] text-[var(--ink)]">
+          <h2 className="related-products-title">
             You May Also Like
           </h2>
           {primaryCategoryPath && primaryCategory && (

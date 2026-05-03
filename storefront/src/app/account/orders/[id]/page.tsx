@@ -241,7 +241,7 @@ export default function OrderDetailsPage() {
   if (error || !order) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <p className="text-red-500 mb-4">{error || 'Order not found'}</p>
+        <p className="account-error-copy mb-4">{error || 'Order not found'}</p>
         <Link href="/account" className="underline">
           Back to Account
         </Link>
@@ -275,7 +275,7 @@ export default function OrderDetailsPage() {
       <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
         <Link
           href="/account"
-          className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-900 mb-8 text-sm transition-colors"
+          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-stone-900"
         >
           <ArrowLeft size={16} /> Back to Orders
         </Link>
@@ -283,15 +283,15 @@ export default function OrderDetailsPage() {
         <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
           <div className="p-6 md:p-8 border-b border-stone-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-serif text-stone-900 mb-1">
+              <h1 className="account-detail-title mb-1">
                 Order #{order.display_id}
               </h1>
-              <p className="text-stone-500 text-sm flex items-center gap-2">
+              <p className="account-muted flex items-center gap-2">
                 <Clock size={14} /> Placed on {date}
               </p>
             </div>
             <div
-              className={`px-4 py-1.5 rounded-full border text-xs font-bold uppercase tracking-widest inline-flex items-center gap-2 ${getStatusColor(order.status)}`}
+              className={`account-status-badge inline-flex items-center gap-2 rounded-full border px-4 py-1.5 ${getStatusColor(order.status)}`}
             >
               {order.status === 'completed' && <CheckCircle size={14} />}
               {order.status === 'canceled' && <XCircle size={14} />}
@@ -301,7 +301,7 @@ export default function OrderDetailsPage() {
           </div>
 
           <div className="bg-stone-50 p-6 border-b border-stone-100">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-stone-400">
+            <div className="account-progress-labels flex items-center justify-between">
               <span className="text-stone-900">Ordered</span>
               <span
                 className={
@@ -346,7 +346,7 @@ export default function OrderDetailsPage() {
 
           <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-100">
             <div className="md:col-span-2 p-6 md:p-8">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-stone-900 mb-6 flex items-center gap-2">
+              <h3 className="account-kicker mb-6 flex items-center gap-2">
                 <Package size={16} /> Items ({(order.items || []).length})
               </h3>
               <div className="space-y-6">
@@ -361,16 +361,16 @@ export default function OrderDetailsPage() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="flex items-center justify-center h-full text-stone-300 text-xs">
+                        <div className="account-caption flex h-full items-center justify-center">
                           No Image
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-stone-900 truncate">
+                      <p className="account-name truncate">
                         {item.title}
                       </p>
-                      <p className="text-xs text-stone-500 mt-1">
+                      <p className="account-caption mt-1">
                         Qty: {item.quantity} ×{' '}
                         {new Intl.NumberFormat(undefined, {
                           style: 'currency',
@@ -378,12 +378,12 @@ export default function OrderDetailsPage() {
                         }).format(item.unit_price / 100)}
                       </p>
                       {item.metadata?.variant && (
-                        <p className="text-xs text-stone-400 mt-1 uppercase tracking-wider">
+                        <p className="account-caption mt-1 uppercase">
                           {String(item.metadata.variant)}
                         </p>
                       )}
                     </div>
-                    <p className="font-medium text-stone-900">
+                    <p className="account-name">
                       {new Intl.NumberFormat(undefined, {
                         style: 'currency',
                         currency: order.currency_code?.toUpperCase() || 'INR',
@@ -394,7 +394,7 @@ export default function OrderDetailsPage() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-stone-100 space-y-2">
-                <div className="flex justify-between text-sm text-stone-500">
+                <div className="account-muted flex justify-between">
                   <span>Subtotal</span>
                   <span>
                     {new Intl.NumberFormat(undefined, {
@@ -403,7 +403,7 @@ export default function OrderDetailsPage() {
                     }).format(order.subtotal / 100)}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm text-stone-500">
+                <div className="account-muted flex justify-between">
                   <span>Shipping</span>
                   <span>
                     {order.shipping_total
@@ -414,7 +414,7 @@ export default function OrderDetailsPage() {
                       : 'Free'}
                   </span>
                 </div>
-                <div className="flex justify-between text-lg font-serif text-stone-900 pt-4 border-t border-stone-100 mt-4">
+                <div className="account-total-row mt-4 flex justify-between border-t border-stone-100 pt-4">
                   <span>Total</span>
                   <span>
                     {new Intl.NumberFormat(undefined, {
@@ -428,11 +428,11 @@ export default function OrderDetailsPage() {
 
             <div className="p-6 md:p-8 bg-stone-50/50 space-y-8">
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3 flex items-center gap-2">
+                <h3 className="account-form-label mb-3 flex items-center gap-2">
                   <Truck size={14} /> Shipping Address
                 </h3>
-                <address className="not-italic text-sm text-stone-600 space-y-1">
-                  <p className="font-medium text-stone-900">
+                <address className="account-body space-y-1 not-italic">
+                  <p className="account-name">
                     {order.shipping_address?.first_name}{' '}
                     {order.shipping_address?.last_name}
                   </p>
@@ -449,14 +449,14 @@ export default function OrderDetailsPage() {
               </div>
 
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3">
+                <h3 className="account-form-label mb-3">
                   Payment Status
                 </h3>
-                <div className="text-sm text-stone-600">
+                <div className="account-body">
                   <p className="capitalize mb-1">
                     {order.payment_status?.replace('_', ' ') || 'Unknown'}
                   </p>
-                  <p className="text-xs text-stone-400 font-mono">
+                  <p className="account-mono-caption">
                     {order.payment_intent_id?.slice(-8)}...
                   </p>
                 </div>
@@ -464,12 +464,12 @@ export default function OrderDetailsPage() {
 
               <div className="pt-8 border-t border-stone-200 space-y-3">
                 {reorderError && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-sm">
+                  <div className="account-alert rounded border border-red-200 bg-red-50 px-4 py-2 text-red-700">
                     {reorderError}
                   </div>
                 )}
                 {returnSuccess && (
-                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded text-sm">
+                  <div className="account-alert rounded border border-green-200 bg-green-50 px-4 py-2 text-green-700">
                     {returnSuccess}
                   </div>
                 )}
@@ -478,7 +478,7 @@ export default function OrderDetailsPage() {
                   disabled={
                     reordering || !order.items || order.items.length === 0
                   }
-                  className="w-full bg-white border border-stone-300 text-stone-900 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {reordering ? (
                     <>
@@ -500,12 +500,12 @@ export default function OrderDetailsPage() {
                       setReturnReason('');
                       setReturnItems({});
                     }}
-                    className="w-full bg-white border border-stone-300 text-stone-700 py-3 text-xs font-bold uppercase tracking-widest hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition-colors flex items-center justify-center gap-2"
+                    className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
                   >
                     <RotateCcw size={14} /> Request Return
                   </button>
                 )}
-                <button className="w-full bg-white border border-stone-300 text-stone-900 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-900 hover:text-white transition-colors">
+                <button className="account-secondary-action w-full border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white">
                   Need Help?
                 </button>
               </div>
@@ -518,16 +518,16 @@ export default function OrderDetailsPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg w-full max-w-lg shadow-2xl overflow-auto max-h-[90vh]">
             <div className="p-6 border-b border-stone-100">
-              <h2 className="text-lg font-serif text-stone-900">
+              <h2 className="account-section-title">
                 Request Return
               </h2>
-              <p className="text-xs text-stone-500 mt-1">
+              <p className="account-caption mt-1">
                 Order #{order.display_id}
               </p>
             </div>
             <div className="p-6 space-y-5">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-3">
+                <p className="account-form-label mb-3">
                   Select Items to Return
                 </p>
                 <div className="space-y-2">
@@ -537,15 +537,15 @@ export default function OrderDetailsPage() {
                       className="flex items-center justify-between py-2 border-b border-stone-50"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-stone-900 truncate">
+                        <p className="account-name truncate">
                           {item.title}
                         </p>
-                        <p className="text-xs text-stone-400">
+                        <p className="account-caption">
                           Qty ordered: {item.quantity}
                         </p>
                       </div>
                       <div className="flex items-center gap-2 ml-4">
-                        <label className="text-xs text-stone-500">
+                        <label className="account-caption">
                           Return qty:
                         </label>
                         <select
@@ -556,7 +556,7 @@ export default function OrderDetailsPage() {
                               [item.id]: Number(e.target.value),
                             }))
                           }
-                          className="border border-stone-200 rounded text-sm p-1 w-16"
+                          className="account-input w-16 rounded border border-stone-200 p-1"
                         >
                           {Array.from({ length: item.quantity + 1 }, (_, i) => (
                             <option key={i} value={i}>
@@ -570,7 +570,7 @@ export default function OrderDetailsPage() {
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold uppercase tracking-widest text-stone-500 block mb-2">
+                <label className="account-form-label mb-2 block">
                   Reason for Return
                 </label>
                 <textarea
@@ -578,11 +578,11 @@ export default function OrderDetailsPage() {
                   onChange={(e) => setReturnReason(e.target.value)}
                   rows={3}
                   placeholder="Please describe why you are returning this item(s)..."
-                  className="w-full border border-stone-200 rounded p-3 text-sm focus:outline-none focus:border-stone-900"
+                  className="account-input w-full rounded border border-stone-200 p-3 focus:outline-none focus:border-stone-900"
                 />
               </div>
               {returnError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded text-sm">
+                <div className="account-alert rounded border border-red-200 bg-red-50 p-3 text-red-700">
                   {returnError}
                 </div>
               )}
@@ -590,14 +590,14 @@ export default function OrderDetailsPage() {
             <div className="p-6 border-t border-stone-100 flex gap-3">
               <button
                 onClick={() => setShowReturnModal(false)}
-                className="flex-1 border border-stone-300 text-stone-700 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-50 transition-colors"
+                className="account-secondary-action flex-1 border border-stone-300 py-3 transition-colors hover:bg-stone-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleRequestReturn}
                 disabled={returnLoading}
-                className="flex-1 bg-stone-900 text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors disabled:opacity-50"
+                className="account-primary-action flex-1 bg-stone-900 py-3 transition-colors hover:bg-stone-700 disabled:opacity-50"
               >
                 {returnLoading ? 'Submitting...' : 'Submit Return'}
               </button>

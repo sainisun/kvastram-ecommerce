@@ -203,7 +203,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   ref={inputRef}
                   type="text"
                   placeholder="Search products, collections, and more..."
-                  className="w-full text-xl font-medium outline-none placeholder:text-stone-300"
+                  className="w-full text-display-sm type-medium outline-none placeholder:text-stone-300"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   aria-label="Search query"
@@ -242,12 +242,12 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {recentSearches.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest">
+                        <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider">
                           Recent Searches
                         </h3>
                         <button
                           onClick={clearRecentSearches}
-                          className="text-[10px] text-stone-400 hover:text-red-500 transition-colors uppercase tracking-wider"
+                          className="text-body-xs text-stone-400 hover:text-red-500 transition-colors uppercase tracking-token-wider"
                         >
                           Clear All
                         </button>
@@ -257,7 +257,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           <button
                             key={term}
                             onClick={() => handleSearch(undefined, term)}
-                            className="flex items-center gap-2 px-4 py-2 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full text-sm transition-colors border border-stone-200 hover:border-stone-900 text-stone-700"
+                            className="flex items-center gap-2 px-4 py-2 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full text-body-sm transition-colors border border-stone-200 hover:border-stone-900 text-stone-700"
                           >
                             <Search size={12} className="opacity-50" />
                             {term}
@@ -269,7 +269,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
                   {/* Trending Now */}
                   <div>
-                    <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider mb-4 flex items-center gap-2">
                       <Sparkles size={12} /> Trending Now
                     </h3>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -309,10 +309,10 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           }}
                           className="flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-lg transition-all duration-200 group border border-stone-100 hover:border-stone-900"
                         >
-                          <span className="text-2xl group-hover:scale-110 transition-transform">
+                          <span className="text-display-md group-hover:scale-110 transition-transform">
                             {emoji}
                           </span>
-                          <span className="text-xs font-medium">{label}</span>
+                          <span className="text-body-xs type-medium">{label}</span>
                         </button>
                       ))}
                     </div>
@@ -320,7 +320,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
                   {/* Popular Searches */}
                   <div>
-                    <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+                    <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider mb-3">
                       Popular Searches
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -335,7 +335,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         <button
                           key={term}
                           onClick={() => setQuery(term)}
-                          className="px-4 py-2 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full text-sm transition-colors border border-stone-200 hover:border-stone-900 text-stone-600"
+                          className="px-4 py-2 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full text-body-sm transition-colors border border-stone-200 hover:border-stone-900 text-stone-600"
                         >
                           {term}
                         </button>
@@ -356,7 +356,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {/* Suggestions List */}
                   {suggestions.length > 0 && (
                     <div className="mb-8">
-                      <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+                      <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider mb-3">
                         Suggestions
                       </h3>
                       <ul className="space-y-2">
@@ -384,7 +384,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {/* Product Grid Preview */}
                   {results.length > 0 && (
                     <div>
-                      <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-6">
+                      <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider mb-6">
                         Products
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -410,11 +410,11 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                                   />
                                 )}
                               </div>
-                              <h4 className="text-sm font-medium text-stone-900 group-hover:underline decoration-1 underline-offset-4 line-clamp-1">
+                              <h4 className="text-body-sm type-medium text-stone-900 group-hover:underline decoration-1 underline-offset-4 line-clamp-1">
                                 {product.title}
                               </h4>
                               {price !== undefined && (
-                                <p className="text-sm text-stone-500 mt-1">
+                                <p className="text-body-sm text-stone-500 mt-1">
                                   from {formatPrice(price)}
                                 </p>
                               )}
@@ -426,7 +426,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                       <div className="mt-8 text-center border-t border-stone-100 pt-6">
                         <button
                           onClick={handleSearch}
-                          className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:underline"
+                          className="inline-flex items-center gap-2 text-body-sm type-bold uppercase tracking-token-wider hover:underline"
                         >
                           View All Results <ArrowRight size={16} />
                         </button>
@@ -438,16 +438,16 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             </div>
 
             {/* Footer */}
-            <div className="bg-stone-50 px-8 py-3.5 text-xs text-stone-400 flex justify-between items-center border-t border-stone-100">
+            <div className="bg-stone-50 px-8 py-3.5 text-body-xs text-stone-400 flex justify-between items-center border-t border-stone-100">
               <span>
                 Press{' '}
-                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-[10px] font-mono">
+                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-body-xs font-mono">
                   Enter
                 </kbd>{' '}
                 to search
               </span>
               <span className="hidden md:flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-[10px] font-mono">
+                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-body-xs font-mono">
                   Esc
                 </kbd>{' '}
                 to close
@@ -459,3 +459,4 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     </AnimatePresence>
   );
 }
+

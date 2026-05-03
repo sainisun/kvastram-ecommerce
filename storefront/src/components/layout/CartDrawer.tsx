@@ -103,19 +103,19 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--soft)]">
           <div className="flex items-center gap-3">
-            <ShoppingBag size={18} className="text-[var(--ink)]" />
-            <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-[var(--ink)]">
+            <ShoppingBag size={18} className="color-ink" />
+            <h2 className="text-body-sm type-bold uppercase tracking-token-wider color-ink">
               Your Bag
             </h2>
             {totalItems > 0 && (
-              <span className="w-5 h-5 bg-[var(--ink)] text-white text-[11px] font-bold rounded-full flex items-center justify-center">
+              <span className="w-5 h-5 bg-[var(--ink)] text-white text-body-xs type-bold rounded-full flex items-center justify-center">
                 {totalItems}
               </span>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-[var(--muted)] hover:text-[var(--ink)] transition-colors rounded-full hover:bg-[var(--soft)]"
+            className="p-2 color-muted hover:color-ink transition-colors rounded-full hover:bg-[var(--soft)]"
             aria-label="Close cart"
           >
             <X size={20} />
@@ -126,18 +126,18 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         {items.length > 0 && (
           <div className="px-6 py-3 bg-[var(--cream)] border-b border-[var(--soft)]">
             {hasFreeShipping ? (
-              <div className="flex items-center gap-2 text-xs text-green-700 font-medium">
+              <div className="flex items-center gap-2 text-body-xs text-green-700 type-medium">
                 <Truck size={14} />
                 <span>You&apos;ve unlocked FREE shipping! ✦</span>
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between text-[11px] text-[var(--muted)] mb-2">
+                <div className="flex items-center justify-between text-body-xs color-muted mb-2">
                   <span className="flex items-center gap-1.5">
                     <Truck size={12} />
                     {formatPrice(amountToFreeShipping)} away from free shipping
                   </span>
-                  <span className="font-medium text-[var(--ink)]">
+                  <span className="type-medium color-ink">
                     {Math.round(shippingProgress)}%
                   </span>
                 </div>
@@ -164,18 +164,18 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             /* Empty State */
             <div className="flex flex-col items-center justify-center h-full px-8 text-center">
               <div className="w-20 h-20 rounded-full bg-[var(--cream)] flex items-center justify-center mb-5">
-                <ShoppingBag className="w-8 h-8 text-[var(--muted)]" />
+                <ShoppingBag className="w-8 h-8 color-muted" />
               </div>
-              <p className="text-base font-serif text-[var(--ink)] mb-2">
+              <p className="text-body-md font-serif color-ink mb-2">
                 Your bag is empty
               </p>
-              <p className="text-xs text-[var(--muted)] mb-6 leading-relaxed">
+              <p className="text-body-xs color-muted mb-6 leading-token-relaxed">
                 Discover our curated collection of handcrafted pieces
               </p>
               <Link
                 href="/products"
                 onClick={onClose}
-                className="inline-flex items-center gap-2 bg-[var(--ink)] text-white px-8 py-3 text-[12px] font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-opacity"
+                className="inline-flex items-center gap-2 bg-[var(--ink)] text-white px-8 py-3 text-body-xs type-bold uppercase tracking-token-wider hover:opacity-90 transition-opacity"
               >
                 Explore Collection <ArrowRight size={12} />
               </Link>
@@ -203,7 +203,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         sizes="72px"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[var(--muted)]">
+                      <div className="w-full h-full flex items-center justify-center color-muted">
                         <ShoppingBag size={20} />
                       </div>
                     )}
@@ -215,12 +215,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       <Link
                         href={`/products/${item.handle || item.id}`}
                         onClick={onClose}
-                        className="text-sm font-medium text-[var(--ink)] hover:text-[var(--muted)] transition-colors line-clamp-2 block leading-tight"
+                        className="text-body-sm type-medium color-ink hover:color-muted transition-colors line-clamp-2 block leading-token-tight"
                       >
                         {item.title}
                       </Link>
                       {item.material && (
-                        <p className="text-[11px] text-[var(--muted)] mt-0.5 uppercase tracking-wider">
+                        <p className="text-body-xs color-muted mt-0.5 uppercase tracking-token-wider">
                           {item.material}
                         </p>
                       )}
@@ -233,19 +233,19 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           onClick={() =>
                             updateQuantity(item.variantId, item.quantity - 1)
                           }
-                          className="w-7 h-7 flex items-center justify-center text-[var(--muted)] hover:text-[var(--ink)] transition-colors"
+                          className="w-7 h-7 flex items-center justify-center color-muted hover:color-ink transition-colors"
                           aria-label="Decrease quantity"
                         >
                           <Minus size={12} />
                         </button>
-                        <span className="w-7 text-center text-xs font-medium text-[var(--ink)]">
+                        <span className="w-7 text-center text-body-xs type-medium color-ink">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() =>
                             updateQuantity(item.variantId, item.quantity + 1)
                           }
-                          className="w-7 h-7 flex items-center justify-center text-[var(--muted)] hover:text-[var(--ink)] transition-colors"
+                          className="w-7 h-7 flex items-center justify-center color-muted hover:color-ink transition-colors"
                           aria-label="Increase quantity"
                         >
                           <Plus size={12} />
@@ -253,7 +253,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       </div>
 
                       {/* Price */}
-                      <span className="text-sm font-medium text-[var(--ink)]">
+                      <span className="text-body-sm type-medium color-ink">
                         {formatPrice(item.price * item.quantity)}
                       </span>
                     </div>
@@ -262,7 +262,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   {/* Remove Button */}
                   <button
                     onClick={() => removeItem(item.variantId)}
-                    className="self-start p-1 text-[var(--muted)] hover:text-red-500 transition-colors opacity-0 group-hover/item:opacity-100"
+                    className="self-start p-1 color-muted hover:text-red-500 transition-colors opacity-0 group-hover/item:opacity-100"
                     aria-label="Remove item"
                   >
                     <Trash2 size={14} />
@@ -279,20 +279,20 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             {/* Subtotal */}
             <div className="px-6 py-4 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[var(--muted)] uppercase tracking-wider">
+                <span className="text-body-xs color-muted uppercase tracking-token-wider">
                   Subtotal
                 </span>
-                <span className="text-base font-medium text-[var(--ink)]">
+                <span className="text-body-md type-medium color-ink">
                   {formatPrice(cartTotal)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[var(--muted)] uppercase tracking-wider">
+                <span className="text-body-xs color-muted uppercase tracking-token-wider">
                   Shipping
                 </span>
-                <span className="text-xs text-[var(--muted)]">
+                <span className="text-body-xs color-muted">
                   {hasFreeShipping ? (
-                    <span className="text-green-600 font-medium">FREE ✦</span>
+                    <span className="text-green-600 type-medium">FREE ✦</span>
                   ) : (
                     'Calculated at checkout'
                   )}
@@ -305,21 +305,21 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <Link
                 href="/checkout"
                 onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full bg-[var(--ink)] text-white py-3.5 text-[12px] font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-opacity"
+                className="flex items-center justify-center gap-2 w-full bg-[var(--ink)] text-white py-3.5 text-body-xs type-bold uppercase tracking-token-wider hover:opacity-90 transition-opacity"
               >
                 Checkout — {formatPrice(cartTotal)}
               </Link>
               <Link
                 href="/cart"
                 onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full border border-[var(--line)] text-[var(--ink)] py-3 text-[12px] font-bold uppercase tracking-[0.15em] hover:bg-[var(--cream)] transition-colors"
+                className="flex items-center justify-center gap-2 w-full border border-[var(--line)] color-ink py-3 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--cream)] transition-colors"
               >
                 View Full Cart
               </Link>
             </div>
 
             {/* Secure Checkout Badge */}
-            <div className="flex items-center justify-center gap-2 pb-4 text-[11px] text-[var(--muted)]">
+            <div className="flex items-center justify-center gap-2 pb-4 text-body-xs color-muted">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
@@ -335,3 +335,4 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     </>
   );
 }
+

@@ -5,10 +5,10 @@ export default function ShippingPage() {
     <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
       <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
         <div className="text-center mb-16 space-y-4">
-          <span className="text-xs font-bold tracking-[0.2em] text-stone-500 uppercase">
+          <span className="text-body-xs type-bold tracking-token-wider text-stone-500 uppercase">
             Global Fulfillment
           </span>
-          <h1 className="text-4xl font-serif text-stone-900">
+          <h1 className="text-display-xl font-serif text-stone-900">
             Shipping & Delivery
           </h1>
         </div>
@@ -16,10 +16,10 @@ export default function ShippingPage() {
         <div className="mb-12 grid gap-8 md:mb-16 md:grid-cols-2 lg:gap-16">
           <div className="bg-stone-50 p-8 space-y-4">
             <Globe className="text-stone-900" size={32} />
-            <h3 className="font-bold text-lg text-stone-900">
+            <h3 className="type-bold text-body-xl text-stone-900">
               International Shipping
             </h3>
-            <p className="text-stone-600 font-light text-sm leading-relaxed">
+            <p className="text-stone-600 type-light text-body-sm leading-token-relaxed">
               We ship to over 150 countries via DHL Express and FedEx
               International Priority. All shipments are fully insured and
               trackable.
@@ -27,8 +27,8 @@ export default function ShippingPage() {
           </div>
           <div className="bg-stone-50 p-8 space-y-4">
             <Clock className="text-stone-900" size={32} />
-            <h3 className="font-bold text-lg text-stone-900">Delivery Times</h3>
-            <p className="text-stone-600 font-light text-sm leading-relaxed">
+            <h3 className="type-bold text-body-xl text-stone-900">Delivery Times</h3>
+            <p className="text-stone-600 type-light text-body-sm leading-token-relaxed">
               <strong>North America:</strong> 3-5 business days
               <br />
               <strong>Europe:</strong> 3-5 business days
@@ -67,3 +67,4 @@ export default function ShippingPage() {
     </div>
   );
 }
+

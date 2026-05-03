@@ -70,14 +70,14 @@ export default function FilterSidebar({
   return (
     <div className={`space-y-7 ${className}`}>
       <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
-        <h3 className="font-heading text-[26px] font-bold leading-none text-[var(--ink)]">
+        <h3 className="filter-sidebar-title">
           Filters
         </h3>
         {hasActiveFilters ? (
           <button
             type="button"
             onClick={() => router.push('/products')}
-            className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--muted)] underline underline-offset-4 transition hover:text-[var(--ink)]"
+            className="filter-clear-button underline underline-offset-4 transition"
           >
             Clear All
           </button>
@@ -105,7 +105,7 @@ export default function FilterSidebar({
                     <button
                       type="button"
                       onClick={() => toggleCategory(cat.id)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--muted)] transition hover:bg-[var(--soft)] hover:text-[var(--ink)]"
+                      className="filter-expand-button flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-[var(--soft)]"
                       aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
                     >
                       {isExpanded ? (
@@ -173,10 +173,10 @@ export default function FilterSidebar({
                   onClick={() =>
                     updateFilter('tag_id', isActive ? null : tag.id)
                   }
-                  className={`rounded-full border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em] transition ${
+                  className={`filter-tag-button rounded-full border px-3 py-2 transition ${
                     isActive
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
-                      : 'border-[var(--line)] bg-white text-[var(--ink)] hover:border-[var(--ink)]'
+                      : 'filter-tag-button-inactive border-[var(--line)] bg-white hover:border-[var(--ink)]'
                   }`}
                 >
                   {tag.name}
@@ -199,7 +199,7 @@ function FilterGroup({
 }) {
   return (
     <section className="space-y-3">
-      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">
+      <p className="filter-group-label">
         {label}
       </p>
       <div className="space-y-1">{children}</div>
@@ -222,12 +222,12 @@ function FilterButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition ${
-        small ? 'text-[13px]' : 'text-[14px]'
+      className={`filter-option flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition ${
+        small ? 'filter-option-small' : 'filter-option-regular'
       } ${
         active
-          ? 'bg-[var(--ink)] font-bold text-white'
-          : 'text-[var(--ink)] hover:bg-[var(--soft)]'
+          ? 'filter-option-active bg-[var(--ink)] text-white'
+          : 'filter-option-inactive hover:bg-[var(--soft)]'
       }`}
     >
       <span className="line-clamp-1">{children}</span>

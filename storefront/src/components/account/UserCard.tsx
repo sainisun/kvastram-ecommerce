@@ -18,7 +18,7 @@ export function UserCard({ firstName, lastName, email }: UserCardProps) {
       <div className="flex items-center gap-4">
         <div className="w-14 h-14 bg-stone-100 rounded-full flex items-center justify-center shrink-0">
           {initials ? (
-            <span className="text-lg font-medium text-stone-600">
+            <span className="text-body-xl type-medium text-stone-600">
               {initials}
             </span>
           ) : (
@@ -26,10 +26,10 @@ export function UserCard({ firstName, lastName, email }: UserCardProps) {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-stone-900 truncate">
+          <p className="type-medium text-stone-900 truncate">
             {firstName} {lastName}
           </p>
-          <p className="text-sm text-stone-500 truncate">{email}</p>
+          <p className="text-body-sm text-stone-500 truncate">{email}</p>
         </div>
         <Link
           href="/account/profile"
@@ -55,3 +55,4 @@ export function UserCard({ firstName, lastName, email }: UserCardProps) {
     </div>
   );
 }
+

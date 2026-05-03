@@ -59,7 +59,7 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
           <p style={{ color: 'rgba(255,255,255,.78)' }}>{subtitle}</p>
 
           {status === 'success' ? (
-            <p className="mt-4 text-sm text-white/90" role="status">
+            <p className="mt-4 text-body-sm text-white/90" role="status">
               {message}
             </p>
           ) : (
@@ -93,7 +93,7 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
           )}
 
           {status === 'error' ? (
-            <p className="mt-3 text-sm text-white/80" role="alert">
+            <p className="mt-3 text-body-sm text-white/80" role="alert">
               {message}
             </p>
           ) : null}
@@ -102,3 +102,4 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
     </section>
   );
 }
+

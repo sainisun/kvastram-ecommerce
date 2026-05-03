@@ -201,7 +201,7 @@ export default async function CollectionPage({
       <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
-          className="font-body mb-8 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
+          className="listing-breadcrumb mb-8 flex items-center gap-2"
         >
           <Link href="/" className="transition-colors hover:text-stone-900">
             Home
@@ -219,25 +219,25 @@ export default async function CollectionPage({
 
         <section className="grid gap-8 border-b border-stone-100 pb-12 md:grid-cols-[1.5fr,1fr] md:gap-12 lg:gap-16">
           <div>
-            <h2 className="font-heading text-[clamp(32px,4vw,54px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
+            <h2 className="collection-detail-title">
               {landing.kind === 'category'
                 ? `New Arrivals in ${landing.title}`
                 : `Explore the ${landing.title} Collection`}
             </h2>
-            <p className="font-body mt-4 max-w-3xl text-[15px] font-[300] leading-[1.8] text-stone-600 md:text-lg">
+            <p className="collection-detail-copy mt-4 max-w-3xl">
               {landing.description}
             </p>
           </div>
 
           <div className="space-y-6">
             <div>
-              <h2 className="font-body text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
+              <h2 className="collection-sidebar-heading">
                 Popular Links
               </h2>
               <div className="mt-4 flex flex-col gap-3">
                 <Link
                   href="/"
-                  className="font-body text-[15px] font-medium text-stone-900 transition-colors hover:text-amber-700"
+                  className="collection-sidebar-link transition-colors hover:text-amber-700"
                 >
                   Shop Handcrafted Ethnic Wear
                 </Link>
@@ -245,7 +245,7 @@ export default async function CollectionPage({
                   <Link
                     key={product.id}
                     href={`/products/${product.handle}`}
-                    className="font-body text-[15px] font-[300] text-stone-600 transition-colors hover:text-stone-900"
+                    className="collection-sidebar-subtle-link transition-colors hover:text-stone-900"
                   >
                     Shop {product.title}
                   </Link>
@@ -255,7 +255,7 @@ export default async function CollectionPage({
 
             {landing.children.length > 0 && (
               <div>
-                <h2 className="font-body text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
+                <h2 className="collection-sidebar-heading">
                   Subcategories
                 </h2>
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -264,7 +264,7 @@ export default async function CollectionPage({
                       <Link
                         key={child.id}
                         href={`/collections/${child.slug}`}
-                        className="font-body border border-stone-200 px-4 py-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+                        className="collection-subcategory-link border border-stone-200 px-4 py-2 transition-colors hover:border-stone-900 hover:text-stone-900"
                       >
                         Shop {child.name}
                       </Link>
@@ -278,7 +278,7 @@ export default async function CollectionPage({
 
         {featuredProducts.length > 0 && (
           <section className="py-12 md:py-16 lg:py-24">
-            <h2 className="font-heading text-[clamp(28px,3.4vw,44px)] font-normal leading-[1.02] tracking-[-0.03em] text-stone-900">
+            <h2 className="collection-section-title">
               Bestselling {landing.title}
             </h2>
             <div className="mt-8 grid gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
@@ -288,12 +288,12 @@ export default async function CollectionPage({
                   href={`/products/${product.handle}`}
                   className="border border-stone-200 p-5 transition-colors hover:border-stone-900"
                 >
-                  <p className="font-body text-[12px] font-medium uppercase tracking-[0.08em] text-stone-500">
+                  <p className="collection-card-kicker">
                     {landing.kind === 'category'
                       ? `Shop ${landing.title}`
                       : 'Featured Product'}
                   </p>
-                  <p className="font-body mt-2 text-[15px] font-normal leading-[1.55] text-stone-900">
+                  <p className="collection-card-product-title mt-2">
                     {product.title}
                   </p>
                 </Link>
@@ -310,7 +310,7 @@ export default async function CollectionPage({
             />
           ) : (
             <div className="py-12 text-center md:py-16 lg:py-24">
-              <p className="text-lg text-stone-500">
+              <p className="collection-empty-copy">
                 No products found in this section right now. Check back soon.
               </p>
             </div>

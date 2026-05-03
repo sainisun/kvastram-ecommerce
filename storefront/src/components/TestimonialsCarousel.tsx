@@ -80,7 +80,7 @@ export default function TestimonialsCarousel({
         </div>
 
         {/* Quote */}
-        <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif italic leading-tight mb-12 max-w-4xl mx-auto">
+        <h2 className="text-display-md md:text-display-xl lg:text-display-xl font-serif italic leading-token-tight mb-12 max-w-4xl mx-auto">
           &ldquo;{currentTestimonial.content}&rdquo;
         </h2>
 
@@ -94,16 +94,16 @@ export default function TestimonialsCarousel({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-stone-300 font-serif text-xl italic">
+              <span className="text-stone-300 font-serif text-display-sm italic">
                 {initials}
               </span>
             )}
           </div>
-          <p className="font-bold text-sm tracking-widest uppercase">
+          <p className="type-bold text-body-sm tracking-token-wider uppercase">
             {currentTestimonial.name}
           </p>
           {currentTestimonial.location && (
-            <p className="text-stone-400 text-sm font-serif italic">
+            <p className="text-stone-400 text-body-sm font-serif italic">
               {currentTestimonial.location}
             </p>
           )}
@@ -130,3 +130,4 @@ export default function TestimonialsCarousel({
     </div>
   );
 }
+

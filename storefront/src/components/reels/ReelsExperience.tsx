@@ -149,13 +149,13 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
       {/* Sticky header */}
       <div className="sticky top-0 z-40 border-b border-[var(--line)] bg-white/95 backdrop-blur-md">
         <div className="kv-container flex items-center justify-between gap-3 py-3">
-          <span className="text-[13px] font-semibold text-[var(--ink)]">Watch &amp; Buy Reels</span>
+          <span className="text-body-sm type-semibold color-ink">Watch &amp; Buy Reels</span>
           <div className="flex items-center gap-1 rounded-lg border border-[var(--line)] p-1">
             <button
               type="button"
               onClick={() => setGrid(2)}
               aria-label="2-column grid"
-              className={`rounded-md p-1.5 transition-colors ${gridCols === 2 ? 'bg-[var(--ink)] text-white' : 'text-[var(--muted)] hover:text-[var(--ink)]'}`}
+              className={`rounded-md p-1.5 transition-colors ${gridCols === 2 ? 'bg-[var(--ink)] text-white' : 'color-muted hover:color-ink'}`}
             >
               <Grid2X2 size={16} />
             </button>
@@ -163,7 +163,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
               type="button"
               onClick={() => setGrid(3)}
               aria-label="3-column grid"
-              className={`rounded-md p-1.5 transition-colors ${gridCols === 3 ? 'bg-[var(--ink)] text-white' : 'text-[var(--muted)] hover:text-[var(--ink)]'}`}
+              className={`rounded-md p-1.5 transition-colors ${gridCols === 3 ? 'bg-[var(--ink)] text-white' : 'color-muted hover:color-ink'}`}
             >
               <Grid3X3 size={16} />
             </button>
@@ -188,7 +188,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
         ) : visibleReels.length === 0 ? (
           <div className="rounded-lg border border-[var(--line)] bg-white px-6 py-14 text-center">
             <p className="kv-tag">No Reels</p>
-            <h2 className="mt-2 kv-title text-[28px]">Nothing here yet</h2>
+            <h2 className="mt-2 kv-title text-display-md">Nothing here yet</h2>
             <Link href="/products" className="kv-btn mt-5 inline-flex">Browse Products</Link>
           </div>
         ) : (
@@ -221,19 +221,19 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                     </div>
                     {/* Product name overlay */}
                     <div className="relative z-[3] px-1">
-                      <div className="reel-title line-clamp-2 leading-tight text-white drop-shadow">
+                      <div className="reel-title line-clamp-2 leading-token-tight text-white drop-shadow">
                         {reel.product_name}
                       </div>
                     </div>
                   </div>
                   {gridCols === 2 && (
                     <div className="reel-info">
-                      <div className="reel-title line-clamp-1 text-[var(--ink)]">
+                      <div className="reel-title line-clamp-1 color-ink">
                         {reel.product_name}
                       </div>
                       <div className="mt-1 flex items-center justify-between gap-1">
-                        <span className="text-[12px] font-semibold text-[var(--sienna)]">{formatPrice(reel.price)}</span>
-                        <span className="inline-flex items-center gap-0.5 text-[10px] text-[var(--muted)]">
+                        <span className="text-body-xs type-semibold color-sienna">{formatPrice(reel.price)}</span>
+                        <span className="inline-flex items-center gap-0.5 text-body-xs color-muted">
                           <Eye size={10} />
                           {reel.view_count || 0}
                         </span>
@@ -488,10 +488,10 @@ function ReelPlayerModal({
             <ArrowLeft size={18} />
           </button>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">
+            <p className="text-body-xs type-bold uppercase tracking-token-wider text-white/50">
               {currentIndex + 1} / {localReels.length}
             </p>
-            <p className="mt-0.5 line-clamp-1 text-[13px] font-semibold text-white">
+            <p className="mt-0.5 line-clamp-1 text-body-sm type-semibold text-white">
               {current.product_name}
             </p>
           </div>
@@ -517,14 +517,14 @@ function ReelPlayerModal({
               />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-[12px] font-semibold leading-snug text-white">
+              <p className="line-clamp-2 text-body-xs type-semibold leading-token-snug text-white">
                 {current.product_name}
               </p>
-              <p className="mt-0.5 text-[13px] font-bold text-white/85">
+              <p className="mt-0.5 text-body-sm type-bold text-white/85">
                 {formatPrice(current.price)}
               </p>
             </div>
-            <span className="shrink-0 rounded-full bg-[var(--sienna)] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-white shadow-lg">
+            <span className="shrink-0 rounded-full bg-[var(--sienna)] px-3 py-2 text-body-xs type-bold uppercase tracking-token-wider text-white shadow-lg">
               Shop
             </span>
           </Link>
@@ -548,7 +548,7 @@ function ReelPlayerModal({
                 color={liked ? '#ef4444' : 'white'}
                 className="drop-shadow transition-transform active:scale-125"
               />
-              <span className="text-[10px] font-semibold text-white drop-shadow">
+              <span className="text-body-xs type-semibold text-white drop-shadow">
                 {likeCount > 0 ? likeCount : ''}
               </span>
             </button>
@@ -556,7 +556,7 @@ function ReelPlayerModal({
             {/* Share */}
             <button type="button" onClick={handleShare} className="flex flex-col items-center gap-0.5">
               <Share2 size={26} className="text-white drop-shadow" />
-              <span className="text-[10px] font-semibold text-white drop-shadow">Share</span>
+              <span className="text-body-xs type-semibold text-white drop-shadow">Share</span>
             </button>
 
             {/* Save */}
@@ -570,7 +570,7 @@ function ReelPlayerModal({
                 fill={saved ? 'white' : 'transparent'}
                 className="text-white drop-shadow transition-transform active:scale-125"
               />
-              <span className="text-[10px] font-semibold text-white drop-shadow">
+              <span className="text-body-xs type-semibold text-white drop-shadow">
                 {saved ? 'Saved' : 'Save'}
               </span>
             </button>
@@ -578,7 +578,7 @@ function ReelPlayerModal({
             {/* Views */}
             <div className="flex flex-col items-center gap-0.5">
               <Eye size={24} className="text-white/75 drop-shadow" />
-              <span className="text-[10px] font-semibold text-white/75 drop-shadow">
+              <span className="text-body-xs type-semibold text-white/75 drop-shadow">
                 {current.view_count || 0}
               </span>
             </div>
@@ -588,7 +588,7 @@ function ReelPlayerModal({
         {/* Swipe hint on first reel */}
         {localReels.length > 1 && currentIndex === 0 && (
           <div className="pointer-events-none absolute inset-x-0 bottom-44 z-10 flex justify-center lg:hidden">
-            <span className="rounded-full bg-black/40 px-4 py-1.5 text-[11px] text-white/70 backdrop-blur-sm">
+            <span className="rounded-full bg-black/40 px-4 py-1.5 text-body-xs text-white/70 backdrop-blur-sm">
               Swipe up for next ↑
             </span>
           </div>
@@ -597,3 +597,4 @@ function ReelPlayerModal({
     </div>
   );
 }
+

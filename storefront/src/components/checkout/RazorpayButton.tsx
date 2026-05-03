@@ -201,10 +201,11 @@ export default function RazorpayButton({
       type="button"
       onClick={handlePay}
       disabled={isProcessing || !scriptLoaded}
-      className="w-full bg-stone-900 text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+      className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
     >
       <CreditCard size={16} />
       {isProcessing ? 'Processing Payment...' : 'Pay with Razorpay'}
     </button>
   );
 }
+

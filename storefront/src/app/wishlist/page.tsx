@@ -40,7 +40,7 @@ export default function WishlistPage() {
         <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
           <div className="text-center">
             <Heart size={64} className="mx-auto text-stone-200 mb-6" />
-            <h1 className="text-3xl font-serif text-stone-900 mb-4">
+            <h1 className="text-display-lg font-serif text-stone-900 mb-4">
               Your Wishlist is Empty
             </h1>
             <p className="text-stone-500 mb-8 max-w-md mx-auto">
@@ -48,7 +48,7 @@ export default function WishlistPage() {
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-stone-900 text-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+              className="inline-flex items-center gap-2 bg-stone-900 text-white px-8 py-3 text-body-xs type-bold uppercase tracking-token-wider hover:bg-stone-800 transition-colors"
             >
               Start Shopping
               <ArrowRight size={16} />
@@ -64,7 +64,7 @@ export default function WishlistPage() {
       <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex items-center justify-between mb-12">
           <div>
-            <h1 className="text-3xl font-serif text-stone-900 mb-2">
+            <h1 className="text-display-lg font-serif text-stone-900 mb-2">
               My Wishlist
             </h1>
             <p className="text-stone-500">
@@ -73,7 +73,7 @@ export default function WishlistPage() {
           </div>
           <button
             onClick={clearWishlist}
-            className="text-stone-500 hover:text-red-500 text-sm transition-colors"
+            className="text-stone-500 hover:text-red-500 text-body-sm transition-colors"
           >
             Clear All
           </button>
@@ -114,12 +114,12 @@ export default function WishlistPage() {
                     {item.title}
                   </h3>
                 </Link>
-                <p className="text-sm font-medium text-stone-900">
+                <p className="text-body-sm type-medium text-stone-900">
                   {formatPrice(item.price)}
                 </p>
                 <button
                   onClick={() => handleAddToCart(item)}
-                  className="w-full flex items-center justify-center gap-2 bg-stone-900 text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 bg-stone-900 text-white py-3 text-body-xs type-bold uppercase tracking-token-wider hover:bg-stone-800 transition-colors"
                 >
                   <ShoppingBag size={14} />
                   Add to Cart
@@ -132,3 +132,4 @@ export default function WishlistPage() {
     </div>
   );
 }
+

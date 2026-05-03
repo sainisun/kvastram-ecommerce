@@ -56,12 +56,12 @@ export default function CategoryBannerCarousel({ banners }: Props) {
                   <div className="absolute inset-x-0 bottom-0 flex justify-center px-5 pb-8 pt-20 text-center">
                     <div className="max-w-[18rem] text-white">
                       {banner.headline ? (
-                        <h2 className="font-heading text-[30px] font-semibold uppercase leading-[1.05] tracking-[0.02em] text-white">
+                        <h2 className="category-banner-title">
                           {banner.headline}
                         </h2>
                       ) : null}
                       {banner.button_label ? (
-                        <span className="font-body mt-4 inline-flex items-center rounded-full bg-white px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-stone-900">
+                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full bg-white px-5 py-2.5">
                           {banner.button_label}
                         </span>
                       ) : null}

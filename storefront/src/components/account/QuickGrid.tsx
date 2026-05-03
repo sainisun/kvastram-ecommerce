@@ -54,12 +54,12 @@ export function QuickGrid() {
               <div className="relative">
                 <Icon size={22} strokeWidth={1.5} className="text-stone-600" />
                 {item.count !== null && (
-                  <span className="absolute -top-2 -right-2 w-4 h-4 bg-stone-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 w-4 h-4 bg-stone-900 text-white text-body-xs type-bold rounded-full flex items-center justify-center">
                     {item.count}
                   </span>
                 )}
               </div>
-              <span className="text-xs font-medium text-stone-700 mt-2">
+              <span className="text-body-xs type-medium text-stone-700 mt-2">
                 {item.label}
               </span>
             </Link>
@@ -69,3 +69,4 @@ export function QuickGrid() {
     </div>
   );
 }
+

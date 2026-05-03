@@ -241,7 +241,7 @@ export default function ProductGallery({
                 )}
 
                 {item.type === 'video' && (
-                  <div className="absolute left-4 top-4 flex items-center gap-2 rounded-[var(--radius-sm)] bg-black/45 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                  <div className="media-badge absolute left-4 top-4 flex items-center gap-2 rounded-[var(--radius-sm)] bg-black/45 px-3 py-1.5">
                     <Play size={12} fill="currentColor" />
                     Reel
                   </div>
@@ -342,7 +342,7 @@ export default function ProductGallery({
                 >
                   {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                 </button>
-                <div className="absolute left-5 top-5 flex items-center gap-2 rounded-[var(--radius-sm)] bg-black/45 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                <div className="media-badge absolute left-5 top-5 flex items-center gap-2 rounded-[var(--radius-sm)] bg-black/45 px-3 py-1.5">
                   <Play size={12} fill="currentColor" />
                   Reel
                 </div>

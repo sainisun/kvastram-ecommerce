@@ -68,19 +68,19 @@ export default function ProfilePage() {
       <div className="mx-auto max-w-2xl px-6 md:px-12 lg:px-20">
         <Link
           href="/account"
-          className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-900 mb-8 text-sm transition-colors"
+          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-stone-900"
         >
           <ArrowLeft size={16} /> Back to Account
         </Link>
 
         <div className="bg-white p-8 border border-stone-200 shadow-sm">
-          <h1 className="text-2xl font-serif text-stone-900 mb-6">
+          <h1 className="account-detail-title mb-6">
             Edit Profile
           </h1>
 
           {message && (
             <div
-              className={`p-4 mb-6 text-sm rounded-sm ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}
+              className={`account-alert mb-6 rounded-sm p-4 ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}
             >
               {message.text}
             </div>
@@ -89,7 +89,7 @@ export default function ProfilePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+                <label className="account-form-label mb-2 block">
                   First Name
                 </label>
                 <input
@@ -98,11 +98,11 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     setFormData({ ...formData, first_name: e.target.value })
                   }
-                  className="w-full border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-900"
+                  className="account-input w-full border border-stone-200 p-3 focus:outline-none focus:border-stone-900"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+                <label className="account-form-label mb-2 block">
                   Last Name
                 </label>
                 <input
@@ -111,28 +111,28 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     setFormData({ ...formData, last_name: e.target.value })
                   }
-                  className="w-full border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-900"
+                  className="account-input w-full border border-stone-200 p-3 focus:outline-none focus:border-stone-900"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+              <label className="account-form-label mb-2 block">
                 Email Address
               </label>
               <input
                 type="email"
                 value={formData.email}
                 disabled
-                className="w-full border border-stone-100 bg-stone-50 p-3 text-sm text-stone-500 cursor-not-allowed"
+                className="account-input w-full cursor-not-allowed border border-stone-100 bg-stone-50 p-3 text-stone-500"
               />
-              <p className="text-[10px] text-stone-400 mt-1">
+              <p className="account-caption mt-1">
                 Email cannot be changed directly.
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest text-stone-500 mb-2">
+              <label className="account-form-label mb-2 block">
                 Phone Number
               </label>
               <input
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                 onChange={(e) =>
                   setFormData({ ...formData, phone: e.target.value })
                 }
-                className="w-full border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-900"
+                className="account-input w-full border border-stone-200 p-3 focus:outline-none focus:border-stone-900"
                 placeholder="+1 (555) 000-0000"
               />
             </div>
@@ -150,7 +150,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center justify-center gap-2 w-full bg-stone-900 text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors disabled:opacity-70"
+                className="account-primary-action flex w-full items-center justify-center gap-2 bg-stone-900 py-3.5 transition-colors hover:bg-stone-800 disabled:opacity-70"
               >
                 {saving ? (
                   <Loader2 className="animate-spin" size={16} />

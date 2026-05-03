@@ -72,7 +72,7 @@ function PayPalButtonInner({
 
   if (isPending || isProcessing) {
     return (
-      <div className="w-full py-4 bg-stone-50 border border-stone-200 text-center text-sm text-stone-500">
+      <div className="w-full py-4 bg-stone-50 border border-stone-200 text-center text-body-sm text-stone-500">
         {isProcessing ? 'Processing payment...' : 'Loading PayPal...'}
       </div>
     );
@@ -80,7 +80,7 @@ function PayPalButtonInner({
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-stone-500 text-center uppercase tracking-wider font-bold">
+      <p className="text-body-xs text-stone-500 text-center uppercase tracking-token-wider type-bold">
         Pay with PayPal
       </p>
       <PayPalButtons
@@ -107,7 +107,7 @@ function PayPalButtonInner({
 export default function PayPalButton(props: PayPalButtonProps) {
   if (!clientId) {
     return (
-      <div className="w-full py-4 bg-stone-50 border border-stone-200 text-center text-sm text-stone-400">
+      <div className="w-full py-4 bg-stone-50 border border-stone-200 text-center text-body-sm text-stone-400">
         PayPal not configured
       </div>
     );
@@ -126,3 +126,4 @@ export default function PayPalButton(props: PayPalButtonProps) {
     </PayPalScriptProvider>
   );
 }
+

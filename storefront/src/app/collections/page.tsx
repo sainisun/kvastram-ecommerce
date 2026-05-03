@@ -67,21 +67,21 @@ function CollectionCard({
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center px-5 text-center">
-            <span className="font-heading text-3xl font-semibold uppercase tracking-[0.02em] text-white/70">
+            <span className="collection-card-placeholder">
               {collection.title}
             </span>
           </div>
         )}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.02),rgba(0,0,0,0.36))]" />
-        <div className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--ink)]">
+        <div className="collection-count-badge absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1">
           {count} products
         </div>
       </div>
       <div className="px-1 pt-4">
-        <h2 className="font-heading text-[20px] font-medium leading-tight text-stone-950">
+        <h2 className="collection-card-title">
           {collection.title}
         </h2>
-        <p className="mt-1 line-clamp-2 text-[12px] uppercase tracking-[0.16em] text-stone-500">
+        <p className="collection-card-copy mt-1 line-clamp-2">
           {collection.description || 'View collection'}
         </p>
       </div>
@@ -138,17 +138,17 @@ export default async function CollectionsPage({
           <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.2),rgba(0,0,0,0.3))]" />
           <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
             <div className="max-w-3xl">
-              <div className="text-[11px] uppercase tracking-[0.25em] text-white/80">
+              <div className="collection-hero-eyebrow">
                 Curated Series
               </div>
-              <h1 className="mt-4 font-heading text-[clamp(44px,6vw,72px)] font-normal leading-none tracking-[-0.03em] text-white">
+              <h1 className="collection-hero-title mt-4">
                 Collections
               </h1>
             </div>
           </div>
         </section>
         <div className="mx-auto max-w-[1440px] px-6 py-12 text-center md:px-12 md:py-16 lg:px-20 lg:py-24">
-          <p className="text-lg text-stone-500">No collections found. Check back soon!</p>
+          <p className="collection-empty-copy">No collections found. Check back soon!</p>
         </div>
       </div>
     );
@@ -177,13 +177,13 @@ export default async function CollectionsPage({
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.2),rgba(0,0,0,0.3))]" />
         <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
           <div className="max-w-3xl">
-            <div className="text-[11px] uppercase tracking-[0.25em] text-white/80">
+            <div className="collection-hero-eyebrow">
               Curated Series
             </div>
-            <h1 className="mt-4 font-heading text-[clamp(44px,6vw,72px)] font-normal leading-none tracking-[-0.03em] text-white">
+            <h1 className="collection-hero-title mt-4">
               Our <em className="italic">Collections</em>
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl font-heading text-[18px] font-normal italic leading-8 text-white/90">
+            <p className="collection-hero-copy mx-auto mt-4 max-w-2xl italic">
               From everyday kurta sets to handcrafted bridal lehengas — every
               edit tells a story.
             </p>
@@ -194,7 +194,7 @@ export default async function CollectionsPage({
       <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
-          className="mb-10 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-stone-400"
+          className="listing-breadcrumb mb-10 flex items-center gap-2"
         >
           <Link href="/" className="transition-colors hover:text-stone-900">
             Home
@@ -221,22 +221,22 @@ export default async function CollectionsPage({
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-stone-200">
-                    <span className="font-heading text-[26px] uppercase tracking-[0.02em] text-stone-400">
+                    <span className="collection-feature-placeholder">
                       {collection.title}
                     </span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.08),rgba(0,0,0,0.45))]" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                  <h2 className="font-heading text-[28px] font-normal leading-none tracking-[-0.03em]">
+                  <h2 className="collection-feature-title">
                     {collection.title}
                   </h2>
                   {collection.description ? (
-                    <p className="mt-3 max-w-[18rem] text-[13px] leading-6 text-white/85">
+                    <p className="collection-feature-copy mt-3 max-w-[18rem]">
                       {collection.description}
                     </p>
                   ) : null}
-                  <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em]">
+                  <span className="collection-feature-link mt-4 inline-flex items-center gap-2">
                     Shop Now
                     <ArrowRight size={14} />
                   </span>

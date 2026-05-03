@@ -82,9 +82,9 @@ function ProductCarousel({
           <div key={i} className="product-card animate-pulse">
             <div className="product-media" style={{ background: 'var(--soft)' }} />
             <div className="product-info">
-              <div style={{ height: 8, background: 'var(--line)', width: '40%', marginBottom: 8, borderRadius: 4 }} />
-              <div style={{ height: 14, background: 'var(--line)', width: '70%', marginBottom: 6, borderRadius: 4 }} />
-              <div style={{ height: 12, background: 'var(--line)', width: '30%', borderRadius: 4 }} />
+              <div className="skeleton-line skeleton-line-brand" />
+              <div className="skeleton-line skeleton-line-name" />
+              <div className="skeleton-line skeleton-line-price" />
             </div>
           </div>
         ))}
@@ -94,7 +94,7 @@ function ProductCarousel({
 
   if (products.length === 0) {
     return (
-      <div className="py-20 text-center text-stone-500 font-light italic">
+      <div className="product-empty-state">
         No products found.
       </div>
     );
