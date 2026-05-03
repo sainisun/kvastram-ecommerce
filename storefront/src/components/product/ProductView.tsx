@@ -499,7 +499,7 @@ export default function ProductView({ product }: { product: Product }) {
           onClick={handleAddToCart}
           disabled={!selectedVariant || addedToCart || outOfStock}
           className="btn btn-primary"
-          style={outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : addedToCart ? { background: '#15803d', borderColor: '#15803d' } : {}}
+          style={outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : addedToCart ? { background: 'var(--success-dark)', borderColor: 'var(--success-dark)' } : {}}
         >
           {outOfStock ? 'Sold Out' : addedToCart ? 'Added ✓' : 'Add to Bag'}
         </button>
