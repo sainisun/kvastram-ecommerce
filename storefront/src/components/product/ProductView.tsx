@@ -110,6 +110,7 @@ export default function ProductView({ product }: { product: Product }) {
     return product.variants.find((v) => v.id === selectedVariantId) || product.variants[0];
   }, [hasStructuredOptions, product.options, product.variants, selectedOptions, selectedVariantId]);
 
+  const isOnRequest = product.price_type === 'on_request';
   const currentInventory = selectedVariant ? realTimeInventory[selectedVariant.id] ?? selectedVariant.inventory_quantity : 0;
   const prices = selectedVariant?.prices || [];
   const inrPriceObj = prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || prices[0];
@@ -117,7 +118,8 @@ export default function ProductView({ product }: { product: Product }) {
   const compareAtAmount = selectedVariant?.compare_at_price;
   const formattedPrice = amount ? formatPrice(amount) : '';
   const formattedComparePrice = compareAtAmount ? formatPrice(compareAtAmount) : null;
-  const outOfStock = currentInventory <= 0;
+  const outOfStock = !isOnRequest && currentInventory <= 0;
+  const whatsappUrl = `https://wa.me/message/kvastram?text=${encodeURIComponent(`Hi, I'm interested in: ${displayTitle}`)}`;
 
   const galleryMedia = useMemo(() => {
     return product.images?.length
@@ -220,12 +222,18 @@ export default function ProductView({ product }: { product: Product }) {
 
             {/* Price */}
             <div className="pdp-price-row">
-              <span className="pd-price">{formattedPrice}</span>
-              {formattedComparePrice && <span className="orig">{formattedComparePrice}</span>}
-              {formattedComparePrice && compareAtAmount && amount < compareAtAmount && (
-                <span className="pdp-save-badge">
-                  Save {Math.round((1 - amount / compareAtAmount) * 100)}%
-                </span>
+              {isOnRequest ? (
+                <span className="pdp-enquire-label">Enquire for price</span>
+              ) : (
+                <>
+                  <span className="pd-price">{formattedPrice}</span>
+                  {formattedComparePrice && <span className="orig">{formattedComparePrice}</span>}
+                  {formattedComparePrice && compareAtAmount && amount < compareAtAmount && (
+                    <span className="pdp-save-badge">
+                      Save {Math.round((1 - amount / compareAtAmount) * 100)}%
+                    </span>
+                  )}
+                </>
               )}
             </div>
 
@@ -290,8 +298,8 @@ export default function ProductView({ product }: { product: Product }) {
               </div>
             )}
 
-            {/* Quantity */}
-            <div className="pdp-option-block">
+            {/* Quantity — hidden for on_request products */}
+            {!isOnRequest && <div className="pdp-option-block">
               <strong className="pdp-option-label">Quantity</strong>
               <div className="option-row">
                 <button type="button" className="option-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease">
@@ -302,10 +310,10 @@ export default function ProductView({ product }: { product: Product }) {
                   <Plus size={14} />
                 </button>
               </div>
-            </div>
+            </div>}
 
             {/* Low stock warning */}
-            {selectedVariant && currentInventory > 0 && currentInventory <= 10 && (
+            {!isOnRequest && selectedVariant && currentInventory > 0 && currentInventory <= 10 && (
               <div className="pdp-low-stock">
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--danger-dot)', display: 'inline-block' }} />
                 Only {currentInventory} left
@@ -315,28 +323,46 @@ export default function ProductView({ product }: { product: Product }) {
 
             {/* CTA Buttons */}
             <div className="pdp-cta-grid">
-              <button
-                id="pdp-atc-btn"
-                type="button"
-                onClick={handleAddToCart}
-                disabled={!selectedVariant || addedToCart || outOfStock}
-                className={`btn btn-full${addedToCart ? '' : outOfStock ? '' : ' btn-primary'}`}
-                style={addedToCart ? { background: 'var(--success-dark)', color: 'white', borderColor: 'var(--success-dark)' } : outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : {}}
-              >
-                {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag ✓' : 'Add to Bag'}
-              </button>
-              <a
-                href={`https://wa.me/message/kvastram?text=${encodeURIComponent(`Hi, I'm interested in: ${displayTitle}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-outline btn-full pdp-whatsapp"
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                  <path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.83L.057 23.486a.5.5 0 0 0 .614.612l5.579-1.453A11.942 11.942 0 0 0 12 24c6.626 0 12-5.373 12-12S18.626 0 12 0zm0 21.818a9.818 9.818 0 0 1-4.992-1.364l-.358-.213-3.714.968.993-3.601-.233-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
-                </svg>
-                Ask on WhatsApp
-              </a>
+              {isOnRequest ? (
+                <a
+                  id="pdp-atc-btn"
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary btn-full pdp-whatsapp"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                    <path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.83L.057 23.486a.5.5 0 0 0 .614.612l5.579-1.453A11.942 11.942 0 0 0 12 24c6.626 0 12-5.373 12-12S18.626 0 12 0zm0 21.818a9.818 9.818 0 0 1-4.992-1.364l-.358-.213-3.714.968.993-3.601-.233-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
+                  </svg>
+                  Enquire on WhatsApp
+                </a>
+              ) : (
+                <>
+                  <button
+                    id="pdp-atc-btn"
+                    type="button"
+                    onClick={handleAddToCart}
+                    disabled={!selectedVariant || addedToCart || outOfStock}
+                    className={`btn btn-full${addedToCart ? '' : outOfStock ? '' : ' btn-primary'}`}
+                    style={addedToCart ? { background: 'var(--success-dark)', color: 'white', borderColor: 'var(--success-dark)' } : outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : {}}
+                  >
+                    {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag ✓' : 'Add to Bag'}
+                  </button>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline btn-full pdp-whatsapp"
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                      <path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.83L.057 23.486a.5.5 0 0 0 .614.612l5.579-1.453A11.942 11.942 0 0 0 12 24c6.626 0 12-5.373 12-12S18.626 0 12 0zm0 21.818a9.818 9.818 0 0 1-4.992-1.364l-.358-.213-3.714.968.993-3.601-.233-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
+                    </svg>
+                    Ask on WhatsApp
+                  </a>
+                </>
+              )}
             </div>
 
             {/* Wishlist + Share */}
@@ -389,7 +415,7 @@ export default function ProductView({ product }: { product: Product }) {
               </div>
             </div>
 
-            {outOfStock && selectedVariant && (
+            {!isOnRequest && outOfStock && selectedVariant && (
               <div className="pdp-back-in-stock">
                 <BackInStock productId={product.id} variantId={selectedVariant.id} productTitle={displayTitle} />
               </div>
@@ -478,17 +504,32 @@ export default function ProductView({ product }: { product: Product }) {
       >
         <div className="pdp-sticky-info">
           <p className="pdp-sticky-title">{displayTitle}</p>
-          <p className="pdp-sticky-price">{formattedPrice}</p>
+          {isOnRequest ? (
+            <p className="pdp-sticky-price pdp-enquire-label">Enquire for price</p>
+          ) : (
+            <p className="pdp-sticky-price">{formattedPrice}</p>
+          )}
         </div>
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={!selectedVariant || addedToCart || outOfStock}
-          className="btn btn-primary"
-          style={outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : addedToCart ? { background: 'var(--success-dark)', borderColor: 'var(--success-dark)' } : {}}
-        >
-          {outOfStock ? 'Sold Out' : addedToCart ? 'Added ✓' : 'Add to Bag'}
-        </button>
+        {isOnRequest ? (
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary pdp-whatsapp"
+          >
+            Enquire on WhatsApp
+          </a>
+        ) : (
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={!selectedVariant || addedToCart || outOfStock}
+            className="btn btn-primary"
+            style={outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : addedToCart ? { background: 'var(--success-dark)', borderColor: 'var(--success-dark)' } : {}}
+          >
+            {outOfStock ? 'Sold Out' : addedToCart ? 'Added ✓' : 'Add to Bag'}
+          </button>
+        )}
       </div>
     </div>
   );

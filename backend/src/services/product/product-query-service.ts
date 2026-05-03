@@ -33,6 +33,7 @@ interface ProductWithStats {
   description: string | null;
   size_guide: string | null;
   care_instructions: string | null;
+  price_type: string;
   seo_title: string | null;
   seo_description: string | null;
   status: string;
@@ -257,6 +258,7 @@ export class ProductQueryService {
         description: product.description as string | null,
         size_guide: product.size_guide as string | null,
         care_instructions: product.care_instructions as string | null,
+        price_type: (product.price_type as string) || 'fixed',
         seo_title: product.seo_title as string | null,
         seo_description: product.seo_description as string | null,
         status: String(product.status),
@@ -331,6 +333,7 @@ export class ProductQueryService {
         description: products.description,
         size_guide: products.size_guide,
         care_instructions: products.care_instructions,
+        price_type: products.price_type,
         seo_title: products.seo_title,
         seo_description: products.seo_description,
         status: products.status,

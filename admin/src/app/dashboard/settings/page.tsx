@@ -480,6 +480,7 @@ export default function SettingsPage() {
     { id: 'homepage', label: 'Homepage', icon: Home },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle },
+    { id: 'admin-tools', label: 'Admin Tools', icon: Shield },
     { id: 'security', label: 'Security', icon: Lock },
     { id: 'payment', label: 'Payment', icon: CreditCard },
     { id: 'email', label: 'Email', icon: Mail },
@@ -1373,6 +1374,35 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'admin-tools' && (
+              <div className="space-y-6">
+                <h2 className="text-lg font-black text-[var(--on-surface)]">Admin Tools</h2>
+                <p className="text-[var(--on-surface-variant)]">Advanced tools for store administration.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                  <Link
+                    href="/dashboard/settings/audit-log"
+                    className="flex items-start gap-4 p-5 rounded-xl border border-[var(--surface-container-low)] hover:border-gray-400 transition-colors"
+                  >
+                    <Shield size={22} className="text-gray-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-semibold text-[var(--on-surface)]">Audit Log</p>
+                      <p className="text-sm text-[var(--on-surface-variant)] mt-0.5">View all admin actions — who changed what and when.</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/dashboard/settings/redirects"
+                    className="flex items-start gap-4 p-5 rounded-xl border border-[var(--surface-container-low)] hover:border-gray-400 transition-colors"
+                  >
+                    <Shield size={22} className="text-gray-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-semibold text-[var(--on-surface)]">URL Redirects</p>
+                      <p className="text-sm text-[var(--on-surface-variant)] mt-0.5">Manage 301/302 redirects for moved or broken URLs.</p>
+                    </div>
+                  </Link>
                 </div>
               </div>
             )}

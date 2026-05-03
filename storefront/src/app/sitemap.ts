@@ -89,7 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ]);
 
     const categoryEntries = flattenCategories(categoriesData.categories || [])
-      .filter((category) => category.slug || category.handle)
+      .filter((category) => (category.slug || category.handle) && (category as unknown as { is_active?: boolean }).is_active !== false)
       .map((category) => ({
         url: `${SITE_URL}/collections/${category.slug || category.handle}`,
         lastModified: new Date(),
@@ -98,18 +98,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
 
     const collectionEntries = (collectionsData.collections || [])
-      .filter((collection: { handle?: string }) => collection.handle)
+      .filter((collection: { handle?: string; status?: string }) =>
+        collection.handle && collection.status === 'active'
+      )
       .map((collection: { handle: string; updated_at?: string }) => ({
         url: `${SITE_URL}/collections/${collection.handle}`,
         lastModified: collection.updated_at
           ? new Date(collection.updated_at)
           : new Date(),
         changeFrequency: 'weekly' as const,
-        priority: 0.8,
+        priority: 0.6,
       }));
 
     const productEntries = products
-      .filter((product) => product.handle || product.id)
+      .filter((product) => (product.handle || product.id) && product.status === 'published')
       .map((product) => {
         const updatedAt = (product as Product & { updated_at?: string }).updated_at;
         return {
@@ -119,8 +121,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           : product.created_at
             ? new Date(product.created_at)
             : new Date(),
-        changeFrequency: 'daily' as const,
-        priority: 0.8,
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
       };
       });
 

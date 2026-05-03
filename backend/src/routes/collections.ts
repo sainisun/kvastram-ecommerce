@@ -2,8 +2,8 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
-import { product_collections, products } from '../db/schema';
-import { eq, desc, inArray, sql } from 'drizzle-orm';
+import { product_collections, products, collection_products } from '../db/schema';
+import { eq, desc, inArray, sql, and, ne } from 'drizzle-orm';
 import { z } from 'zod';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 
@@ -14,10 +14,25 @@ const isUuid = (val: string): boolean => {
 
 const collectionsRouter = new Hono();
 
+// guide Section 3.2 + 3.5
 const CollectionSchema = z.object({
-  title: z.string().min(1),
-  handle: z.string().min(1),
+  title: z.string().min(3).max(150).trim(),
+  handle: z.string().min(1).optional(),
   image: z.string().optional(),
+  type: z.enum(['occasion', 'seasonal', 'price', 'fabric', 'gift', 'style']).optional(),
+  rule_type: z.enum(['manual', 'auto']).default('manual'),
+  rule_definition: z.record(z.any()).optional(),
+  description: z.string().optional(),
+  cover_image_url: z.string().optional(),
+  status: z.enum(['draft', 'active', 'archived']).default('draft'),
+  display_order: z.number().int().default(0),
+  show_in_megamenu: z.boolean().default(false),
+  homepage_section: z.string().optional(),
+  valid_from: z.string().datetime().optional().nullable(),
+  valid_until: z.string().datetime().optional().nullable(),
+  seo_title: z.string().max(200).optional(),
+  seo_desc: z.string().max(300).optional(),
+  og_image_url: z.string().optional(),
   metadata: z.record(z.any()).optional(),
 });
 
@@ -25,40 +40,120 @@ const ProductAssignmentSchema = z.object({
   product_ids: z.array(z.string().uuid()).default([]),
 });
 
+// Active status ke liye min 3 products + cover_image check
+async function validateActiveStatus(collectionId: string): Promise<{ valid: boolean; count: number }> {
+  const rows = await db
+    .select({ cnt: sql<number>`count(*)`.mapWith(Number) })
+    .from(collection_products)
+    .innerJoin(products, eq(products.id, collection_products.product_id))
+    .where(
+      and(
+        eq(collection_products.collection_id, collectionId),
+        eq(products.status, 'published')
+      )
+    );
+  const count = rows[0]?.cnt ?? 0;
+  return { valid: count >= 3, count };
+}
+
 // GET /collections
 collectionsRouter.get('/', async (c) => {
   try {
+    const { status, type, megamenu } = c.req.query();
+
+    // Public requests: default to active only
+    // Admin requests (with auth header): all statuses unless filtered
+    const isAdminRequest = c.req.header('authorization');
+    const effectiveStatus = status || (isAdminRequest ? undefined : 'active');
+
     const list = await db
       .select({
         id: product_collections.id,
         title: product_collections.title,
         handle: product_collections.handle,
         image: product_collections.image,
+        cover_image_url: product_collections.cover_image_url,
+        type: product_collections.type,
+        rule_type: product_collections.rule_type,
+        description: product_collections.description,
+        status: product_collections.status,
+        display_order: product_collections.display_order,
+        show_in_megamenu: product_collections.show_in_megamenu,
+        homepage_section: product_collections.homepage_section,
+        valid_from: product_collections.valid_from,
+        valid_until: product_collections.valid_until,
+        seo_title: product_collections.seo_title,
+        seo_desc: product_collections.seo_desc,
+        og_image_url: product_collections.og_image_url,
         metadata: product_collections.metadata,
         created_at: product_collections.created_at,
         updated_at: product_collections.updated_at,
-        deleted_at: product_collections.deleted_at,
-        product_count: sql<number>`count(${products.id})`.mapWith(Number),
+        product_count: sql<number>`(
+          SELECT COUNT(*) FROM collection_products cp
+          JOIN products p ON p.id = cp.product_id
+          WHERE cp.collection_id = ${product_collections.id}
+            AND p.status = 'published'
+        )`.mapWith(Number),
       })
       .from(product_collections)
-      .leftJoin(products, eq(product_collections.id, products.collection_id))
-      .groupBy(product_collections.id)
-      .orderBy(desc(product_collections.created_at));
+      .where(
+        and(
+          effectiveStatus ? eq(product_collections.status, effectiveStatus) : undefined,
+          type ? eq(product_collections.type, type) : undefined,
+          megamenu === 'true' ? eq(product_collections.show_in_megamenu, true) : undefined,
+          // Exclude soft-deleted
+          sql`${product_collections.deleted_at} IS NULL`
+        )
+      )
+      .orderBy(product_collections.display_order, desc(product_collections.created_at));
+
     return c.json({ collections: list });
   } catch (error: any) {
     console.error('[Collections] GET / error:', error?.message || error);
-    console.error(
-      '[Collections] Full error:',
-      JSON.stringify(error, Object.getOwnPropertyNames(error))
-    );
-    return c.json(
-      { error: 'Failed to fetch collections', details: error?.message },
-      500
-    );
+    return c.json({ error: 'Failed to fetch collections', details: error?.message }, 500);
   }
 });
 
-// GET /collections/:id - accepts UUID or handle
+// GET /collections/:id — by UUID or handle
+collectionsRouter.get('/:id', async (c) => {
+  const idOrHandle = c.req.param('id');
+  try {
+    const collection = isUuid(idOrHandle)
+      ? await db.query.product_collections.findFirst({
+          where: and(
+            eq(product_collections.id, idOrHandle),
+            sql`${product_collections.deleted_at} IS NULL`
+          ),
+        })
+      : await db.query.product_collections.findFirst({
+          where: and(
+            eq(product_collections.handle, idOrHandle),
+            sql`${product_collections.deleted_at} IS NULL`
+          ),
+        });
+
+    if (!collection) return c.json({ error: 'Collection not found' }, 404);
+
+    // Count active products
+    const [{ cnt }] = await db
+      .select({ cnt: sql<number>`count(*)`.mapWith(Number) })
+      .from(collection_products)
+      .innerJoin(products, eq(products.id, collection_products.product_id))
+      .where(
+        and(
+          eq(collection_products.collection_id, collection.id),
+          eq(products.status, 'published')
+        )
+      );
+
+    return c.json({ collection: { ...collection, product_count: cnt } });
+  } catch (error: unknown) {
+    console.error('Error fetching collection:', error);
+    return c.json({ error: 'Failed to fetch collection' }, 500);
+  }
+});
+
+// GET /collections/:id/products — junction table se
 collectionsRouter.get('/:id/products', verifyAdmin, async (c) => {
   const id = c.req.param('id');
   try {
@@ -69,10 +164,13 @@ collectionsRouter.get('/:id/products', verifyAdmin, async (c) => {
         handle: products.handle,
         thumbnail: products.thumbnail,
         status: products.status,
+        price_type: products.price_type,
+        position: collection_products.position,
       })
-      .from(products)
-      .where(eq(products.collection_id, id))
-      .orderBy(desc(products.created_at));
+      .from(collection_products)
+      .innerJoin(products, eq(products.id, collection_products.product_id))
+      .where(eq(collection_products.collection_id, id))
+      .orderBy(collection_products.position, desc(products.created_at));
 
     return c.json({ products: rows });
   } catch (error: unknown) {
@@ -81,6 +179,7 @@ collectionsRouter.get('/:id/products', verifyAdmin, async (c) => {
   }
 });
 
+// PUT /collections/:id/products — M2M junction update
 collectionsRouter.put(
   '/:id/products',
   verifyAdmin,
@@ -91,16 +190,34 @@ collectionsRouter.put(
 
     try {
       await db.transaction(async (tx) => {
+        // Remove all current assignments
         await tx
-          .update(products)
-          .set({ collection_id: null, updated_at: new Date() })
-          .where(eq(products.collection_id, id));
+          .delete(collection_products)
+          .where(eq(collection_products.collection_id, id));
 
+        // Add new assignments with position
         if (product_ids.length > 0) {
+          await tx.insert(collection_products).values(
+            product_ids.map((pid, i) => ({
+              product_id: pid,
+              collection_id: id,
+              position: i,
+            }))
+          );
+        }
+
+        // Auto-draft if < 3 active products (guide Rule CO-1)
+        const { valid } = await validateActiveStatus(id);
+        const [current] = await tx
+          .select({ status: product_collections.status })
+          .from(product_collections)
+          .where(eq(product_collections.id, id));
+
+        if (current?.status === 'active' && !valid) {
           await tx
-            .update(products)
-            .set({ collection_id: id, updated_at: new Date() })
-            .where(inArray(products.id, product_ids));
+            .update(product_collections)
+            .set({ status: 'draft', updated_at: new Date() })
+            .where(eq(product_collections.id, id));
         }
       });
 
@@ -117,32 +234,6 @@ collectionsRouter.put(
   }
 );
 
-collectionsRouter.get('/:id', async (c) => {
-  const idOrHandle = c.req.param('id');
-  try {
-    let collection;
-    
-    if (isUuid(idOrHandle)) {
-      collection = await db.query.product_collections.findFirst({
-        where: eq(product_collections.id, idOrHandle),
-      });
-    } else {
-      collection = await db.query.product_collections.findFirst({
-        where: eq(product_collections.handle, idOrHandle),
-      });
-    }
-
-    if (!collection) {
-      return c.json({ error: 'Collection not found' }, 404);
-    }
-
-    return c.json({ collection });
-  } catch (error: unknown) {
-    console.error('Error fetching collection:', error);
-    return c.json({ error: 'Failed to fetch collection' }, 500);
-  }
-});
-
 // POST /collections
 collectionsRouter.post(
   '/',
@@ -151,22 +242,57 @@ collectionsRouter.post(
   async (c) => {
     const data = c.req.valid('json');
     try {
+      // Guide Rule CO-2: globally unique name (case-insensitive)
+      const existing = await db.query.product_collections.findFirst({
+        where: sql`lower(${product_collections.title}) = lower(${data.title})
+                   AND ${product_collections.deleted_at} IS NULL`,
+      });
+      if (existing) {
+        return c.json({ error: 'Collection with this name already exists' }, 409);
+      }
+
+      // Auto-generate handle if not provided
+      const handle = data.handle || data.title
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+
+      // Active requires cover_image — force draft if no image
+      let status = data.status;
+      if (status === 'active' && !data.cover_image_url && !data.image) {
+        status = 'draft';
+      }
+
       const [newCollection] = await db
         .insert(product_collections)
         .values({
           title: data.title,
-          handle: data.handle,
+          handle,
           image: data.image,
+          type: data.type,
+          rule_type: data.rule_type,
+          rule_definition: data.rule_definition,
+          description: data.description,
+          cover_image_url: data.cover_image_url,
+          status,
+          display_order: data.display_order,
+          show_in_megamenu: data.show_in_megamenu,
+          homepage_section: data.homepage_section,
+          valid_from: data.valid_from ? new Date(data.valid_from) : null,
+          valid_until: data.valid_until ? new Date(data.valid_until) : null,
+          seo_title: data.seo_title,
+          seo_desc: data.seo_desc,
+          og_image_url: data.og_image_url,
           metadata: data.metadata,
         })
         .returning();
 
       return c.json({ collection: newCollection }, 201);
     } catch (error: any) {
-      return c.json(
-        { error: error.message || 'Failed to create collection' },
-        500
-      );
+      return c.json({ error: error.message || 'Failed to create collection' }, 500);
     }
   }
 );
@@ -180,21 +306,59 @@ collectionsRouter.put(
     const id = c.req.param('id');
     const data = c.req.valid('json');
     try {
+      // If setting active: validate product count + image
+      if (data.status === 'active') {
+        const [current] = await db
+          .select({ cover_image_url: product_collections.cover_image_url, image: product_collections.image })
+          .from(product_collections)
+          .where(eq(product_collections.id, id));
+
+        const hasImage = data.cover_image_url || current?.cover_image_url || current?.image;
+        const { valid, count } = await validateActiveStatus(id);
+
+        if (!valid) {
+          return c.json({
+            error: `Cannot activate: only ${count} active products (minimum 3 required)`,
+          }, 400);
+        }
+        if (!hasImage) {
+          return c.json({ error: 'Cannot activate: cover image required' }, 400);
+        }
+      }
+
+      // Unique name check (case-insensitive) if title is changing
+      if (data.title) {
+        const duplicate = await db.query.product_collections.findFirst({
+          where: and(
+            sql`lower(${product_collections.title}) = lower(${data.title})`,
+            ne(product_collections.id, id),
+            sql`${product_collections.deleted_at} IS NULL`
+          ),
+        });
+        if (duplicate) {
+          return c.json({ error: 'Collection with this name already exists' }, 409);
+        }
+      }
+
       const [updatedCollection] = await db
         .update(product_collections)
         .set({
           ...data,
+          valid_from: data.valid_from ? new Date(data.valid_from) : undefined,
+          valid_until: data.valid_until ? new Date(data.valid_until) : undefined,
           updated_at: new Date(),
         })
         .where(eq(product_collections.id, id))
         .returning();
 
+      await triggerStorefrontRevalidation({
+        paths: ['/collections', `/collections/${updatedCollection.handle}`],
+        tags: ['collections'],
+      });
+
       return c.json({ collection: updatedCollection });
     } catch (error: any) {
-      return c.json(
-        { error: error.message || 'Failed to update collection' },
-        500
-      );
+      return c.json({ error: error.message || 'Failed to update collection' }, 500);
     }
   }
 );
@@ -203,13 +367,15 @@ collectionsRouter.put(
 collectionsRouter.delete('/:id', verifyAdmin, async (c) => {
   const id = c.req.param('id');
   try {
-    await db.delete(product_collections).where(eq(product_collections.id, id));
+    // Soft delete
+    await db
+      .update(product_collections)
+      .set({ deleted_at: new Date(), updated_at: new Date() })
+      .where(eq(product_collections.id, id));
+
     return c.json({ success: true });
   } catch (error: any) {
-    return c.json(
-      { error: error.message || 'Failed to delete collection' },
-      500
-    );
+    return c.json({ error: error.message || 'Failed to delete collection' }, 500);
   }
 });
 

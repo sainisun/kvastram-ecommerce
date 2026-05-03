@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound, permanentRedirect } from 'next/navigation';
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 
 import PageHero from '@/components/hero/PageHero';
 import ProductGrid from '@/components/ProductGrid';
@@ -20,7 +20,7 @@ import type { Product } from '@/types';
 
 type Props = {
   params: Promise<{ handle: string }>;
-  searchParams: Promise<{ sort?: string }>;
+  searchParams: Promise<{ sort?: string; preview?: string }>;
 };
 
 type LandingData =
@@ -32,6 +32,8 @@ type LandingData =
       description: string;
       image?: string | null;
       children: Array<{ id: string; name: string; slug?: string }>;
+      status?: string;
+      type?: string;
     }
   | {
       kind: 'collection';
@@ -41,6 +43,8 @@ type LandingData =
       description: string;
       image?: string | null;
       children: [];
+      status?: string;
+      type?: string;
     };
 
 async function resolveLanding(handle: string): Promise<LandingData | null> {
@@ -92,10 +96,12 @@ async function resolveLanding(handle: string): Promise<LandingData | null> {
       description:
         typeof collection.metadata?.description === 'string'
           ? collection.metadata.description
-          : undefined,
+          : collection.description || undefined,
     }),
-    image: collection.image,
+    image: collection.cover_image_url || collection.image,
     children: [],
+    status: collection.status,
+    type: collection.type,
   };
 }
 
@@ -124,10 +130,15 @@ export default async function CollectionPage({
   searchParams,
 }: Props) {
   const { handle } = await params;
-  const { sort } = await searchParams;
+  const { sort, preview } = await searchParams;
   const landing = (await resolveLanding(handle)) || notFound();
 
-  const [productsResponse, bannersResponse, circlesResponse, spotlightResponse] =
+  // Task 5.7: Draft collections hidden from public (only admin preview allowed)
+  if (landing.kind === 'collection' && landing.status === 'draft' && preview !== 'true') {
+    redirect('/collections');
+  }
+
+  const [productsResponse, bannersResponse, circlesResponse, spotlightResponse, allCollectionsResponse] =
     await Promise.all([
       api.getProducts({
         limit: 50,
@@ -139,6 +150,9 @@ export default async function CollectionPage({
       api.getBanners(),
       api.getCategoryCircles(),
       api.getSpotlightProducts(),
+      landing.kind === 'collection' && landing.type
+        ? api.getCollections()
+        : Promise.resolve(null),
     ]);
 
   const products = productsResponse.products || [];
@@ -146,6 +160,19 @@ export default async function CollectionPage({
   const categoryCircles = circlesResponse.circles || [];
   const spotlightProducts = spotlightResponse.featuredProducts || [];
   const featuredProducts = products.slice(0, 4);
+
+  // Task 5.5: Related collections — same type, active, excluding current
+  const relatedCollections: Array<{ id: string; handle: string; title: string; cover_image_url?: string; image?: string }> =
+    allCollectionsResponse
+      ? (allCollectionsResponse.collections || [])
+          .filter((c: { id: string; type?: string; status?: string; handle?: string }) =>
+            c.id !== landing.id &&
+            c.type === landing.type &&
+            c.status === 'active' &&
+            c.handle
+          )
+          .slice(0, 3)
+      : [];
   const schema = [
     buildCollectionPageJsonLd({
       name: landing.title,
@@ -316,6 +343,36 @@ export default async function CollectionPage({
             </div>
           )}
         </section>
+
+        {/* Task 5.5: Related Collections */}
+        {relatedCollections.length > 0 && (
+          <section className="border-t border-stone-100 py-12 md:py-16">
+            <h2 className="collection-section-title mb-8">Related Collections</h2>
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {relatedCollections.map((col) => (
+                <Link
+                  key={col.id}
+                  href={`/collections/${col.handle}`}
+                  className="group relative overflow-hidden rounded-lg border border-stone-200 transition-colors hover:border-stone-900"
+                >
+                  {(col.cover_image_url || col.image) && (
+                    <div className="aspect-[4/3] overflow-hidden bg-stone-100">
+                      <img
+                        src={col.cover_image_url || col.image}
+                        alt={col.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <p className="font-medium text-stone-900">{col.title}</p>
+                    <p className="mt-1 text-sm text-stone-500">Shop collection →</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

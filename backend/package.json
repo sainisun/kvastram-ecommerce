@@ -25,7 +25,9 @@
     "seed:settings": "tsx scripts/seed-settings.ts",
     "seed:categories": "tsx scripts/seed-categories.ts",
     "seed:wholesale-tiers": "tsx scripts/seed-wholesale-tiers.ts",
-    "seed:all": "npm run seed:regions && npm run seed:settings && npm run seed:tags && npm run seed:pages && npm run seed:legal-pages && npm run seed:categories && npm run seed:wholesale-tiers"
+    "seed:all": "npm run seed:regions && npm run seed:settings && npm run seed:tags && npm run seed:pages && npm run seed:legal-pages && npm run seed:categories && npm run seed:wholesale-tiers",
+    "validate:prod": "tsx src/scripts/validate-production-data.ts",
+    "predeploy": "npm run validate:prod"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",

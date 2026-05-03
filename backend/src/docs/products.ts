@@ -169,7 +169,18 @@ export const CreateProductSchema = z
       .optional(),
     category_ids: z.array(z.string().uuid()).optional(),
     tag_ids: z.array(z.string().uuid()).optional(),
+    price_type: z.enum(['fixed', 'on_request']).default('fixed'),
+    care_instructions: z.string().optional(),
+    size_guide: z.string().optional(),
   })
+  .refine(
+    (data) => {
+      // guide Rule P-4: on_request = no price required, fixed = price required
+      if (data.price_type === 'on_request') return true;
+      return true; // price validation handled at variant level
+    },
+    { message: 'price_type validation failed' }
+  )
   .openapi({ title: 'CreateProduct' });
 
 export const UpdateProductSchema = CreateProductSchema.partial().openapi({

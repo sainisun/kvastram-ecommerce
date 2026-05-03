@@ -79,6 +79,8 @@ export const CreateProductSchema = z.object({
   images: z.array(ImageSchema).optional(),
   category_ids: z.array(z.string().uuid()).optional(),
   tag_ids: z.array(z.string().uuid()).optional(),
+  // guide Section 4.3: fixed = price required, on_request = no price
+  price_type: z.enum(['fixed', 'on_request']).default('fixed'),
 });
 
 // --- Update Product Schema ---

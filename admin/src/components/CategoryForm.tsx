@@ -18,6 +18,9 @@ export interface Category {
   parent_id?: string;
   image?: string;
   is_active?: boolean;
+  seo_title?: string;
+  seo_desc?: string;
+  og_image_url?: string;
 }
 
 interface CategoryFormData {
@@ -31,15 +34,19 @@ interface CategoryFormData {
   display_order: number;
   show_in_header: boolean;
   header_image_url: string;
+  seo_title: string;
+  seo_desc: string;
+  og_image_url: string;
 }
 
 type CategoryPayload = Omit<
   CategoryFormData,
-  'parent_id' | 'emoji' | 'header_image_url'
+  'parent_id' | 'emoji' | 'header_image_url' | 'og_image_url'
 > & {
   parent_id: string | null;
   emoji: string | null;
   header_image_url: string | null;
+  og_image_url: string | null;
 };
 
 interface CategoryFormProps {
@@ -63,6 +70,9 @@ const createInitialFormData = (
   display_order: initialData?.display_order ?? 0,
   show_in_header: initialData?.show_in_header ?? true,
   header_image_url: initialData?.header_image_url || '',
+  seo_title: initialData?.seo_title || '',
+  seo_desc: initialData?.seo_desc || '',
+  og_image_url: initialData?.og_image_url || '',
 });
 
 export default function CategoryForm({ initialData }: CategoryFormProps) {
@@ -160,6 +170,7 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
         emoji: formData.emoji === '' ? null : formData.emoji,
         header_image_url:
           formData.header_image_url === '' ? null : formData.header_image_url,
+        og_image_url: formData.og_image_url === '' ? null : formData.og_image_url,
       };
 
       let categoryId = initialData?.id;
@@ -234,9 +245,15 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
               name="slug"
               value={formData.slug}
               onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-gray-600 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
+              readOnly={Boolean(initialData?.id && selectedProducts.length > 0)}
+              className={`w-full rounded-lg border px-4 py-2 text-gray-600 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black ${initialData?.id && selectedProducts.length > 0 ? 'border-amber-300 bg-amber-50 cursor-not-allowed' : 'border-gray-300 bg-gray-50'}`}
               required
             />
+            {initialData?.id && selectedProducts.length > 0 && (
+              <p className="text-xs text-amber-700">
+                Slug locked — {selectedProducts.length} product(s) use this URL. Contact a super_admin to change it.
+              </p>
+            )}
           </div>
         </div>
 
@@ -379,6 +396,45 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
         label="Products in this Category"
         helpText="Select products that should appear on this category storefront page."
       />
+
+      <details className="rounded-xl border border-gray-200 bg-white shadow-sm">
+        <summary className="cursor-pointer px-8 py-4 text-sm font-semibold text-gray-700">SEO Settings</summary>
+        <div className="space-y-4 px-8 pb-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Meta Title</label>
+            <input
+              type="text"
+              name="seo_title"
+              value={formData.seo_title}
+              onChange={handleChange}
+              maxLength={200}
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
+              placeholder={formData.name ? `${formData.name} — Handmade Indian Fashion | Kvastram` : 'Auto-generated from name if empty'}
+            />
+            <p className="text-xs text-gray-500">{formData.seo_title.length}/200 characters</p>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Meta Description</label>
+            <textarea
+              name="seo_desc"
+              value={formData.seo_desc}
+              onChange={handleChange}
+              maxLength={300}
+              rows={3}
+              className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
+              placeholder="Brief description for search engines..."
+            />
+            <p className="text-xs text-gray-500">{formData.seo_desc.length}/300 characters</p>
+          </div>
+          <ImageUploadField
+            label="OG Image (Social Share)"
+            value={formData.og_image_url}
+            onChange={(og_image_url) => setFormData((prev) => ({ ...prev, og_image_url }))}
+            helpText="Image shown when sharing on social media. Recommended: 1200×630px."
+            uploadButtonText="Upload OG image"
+          />
+        </div>
+      </details>
 
       <div className="flex justify-end rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
         <button

@@ -30,6 +30,7 @@ export interface Product {
   origin_country?: string;
   size_guide?: SizeGuide | string; // Can be structured object or plain text
   care_instructions?: string;
+  price_type?: 'fixed' | 'on_request';
   seo_title?: string;
   seo_description?: string;
   avg_rating?: number;

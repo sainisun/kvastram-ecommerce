@@ -13,6 +13,14 @@ interface Collection {
   title: string;
   handle: string;
   image?: string;
+  cover_image_url?: string;
+  type?: string;
+  status?: string;
+  description?: string;
+  show_in_megamenu?: boolean;
+  homepage_section?: string;
+  seo_title?: string;
+  seo_desc?: string;
   metadata?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
@@ -29,6 +37,13 @@ export default function CollectionsPage() {
     title: '',
     handle: '',
     image: '',
+    type: '',
+    status: 'draft' as string,
+    description: '',
+    show_in_megamenu: false,
+    homepage_section: '',
+    seo_title: '',
+    seo_desc: '',
   });
 
   const fetchCollections = async () => {
@@ -68,7 +83,7 @@ export default function CollectionsPage() {
           selectedProducts.map((product) => product.id)
         );
       }
-      setFormData({ title: '', handle: '', image: '' });
+      setFormData({ title: '', handle: '', image: '', type: '', status: 'draft', description: '', show_in_megamenu: false, homepage_section: '', seo_title: '', seo_desc: '' });
       setSelectedProducts([]);
       setProductsLoaded(true);
       setShowForm(false);
@@ -87,7 +102,14 @@ export default function CollectionsPage() {
     setFormData({
       title: collection.title,
       handle: collection.handle,
-      image: collection.image || '',
+      image: collection.cover_image_url || collection.image || '',
+      type: collection.type || '',
+      status: collection.status || 'draft',
+      description: collection.description || '',
+      show_in_megamenu: collection.show_in_megamenu || false,
+      homepage_section: collection.homepage_section || '',
+      seo_title: collection.seo_title || '',
+      seo_desc: collection.seo_desc || '',
     });
     setEditingId(collection.id);
     setProductsLoaded(false);
@@ -135,7 +157,7 @@ export default function CollectionsPage() {
           onClick={() => {
             setShowForm(!showForm);
             setEditingId(null);
-            setFormData({ title: '', handle: '', image: '' });
+            setFormData({ title: '', handle: '', image: '', type: '', status: 'draft', description: '', show_in_megamenu: false, homepage_section: '', seo_title: '', seo_desc: '' });
             setSelectedProducts([]);
             setProductsLoaded(true);
           }}
@@ -194,13 +216,109 @@ export default function CollectionsPage() {
                 />
               </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Type <span className="text-red-500">*</span></label>
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                >
+                  <option value="">Select type</option>
+                  <option value="occasion">Occasion</option>
+                  <option value="seasonal">Seasonal</option>
+                  <option value="price">Price</option>
+                  <option value="fabric">Fabric</option>
+                  <option value="gift">Gift</option>
+                  <option value="style">Style</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                >
+                  <option value="draft">🟡 Draft</option>
+                  <option value="active">🟢 Active</option>
+                  <option value="archived">⚫ Archived</option>
+                </select>
+                {formData.status === 'active' && (
+                  <p className="text-xs text-amber-600 mt-1">Active requires 3+ products and a cover image.</p>
+                )}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={2}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                placeholder="Short description of this collection..."
+              />
+            </div>
             <ImageUploadField
-              label="Collection Image"
+              label="Cover Image"
               value={formData.image}
               onChange={(image) => setFormData({ ...formData, image })}
               helpText="Upload the collection cover image instead of pasting a URL."
               uploadButtonText="Upload collection image"
             />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Homepage Section</label>
+                <select
+                  value={formData.homepage_section}
+                  onChange={(e) => setFormData({ ...formData, homepage_section: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                >
+                  <option value="">None</option>
+                  <option value="shop_by_occasion">Shop by Occasion</option>
+                  <option value="seasonal_edits">Seasonal Edits</option>
+                  <option value="shop_by_fabric">Shop by Fabric</option>
+                  <option value="curated_collections">Curated Collections</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-3 pt-6">
+                <input
+                  type="checkbox"
+                  id="show_in_megamenu"
+                  checked={formData.show_in_megamenu}
+                  onChange={(e) => setFormData({ ...formData, show_in_megamenu: e.target.checked })}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <label htmlFor="show_in_megamenu" className="text-sm font-medium text-gray-700">Show in Mega Menu</label>
+              </div>
+            </div>
+            <details className="border border-gray-200 rounded-lg">
+              <summary className="px-4 py-2 text-sm font-medium text-gray-700 cursor-pointer">SEO Fields</summary>
+              <div className="p-4 space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Meta Title</label>
+                  <input
+                    type="text"
+                    value={formData.seo_title}
+                    onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
+                    maxLength={200}
+                    className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                    placeholder="Auto-generated from title if empty"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Meta Description</label>
+                  <textarea
+                    value={formData.seo_desc}
+                    onChange={(e) => setFormData({ ...formData, seo_desc: e.target.value })}
+                    maxLength={300}
+                    rows={2}
+                    className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                  />
+                </div>
+              </div>
+            </details>
             <div className="flex gap-3">
               <button
                 type="submit"
@@ -214,7 +332,7 @@ export default function CollectionsPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingId(null);
-                  setFormData({ title: '', handle: '', image: '' });
+                  setFormData({ title: '', handle: '', image: '', type: '', status: 'draft', description: '', show_in_megamenu: false, homepage_section: '', seo_title: '', seo_desc: '' });
                   setSelectedProducts([]);
                   setProductsLoaded(true);
                 }}
@@ -263,11 +381,17 @@ export default function CollectionsPage() {
               key={collection.id}
               className="flex items-center border-b border-gray-100 hover:bg-gray-50 transition-colors last:border-0"
             >
-              <div className="flex-1 py-3 px-4 flex items-center">
-                <Folder size={16} className="text-gray-400 mr-3" />
-                <span className="font-medium text-gray-900">
-                  {collection.title}
-                </span>
+              <div className="flex-1 py-3 px-4 flex items-center gap-3">
+                <Folder size={16} className="text-gray-400 shrink-0" />
+                <span className="font-medium text-gray-900">{collection.title}</span>
+                {collection.status && (
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${collection.status === 'active' ? 'bg-green-100 text-green-700' : collection.status === 'archived' ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-700'}`}>
+                    {collection.status}
+                  </span>
+                )}
+                {collection.type && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium">{collection.type}</span>
+                )}
               </div>
               <div className="w-40 py-3 px-4 text-sm text-gray-500">
                 /collections/{collection.handle}

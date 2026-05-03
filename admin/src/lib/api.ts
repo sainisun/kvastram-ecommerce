@@ -2269,4 +2269,14 @@ export const api = {
     if (!res.ok) return handleApiError(res, 'Failed to delete tier');
     return res.json();
   },
+
+  // Generic authenticated request — for pages that need endpoints not yet in api.*
+  request: async (path: string, options: RequestInit = {}) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
+      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      ...options,
+    });
+    if (!res.ok) return handleApiError(res, `Request failed: ${path}`);
+    return res.json();
+  },
 };

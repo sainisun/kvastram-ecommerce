@@ -167,6 +167,7 @@ export default function EditProductPage() {
   const [mediaItems, setMediaItems] = useState<ProductMediaItem[]>([]);
   // Single INR price — storefront converts to buyer's local currency
   const [inrPrice, setInrPrice]     = useState('');
+  const [priceType, setPriceType]   = useState<'fixed' | 'on_request'>('fixed');
 
   // INR region needed for payload
   const inrRegion = regions.find((r) => r.currency_code.toLowerCase() === 'inr');
@@ -252,6 +253,9 @@ export default function EditProductPage() {
         const inrEntry = variantPrices.find((p: any) => p.currency_code?.toLowerCase() === 'inr')
           || variantPrices[0];
         if (inrEntry) setInrPrice((inrEntry.amount / 100).toString());
+      }
+      if (product.price_type) {
+        setPriceType(product.price_type as 'fixed' | 'on_request');
       }
 
       try {
@@ -436,8 +440,8 @@ export default function EditProductPage() {
         throw new Error('Add at least 1 media item before saving this product.');
       }
 
-      // Save price only for the INR region — storefront converts to buyer's currency
-      const formattedPrices = inrRegion && inrPrice
+      // Save price only for fixed-price products; on_request products have no price
+      const formattedPrices = priceType === 'fixed' && inrRegion && inrPrice
         ? [{
             region_id:     inrRegion.id,
             currency_code: 'inr',
@@ -447,6 +451,7 @@ export default function EditProductPage() {
 
       const payload = {
         ...formData,
+        price_type: priceType,
         weight:             formData.weight             ? Number.parseInt(formData.weight)             : undefined,
         length:             formData.length             ? Number.parseInt(formData.length)             : undefined,
         height:             formData.height             ? Number.parseInt(formData.height)             : undefined,
@@ -630,32 +635,45 @@ export default function EditProductPage() {
               <DollarSign size={18} className="text-green-600" />
               <h2 className="text-base font-bold text-gray-800">Price</h2>
             </div>
-            <p className="text-sm text-gray-500 mb-5">
-              Enter the price in Indian Rupees (₹). Customers worldwide will see it
-              automatically converted to their local currency.
-            </p>
-            <div className="max-w-xs">
-              <label htmlFor="inr_price" className={labelCls}>
-                Price (INR ₹) <span className="text-red-500">*</span>
+            <div className="flex gap-3 mb-5">
+              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${priceType === 'fixed' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                <input type="radio" name="price_type" value="fixed" checked={priceType === 'fixed'} onChange={() => setPriceType('fixed')} className="sr-only" />
+                Fixed Price
               </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
-                <input
-                  id="inr_price" type="number" min="0" step="1"
-                  value={inrPrice}
-                  onChange={(e) => setInrPrice(e.target.value)}
-                  className="w-full pl-8 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm"
-                  placeholder="e.g. 1999"
-                />
-              </div>
-              {inrPrice && (
-                <p className="mt-2 text-xs text-gray-500">
-                  ≈ ${(Number(inrPrice) * 0.012).toFixed(2)} USD &nbsp;·&nbsp;
-                  €{(Number(inrPrice) * 0.011).toFixed(2)} EUR
-                  <span className="ml-1 text-gray-400">(indicative)</span>
-                </p>
-              )}
+              <label className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${priceType === 'on_request' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                <input type="radio" name="price_type" value="on_request" checked={priceType === 'on_request'} onChange={() => setPriceType('on_request')} className="sr-only" />
+                On Request (WhatsApp)
+              </label>
             </div>
+            {priceType === 'on_request' ? (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-sm text-orange-800">
+                Customer will see a WhatsApp enquiry button instead of &ldquo;Add to Bag&rdquo;.
+                {inrPrice && <span className="ml-1 font-medium">Note: Saving will remove the current price.</span>}
+              </div>
+            ) : (
+              <div className="max-w-xs">
+                <label htmlFor="inr_price" className={labelCls}>
+                  Price (INR ₹) <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-sm">₹</span>
+                  <input
+                    id="inr_price" type="number" min="0" step="1"
+                    value={inrPrice}
+                    onChange={(e) => setInrPrice(e.target.value)}
+                    className="w-full pl-8 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm"
+                    placeholder="e.g. 1999"
+                  />
+                </div>
+                {inrPrice && (
+                  <p className="mt-2 text-xs text-gray-500">
+                    ≈ ${(Number(inrPrice) * 0.012).toFixed(2)} USD &nbsp;·&nbsp;
+                    €{(Number(inrPrice) * 0.011).toFixed(2)} EUR
+                    <span className="ml-1 text-gray-400">(indicative)</span>
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* 5 ── Inventory */}

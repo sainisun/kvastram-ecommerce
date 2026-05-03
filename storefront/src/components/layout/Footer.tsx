@@ -7,11 +7,11 @@ import NewsletterForm from '@/components/NewsletterForm';
 
 const shopLinks = [
   { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Kantha Quilts & Throws', href: '/collections/kantha-quilts' },
-  { label: 'Handmade Bags & Totes', href: '/collections/bags' },
-  { label: 'Block Print Clothing', href: '/collections/block-print' },
-  { label: 'Artisan Scarves & Wraps', href: '/collections/dupattas-stoles' },
-  { label: 'Gifts Under $75', href: '/collections/gifts' },
+  { label: 'Kantha Quilts & Throws', href: '/collections/kantha-essentials' },
+  { label: 'Handmade Bags & Totes', href: '/categories/tote-bags' },
+  { label: 'Block Print Clothing', href: '/collections/block-print-edit' },
+  { label: 'Artisan Scarves & Wraps', href: '/categories/scarves-wraps' },
+  { label: 'Gifts Under ₹2,000', href: '/collections/gifts-under-2000' },
   { label: 'Last Pieces — On Sale', href: '/sale' },
 ];
 
@@ -37,9 +37,9 @@ const mobileShopLinks = [
   { label: 'New Arrivals', href: '/products?sort=newest' },
   { label: 'Best Sellers', href: '/products' },
   { label: 'Collections', href: '/collections' },
-  { label: 'Shawls & Wraps', href: '/collections/shawls' },
-  { label: 'Kurtis & Tops', href: '/collections/kurtis' },
-  { label: 'Accessories', href: '/collections/accessories' },
+  { label: 'Shawls & Wraps', href: '/categories/scarves-wraps' },
+  { label: 'Kurtis & Tops', href: '/categories/suits-kurtas' },
+  { label: 'Accessories', href: '/categories/accessories' },
   { label: 'Sale', href: '/sale' },
 ];
 

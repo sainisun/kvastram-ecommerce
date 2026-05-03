@@ -69,6 +69,7 @@ export const products = pgTable(
     discountable: boolean('discountable').default(true),
     size_guide: text('size_guide'),
     care_instructions: text('care_instructions'),
+    price_type: text('price_type').default('fixed'), // fixed | on_request
     seo_title: text('seo_title'),
     seo_description: text('seo_description'),
     metadata: jsonb('metadata'),
@@ -138,14 +139,57 @@ export const product_option_values = pgTable('product_option_values', {
   ...createdUpdated,
 });
 
-export const product_collections = pgTable('product_collections', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  title: text('title').notNull(),
-  handle: text('handle').notNull().unique(),
-  image: text('image'),
-  metadata: jsonb('metadata'),
-  ...createdUpdated,
-});
+export const product_collections = pgTable(
+  'product_collections',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    title: text('title').notNull(),
+    handle: text('handle').notNull().unique(),
+    image: text('image'),
+    // v2 fields
+    type: text('type'), // occasion | seasonal | price | fabric | gift | style
+    rule_type: text('rule_type').default('manual'), // manual | auto
+    rule_definition: jsonb('rule_definition'),
+    description: text('description'),
+    cover_image_url: text('cover_image_url'),
+    status: text('status').default('draft'), // draft | active | archived
+    display_order: integer('display_order').default(0),
+    show_in_megamenu: boolean('show_in_megamenu').default(false),
+    homepage_section: text('homepage_section'),
+    valid_from: timestamp('valid_from'),
+    valid_until: timestamp('valid_until'),
+    seo_title: text('seo_title'),
+    seo_desc: text('seo_desc'),
+    og_image_url: text('og_image_url'),
+    metadata: jsonb('metadata'),
+    ...createdUpdated,
+  },
+  (table) => ({
+    statusIdx: index('idx_collections_status').on(table.status),
+    typeIdx: index('idx_collections_type').on(table.type),
+    displayOrderIdx: index('idx_collections_display_order').on(table.display_order),
+  })
+);
+
+// M2M junction: products ↔ collections (guide Section 5.4)
+export const collection_products = pgTable(
+  'collection_products',
+  {
+    product_id: uuid('product_id')
+      .references(() => products.id, { onDelete: 'cascade' })
+      .notNull(),
+    collection_id: uuid('collection_id')
+      .references(() => product_collections.id, { onDelete: 'cascade' })
+      .notNull(),
+    position: integer('position').default(0),
+    added_at: timestamp('added_at').defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.product_id, t.collection_id] }),
+    collectionIdx: index('idx_cp_collection').on(t.collection_id, t.position),
+    productIdx: index('idx_cp_product').on(t.product_id),
+  })
+);
 
 export const product_images = pgTable('product_images', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -190,6 +234,9 @@ export const categories = pgTable(
     show_in_header: boolean('show_in_header').default(true),
     header_image_url: text('header_image_url'),
     emoji: text('emoji'),
+    seo_title: text('seo_title'),
+    seo_desc: text('seo_desc'),
+    og_image_url: text('og_image_url'),
     ...createdUpdated,
   },
   (table) => ({
@@ -1188,3 +1235,42 @@ export const returnItemsRelations = relations(return_items, ({ one }) => ({
     references: [line_items.id],
   }),
 }));
+
+
+// --- ADMIN AUDIT LOG (guide Section 7.3) ---
+export const admin_audit_log = pgTable(
+  'admin_audit_log',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    user_id: uuid('user_id').notNull(),
+    user_role: text('user_role'),
+    action: text('action').notNull(),
+    entity_type: text('entity_type').notNull(),
+    entity_id: uuid('entity_id'),
+    old_value: jsonb('old_value'),
+    new_value: jsonb('new_value'),
+    ip_address: text('ip_address'),
+    created_at: timestamp('created_at').defaultNow(),
+  },
+  (table) => ({
+    userIdx: index('idx_audit_user').on(table.user_id),
+    entityIdx: index('idx_audit_entity').on(table.entity_type, table.entity_id),
+    createdIdx: index('idx_audit_created').on(table.created_at),
+  })
+);
+
+// --- REDIRECTS (guide Section 11.4) ---
+export const redirects = pgTable(
+  'redirects',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    from_path: text('from_path').notNull().unique(),
+    to_path: text('to_path').notNull(),
+    status: integer('status').default(301),
+    created_by: uuid('created_by'),
+    created_at: timestamp('created_at').defaultNow(),
+  },
+  (table) => ({
+    fromIdx: index('idx_redirects_from').on(table.from_path),
+  })
+);

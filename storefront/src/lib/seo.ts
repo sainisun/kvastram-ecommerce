@@ -188,7 +188,7 @@ export function getCategoryPath(category: {
   handle?: string;
 }): string | null {
   const slug = category.slug || category.handle;
-  return slug ? `/collections/${slug}` : null;
+  return slug ? `/categories/${slug}` : null;
 }
 
 function getCategoryKeywordBundle(label: string) {

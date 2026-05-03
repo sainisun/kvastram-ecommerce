@@ -40,6 +40,7 @@ import pageRoutes from './routes/pages';
 import categoriesRoutes from './routes/categories';
 import tagsRoutes from './routes/tags';
 import collectionsRoutes from './routes/collections';
+import redirectsRoutes from './routes/redirects';
 import testimonialsRoutes from './routes/testimonials';
 
 import analyticsRoutes from './routes/analytics';
@@ -360,6 +361,7 @@ app.route('/pages', pageRoutes);
 app.route('/categories', categoriesRoutes);
 app.route('/tags', tagsRoutes);
 app.route('/collections', collectionsRoutes);
+app.route('/redirects', redirectsRoutes);
 app.route('/testimonials', testimonialsRoutes);
 
 app.route('/analytics', analyticsRoutes);

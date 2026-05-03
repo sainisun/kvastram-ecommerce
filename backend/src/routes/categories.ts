@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
 import { categories, product_categories, products } from '../db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, count } from 'drizzle-orm';
 import { z } from 'zod';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 
@@ -20,6 +20,9 @@ const CategorySchema = z.object({
   show_in_header: z.boolean().optional().default(true),
   header_image_url: z.string().optional().nullable(),
   emoji: z.string().optional().nullable(),
+  seo_title: z.string().max(200).optional().nullable(),
+  seo_desc: z.string().max(300).optional().nullable(),
+  og_image_url: z.string().url().optional().nullable(),
 });
 
 const ProductAssignmentSchema = z.object({
@@ -159,6 +162,7 @@ categoriesRouter.post(
   async (c) => {
     const data = c.req.valid('json');
     try {
+      const seoTitle = data.seo_title || `${data.name} — Handmade Indian Fashion | Kvastram`;
       const [newCategory] = await db
         .insert(categories)
         .values({
@@ -172,6 +176,9 @@ categoriesRouter.post(
           show_in_header: data.show_in_header ?? true,
           header_image_url: data.header_image_url || null,
           emoji: data.emoji || null,
+          seo_title: seoTitle,
+          seo_desc: data.seo_desc || null,
+          og_image_url: data.og_image_url || null,
         })
         .returning();
 
@@ -234,6 +241,21 @@ categoriesRouter.put(
     const id = c.req.param('id');
     const data = c.req.valid('json');
     try {
+      // Slug lock: block slug changes if products are assigned (only super_admin can override)
+      if (data.slug) {
+        const existing = await db.query.categories.findFirst({ where: eq(categories.id, id) });
+        if (existing && existing.slug !== data.slug) {
+          const [{ total }] = await db
+            .select({ total: count() })
+            .from(product_categories)
+            .where(eq(product_categories.category_id, id));
+          const payload = c.get('jwtPayload') as { role?: string } | undefined;
+          if (total > 0 && payload?.role !== 'super_admin') {
+            return c.json({ error: 'Slug cannot be changed while products are assigned. Contact a super_admin.' }, 403);
+          }
+        }
+      }
+
       const [updatedCategory] = await db
         .update(categories)
         .set({
