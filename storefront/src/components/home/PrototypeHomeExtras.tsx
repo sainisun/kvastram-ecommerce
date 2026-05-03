@@ -84,7 +84,7 @@ function MerchSlotCard({ slot }: { slot: HomepageMerchandisingSlot }) {
   return (
     <Link
       href={slotHref(slot)}
-      className="relative min-h-[320px] min-w-[78%] snap-start overflow-hidden rounded-[12px] bg-gradient-to-br from-[#7d3f25] via-[#a85d3a] to-[#d8b295] p-8 text-white sm:min-w-[42%] lg:min-w-[31%]"
+      className="relative min-h-[320px] min-w-[78%] snap-start overflow-hidden rounded-lg bg-gradient-to-br from-[#7d3f25] via-[#a85d3a] to-[#d8b295] p-8 text-white sm:min-w-[42%] lg:min-w-[31%]"
     >
       {slot.image_url ? (
         <OptimizedImage
@@ -121,7 +121,7 @@ function ProductTile({ product }: { product: Product }) {
     <article className="group">
       <Link
         href={`/products/${product.handle || product.id}`}
-        className="relative block aspect-[4/5] overflow-hidden rounded-[12px] bg-stone-100"
+        className="relative block aspect-[4/5] overflow-hidden rounded-lg bg-stone-100"
       >
         {product.thumbnail ? (
           <OptimizedImage

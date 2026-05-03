@@ -204,7 +204,7 @@ export function Reviews({ productId }: ReviewsProps) {
         {showForm && !submitted && (
           <form
             onSubmit={handleSubmit}
-            className="max-w-xl bg-stone-50 p-8 mb-12 rounded-sm space-y-4"
+            className="max-w-xl bg-stone-50 p-8 mb-12 rounded-lg space-y-4"
           >
             <h3 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-stone-800 mb-4">Share Your Experience</h3>
 
@@ -334,7 +334,7 @@ export function Reviews({ productId }: ReviewsProps) {
         )}
 
         {submitted && (
-          <div className="bg-green-50 text-green-800 p-6 mb-12 rounded-sm text-center">
+          <div className="bg-green-50 text-green-800 p-6 mb-12 rounded-lg text-center">
             <h3 className="font-bold mb-2">Thank you!</h3>
             <p className="text-sm">
               Your review has been submitted and is pending approval.

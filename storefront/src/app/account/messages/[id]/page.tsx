@@ -140,7 +140,7 @@ export default function AccountMessageDetailPage() {
                 const isAdmin = message.sender_type === 'admin';
                 return (
                   <div key={message.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[84%] rounded-2xl px-4 py-3 ${isAdmin ? 'bg-stone-100 text-stone-800' : 'bg-stone-900 text-white'}`}>
+                    <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-stone-100 text-stone-800' : 'bg-stone-900 text-white'}`}>
                       <p className={`mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${isAdmin ? 'text-stone-500' : 'text-stone-300'}`}>
                         {isAdmin ? message.sender_name || 'Kvastram Studio' : 'You'}
                       </p>
@@ -151,7 +151,7 @@ export default function AccountMessageDetailPage() {
               })}
               {studioTyping && (
                 <div className="flex justify-start">
-                  <div className="rounded-2xl bg-stone-100 px-4 py-3 text-sm text-stone-500">
+                  <div className="rounded-lg bg-stone-100 px-4 py-3 text-sm text-stone-500">
                     Studio is typing...
                   </div>
                 </div>

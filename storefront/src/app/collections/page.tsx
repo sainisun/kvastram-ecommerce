@@ -57,7 +57,7 @@ function CollectionCard({
 
   return (
     <Link href={`/collections/${collection.handle}`} className="group block">
-      <div className={`relative aspect-[3/4] overflow-hidden rounded-[12px] bg-gradient-to-br ${gradient}`}>
+      <div className={`relative aspect-[3/4] overflow-hidden rounded-lg bg-gradient-to-br ${gradient}`}>
         {collection.image ? (
           <OptimizedImage
             src={collection.image}

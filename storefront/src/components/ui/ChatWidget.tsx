@@ -134,7 +134,7 @@ export function ChatWidget() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed bottom-40 right-4 z-50 w-[calc(100vw-1rem)] max-w-80 overflow-hidden rounded-2xl bg-white shadow-2xl md:bottom-6 md:right-6 md:w-96 ${isMinimized ? 'h-14' : 'h-[500px]'}`}
+            className={`fixed bottom-40 right-4 z-50 w-[calc(100vw-1rem)] max-w-80 overflow-hidden rounded-lg bg-white shadow-2xl md:bottom-6 md:right-6 md:w-96 ${isMinimized ? 'h-14' : 'h-[500px]'}`}
           >
             {/* Header */}
             <div className="bg-stone-900 text-white p-4 flex items-center justify-between">
@@ -175,7 +175,7 @@ export function ChatWidget() {
                   <div className="space-y-4">
                     {/* Welcome Message */}
                     <div className="flex justify-start">
-                      <div className="bg-white border border-stone-200 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
+                      <div className="bg-white border border-stone-200 rounded-lg rounded-tl-sm px-4 py-3 max-w-[80%]">
                         <p className="text-sm text-stone-700">
                           Hello! Welcome to Kvastram. How can we help you today?
                         </p>

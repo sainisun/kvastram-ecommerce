@@ -222,7 +222,7 @@ function FilterButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between rounded-[8px] px-3 py-2 text-left transition ${
+      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition ${
         small ? 'text-[13px]' : 'text-[14px]'
       } ${
         active

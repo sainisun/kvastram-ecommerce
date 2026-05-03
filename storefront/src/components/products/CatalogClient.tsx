@@ -385,7 +385,7 @@ export default function CatalogClient({
                   categories={categories}
                   tags={tags}
                   collections={collections}
-                  className="rounded-[12px] border border-[var(--line)] bg-[var(--cream)] p-5"
+                  className="rounded-lg border border-[var(--line)] bg-[var(--cream)] p-5"
                 />
               </div>
             </aside>

@@ -296,7 +296,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                             onClose();
                             router.push(href);
                           }}
-                          className="flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-xl transition-all duration-200 group border border-stone-100 hover:border-stone-900"
+                          className="flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-lg transition-all duration-200 group border border-stone-100 hover:border-stone-900"
                         >
                           <span className="text-2xl group-hover:scale-110 transition-transform">
                             {emoji}

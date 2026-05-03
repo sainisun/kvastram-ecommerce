@@ -167,11 +167,11 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
         {loading ? (
           <div className={gridCols === 3 ? 'grid grid-cols-3 gap-1.5' : 'grid grid-cols-2 gap-3'}>
             {[1, 2, 3, 4, 6].map((i) => (
-              <div key={i} className="aspect-[9/16] animate-pulse rounded-xl bg-stone-200" />
+              <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-stone-200" />
             ))}
           </div>
         ) : visibleReels.length === 0 ? (
-          <div className="rounded-xl border border-[var(--line)] bg-white px-6 py-14 text-center">
+          <div className="rounded-lg border border-[var(--line)] bg-white px-6 py-14 text-center">
             <p className="kv-tag">No Reels</p>
             <h2 className="mt-2 kv-title text-[28px]">Nothing here yet</h2>
             <Link href="/products" className="kv-btn mt-5 inline-flex">Browse Products</Link>
@@ -263,7 +263,7 @@ function ReelsGridSkeleton() {
       <div className="kv-container pt-6 pb-8">
         <div className="grid grid-cols-2 gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="aspect-[9/16] animate-pulse rounded-xl bg-stone-200" />
+            <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-stone-200" />
           ))}
         </div>
       </div>
@@ -429,7 +429,7 @@ function ReelPlayerModal({
        * Desktop → h-[90dvh] max-w-[390px] with rounded corners
        */}
       <div
-        className="relative flex h-full w-full flex-col overflow-hidden bg-black lg:h-[90dvh] lg:max-w-[390px] lg:rounded-2xl"
+        className="relative flex h-full w-full flex-col overflow-hidden bg-black lg:h-[90dvh] lg:max-w-[390px] lg:rounded-lg"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -490,9 +490,9 @@ function ReelPlayerModal({
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}
-            className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-white/15 bg-black/55 p-3 backdrop-blur-xl transition active:scale-[0.98]"
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-white/15 bg-black/55 p-3 backdrop-blur-xl transition active:scale-[0.98]"
           >
-            <div className="relative h-14 w-11 shrink-0 overflow-hidden rounded-xl">
+            <div className="relative h-14 w-11 shrink-0 overflow-hidden rounded-lg">
               <OptimizedImage
                 src={current.thumbnail_url}
                 alt={current.product_name}

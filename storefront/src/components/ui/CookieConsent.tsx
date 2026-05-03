@@ -39,7 +39,7 @@ export function CookieConsent() {
       aria-label="Cookie consent"
       aria-live="polite"
     >
-      <div className="bg-white border border-stone-200 shadow-2xl rounded-2xl p-5 flex flex-col gap-4">
+      <div className="bg-white border border-stone-200 shadow-2xl rounded-lg p-5 flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -72,19 +72,19 @@ export function CookieConsent() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleAcceptAll}
-            className="flex-1 bg-stone-900 text-white text-xs font-bold uppercase tracking-widest py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
+            className="flex-1 bg-stone-900 text-white text-xs font-bold uppercase tracking-widest py-2.5 rounded-sm hover:bg-stone-700 transition-colors"
           >
             Accept All
           </button>
           <button
             onClick={handleRejectAll}
-            className="flex-1 border border-stone-200 text-stone-600 text-xs font-bold uppercase tracking-widest py-2.5 rounded-xl hover:bg-stone-50 hover:border-stone-400 transition-colors"
+            className="flex-1 border border-stone-200 text-stone-600 text-xs font-bold uppercase tracking-widest py-2.5 rounded-sm hover:bg-stone-50 hover:border-stone-400 transition-colors"
           >
             Reject All
           </button>
           <Link
             href="/cookie-settings"
-            className="flex-1 text-center text-stone-900 underline text-xs font-bold uppercase tracking-widest py-2.5 rounded-xl hover:text-amber-600 transition-colors"
+            className="flex-1 text-center text-stone-900 underline text-xs font-bold uppercase tracking-widest py-2.5 rounded-sm hover:text-amber-600 transition-colors"
           >
             Customize
           </Link>

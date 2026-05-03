@@ -66,7 +66,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
             ))}
           </div>
         ) : (
-          <div className="rounded-[12px] border border-dashed border-[var(--line)] bg-[var(--cream)] px-6 py-12 text-center">
+          <div className="rounded-lg border border-dashed border-[var(--line)] bg-[var(--cream)] px-6 py-12 text-center">
             <p className="kv-tag">No reels live</p>
             <p className="mx-auto mt-2 max-w-md text-[14px] leading-6 text-[var(--muted)]">
               Publish active reels from the backend to show Watch &amp; Buy previews here.

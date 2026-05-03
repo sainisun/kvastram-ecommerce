@@ -919,7 +919,7 @@ export default function CheckoutPage() {
                         placeholder="Write a personal message for the recipient..."
                         maxLength={200}
                         rows={3}
-                        className="w-full border border-stone-200 rounded-sm px-4 py-3 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:border-stone-900 resize-none transition-colors font-light"
+                        className="w-full border border-stone-200 rounded-md px-4 py-3 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:border-stone-900 resize-none transition-colors font-light"
                       />
                       <p className="text-[10px] text-stone-400 text-right mt-1">
                         {giftMessage.length}/200

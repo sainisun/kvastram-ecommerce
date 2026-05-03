@@ -53,7 +53,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
             ))}
           </div>
         ) : (
-          <div className="rounded-[12px] border border-dashed border-[var(--line)] bg-white px-6 py-12 text-center">
+          <div className="rounded-lg border border-dashed border-[var(--line)] bg-white px-6 py-12 text-center">
             <p className="kv-tag">No collections live</p>
             <p className="mx-auto mt-2 max-w-md text-[14px] leading-6 text-[var(--muted)]">
               Add active collections with storefront handles to show this section.
