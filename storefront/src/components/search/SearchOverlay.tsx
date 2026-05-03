@@ -12,6 +12,15 @@ import type { Product } from '@/types';
 
 type SearchResult = Pick<Product, 'id' | 'title' | 'handle' | 'thumbnail' | 'variants'>;
 
+function getSearchResultPrice(product: SearchResult) {
+  const prices = product.variants?.flatMap((variant) => variant.prices || []) || [];
+  const preferredPrice =
+    prices.find((price) => price.currency_code?.toLowerCase() === 'inr') ||
+    prices[0];
+
+  return preferredPrice?.amount;
+}
+
 interface SearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
@@ -379,38 +388,39 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         Products
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {results.map((product) => (
-                          <div
-                            key={product.id}
-                            className="group cursor-pointer"
-                            onClick={() => {
-                              onClose();
-                              router.push(`/products/${product.handle}`);
-                            }}
-                          >
-                            <div className="aspect-[3/4] bg-stone-100 relative rounded-lg overflow-hidden mb-3">
-                              {product.thumbnail && (
-                                <OptimizedImage
-                                  src={product.thumbnail}
-                                  alt={product.title}
-                                  fill
-                                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
+                        {results.map((product) => {
+                          const price = getSearchResultPrice(product);
+
+                          return (
+                            <div
+                              key={product.id}
+                              className="group cursor-pointer"
+                              onClick={() => {
+                                onClose();
+                                router.push(`/products/${product.handle || product.id}`);
+                              }}
+                            >
+                              <div className="aspect-[3/4] bg-stone-100 relative rounded-lg overflow-hidden mb-3">
+                                {product.thumbnail && (
+                                  <OptimizedImage
+                                    src={product.thumbnail}
+                                    alt={product.title}
+                                    fill
+                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                  />
+                                )}
+                              </div>
+                              <h4 className="text-sm font-medium text-stone-900 group-hover:underline decoration-1 underline-offset-4 line-clamp-1">
+                                {product.title}
+                              </h4>
+                              {price !== undefined && (
+                                <p className="text-sm text-stone-500 mt-1">
+                                  from {formatPrice(price)}
+                                </p>
                               )}
                             </div>
-                            <h4 className="text-sm font-medium text-stone-900 group-hover:underline decoration-1 underline-offset-4 line-clamp-1">
-                              {product.title}
-                            </h4>
-                            {product.price !== undefined && (
-                              <p className="text-sm text-stone-500 mt-1">
-                                from{' '}
-                                {formatPrice(product.price)}
-                                {/* Note: product.price from backend search is formatted generic price, multiplying by 100 to convert back to cents if needed or assuming standard format. Checking backend logic: backend returns `minProductPrice` which is int cents? No, service mapped `price: minProductPrice`. wait, map returns minProductPrice which is variants' amount. Amount is in cents. So we pass cents to `formatPrice`. */}
-                                {/* Update: In service we did `return { ...p, price: minProductPrice };`. minProductPrice comes from `pr.amount` which is in cents. formatPrice expects cents? No, `formatPrice` usually expects number. Let's check logic. `new Intl.NumberFormat().format(amount / 100)`. So yes, pass cents. */}
-                              </p>
-                            )}
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
 
                       <div className="mt-8 text-center border-t border-stone-100 pt-6">
