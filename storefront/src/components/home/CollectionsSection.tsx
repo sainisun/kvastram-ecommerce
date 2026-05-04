@@ -20,12 +20,12 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
         </div>
 
         {displayed.length > 0 ? (
-          <div className="collections-grid featured">
+          <div className="kv-carousel collections-carousel">
             {displayed.map((collection) => (
               <Link
                 key={collection.id}
                 href={`/collections/${collection.handle}`}
-                className="collection-card group"
+                className="collection-card kv-carousel-item group"
               >
                 {collection.image ? (
                   <div className="absolute inset-0">

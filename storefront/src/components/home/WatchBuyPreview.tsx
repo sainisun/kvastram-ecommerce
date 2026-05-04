@@ -10,7 +10,7 @@ interface WatchBuyPreviewProps {
 }
 
 export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
-  const displayed = reels.slice(0, 4);
+  const displayed = reels.slice(0, 12);
 
   return (
     <section className="kv-section bg-[var(--cream)]">
@@ -23,15 +23,27 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
         </div>
 
         {displayed.length > 0 ? (
-          <div className="reels-grid">
+          <div className="kv-carousel watch-buy-carousel">
             {displayed.map((reel) => (
               <Link
                 key={reel.id}
                 href="/reels"
-                className="reel-card"
+                className="reel-card kv-carousel-item"
               >
                 <div className="reel-media">
-                  {reel.thumbnail_url ? (
+                  {reel.video_url ? (
+                    <video
+                      className="reel-video"
+                      src={reel.video_url}
+                      poster={reel.thumbnail_url || undefined}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      aria-label={reel.product_name}
+                    />
+                  ) : reel.thumbnail_url ? (
                     <OptimizedImage
                       src={reel.thumbnail_url}
                       alt={reel.product_name}

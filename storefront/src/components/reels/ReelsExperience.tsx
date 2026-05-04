@@ -202,7 +202,19 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                   className="reel-card group"
                 >
                   <div className="reel-media">
-                    {reel.thumbnail_url ? (
+                    {reel.video_url ? (
+                      <video
+                        className="reel-video transition-transform duration-500 group-hover:scale-105"
+                        src={reel.video_url}
+                        poster={reel.thumbnail_url || undefined}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        aria-label={reel.product_name}
+                      />
+                    ) : reel.thumbnail_url ? (
                       <OptimizedImage
                         src={reel.thumbnail_url}
                         alt={reel.product_name}

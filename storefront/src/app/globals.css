@@ -3652,6 +3652,27 @@ a:active,
   display: grid;
   gap: 14px;
 }
+.kv-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(250px, 78%);
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.kv-carousel::-webkit-scrollbar {
+  display: none;
+}
+.kv-carousel-item {
+  scroll-snap-align: start;
+}
+.collections-carousel {
+  grid-auto-columns: minmax(280px, 82%);
+}
 .collection-card {
   min-height: 260px;
   border-radius: var(--radius-lg);
@@ -3695,6 +3716,9 @@ a:active,
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
+.watch-buy-carousel {
+  grid-auto-columns: minmax(170px, 44%);
+}
 .reel-card {
   border: 0;
   text-align: left;
@@ -3720,6 +3744,13 @@ a:active,
   overflow: hidden;
   flex-shrink: 0;
 }
+.reel-video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
 .play {
   position: absolute;
   inset: 0;
@@ -3737,6 +3768,24 @@ a:active,
   font-weight: 700;
   font-size: var(--text-body-sm);
   line-height: var(--leading-snug);
+}
+
+@media (min-width: 640px) {
+  .watch-buy-carousel {
+    grid-auto-columns: minmax(190px, 30%);
+  }
+  .collections-carousel {
+    grid-auto-columns: minmax(320px, 46%);
+  }
+}
+
+@media (min-width: 1024px) {
+  .watch-buy-carousel {
+    grid-auto-columns: minmax(220px, 23%);
+  }
+  .collections-carousel {
+    grid-auto-columns: minmax(360px, 32%);
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -3852,6 +3901,33 @@ a:active,
   font-size: var(--text-body-xs);
   font-weight: 900;
   line-height: var(--leading-snug);
+}
+
+@media (max-width: 767px) {
+  .kv-section {
+    padding-block: 28px;
+  }
+
+  .kv-section-head {
+    margin-bottom: 16px;
+  }
+
+  .mobile-circle-categories {
+    padding-top: 12px;
+    padding-bottom: 10px;
+  }
+
+  .mobile-circle-categories + .hero {
+    margin-top: 0;
+  }
+
+  .hero + .kv-section {
+    padding-top: 24px;
+  }
+
+  .circle-row {
+    padding-bottom: 6px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -4778,4 +4854,3 @@ a:active,
   font-weight: var(--weight-regular);
   line-height: var(--leading-normal);
 }
-
