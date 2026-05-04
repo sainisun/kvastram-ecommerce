@@ -29,10 +29,6 @@ export async function CircularCategories() {
   return (
     <section className="kv-section mobile-circle-categories bg-[var(--cream)]">
       <div className="kv-container">
-        <div className="kv-section-head">
-          <div className="kv-tag">Shop by category</div>
-        </div>
-
         {circles.length > 0 ? (
           <div className="circle-row">
             {circles.map((circle) => (

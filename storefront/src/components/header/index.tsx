@@ -1,13 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { usePathname } from 'next/navigation';
 import { PromoBar } from './PromoBar';
 import { HeaderMain } from './HeaderMain';
 import { SearchBar } from './SearchBar';
 import { MegaMenu } from './MegaMenu';
 import { MobileTopBar } from './mobile/MobileTopBar';
-import { CategoryPills } from './mobile/CategoryPills';
 import { MobileDrawer } from './mobile/MobileDrawer';
 import CartDrawer from '@/components/layout/CartDrawer';
 import SearchOverlay from '@/components/search/SearchOverlay';
@@ -22,7 +20,6 @@ interface Collection {
 }
 
 export function SiteHeader() {
-  const pathname = usePathname();
   const [isSticky, setIsSticky] = useState(false);
   const [activeMega, setActiveMega] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -104,8 +101,6 @@ export function SiteHeader() {
           onCartOpen={() => setCartOpen(true)}
         />
 
-        {/* Mobile category pills */}
-        {pathname !== '/' && <CategoryPills />}
       </header>
 
       {/* Mobile drawer — outside header to escape stacking context */}
