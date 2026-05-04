@@ -3678,6 +3678,7 @@ a:active,
 .collection-info h3 {
   margin: 0 0 4px;
   font-size: var(--text-display-md);
+  color: white;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -4328,7 +4329,7 @@ a:active,
 }
 
 .category-banner-cta {
-  color: var(--ink);
+  color: white;
 }
 
 .category-circle-label {
@@ -4777,5 +4778,4 @@ a:active,
   font-weight: var(--weight-regular);
   line-height: var(--leading-normal);
 }
-
 

@@ -44,14 +44,6 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                   <div className="play z-[2]">
                     <Play size={34} fill="white" className="text-white" />
                   </div>
-                  <div className="relative z-[3]">
-                    <div className="text-body-xs type-bold uppercase tracking-token-wider text-white/75 sm:text-body-xs">
-                      Watch &amp; Buy
-                    </div>
-                    <div className="reel-title mt-0.5 line-clamp-2 leading-token-tight text-white">
-                      {reel.product_name}
-                    </div>
-                  </div>
                 </div>
                 <div className="reel-info">
                   <h3 className="reel-title line-clamp-2 leading-token-snug color-ink">

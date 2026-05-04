@@ -43,7 +43,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
                   </div>
                 )}
                 <div className="collection-info">
-                  <h3 className="font-heading type-bold">{collection.title}</h3>
+                  <h3 className="font-heading type-bold text-white">{collection.title}</h3>
                   <span className="text-body-sm text-white/70">Shop Edit</span>
                 </div>
               </Link>

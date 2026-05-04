@@ -61,7 +61,7 @@ export default function CategoryBannerCarousel({ banners }: Props) {
                         </h2>
                       ) : null}
                       {banner.button_label ? (
-                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full bg-white px-5 py-2.5">
+                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full border border-white/70 bg-transparent px-5 py-2.5 text-white">
                           {banner.button_label}
                         </span>
                       ) : null}

@@ -213,17 +213,10 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                     ) : (
                       <div className="absolute inset-0 bg-[var(--soft)]" />
                     )}
-                    {/* Gradient for text readability */}
+                    {/* Gradient keeps the play icon readable on busy thumbnails. */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                    {/* Play icon */}
                     <div className="play">
                       <Play size={gridCols === 3 ? 20 : 28} fill="white" className="text-white drop-shadow-lg" />
-                    </div>
-                    {/* Product name overlay */}
-                    <div className="relative z-[3] px-1">
-                      <div className="reel-title line-clamp-2 leading-token-tight text-white drop-shadow">
-                        {reel.product_name}
-                      </div>
                     </div>
                   </div>
                   {gridCols === 2 && (
