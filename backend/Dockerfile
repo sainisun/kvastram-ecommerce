@@ -30,4 +30,4 @@ COPY --from=builder /app/src/db/migrations ./dist/migrations
 EXPOSE 4000
 
 # Run migrations then start server — both are pre-compiled, no tsx needed
-CMD ["sh", "-c", "node dist/migrate.js && node dist/index.js"]
+CMD ["sh", "-c", "node dist/migrate.js && node dist/run-manual-migrations.js && node dist/index.js"]
