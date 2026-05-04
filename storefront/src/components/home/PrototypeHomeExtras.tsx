@@ -39,16 +39,16 @@ function isSaleProduct(product: Product) {
 }
 
 function SectionHead({
-  title,
+  eyebrow,
   action,
 }: {
-  title: string;
+  eyebrow: string;
   copy?: string;
   action?: { label: string; href: string };
 }) {
   return (
     <div className="kv-section-head mb-8 md:mb-12">
-      <h2 className="kv-title">{title}</h2>
+      <div className="kv-tag">{eyebrow}</div>
       {action ? (
         <Link href={action.href} className="kv-section-link">
           {action.label}
@@ -203,7 +203,7 @@ export function PrototypeHomeExtras({
       <section className="kv-section bg-[var(--cream)]">
         <div className="kv-container">
           <SectionHead
-            title="Seasonal edits"
+            eyebrow="Limited editions"
             action={{ label: 'View All', href: '/products' }}
           />
           {seasonalSlots.length > 0 ? (
@@ -221,7 +221,7 @@ export function PrototypeHomeExtras({
       <section className="kv-section bg-white">
         <div className="kv-container">
           <SectionHead
-            title="Pieces we love"
+            eyebrow="Curated for you"
             action={{ label: 'View All', href: '/products' }}
           />
           {tabProducts.length > 0 ? (
@@ -241,7 +241,7 @@ export function PrototypeHomeExtras({
       <section className="kv-section bg-[var(--cream)]">
         <div className="kv-container">
           <SectionHead
-            title="Shop by fabric"
+            eyebrow="Craft &amp; material"
             action={{ label: 'View All', href: '/products' }}
           />
           {fabricCards.length > 0 ? (
@@ -259,7 +259,7 @@ export function PrototypeHomeExtras({
       <section className="kv-section bg-[var(--cream)]">
         <div className="kv-container">
           <SectionHead
-            title="Occasion finder"
+            eyebrow="Dress for the moment"
             action={{ label: 'View All', href: '/collections' }}
           />
           {occasionCards.length > 0 ? (

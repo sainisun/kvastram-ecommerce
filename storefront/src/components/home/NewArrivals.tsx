@@ -17,7 +17,7 @@ export function NewArrivals({ products, isCurated = false }: NewArrivalsProps) {
     <section className={isCurated ? 'kv-section bg-[var(--cream)]' : 'kv-section bg-white'}>
       <div className="kv-container">
         <div className="kv-section-head">
-          <h2 className="kv-title">Fresh from the studio</h2>
+          <div className="kv-tag">New arrivals</div>
           <Link
             href={isCurated ? '/products' : '/products?sort=newest'}
             className="kv-section-link"

@@ -17,7 +17,7 @@ export function BestSellers({ products }: BestSellersProps) {
     <section className="kv-section bg-[var(--cream)]">
       <div className="kv-container">
         <div className="kv-section-head">
-          <h2 className="kv-title">Customer-loved pieces</h2>
+          <div className="kv-tag">Bestsellers</div>
           <Link href="/bestsellers" className="kv-section-link">
             View All
           </Link>

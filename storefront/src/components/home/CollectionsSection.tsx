@@ -13,7 +13,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
     <section className="kv-section bg-[var(--cream)]">
       <div className="kv-container">
         <div className="kv-section-head">
-          <h2 className="kv-title">Shop the occasion</h2>
+          <div className="kv-tag">Curated collections</div>
           <Link href="/collections" className="kv-section-link">
             View All
           </Link>

@@ -16,7 +16,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
     <section className="kv-section bg-[var(--cream)]">
       <div className="kv-container">
         <div className="kv-section-head">
-          <h2 className="kv-title">Reels that sell the story</h2>
+          <div className="kv-tag">Watch &amp; Buy</div>
           <Link href="/reels" className="kv-section-link">
             View All
           </Link>
