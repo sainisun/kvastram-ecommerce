@@ -58,6 +58,7 @@ services:
     environment:
       # Server-side only: Next.js rewrites proxy to this internal Docker URL.
       - INTERNAL_API_URL=http://backend:4000
+      - HOSTNAME=0.0.0.0
       - NODE_ENV=production
     depends_on:
       - backend
@@ -87,6 +88,7 @@ services:
     environment:
       # Server-side only: Next.js rewrites proxy to this internal Docker URL.
       - BACKEND_URL=http://backend:4000
+      - HOSTNAME=0.0.0.0
       - NODE_ENV=production
     depends_on:
       - backend
