@@ -82,6 +82,49 @@ export class ConflictError extends APIError {
   }
 }
 
+function isDatabaseError(err: Error): err is Error & {
+  code?: string;
+  constraint?: string;
+  column?: string;
+  detail?: string;
+} {
+  return typeof (err as { code?: unknown }).code === 'string';
+}
+
+function getDatabaseErrorResponse(err: Error) {
+  if (!isDatabaseError(err)) return null;
+
+  if (err.code === '23505') {
+    const target =
+      err.constraint === 'products_handle_unique'
+        ? 'URL handle'
+        : err.constraint === 'product_variants_sku_unique'
+          ? 'SKU'
+          : 'identifier';
+
+    return {
+      message: `${target} already exists. Please use a different ${target.toLowerCase()}.`,
+      status: HttpStatus.CONFLICT,
+    };
+  }
+
+  if (err.code === '23503') {
+    return {
+      message: 'Related record was not found. Please refresh and try again.',
+      status: HttpStatus.UNPROCESSABLE_ENTITY,
+    };
+  }
+
+  if (err.code === '23502') {
+    return {
+      message: `Missing required field${err.column ? `: ${err.column}` : ''}.`,
+      status: HttpStatus.UNPROCESSABLE_ENTITY,
+    };
+  }
+
+  return null;
+}
+
 // Global error handler middleware
 export async function errorHandler(err: Error, c: Context) {
   console.error('[ERROR]', err);
@@ -104,6 +147,11 @@ export async function errorHandler(err: Error, c: Context) {
   // Handle custom API errors
   if (err instanceof APIError) {
     return errorResponse(c, err.message, err.errors, err.statusCode);
+  }
+
+  const databaseError = getDatabaseErrorResponse(err);
+  if (databaseError) {
+    return errorResponse(c, databaseError.message, null, databaseError.status);
   }
 
   // Handle specific error types by message (legacy support)

@@ -252,10 +252,10 @@ export default function NewProductPage() {
       };
 
       const created = await api.createProduct(payload);
-      const productId = created?.product?.id;
+      const productId = created?.product?.id || created?.id;
 
       if (productId) {
-        await api.updateProductHomepagePlacements(productId, [
+        const placements = [
           ...(homepagePlacement.new_arrivals
             ? [
                 {
@@ -276,7 +276,19 @@ export default function NewProductPage() {
                 },
               ]
             : []),
-        ]);
+        ];
+
+        if (placements.length > 0) {
+          try {
+            await api.updateProductHomepagePlacements(productId, placements);
+          } catch (placementError) {
+            console.error('Failed to update product homepage placements:', placementError);
+            showNotification(
+              'warning',
+              'Product saved, but homepage placement could not be updated.'
+            );
+          }
+        }
       }
       showNotification('success', 'Product created successfully');
       router.push('/dashboard/products');
