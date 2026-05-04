@@ -9,7 +9,6 @@ import {
   buildWebsiteJsonLd,
   serializeJsonLd,
 } from '@/lib/seo';
-import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
 import { BrandStory } from '@/components/home/BrandStory';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
@@ -349,7 +348,6 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
 
-      <CircularCategories />
       <HeroSection banners={heroBanners} />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
