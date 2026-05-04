@@ -11,6 +11,8 @@ import {
   product_option_values,
   money_amounts,
   product_images,
+  categories,
+  tags,
   product_categories,
   product_tags,
   back_in_stock_subscriptions,
@@ -22,6 +24,8 @@ import type {
   UpdateProductInput,
   ProductBulkUpdate,
 } from './product-validator';
+import { ValidationError } from '../../middleware/error-handler';
+import type { ValidationErrorDetails } from '../../middleware/error-handler';
 
 
 export class ProductMutationService {
@@ -40,6 +44,9 @@ export class ProductMutationService {
         sku,
         ...productData
       } = data;
+
+      // Validate foreign keys exist before proceeding
+      await this.validateForeignKeys(tx, category_ids, tag_ids);
 
       // 1. Create Product
       const newProduct = await this.createBaseProduct(tx, productData);
@@ -64,6 +71,46 @@ export class ProductMutationService {
 
       return { ...newProduct, default_variant_id: newVariant.id };
     });
+  }
+
+  private async validateForeignKeys(tx: any, categoryIds: string[] | undefined, tagIds: string[] | undefined) {
+    if (!categoryIds && !tagIds) return;
+
+    const errors: ValidationErrorDetails[] = [];
+
+    if (categoryIds && categoryIds.length > 0) {
+      const existingCats = await tx
+        .select({ id: categories.id })
+        .from(categories)
+        .where(inArray(categories.id, categoryIds));
+      const existingIds = new Set(existingCats.map((c: { id: any }) => c.id));
+      const missing = categoryIds.filter((id) => !existingIds.has(id));
+      if (missing.length > 0) {
+        errors.push({
+          field: 'category_ids',
+          message: `Categories not found: ${missing.join(', ')}`,
+        });
+      }
+    }
+
+    if (tagIds && tagIds.length > 0) {
+      const existingTags = await tx
+        .select({ id: tags.id })
+        .from(tags)
+        .where(inArray(tags.id, tagIds));
+      const existingIds = new Set(existingTags.map((t: { id: any }) => t.id));
+      const missing = tagIds.filter((id) => !existingIds.has(id));
+      if (missing.length > 0) {
+        errors.push({
+          field: 'tag_ids',
+          message: `Tags not found: ${missing.join(', ')}`,
+        });
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new ValidationError('Invalid foreign key references', errors);
+    }
   }
 
   private async createBaseProduct(tx: any, productData: any) {

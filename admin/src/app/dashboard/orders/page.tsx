@@ -79,7 +79,13 @@ export default function OrdersPage() {
   }, [page, search, statusFilter]);
 
   const fetchStats = async () => {
-    try { const d = await api.getOrderStats(); setStats(d || null); } catch { /* ignore */ }
+    try {
+      const d = await api.getOrderStats();
+      setStats(d || null);
+    } catch (error) {
+      console.error('Failed to fetch order stats:', error);
+      setStats(null);
+    }
   };
 
   useEffect(() => { void fetchOrders(); }, [fetchOrders]);

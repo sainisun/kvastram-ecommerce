@@ -205,12 +205,16 @@ const createProductHandler = asyncHandler(async (c) => {
 
   // Convert status to correct type if needed, Zod handles validation
   const product = await productService.create(result.data);
-  await triggerStorefrontRevalidation({
-    productId: product.id,
-    handle: product.handle,
-    paths: ['/', '/products'],
-    tags: ['products'],
-  });
+  try {
+    await triggerStorefrontRevalidation({
+      productId: product.id,
+      handle: product.handle,
+      paths: ['/', '/products'],
+      tags: ['products'],
+    });
+  } catch (err) {
+    console.warn(`[StorefrontRevalidate] Revalidation failed for product ${product.id}:`, err);
+  }
   return successResponse(
     c,
     { product },
@@ -255,10 +259,14 @@ productsRouter.post(
       }
     }
 
-    await triggerStorefrontRevalidation({
-      paths: ['/', '/products'],
-      tags: ['products'],
-    });
+    try {
+      await triggerStorefrontRevalidation({
+        paths: ['/', '/products'],
+        tags: ['products'],
+      });
+    } catch (err) {
+      console.warn('[StorefrontRevalidate] Revalidation failed for bulk create:', err);
+    }
 
     return successResponse(
       c,
@@ -284,12 +292,16 @@ productsRouter.put(
 
     try {
       const product = await productService.update(id, result.data);
-      await triggerStorefrontRevalidation({
-        productId: product.id,
-        handle: product.handle,
-        paths: ['/', '/products'],
-        tags: ['products'],
-      });
+      try {
+        await triggerStorefrontRevalidation({
+          productId: product.id,
+          handle: product.handle,
+          paths: ['/', '/products'],
+          tags: ['products'],
+        });
+      } catch (err) {
+        console.warn(`[StorefrontRevalidate] Revalidation failed for product ${product.id}:`, err);
+      }
       return successResponse(c, { product }, 'Product updated successfully');
     } catch (e: unknown) {
       if (e instanceof Error && e.message.includes('not found'))
@@ -346,10 +358,14 @@ productsRouter.post(
       }
     }
 
-    await triggerStorefrontRevalidation({
-      paths: ['/', '/products'],
-      tags: ['products'],
-    });
+    try {
+      await triggerStorefrontRevalidation({
+        paths: ['/', '/products'],
+        tags: ['products'],
+      });
+    } catch (err) {
+      console.warn('[StorefrontRevalidate] Revalidation failed for bulk update:', err);
+    }
 
     return successResponse(
       c,
@@ -386,10 +402,14 @@ productsRouter.post(
 
     const { product_ids } = result.data;
     const count = await productService.bulkDelete(product_ids);
-    await triggerStorefrontRevalidation({
-      paths: ['/', '/products'],
-      tags: ['products'],
-    });
+    try {
+      await triggerStorefrontRevalidation({
+        paths: ['/', '/products'],
+        tags: ['products'],
+      });
+    } catch (err) {
+      console.warn('[StorefrontRevalidate] Revalidation failed for bulk delete:', err);
+    }
 
     return successResponse(
       c,
@@ -413,12 +433,16 @@ productsRouter.delete(
       throw new NotFoundError('Product not found');
     }
     await productService.delete(id);
-    await triggerStorefrontRevalidation({
-      productId: id,
-      handle: product.handle,
-      paths: ['/', '/products'],
-      tags: ['products'],
-    });
+    try {
+      await triggerStorefrontRevalidation({
+        productId: id,
+        handle: product.handle,
+        paths: ['/', '/products'],
+        tags: ['products'],
+      });
+    } catch (err) {
+      console.warn(`[StorefrontRevalidate] Revalidation failed for product ${id}:`, err);
+    }
     return successResponse(
       c,
       { id, deleted: true },
