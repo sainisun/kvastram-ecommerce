@@ -27,7 +27,7 @@ export function CategoryPills({ pills = DEFAULT_PILLS }: CategoryPillsProps) {
 
   return (
     <div
-      className={`flex md:hidden gap-1.5 overflow-x-auto px-3.5 py-2 bg-[#f7f4ef] border-b border-[#d8d2c8] h-[44px] items-center ${styles.scrollbarNone}`}
+      className={`flex md:hidden gap-5 overflow-x-auto px-4 py-2 bg-[#f7f4ef] border-b border-[#d8d2c8] h-[44px] items-center ${styles.scrollbarNone}`}
       role="tablist"
       aria-label="Category quick links"
     >
@@ -40,10 +40,10 @@ export function CategoryPills({ pills = DEFAULT_PILLS }: CategoryPillsProps) {
             role="tab"
             aria-selected={isActive}
             className={[
-              'flex-shrink-0 px-3 py-1 rounded-full font-[family-name:var(--font-ui)] text-[11px] tracking-[0.04em] border transition-all whitespace-nowrap',
+              'flex-shrink-0 font-[family-name:var(--font-ui)] text-[11px] tracking-[0.04em] transition-colors whitespace-nowrap underline-offset-4',
               isActive
-                ? 'bg-[#1a1714] text-white border-[#1a1714]'
-                : 'bg-white text-[#7a7570] border-[#d8d2c8] hover:border-[#7a7570]',
+                ? 'text-[#1a1714] underline'
+                : 'text-[#7a7570] hover:text-[#1a1714] hover:underline',
             ].join(' ')}
           >
             {pill.label}

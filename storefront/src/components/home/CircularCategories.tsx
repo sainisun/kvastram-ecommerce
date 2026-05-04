@@ -27,13 +27,10 @@ export async function CircularCategories() {
   }
 
   return (
-    <section className="kv-section bg-[var(--cream)]">
+    <section className="kv-section mobile-circle-categories bg-[var(--cream)]">
       <div className="kv-container">
         <div className="kv-section-head">
-          <div>
-            <div className="kv-tag">Shop by category</div>
-            <h2 className="kv-title">Craft-led discovery</h2>
-          </div>
+          <h2 className="kv-title">Craft-led discovery</h2>
         </div>
 
         {circles.length > 0 ? (

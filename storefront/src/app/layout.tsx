@@ -16,7 +16,6 @@ import { WholesaleCartProvider } from '@/context/wholesale-cart-context';
 import { WholesaleProvider } from '@/context/wholesale-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
-import { TawkToWidget } from '@/components/ui/TawkToWidget';
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
 
 const cormorant = Cormorant_Garamond({
@@ -126,7 +125,6 @@ export default async function RootLayout({
         </RootErrorBoundary>
         <Analytics />
         <CookieConsent />
-        <TawkToWidget propertyId={process.env.NEXT_PUBLIC_TAWK_PROPERTY_ID} />
       </body>
     </html>
   );

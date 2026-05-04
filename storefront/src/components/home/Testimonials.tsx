@@ -47,9 +47,8 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
   return (
     <section className="kv-section bg-white">
       <div className="kv-container">
-        <div className="mb-8 text-center md:mb-12">
-          <div className="kv-tag">Love shared by customers</div>
-          <h2 className="kv-title mt-3">What they&apos;re <em>saying</em></h2>
+        <div className="kv-section-head mb-8 md:mb-12">
+          <h2 className="kv-title">What they&apos;re <em>saying</em></h2>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3 lg:gap-8">

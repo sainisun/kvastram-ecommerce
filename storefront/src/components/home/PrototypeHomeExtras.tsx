@@ -39,23 +39,18 @@ function isSaleProduct(product: Product) {
 }
 
 function SectionHead({
-  eyebrow,
   title,
   action,
 }: {
-  eyebrow: string;
   title: string;
   copy?: string;
   action?: { label: string; href: string };
 }) {
   return (
     <div className="kv-section-head mb-8 md:mb-12">
-      <div>
-        <div className="kv-tag">{eyebrow}</div>
-        <h2 className="kv-title">{title}</h2>
-      </div>
+      <h2 className="kv-title">{title}</h2>
       {action ? (
-        <Link href={action.href} className="kv-btn kv-btn-outline">
+        <Link href={action.href} className="kv-section-link">
           {action.label}
         </Link>
       ) : null}
@@ -208,8 +203,8 @@ export function PrototypeHomeExtras({
       <section className="kv-section bg-[var(--cream)]">
         <div className="kv-container">
           <SectionHead
-            eyebrow="Limited editions"
             title="Seasonal edits"
+            action={{ label: 'View All', href: '/products' }}
           />
           {seasonalSlots.length > 0 ? (
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -226,8 +221,8 @@ export function PrototypeHomeExtras({
       <section className="kv-section bg-white">
         <div className="kv-container">
           <SectionHead
-            eyebrow="Curated for you"
             title="Pieces we love"
+            action={{ label: 'View All', href: '/products' }}
           />
           {tabProducts.length > 0 ? (
             <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8">
@@ -246,8 +241,8 @@ export function PrototypeHomeExtras({
       <section className="kv-section bg-[var(--cream)]">
         <div className="kv-container">
           <SectionHead
-            eyebrow="Craft &amp; material"
             title="Shop by fabric"
+            action={{ label: 'View All', href: '/products' }}
           />
           {fabricCards.length > 0 ? (
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -264,8 +259,8 @@ export function PrototypeHomeExtras({
       <section className="kv-section bg-[var(--cream)]">
         <div className="kv-container">
           <SectionHead
-            eyebrow="Dress for the moment"
             title="Occasion finder"
+            action={{ label: 'View All', href: '/collections' }}
           />
           {occasionCards.length > 0 ? (
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

@@ -42,10 +42,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
     <section className="kv-section bg-white">
       <div className="kv-container">
         <div className="kv-section-head">
-          <div>
-            <div className="kv-tag">Style Story</div>
-            <h2 className="kv-title">Shop the <em className="italic">Look</em></h2>
-          </div>
+          <h2 className="kv-title">Shop the <em className="italic">Look</em></h2>
         </div>
 
         <div className="grid gap-8 md:gap-12 lg:grid-cols-[1.4fr,1fr] lg:items-center lg:gap-16">

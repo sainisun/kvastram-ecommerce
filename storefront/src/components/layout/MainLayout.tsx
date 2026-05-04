@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { SiteHeader } from '@/components/header';
 import { Footer } from '@/components/layout/Footer';
 import { BottomNav } from '@/components/layout/BottomNav';
-import { ChatWidget } from '@/components/ui/ChatWidget';
 import { WholesaleHeader } from '@/components/layout/WholesaleHeader';
 import { WholesaleFooter } from '@/components/layout/WholesaleFooter';
 import { CartRecovery } from '@/components/cart/CartRecovery';
@@ -82,8 +81,6 @@ export function MainLayout({
       {!isCheckoutPage && <BottomNav />}
       {/* Scroll to top */}
       {!hideSiteChrome && <ScrollToTop />}
-      {/* Chat Widget */}
-      {!hideSiteChrome && <ChatWidget />}
       {/* Cart Abandonment Recovery Modal */}
       {!hideSiteChrome && <CartRecovery />}
       {/* Cookie Consent */}

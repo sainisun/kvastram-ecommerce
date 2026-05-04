@@ -13,12 +13,9 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
     <section className="kv-section bg-[var(--cream)]">
       <div className="kv-container">
         <div className="kv-section-head">
-          <div>
-            <div className="kv-tag">Curated collections</div>
-            <h2 className="kv-title">Shop the occasion</h2>
-          </div>
-          <Link href="/collections" className="kv-btn kv-btn-outline">
-            Browse Collections
+          <h2 className="kv-title">Shop the occasion</h2>
+          <Link href="/collections" className="kv-section-link">
+            View All
           </Link>
         </div>
 
