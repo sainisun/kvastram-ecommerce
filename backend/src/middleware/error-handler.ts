@@ -122,6 +122,20 @@ function getDatabaseErrorResponse(err: Error) {
     };
   }
 
+  if (err.code === '42703') {
+    return {
+      message: 'Database schema is missing a required column. Please run migrations and try again.',
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    };
+  }
+
+  if (err.code === '42P01') {
+    return {
+      message: 'Database schema is missing a required table. Please run migrations and try again.',
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+    };
+  }
+
   return null;
 }
 
