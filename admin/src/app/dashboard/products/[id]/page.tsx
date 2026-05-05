@@ -440,12 +440,18 @@ export default function EditProductPage() {
         throw new Error('Add at least 1 media item before saving this product.');
       }
 
-      // Save price only for fixed-price products; on_request products have no price
-      const formattedPrices = priceType === 'fixed' && inrRegion && inrPrice
+      const parsedInrPrice = Number.parseFloat(inrPrice);
+      if (priceType === 'fixed' && (!inrPrice || Number.isNaN(parsedInrPrice) || parsedInrPrice <= 0)) {
+        throw new Error('Enter a valid INR price before saving this fixed-price product.');
+      }
+
+      // Save price only for fixed-price products. Region is optional because storefront pricing
+      // only needs currency_code + amount, and some installs may not have an INR region yet.
+      const formattedPrices = priceType === 'fixed'
         ? [{
-            region_id:     inrRegion.id,
+            region_id:     inrRegion?.id,
             currency_code: 'inr',
-            amount:        Math.round(Number.parseFloat(inrPrice) * 100),
+            amount:        Math.round(parsedInrPrice * 100),
           }]
         : [];
 

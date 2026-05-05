@@ -20,7 +20,6 @@ import {
   Grid2X2,
   Grid3X3,
   Heart,
-  Play,
   Share2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -225,11 +224,8 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                     ) : (
                       <div className="absolute inset-0 bg-[var(--soft)]" />
                     )}
-                    {/* Gradient keeps the play icon readable on busy thumbnails. */}
+                    {/* Gradient keeps autoplaying thumbnails legible against the card edge. */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                    <div className="play">
-                      <Play size={gridCols === 3 ? 20 : 28} fill="white" className="text-white drop-shadow-lg" />
-                    </div>
                   </div>
                   {gridCols === 2 && (
                     <div className="reel-info">

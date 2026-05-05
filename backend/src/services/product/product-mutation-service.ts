@@ -147,7 +147,7 @@ export class ProductMutationService {
     for (const price of prices) {
       await tx.insert(money_amounts).values({
         variant_id: variantId,
-        region_id: price.region_id,
+        region_id: price.region_id ?? null,
         currency_code: price.currency_code,
         amount: price.amount,
         min_quantity: 1,
@@ -316,7 +316,7 @@ export class ProductMutationService {
     await tx.insert(money_amounts).values(
       prices.map((price) => ({
         variant_id: variantId,
-        region_id: price.region_id,
+        region_id: price.region_id ?? null,
         currency_code: price.currency_code,
         amount: price.amount,
         min_quantity: 1,

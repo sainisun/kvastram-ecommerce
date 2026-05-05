@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { Play } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import type { HomepageTrendingReel } from '@/types/homepage';
 
@@ -53,9 +52,6 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                     />
                   ) : null}
                   <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="play z-[2]">
-                    <Play size={34} fill="white" className="text-white" />
-                  </div>
                 </div>
                 <div className="reel-info">
                   <h3 className="reel-title line-clamp-2 leading-token-snug color-ink">

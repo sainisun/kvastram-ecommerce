@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 // --- Price Schema ---
 export const PriceSchema = z.object({
-  region_id: z.string().uuid(),
+  region_id: z.string().uuid().nullable().optional(),
   amount: z.number().int().min(0), // stored in cents
   currency_code: z.string().length(3),
 });
