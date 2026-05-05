@@ -21,6 +21,7 @@ import {
   Grid3X3,
   Heart,
   Share2,
+  ShoppingBag,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import OptimizedImage from '@/components/ui/OptimizedImage';
@@ -498,92 +499,103 @@ function ReelPlayerModal({
           </div>
         </div>
 
-        {/* Bottom: product card + action buttons */}
+        {/* Action buttons */}
+        <div className="absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5">
+          {/* Like */}
+          <button
+            type="button"
+            onClick={() => {
+              setLiked((prev) => {
+                setLikeCount((c) => prev ? c - 1 : c + 1);
+                return !prev;
+              });
+            }}
+            className="flex flex-col items-center gap-0.5 text-white"
+            aria-label={liked ? 'Unlike reel' : 'Like reel'}
+          >
+            <Heart
+              size={28}
+              fill={liked ? 'white' : 'transparent'}
+              color="white"
+              className="drop-shadow transition-transform active:scale-125"
+            />
+            <span className="text-body-xs type-semibold text-white drop-shadow">
+              {likeCount > 0 ? likeCount : ''}
+            </span>
+          </button>
+
+          {/* Share */}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex flex-col items-center gap-0.5 text-white"
+            aria-label="Share reel"
+          >
+            <Share2 size={26} className="text-white drop-shadow" />
+            <span className="text-body-xs type-semibold text-white drop-shadow">Share</span>
+          </button>
+
+          {/* Save */}
+          <button
+            type="button"
+            onClick={() => setSaved(toggleSavedReel(current.id))}
+            className="flex flex-col items-center gap-0.5 text-white"
+            aria-label={saved ? 'Remove saved reel' : 'Save reel'}
+          >
+            <Bookmark
+              size={26}
+              fill={saved ? 'white' : 'transparent'}
+              className="text-white drop-shadow transition-transform active:scale-125"
+            />
+            <span className="text-body-xs type-semibold text-white drop-shadow">
+              {saved ? 'Saved' : 'Save'}
+            </span>
+          </button>
+
+          {/* Views */}
+          <div
+            className="flex flex-col items-center gap-0.5 text-white"
+            aria-label={`${current.view_count || 0} views`}
+          >
+            <Eye size={24} className="text-white drop-shadow" />
+            <span className="text-body-xs type-semibold text-white drop-shadow">
+              {current.view_count || 0}
+            </span>
+          </div>
+        </div>
+
+        {/* Bottom product overlay */}
         <div
-          className="relative z-10 mt-auto flex items-end gap-3 px-4"
-          style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
+          className="relative z-10 mt-auto px-3"
+          style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
         >
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}
-            className="flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-white/15 bg-black/55 p-3 backdrop-blur-xl transition active:scale-[0.98]"
+            className="flex min-w-0 items-center gap-3 rounded-lg border border-white/70 bg-white/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-xl transition active:scale-[0.98]"
           >
-            <div className="relative h-14 w-11 shrink-0 overflow-hidden rounded-lg">
+            <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border border-black/10 bg-white">
               <OptimizedImage
                 src={current.thumbnail_url}
                 alt={current.product_name}
                 fill
-                sizes="44px"
+                sizes="48px"
                 className="object-cover"
               />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-body-xs type-semibold leading-token-snug text-white">
+              <p className="line-clamp-2 text-body-sm type-semibold leading-token-snug color-ink">
                 {current.product_name}
               </p>
-              <p className="mt-0.5 text-body-sm type-bold text-white/85">
+              <p className="mt-1 text-body-sm type-bold color-sienna">
                 {formatPrice(current.price)}
               </p>
             </div>
-            <span className="shrink-0 rounded-full bg-[var(--sienna)] px-3 py-2 text-body-xs type-bold uppercase tracking-token-wider text-white shadow-lg">
+            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--sienna)] px-3.5 py-2 text-body-xs type-bold uppercase tracking-token-wider text-white shadow-lg">
+              <ShoppingBag size={14} aria-hidden="true" />
               Shop
             </span>
           </Link>
-
-          {/* Action buttons */}
-          <div className="flex shrink-0 flex-col items-center gap-5 pb-1">
-            {/* Like */}
-            <button
-              type="button"
-              onClick={() => {
-                setLiked((prev) => {
-                  setLikeCount((c) => prev ? c - 1 : c + 1);
-                  return !prev;
-                });
-              }}
-              className="flex flex-col items-center gap-0.5"
-            >
-              <Heart
-                size={28}
-                fill={liked ? '#ef4444' : 'transparent'}
-                color={liked ? '#ef4444' : 'white'}
-                className="drop-shadow transition-transform active:scale-125"
-              />
-              <span className="text-body-xs type-semibold text-white drop-shadow">
-                {likeCount > 0 ? likeCount : ''}
-              </span>
-            </button>
-
-            {/* Share */}
-            <button type="button" onClick={handleShare} className="flex flex-col items-center gap-0.5">
-              <Share2 size={26} className="text-white drop-shadow" />
-              <span className="text-body-xs type-semibold text-white drop-shadow">Share</span>
-            </button>
-
-            {/* Save */}
-            <button
-              type="button"
-              onClick={() => setSaved(toggleSavedReel(current.id))}
-              className="flex flex-col items-center gap-0.5"
-            >
-              <Bookmark
-                size={26}
-                fill={saved ? 'white' : 'transparent'}
-                className="text-white drop-shadow transition-transform active:scale-125"
-              />
-              <span className="text-body-xs type-semibold text-white drop-shadow">
-                {saved ? 'Saved' : 'Save'}
-              </span>
-            </button>
-
-            {/* Views */}
-            <div className="flex flex-col items-center gap-0.5">
-              <Eye size={24} className="text-white/75 drop-shadow" />
-              <span className="text-body-xs type-semibold text-white/75 drop-shadow">
-                {current.view_count || 0}
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Swipe hint on first reel */}
