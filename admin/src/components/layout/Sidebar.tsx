@@ -114,33 +114,6 @@ function SidebarContent({
         )}
       </div>
 
-      <div className="px-4 pb-4">
-        <div className="flex items-center gap-1 rounded-full bg-white/5 p-1">
-          <Link
-            href="/dashboard"
-            onClick={onClose}
-            className={`flex-1 rounded-full px-3 py-2 text-center text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              mode === 'retail'
-                ? 'bg-white text-[#01071c]'
-                : 'text-slate-300 hover:text-white'
-            }`}
-          >
-            Retail
-          </Link>
-          <Link
-            href="/dashboard/wholesale"
-            onClick={onClose}
-            className={`flex-1 rounded-full px-3 py-2 text-center text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              mode === 'wholesale'
-                ? 'bg-white text-[#01071c]'
-                : 'text-slate-300 hover:text-white'
-            }`}
-          >
-            Wholesale
-          </Link>
-        </div>
-      </div>
-
       {/* Nav */}
       <nav className="flex-1 px-4 space-y-0.5 overflow-y-auto no-scrollbar">
         {items.map((item) => {
