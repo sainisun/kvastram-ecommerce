@@ -6,16 +6,29 @@ import { MegaFeatureCard } from './MegaFeatureCard';
 
 interface Collection {
   id: string;
-  name: string;
+  title?: string;
+  name?: string;
   handle: string;
   status?: string;
   show_in_megamenu?: boolean;
   display_order?: number;
 }
 
+interface HeaderCategory {
+  id: string;
+  name: string;
+  slug: string;
+  handle?: string;
+  is_active?: boolean;
+  show_in_header?: boolean;
+  display_order?: number;
+  children?: HeaderCategory[];
+}
+
 interface MegaMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  categories: HeaderCategory[];
   collections: Collection[];
 }
 
@@ -25,7 +38,7 @@ const megaVariants: Variants = {
   exit: { opacity: 0, y: -4, transition: { duration: 0.12 } },
 };
 
-const COL1_GROUPS = [
+const FALLBACK_CATEGORY_GROUPS = [
   {
     label: 'Clothing',
     items: [
@@ -38,7 +51,7 @@ const COL1_GROUPS = [
   },
 ];
 
-const COL2_GROUPS = [
+const FALLBACK_SECONDARY_GROUPS = [
   {
     label: 'Bags & Home',
     items: [
@@ -57,36 +70,79 @@ const COL2_GROUPS = [
   },
 ];
 
-export function MegaMenu({ isOpen, onClose, collections }: MegaMenuProps) {
-  const megamenuCollections = collections
-    .filter((c) => c.status === 'active' && c.show_in_megamenu)
-    .sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99))
-    .slice(0, 5);
+const FALLBACK_COLLECTION_GROUPS = [
+  {
+    label: 'Collections',
+    items: [
+      { label: 'Kantha Essentials', href: '/collections/kantha-essentials' },
+      { label: 'Festival Ready', href: '/collections/festival-ready' },
+      { label: 'Gifts Under Rs. 2,000', href: '/collections/gifts-under-2000' },
+      { label: 'Block Print Edit', href: '/collections/block-print-edit' },
+      { label: 'New Arrivals', href: '/products?sort=newest', isNew: true },
+    ],
+  },
+];
 
-  const featuredCollection = megamenuCollections[0] ?? collections.find((c) => c.status === 'active');
+function sortByDisplayOrder<T extends { display_order?: number }>(items: T[]) {
+  return [...items].sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99));
+}
 
-  const col3Groups = megamenuCollections.length
+function categoryHref(category: HeaderCategory) {
+  return `/categories/${category.slug || category.handle}`;
+}
+
+function collectionTitle(collection: Collection) {
+  return collection.title || collection.name || 'Collection';
+}
+
+export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuProps) {
+  const headerCategories = sortByDisplayOrder(
+    categories.filter((category) => category.is_active !== false && category.show_in_header !== false)
+  );
+
+  const categoryGroups = headerCategories.length
     ? [
         {
-          label: 'Collections',
-          items: megamenuCollections.map((c) => ({
-            label: c.name,
-            href: `/collections/${c.handle}`,
+          label: 'Shop',
+          items: headerCategories.slice(0, 7).map((category) => ({
+            label: category.name,
+            href: categoryHref(category),
           })),
         },
       ]
-    : [
+    : FALLBACK_CATEGORY_GROUPS;
+
+  const subcategoryItems = headerCategories
+    .flatMap((category) => category.children || [])
+    .filter((category) => category.is_active !== false)
+    .slice(0, 8)
+    .map((category) => ({
+      label: category.name,
+      href: categoryHref(category),
+    }));
+
+  const secondaryGroups = subcategoryItems.length
+    ? [{ label: 'More to explore', items: subcategoryItems }]
+    : FALLBACK_SECONDARY_GROUPS;
+
+  const megamenuCollections = sortByDisplayOrder(
+    collections.filter((collection) => collection.status === 'active' && collection.show_in_megamenu)
+  ).slice(0, 5);
+
+  const featuredCollection =
+    megamenuCollections[0] ?? collections.find((collection) => collection.status === 'active');
+
+  const collectionGroups = megamenuCollections.length
+    ? [
         {
           label: 'Collections',
-          items: [
-            { label: 'Kantha Essentials', href: '/collections/kantha-essentials' },
-            { label: 'Festival Ready', href: '/collections/festival-ready' },
-            { label: 'Gifts Under ₹2,000', href: '/collections/gifts-under-2000' },
-            { label: 'Block Print Edit', href: '/collections/block-print-edit' },
-            { label: 'New Arrivals', href: '/new-arrivals', isNew: true },
-          ],
+          items: megamenuCollections.map((collection) => ({
+            label: collectionTitle(collection),
+            href: `/collections/${collection.handle}`,
+          })),
         },
-      ];
+      ]
+    : FALLBACK_COLLECTION_GROUPS;
 
   return (
     <AnimatePresence>
@@ -100,42 +156,32 @@ export function MegaMenu({ isOpen, onClose, collections }: MegaMenuProps) {
           aria-label="Main navigation"
           className="absolute top-full left-0 right-0 bg-white border-b-[1.5px] border-[#1a1714] z-[100] shadow-sm"
         >
-          <div
-            className="grid"
-            style={{ gridTemplateColumns: '1.1fr 1fr 1fr 180px' }}
-          >
-            {/* Col 1 */}
+          <div className="grid" style={{ gridTemplateColumns: '1.1fr 1fr 1fr 180px' }}>
             <div className="px-8 py-6 border-r border-[#ede8e0]">
               <MegaColumn
-                groups={COL1_GROUPS}
-                viewAllLabel="View all clothing →"
-                viewAllHref="/categories/clothing"
+                groups={categoryGroups}
+                viewAllLabel="Shop all products"
+                viewAllHref="/products"
                 onClose={onClose}
               />
             </div>
 
-            {/* Col 2 */}
             <div className="px-8 py-6 border-r border-[#ede8e0]">
-              <MegaColumn
-                groups={COL2_GROUPS}
-                onClose={onClose}
-              />
+              <MegaColumn groups={secondaryGroups} onClose={onClose} />
             </div>
 
-            {/* Col 3 */}
             <div className="px-8 py-6 border-r border-[#ede8e0]">
               <MegaColumn
-                groups={col3Groups}
-                viewAllLabel="All collections →"
+                groups={collectionGroups}
+                viewAllLabel="All collections"
                 viewAllHref="/collections"
                 onClose={onClose}
               />
             </div>
 
-            {/* Col 4 — Featured card */}
             {featuredCollection ? (
               <MegaFeatureCard
-                name={featuredCollection.name}
+                name={collectionTitle(featuredCollection)}
                 handle={featuredCollection.handle}
                 onClick={onClose}
               />

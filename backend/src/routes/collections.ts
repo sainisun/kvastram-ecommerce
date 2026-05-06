@@ -1,4 +1,6 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
+import { getCookie } from 'hono/cookie';
+import { verify } from 'hono/jwt';
 import { zValidator } from '@hono/zod-validator';
 import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
@@ -6,6 +8,7 @@ import { product_collections, products, collection_products } from '../db/schema
 import { eq, desc, inArray, sql, and, ne } from 'drizzle-orm';
 import { z } from 'zod';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
+import { config } from '../config';
 
 const isUuid = (val: string): boolean => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -13,6 +16,23 @@ const isUuid = (val: string): boolean => {
 };
 
 const collectionsRouter = new Hono();
+
+async function isVerifiedAdminRequest(c: Context) {
+  const authHeader = c.req.header('authorization');
+  const bearerToken = authHeader?.startsWith('Bearer ')
+    ? authHeader.split(' ')[1]
+    : null;
+  const token = bearerToken || getCookie(c, 'admin_token');
+
+  if (!token) return false;
+
+  try {
+    const payload = (await verify(token, config.jwt.secret, 'HS256')) as { role?: string };
+    return payload.role === 'admin';
+  } catch {
+    return false;
+  }
+}
 
 // guide Section 3.2 + 3.5
 const CollectionSchema = z.object({
@@ -62,9 +82,14 @@ collectionsRouter.get('/', async (c) => {
     const { status, type, megamenu } = c.req.query();
 
     // Public requests: default to active only
-    // Admin requests (with auth header): all statuses unless filtered
-    const isAdminRequest = c.req.header('authorization');
-    const effectiveStatus = status || (isAdminRequest ? undefined : 'active');
+    // Admin requests: all statuses when explicitly requested
+    const isAdminRequest = await isVerifiedAdminRequest(c);
+    if (status === 'all' && !isAdminRequest) {
+      return c.json({ error: 'Admin access required' }, 403);
+    }
+    const effectiveStatus = status === 'all'
+      ? undefined
+      : status || (isAdminRequest ? undefined : 'active');
 
     const list = await db
       .select({
@@ -290,6 +315,11 @@ collectionsRouter.post(
         })
         .returning();
 
+      await triggerStorefrontRevalidation({
+        paths: ['/collections', `/collections/${newCollection.handle}`],
+        tags: ['collections'],
+      });
+
       return c.json({ collection: newCollection }, 201);
     } catch (error: any) {
       return c.json({ error: error.message || 'Failed to create collection' }, 500);
@@ -313,7 +343,7 @@ collectionsRouter.put(
           .from(product_collections)
           .where(eq(product_collections.id, id));
 
-        const hasImage = data.cover_image_url || current?.cover_image_url || current?.image;
+        const hasImage = data.cover_image_url || data.image || current?.cover_image_url || current?.image;
         const { valid, count } = await validateActiveStatus(id);
 
         if (!valid) {
@@ -368,10 +398,16 @@ collectionsRouter.delete('/:id', verifyAdmin, async (c) => {
   const id = c.req.param('id');
   try {
     // Soft delete
-    await db
+    const [deletedCollection] = await db
       .update(product_collections)
       .set({ deleted_at: new Date(), updated_at: new Date() })
-      .where(eq(product_collections.id, id));
+      .where(eq(product_collections.id, id))
+      .returning();
+
+    await triggerStorefrontRevalidation({
+      paths: ['/collections', deletedCollection?.handle ? `/collections/${deletedCollection.handle}` : '/collections'],
+      tags: ['collections'],
+    });
 
     return c.json({ success: true });
   } catch (error: any) {

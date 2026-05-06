@@ -12,6 +12,7 @@ import {
   money_amounts,
   product_images,
   product_categories,
+  collection_products,
   product_tags,
 } from '../../db/schema';
 import { eq, desc, asc, sql, or, and, inArray } from 'drizzle-orm';
@@ -74,7 +75,24 @@ export class ProductQueryService {
 
     // Collection Filter
     if (filters.collectionId) {
-      conditions.push(eq(products.collection_id, filters.collectionId));
+      const collectionMatches = await db
+        .select({ product_id: collection_products.product_id })
+        .from(collection_products)
+        .where(eq(collection_products.collection_id, filters.collectionId));
+
+      if (collectionMatches.length === 0) {
+        conditions.push(eq(products.collection_id, filters.collectionId));
+      } else {
+        conditions.push(
+          or(
+            eq(products.collection_id, filters.collectionId),
+            inArray(
+              products.id,
+              collectionMatches.map((item) => item.product_id)
+            )
+          ) as ReturnType<typeof eq>
+        );
+      }
     }
 
     // Category Filter
@@ -474,7 +492,24 @@ export class ProductQueryService {
 
     // Add collection filter
     if (collectionId) {
-      conditions.push(eq(products.collection_id, collectionId));
+      const collectionMatches = await db
+        .select({ product_id: collection_products.product_id })
+        .from(collection_products)
+        .where(eq(collection_products.collection_id, collectionId));
+
+      if (collectionMatches.length === 0) {
+        conditions.push(eq(products.collection_id, collectionId));
+      } else {
+        conditions.push(
+          or(
+            eq(products.collection_id, collectionId),
+            inArray(
+              products.id,
+              collectionMatches.map((item) => item.product_id)
+            )
+          ) as ReturnType<typeof eq>
+        );
+      }
     }
 
     // Text Search (Title, Description, Handle)

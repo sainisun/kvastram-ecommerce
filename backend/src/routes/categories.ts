@@ -182,6 +182,11 @@ categoriesRouter.post(
         })
         .returning();
 
+      await triggerStorefrontRevalidation({
+        paths: ['/', '/products', '/collections', `/collections/${newCategory.slug}`],
+        tags: ['categories'],
+      });
+
       return c.json({ category: newCategory }, 201);
     } catch (error: any) {
       return c.json(
@@ -198,6 +203,7 @@ const ReorderSchema = z.object({
     z.object({
       id: z.string().uuid(),
       display_order: z.number().min(0),
+      show_in_header: z.boolean().optional(),
     })
   ),
 });
@@ -215,12 +221,20 @@ categoriesRouter.put(
             .update(categories)
             .set({
               display_order: update.display_order,
+              ...(update.show_in_header !== undefined
+                ? { show_in_header: update.show_in_header }
+                : {}),
               updated_at: new Date(),
             })
             .where(eq(categories.id, update.id))
             .returning()
         )
       );
+
+      await triggerStorefrontRevalidation({
+        paths: ['/', '/products', '/collections'],
+        tags: ['categories'],
+      });
 
       return c.json({ categories: updates.map((u) => u[0]) });
     } catch (error: any) {
@@ -265,6 +279,11 @@ categoriesRouter.put(
         .where(eq(categories.id, id))
         .returning();
 
+      await triggerStorefrontRevalidation({
+        paths: ['/', '/products', '/collections', `/collections/${updatedCategory.slug}`],
+        tags: ['categories'],
+      });
+
       return c.json({ category: updatedCategory });
     } catch (error: any) {
       return c.json(
@@ -280,6 +299,10 @@ categoriesRouter.delete('/:id', verifyAdmin, async (c) => {
   const id = c.req.param('id');
   try {
     await db.delete(categories).where(eq(categories.id, id));
+    await triggerStorefrontRevalidation({
+      paths: ['/', '/products', '/collections'],
+      tags: ['categories'],
+    });
     return c.json({ success: true });
   } catch (error: any) {
     return c.json({ error: error.message || 'Failed to delete category' }, 500);

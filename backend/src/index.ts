@@ -47,6 +47,7 @@ import analyticsRoutes from './routes/analytics';
 import auth2faRoutes from './routes/auth-2fa';
 import storeAuthRoutes from './routes/store/auth';
 import storeCustomersRouter from './routes/store/customers';
+import storeOrdersRouter from './routes/store/orders';
 import checkoutRoutes from './routes/store/checkout';
 import paymentRoutes from './routes/store/payments';
 import razorpayRoutes from './routes/store/payments-razorpay';
@@ -73,6 +74,7 @@ import adminReturnsRoutes from './routes/admin/returns';
 import storeReturnsRoutes from './routes/store/returns';
 import abandonedCartsRoutes from './routes/admin/abandoned-carts';
 import bulkDiscountsRoutes from './routes/admin/bulk-discounts';
+import adminContactsRoutes from './routes/admin/contacts';
 import adminHeroBannersRoutes from './routes/admin/hero-banners';
 import heroBannersRoutes from './routes/hero-banners';
 import adminTrendingReelsRoutes from './routes/admin/trending-reels';
@@ -339,6 +341,8 @@ const generalApiRoutes = [
   '/admin/featured-products/*',
   '/admin/studio-inquiries',
   '/admin/studio-inquiries/*',
+  '/admin/contacts',
+  '/admin/contacts/*',
 ];
 
 for (const route of generalApiRoutes) {
@@ -378,6 +382,7 @@ app.route('/admin/whatsapp', whatsappRoutes);
 
 // Contact Form Route
 app.route('/contact', contactRoutes);
+app.route('/admin/contacts', adminContactsRoutes);
 
 // Newsletter Route
 app.route('/newsletter', newsletterRoutes);
@@ -385,6 +390,7 @@ app.route('/newsletter', newsletterRoutes);
 // Store Routes (Customer-facing)
 app.route('/store/auth', storeAuthRoutes);
 app.route('/store/customers', storeCustomersRouter);
+app.route('/store/orders', storeOrdersRouter);
 app.route('/store/checkout', checkoutRoutes);
 app.route('/store/payments', paymentRoutes);
 app.route('/store/payments/razorpay', razorpayRoutes);

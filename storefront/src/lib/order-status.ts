@@ -1,8 +1,28 @@
 // Order status display utilities
 
-export type OrderStatus = 'pending' | 'completed' | 'canceled' | 'refunded' | 'processing';
-export type PaymentStatus = 'not_paid' | 'paid' | 'refunded' | 'failed';
-export type FulfillmentStatus = 'not_fulfilled' | 'fulfilled' | 'partial' | 'returned';
+export type OrderStatus =
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'completed'
+  | 'canceled'
+  | 'cancelled'
+  | 'refunded';
+export type PaymentStatus =
+  | 'not_paid'
+  | 'paid'
+  | 'awaiting'
+  | 'captured'
+  | 'refunded'
+  | 'failed';
+export type FulfillmentStatus =
+  | 'not_fulfilled'
+  | 'processing'
+  | 'fulfilled'
+  | 'shipped'
+  | 'partial'
+  | 'returned';
 
 export interface StatusConfig {
   label: string;
@@ -42,6 +62,24 @@ const orderStatusConfig: Partial<Record<OrderStatus, StatusConfig>> = {
     bgClass: 'bg-amber-50',
     borderClass: 'border-amber-200',
   },
+  shipped: {
+    label: 'Shipped',
+    className: 'text-blue-700',
+    bgClass: 'bg-blue-50',
+    borderClass: 'border-blue-200',
+  },
+  delivered: {
+    label: 'Delivered',
+    className: 'text-green-700',
+    bgClass: 'bg-green-50',
+    borderClass: 'border-green-200',
+  },
+  cancelled: {
+    label: 'Cancelled',
+    className: 'text-red-700',
+    bgClass: 'bg-red-50',
+    borderClass: 'border-red-200',
+  },
 };
 
 const paymentStatusConfig: Partial<Record<PaymentStatus, StatusConfig>> = {
@@ -52,6 +90,18 @@ const paymentStatusConfig: Partial<Record<PaymentStatus, StatusConfig>> = {
     borderClass: 'border-yellow-200',
   },
   paid: {
+    label: 'Paid',
+    className: 'text-green-700',
+    bgClass: 'bg-green-50',
+    borderClass: 'border-green-200',
+  },
+  awaiting: {
+    label: 'Awaiting Payment',
+    className: 'text-yellow-700',
+    bgClass: 'bg-yellow-50',
+    borderClass: 'border-yellow-200',
+  },
+  captured: {
     label: 'Paid',
     className: 'text-green-700',
     bgClass: 'bg-green-50',
@@ -83,6 +133,18 @@ const fulfillmentStatusConfig: Partial<Record<FulfillmentStatus, StatusConfig>> 
     className: 'text-green-700',
     bgClass: 'bg-green-50',
     borderClass: 'border-green-200',
+  },
+  processing: {
+    label: 'Processing',
+    className: 'text-amber-700',
+    bgClass: 'bg-amber-50',
+    borderClass: 'border-amber-200',
+  },
+  shipped: {
+    label: 'Shipped',
+    className: 'text-blue-700',
+    bgClass: 'bg-blue-50',
+    borderClass: 'border-blue-200',
   },
   partial: {
     label: 'Partially Fulfilled',

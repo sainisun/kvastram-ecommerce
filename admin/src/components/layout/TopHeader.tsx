@@ -29,7 +29,6 @@ const PAGE_TITLES: Record<string, string> = {
   '/dashboard/studio-inquiries': 'Studio Inquiries',
   '/dashboard/returns': 'Returns',
   '/dashboard/wholesale': 'Wholesale Overview',
-  '/dashboard/wholesale-page': 'Wholesale Page',
 };
 
 function getPageTitle(pathname: string) {

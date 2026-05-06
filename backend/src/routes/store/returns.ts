@@ -4,6 +4,7 @@ import { db } from '../../db/client';
 import { returns, return_items, orders } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 import { verifyCustomer } from '../../middleware/customer-auth';
+import { deriveWorkflowStatus } from '../../utils/order-workflow';
 
 const router = new Hono();
 
@@ -28,7 +29,15 @@ router.post('/', verifyCustomer, async (c) => {
 
     // Verify order belongs to this customer
     const [order] = await db
-      .select({ id: orders.id, customer_id: orders.customer_id, status: orders.status })
+      .select({
+        id: orders.id,
+        customer_id: orders.customer_id,
+        status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
+        tracking_number: orders.tracking_number,
+        metadata: orders.metadata,
+      })
       .from(orders)
       .where(eq(orders.id, data.order_id))
       .limit(1);
@@ -42,9 +51,10 @@ router.post('/', verifyCustomer, async (c) => {
       return c.json({ error: 'Forbidden' }, 403);
     }
 
-    // Only allow return on completed orders
-    if (order.status !== 'completed') {
-      return c.json({ error: 'Returns can only be requested for completed orders' }, 400);
+    // Allow returns once the order is in a delivered/completed state
+    const workflowStatus = deriveWorkflowStatus(order);
+    if (workflowStatus !== 'delivered' && order.status !== 'completed') {
+      return c.json({ error: 'Returns can only be requested for delivered orders' }, 400);
     }
 
     // Check if a return already exists for this order

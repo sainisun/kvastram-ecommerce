@@ -13,7 +13,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Shop', href: '/products', hasMega: true },
   { label: 'Collections', href: '/collections', hasMega: true },
-  { label: 'New Arrivals', href: '/new-arrivals' },
+  { label: 'New Arrivals', href: '/products?sort=newest' },
   { label: 'About', href: '/about' },
 ];
 

@@ -19,6 +19,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
 
 // Extended order interface for frontend display
 interface OrderWithDetails extends Order {
@@ -47,6 +48,7 @@ interface OrderWithDetails extends Order {
     country_code?: string;
   };
   payment_intent_id?: string;
+  tracking_link?: string | null;
 }
 
 export default function OrderDetailsPage() {
@@ -249,19 +251,6 @@ export default function OrderDetailsPage() {
     );
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'text-green-600 bg-green-50 border-green-200';
-      case 'canceled':
-        return 'text-red-600 bg-red-50 border-red-200';
-      case 'pending':
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      default:
-        return 'text-stone-600 bg-stone-50 border-stone-200';
-    }
-  };
-
   const date = new Date(order.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -269,6 +258,24 @@ export default function OrderDetailsPage() {
     hour: '2-digit',
     minute: '2-digit',
   });
+  const workflowTimeline = order.workflow?.timeline?.filter((step) =>
+    ['pending', 'processing', 'shipped', 'delivered'].includes(step.key)
+  ) || [
+    { key: 'pending', label: 'Order placed', happened_at: null, completed: true, current: false },
+    { key: 'processing', label: 'Processing', happened_at: null, completed: false, current: true },
+    { key: 'shipped', label: 'Shipped', happened_at: null, completed: false, current: false },
+    { key: 'delivered', label: 'Delivered', happened_at: null, completed: false, current: false },
+  ];
+  const workflowIndex = workflowTimeline.findIndex((step) => step.current);
+  const completedWorkflowSteps = workflowTimeline.filter(
+    (step) => step.completed || step.current
+  ).length;
+  const workflowProgressWidth = `${Math.max(
+    25,
+    Math.round((completedWorkflowSteps / workflowTimeline.length) * 100)
+  )}%`;
+  const canRequestReturn =
+    order.status === 'delivered' || order.raw_status === 'completed';
 
   return (
     <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
@@ -291,55 +298,31 @@ export default function OrderDetailsPage() {
               </p>
             </div>
             <div
-              className={`account-status-badge inline-flex items-center gap-2 rounded-full border px-4 py-1.5 ${getStatusColor(order.status)}`}
+              className={`account-status-badge inline-flex items-center gap-2 rounded-full border px-4 py-1.5 ${getOrderStatusBadgeClass(order.status)}`}
             >
-              {order.status === 'completed' && <CheckCircle size={14} />}
-              {order.status === 'canceled' && <XCircle size={14} />}
+              {order.status === 'delivered' && <CheckCircle size={14} />}
+              {(order.status === 'canceled' || order.status === 'cancelled') && <XCircle size={14} />}
+              {order.status === 'shipped' && <Truck size={14} />}
               {order.status === 'pending' && <Package size={14} />}
-              {order.status}
+              {getOrderStatusConfig(order.status).label}
             </div>
           </div>
 
           <div className="bg-stone-50 p-6 border-b border-stone-100">
             <div className="account-progress-labels flex items-center justify-between">
-              <span className="text-stone-900">Ordered</span>
-              <span
-                className={
-                  order.fulfillment_status !== 'not_fulfilled'
-                    ? 'text-stone-900'
-                    : ''
-                }
-              >
-                Processing
-              </span>
-              <span
-                className={
-                  order.fulfillment_status === 'fulfilled'
-                    ? 'text-stone-900'
-                    : ''
-                }
-              >
-                Shipped
-              </span>
-              <span
-                className={order.status === 'completed' ? 'text-stone-900' : ''}
-              >
-                Delivered
-              </span>
+              {workflowTimeline.map((step, index) => (
+                <span
+                  key={step.key}
+                  className={step.completed || step.current || index === 0 ? 'text-stone-900' : ''}
+                >
+                  {step.label}
+                </span>
+              ))}
             </div>
             <div className="mt-3 h-1 bg-stone-200 rounded-full relative">
               <div
                 className="absolute left-0 top-0 h-full bg-stone-900 rounded-full transition-all duration-500"
-                style={{
-                  width:
-                    order.status === 'completed'
-                      ? '100%'
-                      : order.fulfillment_status === 'fulfilled'
-                        ? '75%'
-                        : order.fulfillment_status !== 'not_fulfilled'
-                          ? '50%'
-                          : '25%',
-                }}
+                style={{ width: workflowIndex >= 0 ? workflowProgressWidth : '25%' }}
               ></div>
             </div>
           </div>
@@ -462,6 +445,28 @@ export default function OrderDetailsPage() {
                 </div>
               </div>
 
+              {(order.workflow?.estimated_delivery_start ||
+                order.workflow?.estimated_delivery_end ||
+                order.workflow?.customer_note) && (
+                <div>
+                  <h3 className="account-form-label mb-3">Delivery updates</h3>
+                  <div className="account-body space-y-2">
+                    {(order.workflow?.estimated_delivery_start ||
+                      order.workflow?.estimated_delivery_end) && (
+                      <p>
+                        ETA: {order.workflow?.estimated_delivery_start || 'TBD'}
+                        {order.workflow?.estimated_delivery_end
+                          ? ` - ${order.workflow.estimated_delivery_end}`
+                          : ''}
+                      </p>
+                    )}
+                    {order.workflow?.customer_note && (
+                      <p>{order.workflow.customer_note}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="pt-8 border-t border-stone-200 space-y-3">
                 {reorderError && (
                   <div className="account-alert rounded border border-red-200 bg-red-50 px-4 py-2 text-red-700">
@@ -491,7 +496,7 @@ export default function OrderDetailsPage() {
                     </>
                   )}
                 </button>
-                {order.status === 'completed' && (
+                {canRequestReturn && (
                   <button
                     onClick={() => {
                       setShowReturnModal(true);
@@ -505,9 +510,22 @@ export default function OrderDetailsPage() {
                     <RotateCcw size={14} /> Request Return
                   </button>
                 )}
-                <button className="account-secondary-action w-full border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white">
+                {order.tracking_link ? (
+                  <a
+                    href={order.tracking_link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"
+                  >
+                    <Truck size={14} /> Track Package
+                  </a>
+                ) : null}
+                <Link
+                  href={`/contact?order=${order.display_id}&email=${encodeURIComponent(order.email)}`}
+                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"
+                >
                   Need Help?
-                </button>
+                </Link>
               </div>
             </div>
           </div>

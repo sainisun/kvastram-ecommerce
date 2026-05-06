@@ -29,6 +29,7 @@ interface OrderDetails {
   order_number?: string;
   display_id?: string;
   status: string;
+  raw_status?: string;
   created_at?: string;
   email: string;
   customer_first_name?: string | null;
@@ -51,6 +52,22 @@ interface OrderDetails {
   tracking_number?: string | null;
   shipping_carrier?: string | null;
   tracking_link?: string | null;
+  workflow?: {
+    ship_by_date?: string | null;
+    estimated_delivery_start?: string | null;
+    estimated_delivery_end?: string | null;
+    customer_note?: string | null;
+    internal_note?: string | null;
+    needs_attention?: boolean;
+    overdue_ship_by?: boolean;
+    overdue_tracking?: boolean;
+    timeline?: Array<{
+      key: string;
+      label: string;
+      completed: boolean;
+      current: boolean;
+    }>;
+  };
 }
 
 interface OrderItem {
@@ -73,6 +90,13 @@ export default function OrderDetailsPage() {
   const [items, setItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [workflowForm, setWorkflowForm] = useState({
+    ship_by_date: '',
+    estimated_delivery_start: '',
+    estimated_delivery_end: '',
+    customer_note: '',
+    internal_note: '',
+  });
 
   useEffect(() => {
     const loadOrder = async () => {
@@ -82,6 +106,15 @@ export default function OrderDetailsPage() {
         const orderData = data?.order || data;
         setOrder(orderData);
         setItems(data?.items || orderData?.items || []);
+        setWorkflowForm({
+          ship_by_date: orderData?.workflow?.ship_by_date || '',
+          estimated_delivery_start:
+            orderData?.workflow?.estimated_delivery_start || '',
+          estimated_delivery_end:
+            orderData?.workflow?.estimated_delivery_end || '',
+          customer_note: orderData?.workflow?.customer_note || '',
+          internal_note: orderData?.workflow?.internal_note || '',
+        });
       } catch (error) {
         console.error('Failed to load order:', error);
       } finally {
@@ -99,16 +132,24 @@ export default function OrderDetailsPage() {
       maximumFractionDigits: 0,
     }).format(amount / 100);
 
-  const timelineIndex = Math.max(
-    timelineSteps.findIndex((step) => step === order?.status),
-    order?.status === 'completed' ? timelineSteps.length - 1 : 0
-  );
+  const workflowTimeline =
+    order?.workflow?.timeline?.filter((step) =>
+      timelineSteps.includes(step.key)
+    ) ||
+    timelineSteps.map((step, index) => ({
+      key: step,
+      label: step,
+      completed: index === 0,
+      current: index === 1,
+    }));
 
   const handleStatusChange = async (status: string) => {
     try {
       setUpdating(true);
       await api.updateOrderStatus(id, status);
-      setOrder((current) => (current ? { ...current, status } : current));
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
       showNotification('success', `Order updated to ${status}`);
     } catch (error: unknown) {
       showNotification(
@@ -132,6 +173,25 @@ export default function OrderDetailsPage() {
       link.remove();
     } catch (error) {
       console.error('Invoice download failed:', error);
+    }
+  };
+
+  const handleWorkflowSave = async () => {
+    try {
+      setUpdating(true);
+      const response = await api.updateOrderWorkflow(id, workflowForm);
+      const updatedOrder = response?.data?.order || response?.order;
+      if (updatedOrder) {
+        setOrder((current) => (current ? { ...current, ...updatedOrder } : current));
+      }
+      showNotification('success', 'Order workflow updated');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to update workflow'
+      );
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -229,11 +289,11 @@ export default function OrderDetailsPage() {
             </div>
 
             <div className="mt-6 grid gap-3 md:grid-cols-4">
-              {timelineSteps.map((step, index) => {
-                const reached = index <= timelineIndex;
+              {workflowTimeline.map((step, index) => {
+                const reached = step.completed || step.current;
                 return (
                   <div
-                    key={step}
+                    key={step.key}
                     className={`rounded-[1.1rem] border px-4 py-4 ${
                       reached
                         ? 'border-[var(--kv-accent)] bg-[var(--kv-accent-soft)]'
@@ -251,13 +311,28 @@ export default function OrderDetailsPage() {
                         {index + 1}
                       </span>
                       <p className="text-sm font-semibold capitalize text-[var(--kv-text)]">
-                        {step}
+                        {step.label}
                       </p>
                     </div>
                   </div>
                 );
               })}
             </div>
+
+            {order.workflow?.needs_attention ? (
+              <div className="mt-6 rounded-[1.1rem] border border-[var(--kv-danger)]/20 bg-[var(--kv-danger)]/8 px-4 py-4 text-sm text-[var(--kv-text)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-danger)]">
+                  Attention required
+                </p>
+                <p className="mt-2">
+                  {order.workflow?.overdue_ship_by
+                    ? 'This order is past its ship-by date and should be reviewed now.'
+                    : order.workflow?.overdue_tracking
+                      ? 'This order is still missing tracking details.'
+                      : 'This workflow needs manual review.'}
+                </p>
+              </div>
+            ) : null}
           </Surface>
 
           <Surface className="overflow-hidden">
@@ -415,6 +490,104 @@ export default function OrderDetailsPage() {
           </Surface>
 
           <Surface className="overflow-hidden">
+            <SectionHeader title="Workflow details" />
+            <div className="space-y-4 px-5 py-5 md:px-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Ship by
+                  </span>
+                  <input
+                    type="date"
+                    value={workflowForm.ship_by_date}
+                    onChange={(event) =>
+                      setWorkflowForm((current) => ({
+                        ...current,
+                        ship_by_date: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                  />
+                </label>
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    ETA start
+                  </span>
+                  <input
+                    type="date"
+                    value={workflowForm.estimated_delivery_start}
+                    onChange={(event) =>
+                      setWorkflowForm((current) => ({
+                        ...current,
+                        estimated_delivery_start: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                  />
+                </label>
+              </div>
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  ETA end
+                </span>
+                <input
+                  type="date"
+                  value={workflowForm.estimated_delivery_end}
+                  onChange={(event) =>
+                    setWorkflowForm((current) => ({
+                      ...current,
+                      estimated_delivery_end: event.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                />
+              </label>
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Customer note
+                </span>
+                <textarea
+                  value={workflowForm.customer_note}
+                  onChange={(event) =>
+                    setWorkflowForm((current) => ({
+                      ...current,
+                      customer_note: event.target.value,
+                    }))
+                  }
+                  rows={4}
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="Shown in buyer tracking."
+                />
+              </label>
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Internal note
+                </span>
+                <textarea
+                  value={workflowForm.internal_note}
+                  onChange={(event) =>
+                    setWorkflowForm((current) => ({
+                      ...current,
+                      internal_note: event.target.value,
+                    }))
+                  }
+                  rows={4}
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="Visible only in admin."
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => void handleWorkflowSave()}
+                disabled={updating}
+                className="w-full rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                {updating ? 'Saving…' : 'Save workflow details'}
+              </button>
+            </div>
+          </Surface>
+
+          <Surface className="overflow-hidden">
             <SectionHeader title="Fulfillment and tracking" />
             <div className="px-5 py-5 md:px-6">
               {order.tracking_number ? (
@@ -462,15 +635,9 @@ export default function OrderDetailsPage() {
                     try {
                       setUpdating(true);
                       await api.addOrderTracking(id, payload);
-                      setOrder((current) =>
-                        current
-                          ? {
-                              ...current,
-                              ...payload,
-                              status: 'shipped',
-                            }
-                          : current
-                      );
+                      const refreshed = await api.getOrder(id);
+                      const refreshedOrder = refreshed?.order || refreshed;
+                      setOrder(refreshedOrder);
                       showNotification('success', 'Tracking saved');
                     } catch (error: unknown) {
                       showNotification(

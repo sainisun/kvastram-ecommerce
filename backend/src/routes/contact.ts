@@ -7,6 +7,7 @@ const ContactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Invalid email address'),
+  orderReference: z.string().max(64).optional(),
   message: z.string().min(10, 'Message must be at least 10 characters'),
 });
 
@@ -16,6 +17,9 @@ app.post('/', async (c) => {
   try {
     const body = await c.req.json();
     const validated = ContactSchema.parse(body);
+    const formattedMessage = validated.orderReference
+      ? `[Order #${validated.orderReference}]\n${validated.message}`
+      : validated.message;
 
     // Save to database
     await db.insert(contacts).values({
@@ -23,13 +27,15 @@ app.post('/', async (c) => {
       first_name: validated.firstName,
       last_name: validated.lastName,
       email: validated.email,
-      message: validated.message,
+      message: formattedMessage,
       created_at: new Date(),
     });
 
     return c.json({
       success: true,
-      message: "Message sent successfully! We'll get back to you soon.",
+      message: validated.orderReference
+        ? `Support request for order #${validated.orderReference} sent successfully. We'll get back to you soon.`
+        : "Message sent successfully! We'll get back to you soon.",
     });
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {

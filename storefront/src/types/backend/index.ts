@@ -43,15 +43,67 @@ export interface MoneyAmount {
   region_id?: string | null;
 }
 
+export interface OrderWorkflowTimelineEvent {
+  key:
+    | 'pending'
+    | 'processing'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'refunded';
+  label: string;
+  happened_at: string | null;
+  description?: string;
+  completed: boolean;
+  current: boolean;
+}
+
+export interface OrderWorkflow {
+  status:
+    | 'pending'
+    | 'processing'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'refunded';
+  status_label: string;
+  ship_by_date?: string | null;
+  estimated_delivery_start?: string | null;
+  estimated_delivery_end?: string | null;
+  customer_note?: string | null;
+  internal_note?: string | null;
+  has_tracking: boolean;
+  needs_attention?: boolean;
+  overdue_ship_by?: boolean;
+  overdue_tracking?: boolean;
+  timeline: OrderWorkflowTimelineEvent[];
+}
+
 export interface Order {
   id: string;
   display_id: number;
   email: string;
   total: number;
   currency_code: string;
-  status: 'pending' | 'completed' | 'canceled';
-  payment_status: 'not_paid' | 'paid';
-  fulfillment_status: 'not_fulfilled' | 'fulfilled';
+  status:
+    | 'pending'
+    | 'processing'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'canceled'
+    | 'completed'
+    | 'refunded';
+  raw_status?: string;
+  payment_status: 'not_paid' | 'paid' | 'awaiting' | 'captured' | 'failed' | 'refunded';
+  fulfillment_status:
+    | 'not_fulfilled'
+    | 'processing'
+    | 'partial'
+    | 'fulfilled'
+    | 'shipped'
+    | 'returned';
   created_at: string;
   metadata?: Record<string, unknown> | null;
+  workflow?: OrderWorkflow;
 }

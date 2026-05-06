@@ -1,9 +1,31 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { X } from 'lucide-react';
 import { DrawerNavItem } from './DrawerNavItem';
+
+interface HeaderCategory {
+  id: string;
+  name: string;
+  slug: string;
+  handle?: string;
+  is_active?: boolean;
+  show_in_header?: boolean;
+  display_order?: number;
+  children?: HeaderCategory[];
+}
+
+interface Collection {
+  id: string;
+  title?: string;
+  name?: string;
+  handle: string;
+  status?: string;
+  show_in_megamenu?: boolean;
+  display_order?: number;
+}
 
 const SHOP_SECTIONS = [
   {
@@ -31,12 +53,12 @@ const COLLECTIONS_SECTIONS = [
     items: [
       { label: 'Kantha Essentials', href: '/collections/kantha-essentials' },
       { label: 'Festival Ready', href: '/collections/festival-ready' },
-      { label: 'Gifts Under ₹2,000', href: '/collections/gifts-under-2000' },
+      { label: 'Gifts Under Rs. 2,000', href: '/collections/gifts-under-2000' },
     ],
   },
 ];
 
-const NAV_ITEMS = [
+const FALLBACK_NAV_ITEMS = [
   {
     label: 'Shop',
     href: '/products',
@@ -51,7 +73,7 @@ const NAV_ITEMS = [
     viewAllLabel: 'All collections',
     viewAllHref: '/collections',
   },
-  { label: 'New Arrivals', href: '/new-arrivals' },
+  { label: 'New Arrivals', href: '/products?sort=newest' },
   { label: 'About', href: '/about' },
 ];
 
@@ -60,24 +82,91 @@ interface MobileDrawerProps {
   onClose: () => void;
   expandedItem: string | null;
   onToggleItem: (label: string) => void;
+  categories: HeaderCategory[];
+  collections: Collection[];
 }
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '919999999999';
 
-export function MobileDrawer({ isOpen, onClose, expandedItem, onToggleItem }: MobileDrawerProps) {
-  const pathname = usePathname();
+function sortByDisplayOrder<T extends { display_order?: number }>(items: T[]) {
+  return [...items].sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99));
+}
 
-  // Lock body scroll
+function categoryHref(category: HeaderCategory) {
+  return `/categories/${category.slug || category.handle}`;
+}
+
+function collectionTitle(collection: Collection) {
+  return collection.title || collection.name || 'Collection';
+}
+
+export function MobileDrawer({
+  isOpen,
+  onClose,
+  expandedItem,
+  onToggleItem,
+  categories,
+  collections,
+}: MobileDrawerProps) {
+  const pathname = usePathname();
+  const headerCategories = sortByDisplayOrder(
+    categories.filter((category) => category.is_active !== false && category.show_in_header !== false)
+  );
+  const activeMenuCollections = sortByDisplayOrder(
+    collections.filter((collection) => collection.status === 'active' && collection.show_in_megamenu)
+  );
+  const navItems = headerCategories.length
+    ? [
+        {
+          label: 'Shop',
+          href: '/products',
+          subSections: [
+            {
+              label: 'Categories',
+              items: headerCategories.slice(0, 10).map((category) => ({
+                label: category.name,
+                href: categoryHref(category),
+              })),
+            },
+          ],
+          viewAllLabel: 'Shop all products',
+          viewAllHref: '/products',
+        },
+        {
+          label: 'Collections',
+          href: '/collections',
+          subSections: activeMenuCollections.length
+            ? [
+                {
+                  label: 'Collections',
+                  items: activeMenuCollections.slice(0, 8).map((collection) => ({
+                    label: collectionTitle(collection),
+                    href: `/collections/${collection.handle}`,
+                  })),
+                },
+              ]
+            : COLLECTIONS_SECTIONS,
+          viewAllLabel: 'All collections',
+          viewAllHref: '/collections',
+        },
+        { label: 'New Arrivals', href: '/products?sort=newest' },
+        { label: 'About', href: '/about' },
+      ]
+    : FALLBACK_NAV_ITEMS;
+
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
-  // Close on route change
-  useEffect(() => { onClose(); }, [pathname, onClose]);
+  useEffect(() => {
+    onClose();
+  }, [pathname, onClose]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') onClose();
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') onClose();
   }, [onClose]);
 
   useEffect(() => {
@@ -89,7 +178,6 @@ export function MobileDrawer({ isOpen, onClose, expandedItem, onToggleItem }: Mo
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -100,7 +188,6 @@ export function MobileDrawer({ isOpen, onClose, expandedItem, onToggleItem }: Mo
             onClick={onClose}
           />
 
-          {/* Drawer */}
           <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
@@ -111,12 +198,19 @@ export function MobileDrawer({ isOpen, onClose, expandedItem, onToggleItem }: Mo
             role="dialog"
             aria-label="Navigation"
           >
-            {/* Top spacer (aligns with MobileTopBar) */}
-            <div className="h-[54px] shrink-0" />
+            <div className="h-[54px] shrink-0 border-b border-[#d8d2c8] flex items-center justify-end px-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-10 h-10 flex items-center justify-center text-[#c94e2a] focus-visible:outline-2 focus-visible:outline-[#c94e2a]"
+                aria-label="Close navigation"
+              >
+                <X size={20} strokeWidth={1.8} />
+              </button>
+            </div>
 
-            {/* Nav items */}
             <div className="flex-1 overflow-y-auto">
-              {NAV_ITEMS.map((item) => (
+              {navItems.map((item) => (
                 <DrawerNavItem
                   key={item.label}
                   label={item.label}
@@ -132,10 +226,9 @@ export function MobileDrawer({ isOpen, onClose, expandedItem, onToggleItem }: Mo
               ))}
             </div>
 
-            {/* Bottom CTA bar */}
             <div className="shrink-0 border-t border-[#d8d2c8] p-3 flex gap-2 bg-white">
               <a
-                href="/orders"
+                href="/track"
                 className="flex-1 py-2.5 rounded-md font-[family-name:var(--font-ui)] text-[11px] font-medium uppercase tracking-[0.06em] border border-[#d8d2c8] text-[#3d3a36] text-center"
               >
                 Track order
