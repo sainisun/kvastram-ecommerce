@@ -7,8 +7,8 @@
    ═══════════════════════════════════════════════════ */
 
 :root {
-  --font-display: var(--font-mulmul), 'Montserrat', 'Avenir Next', Arial, sans-serif;
-  --font-body: var(--font-mulmul), 'Montserrat', 'Avenir Next', Arial, sans-serif;
+  --font-display: 'Montserrat', 'Avenir Next', Arial, sans-serif;
+  --font-body: 'Montserrat', 'Avenir Next', Arial, sans-serif;
   --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   --text-display-xl: clamp(2.25rem, 2.25rem, 3.25rem);

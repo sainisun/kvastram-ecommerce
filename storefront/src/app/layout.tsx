@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Montserrat } from 'next/font/google';
 
 import './globals.css';
 import { Analytics } from '@/components/Analytics';
@@ -17,14 +16,6 @@ import { WholesaleProvider } from '@/context/wholesale-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
-
-const mulmulSans = Montserrat({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  style: ['normal', 'italic'],
-  variable: '--font-mulmul',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -65,11 +56,7 @@ export default async function RootLayout({
   );
 
   return (
-    <html
-      lang="en"
-      className={mulmulSans.variable}
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link
           rel="preconnect"
@@ -122,4 +109,3 @@ export default async function RootLayout({
     </html>
   );
 }
-
