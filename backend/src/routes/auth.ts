@@ -20,6 +20,7 @@ import { config } from '../config';
 import { serializeUser } from '../utils/safe-user';
 
 const authRouter = new Hono<{ Variables: AuthContextVariables }>();
+const allowAdminBootstrap = process.env.ALLOW_ADMIN_BOOTSTRAP === 'true';
 
 // Cookie configuration for httpOnly JWT storage
 // Production (Hostinger): sameSite:'none' required for cross-domain HTTPS cookies
@@ -88,6 +89,10 @@ authRouter.post(
   '/register',
   zValidator('json', RegisterSchema),
   asyncHandler(async (c) => {
+    if (!allowAdminBootstrap) {
+      return c.json({ error: 'Not found' }, HttpStatus.NOT_FOUND);
+    }
+
     const data = c.req.valid('json');
     const result = await authService.register(data);
     // Set JWT in httpOnly cookie for XSS protection

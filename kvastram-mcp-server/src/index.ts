@@ -16,6 +16,7 @@ import { registerTrustItemTools } from './tools/trust-items.js';
 const PORT = Number(process.env.PORT) || 3002;
 const SECRET = process.env.MCP_SECRET_TOKEN;
 const BASE_URL = process.env.MCP_BASE_URL || `http://localhost:${PORT}`;
+const publicOAuthEnabled = process.env.MCP_PUBLIC_OAUTH_ENABLED === 'true';
 
 if (!SECRET) {
   console.error('❌ MCP_SECRET_TOKEN is not set in .env');
@@ -42,6 +43,17 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+function respondOAuthDisabled(res: Response) {
+  res.status(404).json({ error: 'Not found' });
+}
+
+function setWwwAuthenticateHeader(res: Response) {
+  const value = publicOAuthEnabled
+    ? `Bearer realm="kvastram-admin", resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`
+    : 'Bearer realm="kvastram-admin"';
+  res.setHeader('WWW-Authenticate', value);
+}
+
 // CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -61,6 +73,11 @@ app.get('/health', (_req, res) => {
 
 // RFC 9728: Protected Resource Metadata — claude.ai fetches this first
 app.get('/.well-known/oauth-protected-resource', (_req, res) => {
+  if (!publicOAuthEnabled) {
+    respondOAuthDisabled(res);
+    return;
+  }
+
   res.json({
     resource: `${BASE_URL}/mcp`,
     authorization_servers: [BASE_URL],
@@ -69,6 +86,11 @@ app.get('/.well-known/oauth-protected-resource', (_req, res) => {
 
 // RFC 8414: Authorization Server Metadata
 app.get('/.well-known/oauth-authorization-server', (_req, res) => {
+  if (!publicOAuthEnabled) {
+    respondOAuthDisabled(res);
+    return;
+  }
+
   res.json({
     issuer: BASE_URL,
     authorization_endpoint: `${BASE_URL}/authorize`,
@@ -85,6 +107,11 @@ app.get('/.well-known/oauth-authorization-server', (_req, res) => {
 // ── OAuth: Dynamic Client Registration (RFC 7591) ─────────────
 // claude.ai requires this before it will start the OAuth browser flow
 app.post('/register', (req, res) => {
+  if (!publicOAuthEnabled) {
+    respondOAuthDisabled(res);
+    return;
+  }
+
   const { client_name, redirect_uris, grant_types, response_types } = req.body as Record<string, unknown>;
   const clientId = `mcp-client-${randomUUID()}`;
   console.log(`[OAuth] Client registered: ${client_name} → ${clientId}`);
@@ -101,6 +128,11 @@ app.post('/register', (req, res) => {
 // ── OAuth: Authorization endpoint ────────────────────────────
 // claude.ai redirects here — we auto-approve (single-user admin)
 app.get('/authorize', (req, res) => {
+  if (!publicOAuthEnabled) {
+    respondOAuthDisabled(res);
+    return;
+  }
+
   const { redirect_uri, state, client_id } = req.query as Record<string, string>;
 
   if (!redirect_uri) {
@@ -126,6 +158,11 @@ app.get('/authorize', (req, res) => {
 
 // ── OAuth: Token endpoint ─────────────────────────────────────
 app.post('/token', (req, res) => {
+  if (!publicOAuthEnabled) {
+    respondOAuthDisabled(res);
+    return;
+  }
+
   const { grant_type, code, redirect_uri } = req.body as Record<string, string>;
 
   if (grant_type !== 'authorization_code') {
@@ -166,10 +203,7 @@ async function handleMcpPost(req: Request, res: Response): Promise<void> {
   const auth = req.headers['authorization'];
   if (!auth || auth !== `Bearer ${SECRET}`) {
     // RFC 6750 §3.1 — WWW-Authenticate lets clients discover OAuth server
-    res.setHeader(
-      'WWW-Authenticate',
-      `Bearer realm="kvastram-admin", resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`
-    );
+    setWwwAuthenticateHeader(res);
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
@@ -209,10 +243,7 @@ app.post('/mcp', handleMcpPost);
 app.get('/mcp', async (req, res) => {
   const auth = req.headers['authorization'];
   if (!auth || auth !== `Bearer ${SECRET}`) {
-    res.setHeader(
-      'WWW-Authenticate',
-      `Bearer realm="kvastram-admin", resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`
-    );
+    setWwwAuthenticateHeader(res);
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
