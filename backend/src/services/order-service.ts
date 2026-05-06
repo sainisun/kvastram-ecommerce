@@ -71,6 +71,7 @@ function sendStatusNotification(data: {
   tracking_number?: string | null;
 }) {
   if (!data.email) return;
+  const email = data.email;
 
   import('./email-service')
     .then(({ emailService }) => {
@@ -85,7 +86,7 @@ function sendStatusNotification(data: {
           currency_code: data.currency_code || 'INR',
           status: data.status,
         },
-        data.email
+        email
       );
     })
     .catch((err) =>

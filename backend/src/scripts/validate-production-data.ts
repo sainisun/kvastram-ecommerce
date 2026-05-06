@@ -75,7 +75,12 @@ async function validateProductionData() {
     GROUP BY lower(title)
     HAVING COUNT(*) > 1
   `);
-  (dupeCollections.rows as any[]).forEach((c) =>
+  const dupeCollectionRows = dupeCollections as unknown as Array<{
+    name_lower: string;
+    cnt: number | string;
+    titles: string[];
+  }>;
+  dupeCollectionRows.forEach((c) =>
     errors.push(`G-03 DUPLICATE COLLECTION NAME: "${c.name_lower}" appears ${c.cnt} times: ${c.titles.join(', ')}`)
   );
 
@@ -115,7 +120,11 @@ async function validateProductionData() {
     WHERE p.price_type = 'on_request'
       AND ma.amount > 0
   `);
-  (brokenPriceProducts.rows as any[]).forEach((p) =>
+  const brokenPriceRows = brokenPriceProducts as unknown as Array<{
+    title: string;
+    id: string;
+  }>;
+  brokenPriceRows.forEach((p) =>
     errors.push(`G-06 PRICE CONFLICT: "${p.title}" is on_request but has price set`)
   );
 

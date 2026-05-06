@@ -35,7 +35,10 @@ export function auditLog(entityType: string, action: AuditAction) {
       try {
         const clone = c.res.clone();
         const body = await clone.json();
-        newValue = body;
+        newValue =
+          body && typeof body === 'object' && !Array.isArray(body)
+            ? (body as Record<string, unknown>)
+            : null;
       } catch {
         // Response not JSON — skip
       }

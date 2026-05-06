@@ -71,6 +71,7 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+    turbopackUseSystemTlsCerts: true,
   },
   async rewrites() {
     // INTERNAL_API_URL: server-to-server (Docker: http://backend:4000)
