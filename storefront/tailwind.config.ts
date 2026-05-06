@@ -50,10 +50,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        heading: ['var(--font-display)', 'Georgia', 'serif'],
-        display: ['var(--font-display)', 'Georgia', 'serif'],
+        heading: ['var(--font-display)', 'Avenir Next', 'Arial', 'sans-serif'],
+        display: ['var(--font-display)', 'Avenir Next', 'Arial', 'sans-serif'],
         body:    ['var(--font-body)', 'system-ui', 'sans-serif'],
-        serif:   ['var(--font-display)', 'Georgia', 'serif'],
+        serif:   ['var(--font-display)', 'Avenir Next', 'Arial', 'sans-serif'],
         sans:    ['var(--font-body)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
