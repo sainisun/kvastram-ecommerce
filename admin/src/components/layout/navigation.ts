@@ -244,7 +244,7 @@ export function getNavItemsForMode(mode: DashboardMode): NavItem[] {
 }
 
 export function isNavItemActive(pathname: string, href: string) {
-  if (href === '/dashboard') {
+  if (href === '/dashboard' || href === '/dashboard/wholesale') {
     return pathname === href;
   }
 
