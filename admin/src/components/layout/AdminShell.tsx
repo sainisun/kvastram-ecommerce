@@ -10,6 +10,11 @@ import MobileBottomTab from '@/components/layout/MobileBottomTab';
 
 const DASHBOARD_MODE_STORAGE_KEY = 'kvastram.dashboardMode';
 const WHOLESALE_COUPONS_ROUTE = '/dashboard/wholesale/tiers';
+const LEGACY_WHOLESALE_ROUTES: Record<string, string> = {
+  '/dashboard/settings/tiers': '/dashboard/wholesale/tiers',
+  '/dashboard/content/footer-links': '/dashboard/wholesale/footer-links',
+  '/dashboard/wholesale-page': '/dashboard/wholesale/page-content',
+};
 
 export default function AdminShell({
   children,
@@ -39,6 +44,13 @@ export default function AdminShell({
     if (!isDashboardRoute) return;
 
     const savedMode = window.sessionStorage.getItem(DASHBOARD_MODE_STORAGE_KEY);
+    const wholesaleRedirect = LEGACY_WHOLESALE_ROUTES[pathname];
+
+    if (wholesaleRedirect) {
+      window.sessionStorage.setItem(DASHBOARD_MODE_STORAGE_KEY, 'wholesale');
+      router.replace(wholesaleRedirect);
+      return;
+    }
 
     if (pathname.startsWith('/dashboard/wholesale')) {
       window.sessionStorage.setItem(DASHBOARD_MODE_STORAGE_KEY, 'wholesale');

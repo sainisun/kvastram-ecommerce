@@ -186,23 +186,6 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<SettingsState>({});
   const [user, setUser] = useState<ApiUser | null>(null);
 
-  // Tiers State
-  const [tiers, setTiers] = useState<TierRecord[]>([]);
-  const [tiersLoading, setTiersLoading] = useState(false);
-  const [showTierForm, setShowTierForm] = useState(false);
-  const [editingTierId, setEditingTierId] = useState<string | null>(null);
-  const [tierFormData, setTierFormData] = useState<TierFormData>({
-    name: '',
-    slug: '',
-    discount_percent: 0,
-    min_order_value: 0,
-    min_order_quantity: 0,
-    payment_terms: '',
-    color: '#3B82F6',
-    priority: 0,
-    is_active: true,
-  });
-
   // Stripe Modal State
   const [showStripeModal, setShowStripeModal] = useState(false);
   const [stripeKeys, setStripeKeys] = useState({ publishable: '', secret: '' });
@@ -485,7 +468,6 @@ export default function SettingsPage() {
     { id: 'payment', label: 'Payment', icon: CreditCard },
     { id: 'email', label: 'Email', icon: Mail },
     { id: 'shipping', label: 'Shipping', icon: Truck },
-    { id: 'tiers', label: 'Tiers', icon: Layers },
   ];
 
   const shippingOrigin = settings.shipping_origin_address ?? {};
@@ -2269,22 +2251,6 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {activeTab === 'tiers' && (
-              <TiersTabContent
-                tiers={tiers}
-                setTiers={setTiers}
-                tiersLoading={tiersLoading}
-                setTiersLoading={setTiersLoading}
-                showTierForm={showTierForm}
-                setShowTierForm={setShowTierForm}
-                editingTierId={editingTierId}
-                setEditingTierId={setEditingTierId}
-                tierFormData={tierFormData}
-                setTierFormData={setTierFormData}
-                showNotification={showNotification}
-              />
-            )}
-
             <div className="mt-8 pt-6 border-t border-[var(--surface-container-low)]">
               <button
                 onClick={handleSave}
@@ -2534,6 +2500,8 @@ interface TiersTabContentProps {
   showNotification: NotificationFn;
 }
 
+// Kept for now while wholesale tiers live on /dashboard/wholesale/tiers.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function TiersTabContent({
   tiers,
   setTiers,

@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, X } from 'lucide-react';
+import { ChevronDown, LogOut, X } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import {
   getDashboardMode,
-  getNavItemsForMode,
+  getNavGroupsForMode,
   isNavItemActive,
+  type NavGroup,
   type NavItem,
 } from '@/components/layout/navigation';
 
@@ -23,7 +24,7 @@ export default function Sidebar({
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const mode = getDashboardMode(pathname);
-  const navItems = getNavItemsForMode(mode);
+  const navGroups = getNavGroupsForMode(mode);
 
   return (
     <>
@@ -34,7 +35,7 @@ export default function Sidebar({
           pathname={pathname}
           mode={mode}
           pendingOrders={pendingOrders}
-          items={navItems}
+          groups={navGroups}
           onClose={onClose}
           logout={logout}
           showClose={false}
@@ -52,7 +53,7 @@ export default function Sidebar({
           pathname={pathname}
           mode={mode}
           pendingOrders={pendingOrders}
-          items={navItems}
+          groups={navGroups}
           onClose={onClose}
           logout={logout}
           showClose
@@ -67,7 +68,7 @@ function SidebarContent({
   pathname,
   mode,
   pendingOrders,
-  items,
+  groups,
   onClose,
   logout,
   showClose,
@@ -76,7 +77,7 @@ function SidebarContent({
   pathname: string;
   mode: 'retail' | 'wholesale';
   pendingOrders: number;
-  items: NavItem[];
+  groups: NavGroup[];
   onClose: () => void;
   logout: () => void;
   showClose: boolean;
@@ -115,31 +116,38 @@ function SidebarContent({
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-4 space-y-0.5 overflow-y-auto no-scrollbar">
-        {items.map((item) => {
-          const active = isNavItemActive(pathname, item.href);
-          const Icon = item.icon;
+      <nav className="flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar">
+        {groups.map((group, index) => {
+          const isGroupActive = group.items.some((item) =>
+            isNavItemActive(pathname, item.href)
+          );
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className={`flex items-center gap-3 py-3 transition-all ${
-                active
-                  ? 'bg-[var(--surface-container-lowest)] text-[var(--primary)] rounded-l-full ml-4 pl-4 font-bold'
-                  : 'text-slate-400 hover:text-white px-8 hover:bg-white/5'
-              }`}
+            <details
+              key={group.label}
+              open={index === 0 || isGroupActive}
+              className="group/nav"
             >
-              <Icon size={18} className="flex-shrink-0" />
-              <span className="font-['Inter'] uppercase tracking-widest text-[0.6875rem] truncate">
-                {item.label}
-              </span>
-              {item.badge === 'pendingOrders' && pendingOrders > 0 && (
-                <span className="ml-auto rounded-full bg-[var(--error)] px-2 py-0.5 text-[9px] font-bold text-white">
-                  {pendingOrders > 99 ? '99+' : pendingOrders}
-                </span>
-              )}
-            </Link>
+              <summary className="flex w-full cursor-pointer list-none items-center justify-between px-4 py-2 text-left text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 transition-colors hover:text-slate-300 [&::-webkit-details-marker]:hidden">
+                <span>{group.label}</span>
+                <ChevronDown
+                  size={14}
+                  className="transition-transform group-open/nav:rotate-180"
+                />
+              </summary>
+
+              <div className="space-y-0.5">
+                {group.items.map((item) => (
+                  <SidebarLink
+                    key={item.href}
+                    item={item}
+                    pathname={pathname}
+                    pendingOrders={pendingOrders}
+                    onClose={onClose}
+                  />
+                ))}
+              </div>
+            </details>
           );
         })}
 
@@ -157,5 +165,42 @@ function SidebarContent({
         </button>
       </nav>
     </>
+  );
+}
+
+function SidebarLink({
+  item,
+  pathname,
+  pendingOrders,
+  onClose,
+}: {
+  item: NavItem;
+  pathname: string;
+  pendingOrders: number;
+  onClose: () => void;
+}) {
+  const active = isNavItemActive(pathname, item.href);
+  const Icon = item.icon;
+
+  return (
+    <Link
+      href={item.href}
+      onClick={onClose}
+      className={`flex items-center gap-3 py-2.5 transition-all ${
+        active
+          ? 'bg-[var(--surface-container-lowest)] text-[var(--primary)] rounded-l-full ml-4 pl-4 font-bold'
+          : 'text-slate-400 hover:text-white px-8 hover:bg-white/5'
+      }`}
+    >
+      <Icon size={18} className="flex-shrink-0" />
+      <span className="font-['Inter'] uppercase tracking-widest text-[0.6875rem] truncate">
+        {item.label}
+      </span>
+      {item.badge === 'pendingOrders' && pendingOrders > 0 && (
+        <span className="ml-auto rounded-full bg-[var(--error)] px-2 py-0.5 text-[9px] font-bold text-white">
+          {pendingOrders > 99 ? '99+' : pendingOrders}
+        </span>
+      )}
+    </Link>
   );
 }
