@@ -10,22 +10,19 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
   const displayed = collections.slice(0, 12);
 
   return (
-    <section className="kv-section bg-[var(--cream)]">
-      <div className="kv-container">
-        <div className="kv-section-head">
-          <div className="kv-tag">Curated collections</div>
-          <Link href="/collections" className="kv-section-link">
-            View All
-          </Link>
+    <section className="kv-section collections-as-seen-section">
+      <div className="collections-as-seen-container">
+        <div className="collections-as-seen-head">
+          <h2>Curated Collections</h2>
         </div>
 
         {displayed.length > 0 ? (
-          <div className="kv-carousel collections-carousel">
+          <div className="kv-carousel collections-carousel collections-as-seen-carousel">
             {displayed.map((collection) => (
               <Link
                 key={collection.id}
                 href={`/collections/${collection.handle}`}
-                className="collection-card kv-carousel-item group"
+                className="collection-card collections-as-seen-card kv-carousel-item group"
               >
                 {collection.image ? (
                   <div className="absolute inset-0">
@@ -42,9 +39,9 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
                     {collection.title.charAt(0)}
                   </div>
                 )}
-                <div className="collection-info">
-                  <h3 className="font-heading type-bold text-white">{collection.title}</h3>
-                  <span className="text-body-sm text-white/70">Shop Edit</span>
+                <div className="collection-info collections-as-seen-info">
+                  <span>Collection</span>
+                  <h3>{collection.title}</h3>
                 </div>
               </Link>
             ))}
