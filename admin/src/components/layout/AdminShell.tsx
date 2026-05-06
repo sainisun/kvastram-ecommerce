@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Sidebar from '@/components/layout/Sidebar';
 import TopHeader from '@/components/layout/TopHeader';
 import MobileBottomTab from '@/components/layout/MobileBottomTab';
+
+const DASHBOARD_MODE_STORAGE_KEY = 'kvastram.dashboardMode';
+const WHOLESALE_COUPONS_ROUTE = '/dashboard/wholesale/tiers';
 
 export default function AdminShell({
   children,
@@ -14,6 +17,7 @@ export default function AdminShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [pendingOrders, setPendingOrders] = useState(0);
   const [drawerState, setDrawerState] = useState({
     open: false,
@@ -30,6 +34,26 @@ export default function AdminShell({
   const closeDrawer = () => {
     setDrawerState({ open: false, pathname });
   };
+
+  useEffect(() => {
+    if (!isDashboardRoute) return;
+
+    const savedMode = window.sessionStorage.getItem(DASHBOARD_MODE_STORAGE_KEY);
+
+    if (pathname.startsWith('/dashboard/wholesale')) {
+      window.sessionStorage.setItem(DASHBOARD_MODE_STORAGE_KEY, 'wholesale');
+      return;
+    }
+
+    if (pathname === '/dashboard') {
+      window.sessionStorage.setItem(DASHBOARD_MODE_STORAGE_KEY, 'retail');
+      return;
+    }
+
+    if (pathname.startsWith('/dashboard/marketing') && savedMode === 'wholesale') {
+      router.replace(WHOLESALE_COUPONS_ROUTE);
+    }
+  }, [isDashboardRoute, pathname, router]);
 
   useEffect(() => {
     if (!isDashboardRoute) return;
