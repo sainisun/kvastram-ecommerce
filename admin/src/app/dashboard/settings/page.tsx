@@ -485,7 +485,6 @@ export default function SettingsPage() {
     { id: 'payment', label: 'Payment', icon: CreditCard },
     { id: 'email', label: 'Email', icon: Mail },
     { id: 'shipping', label: 'Shipping', icon: Truck },
-    { id: 'tiers', label: 'Tiers', icon: Layers },
   ];
 
   const shippingOrigin = settings.shipping_origin_address ?? {};

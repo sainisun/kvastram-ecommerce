@@ -12,11 +12,27 @@ import SearchOverlay from '@/components/search/SearchOverlay';
 
 interface Collection {
   id: string;
-  name: string;
+  title?: string;
+  name?: string;
   handle: string;
   status?: string;
   show_in_megamenu?: boolean;
   display_order?: number;
+  cover_image_url?: string | null;
+  image?: string | null;
+}
+
+interface HeaderCategory {
+  id: string;
+  name: string;
+  slug: string;
+  handle?: string;
+  image?: string | null;
+  header_image_url?: string | null;
+  show_in_header?: boolean;
+  is_active?: boolean;
+  display_order?: number;
+  children?: HeaderCategory[];
 }
 
 export function SiteHeader() {
@@ -27,6 +43,7 @@ export function SiteHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [expandedDrawerItem, setExpandedDrawerItem] = useState<string | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [categories, setCategories] = useState<HeaderCategory[]>([]);
 
   const megaLeaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -37,12 +54,18 @@ export function SiteHeader() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch collections for mega menu
+  // Fetch categories and collections for navigation.
   useEffect(() => {
     import('@/lib/api').then(({ api }) => {
-      api.getCollections().then((data: { collections?: Collection[] }) => {
-        setCollections(data.collections ?? []);
-      }).catch(() => {});
+      Promise.all([api.getCategoriesTree(), api.getCollections()])
+        .then(([categoriesData, collectionsData]: [
+          { categories?: HeaderCategory[] },
+          { collections?: Collection[] },
+        ]) => {
+          setCategories(categoriesData.categories ?? []);
+          setCollections(collectionsData.collections ?? []);
+        })
+        .catch(() => {});
     });
   }, []);
 
@@ -89,6 +112,7 @@ export function SiteHeader() {
           <MegaMenu
             isOpen={activeMega !== null}
             onClose={() => setActiveMega(null)}
+            categories={categories}
             collections={collections}
           />
         </div>
@@ -109,6 +133,8 @@ export function SiteHeader() {
         onClose={closeDrawer}
         expandedItem={expandedDrawerItem}
         onToggleItem={handleToggleDrawerItem}
+        categories={categories}
+        collections={collections}
       />
 
       {/* Mobile search overlay */}

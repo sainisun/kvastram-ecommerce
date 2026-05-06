@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   Search,
   Package,
@@ -14,10 +15,26 @@ import { api } from '@/lib/api';
 
 interface OrderStatus {
   id: string;
+  display_id?: number;
   status: string;
   created_at: string;
   tracking_number?: string;
+  tracking_link?: string;
   shipping_carrier?: string;
+  workflow?: {
+    status: string;
+    status_label: string;
+    estimated_delivery_start?: string | null;
+    estimated_delivery_end?: string | null;
+    customer_note?: string | null;
+    timeline: Array<{
+      key: string;
+      label: string;
+      happened_at: string | null;
+      completed: boolean;
+      current: boolean;
+    }>;
+  };
   items: Array<{
     title: string;
     quantity: number;
@@ -47,8 +64,8 @@ export default function TrackOrderPage() {
     setOrder(null);
 
     try {
-      const data = await api.getOrder(orderId);
-      setOrder(data.order);
+      const data = await api.trackOrder(orderId, email);
+      setOrder(data);
     } catch (err: unknown) {
       setError(
         err instanceof Error
@@ -77,24 +94,17 @@ export default function TrackOrderPage() {
     }
   };
 
-  const getStatusSteps = (status: string) => {
-    const steps = [
-      { key: 'confirmed', label: 'Order Confirmed' },
-      { key: 'processing', label: 'Processing' },
-      { key: 'shipped', label: 'Shipped' },
-      { key: 'out_for_delivery', label: 'Out for Delivery' },
-      { key: 'delivered', label: 'Delivered' },
+  const getStatusSteps = (currentOrder: OrderStatus | null) => {
+    if (currentOrder?.workflow?.timeline?.length) {
+      return currentOrder.workflow.timeline;
+    }
+
+    return [
+      { key: 'pending', label: 'Order Placed', completed: true, current: false, happened_at: null },
+      { key: 'processing', label: 'Processing', completed: false, current: true, happened_at: null },
+      { key: 'shipped', label: 'Shipped', completed: false, current: false, happened_at: null },
+      { key: 'delivered', label: 'Delivered', completed: false, current: false, happened_at: null },
     ];
-
-    const currentIndex = steps.findIndex(
-      (s) => s.key === status?.toLowerCase()
-    );
-
-    return steps.map((step, index) => ({
-      ...step,
-      completed: index <= currentIndex && currentIndex > -1,
-      current: index === currentIndex,
-    }));
   };
 
   return (
@@ -137,6 +147,7 @@ export default function TrackOrderPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 className="w-full border border-stone-200 bg-white px-4 py-3 outline-none transition focus:border-stone-900"
+                required
               />
             </div>
           </div>
@@ -163,7 +174,7 @@ export default function TrackOrderPage() {
 
         <div className="mt-8 overflow-x-auto">
           <div className="grid w-full min-w-0 grid-cols-5 gap-2">
-            {(order ? getStatusSteps(order.status) : getStatusSteps('out_for_delivery')).map((step, index) => (
+            {getStatusSteps(order).map((step, index) => (
               <div key={step.key} className={`text-center text-body-xs ${step.completed || step.current ? 'text-stone-900' : 'text-stone-400'}`}>
                 <div
                   className={`mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full border-2 ${
@@ -192,7 +203,7 @@ export default function TrackOrderPage() {
                     Order ID
                   </p>
                   <p className="text-body-xl type-medium text-stone-900">
-                    {order.id}
+                    #{order.display_id || order.id}
                   </p>
                 </div>
                 <div className="text-right">
@@ -201,7 +212,7 @@ export default function TrackOrderPage() {
                     Status
                   </p>
                   <p className="text-body-xl type-medium text-stone-900 capitalize">
-                    {order.status}
+                    {order.workflow?.status_label || order.status}
                   </p>
                 </div>
               </div>
@@ -211,11 +222,49 @@ export default function TrackOrderPage() {
                   <p className="text-body-xs type-bold uppercase text-stone-500 mb-1">
                     Tracking
                   </p>
+                  {order.tracking_link ? (
+                    <a href={order.tracking_link} target="_blank" rel="noreferrer" className="text-stone-700 underline">
+                      {order.shipping_carrier}: {order.tracking_number}
+                    </a>
+                  ) : (
+                    <p className="text-stone-700">
+                      {order.shipping_carrier}: {order.tracking_number}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {(order.workflow?.estimated_delivery_start || order.workflow?.estimated_delivery_end) && (
+                <div className="pt-4 border-t border-stone-200">
+                  <p className="text-body-xs type-bold uppercase text-stone-500 mb-1">
+                    Estimated delivery
+                  </p>
                   <p className="text-stone-700">
-                    {order.shipping_carrier}: {order.tracking_number}
+                    {order.workflow?.estimated_delivery_start || 'TBD'}
+                    {order.workflow?.estimated_delivery_end
+                      ? ` - ${order.workflow.estimated_delivery_end}`
+                      : ''}
                   </p>
                 </div>
               )}
+
+              {order.workflow?.customer_note && (
+                <div className="pt-4 border-t border-stone-200">
+                  <p className="text-body-xs type-bold uppercase text-stone-500 mb-1">
+                    Update from Kvastram
+                  </p>
+                  <p className="text-stone-700">{order.workflow.customer_note}</p>
+                </div>
+              )}
+
+              <div className="pt-4 border-t border-stone-200">
+                <Link
+                  href={`/contact?order=${order.display_id || order.id}&email=${encodeURIComponent(email)}`}
+                  className="inline-flex items-center justify-center border border-stone-300 px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-900 hover:text-white"
+                >
+                  Need Help With This Order?
+                </Link>
+              </div>
             </div>
 
             {/* Shipping Address */}

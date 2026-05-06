@@ -18,6 +18,13 @@ interface Order {
   customer_first_name: string | null;
   customer_last_name: string | null;
   created_at: string;
+  workflow?: {
+    ship_by_date?: string | null;
+    has_tracking?: boolean;
+    needs_attention?: boolean;
+    overdue_ship_by?: boolean;
+    overdue_tracking?: boolean;
+  };
 }
 
 interface OrderStats {
@@ -134,6 +141,8 @@ export default function OrdersPage() {
   };
 
   const statCount = (v: OrderFilter) => ({ all: stats?.total_orders, pending: stats?.pending_orders, processing: stats?.processing_orders, shipped: stats?.shipped_orders, delivered: stats?.delivered_orders, cancelled: stats?.cancelled_orders })[v] || 0;
+  const attentionCount = orders.filter((order) => order.workflow?.needs_attention).length;
+  const overdueCount = orders.filter((order) => order.workflow?.overdue_ship_by).length;
 
   return (
     <div className="space-y-6 px-4 py-6 md:px-6">
@@ -168,6 +177,18 @@ export default function OrdersPage() {
           </div>
         ))}
       </div>
+
+      {(attentionCount > 0 || overdueCount > 0) && (
+        <div className="rounded-xl border border-[var(--error-container)] bg-[var(--error-container)]/20 px-5 py-4 text-sm text-[var(--on-surface)]">
+          <p className="font-bold uppercase tracking-widest text-[10px] text-[var(--error)]">
+            Needs Attention
+          </p>
+          <p className="mt-2">
+            {attentionCount} orders need review.
+            {overdueCount > 0 ? ` ${overdueCount} are past their ship-by date.` : ''}
+          </p>
+        </div>
+      )}
 
       {/* ── Filter tabs + search ── */}
       <div className="bg-[var(--surface-container-lowest)] rounded-xl p-4 shadow-[0_4px_12px_rgba(25,28,30,0.04)] space-y-4">
@@ -225,7 +246,7 @@ export default function OrdersPage() {
                 <th className="px-6 py-4 text-left">
                   <input type="checkbox" checked={orders.length > 0 && selectedOrders.size === orders.length} onChange={toggleAll} className="h-4 w-4 rounded" />
                 </th>
-                {['Order','Customer','Amount','Status','Date','Actions'].map(h => (
+                {['Order','Customer','Amount','Status','Ship By','Date','Actions'].map(h => (
                   <th key={h} className="px-6 py-4 text-left text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">{h}</th>
                 ))}
               </tr>
@@ -240,10 +261,21 @@ export default function OrdersPage() {
                 return (
                   <tr key={order.id} className={`border-b border-[var(--surface-container-low)] border-l-4 ${s.border} hover:bg-[var(--surface-container-low)]/40 transition-colors`}>
                     <td className="px-6 py-4"><input type="checkbox" checked={selectedOrders.has(order.id)} onChange={() => toggleOne(order.id)} className="h-4 w-4 rounded" /></td>
-                    <td className="px-6 py-4"><Link href={`/dashboard/orders/${order.id}`} className="text-xs font-bold text-[var(--on-surface)] hover:text-[var(--on-tertiary-container)]">#{order.order_number}</Link></td>
+                    <td className="px-6 py-4">
+                      <Link href={`/dashboard/orders/${order.id}`} className="text-xs font-bold text-[var(--on-surface)] hover:text-[var(--on-tertiary-container)]">#{order.order_number}</Link>
+                      <p className="mt-1 text-[10px] text-[var(--on-surface-variant)]">
+                        {order.workflow?.has_tracking ? 'Tracking added' : 'Tracking pending'}
+                      </p>
+                      {order.workflow?.needs_attention ? (
+                        <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-[var(--error)]">
+                          {order.workflow?.overdue_ship_by ? 'Ship-by overdue' : 'Review required'}
+                        </p>
+                      ) : null}
+                    </td>
                     <td className="px-6 py-4"><p className="text-xs font-medium text-[var(--on-surface)]">{getName(order)}</p><p className="text-[10px] text-[var(--on-surface-variant)]">{order.email}</p></td>
                     <td className="px-6 py-4 text-xs font-black text-[var(--on-surface)]">{fmtCurrency(order.total, order.currency_code || 'INR')}</td>
                     <td className="px-6 py-4"><span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{order.status}</span></td>
+                    <td className="px-6 py-4 text-[10px] text-[var(--on-surface-variant)]">{order.workflow?.ship_by_date ? fmtDate(order.workflow.ship_by_date) : 'Not set'}</td>
                     <td className="px-6 py-4 text-[10px] text-[var(--on-surface-variant)]">{fmtDate(order.created_at)}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 justify-end">

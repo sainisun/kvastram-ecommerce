@@ -840,6 +840,22 @@ export const api = {
     return res.json();
   },
 
+  async trackOrder(orderNumber: string, email: string) {
+    const query = new URLSearchParams({
+      order_number: orderNumber,
+      email,
+    });
+    const res = await fetchWithTrace(
+      `${API_URL}/store/orders/track?${query.toString()}`
+    );
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      throw new Error(error?.message || error?.error || 'Failed to track order');
+    }
+    const payload = await res.json();
+    return payload.data;
+  },
+
   // --- Cart Persistence (Cart Abandonment Recovery) ---
   async saveCart(items: CartItem[]) {
     try {

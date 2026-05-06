@@ -10,7 +10,7 @@ interface Pill {
 }
 
 const DEFAULT_PILLS: Pill[] = [
-  { label: 'New Arrivals', href: '/new-arrivals' },
+  { label: 'New Arrivals', href: '/products?sort=newest' },
   { label: 'Jackets', href: '/categories/jackets' },
   { label: 'Sarees', href: '/categories/sarees' },
   { label: 'Tote Bags', href: '/categories/tote-bags' },

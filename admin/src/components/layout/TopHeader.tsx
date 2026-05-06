@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Bell, Menu } from 'lucide-react';
+import { Bell, ChevronDown, LogOut, Menu, Shield, Truck } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import {
   getDashboardMode,
@@ -29,7 +29,6 @@ const PAGE_TITLES: Record<string, string> = {
   '/dashboard/studio-inquiries': 'Studio Inquiries',
   '/dashboard/returns': 'Returns',
   '/dashboard/wholesale': 'Wholesale Overview',
-  '/dashboard/wholesale-page': 'Wholesale Page',
 };
 
 function getPageTitle(pathname: string) {
@@ -82,10 +81,12 @@ export default function TopHeader({
   pendingOrders,
   onMenuOpen,
 }: TopHeaderProps) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   const [notifOpen, setNotifOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
   const mode = getDashboardMode(pathname);
 
   const initial =
@@ -102,6 +103,9 @@ export default function TopHeader({
     const handler = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setNotifOpen(false);
+      }
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
       }
     };
 
@@ -124,28 +128,6 @@ export default function TopHeader({
         <h1 className="font-['Inter'] text-xl font-black uppercase tracking-[0.2em] text-[var(--primary)]">
           {title}
         </h1>
-        <div className="hidden items-center gap-1 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] p-1 md:flex">
-          <Link
-            href="/dashboard"
-            className={`rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              mode === 'retail'
-                ? 'bg-[var(--primary)] text-white'
-                : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
-            }`}
-          >
-            Retail
-          </Link>
-          <Link
-            href="/dashboard/wholesale"
-            className={`rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
-              mode === 'wholesale'
-                ? 'bg-[var(--primary)] text-white'
-                : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
-            }`}
-          >
-            Wholesale
-          </Link>
-        </div>
       </div>
 
       <div className="flex items-center gap-4">
@@ -214,8 +196,99 @@ export default function TopHeader({
           </div>
         </div>
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--primary-container)] text-xs font-bold text-[var(--surface-container-lowest)]">
-          {initial}
+        <div ref={accountRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setAccountOpen((current) => !current)}
+            className="flex items-center gap-2 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-1.5 py-1 text-[var(--primary)] transition-all hover:border-[var(--primary)] active:scale-95"
+            aria-label="Admin account"
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--primary-container)] text-xs font-bold text-[var(--surface-container-lowest)]">
+              {initial}
+            </span>
+            <span className="hidden text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--on-surface)] md:block">
+              {mode === 'wholesale' ? 'Wholesale' : 'Admin'}
+            </span>
+            <ChevronDown size={14} className="hidden md:block" />
+          </button>
+
+          <div
+            className={`absolute right-0 z-50 mt-4 w-72 origin-top-right rounded-xl bg-[var(--surface-container-lowest)] shadow-[0_12px_32px_-4px_rgba(25,28,30,0.12)] transition-all duration-200 ${
+              accountOpen
+                ? 'translate-y-0 scale-100 opacity-100'
+                : 'pointer-events-none -translate-y-2 scale-95 opacity-0'
+            }`}
+          >
+            <div className="border-b border-[var(--surface-container-low)] p-4">
+              <p className="text-xs font-bold uppercase tracking-widest text-[var(--on-surface)]">
+                {user?.first_name || 'Admin'}
+              </p>
+              <p className="mt-1 text-[11px] text-[var(--on-surface-variant)]">
+                {user?.email || 'admin@kvastram.com'}
+              </p>
+            </div>
+
+            <div className="space-y-2 p-3">
+              <Link
+                href="/dashboard"
+                onClick={() => setAccountOpen(false)}
+                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${
+                  mode === 'retail'
+                    ? 'bg-[var(--primary)] text-white'
+                    : 'text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]'
+                }`}
+              >
+                <Shield size={16} />
+                <div>
+                  <p className="font-semibold">Retail dashboard</p>
+                  <p
+                    className={`text-[11px] ${
+                      mode === 'retail'
+                        ? 'text-white/80'
+                        : 'text-[var(--on-surface-variant)]'
+                    }`}
+                  >
+                    Main admin workspace
+                  </p>
+                </div>
+              </Link>
+
+              <Link
+                href="/dashboard/wholesale"
+                onClick={() => setAccountOpen(false)}
+                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors ${
+                  mode === 'wholesale'
+                    ? 'bg-[var(--primary)] text-white'
+                    : 'text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]'
+                }`}
+              >
+                <Truck size={16} />
+                <div>
+                  <p className="font-semibold">Wholesale dashboard</p>
+                  <p
+                    className={`text-[11px] ${
+                      mode === 'wholesale'
+                        ? 'text-white/80'
+                        : 'text-[var(--on-surface-variant)]'
+                    }`}
+                  >
+                    B2B inquiries, customers, orders
+                  </p>
+                </div>
+              </Link>
+            </div>
+
+            <div className="border-t border-[var(--surface-container-low)] p-3">
+              <button
+                type="button"
+                onClick={logout}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-[var(--on-surface)] transition-colors hover:bg-[var(--surface-container-low)]"
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>

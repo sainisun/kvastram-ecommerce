@@ -11,6 +11,11 @@ import { eq, desc, like, or, sql, and, gte, lte, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateInvoice } from '../services/pdf-service';
 import { sanitizeSearchInput } from '../utils/validation';
+import {
+  buildWorkflowSummary,
+  deriveWorkflowStatus,
+  mergeWorkflowMetadata,
+} from '../utils/order-workflow';
 
 // --- TYPES ---
 export type OrderStatus =
@@ -46,6 +51,48 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 const shippingAddr = alias(addresses, 'shipping_address');
 const billingAddr = alias(addresses, 'billing_address');
 
+function applyWorkflowSummary<T extends Record<string, any>>(order: T) {
+  const workflow = buildWorkflowSummary(order);
+
+  return {
+    ...order,
+    raw_status: order.status,
+    status: workflow.status,
+    workflow,
+  };
+}
+
+function sendStatusNotification(data: {
+  email?: string | null;
+  order_number?: string | number | null;
+  total?: number | null;
+  currency_code?: string | null;
+  status: string;
+  tracking_number?: string | null;
+}) {
+  if (!data.email) return;
+
+  import('./email-service')
+    .then(({ emailService }) => {
+      if (data.status === 'shipped' && data.tracking_number) {
+        return;
+      }
+
+      return emailService.sendOrderStatusUpdate(
+        {
+          order_number: data.order_number ?? '',
+          total: data.total || 0,
+          currency_code: data.currency_code || 'INR',
+          status: data.status,
+        },
+        data.email
+      );
+    })
+    .catch((err) =>
+      console.error('[OrderService] Failed to load email service:', err)
+    );
+}
+
 // --- SERVICE CLASS ---
 class OrderService {
   async listOrders(filters: OrderFilters) {
@@ -75,17 +122,10 @@ class OrderService {
       }
     }
 
-    if (status && status !== 'all') conditions.push(eq(orders.status, status));
     if (date_from) conditions.push(gte(orders.created_at, new Date(date_from)));
     if (date_to) conditions.push(lte(orders.created_at, new Date(date_to)));
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-    // Count
-    const [{ count }] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(orders)
-      .where(whereClause);
 
     // Sort Column
     let sortCol: any = orders.created_at;
@@ -100,6 +140,8 @@ class OrderService {
         id: orders.id,
         order_number: orders.display_id,
         status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
         email: orders.email,
         subtotal: orders.subtotal,
         tax_total: orders.tax_total,
@@ -109,23 +151,30 @@ class OrderService {
         customer_id: orders.customer_id,
         created_at: orders.created_at,
         updated_at: orders.updated_at,
+        tracking_number: orders.tracking_number,
+        metadata: orders.metadata,
         customer_first_name: customers.first_name,
         customer_last_name: customers.last_name,
       })
       .from(orders)
       .leftJoin(customers, eq(orders.customer_id, customers.id))
       .where(whereClause)
-      .orderBy(sort_order === 'asc' ? sortCol : desc(sortCol))
-      .limit(limit)
-      .offset(offset);
+      .orderBy(sort_order === 'asc' ? sortCol : desc(sortCol));
+
+    const normalizedOrders = ordersList.map((order) => applyWorkflowSummary(order));
+    const filteredOrders =
+      status && status !== 'all'
+        ? normalizedOrders.filter((order) => order.status === status)
+        : normalizedOrders;
+    const paginatedOrders = filteredOrders.slice(offset, offset + limit);
 
     return {
-      orders: ordersList,
+      orders: paginatedOrders,
       pagination: {
         page,
         limit,
-        total: Number(count),
-        total_pages: Math.ceil(Number(count) / limit),
+        total: filteredOrders.length,
+        total_pages: Math.ceil(filteredOrders.length / limit),
       },
     };
   }
@@ -184,17 +233,27 @@ class OrderService {
       .leftJoin(products, eq(product_variants.product_id, products.id))
       .where(eq(line_items.order_id, id));
 
-    return { order, items };
+    return { order: applyWorkflowSummary(order), items };
   }
 
   async updateStatus(id: string, newStatus: string) {
     const [existingOrder] = await db
-      .select({ status: orders.status })
+      .select({
+        email: orders.email,
+        order_number: orders.display_id,
+        total: orders.total,
+        currency_code: orders.currency_code,
+        status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
+        tracking_number: orders.tracking_number,
+        metadata: orders.metadata,
+      })
       .from(orders)
       .where(eq(orders.id, id));
     if (!existingOrder) throw new Error('Order not found');
 
-    const currentStatus = existingOrder.status || 'pending';
+    const currentStatus = deriveWorkflowStatus(existingOrder);
 
     // Validate transition
     if (currentStatus !== newStatus) {
@@ -206,19 +265,59 @@ class OrderService {
       }
     }
 
+    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+      workflow_status: newStatus as OrderStatus,
+    });
+    const nextFulfillmentStatus =
+      newStatus === 'delivered'
+        ? 'fulfilled'
+        : newStatus === 'shipped'
+          ? 'shipped'
+          : newStatus === 'processing'
+            ? 'not_fulfilled'
+            : existingOrder.fulfillment_status;
+    const nextPaymentStatus =
+      newStatus === 'refunded' ? 'refunded' : existingOrder.payment_status;
+
     const [updated] = await db
       .update(orders)
-      .set({ status: newStatus as any, updated_at: new Date() })
+      .set({
+        status: newStatus as any,
+        fulfillment_status: nextFulfillmentStatus as any,
+        payment_status: nextPaymentStatus as any,
+        metadata: nextMetadata,
+        updated_at: new Date(),
+      })
       .where(eq(orders.id, id))
       .returning();
 
-    return updated;
+    sendStatusNotification({
+      email: existingOrder.email,
+      order_number: existingOrder.order_number,
+      total: existingOrder.total,
+      currency_code: existingOrder.currency_code,
+      status: newStatus,
+      tracking_number: existingOrder.tracking_number,
+    });
+
+    return applyWorkflowSummary(updated as Record<string, any>);
   }
 
   async bulkUpdateStatus(orderIds: string[], newStatus: string) {
     // Fetch current statuses
     const targets = await db
-      .select({ id: orders.id, status: orders.status })
+      .select({
+        id: orders.id,
+        email: orders.email,
+        order_number: orders.display_id,
+        total: orders.total,
+        currency_code: orders.currency_code,
+        status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
+        tracking_number: orders.tracking_number,
+        metadata: orders.metadata,
+      })
       .from(orders)
       .where(inArray(orders.id, orderIds));
 
@@ -226,7 +325,7 @@ class OrderService {
 
     const invalidIds: string[] = [];
     for (const order of targets) {
-      const currentStatus = order.status || 'pending';
+      const currentStatus = deriveWorkflowStatus(order);
       if (currentStatus === newStatus) continue;
 
       const allowed = VALID_TRANSITIONS[currentStatus] || [];
@@ -241,21 +340,62 @@ class OrderService {
       );
     }
 
-    await db
-      .update(orders)
-      .set({ status: newStatus as any, updated_at: new Date() })
-      .where(inArray(orders.id, orderIds));
+    for (const order of targets) {
+      const nextMetadata = mergeWorkflowMetadata(order.metadata, {
+        workflow_status: newStatus as OrderStatus,
+      });
+      const nextFulfillmentStatus =
+        newStatus === 'delivered'
+          ? 'fulfilled'
+          : newStatus === 'shipped'
+            ? 'shipped'
+            : newStatus === 'processing'
+              ? 'not_fulfilled'
+              : order.fulfillment_status;
+      const nextPaymentStatus =
+        newStatus === 'refunded' ? 'refunded' : order.payment_status;
+
+      await db
+        .update(orders)
+        .set({
+          status: newStatus as any,
+          fulfillment_status: nextFulfillmentStatus as any,
+          payment_status: nextPaymentStatus as any,
+          metadata: nextMetadata,
+          updated_at: new Date(),
+        })
+        .where(eq(orders.id, order.id));
+
+      sendStatusNotification({
+        email: order.email,
+        order_number: order.order_number,
+        total: order.total,
+        currency_code: order.currency_code,
+        status: newStatus,
+        tracking_number: order.tracking_number,
+      });
+    }
 
     return targets.length;
   }
 
   async addTracking(id: string, data: { tracking_number: string; shipping_carrier?: string; tracking_link?: string; }) {
     const [existingOrder] = await db
-      .select({ id: orders.id, email: orders.email, order_number: orders.display_id })
+      .select({
+        id: orders.id,
+        email: orders.email,
+        order_number: orders.display_id,
+        metadata: orders.metadata,
+      })
       .from(orders)
       .where(eq(orders.id, id));
 
     if (!existingOrder) throw new Error('Order not found');
+
+    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+      workflow_status: 'shipped',
+      shipped_at: new Date().toISOString(),
+    });
 
     const [updated] = await db
       .update(orders)
@@ -264,6 +404,8 @@ class OrderService {
         shipping_carrier: data.shipping_carrier,
         tracking_link: data.tracking_link,
         status: 'shipped',
+        fulfillment_status: 'shipped',
+        metadata: nextMetadata,
         updated_at: new Date()
       })
       .where(eq(orders.id, id))
@@ -282,7 +424,45 @@ class OrderService {
       }).catch(err => console.error('[OrderService] Failed to load email service:', err));
     }
 
-    return updated;
+    return applyWorkflowSummary(updated as Record<string, any>);
+  }
+
+  async updateWorkflow(
+    id: string,
+    data: {
+      ship_by_date?: string;
+      estimated_delivery_start?: string;
+      estimated_delivery_end?: string;
+      customer_note?: string;
+      internal_note?: string;
+    }
+  ) {
+    const [existingOrder] = await db
+      .select({
+        id: orders.id,
+        metadata: orders.metadata,
+        status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
+        tracking_number: orders.tracking_number,
+      })
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    if (!existingOrder) throw new Error('Order not found');
+
+    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, data);
+
+    const [updated] = await db
+      .update(orders)
+      .set({
+        metadata: nextMetadata,
+        updated_at: new Date(),
+      })
+      .where(eq(orders.id, id))
+      .returning();
+
+    return applyWorkflowSummary(updated as Record<string, any>);
   }
 
   async deleteOrder(id: string) {
@@ -300,30 +480,31 @@ class OrderService {
   }
 
   async getStatsOverview() {
-    const [{ total_orders }] = await db
-      .select({ total_orders: sql<number>`count(*)` })
-      .from(orders);
-    const [{ total_revenue }] = await db
-      .select({ total_revenue: sql<number>`coalesce(sum(${orders.total}), 0)` })
-      .from(orders)
-      .where(sql`${orders.status} NOT IN ('cancelled', 'refunded')`);
-
-    // Status counts
-    const statusCounts = await db
+    const orderRows = await db
       .select({
+        id: orders.id,
         status: orders.status,
-        count: sql<number>`count(*)`,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
+        tracking_number: orders.tracking_number,
+        metadata: orders.metadata,
+        total: orders.total,
       })
-      .from(orders)
-      .groupBy(orders.status);
+      .from(orders);
 
     const countByStatus: Record<string, number> = {};
-    for (const row of statusCounts) {
-      countByStatus[row.status || 'unknown'] = Number(row.count);
+    let totalRevenueNum = 0;
+
+    for (const row of orderRows) {
+      const workflowStatus = deriveWorkflowStatus(row);
+      countByStatus[workflowStatus] = (countByStatus[workflowStatus] || 0) + 1;
+
+      if (workflowStatus !== 'cancelled' && workflowStatus !== 'refunded') {
+        totalRevenueNum += Number(row.total || 0);
+      }
     }
 
-    const totalOrdersNum = Number(total_orders);
-    const totalRevenueNum = Number(total_revenue);
+    const totalOrdersNum = orderRows.length;
 
     return {
       total_orders: totalOrdersNum,

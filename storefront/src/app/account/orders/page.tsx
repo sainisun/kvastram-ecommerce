@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { OrdersListSkeleton } from '@/components/ui/Skeleton';
+import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
 
 const ORDERS_PER_PAGE = 10;
 
@@ -138,15 +139,9 @@ export default function OrdersListPage() {
                         }).format(order.total / 100)}
                       </span>
                       <span
-                        className={`account-status-badge px-3 py-1 ${
-                          order.status === 'completed'
-                            ? 'bg-green-50 text-green-700 border border-green-200'
-                            : order.status === 'canceled'
-                              ? 'bg-red-50 text-red-700 border border-red-200'
-                              : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                        }`}
+                        className={`account-status-badge px-3 py-1 ${getOrderStatusBadgeClass(order.status)}`}
                       >
-                        {order.status}
+                        {getOrderStatusConfig(order.status).label}
                       </span>
                     </div>
                   </div>

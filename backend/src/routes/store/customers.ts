@@ -6,6 +6,7 @@ import { eq, desc, and, asc } from 'drizzle-orm';
 import { z } from 'zod';
 import { serializeCustomer } from '../../utils/safe-user';
 import { broadcastStudioMessage } from '../../services/socket';
+import { buildWorkflowSummary } from '../../utils/order-workflow';
 
 const AddressSchema = z.object({
   first_name: z.string().min(1).max(100).optional(),
@@ -21,6 +22,17 @@ const AddressSchema = z.object({
 });
 
 const storeCustomersRouter = new Hono();
+
+function applyWorkflowSummary<T extends Record<string, any>>(order: T) {
+  const workflow = buildWorkflowSummary(order);
+
+  return {
+    ...order,
+    raw_status: order.status,
+    status: workflow.status,
+    workflow,
+  };
+}
 
 // Get Current Customer Profile
 storeCustomersRouter.get('/me', verifyCustomer, async (c) => {
@@ -94,7 +106,7 @@ storeCustomersRouter.get('/me/orders', verifyCustomer, async (c) => {
     },
   });
 
-  return c.json({ orders: customerOrders });
+  return c.json({ orders: customerOrders.map((order) => applyWorkflowSummary(order)) });
 });
 
 // Get Single Order
@@ -114,7 +126,7 @@ storeCustomersRouter.get('/me/orders/:id', verifyCustomer, async (c) => {
 
   if (!order) return c.json({ error: 'Order not found' }, 404);
 
-  return c.json({ order });
+  return c.json({ order: applyWorkflowSummary(order) });
 });
 
 // Get Customer Studio Messages

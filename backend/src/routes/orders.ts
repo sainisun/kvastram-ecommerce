@@ -177,6 +177,14 @@ const AddTrackingSchema = z.object({
   tracking_link: z.string().url('Must be a valid URL').optional().or(z.literal('')),
 });
 
+const UpdateWorkflowSchema = z.object({
+  ship_by_date: z.string().optional(),
+  estimated_delivery_start: z.string().optional(),
+  estimated_delivery_end: z.string().optional(),
+  customer_note: z.string().max(2000).optional(),
+  internal_note: z.string().max(2000).optional(),
+});
+
 ordersRouter.post(
   '/:id/tracking',
   zValidator('json', AddTrackingSchema),
@@ -190,6 +198,24 @@ ordersRouter.post(
       c,
       { order: updated },
       'Tracking information added successfully'
+    );
+  })
+);
+
+// PATCH /orders/:id/workflow - Update ETA, notes, and ship-by metadata
+ordersRouter.patch(
+  '/:id/workflow',
+  zValidator('json', UpdateWorkflowSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+
+    const updated = await orderService.updateWorkflow(id, data);
+
+    return successResponse(
+      c,
+      { order: updated },
+      'Order workflow updated successfully'
     );
   })
 );

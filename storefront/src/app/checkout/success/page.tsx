@@ -197,7 +197,7 @@ function SuccessContent() {
             Continue Shopping
           </Link>
           <Link
-            href="/account"
+            href="/track"
             className="border border-stone-300 text-stone-900 px-10 py-4 uppercase tracking-token-wider text-body-xs type-bold hover:bg-stone-50 transition-colors text-center"
           >
             Track My Order

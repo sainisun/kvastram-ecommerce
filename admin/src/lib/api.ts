@@ -539,7 +539,8 @@ export const api = {
     search?: string,
     status?: string
   ) => {
-    let url = `${API_BASE_URL}/orders?limit=${limit}&offset=${offset}`;
+    const page = Math.floor(offset / limit) + 1;
+    let url = `${API_BASE_URL}/orders?limit=${limit}&page=${page}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     if (status && status !== 'all') url += `&status=${status}`;
 
@@ -564,15 +565,16 @@ export const api = {
   },
 
   getOrder: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/orders/${id}`, {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}`, {
       // No Authorization header needed - cookie is sent automatically
     });
     if (!res.ok) throw new Error('Failed to fetch order details');
-    return res.json();
+    const response = await res.json();
+    return response.data;
   },
 
   addOrderTracking: async (id: string, data: { tracking_number: string, shipping_carrier?: string, tracking_link?: string }) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/orders/${id}/tracking`, {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/tracking`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -580,6 +582,27 @@ export const api = {
       body: JSON.stringify(data),
     });
     if (!res.ok) return handleApiError(res, 'Failed to add tracking information');
+    return res.json();
+  },
+
+  updateOrderWorkflow: async (
+    id: string,
+    data: {
+      ship_by_date?: string;
+      estimated_delivery_start?: string;
+      estimated_delivery_end?: string;
+      customer_note?: string;
+      internal_note?: string;
+    }
+  ) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/workflow`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update order workflow');
     return res.json();
   },
 
@@ -935,6 +958,33 @@ export const api = {
   get: async (path: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {});
     if (!res.ok) return handleApiError(res, `GET ${path} failed`);
+    return res.json();
+  },
+
+  getSupportRequests: async (kind = 'all', search = '') => {
+    const params = new URLSearchParams();
+    if (kind && kind !== 'all') params.set('kind', kind);
+    if (search) params.set('search', search);
+    const query = params.toString();
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/contacts${query ? `?${query}` : ''}`,
+      {}
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to fetch support requests');
+    return res.json();
+  },
+
+  getSupportRequest: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/contacts/${id}`, {});
+    if (!res.ok) return handleApiError(res, 'Failed to fetch support request');
+    return res.json();
+  },
+
+  deleteSupportRequest: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/contacts/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to delete support request');
     return res.json();
   },
 
@@ -1818,7 +1868,7 @@ export const api = {
 
   // Collections
   getCollections: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/collections`, {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/collections?status=all`, {
       // No Authorization header needed - cookie is sent automatically
     });
     if (!res.ok) throw new Error('Failed to fetch collections');
@@ -1913,9 +1963,9 @@ export const api = {
   },
 
   // Category Order Management
-  updateCategoriesOrder: async (updates: Array<{ id: string; display_order: number }>) => {
+  updateCategoriesOrder: async (updates: Array<{ id: string; display_order: number; show_in_header?: boolean }>) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/categories/reorder`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },

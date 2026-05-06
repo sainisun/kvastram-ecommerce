@@ -2,27 +2,22 @@ import type { LucideIcon } from 'lucide-react';
 import {
   BarChart2,
   ClipboardList,
-  Clapperboard,
   FileText,
   FolderKanban,
   Globe,
   Home,
-  Image,
   Landmark,
   LayoutDashboard,
-  Layers,
   ListTree,
   Megaphone,
   MessageCircleQuestion,
-  MessageSquareQuote,
+  Mailbox,
   Package,
-  PanelsTopLeft,
   RotateCcw,
   Settings,
   ShoppingBag,
   ShoppingCart,
   Star,
-  Tag,
   Truck,
   Users,
 } from 'lucide-react';
@@ -70,27 +65,15 @@ export const retailPrimaryNavItems: NavItem[] = [
     description: 'Revenue and trends',
   },
   {
-    label: 'Hero Banners',
-    href: '/dashboard/content/hero-banners',
-    icon: Image,
-    description: 'Homepage slider',
+    label: 'Content',
+    href: '/dashboard/content',
+    icon: Home,
+    description: 'Homepage, pages, and media',
   },
   {
-    label: 'Homepage Banners',
-    href: '/dashboard/content/homepage-banners',
-    icon: Layers,
-    description: 'Homepage hero/banner slider',
-  },
-  {
-    label: 'Trending Reels',
-    href: '/dashboard/content/trending-reels',
-    icon: Clapperboard,
-    description: 'Short-form media',
-  },
-  {
-    label: 'Coupons',
+    label: 'Marketing',
     href: '/dashboard/marketing',
-    icon: Tag,
+    icon: Megaphone,
     description: 'Discounts and campaigns',
   },
   {
@@ -102,18 +85,6 @@ export const retailPrimaryNavItems: NavItem[] = [
 ];
 
 export const retailMoreNavItems: NavItem[] = [
-  {
-    label: 'Homepage Categories',
-    href: '/dashboard/content/homepage-categories',
-    icon: Layers,
-    description: 'Homepage browse-by-category cards',
-  },
-  {
-    label: 'Category Circles',
-    href: '/dashboard/content/category-circles',
-    icon: LayoutDashboard,
-    description: 'Mobile hero circle shortcuts',
-  },
   {
     label: 'Collections',
     href: '/dashboard/collections',
@@ -127,18 +98,6 @@ export const retailMoreNavItems: NavItem[] = [
     description: 'Taxonomy and menus',
   },
   {
-    label: 'Header Navigation',
-    href: '/dashboard/header-navigation',
-    icon: PanelsTopLeft,
-    description: 'Header category order',
-  },
-  {
-    label: 'Content',
-    href: '/dashboard/content',
-    icon: Home,
-    description: 'Pages, posts, testimonials',
-  },
-  {
     label: 'Reviews',
     href: '/dashboard/reviews',
     icon: Star,
@@ -149,6 +108,12 @@ export const retailMoreNavItems: NavItem[] = [
     href: '/dashboard/studio-inquiries',
     icon: MessageCircleQuestion,
     description: 'Product questions and sizing',
+  },
+  {
+    label: 'Support Inbox',
+    href: '/dashboard/support',
+    icon: Mailbox,
+    description: 'Contact and order help requests',
   },
   {
     label: 'Returns',
@@ -167,18 +132,6 @@ export const retailMoreNavItems: NavItem[] = [
     href: '/dashboard/abandoned-carts',
     icon: ShoppingCart,
     description: 'Recovery automation',
-  },
-  {
-    label: 'Testimonials',
-    href: '/dashboard/content/testimonials',
-    icon: MessageSquareQuote,
-    description: 'Customer stories',
-  },
-  {
-    label: 'Marketing',
-    href: '/dashboard/marketing',
-    icon: Megaphone,
-    description: 'Campaign manager',
   },
 ];
 
@@ -219,16 +172,19 @@ export const wholesaleNavItems: NavItem[] = [
     icon: FileText,
     description: 'Wholesale landing page',
   },
+  {
+    label: 'Footer Links',
+    href: '/dashboard/wholesale/footer-links',
+    icon: FileText,
+    description: 'Catalog and policy resources',
+  },
 ];
 
 export const primaryNavItems = retailPrimaryNavItems;
 export const moreNavItems = retailMoreNavItems;
 
 export function getDashboardMode(pathname: string): DashboardMode {
-  if (
-    pathname.startsWith('/dashboard/wholesale') ||
-    pathname.startsWith('/dashboard/wholesale-page')
-  ) {
+  if (pathname.startsWith('/dashboard/wholesale')) {
     return 'wholesale';
   }
 

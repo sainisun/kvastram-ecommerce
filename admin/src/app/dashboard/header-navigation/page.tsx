@@ -95,6 +95,7 @@ export default function HeaderNavigationPage() {
       const updates = categories.map((cat) => ({
         id: cat.id,
         display_order: cat.display_order,
+        show_in_header: cat.show_in_header,
       }));
 
       await api.updateCategoriesOrder(updates);

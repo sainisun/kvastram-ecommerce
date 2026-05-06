@@ -71,13 +71,19 @@ export default function CollectionsPage() {
 
       let collectionId = editingId;
       if (editingId) {
+        if (formData.status === 'active') {
+          await api.updateCollectionProducts(
+            editingId,
+            selectedProducts.map((product) => product.id)
+          );
+        }
         await api.updateCollection(editingId, formData);
       } else {
         const response = await api.createCollection(formData);
         collectionId = response.collection?.id;
       }
 
-      if (collectionId) {
+      if (collectionId && !(editingId && formData.status === 'active')) {
         await api.updateCollectionProducts(
           collectionId,
           selectedProducts.map((product) => product.id)

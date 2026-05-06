@@ -11,6 +11,7 @@ import { UserCard } from '@/components/account/UserCard';
 import { QuickGrid } from '@/components/account/QuickGrid';
 import { SettingsList } from '@/components/account/SettingsList';
 import { AccountSkeleton } from '@/components/ui/Skeleton';
+import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
 
 export default function AccountPage() {
   const { customer, loading, logout } = useAuth();
@@ -221,15 +222,9 @@ export default function AccountPage() {
                             }).format(order.total / 100)}
                           </span>
                           <span
-                            className={`account-status-badge px-3 py-1 ${
-                              order.status === 'completed'
-                                ? 'bg-green-50 text-green-700 border border-green-200'
-                                : order.status === 'canceled'
-                                  ? 'bg-red-50 text-red-700 border border-red-200'
-                                  : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                            }`}
+                            className={`account-status-badge px-3 py-1 ${getOrderStatusBadgeClass(order.status)}`}
                           >
-                            {order.status}
+                            {getOrderStatusConfig(order.status).label}
                           </span>
                         </div>
                       </div>

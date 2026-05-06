@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   Mail,
   MapPin,
@@ -12,13 +13,18 @@ import {
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 
-export default function ContactPage() {
-  const [formData, setFormData] = useState({
+function ContactContent() {
+  const searchParams = useSearchParams();
+  const orderReference = searchParams.get('order');
+  const emailPrefill = searchParams.get('email');
+  const [formData, setFormData] = useState(() => ({
     firstName: '',
     lastName: '',
-    email: '',
-    message: '',
-  });
+    email: emailPrefill || '',
+    message: orderReference
+      ? `I need help with order #${orderReference}.\n\n`
+      : '',
+  }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [status, setStatus] = useState<
@@ -95,7 +101,10 @@ export default function ContactPage() {
       const res = await fetch(`/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          orderReference: orderReference || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -175,6 +184,11 @@ export default function ContactPage() {
 
         {/* Form */}
         <div className="bg-stone-50 p-8 md:p-12 rounded-none">
+          {orderReference ? (
+            <div className="mb-6 border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700">
+              Support request for order <strong>#{orderReference}</strong>
+            </div>
+          ) : null}
           {status === 'success' ? (
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
@@ -182,7 +196,9 @@ export default function ContactPage() {
                 Message Sent!
               </h3>
               <p className="text-stone-600 mb-6">
-                Thank you for reaching out. We&apos;ll get back to you soon.
+                {orderReference
+                  ? `Your support request for order #${orderReference} is with our concierge team.`
+                  : `Thank you for reaching out. We'll get back to you soon.`}
               </p>
               <button
                 onClick={() => setStatus('idle')}
@@ -265,6 +281,14 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white py-12 md:py-16 lg:py-24" />}>
+      <ContactContent />
+    </Suspense>
   );
 }
 
