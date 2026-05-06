@@ -425,7 +425,7 @@ function ReelPlayerModal({
      * On mobile: no flex — the inner player fills inset-0 directly.
      */
     <div
-      className="fixed inset-0 z-[100] bg-black lg:flex lg:items-center lg:justify-center"
+      className="reel-player-modal fixed inset-0 z-[100] bg-black lg:flex lg:items-center lg:justify-center"
       style={{
         position: 'fixed',
         inset: 0,
@@ -513,7 +513,7 @@ function ReelPlayerModal({
 
         {/* Top bar */}
         <div
-          className="relative z-10 flex items-center gap-3 px-4 pt-10"
+          className="reel-player-topbar relative z-10 flex items-center gap-3 px-4 pt-10"
           style={{
             position: 'relative',
             zIndex: 10,
@@ -560,7 +560,7 @@ function ReelPlayerModal({
 
         {/* Action buttons */}
         <div
-          className="absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5"
+          className="reel-player-actions absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5"
           style={{
             position: 'absolute',
             right: '1rem',
@@ -654,7 +654,7 @@ function ReelPlayerModal({
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}
-            className="flex min-w-0 items-center gap-3 rounded-lg border border-white/70 bg-white/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-xl transition active:scale-[0.98]"
+            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-white/70 bg-white/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-xl transition active:scale-[0.98]"
             style={{
               display: 'flex',
               minWidth: 0,

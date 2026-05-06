@@ -3770,6 +3770,43 @@ a:active,
   line-height: var(--leading-snug);
 }
 
+body.reel-player-open [aria-label='Cookie consent'] {
+  display: none !important;
+}
+
+.reel-player-modal .reel-player-topbar,
+.reel-player-modal .reel-player-topbar *,
+.reel-player-modal .reel-player-actions,
+.reel-player-modal .reel-player-actions * {
+  color: #ffffff !important;
+}
+
+.reel-player-modal .reel-product-overlay {
+  background: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  color: var(--ink) !important;
+}
+
+.reel-player-modal .reel-product-overlay,
+.reel-player-modal .reel-product-overlay * {
+  color: var(--ink) !important;
+}
+
+.reel-player-modal .reel-product-overlay .color-sienna {
+  color: var(--sienna) !important;
+}
+
+.reel-player-modal .reel-product-overlay [class*='bg-'] {
+  background: var(--sienna) !important;
+  background-color: var(--sienna) !important;
+  color: #ffffff !important;
+}
+
+.reel-player-modal .reel-product-overlay [class*='bg-'] * {
+  color: #ffffff !important;
+}
+
 @media (min-width: 640px) {
   .watch-buy-carousel {
     grid-auto-columns: minmax(190px, 30%);
