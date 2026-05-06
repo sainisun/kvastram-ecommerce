@@ -300,8 +300,8 @@ export interface RegisterData {
 }
 
 export interface AuthResponse {
-  token: string;
   customer: Customer;
+  success?: boolean;
 }
 
 // Form Types

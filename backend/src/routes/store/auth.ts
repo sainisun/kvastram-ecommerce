@@ -256,11 +256,6 @@ storeAuthRouter.get('/verification-status', async (c) => {
   }
 
   const status = await customerAuthService.getVerificationStatus(email);
-
-  if (!status) {
-    return c.json({ error: 'Customer not found' }, 404);
-  }
-
   return c.json(status);
 });
 
@@ -314,8 +309,10 @@ storeAuthRouter.post(
       // 🔒 FIX-010: Set httpOnly cookie
       setAuthCookie(c, result.token);
 
-      // Return token for legacy support, but also set cookie
-      return c.json(result);
+      return c.json({
+        success: true,
+        customer: result.customer,
+      });
     } catch (error: any) {
       return c.json({ error: error.message }, 401);
     }

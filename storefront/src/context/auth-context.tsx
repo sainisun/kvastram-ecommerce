@@ -34,9 +34,6 @@ export function AuthProvider({
       setCustomer(data.customer);
     } catch {
       eraseCookie('auth_token');
-      if (globalThis.window !== undefined) {
-        localStorage.removeItem('auth_token');
-      }
       setCustomer(null);
     } finally {
       setLoading(false);
@@ -79,9 +76,6 @@ export function AuthProvider({
   const logout = () => {
     void api.post('/store/auth/logout', {}).catch(() => undefined);
     eraseCookie('auth_token');
-    if (globalThis.window !== undefined) {
-      localStorage.removeItem('auth_token');
-    }
     setCustomer(null);
     router.push('/');
   };

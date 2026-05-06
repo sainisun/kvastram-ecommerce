@@ -378,8 +378,9 @@ export default function SettingsPage() {
   const fetchWhatsAppSettings = async () => {
     try {
       const res = await fetch(`/api/admin/whatsapp/settings`, {
+        credentials: 'include',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
         },
       });
       if (res.ok) {
@@ -404,8 +405,8 @@ export default function SettingsPage() {
       setSaving(true);
       const res = await fetch(`/api/admin/whatsapp/settings`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(whatsappSettings),
@@ -433,8 +434,9 @@ export default function SettingsPage() {
       setTestingWhatsapp(true);
       const res = await fetch(`/api/admin/whatsapp/test`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
         },
       });
 

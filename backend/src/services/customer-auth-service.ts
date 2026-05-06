@@ -176,14 +176,42 @@ export const customerAuthService = {
     }
 
     const password_hash = await bcrypt.hash(data.password, 10);
+    const duplicateAccountMessage =
+      'Unable to create account with this email. Please sign in, verify your email, or reset your password.';
 
     if (existing.length > 0) {
       const customer = existing[0];
       if (customer.has_account) {
         if (!customer.email_verified) {
-          throw new Error('An account with this email exists but is not verified. Please check your inbox or use the "Resend Verification" page.');
+          const verificationToken = generateVerificationToken();
+          const verificationExpires = getVerificationExpiry();
+
+          await db
+            .update(customers)
+            .set({
+              verification_token: verificationToken,
+              verification_expires_at: verificationExpires,
+              updated_at: new Date(),
+            })
+            .where(eq(customers.id, customer.id));
+
+          try {
+            const { emailService } = await import('./email-service');
+            emailService
+              .sendVerificationEmail({
+                email: customer.email,
+                first_name: customer.first_name || data.first_name,
+                token: verificationToken,
+              })
+              .catch(emailError =>
+                console.error('Failed to resend verification email:', emailError)
+              );
+          } catch (emailError: unknown) {
+            console.error('Failed to load email service:', emailError);
+          }
         }
-        throw new Error('Customer already has an account');
+
+        throw new Error(duplicateAccountMessage);
       }
 
       // Upgrade guest to account
@@ -424,7 +452,10 @@ export const customerAuthService = {
       .limit(1);
 
     if (!customer) {
-      return null;
+      return {
+        is_verified: false,
+        requires_verification: false,
+      };
     }
 
     return {
