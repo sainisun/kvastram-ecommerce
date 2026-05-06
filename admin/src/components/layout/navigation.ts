@@ -2,21 +2,15 @@ import type { LucideIcon } from 'lucide-react';
 import {
   BarChart2,
   ClipboardList,
-  Clapperboard,
   FileText,
   FolderKanban,
   Globe,
-  Home,
-  Image,
   Landmark,
   LayoutDashboard,
-  Layers,
   ListTree,
   Megaphone,
   MessageCircleQuestion,
-  MessageSquareQuote,
   Package,
-  PanelsTopLeft,
   RotateCcw,
   Settings,
   ShoppingBag,
@@ -70,24 +64,6 @@ export const retailPrimaryNavItems: NavItem[] = [
     description: 'Revenue and trends',
   },
   {
-    label: 'Hero Banners',
-    href: '/dashboard/content/hero-banners',
-    icon: Image,
-    description: 'Homepage slider',
-  },
-  {
-    label: 'Homepage Banners',
-    href: '/dashboard/content/homepage-banners',
-    icon: Layers,
-    description: 'Homepage hero/banner slider',
-  },
-  {
-    label: 'Trending Reels',
-    href: '/dashboard/content/trending-reels',
-    icon: Clapperboard,
-    description: 'Short-form media',
-  },
-  {
     label: 'Coupons',
     href: '/dashboard/marketing',
     icon: Tag,
@@ -103,18 +79,6 @@ export const retailPrimaryNavItems: NavItem[] = [
 
 export const retailMoreNavItems: NavItem[] = [
   {
-    label: 'Homepage Categories',
-    href: '/dashboard/content/homepage-categories',
-    icon: Layers,
-    description: 'Homepage browse-by-category cards',
-  },
-  {
-    label: 'Category Circles',
-    href: '/dashboard/content/category-circles',
-    icon: LayoutDashboard,
-    description: 'Mobile hero circle shortcuts',
-  },
-  {
     label: 'Collections',
     href: '/dashboard/collections',
     icon: FolderKanban,
@@ -125,18 +89,6 @@ export const retailMoreNavItems: NavItem[] = [
     href: '/dashboard/categories',
     icon: ListTree,
     description: 'Taxonomy and menus',
-  },
-  {
-    label: 'Header Navigation',
-    href: '/dashboard/header-navigation',
-    icon: PanelsTopLeft,
-    description: 'Header category order',
-  },
-  {
-    label: 'Content',
-    href: '/dashboard/content',
-    icon: Home,
-    description: 'Pages, posts, testimonials',
   },
   {
     label: 'Reviews',
@@ -167,12 +119,6 @@ export const retailMoreNavItems: NavItem[] = [
     href: '/dashboard/abandoned-carts',
     icon: ShoppingCart,
     description: 'Recovery automation',
-  },
-  {
-    label: 'Testimonials',
-    href: '/dashboard/content/testimonials',
-    icon: MessageSquareQuote,
-    description: 'Customer stories',
   },
   {
     label: 'Marketing',
