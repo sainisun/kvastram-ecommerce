@@ -81,16 +81,16 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const [reels, setReels] = useState<TrendingReelItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [gridCols, setGridCols] = useState<2 | 3>(2);
+  const [gridCols, setGridCols] = useState<2 | 3>(() => {
+    if (typeof window === 'undefined') return 2;
+    try {
+      return localStorage.getItem('kvastram_reels_grid') === '3' ? 3 : 2;
+    } catch {
+      return 2;
+    }
+  });
   const [showAll, setShowAll] = useState(false);
   const requestedReelId = searchParams.get('reel');
-
-  // Restore grid preference from localStorage
-  useEffect(() => {
-    try {
-      if (localStorage.getItem('kvastram_reels_grid') === '3') setGridCols(3);
-    } catch {}
-  }, []);
 
   function setGrid(cols: 2 | 3) {
     setGridCols(cols);
@@ -112,8 +112,12 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     const requestedIndex = reels.findIndex((reel) => reel.id === requestedReelId);
     if (requestedIndex < 0) return;
 
-    if (requestedIndex >= 12) setShowAll(true);
-    setActiveIndex(requestedIndex);
+    const openRequestedReel = window.setTimeout(() => {
+      if (requestedIndex >= 12) setShowAll(true);
+      setActiveIndex(requestedIndex);
+    }, 0);
+
+    return () => window.clearTimeout(openRequestedReel);
   }, [activeIndex, loading, reels, requestedReelId]);
 
   const visibleReels = useMemo(
@@ -720,4 +724,3 @@ function ReelPlayerModal({
     </div>
   );
 }
-

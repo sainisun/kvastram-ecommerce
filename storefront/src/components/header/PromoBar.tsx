@@ -15,12 +15,11 @@ interface PromoBarProps {
 }
 
 export function PromoBar({ isSticky }: PromoBarProps) {
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem(SESSION_KEY) === '1';
+  });
   const [msgIdx, setMsgIdx] = useState(0);
-
-  useEffect(() => {
-    if (sessionStorage.getItem(SESSION_KEY) === '1') setDismissed(true);
-  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setMsgIdx((i) => (i + 1) % MESSAGES.length), 3500);

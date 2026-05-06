@@ -53,14 +53,16 @@ export default function SalePage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const campaignEndDate = activeCampaign?.end_date ?? null;
+
   useEffect(() => {
-    if (!activeCampaign?.end_date) {
-      setTimeLeft(null);
-      return;
+    if (!campaignEndDate) {
+      const clearCountdown = window.setTimeout(() => setTimeLeft(null), 0);
+      return () => window.clearTimeout(clearCountdown);
     }
 
     const updateCountdown = () => {
-      const remaining = new Date(activeCampaign.end_date as string).getTime() - Date.now();
+      const remaining = new Date(campaignEndDate).getTime() - Date.now();
       if (remaining <= 0) {
         setTimeLeft(null);
         return;
@@ -75,13 +77,16 @@ export default function SalePage() {
       });
     };
 
-    updateCountdown();
+    const firstTick = window.setTimeout(updateCountdown, 0);
     const timer = window.setInterval(() => {
       updateCountdown();
     }, 1000);
 
-    return () => window.clearInterval(timer);
-  }, [activeCampaign]);
+    return () => {
+      window.clearTimeout(firstTick);
+      window.clearInterval(timer);
+    };
+  }, [campaignEndDate]);
 
   return (
     <div className="min-h-screen bg-white">
