@@ -312,7 +312,9 @@ export const moreNavItems = retailMoreNavItems;
 export function getDashboardMode(pathname: string): DashboardMode {
   if (
     pathname.startsWith('/dashboard/wholesale') ||
-    pathname.startsWith('/dashboard/wholesale-page')
+    pathname.startsWith('/dashboard/wholesale-page') ||
+    pathname === '/dashboard/settings/tiers' ||
+    pathname === '/dashboard/content/footer-links'
   ) {
     return 'wholesale';
   }
