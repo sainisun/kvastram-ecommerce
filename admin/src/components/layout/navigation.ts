@@ -184,7 +184,10 @@ export const primaryNavItems = retailPrimaryNavItems;
 export const moreNavItems = retailMoreNavItems;
 
 export function getDashboardMode(pathname: string): DashboardMode {
-  if (pathname.startsWith('/dashboard/wholesale')) {
+  if (
+    pathname.startsWith('/dashboard/wholesale') ||
+    pathname.startsWith('/dashboard/wholesale-page')
+  ) {
     return 'wholesale';
   }
 
@@ -200,7 +203,7 @@ export function getNavItemsForMode(mode: DashboardMode): NavItem[] {
 }
 
 export function isNavItemActive(pathname: string, href: string) {
-  if (href === '/dashboard') {
+  if (href === '/dashboard' || href === '/dashboard/wholesale') {
     return pathname === href;
   }
 
