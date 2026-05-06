@@ -5,9 +5,10 @@ import { usePathname } from 'next/navigation';
 import { LogOut, X } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import {
+  getDashboardMode,
+  getNavItemsForMode,
   isNavItemActive,
-  moreNavItems,
-  primaryNavItems,
+  type NavItem,
 } from '@/components/layout/navigation';
 
 export default function Sidebar({
@@ -21,8 +22,8 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-
-  const allItems = [...primaryNavItems, ...moreNavItems];
+  const mode = getDashboardMode(pathname);
+  const navItems = getNavItemsForMode(mode);
 
   return (
     <>
@@ -31,8 +32,9 @@ export default function Sidebar({
         <SidebarContent
           user={user}
           pathname={pathname}
+          mode={mode}
           pendingOrders={pendingOrders}
-          items={allItems}
+          items={navItems}
           onClose={onClose}
           logout={logout}
           showClose={false}
@@ -48,8 +50,9 @@ export default function Sidebar({
         <SidebarContent
           user={user}
           pathname={pathname}
+          mode={mode}
           pendingOrders={pendingOrders}
-          items={allItems}
+          items={navItems}
           onClose={onClose}
           logout={logout}
           showClose
@@ -62,6 +65,7 @@ export default function Sidebar({
 function SidebarContent({
   user,
   pathname,
+  mode,
   pendingOrders,
   items,
   onClose,
@@ -70,8 +74,9 @@ function SidebarContent({
 }: {
   user: { first_name?: string; email?: string; role?: string } | null;
   pathname: string;
+  mode: 'retail' | 'wholesale';
   pendingOrders: number;
-  items: typeof primaryNavItems;
+  items: NavItem[];
   onClose: () => void;
   logout: () => void;
   showClose: boolean;
@@ -91,7 +96,7 @@ function SidebarContent({
           </div>
           <div>
             <span className="block font-['Inter'] uppercase tracking-widest text-[0.6875rem] font-bold text-white leading-none">
-              Kvastram Admin
+              {mode === 'wholesale' ? 'Kvastram Wholesale' : 'Kvastram Admin'}
             </span>
             <span className="block text-[10px] text-slate-400 font-medium mt-0.5 capitalize">
               {user?.role || 'Super User'}
@@ -107,6 +112,33 @@ function SidebarContent({
             <X size={20} />
           </button>
         )}
+      </div>
+
+      <div className="px-4 pb-4">
+        <div className="flex items-center gap-1 rounded-full bg-white/5 p-1">
+          <Link
+            href="/dashboard"
+            onClick={onClose}
+            className={`flex-1 rounded-full px-3 py-2 text-center text-[10px] font-bold uppercase tracking-widest transition-colors ${
+              mode === 'retail'
+                ? 'bg-white text-[#01071c]'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            Retail
+          </Link>
+          <Link
+            href="/dashboard/wholesale"
+            onClick={onClose}
+            className={`flex-1 rounded-full px-3 py-2 text-center text-[10px] font-bold uppercase tracking-widest transition-colors ${
+              mode === 'wholesale'
+                ? 'bg-white text-[#01071c]'
+                : 'text-slate-300 hover:text-white'
+            }`}
+          >
+            Wholesale
+          </Link>
+        </div>
       </div>
 
       {/* Nav */}

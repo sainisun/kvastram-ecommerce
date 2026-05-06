@@ -1,7 +1,9 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   BarChart2,
+  ClipboardList,
   Clapperboard,
+  FileText,
   FolderKanban,
   Globe,
   Home,
@@ -33,7 +35,9 @@ export interface NavItem {
   description?: string;
 }
 
-export const primaryNavItems: NavItem[] = [
+export type DashboardMode = 'retail' | 'wholesale';
+
+export const retailPrimaryNavItems: NavItem[] = [
   {
     label: 'Dashboard',
     href: '/dashboard',
@@ -97,7 +101,7 @@ export const primaryNavItems: NavItem[] = [
   },
 ];
 
-export const moreNavItems: NavItem[] = [
+export const retailMoreNavItems: NavItem[] = [
   {
     label: 'Homepage Categories',
     href: '/dashboard/content/homepage-categories',
@@ -159,18 +163,6 @@ export const moreNavItems: NavItem[] = [
     description: 'Markets and currencies',
   },
   {
-    label: 'Wholesale',
-    href: '/dashboard/wholesale',
-    icon: Truck,
-    description: 'B2B inquiries and orders',
-  },
-  {
-    label: 'Wholesale Page',
-    href: '/dashboard/wholesale-page',
-    icon: Landmark,
-    description: 'Wholesale landing page',
-  },
-  {
     label: 'Abandoned Carts',
     href: '/dashboard/abandoned-carts',
     icon: ShoppingCart,
@@ -189,6 +181,67 @@ export const moreNavItems: NavItem[] = [
     description: 'Campaign manager',
   },
 ];
+
+export const wholesaleNavItems: NavItem[] = [
+  {
+    label: 'Overview',
+    href: '/dashboard/wholesale',
+    icon: Truck,
+    description: 'B2B snapshot',
+  },
+  {
+    label: 'Inquiries',
+    href: '/dashboard/wholesale/inquiries',
+    icon: ClipboardList,
+    description: 'Applications and approvals',
+  },
+  {
+    label: 'Customers',
+    href: '/dashboard/wholesale/customers',
+    icon: Users,
+    description: 'Approved wholesale accounts',
+  },
+  {
+    label: 'Orders',
+    href: '/dashboard/wholesale/orders',
+    icon: ShoppingBag,
+    description: 'B2B order queue',
+  },
+  {
+    label: 'Tiers',
+    href: '/dashboard/wholesale/tiers',
+    icon: Landmark,
+    description: 'Discount programs',
+  },
+  {
+    label: 'Page Content',
+    href: '/dashboard/wholesale/page-content',
+    icon: FileText,
+    description: 'Wholesale landing page',
+  },
+];
+
+export const primaryNavItems = retailPrimaryNavItems;
+export const moreNavItems = retailMoreNavItems;
+
+export function getDashboardMode(pathname: string): DashboardMode {
+  if (
+    pathname.startsWith('/dashboard/wholesale') ||
+    pathname.startsWith('/dashboard/wholesale-page')
+  ) {
+    return 'wholesale';
+  }
+
+  return 'retail';
+}
+
+export function getNavItemsForMode(mode: DashboardMode): NavItem[] {
+  if (mode === 'wholesale') {
+    return wholesaleNavItems;
+  }
+
+  return [...retailPrimaryNavItems, ...retailMoreNavItems];
+}
 
 export function isNavItemActive(pathname: string, href: string) {
   if (href === '/dashboard') {

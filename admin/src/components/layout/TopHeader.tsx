@@ -1,10 +1,14 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Bell, Menu } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { primaryNavItems } from '@/components/layout/navigation';
+import {
+  getDashboardMode,
+  getNavItemsForMode,
+} from '@/components/layout/navigation';
 
 interface TopHeaderProps {
   pendingOrders: number;
@@ -24,32 +28,65 @@ const PAGE_TITLES: Record<string, string> = {
   '/dashboard/reviews': 'Reviews',
   '/dashboard/studio-inquiries': 'Studio Inquiries',
   '/dashboard/returns': 'Returns',
-  '/dashboard/wholesale': 'Wholesale',
+  '/dashboard/wholesale': 'Wholesale Overview',
+  '/dashboard/wholesale-page': 'Wholesale Page',
 };
 
 function getPageTitle(pathname: string) {
   if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
-  // match by prefix (e.g. /dashboard/orders/123 → Orders)
-  for (const item of primaryNavItems) {
+
+  const mode = getDashboardMode(pathname);
+  const navItems = getNavItemsForMode(mode);
+
+  for (const item of navItems) {
     if (item.href !== '/dashboard' && pathname.startsWith(item.href)) {
       return item.label;
     }
   }
-  return 'Kvastram';
+
+  return mode === 'wholesale' ? 'Wholesale' : 'Kvastram';
 }
 
 const MOCK_NOTIFICATIONS = [
-  { id: 1, title: 'New Order Received', sub: 'Just now • needs fulfillment', dot: 'bg-[var(--on-tertiary-container)]', read: false },
-  { id: 2, title: 'Payment Confirmed', sub: '2 mins ago • order processed', dot: 'bg-[var(--on-tertiary-container)]', read: false },
-  { id: 3, title: 'Low Stock Alert', sub: '1 hour ago • check inventory', dot: 'bg-[var(--secondary-container)]', read: true },
-  { id: 4, title: 'New Customer Signup', sub: '3 hours ago', dot: 'bg-[var(--outline-variant)]', read: true },
+  {
+    id: 1,
+    title: 'New Order Received',
+    sub: 'Just now - needs fulfillment',
+    dot: 'bg-[var(--on-tertiary-container)]',
+    read: false,
+  },
+  {
+    id: 2,
+    title: 'Payment Confirmed',
+    sub: '2 mins ago - order processed',
+    dot: 'bg-[var(--on-tertiary-container)]',
+    read: false,
+  },
+  {
+    id: 3,
+    title: 'Low Stock Alert',
+    sub: '1 hour ago - check inventory',
+    dot: 'bg-[var(--secondary-container)]',
+    read: true,
+  },
+  {
+    id: 4,
+    title: 'New Customer Signup',
+    sub: '3 hours ago',
+    dot: 'bg-[var(--outline-variant)]',
+    read: true,
+  },
 ];
 
-export default function TopHeader({ pendingOrders, onMenuOpen }: TopHeaderProps) {
+export default function TopHeader({
+  pendingOrders,
+  onMenuOpen,
+}: TopHeaderProps) {
   const { user } = useAuth();
   const pathname = usePathname();
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const mode = getDashboardMode(pathname);
 
   const initial =
     user?.first_name?.[0]?.toUpperCase() ||
@@ -57,78 +94,97 @@ export default function TopHeader({ pendingOrders, onMenuOpen }: TopHeaderProps)
     'K';
 
   const title = getPageTitle(pathname);
-  const unread = MOCK_NOTIFICATIONS.filter(n => !n.read).length + (pendingOrders > 0 ? 1 : 0);
+  const unread =
+    MOCK_NOTIFICATIONS.filter((notification) => !notification.read).length +
+    (pendingOrders > 0 ? 1 : 0);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setNotifOpen(false);
       }
     };
+
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 bg-[var(--surface)]/80 backdrop-blur-xl flex items-center justify-between px-6 py-4 shadow-[0_12px_32px_-4px_rgba(25,28,30,0.06)] md:left-[240px]">
-      {/* Left — hamburger (mobile only) */}
+    <header className="fixed inset-x-0 top-0 z-40 flex items-center justify-between bg-[var(--surface)]/80 px-6 py-4 backdrop-blur-xl shadow-[0_12px_32px_-4px_rgba(25,28,30,0.06)] md:left-[240px]">
       <button
         type="button"
         onClick={onMenuOpen}
-        className="text-[var(--primary)] hover:opacity-70 active:scale-95 transition-all md:hidden"
+        className="text-[var(--primary)] transition-all hover:opacity-70 active:scale-95 md:hidden"
         aria-label="Open menu"
       >
         <Menu size={22} />
       </button>
 
-      {/* Title — hidden on desktop (sidebar always visible) */}
-      <h1 className="font-['Inter'] font-black tracking-[0.2em] text-xl uppercase text-[var(--primary)] md:hidden">
-        {title}
-      </h1>
-
-      {/* Desktop page title */}
-      <h1 className="hidden md:block font-['Inter'] font-black tracking-[0.2em] text-xl uppercase text-[var(--primary)]">
-        {title}
-      </h1>
-
-      {/* Right actions */}
       <div className="flex items-center gap-4">
-        {/* Notification bell */}
+        <h1 className="font-['Inter'] text-xl font-black uppercase tracking-[0.2em] text-[var(--primary)]">
+          {title}
+        </h1>
+        <div className="hidden items-center gap-1 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] p-1 md:flex">
+          <Link
+            href="/dashboard"
+            className={`rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+              mode === 'retail'
+                ? 'bg-[var(--primary)] text-white'
+                : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
+            }`}
+          >
+            Retail
+          </Link>
+          <Link
+            href="/dashboard/wholesale"
+            className={`rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+              mode === 'wholesale'
+                ? 'bg-[var(--primary)] text-white'
+                : 'text-[var(--on-surface-variant)] hover:text-[var(--on-surface)]'
+            }`}
+          >
+            Wholesale
+          </Link>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4">
         <div ref={notifRef} className="relative">
           <button
             type="button"
-            onClick={() => setNotifOpen(v => !v)}
-            className="relative text-[var(--primary)] hover:opacity-70 active:scale-95 transition-all"
+            onClick={() => setNotifOpen((current) => !current)}
+            className="relative text-[var(--primary)] transition-all hover:opacity-70 active:scale-95"
             aria-label="Notifications"
           >
             <Bell size={20} />
             {unread > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[var(--error)] rounded-full border-2 border-[var(--surface)]" />
+              <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full border-2 border-[var(--surface)] bg-[var(--error)]" />
             )}
           </button>
 
-          {/* Notification panel */}
           <div
-            className={`absolute right-0 mt-4 w-72 bg-[var(--surface-container-lowest)] rounded-xl shadow-[0_12px_32px_-4px_rgba(25,28,30,0.12)] z-50 transition-all duration-200 origin-top-right ${
-              notifOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+            className={`absolute right-0 z-50 mt-4 w-72 origin-top-right rounded-xl bg-[var(--surface-container-lowest)] shadow-[0_12px_32px_-4px_rgba(25,28,30,0.12)] transition-all duration-200 ${
+              notifOpen
+                ? 'translate-y-0 scale-100 opacity-100'
+                : 'pointer-events-none -translate-y-2 scale-95 opacity-0'
             }`}
           >
-            <div className="p-4 border-b border-[var(--surface-container-low)] flex justify-between items-center">
+            <div className="flex items-center justify-between border-b border-[var(--surface-container-low)] p-4">
               <span className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">
                 Notifications
               </span>
-              <button className="text-[var(--on-tertiary-container)] text-[10px] font-bold">
+              <button className="text-[10px] font-bold text-[var(--on-tertiary-container)]">
                 Mark all read
               </button>
             </div>
             <div className="max-h-80 overflow-y-auto py-2">
               {pendingOrders > 0 && (
-                <div className="px-4 py-3 hover:bg-[var(--surface-container-low)] transition-colors flex gap-3">
-                  <div className="w-2 h-2 mt-1.5 bg-[var(--on-tertiary-container)] rounded-full flex-shrink-0" />
+                <div className="flex gap-3 px-4 py-3 transition-colors hover:bg-[var(--surface-container-low)]">
+                  <div className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--on-tertiary-container)]" />
                   <div>
                     <p className="text-xs font-bold text-[var(--on-surface)]">
-                      {pendingOrders} Pending Order{pendingOrders > 1 ? 's' : ''}
+                      {pendingOrders} Pending Order
+                      {pendingOrders > 1 ? 's' : ''}
                     </p>
                     <p className="text-[10px] text-[var(--on-surface-variant)]">
                       Need fulfillment
@@ -136,12 +192,21 @@ export default function TopHeader({ pendingOrders, onMenuOpen }: TopHeaderProps)
                   </div>
                 </div>
               )}
-              {MOCK_NOTIFICATIONS.map(n => (
-                <div key={n.id} className="px-4 py-3 hover:bg-[var(--surface-container-low)] transition-colors flex gap-3">
-                  <div className={`w-2 h-2 mt-1.5 ${n.dot} rounded-full flex-shrink-0`} />
+              {MOCK_NOTIFICATIONS.map((notification) => (
+                <div
+                  key={notification.id}
+                  className="flex gap-3 px-4 py-3 transition-colors hover:bg-[var(--surface-container-low)]"
+                >
+                  <div
+                    className={`mt-1.5 h-2 w-2 flex-shrink-0 rounded-full ${notification.dot}`}
+                  />
                   <div>
-                    <p className="text-xs font-bold text-[var(--on-surface)]">{n.title}</p>
-                    <p className="text-[10px] text-[var(--on-surface-variant)]">{n.sub}</p>
+                    <p className="text-xs font-bold text-[var(--on-surface)]">
+                      {notification.title}
+                    </p>
+                    <p className="text-[10px] text-[var(--on-surface-variant)]">
+                      {notification.sub}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -149,8 +214,7 @@ export default function TopHeader({ pendingOrders, onMenuOpen }: TopHeaderProps)
           </div>
         </div>
 
-        {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-[var(--primary-container)] text-[var(--surface-container-lowest)] flex items-center justify-center text-xs font-bold">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--primary-container)] text-xs font-bold text-[var(--surface-container-lowest)]">
           {initial}
         </div>
       </div>
