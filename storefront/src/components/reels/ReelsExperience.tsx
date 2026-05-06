@@ -373,6 +373,8 @@ function ReelPlayerModal({
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('reel-player-open');
+    window.dispatchEvent(new Event('reel-player-state-change'));
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowDown') goNext();
@@ -381,6 +383,8 @@ function ReelPlayerModal({
     window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
+      document.body.classList.remove('reel-player-open');
+      window.dispatchEvent(new Event('reel-player-state-change'));
       window.removeEventListener('keydown', onKey);
     };
   }, [goNext, goPrev, onClose]);
@@ -420,7 +424,17 @@ function ReelPlayerModal({
      * On desktop: flex centering so the 400px player sits in the middle.
      * On mobile: no flex — the inner player fills inset-0 directly.
      */
-    <div className="fixed inset-0 z-[100] bg-black lg:flex lg:items-center lg:justify-center">
+    <div
+      className="fixed inset-0 z-[100] bg-black lg:flex lg:items-center lg:justify-center"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 1000,
+        height: '100dvh',
+        overflow: 'hidden',
+        backgroundColor: '#000',
+      }}
+    >
 
       {/* Desktop side arrows — only visible lg+ */}
       <button
@@ -447,6 +461,16 @@ function ReelPlayerModal({
        */}
       <div
         className="relative flex h-full w-full flex-col overflow-hidden bg-black lg:h-[90dvh] lg:max-w-[390px] lg:rounded-lg"
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          height: '100dvh',
+          maxHeight: '100dvh',
+          overflow: 'hidden',
+          backgroundColor: '#000',
+        }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -462,6 +486,13 @@ function ReelPlayerModal({
           playsInline
           autoPlay
           className="absolute inset-0 h-full w-full object-cover"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
         />
 
         {/* Gradients */}
@@ -481,26 +512,67 @@ function ReelPlayerModal({
         )}
 
         {/* Top bar */}
-        <div className="relative z-10 flex items-center gap-3 px-4 pt-10">
+        <div
+          className="relative z-10 flex items-center gap-3 px-4 pt-10"
+          style={{
+            position: 'relative',
+            zIndex: 10,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            paddingInline: '1rem',
+            paddingTop: '2.5rem',
+            color: '#fff',
+          }}
+        >
           <button
             type="button"
             onClick={onClose}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60"
+            style={{
+              display: 'flex',
+              width: '2.25rem',
+              height: '2.25rem',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(0,0,0,0.4)',
+              color: '#fff',
+            }}
           >
             <ArrowLeft size={18} />
           </button>
           <div className="min-w-0 flex-1">
-            <p className="text-body-xs type-bold uppercase tracking-token-wider text-white/50">
+            <p
+              className="text-body-xs type-bold uppercase tracking-token-wider text-white/50"
+              style={{ color: 'rgba(255,255,255,0.65)' }}
+            >
               {currentIndex + 1} / {localReels.length}
             </p>
-            <p className="mt-0.5 line-clamp-1 text-body-sm type-semibold text-white">
+            <p
+              className="mt-0.5 line-clamp-1 text-body-sm type-semibold text-white"
+              style={{ color: '#fff' }}
+            >
               {current.product_name}
             </p>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5">
+        <div
+          className="absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5"
+          style={{
+            position: 'absolute',
+            right: '1rem',
+            bottom: '8rem',
+            zIndex: 20,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1.25rem',
+            color: '#fff',
+          }}
+        >
           {/* Like */}
           <button
             type="button"
@@ -512,6 +584,7 @@ function ReelPlayerModal({
             }}
             className="flex flex-col items-center gap-0.5 text-white"
             aria-label={liked ? 'Unlike reel' : 'Like reel'}
+            style={{ color: '#fff' }}
           >
             <Heart
               size={28}
@@ -519,7 +592,7 @@ function ReelPlayerModal({
               color="white"
               className="drop-shadow transition-transform active:scale-125"
             />
-            <span className="text-body-xs type-semibold text-white drop-shadow">
+            <span className="text-body-xs type-semibold text-white drop-shadow" style={{ color: '#fff' }}>
               {likeCount > 0 ? likeCount : ''}
             </span>
           </button>
@@ -530,9 +603,10 @@ function ReelPlayerModal({
             onClick={handleShare}
             className="flex flex-col items-center gap-0.5 text-white"
             aria-label="Share reel"
+            style={{ color: '#fff' }}
           >
             <Share2 size={26} className="text-white drop-shadow" />
-            <span className="text-body-xs type-semibold text-white drop-shadow">Share</span>
+            <span className="text-body-xs type-semibold text-white drop-shadow" style={{ color: '#fff' }}>Share</span>
           </button>
 
           {/* Save */}
@@ -541,13 +615,14 @@ function ReelPlayerModal({
             onClick={() => setSaved(toggleSavedReel(current.id))}
             className="flex flex-col items-center gap-0.5 text-white"
             aria-label={saved ? 'Remove saved reel' : 'Save reel'}
+            style={{ color: '#fff' }}
           >
             <Bookmark
               size={26}
               fill={saved ? 'white' : 'transparent'}
               className="text-white drop-shadow transition-transform active:scale-125"
             />
-            <span className="text-body-xs type-semibold text-white drop-shadow">
+            <span className="text-body-xs type-semibold text-white drop-shadow" style={{ color: '#fff' }}>
               {saved ? 'Saved' : 'Save'}
             </span>
           </button>
@@ -556,9 +631,10 @@ function ReelPlayerModal({
           <div
             className="flex flex-col items-center gap-0.5 text-white"
             aria-label={`${current.view_count || 0} views`}
+            style={{ color: '#fff' }}
           >
             <Eye size={24} className="text-white drop-shadow" />
-            <span className="text-body-xs type-semibold text-white drop-shadow">
+            <span className="text-body-xs type-semibold text-white drop-shadow" style={{ color: '#fff' }}>
               {current.view_count || 0}
             </span>
           </div>
@@ -567,12 +643,31 @@ function ReelPlayerModal({
         {/* Bottom product overlay */}
         <div
           className="relative z-10 mt-auto px-3"
-          style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+          style={{
+            position: 'relative',
+            zIndex: 10,
+            marginTop: 'auto',
+            paddingInline: '0.75rem',
+            paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
+          }}
         >
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}
             className="flex min-w-0 items-center gap-3 rounded-lg border border-white/70 bg-white/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-xl transition active:scale-[0.98]"
+            style={{
+              display: 'flex',
+              minWidth: 0,
+              alignItems: 'center',
+              gap: '0.75rem',
+              borderRadius: '0.5rem',
+              border: '1px solid rgba(255,255,255,0.7)',
+              backgroundColor: 'rgba(255,255,255,0.9)',
+              padding: '0.625rem',
+              color: 'var(--ink)',
+              boxShadow: '0 18px 50px rgba(0,0,0,0.24)',
+              backdropFilter: 'blur(16px)',
+            }}
           >
             <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border border-black/10 bg-white">
               <OptimizedImage
@@ -583,15 +678,30 @@ function ReelPlayerModal({
                 className="object-cover"
               />
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-body-sm type-semibold leading-token-snug color-ink">
+            <div className="min-w-0 flex-1" style={{ minWidth: 0, flex: 1 }}>
+              <p
+                className="line-clamp-2 text-body-sm type-semibold leading-token-snug color-ink"
+                style={{ color: 'var(--ink)' }}
+              >
                 {current.product_name}
               </p>
-              <p className="mt-1 text-body-sm type-bold color-sienna">
+              <p className="mt-1 text-body-sm type-bold color-sienna" style={{ color: 'var(--sienna)' }}>
                 {formatPrice(current.price)}
               </p>
             </div>
-            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--sienna)] px-3.5 py-2 text-body-xs type-bold uppercase tracking-token-wider text-white shadow-lg">
+            <span
+              className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--sienna)] px-3.5 py-2 text-body-xs type-bold uppercase tracking-token-wider text-white shadow-lg"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: '0.375rem',
+                borderRadius: '9999px',
+                backgroundColor: 'var(--sienna)',
+                padding: '0.5rem 0.875rem',
+                color: '#fff',
+              }}
+            >
               <ShoppingBag size={14} aria-hidden="true" />
               Shop
             </span>
