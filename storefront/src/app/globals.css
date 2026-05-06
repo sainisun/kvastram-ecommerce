@@ -3905,16 +3905,16 @@ a:active,
 
 @media (max-width: 767px) {
   .kv-section {
-    padding-block: 28px;
+    padding-block: 22px;
   }
 
   .kv-section-head {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .mobile-circle-categories {
-    padding-top: 12px;
-    padding-bottom: 10px;
+    padding-top: 8px;
+    padding-bottom: 4px;
   }
 
   .mobile-circle-categories + .hero {
@@ -3922,11 +3922,11 @@ a:active,
   }
 
   .hero + .kv-section {
-    padding-top: 24px;
+    padding-top: 18px;
   }
 
   .circle-row {
-    padding-bottom: 6px;
+    padding-bottom: 2px;
   }
 }
 

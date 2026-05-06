@@ -18,26 +18,21 @@ export function HeaderMain({
   onCartOpen,
 }: HeaderMainProps) {
   return (
-    <div
-      className="hidden md:grid h-[68px] px-8 xl:px-12 bg-white border-b border-[#d8d2c8] max-w-[1440px] mx-auto w-full"
-      style={{ gridTemplateColumns: '1fr auto 1fr' }}
-    >
-      {/* Left — Nav */}
-      <div className="flex items-center">
-        <DesktopNav
-          activeMega={activeMega}
-          onMegaEnter={onMegaEnter}
-          onMegaLeave={onMegaLeave}
-        />
-      </div>
+    <div className="hidden md:flex relative items-center h-[68px] px-8 xl:px-12 bg-white border-b border-[#d8d2c8] w-full">
+      {/* Left — Nav (takes natural width) */}
+      <DesktopNav
+        activeMega={activeMega}
+        onMegaEnter={onMegaEnter}
+        onMegaLeave={onMegaLeave}
+      />
 
-      {/* Center — Logo */}
-      <div className="flex items-center justify-center">
+      {/* Center — Logo (absolutely centered, independent of nav/icon widths) */}
+      <div className="absolute left-1/2 -translate-x-1/2">
         <Logo size="desktop" />
       </div>
 
-      {/* Right — Actions */}
-      <div className="flex items-center">
+      {/* Right — Actions (pushed to right edge) */}
+      <div className="ml-auto">
         <ActionsRight onSearchOpen={onSearchOpen} onCartOpen={onCartOpen} />
       </div>
     </div>
