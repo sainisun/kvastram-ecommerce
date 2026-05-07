@@ -643,6 +643,37 @@ export const api = {
     return res.json();
   },
 
+  getOrderCarrierReadiness: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/orders/${id}/carrier/readiness`,
+      {}
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to check carrier readiness');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getOrderCarrierRates: async (
+    id: string,
+    data: {
+      provider?: 'shiprocket' | 'delhivery' | 'easypost' | 'shippo' | null;
+    } = {}
+  ) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/orders/${id}/carrier/rates`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to fetch carrier rates');
+    const response = await res.json();
+    return response.data;
+  },
+
   updateOrderStatus: async (id: string, status: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/status`, {
       method: 'PUT',
@@ -1022,6 +1053,20 @@ export const api = {
       method: 'DELETE',
     });
     if (!res.ok) return handleApiError(res, 'Failed to delete support request');
+    return res.json();
+  },
+
+  getSecurityEvents: async (severity = 'all', search = '', event = '') => {
+    const params = new URLSearchParams();
+    if (severity && severity !== 'all') params.set('severity', severity);
+    if (search) params.set('search', search);
+    if (event) params.set('event', event);
+    const query = params.toString();
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/security-events${query ? `?${query}` : ''}`,
+      {}
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to fetch security events');
     return res.json();
   },
 

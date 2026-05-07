@@ -82,6 +82,7 @@ import storeReturnsRoutes from './routes/store/returns';
 import abandonedCartsRoutes from './routes/admin/abandoned-carts';
 import bulkDiscountsRoutes from './routes/admin/bulk-discounts';
 import adminContactsRoutes from './routes/admin/contacts';
+import adminSecurityEventsRoutes from './routes/admin/security-events';
 import adminHeroBannersRoutes from './routes/admin/hero-banners';
 import heroBannersRoutes from './routes/hero-banners';
 import adminTrendingReelsRoutes from './routes/admin/trending-reels';
@@ -374,6 +375,8 @@ const generalApiRoutes = [
   '/admin/studio-inquiries/*',
   '/admin/contacts',
   '/admin/contacts/*',
+  '/admin/security-events',
+  '/admin/security-events/*',
 ];
 
 for (const route of generalApiRoutes) {
@@ -414,6 +417,7 @@ app.route('/admin/whatsapp', whatsappRoutes);
 // Contact Form Route
 app.route('/contact', contactRoutes);
 app.route('/admin/contacts', adminContactsRoutes);
+app.route('/admin/security-events', adminSecurityEventsRoutes);
 
 // Newsletter Route
 app.route('/newsletter', newsletterRoutes);
