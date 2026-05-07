@@ -1259,6 +1259,26 @@ export const admin_audit_log = pgTable(
   })
 );
 
+export const security_events = pgTable(
+  'security_events',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    source: text('source').notNull().default('backend'),
+    severity: text('severity').notNull(),
+    event: text('event').notNull(),
+    ip_address: text('ip_address'),
+    method: text('method'),
+    path: text('path'),
+    details: jsonb('details'),
+    created_at: timestamp('created_at').defaultNow(),
+  },
+  (table) => ({
+    createdIdx: index('idx_security_events_created').on(table.created_at),
+    eventIdx: index('idx_security_events_event').on(table.event),
+    ipIdx: index('idx_security_events_ip').on(table.ip_address),
+  })
+);
+
 // --- REDIRECTS (guide Section 11.4) ---
 export const redirects = pgTable(
   'redirects',

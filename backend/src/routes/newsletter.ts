@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { db } from '../db';
 import { newsletter_subscribers } from '../db/schema';
 import { eq } from 'drizzle-orm';
+import { logSecurityEvent, maskEmail } from '../utils/security-events';
 
 const NewsletterSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -11,8 +12,10 @@ const NewsletterSchema = z.object({
 const app = new Hono();
 
 app.post('/subscribe', async (c) => {
+  let body: Record<string, unknown> = {};
+
   try {
-    const body = await c.req.json();
+    body = await c.req.json();
     const validated = NewsletterSchema.parse(body);
 
     // Check if already subscribed
@@ -43,6 +46,9 @@ app.post('/subscribe', async (c) => {
     });
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
+      logSecurityEvent('warn', 'Newsletter validation failed', c, {
+        email: maskEmail(typeof body.email === 'string' ? body.email : null),
+      });
       return c.json(
         {
           error: 'Invalid email address',

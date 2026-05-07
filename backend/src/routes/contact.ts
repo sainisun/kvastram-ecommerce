@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { db } from '../db';
 import { contacts } from '../db/schema';
+import { logSecurityEvent, maskEmail } from '../utils/security-events';
 
 const ContactSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -14,8 +15,10 @@ const ContactSchema = z.object({
 const app = new Hono();
 
 app.post('/', async (c) => {
+  let body: Record<string, unknown> = {};
+
   try {
-    const body = await c.req.json();
+    body = await c.req.json();
     const validated = ContactSchema.parse(body);
     const formattedMessage = validated.orderReference
       ? `[Order #${validated.orderReference}]\n${validated.message}`
@@ -39,6 +42,10 @@ app.post('/', async (c) => {
     });
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
+      logSecurityEvent('warn', 'Contact form validation failed', c, {
+        email: maskEmail(typeof body.email === 'string' ? body.email : null),
+        issue_count: error.errors.length,
+      });
       return c.json(
         {
           error: 'Validation failed',

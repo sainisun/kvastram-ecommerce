@@ -5,6 +5,7 @@ import { asc, eq } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { products, studio_inquiries, studio_inquiry_messages } from '../../db/schema';
 import { broadcastStudioInquiryCreated, broadcastStudioMessage } from '../../services/socket';
+import { logSecurityEvent, maskEmail } from '../../utils/security-events';
 
 const router = new Hono();
 
@@ -97,6 +98,10 @@ router.post('/', async (c) => {
     const parsed = InquirySchema.safeParse(body);
 
     if (!parsed.success) {
+      logSecurityEvent('warn', 'Studio inquiry validation failed', c, {
+        email: maskEmail(typeof body.email === 'string' ? body.email : null),
+        issue_count: parsed.error.errors.length,
+      });
       return c.json(
         {
           error: 'Validation failed',
@@ -201,11 +206,15 @@ router.get('/:id', async (c) => {
     const parsed = TokenSchema.safeParse({ token: c.req.query('token') });
 
     if (!parsed.success) {
+      logSecurityEvent('warn', 'Studio inquiry token missing or invalid', c);
       return c.json({ error: 'Conversation token is required' }, 400);
     }
 
     const conversation = await getConversation(id, parsed.data.token);
     if (!conversation) {
+      logSecurityEvent('warn', 'Studio inquiry conversation not found', c, {
+        inquiry_id: id,
+      });
       return c.json({ error: 'Conversation not found' }, 404);
     }
 
@@ -228,6 +237,11 @@ router.post('/:id/messages', async (c) => {
     const parsed = CustomerMessageSchema.safeParse(body);
 
     if (!parsed.success) {
+      logSecurityEvent('warn', 'Studio inquiry message validation failed', c, {
+        email: maskEmail(typeof body.email === 'string' ? body.email : null),
+        issue_count: parsed.error.errors.length,
+        inquiry_id: id,
+      });
       return c.json(
         {
           error: 'Validation failed',
@@ -239,6 +253,9 @@ router.post('/:id/messages', async (c) => {
 
     const conversation = await getConversation(id, parsed.data.token);
     if (!conversation) {
+      logSecurityEvent('warn', 'Studio inquiry message conversation not found', c, {
+        inquiry_id: id,
+      });
       return c.json({ error: 'Conversation not found' }, 404);
     }
 

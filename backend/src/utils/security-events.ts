@@ -1,4 +1,6 @@
 import { Context } from 'hono';
+import { db } from '../db';
+import { security_events } from '../db/schema';
 import { getClientIp } from './client-ip';
 
 type SecurityLogLevel = 'info' | 'warn' | 'error';
@@ -22,12 +24,27 @@ export function logSecurityEvent(
   c: Context,
   details: Record<string, unknown> = {}
 ) {
-  console[level](
-    `[Security] ${event} ${JSON.stringify({
-      ip: getClientIp(c),
-      method: c.req.method,
-      path: c.req.path,
-      ...details,
-    })}`
-  );
+  const payload = {
+    ip: getClientIp(c),
+    method: c.req.method,
+    path: c.req.path,
+    ...details,
+  };
+
+  console[level](`[Security] ${event} ${JSON.stringify(payload)}`);
+
+  void db
+    .insert(security_events)
+    .values({
+      source: 'backend',
+      severity: level,
+      event,
+      ip_address: payload.ip,
+      method: payload.method,
+      path: payload.path,
+      details,
+    })
+    .catch((error) => {
+      console.error('[Security] Failed to persist security event:', error);
+    });
 }
