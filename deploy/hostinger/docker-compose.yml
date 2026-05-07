@@ -111,7 +111,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ../../kvastram-mcp-server/.env.production
+      # Keep MCP runtime secrets outside the git checkout to prevent deploy drift.
+      - /root/kvastram-secrets/mcp.env
     depends_on:
       - backend
     ports:
