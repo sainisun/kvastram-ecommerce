@@ -12,6 +12,8 @@ import {
   MapPin,
   Package,
   Printer,
+  RadioTower,
+  RefreshCw,
   Truck,
   User,
 } from 'lucide-react';
@@ -192,6 +194,35 @@ interface LabelFormState {
   carrier_service: string;
 }
 
+type CarrierProvider = 'shiprocket' | 'delhivery' | 'easypost' | 'shippo';
+
+interface CarrierReadiness {
+  providers: Array<{
+    provider: CarrierProvider;
+    label: string;
+    configured: boolean;
+    required_env: string[];
+  }>;
+  configured_providers: CarrierProvider[];
+  address_issues: string[];
+  package_issues: string[];
+  can_fetch_live_rates: boolean;
+  manual_label_available: boolean;
+  next_action: string;
+}
+
+interface CarrierRatesResult {
+  readiness: CarrierReadiness;
+  rates: Array<{
+    id: string;
+    provider: CarrierProvider;
+    service: string;
+    amount: number;
+    currency: string;
+  }>;
+  message?: string;
+}
+
 function buildLabelForm(orderData?: OrderDetails | null): LabelFormState {
   const label = orderData?.workflow?.label;
   const currency = label?.currency || orderData?.currency_code || 'INR';
@@ -245,6 +276,12 @@ export default function OrderDetailsPage() {
   const [labelForm, setLabelForm] = useState<LabelFormState>(() =>
     buildLabelForm()
   );
+  const [carrierReadiness, setCarrierReadiness] =
+    useState<CarrierReadiness | null>(null);
+  const [carrierRates, setCarrierRates] = useState<CarrierRatesResult | null>(
+    null
+  );
+  const [carrierLoading, setCarrierLoading] = useState(false);
 
   useEffect(() => {
     const loadOrder = async () => {
@@ -273,6 +310,12 @@ export default function OrderDetailsPage() {
           notify_buyer: true,
         });
         setLabelForm(buildLabelForm(orderData));
+        try {
+          const carrierData = await api.getOrderCarrierReadiness(id);
+          setCarrierReadiness(carrierData?.readiness || null);
+        } catch (carrierError) {
+          console.error('Failed to load carrier readiness:', carrierError);
+        }
       } catch (error) {
         console.error('Failed to load order:', error);
       } finally {
@@ -442,6 +485,13 @@ export default function OrderDetailsPage() {
       setOrder(refreshedOrder);
       setItems(refreshed?.items || refreshedOrder?.items || []);
       setLabelForm(buildLabelForm(refreshedOrder));
+      try {
+        const carrierData = await api.getOrderCarrierReadiness(id);
+        setCarrierReadiness(carrierData?.readiness || null);
+      } catch (carrierError) {
+        console.error('Failed to refresh carrier readiness:', carrierError);
+      }
+      setCarrierRates(null);
       showNotification(
         'success',
         nextStatus === 'printed'
@@ -455,6 +505,42 @@ export default function OrderDetailsPage() {
       );
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleCarrierReadiness = async () => {
+    try {
+      setCarrierLoading(true);
+      const carrierData = await api.getOrderCarrierReadiness(id);
+      setCarrierReadiness(carrierData?.readiness || null);
+      setCarrierRates(null);
+      showNotification('success', 'Carrier readiness refreshed');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to check carrier readiness'
+      );
+    } finally {
+      setCarrierLoading(false);
+    }
+  };
+
+  const handleCarrierRates = async () => {
+    try {
+      setCarrierLoading(true);
+      const result = await api.getOrderCarrierRates(id);
+      setCarrierRates(result);
+      setCarrierReadiness(result?.readiness || carrierReadiness);
+      showNotification('success', 'Carrier rate check completed');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to fetch carrier rates'
+      );
+    } finally {
+      setCarrierLoading(false);
     }
   };
 
@@ -1288,6 +1374,141 @@ export default function OrderDetailsPage() {
               >
                 {updating ? 'Saving...' : 'Save label workflow'}
               </button>
+            </div>
+          </Surface>
+
+          <Surface className="overflow-hidden">
+            <SectionHeader title="Carrier integration" />
+            <div className="space-y-4 px-5 py-5 md:px-6">
+              <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--kv-accent-deep)]">
+                    <RadioTower size={18} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[var(--kv-text)]">
+                      {carrierReadiness?.next_action || 'Check carrier readiness'}
+                    </p>
+                    <p className="text-[var(--kv-muted)]">
+                      {carrierReadiness?.can_fetch_live_rates
+                        ? 'Carrier rates can be requested for this shipment.'
+                        : 'Manual labels stay available while carrier setup is completed.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-2">
+                {carrierReadiness?.providers?.map((provider) => (
+                  <div
+                    key={provider.provider}
+                    className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4 text-sm"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-semibold text-[var(--kv-text)]">
+                        {provider.label}
+                      </p>
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          provider.configured
+                            ? 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
+                            : 'bg-[var(--kv-soft)] text-[var(--kv-muted)]'
+                        }`}
+                      >
+                        {provider.configured ? 'Connected' : 'Needs env'}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-xs text-[var(--kv-muted)]">
+                      {provider.required_env.join(', ')}
+                    </p>
+                  </div>
+                )) || (
+                  <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4 text-sm text-[var(--kv-muted)] md:col-span-2">
+                    Carrier provider status has not been checked yet.
+                  </div>
+                )}
+              </div>
+
+              {carrierReadiness ? (
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Address
+                    </p>
+                    {carrierReadiness.address_issues.length === 0 ? (
+                      <p className="mt-2 font-semibold text-[var(--kv-text)]">
+                        Ready
+                      </p>
+                    ) : (
+                      <ul className="mt-2 space-y-1 text-[var(--kv-muted)]">
+                        {carrierReadiness.address_issues.map((issue) => (
+                          <li key={issue}>{issue}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Package
+                    </p>
+                    {carrierReadiness.package_issues.length === 0 ? (
+                      <p className="mt-2 font-semibold text-[var(--kv-text)]">
+                        Ready
+                      </p>
+                    ) : (
+                      <ul className="mt-2 space-y-1 text-[var(--kv-muted)]">
+                        {carrierReadiness.package_issues.map((issue) => (
+                          <li key={issue}>{issue}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+
+              {carrierRates?.message ? (
+                <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                  {carrierRates.message}
+                </div>
+              ) : null}
+
+              {carrierRates?.rates?.length ? (
+                <div className="space-y-2">
+                  {carrierRates.rates.map((rate) => (
+                    <div
+                      key={rate.id}
+                      className="flex items-center justify-between rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-3 text-sm"
+                    >
+                      <span className="font-semibold text-[var(--kv-text)]">
+                        {rate.service}
+                      </span>
+                      <span className="text-[var(--kv-muted)]">
+                        {formatCurrency(rate.amount, rate.currency)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              <div className="grid gap-3 md:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => void handleCarrierReadiness()}
+                  disabled={carrierLoading}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)] disabled:opacity-60"
+                >
+                  <RefreshCw size={16} />
+                  Check readiness
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleCarrierRates()}
+                  disabled={carrierLoading}
+                  className="rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                >
+                  {carrierLoading ? 'Checking...' : 'Fetch live rates'}
+                </button>
+              </div>
             </div>
           </Surface>
 

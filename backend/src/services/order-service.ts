@@ -10,6 +10,7 @@ import {
 import { eq, desc, like, or, sql, and, gte, lte, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateInvoice } from '../services/pdf-service';
+import { carrierService } from '../services/carrier-service';
 import { sanitizeSearchInput } from '../utils/validation';
 import {
   buildWorkflowSummary,
@@ -18,6 +19,7 @@ import {
   mergeWorkflowMetadata,
 } from '../utils/order-workflow';
 import type { LabelStatus, WorkflowMetadata } from '../utils/order-workflow';
+import type { CarrierProvider } from '../services/carrier-service';
 
 // --- TYPES ---
 export type OrderStatus =
@@ -576,6 +578,23 @@ class OrderService {
       .returning();
 
     return applyWorkflowSummary(updated as Record<string, any>);
+  }
+
+  async getCarrierReadiness(id: string) {
+    const data = await this.getOrder(id);
+    if (!data) return null;
+
+    return carrierService.getReadiness(data.order);
+  }
+
+  async getCarrierRates(
+    id: string,
+    options: { provider?: CarrierProvider | null } = {}
+  ) {
+    const data = await this.getOrder(id);
+    if (!data) return null;
+
+    return carrierService.getRates(data.order, options);
   }
 
   async deleteOrder(id: string) {

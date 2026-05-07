@@ -209,6 +209,17 @@ const UpdateLabelSchema = z.object({
   carrier_service: z.string().max(255).nullable().optional(),
 });
 
+const CarrierProviderSchema = z.enum([
+  'shiprocket',
+  'delhivery',
+  'easypost',
+  'shippo',
+]);
+
+const CarrierRatesSchema = z.object({
+  provider: CarrierProviderSchema.nullable().optional(),
+});
+
 ordersRouter.post(
   '/:id/tracking',
   zValidator('json', AddTrackingSchema),
@@ -261,6 +272,42 @@ ordersRouter.patch(
       c,
       { order: updated },
       'Order label workflow updated successfully'
+    );
+  })
+);
+
+// GET /orders/:id/carrier/readiness - Validate carrier integration readiness
+ordersRouter.get(
+  '/:id/carrier/readiness',
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const readiness = await orderService.getCarrierReadiness(id);
+
+    if (!readiness) throw new NotFoundError('Order not found');
+
+    return successResponse(
+      c,
+      { readiness },
+      'Carrier readiness checked successfully'
+    );
+  })
+);
+
+// POST /orders/:id/carrier/rates - Fetch carrier rate readiness/results
+ordersRouter.post(
+  '/:id/carrier/rates',
+  zValidator('json', CarrierRatesSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+    const result = await orderService.getCarrierRates(id, data);
+
+    if (!result) throw new NotFoundError('Order not found');
+
+    return successResponse(
+      c,
+      result,
+      'Carrier rate request completed successfully'
     );
   })
 );
