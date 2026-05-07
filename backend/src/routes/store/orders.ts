@@ -7,6 +7,7 @@ import { db } from '../../db/client';
 import { addresses, line_items, orders } from '../../db/schema';
 import { successResponse } from '../../utils/api-response';
 import { buildWorkflowSummary } from '../../utils/order-workflow';
+import { logSecurityEvent, maskEmail } from '../../utils/security-events';
 
 const shippingAddress = alias(addresses, 'shipping_address');
 const storeOrdersRouter = new Hono();
@@ -24,6 +25,10 @@ storeOrdersRouter.get(
     const numericDisplayId = Number(order_number.replaceAll(/[^0-9]/g, ''));
 
     if (!Number.isFinite(numericDisplayId)) {
+      logSecurityEvent('warn', 'Invalid order tracking lookup', c, {
+        order_number,
+        email: maskEmail(email),
+      });
       return c.json({ error: 'Invalid order number' }, 400);
     }
 
@@ -53,6 +58,10 @@ storeOrdersRouter.get(
       .limit(1);
 
     if (!order) {
+      logSecurityEvent('warn', 'Order tracking lookup not found', c, {
+        order_number,
+        email: maskEmail(email),
+      });
       return c.json({ error: 'Order not found' }, 404);
     }
 

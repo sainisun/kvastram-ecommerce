@@ -1,38 +1,27 @@
 import { rateLimiter } from 'hono-rate-limiter';
 import { Context } from 'hono';
 import { getClientIp } from '../utils/client-ip';
+import { logSecurityEvent } from '../utils/security-events';
 
-// Get environment
 const isTest = process.env.NODE_ENV === 'test';
 const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
 
-// Helper to create consistent limiters
-const createLimiter = (windowMs: number, limit: number) => {
-  // Skip rate limiting in test mode, use higher limits in dev
-  if (isTest) {
-    return rateLimiter({
-      windowMs: windowMs * 100, // Much longer window in test
-      limit: limit * 100, // Much higher limit in test
-      standardHeaders: 'draft-7',
-      keyGenerator: (c: Context) => getClientIp(c),
-      handler: (c: Context) => {
-        return c.json(
-          {
-            error:
-              'Too many requests. Please wait a moment before trying again.',
-          },
-          429
-        );
-      },
-    });
-  }
+const createLimiter = (windowMs: number, limit: number, label: string) => {
+  const effectiveWindowMs = isTest ? windowMs * 100 : windowMs;
+  const effectiveLimit = isTest ? limit * 100 : limit;
 
   return rateLimiter({
-    windowMs,
-    limit,
+    windowMs: effectiveWindowMs,
+    limit: effectiveLimit,
     standardHeaders: 'draft-7',
     keyGenerator: (c: Context) => getClientIp(c),
     handler: (c: Context) => {
+      logSecurityEvent('warn', 'Rate limit exceeded', c, {
+        limiter: label,
+        limit: effectiveLimit,
+        window_ms: effectiveWindowMs,
+      });
+
       return c.json(
         {
           error: 'Too many requests. Please wait a moment before trying again.',
@@ -43,25 +32,68 @@ const createLimiter = (windowMs: number, limit: number) => {
   });
 };
 
-// 1. Auth Limiter (Strict: Login/Register)
-// Test: 500 requests per 1500 min, Dev: 500 requests per 15 min
-export const authLimiter = createLimiter(15 * 60 * 1000, isDev ? 500 : 500);
+export const adminAuthLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 120 : 30,
+  'admin_auth'
+);
 
-// 2. Checkout Limiter (Very Strict: Payment/Checkout)
-// Test: 300 requests per 100 min, Dev: 50 requests per 1 min
-export const checkoutLimiter = createLimiter(60 * 1000, isDev ? 50 : 300);
+export const customerAuthLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 120 : 40,
+  'customer_auth'
+);
 
-// 3. General Limiter (Browsing/Products/etc)
-// Test: 6000 requests per 100 min, Dev: 500 requests per 1 min
-export const generalLimiter = createLimiter(60 * 1000, isDev ? 500 : 6000);
+export const checkoutLimiter = createLimiter(
+  5 * 60 * 1000,
+  isDev ? 40 : 80,
+  'checkout'
+);
 
-// 4. 🔒 FIX-004: Email Rate Limiter (Strict: Email sending operations)
-// Test: 300 requests per 1500 min (10 * 100 = 1000, windowMs * 100 = 1500 min), Dev: 3 requests per 15 min
-// Prevents email bombing attacks on resend verification endpoint
-export const emailLimiter = createLimiter(15 * 60 * 1000, isDev ? 3 : 10);
+export const generalLimiter = createLimiter(
+  60 * 1000,
+  isDev ? 500 : 1200,
+  'general_api'
+);
 
-// 5. Order Tracking Limiter (Enumeration-sensitive public lookup)
+export const emailLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 6 : 8,
+  'email'
+);
+
 export const trackingLimiter = createLimiter(
   15 * 60 * 1000,
-  isDev ? 30 : 60
+  isDev ? 30 : 20,
+  'order_tracking'
+);
+
+export const contactLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 20 : 6,
+  'contact_form'
+);
+
+export const newsletterLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 20 : 10,
+  'newsletter'
+);
+
+export const studioInquiryLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 20 : 10,
+  'studio_inquiry'
+);
+
+export const verificationLookupLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 60 : 25,
+  'verification_lookup'
+);
+
+export const restockLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 30 : 12,
+  'back_in_stock'
 );

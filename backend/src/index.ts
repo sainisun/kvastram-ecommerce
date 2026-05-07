@@ -6,10 +6,16 @@ import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
 import { csrf } from 'hono/csrf';
 import {
-  authLimiter,
+  adminAuthLimiter,
+  contactLimiter,
+  customerAuthLimiter,
   checkoutLimiter,
+  newsletterLimiter,
   generalLimiter,
+  restockLimiter,
+  studioInquiryLimiter,
   trackingLimiter,
+  verificationLookupLimiter,
 } from './middleware/rate-limiter';
 import {
   defaultTimeout,
@@ -277,28 +283,36 @@ app.get('/', (c) => {
 });
 
 // Rate Limiting Configuration (Tiered)
-// 1. Auth Limits (Strict)
-app.use('/auth/*', authLimiter);
-app.use('/auth/2fa/*', authLimiter);
-app.use('/store/auth/*', authLimiter);
+// 1. Admin auth limits
+app.use('/auth/*', adminAuthLimiter);
+app.use('/auth/2fa/*', adminAuthLimiter);
 
-// 2. Checkout & Payment Limits (Very Strict)
+// 2. Customer auth and verification limits
+app.use('/store/auth/login', customerAuthLimiter);
+app.use('/store/auth/register', customerAuthLimiter);
+app.use('/store/auth/setup-password', customerAuthLimiter);
+app.use('/store/auth/verify-email', customerAuthLimiter);
+app.use('/store/auth/resend-verification', customerAuthLimiter);
+app.use('/store/auth/social/*', customerAuthLimiter);
+app.use('/store/auth/verification-status', verificationLookupLimiter);
+
+// 3. Checkout & Payment Limits
 app.use('/store/checkout/*', checkoutLimiter);
 app.use('/store/payments/*', checkoutLimiter);
 
-// OPT-006: Rate limit public form endpoints (spam prevention)
-app.use('/contact', authLimiter); // Strict: same as auth
-app.use('/contact/*', authLimiter); // Strict: same as auth
-app.use('/newsletter', authLimiter); // Strict: same as auth
-app.use('/newsletter/*', authLimiter); // Strict: same as auth
-app.use('/store/studio-inquiries', authLimiter); // Strict: customer inquiry spam prevention
-app.use('/store/studio-inquiries/*', authLimiter); // Strict: customer inquiry spam prevention
-app.use('/store/back-in-stock', authLimiter); // Strict: restock signup spam prevention
-app.use('/store/back-in-stock/*', authLimiter); // Strict: restock signup spam prevention
-app.use('/store/orders/track', trackingLimiter); // Strict: enumeration-sensitive public lookup
-app.use('/store/orders/track/*', trackingLimiter); // Strict: enumeration-sensitive public lookup
+// 4. Public form and lookup limits
+app.use('/contact', contactLimiter);
+app.use('/contact/*', contactLimiter);
+app.use('/newsletter', newsletterLimiter);
+app.use('/newsletter/*', newsletterLimiter);
+app.use('/store/studio-inquiries', studioInquiryLimiter);
+app.use('/store/studio-inquiries/*', studioInquiryLimiter);
+app.use('/store/back-in-stock', restockLimiter);
+app.use('/store/back-in-stock/*', restockLimiter);
+app.use('/store/orders/track', trackingLimiter);
+app.use('/store/orders/track/*', trackingLimiter);
 
-// 3. General API Limits (For browsing/products/etc)
+// 5. General API Limits
 const generalApiRoutes = [
   '/products/*',
   '/orders/*',
