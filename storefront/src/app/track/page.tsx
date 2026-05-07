@@ -27,6 +27,28 @@ interface OrderStatus {
     estimated_delivery_start?: string | null;
     estimated_delivery_end?: string | null;
     customer_note?: string | null;
+    primary_package?: {
+      id: string;
+      sequence: number;
+      ship_date?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+    } | null;
+    packages?: Array<{
+      id: string;
+      sequence: number;
+      ship_date?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+    }>;
     timeline: Array<{
       key: string;
       label: string;
@@ -217,20 +239,51 @@ export default function TrackOrderPage() {
                 </div>
               </div>
 
-              {order.tracking_number && (
+              {(order.workflow?.primary_package?.tracking_number || order.tracking_number) && (
                 <div className="pt-4 border-t border-stone-200">
                   <p className="text-body-xs type-bold uppercase text-stone-500 mb-1">
                     Tracking
                   </p>
-                  {order.tracking_link ? (
-                    <a href={order.tracking_link} target="_blank" rel="noreferrer" className="text-stone-700 underline">
-                      {order.shipping_carrier}: {order.tracking_number}
+                  {(order.workflow?.primary_package?.tracking_url || order.tracking_link) ? (
+                    <a href={order.workflow?.primary_package?.tracking_url || order.tracking_link} target="_blank" rel="noreferrer" className="text-stone-700 underline">
+                      {order.workflow?.primary_package?.carrier || order.shipping_carrier}: {order.workflow?.primary_package?.tracking_number || order.tracking_number}
                     </a>
                   ) : (
                     <p className="text-stone-700">
-                      {order.shipping_carrier}: {order.tracking_number}
+                      {order.workflow?.primary_package?.carrier || order.shipping_carrier}: {order.workflow?.primary_package?.tracking_number || order.tracking_number}
                     </p>
                   )}
+                </div>
+              )}
+
+              {(order.workflow?.packages || []).length > 0 && (
+                <div className="pt-4 border-t border-stone-200">
+                  <p className="text-body-xs type-bold uppercase text-stone-500 mb-3">
+                    Shipment packages
+                  </p>
+                  <div className="space-y-3">
+                    {(order.workflow?.packages || []).map((pkg) => (
+                      <div key={pkg.id} className="rounded border border-stone-200 px-4 py-3 text-sm text-stone-700">
+                        <p className="text-body-xs type-bold uppercase text-stone-500">
+                          Package #{pkg.sequence}
+                        </p>
+                        <p className="mt-1">
+                          {pkg.no_tracking
+                            ? 'No tracking attached'
+                            : pkg.tracking_number || 'Tracking pending'}
+                        </p>
+                        <p className="mt-1 text-stone-500">
+                          {[pkg.carrier, pkg.service].filter(Boolean).join(' • ') ||
+                            'Carrier details pending'}
+                        </p>
+                        {pkg.no_tracking_reason ? (
+                          <p className="mt-1 text-stone-500">
+                            Reason: {pkg.no_tracking_reason}
+                          </p>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -336,4 +389,3 @@ export default function TrackOrderPage() {
       </div>
   );
 }
-

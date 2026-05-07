@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { generateInvoice } from '../services/pdf-service';
 import { orderService } from '../services/order-service';
+import type { CarrierProvider } from '../services/carrier-service';
 import {
   asyncHandler,
   NotFoundError,
@@ -29,6 +30,14 @@ ordersRouter.get(
       limit,
       search: filters.search,
       status: filters.status,
+      queue: filters.queue as 'open' | 'completed' | 'issues' | 'all',
+      workflow_filter: filters.workflow_filter as
+        | 'new'
+        | 'processing'
+        | 'due_today'
+        | 'ready_to_ship'
+        | 'missing_tracking'
+        | 'all',
       date_from: filters.date_from,
       date_to: filters.date_to,
       sort_by: filters.sort_by,
@@ -194,6 +203,54 @@ const AddTrackingSchema = z.object({
   notify_buyer: z.boolean().default(true),
 });
 
+const CompleteOrderSchema = z.object({
+  ship_date: z.string().nullable().optional(),
+  shipping_carrier: z.string().nullable().optional(),
+  shipping_service: z.string().nullable().optional(),
+  tracking_number: z.string().nullable().optional(),
+  tracking_link: z.string().url('Must be a valid URL').nullable().optional().or(z.literal('')),
+  no_tracking: z.boolean().default(false),
+  no_tracking_reason: z.string().max(500).nullable().optional(),
+  customer_note: z.string().max(2000).nullable().optional(),
+  internal_note: z.string().max(2000).nullable().optional(),
+  notify_buyer: z.boolean().default(true),
+});
+
+const PackageSchema = z.object({
+  ship_date: z.string().nullable().optional(),
+  shipping_carrier: z.string().nullable().optional(),
+  shipping_service: z.string().nullable().optional(),
+  tracking_number: z.string().nullable().optional(),
+  tracking_link: z.string().url('Must be a valid URL').nullable().optional().or(z.literal('')),
+  no_tracking: z.boolean().default(false),
+  no_tracking_reason: z.string().max(500).nullable().optional(),
+  notify_buyer: z.boolean().default(true),
+});
+
+const UpdatePackageSchema = z.object({
+  ship_date: z.string().nullable().optional(),
+  shipping_carrier: z.string().nullable().optional(),
+  shipping_service: z.string().nullable().optional(),
+  tracking_number: z.string().nullable().optional(),
+  tracking_link: z.string().url('Must be a valid URL').nullable().optional().or(z.literal('')),
+  no_tracking: z.boolean().optional(),
+  no_tracking_reason: z.string().max(500).nullable().optional(),
+  notify_buyer: z.boolean().optional(),
+  label_url: z.string().url('Must be a valid URL').nullable().optional().or(z.literal('')),
+  label_file_name: z.string().max(255).nullable().optional(),
+  label_state: z
+    .enum(['draft', 'created', 'purchased', 'printed', 'voided', 'refunded'])
+    .optional(),
+  label_cost: z.number().int().nonnegative().nullable().optional(),
+  label_currency: z.string().trim().min(3).max(3).nullable().optional(),
+  package_weight_grams: z.number().int().nonnegative().nullable().optional(),
+  package_length_cm: z.number().int().nonnegative().nullable().optional(),
+  package_width_cm: z.number().int().nonnegative().nullable().optional(),
+  package_height_cm: z.number().int().nonnegative().nullable().optional(),
+  carrier_service: z.string().max(255).nullable().optional(),
+  delivered_at: z.string().nullable().optional(),
+});
+
 const UpdateWorkflowSchema = z.object({
   ship_by_date: z.string().nullable().optional(),
   estimated_delivery_start: z.string().nullable().optional(),
@@ -204,7 +261,7 @@ const UpdateWorkflowSchema = z.object({
 
 const UpdateLabelSchema = z.object({
   label_status: z
-    .enum(['draft', 'created', 'printed', 'voided', 'refunded'])
+    .enum(['draft', 'created', 'purchased', 'printed', 'voided', 'refunded'])
     .optional(),
   label_url: z
     .string()
@@ -229,8 +286,20 @@ const CarrierProviderSchema = z.enum([
   'shippo',
 ]);
 
+const OptionalPackageIdSchema = z
+  .union([z.string().trim().min(1), z.literal('')])
+  .nullable()
+  .optional();
+
 const CarrierRatesSchema = z.object({
   provider: CarrierProviderSchema.nullable().optional(),
+  package_id: OptionalPackageIdSchema,
+});
+
+const CarrierPurchaseSchema = z.object({
+  provider: CarrierProviderSchema.nullable().optional(),
+  package_id: OptionalPackageIdSchema,
+  courier_id: z.union([z.string().min(1), z.number().int().positive()]),
 });
 
 const BuyerUpdateSchema = z.object({
@@ -274,6 +343,56 @@ ordersRouter.post(
       { order: updated },
       'Tracking information added successfully'
     );
+  })
+);
+
+ordersRouter.post(
+  '/:id/complete-order',
+  zValidator('json', CompleteOrderSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+
+    const updated = await orderService.completeOrder(id, {
+      ...data,
+      tracking_link: data.tracking_link === '' ? null : data.tracking_link,
+    });
+
+    return successResponse(c, { order: updated }, 'Order completed successfully');
+  })
+);
+
+ordersRouter.post(
+  '/:id/packages',
+  zValidator('json', PackageSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+
+    const updated = await orderService.addPackage(id, {
+      ...data,
+      tracking_link: data.tracking_link === '' ? null : data.tracking_link,
+    });
+
+    return successResponse(c, { order: updated }, 'Package added successfully');
+  })
+);
+
+ordersRouter.patch(
+  '/:id/packages/:packageId',
+  zValidator('json', UpdatePackageSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const packageId = c.req.param('packageId');
+    const data = (c.req as any).valid('json');
+
+    const updated = await orderService.updatePackage(id, packageId, {
+      ...data,
+      tracking_link: data.tracking_link === '' ? null : data.tracking_link,
+      label_url: data.label_url === '' ? null : data.label_url,
+    });
+
+    return successResponse(c, { order: updated }, 'Package updated successfully');
   })
 );
 
@@ -321,7 +440,12 @@ ordersRouter.get(
   '/:id/carrier/readiness',
   asyncHandler(async (c) => {
     const id = c.req.param('id');
-    const readiness = await orderService.getCarrierReadiness(id);
+    const readiness = await orderService.getCarrierReadiness(id, {
+      provider: (c.req.query('provider') || null) as
+        | CarrierProvider
+        | null,
+      package_id: c.req.query('package_id') || null,
+    });
 
     if (!readiness) throw new NotFoundError('Order not found');
 
@@ -340,7 +464,10 @@ ordersRouter.post(
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const data = (c.req as any).valid('json');
-    const result = await orderService.getCarrierRates(id, data);
+    const result = await orderService.getCarrierRates(id, {
+      provider: data.provider,
+      package_id: data.package_id === '' ? null : data.package_id,
+    });
 
     if (!result) throw new NotFoundError('Order not found');
 
@@ -348,6 +475,29 @@ ordersRouter.post(
       c,
       result,
       'Carrier rate request completed successfully'
+    );
+  })
+);
+
+// POST /orders/:id/carrier/purchase-label - Buy a live carrier label for a package
+ordersRouter.post(
+  '/:id/carrier/purchase-label',
+  zValidator('json', CarrierPurchaseSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+    const result = await orderService.purchaseCarrierLabel(id, {
+      provider: data.provider,
+      package_id: data.package_id === '' ? null : data.package_id,
+      courier_id: data.courier_id,
+    });
+
+    if (!result) throw new NotFoundError('Order not found');
+
+    return successResponse(
+      c,
+      result,
+      'Carrier label purchased successfully'
     );
   })
 );

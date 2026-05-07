@@ -537,12 +537,26 @@ export const api = {
     limit = 20,
     offset = 0,
     search?: string,
-    status?: string
+    status?: string,
+    queue?: 'all' | 'open' | 'completed' | 'issues',
+    workflowFilter?:
+      | 'all'
+      | 'new'
+      | 'processing'
+      | 'due_today'
+      | 'ready_to_ship'
+      | 'missing_tracking',
+    sortBy?: 'newest' | 'oldest' | 'ship_by' | 'destination'
   ) => {
     const page = Math.floor(offset / limit) + 1;
     let url = `${API_BASE_URL}/orders?limit=${limit}&page=${page}`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     if (status && status !== 'all') url += `&status=${status}`;
+    if (queue && queue !== 'all') url += `&queue=${queue}`;
+    if (workflowFilter && workflowFilter !== 'all') {
+      url += `&workflow_filter=${workflowFilter}`;
+    }
+    if (sortBy) url += `&sort_by=${sortBy}`;
 
     const res = await fetchWithTimeout(url, {
       // No Authorization header needed - cookie is sent automatically
@@ -596,6 +610,98 @@ export const api = {
     return res.json();
   },
 
+  completeOrder: async (
+    id: string,
+    data: {
+      ship_date?: string | null;
+      shipping_carrier?: string | null;
+      shipping_service?: string | null;
+      tracking_number?: string | null;
+      tracking_link?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      customer_note?: string | null;
+      internal_note?: string | null;
+      notify_buyer?: boolean;
+    }
+  ) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/orders/${id}/complete-order`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to complete order');
+    return res.json();
+  },
+
+  addOrderPackage: async (
+    id: string,
+    data: {
+      ship_date?: string | null;
+      shipping_carrier?: string | null;
+      shipping_service?: string | null;
+      tracking_number?: string | null;
+      tracking_link?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      notify_buyer?: boolean;
+    }
+  ) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/packages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to add order package');
+    return res.json();
+  },
+
+  updateOrderPackage: async (
+    id: string,
+    packageId: string,
+    data: {
+      ship_date?: string | null;
+      shipping_carrier?: string | null;
+      shipping_service?: string | null;
+      tracking_number?: string | null;
+      tracking_link?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      notify_buyer?: boolean;
+      label_url?: string | null;
+      label_file_name?: string | null;
+      label_state?: 'draft' | 'created' | 'purchased' | 'printed' | 'voided' | 'refunded';
+      label_cost?: number | null;
+      label_currency?: string | null;
+      package_weight_grams?: number | null;
+      package_length_cm?: number | null;
+      package_width_cm?: number | null;
+      package_height_cm?: number | null;
+      carrier_service?: string | null;
+      delivered_at?: string | null;
+    }
+  ) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/orders/${id}/packages/${packageId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update order package');
+    return res.json();
+  },
+
   updateOrderWorkflow: async (
     id: string,
     data: {
@@ -620,7 +726,13 @@ export const api = {
   updateOrderLabel: async (
     id: string,
     data: {
-      label_status?: 'draft' | 'created' | 'printed' | 'voided' | 'refunded';
+      label_status?:
+        | 'draft'
+        | 'created'
+        | 'purchased'
+        | 'printed'
+        | 'voided'
+        | 'refunded';
       label_url?: string | null;
       label_file_name?: string | null;
       label_cost?: number | null;
@@ -643,9 +755,19 @@ export const api = {
     return res.json();
   },
 
-  getOrderCarrierReadiness: async (id: string) => {
+  getOrderCarrierReadiness: async (
+    id: string,
+    params: {
+      provider?: 'shiprocket' | 'delhivery' | 'easypost' | 'shippo' | null;
+      package_id?: string | null;
+    } = {}
+  ) => {
+    const query = new URLSearchParams();
+    if (params.provider) query.set('provider', params.provider);
+    if (params.package_id) query.set('package_id', params.package_id);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
     const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/${id}/carrier/readiness`,
+      `${API_BASE_URL}/orders/${id}/carrier/readiness${suffix}`,
       {}
     );
     if (!res.ok) return handleApiError(res, 'Failed to check carrier readiness');
@@ -657,6 +779,7 @@ export const api = {
     id: string,
     data: {
       provider?: 'shiprocket' | 'delhivery' | 'easypost' | 'shippo' | null;
+      package_id?: string | null;
     } = {}
   ) => {
     const res = await fetchWithTimeout(
@@ -670,6 +793,29 @@ export const api = {
       }
     );
     if (!res.ok) return handleApiError(res, 'Failed to fetch carrier rates');
+    const response = await res.json();
+    return response.data;
+  },
+
+  purchaseOrderCarrierLabel: async (
+    id: string,
+    data: {
+      provider?: 'shiprocket' | 'delhivery' | 'easypost' | 'shippo' | null;
+      package_id?: string | null;
+      courier_id: string | number;
+    }
+  ) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/orders/${id}/carrier/purchase-label`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to purchase carrier label');
     const response = await res.json();
     return response.data;
   },

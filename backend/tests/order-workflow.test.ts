@@ -213,4 +213,41 @@ describe('order workflow metadata', () => {
       checked_by: 'Asha',
     });
   });
+
+  it('keeps package-level provider references and label metadata on the selected primary package', () => {
+    const summary = buildWorkflowSummary({
+      status: 'shipped',
+      created_at: '2026-05-01T10:00:00.000Z',
+      metadata: {
+        workflow_status: 'shipped',
+        packages: [
+          {
+            id: 'pkg_1',
+            sequence: 1,
+            ship_date: '2026-05-07T09:00:00.000Z',
+            carrier: 'Shiprocket',
+            tracking_number: 'AWB-1001',
+            tracking_url: 'https://www.shiprocket.in/shipment-tracking/',
+            label_provider: 'shiprocket',
+            provider_order_id: 'sr-order-1',
+            provider_shipment_id: 'sr-shipment-1',
+            provider_courier_id: '42',
+            pickup_reference: 'pickup-99',
+            label_url: 'https://cdn.example.com/shiprocket-label.pdf',
+            label_state: 'purchased',
+          },
+        ],
+      },
+    });
+
+    expect(summary.primary_package?.label_provider).toBe('shiprocket');
+    expect(summary.primary_package?.provider_order_id).toBe('sr-order-1');
+    expect(summary.primary_package?.provider_shipment_id).toBe('sr-shipment-1');
+    expect(summary.primary_package?.provider_courier_id).toBe('42');
+    expect(summary.primary_package?.pickup_reference).toBe('pickup-99');
+    expect(summary.label.provider).toBe('shiprocket');
+    expect(summary.label.provider_shipment_id).toBe('sr-shipment-1');
+    expect(summary.label.pickup_reference).toBe('pickup-99');
+    expect(summary.label.url).toBe('https://cdn.example.com/shiprocket-label.pdf');
+  });
 });

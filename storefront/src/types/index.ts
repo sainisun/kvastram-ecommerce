@@ -198,6 +198,56 @@ export interface Order {
     needs_attention?: boolean;
     overdue_ship_by?: boolean;
     overdue_tracking?: boolean;
+    primary_package?: {
+      id: string;
+      sequence: number;
+      ship_date?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      label_provider?: string | null;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      label_url?: string | null;
+      label_file_name?: string | null;
+      label_state?:
+        | 'draft'
+        | 'created'
+        | 'purchased'
+        | 'printed'
+        | 'voided'
+        | 'refunded';
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      provider_order_id?: string | null;
+      provider_shipment_id?: string | null;
+      provider_courier_id?: string | null;
+      pickup_reference?: string | null;
+    } | null;
+    packages?: Array<{
+      id: string;
+      sequence: number;
+      ship_date?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      label_provider?: string | null;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      label_url?: string | null;
+      label_file_name?: string | null;
+      label_state?:
+        | 'draft'
+        | 'created'
+        | 'purchased'
+        | 'printed'
+        | 'voided'
+        | 'refunded';
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      provider_order_id?: string | null;
+      provider_shipment_id?: string | null;
+      provider_courier_id?: string | null;
+      pickup_reference?: string | null;
+    }>;
     timeline: Array<{
       key: string;
       label: string;

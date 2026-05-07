@@ -49,6 +49,30 @@ interface OrderWithDetails extends Order {
   };
   payment_intent_id?: string;
   tracking_link?: string | null;
+  workflow?: Order['workflow'] & {
+    packages?: Array<{
+      id: string;
+      sequence: number;
+      ship_date?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+    }>;
+    primary_package?: {
+      id: string;
+      sequence: number;
+      ship_date?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+    } | null;
+  };
 }
 
 export default function OrderDetailsPage() {
@@ -467,6 +491,38 @@ export default function OrderDetailsPage() {
                 </div>
               )}
 
+              {(order.workflow?.packages || []).length > 0 && (
+                <div>
+                  <h3 className="account-form-label mb-3">Packages</h3>
+                  <div className="space-y-3">
+                    {(order.workflow?.packages || []).map((pkg) => (
+                      <div
+                        key={pkg.id}
+                        className="rounded border border-stone-200 px-4 py-3 text-sm text-stone-700"
+                      >
+                        <p className="account-mono-caption">
+                          Package #{pkg.sequence}
+                        </p>
+                        <p className="mt-1">
+                          {pkg.no_tracking
+                            ? 'No tracking attached'
+                            : pkg.tracking_number || 'Tracking pending'}
+                        </p>
+                        <p className="mt-1 text-stone-500">
+                          {[pkg.carrier, pkg.service].filter(Boolean).join(' • ') ||
+                            'Carrier details pending'}
+                        </p>
+                        {pkg.no_tracking_reason ? (
+                          <p className="mt-1 text-stone-500">
+                            Reason: {pkg.no_tracking_reason}
+                          </p>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="pt-8 border-t border-stone-200 space-y-3">
                 {reorderError && (
                   <div className="account-alert rounded border border-red-200 bg-red-50 px-4 py-2 text-red-700">
@@ -510,9 +566,13 @@ export default function OrderDetailsPage() {
                     <RotateCcw size={14} /> Request Return
                   </button>
                 )}
-                {order.tracking_link ? (
+                {order.workflow?.primary_package?.tracking_url || order.tracking_link ? (
                   <a
-                    href={order.tracking_link}
+                    href={
+                      order.workflow?.primary_package?.tracking_url ||
+                      order.tracking_link ||
+                      '#'
+                    }
                     target="_blank"
                     rel="noreferrer"
                     className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"

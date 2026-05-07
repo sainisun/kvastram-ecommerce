@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Download, RefreshCw, Search, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -13,6 +14,15 @@ type WorkflowStatus =
   | 'cancelled'
   | 'refunded';
 type OrderFilter = 'all' | WorkflowStatus;
+type QueueTab = 'open' | 'completed' | 'issues';
+type OpenFilter =
+  | 'all'
+  | 'new'
+  | 'processing'
+  | 'due_today'
+  | 'ready_to_ship'
+  | 'missing_tracking';
+type SortOption = 'newest' | 'oldest' | 'ship_by' | 'destination';
 
 interface Order {
   id: string;
@@ -25,12 +35,37 @@ interface Order {
   customer_first_name: string | null;
   customer_last_name: string | null;
   created_at: string;
+  shipping_first_name?: string | null;
+  shipping_last_name?: string | null;
+  shipping_city?: string | null;
+  shipping_postal_code?: string | null;
+  shipping_country_code?: string | null;
   workflow?: {
+    status?: WorkflowStatus;
+    status_label?: string;
     ship_by_date?: string | null;
     has_tracking?: boolean;
     needs_attention?: boolean;
     overdue_ship_by?: boolean;
     overdue_tracking?: boolean;
+    label?: {
+      url?: string | null;
+    };
+    primary_package?: {
+      id: string;
+      sequence: number;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      no_tracking?: boolean;
+      label_url?: string | null;
+    } | null;
+    packages?: Array<{
+      id: string;
+      sequence: number;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      no_tracking?: boolean;
+    }>;
   };
 }
 
@@ -54,6 +89,21 @@ const FILTERS: Array<{ label: string; value: OrderFilter }> = [
   { label: 'Delivered',  value: 'delivered' },
   { label: 'Cancelled',  value: 'cancelled' },
   { label: 'Refunded',   value: 'refunded' },
+];
+
+const QUEUE_TABS: Array<{ label: string; value: QueueTab }> = [
+  { label: 'Open', value: 'open' },
+  { label: 'Completed', value: 'completed' },
+  { label: 'Issues', value: 'issues' },
+];
+
+const OPEN_FILTERS: Array<{ label: string; value: OpenFilter }> = [
+  { label: 'All', value: 'all' },
+  { label: 'New', value: 'new' },
+  { label: 'Processing', value: 'processing' },
+  { label: 'Due Today', value: 'due_today' },
+  { label: 'Ready to Ship', value: 'ready_to_ship' },
+  { label: 'Missing Tracking', value: 'missing_tracking' },
 ];
 
 const STATUS_LABELS: Record<WorkflowStatus, string> = {
@@ -105,12 +155,56 @@ function fmtDate(v: string) {
   return new Date(v).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function getWorkflowStatus(order: Order): WorkflowStatus {
+  return normalizeStatus(order.workflow?.status || order.status);
+}
+
+function getDestinationLabel(order: Order) {
+  const name = [order.shipping_first_name, order.shipping_last_name]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  const location = [order.shipping_city, order.shipping_postal_code, order.shipping_country_code]
+    .filter(Boolean)
+    .join(', ')
+    .trim();
+
+  return {
+    name: name || 'Destination pending',
+    location: location || 'Address not filled yet',
+  };
+}
+
+function getPrimaryPackage(order: Order) {
+  return order.workflow?.primary_package || order.workflow?.packages?.[0] || null;
+}
+
+function canCompleteOrder(order: Order) {
+  const workflowStatus = getWorkflowStatus(order);
+  return workflowStatus === 'pending' || workflowStatus === 'processing';
+}
+
+function getQueueCount(stats: OrderStats | null, queue: QueueTab) {
+  if (!stats) return 0;
+  if (queue === 'open') {
+    return (stats.pending_orders || 0) + (stats.processing_orders || 0);
+  }
+  if (queue === 'completed') {
+    return (stats.shipped_orders || 0) + (stats.delivered_orders || 0);
+  }
+  return (stats.cancelled_orders || 0) + (stats.refunded_orders || 0);
+}
+
 export default function OrdersPage() {
+  const router = useRouter();
   const [orders, setOrders]           = useState<Order[]>([]);
   const [stats, setStats]             = useState<OrderStats | null>(null);
   const [loading, setLoading]         = useState(true);
   const [search, setSearch]           = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderFilter>('all');
+  const [queueTab, setQueueTab] = useState<QueueTab>('open');
+  const [openFilter, setOpenFilter] = useState<OpenFilter>('all');
+  const [sortBy, setSortBy] = useState<SortOption>('ship_by');
   const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
   const [page, setPage]               = useState(1);
   const [totalPages, setTotalPages]   = useState(1);
@@ -118,12 +212,20 @@ export default function OrdersPage() {
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await api.getOrders(20, (page - 1) * 20, search, statusFilter);
+      const data = await api.getOrders(
+        20,
+        (page - 1) * 20,
+        search,
+        statusFilter,
+        queueTab,
+        queueTab === 'open' ? openFilter : 'all',
+        sortBy
+      );
       setOrders(data?.orders || data || []);
       setTotalPages(data?.pagination?.total_pages || 1);
     } catch { setOrders([]); setTotalPages(1); }
     finally { setLoading(false); }
-  }, [page, search, statusFilter]);
+  }, [openFilter, page, queueTab, search, sortBy, statusFilter]);
 
   const fetchStats = async () => {
     try {
@@ -137,6 +239,28 @@ export default function OrdersPage() {
 
   useEffect(() => { void fetchOrders(); }, [fetchOrders]);
   useEffect(() => { void fetchStats(); }, []);
+
+  const filteredOpenCount = useMemo(() => {
+    if (queueTab !== 'open') return 0;
+    return openFilter === 'all'
+      ? orders.length
+      : orders.filter((order) => {
+          const workflowStatus = getWorkflowStatus(order);
+          if (openFilter === 'new') return workflowStatus === 'pending';
+          if (openFilter === 'processing') return workflowStatus === 'processing';
+          if (openFilter === 'due_today') {
+            const shipBy = order.workflow?.ship_by_date?.slice(0, 10);
+            return shipBy === new Date().toISOString().slice(0, 10);
+          }
+          if (openFilter === 'ready_to_ship') {
+            return workflowStatus === 'processing' && !order.workflow?.has_tracking;
+          }
+          if (openFilter === 'missing_tracking') {
+            return workflowStatus === 'processing' && !order.workflow?.has_tracking;
+          }
+          return true;
+        }).length;
+  }, [openFilter, orders, queueTab]);
 
   const getName = (o: Order) =>
     o.customer_first_name && o.customer_last_name
@@ -190,8 +314,8 @@ export default function OrdersPage() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--on-surface)]">Orders</h2>
-          <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">Filter the queue, update fulfillment states, export reports.</p>
+          <h2 className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--on-surface)]">Orders &amp; Shipping</h2>
+          <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">Work the shipping queue, complete packages, and keep buyer updates moving.</p>
         </div>
         <div className="flex items-center gap-2 mt-2">
           <button onClick={() => void Promise.all([fetchOrders(), fetchStats()])} className="flex items-center gap-2 bg-[var(--surface-container-lowest)] border border-[var(--outline-variant)] text-[var(--on-surface)] px-4 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-[var(--surface-container-low)] transition-colors">
@@ -233,37 +357,75 @@ export default function OrdersPage() {
       {/* ── Filter tabs + search ── */}
       <div className="bg-[var(--surface-container-lowest)] rounded-xl p-4 shadow-[0_4px_12px_rgba(25,28,30,0.04)] space-y-4">
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          {FILTERS.map(f => (
+          {QUEUE_TABS.map((tab) => (
             <button
-              key={f.value}
-              onClick={() => { setStatusFilter(f.value); setPage(1); }}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                statusFilter === f.value
+              key={tab.value}
+              onClick={() => {
+                setQueueTab(tab.value);
+                setPage(1);
+              }}
+              className={`flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                queueTab === tab.value
                   ? 'bg-[var(--primary)] text-white'
                   : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container)]'
               }`}
             >
-              {f.label}
-              {statCount(f.value) > 0 && (
-                <span className={`text-[9px] font-black rounded-full px-1.5 py-0.5 ${statusFilter === f.value ? 'bg-white/20 text-white' : 'bg-[var(--outline-variant)]/50 text-[var(--on-surface-variant)]'}`}>
-                  {statCount(f.value)}
+              {tab.label}
+              {getQueueCount(stats, tab.value) > 0 && (
+                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${queueTab === tab.value ? 'bg-white/20 text-white' : 'bg-[var(--outline-variant)]/50 text-[var(--on-surface-variant)]'}`}>
+                  {getQueueCount(stats, tab.value)}
                 </span>
               )}
             </button>
           ))}
         </div>
 
+        {queueTab === 'open' && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+            {OPEN_FILTERS.map((filter) => (
+              <button
+                key={filter.value}
+                onClick={() => {
+                  setOpenFilter(filter.value);
+                  setPage(1);
+                }}
+                className={`flex-shrink-0 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                  openFilter === filter.value
+                    ? 'bg-[var(--surface-container-high)] text-[var(--on-surface)] ring-1 ring-[var(--primary)]/20'
+                    : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container)]'
+                }`}
+              >
+                {filter.label}
+                {openFilter === filter.value && filteredOpenCount > 0 ? ` (${filteredOpenCount})` : ''}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[200px]">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--on-surface-variant)]" />
             <input
               type="search"
-              placeholder="Search by order ID or customer…"
+              placeholder="Search order #, buyer, email, address, item, notes..."
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
               className="w-full bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full pl-9 pr-4 py-2.5 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:border-[var(--on-tertiary-container)] focus:ring-2 focus:ring-[var(--on-tertiary-container)]/10"
             />
           </div>
+          <select
+            value={sortBy}
+            onChange={(e) => {
+              setSortBy(e.target.value as SortOption);
+              setPage(1);
+            }}
+            className="min-w-[180px] rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-2.5 text-sm font-medium text-[var(--on-surface)] focus:outline-none"
+          >
+            <option value="ship_by">Sort: Ship By</option>
+            <option value="destination">Sort: Destination</option>
+            <option value="newest">Sort: Newest</option>
+            <option value="oldest">Sort: Oldest</option>
+          </select>
           {selectedOrders.size > 0 && (
             <div className="flex gap-2 flex-wrap">
               {(['processing','shipped','delivered','cancelled'] as const).map(s => (
@@ -273,6 +435,27 @@ export default function OrdersPage() {
               ))}
             </div>
           )}
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          {FILTERS.map(f => (
+            <button
+              key={f.value}
+              onClick={() => { setStatusFilter(f.value); setPage(1); }}
+              className={`flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                statusFilter === f.value
+                  ? 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]'
+                  : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container)]'
+              }`}
+            >
+              {f.label}
+              {statCount(f.value) > 0 && (
+                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${statusFilter === f.value ? 'bg-black/10 text-[var(--on-secondary-container)]' : 'bg-[var(--outline-variant)]/50 text-[var(--on-surface-variant)]'}`}>
+                  {statCount(f.value)}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -286,18 +469,23 @@ export default function OrdersPage() {
                 <th className="px-6 py-4 text-left">
                   <input type="checkbox" checked={orders.length > 0 && selectedOrders.size === orders.length} onChange={toggleAll} className="h-4 w-4 rounded" />
                 </th>
-                {['Order','Customer','Amount','Status','Ship By','Date','Actions'].map(h => (
+                {['Order','Buyer','Destination','Amount','Status','Ship By','Actions'].map(h => (
                   <th key={h} className="px-6 py-4 text-left text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="px-6 py-14 text-center text-sm text-[var(--on-surface-variant)]">Loading orders…</td></tr>
+                <tr><td colSpan={8} className="px-6 py-14 text-center text-sm text-[var(--on-surface-variant)]">Loading orders...</td></tr>
               ) : orders.length === 0 ? (
-                <tr><td colSpan={7} className="px-6 py-14 text-center text-sm text-[var(--on-surface-variant)]">No orders match the current filters.</td></tr>
+                <tr><td colSpan={8} className="px-6 py-14 text-center text-sm text-[var(--on-surface-variant)]">No orders match the current queue.</td></tr>
               ) : orders.map(order => {
-                const s = ss(order.status);
+                const workflowStatus = getWorkflowStatus(order);
+                const workflowLabel = order.workflow?.status_label || STATUS_LABELS[workflowStatus];
+                const s = ss(workflowStatus);
+                const destination = getDestinationLabel(order);
+                const primaryPackage = getPrimaryPackage(order);
+                const hasLabel = Boolean(order.workflow?.label?.url);
                 return (
                   <tr key={order.id} className={`border-b border-[var(--surface-container-low)] border-l-4 ${s.border} hover:bg-[var(--surface-container-low)]/40 transition-colors`}>
                     <td className="px-6 py-4"><input type="checkbox" checked={selectedOrders.has(order.id)} onChange={() => toggleOne(order.id)} className="h-4 w-4 rounded" /></td>
@@ -306,23 +494,67 @@ export default function OrdersPage() {
                       <p className="mt-1 text-[10px] text-[var(--on-surface-variant)]">
                         {order.workflow?.has_tracking ? 'Tracking added' : 'Tracking pending'}
                       </p>
+                      {primaryPackage?.tracking_number ? (
+                        <p className="mt-1 text-[10px] text-[var(--on-surface-variant)]">
+                          Package #{primaryPackage.sequence} · {primaryPackage.tracking_number}
+                        </p>
+                      ) : null}
                       {order.workflow?.needs_attention ? (
                         <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-[var(--error)]">
-                          {order.workflow?.overdue_ship_by ? 'Ship-by overdue' : 'Review required'}
+                          {order.workflow?.overdue_ship_by ? 'Ship-by overdue' : order.workflow?.overdue_tracking ? 'Missing tracking' : 'Review required'}
                         </p>
                       ) : null}
                     </td>
                     <td className="px-6 py-4"><p className="text-xs font-medium text-[var(--on-surface)]">{getName(order)}</p><p className="text-[10px] text-[var(--on-surface-variant)]">{order.email}</p></td>
+                    <td className="px-6 py-4"><p className="text-xs font-medium text-[var(--on-surface)]">{destination.name}</p><p className="text-[10px] text-[var(--on-surface-variant)]">{destination.location}</p></td>
                     <td className="px-6 py-4 text-xs font-black text-[var(--on-surface)]">{fmtCurrency(order.total, order.currency_code || 'INR')}</td>
-                    <td className="px-6 py-4"><span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{order.status}</span></td>
-                    <td className="px-6 py-4 text-[10px] text-[var(--on-surface-variant)]">{order.workflow?.ship_by_date ? fmtDate(order.workflow.ship_by_date) : 'Not set'}</td>
-                    <td className="px-6 py-4 text-[10px] text-[var(--on-surface-variant)]">{fmtDate(order.created_at)}</td>
+                    <td className="px-6 py-4"><span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{workflowLabel}</span></td>
+                    <td className="px-6 py-4 text-[10px] text-[var(--on-surface-variant)]">
+                      {order.workflow?.ship_by_date ? fmtDate(order.workflow.ship_by_date) : 'Not set'}
+                      <p className="mt-1">{fmtDate(order.created_at)}</p>
+                    </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 justify-end">
-                        <select value={normalizeStatus(order.status)} onChange={e => void singleUpdate(order.id, e.target.value)} className="bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-1.5 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
-                          {getStatusOptions(order.status).map(status => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
+                      <div className="flex max-w-[340px] flex-wrap items-center justify-end gap-2">
+                        {canCompleteOrder(order) ? (
+                          <button
+                            onClick={() => router.push(`/dashboard/orders/${order.id}?action=complete`)}
+                            className="rounded-full bg-[var(--primary)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white hover:opacity-90"
+                          >
+                            Complete order
+                          </button>
+                        ) : null}
+                        <button
+                          onClick={() => router.push(`/dashboard/orders/${order.id}?action=add-package`)}
+                          className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]"
+                        >
+                          Add package
+                        </button>
+                        <button
+                          onClick={() => router.push(`/dashboard/orders/${order.id}?action=edit-tracking`)}
+                          className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]"
+                        >
+                          Edit tracking
+                        </button>
+                        {hasLabel ? (
+                          <a
+                            href={order.workflow?.label?.url || '#'}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]"
+                          >
+                            Open label
+                          </a>
+                        ) : null}
+                        <button
+                          onClick={() => router.push(`/dashboard/orders/${order.id}?action=message-buyer`)}
+                          className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]"
+                        >
+                          Message buyer
+                        </button>
+                        <select value={workflowStatus} onChange={e => void singleUpdate(order.id, e.target.value)} className="bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-1.5 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
+                          {getStatusOptions(workflowStatus).map(status => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
                         </select>
-                        <Link href={`/dashboard/orders/${order.id}`} className="px-3 py-1.5 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">View</Link>
+                        <Link href={`/dashboard/orders/${order.id}`} className="px-3 py-1.5 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">Open order</Link>
                         <button onClick={() => void handleDelete(order.id, order.order_number)} className="w-8 h-8 rounded-full border border-[var(--error-container)] bg-[var(--error-container)]/30 text-[var(--error)] flex items-center justify-center hover:bg-[var(--error-container)] transition-colors"><Trash2 size={13} /></button>
                       </div>
                     </td>
@@ -336,11 +568,13 @@ export default function OrdersPage() {
         {/* Mobile list */}
         <div className="md:hidden divide-y divide-[var(--surface-container-low)]">
           {loading ? (
-            <p className="p-6 text-center text-sm text-[var(--on-surface-variant)]">Loading orders…</p>
+            <p className="p-6 text-center text-sm text-[var(--on-surface-variant)]">Loading orders...</p>
           ) : orders.length === 0 ? (
-            <p className="p-6 text-center text-sm text-[var(--on-surface-variant)]">No orders match the current filters.</p>
+            <p className="p-6 text-center text-sm text-[var(--on-surface-variant)]">No orders match the current queue.</p>
           ) : orders.map(order => {
-            const s = ss(order.status);
+            const workflowStatus = getWorkflowStatus(order);
+            const s = ss(workflowStatus);
+            const destination = getDestinationLabel(order);
             return (
               <div key={order.id} className={`p-4 border-l-4 ${s.border}`}>
                 <div className="flex items-start justify-between gap-3">
@@ -348,14 +582,20 @@ export default function OrdersPage() {
                     <Link href={`/dashboard/orders/${order.id}`} className="text-xs font-bold text-[var(--on-surface)]">#{order.order_number}</Link>
                     <p className="text-[10px] text-[var(--on-surface-variant)] mt-0.5">{fmtDate(order.created_at)}</p>
                   </div>
-                  <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{order.status}</span>
+                  <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{order.workflow?.status_label || STATUS_LABELS[workflowStatus]}</span>
                 </div>
                 <p className="text-xs font-medium text-[var(--on-surface)] mt-2">{getName(order)}</p>
+                <p className="text-[10px] text-[var(--on-surface-variant)] mt-1">{destination.location}</p>
                 <p className="text-xs font-black text-[var(--on-surface)] mt-1">{fmtCurrency(order.total, order.currency_code || 'INR')}</p>
-                <div className="mt-3 flex gap-2">
-                  <Link href={`/dashboard/orders/${order.id}`} className="flex-1 text-center px-4 py-2 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)]">View</Link>
-                  <select value={normalizeStatus(order.status)} onChange={e => void singleUpdate(order.id, e.target.value)} className="flex-1 bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-2 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
-                    {getStatusOptions(order.status).map(status => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {canCompleteOrder(order) ? (
+                    <button onClick={() => router.push(`/dashboard/orders/${order.id}?action=complete`)} className="flex-1 rounded-full bg-[var(--primary)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white">
+                      Complete
+                    </button>
+                  ) : null}
+                  <Link href={`/dashboard/orders/${order.id}`} className="flex-1 text-center px-4 py-2 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)]">Open order</Link>
+                  <select value={workflowStatus} onChange={e => void singleUpdate(order.id, e.target.value)} className="flex-1 bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-2 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
+                    {getStatusOptions(workflowStatus).map(status => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
                   </select>
                 </div>
               </div>

@@ -58,6 +58,45 @@ export interface OrderWorkflowTimelineEvent {
   current: boolean;
 }
 
+export interface OrderPackage {
+  id: string;
+  sequence: number;
+  ship_date?: string | null;
+  carrier?: string | null;
+  service?: string | null;
+  label_provider?: string | null;
+  tracking_number?: string | null;
+  tracking_url?: string | null;
+  label_url?: string | null;
+  label_file_name?: string | null;
+  label_state?:
+    | 'draft'
+    | 'created'
+    | 'purchased'
+    | 'printed'
+    | 'voided'
+    | 'refunded';
+  label_cost?: number | null;
+  label_currency?: string | null;
+  package_weight_grams?: number | null;
+  package_length_cm?: number | null;
+  package_width_cm?: number | null;
+  package_height_cm?: number | null;
+  carrier_service?: string | null;
+  provider_order_id?: string | null;
+  provider_shipment_id?: string | null;
+  provider_courier_id?: string | null;
+  pickup_reference?: string | null;
+  no_tracking?: boolean;
+  no_tracking_reason?: string | null;
+  notify_buyer?: boolean;
+  notification_sent?: boolean;
+  notification_sent_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  delivered_at?: string | null;
+}
+
 export interface OrderWorkflow {
   status:
     | 'pending'
@@ -76,6 +115,8 @@ export interface OrderWorkflow {
   needs_attention?: boolean;
   overdue_ship_by?: boolean;
   overdue_tracking?: boolean;
+  primary_package?: OrderPackage | null;
+  packages?: OrderPackage[];
   timeline: OrderWorkflowTimelineEvent[];
 }
 

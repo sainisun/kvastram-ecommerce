@@ -7,7 +7,19 @@ import {
   product_variants,
   addresses,
 } from '../db/schema';
-import { eq, desc, like, or, sql, and, gte, lte, inArray } from 'drizzle-orm';
+import {
+  eq,
+  desc,
+  like,
+  ilike,
+  or,
+  sql,
+  and,
+  gte,
+  lte,
+  inArray,
+  asc,
+} from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { generateInvoice } from '../services/pdf-service';
 import { carrierService } from '../services/carrier-service';
@@ -16,9 +28,14 @@ import {
   buildWorkflowSummary,
   deriveWorkflowStatus,
   getWorkflowMetadata,
+  getWorkflowPackages,
   mergeWorkflowMetadata,
 } from '../utils/order-workflow';
-import type { LabelStatus, WorkflowMetadata } from '../utils/order-workflow';
+import type {
+  LabelStatus,
+  WorkflowMetadata,
+  WorkflowPackage,
+} from '../utils/order-workflow';
 import type { CarrierProvider } from '../services/carrier-service';
 
 // --- TYPES ---
@@ -35,6 +52,14 @@ export interface OrderFilters {
   limit?: number;
   search?: string;
   status?: string;
+  queue?: 'open' | 'completed' | 'issues' | 'all';
+  workflow_filter?:
+    | 'new'
+    | 'processing'
+    | 'due_today'
+    | 'ready_to_ship'
+    | 'missing_tracking'
+    | 'all';
   date_from?: string;
   date_to?: string;
   sort_by?: string;
@@ -55,6 +80,209 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 const shippingAddr = alias(addresses, 'shipping_address');
 const billingAddr = alias(addresses, 'billing_address');
 
+function sortPackages(packages: WorkflowPackage[]) {
+  return [...packages].sort((left, right) => left.sequence - right.sequence);
+}
+
+function getPrimaryPackage(packages: WorkflowPackage[]) {
+  if (!packages.length) return null;
+
+  return (
+    [...packages]
+      .filter(
+        (pkg) => !!pkg.ship_date || !!pkg.tracking_number || pkg.no_tracking === true
+      )
+      .sort((left, right) => right.sequence - left.sequence)[0] || packages[0]
+  );
+}
+
+function deriveLegacyTrackingFields(packages: WorkflowPackage[]) {
+  const primaryPackage = getPrimaryPackage(packages);
+
+  return {
+    tracking_number: primaryPackage?.tracking_number || null,
+    shipping_carrier: primaryPackage?.carrier || null,
+    tracking_link: primaryPackage?.tracking_url || null,
+  };
+}
+
+function normalizePackageSequence(packages: WorkflowPackage[]) {
+  return packages.map((pkg, index) => ({
+    ...pkg,
+    sequence: index + 1,
+    id: pkg.id || `pkg_${index + 1}`,
+  }));
+}
+
+type PackageUpsertInput = {
+  package_id?: string;
+  ship_date?: string | null;
+  carrier?: string | null;
+  service?: string | null;
+  label_provider?: string | null;
+  tracking_number?: string | null;
+  tracking_url?: string | null;
+  label_url?: string | null;
+  label_file_name?: string | null;
+  label_state?: LabelStatus;
+  label_cost?: number | null;
+  label_currency?: string | null;
+  package_weight_grams?: number | null;
+  package_length_cm?: number | null;
+  package_width_cm?: number | null;
+  package_height_cm?: number | null;
+  carrier_service?: string | null;
+  provider_order_id?: string | null;
+  provider_shipment_id?: string | null;
+  provider_courier_id?: string | null;
+  pickup_reference?: string | null;
+  no_tracking?: boolean;
+  no_tracking_reason?: string | null;
+  notify_buyer?: boolean;
+  notification_sent?: boolean;
+  notification_sent_at?: string | null;
+  delivered_at?: string | null;
+};
+
+function upsertWorkflowPackage(
+  packages: WorkflowPackage[],
+  input: PackageUpsertInput
+) {
+  const nextPackages = sortPackages(packages);
+  const now = new Date().toISOString();
+  const targetIndex =
+    input.package_id
+      ? nextPackages.findIndex((pkg) => pkg.id === input.package_id)
+      : nextPackages.length > 0
+        ? 0
+        : -1;
+
+  const existing =
+    targetIndex >= 0 ? nextPackages[targetIndex] : null;
+  const sequence =
+    existing?.sequence || nextPackages.length + 1;
+  const packageId = input.package_id || existing?.id || `pkg_${sequence}`;
+
+  const nextPackage: WorkflowPackage = {
+    id: packageId,
+    sequence,
+    ship_date:
+      Object.prototype.hasOwnProperty.call(input, 'ship_date')
+        ? input.ship_date ?? null
+        : existing?.ship_date ?? null,
+    carrier:
+      Object.prototype.hasOwnProperty.call(input, 'carrier')
+        ? input.carrier ?? null
+        : existing?.carrier ?? null,
+    service:
+      Object.prototype.hasOwnProperty.call(input, 'service')
+        ? input.service ?? null
+        : existing?.service ?? null,
+    label_provider:
+      Object.prototype.hasOwnProperty.call(input, 'label_provider')
+        ? input.label_provider ?? null
+        : existing?.label_provider ?? null,
+    tracking_number:
+      Object.prototype.hasOwnProperty.call(input, 'tracking_number')
+        ? input.tracking_number ?? null
+        : existing?.tracking_number ?? null,
+    tracking_url:
+      Object.prototype.hasOwnProperty.call(input, 'tracking_url')
+        ? input.tracking_url ?? null
+        : existing?.tracking_url ?? null,
+    label_url:
+      Object.prototype.hasOwnProperty.call(input, 'label_url')
+        ? input.label_url ?? null
+        : existing?.label_url ?? null,
+    label_file_name:
+      Object.prototype.hasOwnProperty.call(input, 'label_file_name')
+        ? input.label_file_name ?? null
+        : existing?.label_file_name ?? null,
+    label_state:
+      Object.prototype.hasOwnProperty.call(input, 'label_state')
+        ? input.label_state
+        : existing?.label_state || 'draft',
+    label_cost:
+      Object.prototype.hasOwnProperty.call(input, 'label_cost')
+        ? input.label_cost ?? null
+        : existing?.label_cost ?? null,
+    label_currency:
+      Object.prototype.hasOwnProperty.call(input, 'label_currency')
+        ? input.label_currency ?? null
+        : existing?.label_currency ?? null,
+    package_weight_grams:
+      Object.prototype.hasOwnProperty.call(input, 'package_weight_grams')
+        ? input.package_weight_grams ?? null
+        : existing?.package_weight_grams ?? null,
+    package_length_cm:
+      Object.prototype.hasOwnProperty.call(input, 'package_length_cm')
+        ? input.package_length_cm ?? null
+        : existing?.package_length_cm ?? null,
+    package_width_cm:
+      Object.prototype.hasOwnProperty.call(input, 'package_width_cm')
+        ? input.package_width_cm ?? null
+        : existing?.package_width_cm ?? null,
+    package_height_cm:
+      Object.prototype.hasOwnProperty.call(input, 'package_height_cm')
+        ? input.package_height_cm ?? null
+        : existing?.package_height_cm ?? null,
+    carrier_service:
+      Object.prototype.hasOwnProperty.call(input, 'carrier_service')
+        ? input.carrier_service ?? null
+        : existing?.carrier_service ?? null,
+    provider_order_id:
+      Object.prototype.hasOwnProperty.call(input, 'provider_order_id')
+        ? input.provider_order_id ?? null
+        : existing?.provider_order_id ?? null,
+    provider_shipment_id:
+      Object.prototype.hasOwnProperty.call(input, 'provider_shipment_id')
+        ? input.provider_shipment_id ?? null
+        : existing?.provider_shipment_id ?? null,
+    provider_courier_id:
+      Object.prototype.hasOwnProperty.call(input, 'provider_courier_id')
+        ? input.provider_courier_id ?? null
+        : existing?.provider_courier_id ?? null,
+    pickup_reference:
+      Object.prototype.hasOwnProperty.call(input, 'pickup_reference')
+        ? input.pickup_reference ?? null
+        : existing?.pickup_reference ?? null,
+    no_tracking:
+      Object.prototype.hasOwnProperty.call(input, 'no_tracking')
+        ? input.no_tracking === true
+        : existing?.no_tracking === true,
+    no_tracking_reason:
+      Object.prototype.hasOwnProperty.call(input, 'no_tracking_reason')
+        ? input.no_tracking_reason ?? null
+        : existing?.no_tracking_reason ?? null,
+    notify_buyer:
+      Object.prototype.hasOwnProperty.call(input, 'notify_buyer')
+        ? input.notify_buyer
+        : existing?.notify_buyer,
+    notification_sent:
+      Object.prototype.hasOwnProperty.call(input, 'notification_sent')
+        ? input.notification_sent === true
+        : existing?.notification_sent === true,
+    notification_sent_at:
+      Object.prototype.hasOwnProperty.call(input, 'notification_sent_at')
+        ? input.notification_sent_at ?? null
+        : existing?.notification_sent_at ?? null,
+    delivered_at:
+      Object.prototype.hasOwnProperty.call(input, 'delivered_at')
+        ? input.delivered_at ?? null
+        : existing?.delivered_at ?? null,
+    created_at: existing?.created_at || now,
+    updated_at: now,
+  };
+
+  if (targetIndex >= 0) {
+    nextPackages[targetIndex] = nextPackage;
+  } else {
+    nextPackages.push(nextPackage);
+  }
+
+  return normalizePackageSequence(nextPackages);
+}
+
 function applyWorkflowSummary<T extends Record<string, any>>(order: T) {
   const workflow = buildWorkflowSummary(order);
 
@@ -63,6 +291,67 @@ function applyWorkflowSummary<T extends Record<string, any>>(order: T) {
     raw_status: order.status,
     status: workflow.status,
     workflow,
+  };
+}
+
+function buildCarrierContext(
+  order: Record<string, any>,
+  items: Record<string, any>[],
+  packageId?: string | null
+) {
+  const packages = order.workflow?.packages || [];
+  const explicitlySelectedPackage = packageId
+    ? packages.find((pkg: WorkflowPackage) => pkg.id === packageId) || null
+    : null;
+  const primaryPackage = order.workflow?.primary_package || packages[0] || null;
+  const selectedPackage = packageId ? explicitlySelectedPackage : primaryPackage;
+  const workflowLabel = order.workflow?.label || {};
+  const useWorkflowLabelFallback =
+    !packageId ||
+    (!!selectedPackage &&
+      (selectedPackage.id === primaryPackage?.id ||
+        selectedPackage.sequence === primaryPackage?.sequence));
+
+  return {
+    order: {
+      ...order,
+      shipping_address: {
+        ...order.shipping_address,
+        phone:
+          order.shipping_address?.phone ||
+          order.customer_phone ||
+          order.customer?.phone ||
+          null,
+      },
+      workflow: {
+        ...order.workflow,
+        label: {
+          ...workflowLabel,
+          package_weight_grams:
+            selectedPackage?.package_weight_grams ??
+            (useWorkflowLabelFallback ? workflowLabel.package_weight_grams : null) ??
+            null,
+          package_length_cm:
+            selectedPackage?.package_length_cm ??
+            (useWorkflowLabelFallback ? workflowLabel.package_length_cm : null) ??
+            null,
+          package_width_cm:
+            selectedPackage?.package_width_cm ??
+            (useWorkflowLabelFallback ? workflowLabel.package_width_cm : null) ??
+            null,
+          package_height_cm:
+            selectedPackage?.package_height_cm ??
+            (useWorkflowLabelFallback ? workflowLabel.package_height_cm : null) ??
+            null,
+          carrier_service:
+            selectedPackage?.carrier_service ??
+            (useWorkflowLabelFallback ? workflowLabel.carrier_service : null) ??
+            null,
+        },
+      },
+    },
+    items,
+    package: selectedPackage as WorkflowPackage | null,
   };
 }
 
@@ -106,6 +395,8 @@ class OrderService {
       limit = 20,
       search = '',
       status = '',
+      queue = 'all',
+      workflow_filter = 'all',
       date_from = '',
       date_to = '',
       sort_by = 'created_at',
@@ -118,10 +409,27 @@ class OrderService {
     if (search) {
       const sanitizedSearch = sanitizeSearchInput(search);
       if (sanitizedSearch) {
+        const pattern = `%${sanitizedSearch}%`;
         conditions.push(
           or(
-            sql`CAST(${orders.display_id} AS TEXT) LIKE ${`%${sanitizedSearch}%`}`,
-            like(orders.email, `%${sanitizedSearch}%`)
+            sql`CAST(${orders.display_id} AS TEXT) LIKE ${pattern}`,
+            ilike(orders.email, pattern),
+            ilike(customers.first_name, pattern),
+            ilike(customers.last_name, pattern),
+            ilike(sql`coalesce(${shippingAddr.first_name}, '')`, pattern),
+            ilike(sql`coalesce(${shippingAddr.last_name}, '')`, pattern),
+            ilike(sql`coalesce(${shippingAddr.address_1}, '')`, pattern),
+            ilike(sql`coalesce(${shippingAddr.city}, '')`, pattern),
+            ilike(sql`coalesce(${shippingAddr.postal_code}, '')`, pattern),
+            sql`exists (
+              select 1
+              from ${line_items}
+              where ${line_items.order_id} = ${orders.id}
+                and (
+                  ${line_items.title} ilike ${pattern}
+                  or coalesce(${line_items.description}, '') ilike ${pattern}
+                )
+            )`
           )
         );
       }
@@ -131,13 +439,6 @@ class OrderService {
     if (date_to) conditions.push(lte(orders.created_at, new Date(date_to)));
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-
-    // Sort Column
-    let sortCol: any = orders.created_at;
-    if (sort_by === 'order_number') sortCol = orders.display_id;
-    else if (sort_by === 'total') sortCol = orders.total;
-    else if (sort_by === 'status') sortCol = orders.status;
-    else if (sort_by === 'email') sortCol = orders.email;
 
     // Fetch
     const ordersList = await db
@@ -157,29 +458,152 @@ class OrderService {
         created_at: orders.created_at,
         updated_at: orders.updated_at,
         tracking_number: orders.tracking_number,
+        shipping_carrier: orders.shipping_carrier,
+        tracking_link: orders.tracking_link,
         metadata: orders.metadata,
         customer_first_name: customers.first_name,
         customer_last_name: customers.last_name,
+        shipping_first_name: shippingAddr.first_name,
+        shipping_last_name: shippingAddr.last_name,
+        shipping_city: shippingAddr.city,
+        shipping_postal_code: shippingAddr.postal_code,
+        shipping_country_code: shippingAddr.country_code,
       })
       .from(orders)
       .leftJoin(customers, eq(orders.customer_id, customers.id))
+      .leftJoin(shippingAddr, eq(orders.shipping_address_id, shippingAddr.id))
       .where(whereClause)
-      .orderBy(sort_order === 'asc' ? sortCol : desc(sortCol));
+      .orderBy(sort_order === 'asc' ? asc(orders.created_at) : desc(orders.created_at));
 
     const normalizedOrders = ordersList.map((order) => applyWorkflowSummary(order));
-    const filteredOrders =
+
+    const queueFilteredOrders = normalizedOrders.filter((order) => {
+      if (queue === 'all') return true;
+      if (queue === 'open') {
+        return order.status === 'pending' || order.status === 'processing';
+      }
+      if (queue === 'completed') {
+        return order.status === 'shipped' || order.status === 'delivered';
+      }
+      if (queue === 'issues') {
+        return (
+          order.status === 'cancelled' ||
+          order.status === 'refunded' ||
+          order.workflow?.needs_attention === true ||
+          order.workflow?.overdue_tracking === true
+        );
+      }
+
+      return true;
+    });
+
+    const workflowFilteredOrders = queueFilteredOrders.filter((order) => {
+      if (workflow_filter === 'all') return true;
+
+      const shipByDate = order.workflow?.ship_by_date
+        ? new Date(order.workflow.ship_by_date)
+        : null;
+      const now = new Date();
+      const todayStart = new Date(now);
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date(now);
+      todayEnd.setHours(23, 59, 59, 999);
+
+      switch (workflow_filter) {
+        case 'new':
+          return order.status === 'pending';
+        case 'processing':
+          return order.status === 'processing';
+        case 'due_today':
+          return (
+            order.status !== 'shipped' &&
+            order.status !== 'delivered' &&
+            !!shipByDate &&
+            !Number.isNaN(shipByDate.getTime()) &&
+            shipByDate >= todayStart &&
+            shipByDate <= todayEnd
+          );
+        case 'ready_to_ship':
+          return order.status === 'processing';
+        case 'missing_tracking':
+          return (
+            (order.status === 'processing' || order.status === 'shipped') &&
+            !order.workflow?.has_tracking
+          );
+        default:
+          return true;
+      }
+    });
+
+    const statusFilteredOrders =
       status && status !== 'all'
-        ? normalizedOrders.filter((order) => order.status === status)
-        : normalizedOrders;
-    const paginatedOrders = filteredOrders.slice(offset, offset + limit);
+        ? workflowFilteredOrders.filter((order) => order.status === status)
+        : workflowFilteredOrders;
+
+    const sortedOrders = [...statusFilteredOrders].sort((left, right) => {
+      if (sort_by === 'ship_by') {
+        const leftTime = left.workflow?.ship_by_date
+          ? new Date(left.workflow.ship_by_date).getTime()
+          : Number.MAX_SAFE_INTEGER;
+        const rightTime = right.workflow?.ship_by_date
+          ? new Date(right.workflow.ship_by_date).getTime()
+          : Number.MAX_SAFE_INTEGER;
+        return sort_order === 'asc' ? leftTime - rightTime : rightTime - leftTime;
+      }
+
+      if (sort_by === 'destination') {
+        const leftDestination = [
+          left.shipping_country_code,
+          left.shipping_city,
+          left.shipping_postal_code,
+        ]
+          .filter(Boolean)
+          .join(' ');
+        const rightDestination = [
+          right.shipping_country_code,
+          right.shipping_city,
+          right.shipping_postal_code,
+        ]
+          .filter(Boolean)
+          .join(' ');
+
+        return sort_order === 'asc'
+          ? leftDestination.localeCompare(rightDestination)
+          : rightDestination.localeCompare(leftDestination);
+      }
+
+      if (sort_by === 'oldest') {
+        return (
+          new Date(left.created_at).getTime() - new Date(right.created_at).getTime()
+        );
+      }
+
+      if (sort_by === 'newest') {
+        return (
+          new Date(right.created_at).getTime() - new Date(left.created_at).getTime()
+        );
+      }
+
+      if (sort_by === 'order_number') {
+        return sort_order === 'asc'
+          ? Number(left.order_number) - Number(right.order_number)
+          : Number(right.order_number) - Number(left.order_number);
+      }
+
+      return sort_order === 'asc'
+        ? new Date(left.created_at).getTime() - new Date(right.created_at).getTime()
+        : new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
+    });
+
+    const paginatedOrders = sortedOrders.slice(offset, offset + limit);
 
     return {
       orders: paginatedOrders,
       pagination: {
         page,
         limit,
-        total: filteredOrders.length,
-        total_pages: Math.ceil(filteredOrders.length / limit),
+        total: sortedOrders.length,
+        total_pages: Math.ceil(sortedOrders.length / limit),
       },
     };
   }
@@ -405,6 +829,9 @@ class OrderService {
         email: orders.email,
         order_number: orders.display_id,
         metadata: orders.metadata,
+        tracking_number: orders.tracking_number,
+        shipping_carrier: orders.shipping_carrier,
+        tracking_link: orders.tracking_link,
       })
       .from(orders)
       .where(eq(orders.id, id));
@@ -415,20 +842,38 @@ class OrderService {
     const shippedAt = Number.isNaN(shipDate.getTime())
       ? new Date().toISOString()
       : shipDate.toISOString();
+    const nextPackages = upsertWorkflowPackage(
+      getWorkflowPackages(existingOrder),
+      {
+        package_id: 'pkg_1',
+        ship_date: shippedAt,
+        carrier: data.shipping_carrier ?? null,
+        tracking_number: data.tracking_number,
+        tracking_url: data.tracking_link ?? null,
+        no_tracking: false,
+        no_tracking_reason: null,
+        notify_buyer: data.notify_buyer !== false,
+        notification_sent: data.notify_buyer !== false,
+        notification_sent_at:
+          data.notify_buyer !== false ? new Date().toISOString() : null,
+      }
+    );
 
     const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
       workflow_status: 'shipped',
       shipped_at: shippedAt,
       customer_note: data.customer_note,
       internal_note: data.internal_note,
+      packages: nextPackages,
     });
+    const trackingFields = deriveLegacyTrackingFields(nextPackages);
 
     const [updated] = await db
       .update(orders)
       .set({
-        tracking_number: data.tracking_number,
-        shipping_carrier: data.shipping_carrier,
-        tracking_link: data.tracking_link,
+        tracking_number: trackingFields.tracking_number,
+        shipping_carrier: trackingFields.shipping_carrier,
+        tracking_link: trackingFields.tracking_link,
         status: 'shipped',
         fulfillment_status: 'shipped',
         metadata: nextMetadata,
@@ -449,6 +894,302 @@ class OrderService {
         }).catch(err => console.error('[OrderService] Failed to send shipping notification:', err));
       }).catch(err => console.error('[OrderService] Failed to load email service:', err));
     }
+
+    return applyWorkflowSummary(updated as Record<string, any>);
+  }
+
+  async completeOrder(
+    id: string,
+    data: {
+      ship_date?: string | null;
+      shipping_carrier?: string | null;
+      shipping_service?: string | null;
+      tracking_number?: string | null;
+      tracking_link?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      customer_note?: string | null;
+      internal_note?: string | null;
+      notify_buyer?: boolean;
+    }
+  ) {
+    const [existingOrder] = await db
+      .select({
+        id: orders.id,
+        email: orders.email,
+        order_number: orders.display_id,
+        metadata: orders.metadata,
+      })
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    if (!existingOrder) throw new Error('Order not found');
+
+    if (data.no_tracking !== true && !data.tracking_number?.trim()) {
+      throw new Error('Tracking number is required unless no-tracking is selected');
+    }
+
+    const shipDate = data.ship_date ? new Date(data.ship_date) : new Date();
+    const shippedAt = Number.isNaN(shipDate.getTime())
+      ? new Date().toISOString()
+      : shipDate.toISOString();
+    const nextPackages = upsertWorkflowPackage(
+      getWorkflowPackages(existingOrder),
+      {
+        package_id: 'pkg_1',
+        ship_date: shippedAt,
+        carrier: data.shipping_carrier ?? null,
+        service: data.shipping_service ?? null,
+        tracking_number:
+          data.no_tracking === true ? null : data.tracking_number?.trim() || null,
+        tracking_url:
+          data.no_tracking === true ? null : data.tracking_link ?? null,
+        no_tracking: data.no_tracking === true,
+        no_tracking_reason:
+          data.no_tracking === true ? data.no_tracking_reason ?? null : null,
+        notify_buyer: data.notify_buyer !== false,
+        notification_sent: data.notify_buyer !== false,
+        notification_sent_at:
+          data.notify_buyer !== false ? new Date().toISOString() : null,
+      }
+    );
+    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+      workflow_status: 'shipped',
+      shipped_at: shippedAt,
+      customer_note: data.customer_note,
+      internal_note: data.internal_note,
+      packages: nextPackages,
+    });
+    const trackingFields = deriveLegacyTrackingFields(nextPackages);
+
+    const [updated] = await db
+      .update(orders)
+      .set({
+        tracking_number: trackingFields.tracking_number,
+        shipping_carrier: trackingFields.shipping_carrier,
+        tracking_link: trackingFields.tracking_link,
+        status: 'shipped',
+        fulfillment_status: 'shipped',
+        metadata: nextMetadata,
+        updated_at: new Date(),
+      })
+      .where(eq(orders.id, id))
+      .returning();
+
+    if (
+      existingOrder.email &&
+      data.notify_buyer !== false &&
+      data.no_tracking !== true &&
+      trackingFields.tracking_number
+    ) {
+      import('./email-service')
+        .then(({ emailService }) => {
+          emailService
+            .sendShippingNotification({
+              email: existingOrder.email!,
+              order_number: existingOrder.order_number ?? id.slice(0, 8),
+              tracking_number: trackingFields.tracking_number!,
+              shipping_carrier: trackingFields.shipping_carrier ?? undefined,
+              tracking_link: trackingFields.tracking_link ?? undefined,
+            })
+            .catch((err) =>
+              console.error(
+                '[OrderService] Failed to send shipping notification:',
+                err
+              )
+            );
+        })
+        .catch((err) =>
+          console.error('[OrderService] Failed to load email service:', err)
+        );
+    }
+
+    return applyWorkflowSummary(updated as Record<string, any>);
+  }
+
+  async addPackage(
+    id: string,
+    data: {
+      ship_date?: string | null;
+      shipping_carrier?: string | null;
+      shipping_service?: string | null;
+      tracking_number?: string | null;
+      tracking_link?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      notify_buyer?: boolean;
+    }
+  ) {
+    const [existingOrder] = await db
+      .select({
+        id: orders.id,
+        metadata: orders.metadata,
+        tracking_number: orders.tracking_number,
+        shipping_carrier: orders.shipping_carrier,
+        tracking_link: orders.tracking_link,
+      })
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    if (!existingOrder) throw new Error('Order not found');
+
+    const shipDate = data.ship_date ? new Date(data.ship_date) : new Date();
+    const shippedAt = Number.isNaN(shipDate.getTime())
+      ? new Date().toISOString()
+      : shipDate.toISOString();
+    const nextPackages = upsertWorkflowPackage(
+      getWorkflowPackages(existingOrder),
+      {
+        ship_date: shippedAt,
+        carrier: data.shipping_carrier ?? null,
+        service: data.shipping_service ?? null,
+        tracking_number:
+          data.no_tracking === true ? null : data.tracking_number?.trim() || null,
+        tracking_url:
+          data.no_tracking === true ? null : data.tracking_link ?? null,
+        no_tracking: data.no_tracking === true,
+        no_tracking_reason:
+          data.no_tracking === true ? data.no_tracking_reason ?? null : null,
+        notify_buyer: data.notify_buyer !== false,
+        notification_sent: false,
+        notification_sent_at: null,
+      }
+    );
+    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+      workflow_status: 'shipped',
+      shipped_at: getWorkflowMetadata(existingOrder.metadata).shipped_at || shippedAt,
+      packages: nextPackages,
+    });
+    const trackingFields = deriveLegacyTrackingFields(nextPackages);
+
+    const [updated] = await db
+      .update(orders)
+      .set({
+        tracking_number: trackingFields.tracking_number,
+        shipping_carrier: trackingFields.shipping_carrier,
+        tracking_link: trackingFields.tracking_link,
+        status: 'shipped',
+        fulfillment_status: 'shipped',
+        metadata: nextMetadata,
+        updated_at: new Date(),
+      })
+      .where(eq(orders.id, id))
+      .returning();
+
+    return applyWorkflowSummary(updated as Record<string, any>);
+  }
+
+  async updatePackage(
+    id: string,
+    packageId: string,
+    data: {
+      ship_date?: string | null;
+      shipping_carrier?: string | null;
+      shipping_service?: string | null;
+      tracking_number?: string | null;
+      tracking_link?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      notify_buyer?: boolean;
+      label_url?: string | null;
+      label_file_name?: string | null;
+      label_state?: LabelStatus;
+      label_cost?: number | null;
+      label_currency?: string | null;
+      package_weight_grams?: number | null;
+      package_length_cm?: number | null;
+      package_width_cm?: number | null;
+      package_height_cm?: number | null;
+      carrier_service?: string | null;
+      label_provider?: string | null;
+      provider_order_id?: string | null;
+      provider_shipment_id?: string | null;
+      provider_courier_id?: string | null;
+      pickup_reference?: string | null;
+      delivered_at?: string | null;
+    }
+  ) {
+    const [existingOrder] = await db
+      .select({
+        id: orders.id,
+        metadata: orders.metadata,
+        status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
+        tracking_number: orders.tracking_number,
+      })
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    if (!existingOrder) throw new Error('Order not found');
+
+    const existingPackages = getWorkflowPackages(existingOrder);
+    if (!existingPackages.some((pkg) => pkg.id === packageId)) {
+      throw new Error('Package not found');
+    }
+
+    const nextPackages = upsertWorkflowPackage(existingPackages, {
+      package_id: packageId,
+      ship_date: data.ship_date,
+      carrier: data.shipping_carrier,
+      service: data.shipping_service,
+      tracking_number: data.tracking_number,
+      tracking_url: data.tracking_link,
+      no_tracking: data.no_tracking,
+      no_tracking_reason: data.no_tracking_reason,
+      notify_buyer: data.notify_buyer,
+      label_url: data.label_url,
+      label_file_name: data.label_file_name,
+      label_state: data.label_state,
+      label_cost: data.label_cost,
+      label_currency: data.label_currency,
+      package_weight_grams: data.package_weight_grams,
+      package_length_cm: data.package_length_cm,
+      package_width_cm: data.package_width_cm,
+      package_height_cm: data.package_height_cm,
+      carrier_service: data.carrier_service,
+      label_provider: data.label_provider,
+      provider_order_id: data.provider_order_id,
+      provider_shipment_id: data.provider_shipment_id,
+      provider_courier_id: data.provider_courier_id,
+      pickup_reference: data.pickup_reference,
+      delivered_at: data.delivered_at,
+    });
+    const primaryPackage = getPrimaryPackage(nextPackages);
+    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+      workflow_status: data.delivered_at ? 'delivered' : undefined,
+      shipped_at:
+        getWorkflowMetadata(existingOrder.metadata).shipped_at ||
+        primaryPackage?.ship_date ||
+        null,
+      delivered_at: data.delivered_at,
+      packages: nextPackages,
+    });
+    const trackingFields = deriveLegacyTrackingFields(nextPackages);
+
+    const [updated] = await db
+      .update(orders)
+      .set({
+        tracking_number: trackingFields.tracking_number,
+        shipping_carrier: trackingFields.shipping_carrier,
+        tracking_link: trackingFields.tracking_link,
+        status:
+          data.delivered_at
+            ? 'delivered'
+            : primaryPackage?.ship_date
+              ? 'shipped'
+              : existingOrder.status,
+        fulfillment_status:
+          data.delivered_at
+            ? 'fulfilled'
+            : primaryPackage?.ship_date
+              ? 'shipped'
+              : existingOrder.fulfillment_status,
+        metadata: nextMetadata,
+        updated_at: new Date(),
+      })
+      .where(eq(orders.id, id))
+      .returning();
 
     return applyWorkflowSummary(updated as Record<string, any>);
   }
@@ -521,6 +1262,8 @@ class OrderService {
     if (!existingOrder) throw new Error('Order not found');
 
     const existingMetadata = getWorkflowMetadata(existingOrder.metadata);
+    const existingPackages = getWorkflowPackages(existingOrder);
+    const primaryPackage = getPrimaryPackage(existingPackages);
     const updates: Partial<WorkflowMetadata> = {};
     const copyNullable = <K extends keyof WorkflowMetadata>(
       sourceKey: keyof typeof data,
@@ -563,6 +1306,47 @@ class OrderService {
         ? existingMetadata.label_printed_at || now
         : existingMetadata.label_printed_at || null;
 
+    updates.packages = upsertWorkflowPackage(existingPackages, {
+      package_id: primaryPackage?.id || 'pkg_1',
+      label_url:
+        Object.prototype.hasOwnProperty.call(data, 'label_url')
+          ? data.label_url ?? null
+          : undefined,
+      label_file_name:
+        Object.prototype.hasOwnProperty.call(data, 'label_file_name')
+          ? data.label_file_name ?? null
+          : undefined,
+      label_state: nextStatus,
+      label_cost:
+        Object.prototype.hasOwnProperty.call(data, 'label_cost')
+          ? data.label_cost ?? null
+          : undefined,
+      label_currency:
+        Object.prototype.hasOwnProperty.call(data, 'label_currency')
+          ? (data.label_currency ? data.label_currency.toUpperCase() : null)
+          : undefined,
+      package_weight_grams:
+        Object.prototype.hasOwnProperty.call(data, 'package_weight_grams')
+          ? data.package_weight_grams ?? null
+          : undefined,
+      package_length_cm:
+        Object.prototype.hasOwnProperty.call(data, 'package_length_cm')
+          ? data.package_length_cm ?? null
+          : undefined,
+      package_width_cm:
+        Object.prototype.hasOwnProperty.call(data, 'package_width_cm')
+          ? data.package_width_cm ?? null
+          : undefined,
+      package_height_cm:
+        Object.prototype.hasOwnProperty.call(data, 'package_height_cm')
+          ? data.package_height_cm ?? null
+          : undefined,
+      carrier_service:
+        Object.prototype.hasOwnProperty.call(data, 'carrier_service')
+          ? data.carrier_service ?? null
+          : undefined,
+    });
+
     const nextMetadata = mergeWorkflowMetadata(
       existingOrder.metadata,
       updates
@@ -580,21 +1364,96 @@ class OrderService {
     return applyWorkflowSummary(updated as Record<string, any>);
   }
 
-  async getCarrierReadiness(id: string) {
-    const data = await this.getOrder(id);
-    if (!data) return null;
-
-    return carrierService.getReadiness(data.order);
-  }
-
-  async getCarrierRates(
+  async getCarrierReadiness(
     id: string,
-    options: { provider?: CarrierProvider | null } = {}
+    options: { provider?: CarrierProvider | null; package_id?: string | null } = {}
   ) {
     const data = await this.getOrder(id);
     if (!data) return null;
 
-    return carrierService.getRates(data.order, options);
+    const context = buildCarrierContext(data.order, data.items || [], options.package_id);
+    return carrierService.getReadiness(context.order, {
+      provider: options.provider,
+    });
+  }
+
+  async getCarrierRates(
+    id: string,
+    options: { provider?: CarrierProvider | null; package_id?: string | null } = {}
+  ) {
+    const data = await this.getOrder(id);
+    if (!data) return null;
+
+    const context = buildCarrierContext(data.order, data.items || [], options.package_id);
+    return carrierService.getRates(context.order, {
+      provider: options.provider,
+    });
+  }
+
+  async purchaseCarrierLabel(
+    id: string,
+    options: {
+      provider?: CarrierProvider | null;
+      package_id?: string | null;
+      courier_id: string | number;
+    }
+  ) {
+    const data = await this.getOrder(id);
+    if (!data) return null;
+
+    const context = buildCarrierContext(data.order, data.items || [], options.package_id);
+    const targetPackageId = options.package_id || context.package?.id || 'pkg_1';
+    const purchase = await carrierService.purchaseLabel(
+      {
+        order: context.order,
+        items: context.items || [],
+      },
+      {
+        provider: options.provider,
+        package_id: targetPackageId,
+        courier_id: options.courier_id,
+      }
+    );
+
+    const updatedOrder = await this.updatePackage(id, targetPackageId, {
+      label_provider: purchase.provider,
+      shipping_carrier: purchase.shipping_carrier,
+      tracking_number: purchase.tracking_number,
+      tracking_link: purchase.tracking_url,
+      label_state: purchase.label_status,
+      label_url: purchase.label_url,
+      label_file_name: purchase.label_file_name,
+      label_cost: purchase.label_cost,
+      label_currency: purchase.label_currency,
+      package_weight_grams:
+        context.order.workflow?.label?.package_weight_grams ?? null,
+      package_length_cm: context.order.workflow?.label?.package_length_cm ?? null,
+      package_width_cm: context.order.workflow?.label?.package_width_cm ?? null,
+      package_height_cm: context.order.workflow?.label?.package_height_cm ?? null,
+      carrier_service: purchase.carrier_service,
+      provider_order_id:
+        purchase.shiprocket_order_id != null
+          ? String(purchase.shiprocket_order_id)
+          : null,
+      provider_shipment_id:
+        purchase.shiprocket_shipment_id != null
+          ? String(purchase.shiprocket_shipment_id)
+          : null,
+      provider_courier_id:
+        purchase.shiprocket_courier_id != null
+          ? String(purchase.shiprocket_courier_id)
+          : null,
+      pickup_reference:
+        purchase.shiprocket_pickup_id != null
+          ? String(purchase.shiprocket_pickup_id)
+          : null,
+      notify_buyer: false,
+    });
+
+    return {
+      order: updatedOrder,
+      purchase,
+    };
   }
 
   async sendBuyerUpdate(
@@ -612,9 +1471,6 @@ class OrderService {
         email: orders.email,
         order_number: orders.display_id,
         metadata: orders.metadata,
-        tracking_number: orders.tracking_number,
-        shipping_carrier: orders.shipping_carrier,
-        tracking_link: orders.tracking_link,
       })
       .from(orders)
       .where(eq(orders.id, id));
@@ -622,6 +1478,7 @@ class OrderService {
     if (!existingOrder) throw new Error('Order not found');
     if (!existingOrder.email) throw new Error('Order email is missing');
 
+    const primaryPackage = getPrimaryPackage(getWorkflowPackages(existingOrder));
     const sentAt = new Date().toISOString();
 
     const { emailService } = await import('./email-service');
@@ -631,11 +1488,15 @@ class OrderService {
       subject: data.subject,
       message: data.message,
       tracking_number:
-        data.include_tracking === false ? null : existingOrder.tracking_number,
+        data.include_tracking === false
+          ? null
+          : primaryPackage?.tracking_number || null,
       shipping_carrier:
-        data.include_tracking === false ? null : existingOrder.shipping_carrier,
+        data.include_tracking === false ? null : primaryPackage?.carrier || null,
       tracking_link:
-        data.include_tracking === false ? null : existingOrder.tracking_link,
+        data.include_tracking === false
+          ? null
+          : primaryPackage?.tracking_url || null,
     });
 
     const baseMetadata =

@@ -6,7 +6,13 @@ export type WorkflowStatus =
   | 'cancelled'
   | 'refunded';
 
-export type LabelStatus = 'draft' | 'created' | 'printed' | 'voided' | 'refunded';
+export type LabelStatus =
+  | 'draft'
+  | 'created'
+  | 'purchased'
+  | 'printed'
+  | 'voided'
+  | 'refunded';
 
 export interface WorkflowTimelineEvent {
   key: WorkflowStatus;
@@ -24,6 +30,39 @@ export interface WorkflowCommunicationEvent {
   sent_at?: string | null;
   channel?: string;
   status?: string;
+}
+
+export interface WorkflowPackage {
+  id: string;
+  sequence: number;
+  ship_date?: string | null;
+  carrier?: string | null;
+  service?: string | null;
+  label_provider?: string | null;
+  tracking_number?: string | null;
+  tracking_url?: string | null;
+  label_url?: string | null;
+  label_file_name?: string | null;
+  label_state?: LabelStatus;
+  label_cost?: number | null;
+  label_currency?: string | null;
+  package_weight_grams?: number | null;
+  package_length_cm?: number | null;
+  package_width_cm?: number | null;
+  package_height_cm?: number | null;
+  carrier_service?: string | null;
+  provider_order_id?: string | null;
+  provider_shipment_id?: string | null;
+  provider_courier_id?: string | null;
+  pickup_reference?: string | null;
+  no_tracking?: boolean;
+  no_tracking_reason?: string | null;
+  notify_buyer?: boolean;
+  notification_sent?: boolean;
+  notification_sent_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  delivered_at?: string | null;
 }
 
 export interface PackagingChecklist {
@@ -67,6 +106,7 @@ export interface WorkflowMetadata {
   label_printed_at?: string | null;
   communication_events?: WorkflowCommunicationEvent[];
   packaging_checklist?: PackagingChecklist;
+  packages?: WorkflowPackage[];
 }
 
 type OrderLike = {
@@ -98,6 +138,7 @@ const WORKFLOW_LABELS: Record<WorkflowStatus, string> = {
 const LABEL_STATUS_LABELS: Record<LabelStatus, string> = {
   draft: 'Draft',
   created: 'Label created',
+  purchased: 'Purchased',
   printed: 'Printed',
   voided: 'Voided',
   refunded: 'Refunded',
@@ -115,6 +156,16 @@ function numberOrNull(value: unknown): number | null {
 
 function booleanOrFalse(value: unknown): boolean {
   return value === true;
+}
+
+function stringOrNull(value: unknown): string | null {
+  return typeof value === 'string' ? value : null;
+}
+
+function ensurePackageId(value: unknown, sequence: number): string {
+  return typeof value === 'string' && value.trim().length > 0
+    ? value
+    : `pkg_${sequence}`;
 }
 
 export function normalizeWorkflowStatus(
@@ -143,6 +194,7 @@ export function normalizeLabelStatus(value?: string | null): LabelStatus | null 
   if (
     normalized === 'draft' ||
     normalized === 'created' ||
+    normalized === 'purchased' ||
     normalized === 'printed' ||
     normalized === 'voided' ||
     normalized === 'refunded'
@@ -151,6 +203,56 @@ export function normalizeLabelStatus(value?: string | null): LabelStatus | null 
   }
 
   return null;
+}
+
+function normalizeWorkflowPackage(
+  value: unknown,
+  fallbackSequence: number
+): WorkflowPackage | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  const source = value as Record<string, unknown>;
+  const sequence =
+    typeof source.sequence === 'number' && Number.isFinite(source.sequence)
+      ? Math.max(1, Math.round(source.sequence))
+      : fallbackSequence;
+
+  return {
+    id: ensurePackageId(source.id, sequence),
+    sequence,
+    ship_date: stringOrNull(source.ship_date),
+    carrier: stringOrNull(source.carrier),
+    service: stringOrNull(source.service),
+    label_provider: stringOrNull(source.label_provider),
+    tracking_number: stringOrNull(source.tracking_number),
+    tracking_url: stringOrNull(source.tracking_url),
+    label_url: stringOrNull(source.label_url),
+    label_file_name: stringOrNull(source.label_file_name),
+    label_state:
+      normalizeLabelStatus(stringOrNull(source.label_state)) || undefined,
+    label_cost: numberOrNull(source.label_cost),
+    label_currency: stringOrNull(source.label_currency),
+    package_weight_grams: numberOrNull(source.package_weight_grams),
+    package_length_cm: numberOrNull(source.package_length_cm),
+    package_width_cm: numberOrNull(source.package_width_cm),
+    package_height_cm: numberOrNull(source.package_height_cm),
+    carrier_service: stringOrNull(source.carrier_service),
+    provider_order_id: stringOrNull(source.provider_order_id),
+    provider_shipment_id: stringOrNull(source.provider_shipment_id),
+    provider_courier_id: stringOrNull(source.provider_courier_id),
+    pickup_reference: stringOrNull(source.pickup_reference),
+    no_tracking: source.no_tracking === true,
+    no_tracking_reason: stringOrNull(source.no_tracking_reason),
+    notify_buyer:
+      typeof source.notify_buyer === 'boolean' ? source.notify_buyer : undefined,
+    notification_sent: source.notification_sent === true,
+    notification_sent_at: stringOrNull(source.notification_sent_at),
+    created_at: stringOrNull(source.created_at),
+    updated_at: stringOrNull(source.updated_at),
+    delivered_at: stringOrNull(source.delivered_at),
+  };
 }
 
 export function getWorkflowMetadata(metadata: unknown): WorkflowMetadata {
@@ -248,6 +350,12 @@ export function getWorkflowMetadata(metadata: unknown): WorkflowMetadata {
               typeof entry.status === 'string' ? entry.status : undefined,
           }))
       : undefined,
+    packages: Array.isArray(source.packages)
+      ? source.packages
+          .map((entry, index) => normalizeWorkflowPackage(entry, index + 1))
+          .filter((entry): entry is WorkflowPackage => !!entry)
+          .sort((left, right) => left.sequence - right.sequence)
+      : undefined,
     packaging_checklist:
       source.packaging_checklist &&
       typeof source.packaging_checklist === 'object' &&
@@ -294,6 +402,72 @@ export function getWorkflowMetadata(metadata: unknown): WorkflowMetadata {
   };
 }
 
+export function getWorkflowPackages(order: OrderLike): WorkflowPackage[] {
+  const metadata = getWorkflowMetadata(order.metadata);
+
+  if (metadata.packages?.length) {
+    return metadata.packages.map((pkg, index) => ({
+      ...pkg,
+      id: ensurePackageId(pkg.id, pkg.sequence || index + 1),
+      sequence: pkg.sequence || index + 1,
+    }));
+  }
+
+  const hasLegacyShippingData =
+    !!order.tracking_number ||
+    !!metadata.label_url ||
+    !!metadata.carrier_service ||
+    !!metadata.shipped_at;
+
+  if (!hasLegacyShippingData) {
+    return [];
+  }
+
+  return [
+    {
+      id: 'pkg_1',
+      sequence: 1,
+      ship_date: metadata.shipped_at || null,
+      carrier: null,
+      service: metadata.carrier_service || null,
+      tracking_number: order.tracking_number || null,
+      tracking_url: null,
+      label_url: metadata.label_url || null,
+      label_file_name: metadata.label_file_name || null,
+      label_state: metadata.label_status || 'draft',
+      label_cost: metadata.label_cost ?? null,
+      label_currency: metadata.label_currency || null,
+      package_weight_grams: metadata.package_weight_grams ?? null,
+      package_length_cm: metadata.package_length_cm ?? null,
+      package_width_cm: metadata.package_width_cm ?? null,
+      package_height_cm: metadata.package_height_cm ?? null,
+      carrier_service: metadata.carrier_service || null,
+      no_tracking: !order.tracking_number,
+      no_tracking_reason: null,
+      notify_buyer: true,
+      notification_sent: false,
+      notification_sent_at: null,
+      created_at: metadata.label_created_at || metadata.shipped_at || null,
+      updated_at: metadata.label_printed_at || metadata.shipped_at || null,
+      delivered_at: metadata.delivered_at || null,
+    },
+  ];
+}
+
+function getPrimaryWorkflowPackage(order: OrderLike): WorkflowPackage | null {
+  const packages = getWorkflowPackages(order);
+  if (!packages.length) return null;
+
+  const deliveredPackage = packages.find((pkg) => pkg.delivered_at);
+  if (deliveredPackage) return deliveredPackage;
+
+  const shippedPackage = [...packages]
+    .filter((pkg) => pkg.ship_date || pkg.tracking_number || pkg.no_tracking)
+    .sort((left, right) => right.sequence - left.sequence)[0];
+
+  return shippedPackage || packages[0];
+}
+
 export function deriveWorkflowStatus(order: OrderLike): WorkflowStatus {
   const metadata = getWorkflowMetadata(order.metadata);
 
@@ -321,6 +495,9 @@ export function deriveWorkflowStatus(order: OrderLike): WorkflowStatus {
   }
   if (
     metadata.shipped_at ||
+    getWorkflowPackages(order).some(
+      (pkg) => !!pkg.ship_date || !!pkg.tracking_number || pkg.no_tracking === true
+    ) ||
     !!order.tracking_number ||
     fulfillmentStatus === 'shipped' ||
     fulfillmentStatus === 'fulfilled'
@@ -484,6 +661,9 @@ export function mergeWorkflowMetadata(
   merged.communication_events = hasUpdate('communication_events')
     ? updates.communication_events ?? []
     : existing.communication_events ?? [];
+  merged.packages = hasUpdate('packages')
+    ? updates.packages ?? []
+    : existing.packages ?? [];
   merged.packaging_checklist = hasUpdate('packaging_checklist')
     ? updates.packaging_checklist ?? {}
     : existing.packaging_checklist ?? {};
@@ -519,6 +699,8 @@ export function mergeWorkflowMetadata(
 export function buildWorkflowSummary(order: OrderLike) {
   const metadata = getWorkflowMetadata(order.metadata);
   const workflowStatus = deriveWorkflowStatus(order);
+  const packages = getWorkflowPackages(order);
+  const primaryPackage = getPrimaryWorkflowPackage(order);
   const shipByDate = metadata.ship_by_date || null;
   const now = new Date();
   const shipBy = shipByDate ? new Date(shipByDate) : null;
@@ -540,24 +722,51 @@ export function buildWorkflowSummary(order: OrderLike) {
     estimated_delivery_end: metadata.estimated_delivery_end || null,
     customer_note: metadata.customer_note || null,
     internal_note: metadata.internal_note || null,
-    has_tracking: !!order.tracking_number,
+    has_tracking:
+      packages.some((pkg) => !!pkg.tracking_number) || !!order.tracking_number,
     needs_attention: overdueShipBy || workflowStatus === 'cancelled' || workflowStatus === 'refunded',
     overdue_ship_by: overdueShipBy,
     overdue_tracking: overdueTracking,
+    primary_package: primaryPackage,
+    packages,
     label: {
-      status: metadata.label_status || 'draft',
-      status_label: LABEL_STATUS_LABELS[metadata.label_status || 'draft'],
-      url: metadata.label_url || null,
-      file_name: metadata.label_file_name || null,
-      cost: metadata.label_cost ?? null,
-      currency: metadata.label_currency || null,
-      package_weight_grams: metadata.package_weight_grams ?? null,
-      package_length_cm: metadata.package_length_cm ?? null,
-      package_width_cm: metadata.package_width_cm ?? null,
-      package_height_cm: metadata.package_height_cm ?? null,
-      carrier_service: metadata.carrier_service || null,
-      created_at: metadata.label_created_at || null,
-      printed_at: metadata.label_printed_at || null,
+      status:
+        primaryPackage?.label_state || metadata.label_status || 'draft',
+      status_label:
+        LABEL_STATUS_LABELS[
+          primaryPackage?.label_state || metadata.label_status || 'draft'
+        ],
+      url: primaryPackage?.label_url || metadata.label_url || null,
+      file_name:
+        primaryPackage?.label_file_name || metadata.label_file_name || null,
+      cost: primaryPackage?.label_cost ?? metadata.label_cost ?? null,
+      currency:
+        primaryPackage?.label_currency || metadata.label_currency || null,
+      package_weight_grams:
+        primaryPackage?.package_weight_grams ??
+        metadata.package_weight_grams ??
+        null,
+      package_length_cm:
+        primaryPackage?.package_length_cm ??
+        metadata.package_length_cm ??
+        null,
+      package_width_cm:
+        primaryPackage?.package_width_cm ?? metadata.package_width_cm ?? null,
+      package_height_cm:
+        primaryPackage?.package_height_cm ??
+        metadata.package_height_cm ??
+        null,
+      carrier_service:
+        primaryPackage?.carrier_service || metadata.carrier_service || null,
+      provider: primaryPackage?.label_provider || null,
+      provider_order_id: primaryPackage?.provider_order_id || null,
+      provider_shipment_id: primaryPackage?.provider_shipment_id || null,
+      provider_courier_id: primaryPackage?.provider_courier_id || null,
+      pickup_reference: primaryPackage?.pickup_reference || null,
+      created_at:
+        primaryPackage?.created_at || metadata.label_created_at || null,
+      printed_at:
+        primaryPackage?.updated_at || metadata.label_printed_at || null,
     },
     communication_events: metadata.communication_events || [],
     packaging_checklist: metadata.packaging_checklist || {

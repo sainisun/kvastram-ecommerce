@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft,
   ExternalLink,
@@ -41,7 +41,13 @@ type WorkflowStatus =
   | 'cancelled'
   | 'refunded';
 
-type LabelStatus = 'draft' | 'created' | 'printed' | 'voided' | 'refunded';
+type LabelStatus =
+  | 'draft'
+  | 'created'
+  | 'purchased'
+  | 'printed'
+  | 'voided'
+  | 'refunded';
 type BuyerUpdateTemplate =
   | 'order_received'
   | 'processing_started'
@@ -65,6 +71,7 @@ const STATUS_LABELS: Record<WorkflowStatus, string> = {
 const LABEL_STATUS_LABELS: Record<LabelStatus, string> = {
   draft: 'Draft',
   created: 'Label created',
+  purchased: 'Purchased',
   printed: 'Printed',
   voided: 'Voided',
   refunded: 'Refunded',
@@ -73,6 +80,7 @@ const LABEL_STATUS_LABELS: Record<LabelStatus, string> = {
 const LABEL_STATUS_OPTIONS: LabelStatus[] = [
   'draft',
   'created',
+  'purchased',
   'printed',
   'voided',
   'refunded',
@@ -233,6 +241,34 @@ interface OrderDetails {
   tracking_number?: string | null;
   shipping_carrier?: string | null;
   tracking_link?: string | null;
+  packages?: Array<{
+    id: string;
+    sequence: number;
+    ship_date?: string | null;
+    delivered_at?: string | null;
+    carrier?: string | null;
+    service?: string | null;
+    label_provider?: string | null;
+    tracking_number?: string | null;
+    tracking_url?: string | null;
+    label_url?: string | null;
+    label_file_name?: string | null;
+    label_state?: LabelStatus;
+    label_cost?: number | null;
+    label_currency?: string | null;
+    package_weight_grams?: number | null;
+    package_length_cm?: number | null;
+    package_width_cm?: number | null;
+    package_height_cm?: number | null;
+    carrier_service?: string | null;
+    provider_order_id?: string | null;
+    provider_shipment_id?: string | null;
+    provider_courier_id?: string | null;
+    pickup_reference?: string | null;
+    no_tracking?: boolean;
+    no_tracking_reason?: string | null;
+    notification_sent?: boolean;
+  }>;
   workflow?: {
     ship_by_date?: string | null;
     estimated_delivery_start?: string | null;
@@ -272,9 +308,70 @@ interface OrderDetails {
       package_width_cm?: number | null;
       package_height_cm?: number | null;
       carrier_service?: string | null;
+      provider?: string | null;
+      provider_order_id?: string | null;
+      provider_shipment_id?: string | null;
+      provider_courier_id?: string | null;
+      pickup_reference?: string | null;
       created_at?: string | null;
       printed_at?: string | null;
     };
+    primary_package?: {
+      id: string;
+      sequence: number;
+      ship_date?: string | null;
+      delivered_at?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      label_provider?: string | null;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      label_url?: string | null;
+      label_file_name?: string | null;
+      label_state?: LabelStatus;
+      label_cost?: number | null;
+      label_currency?: string | null;
+      package_weight_grams?: number | null;
+      package_length_cm?: number | null;
+      package_width_cm?: number | null;
+      package_height_cm?: number | null;
+      carrier_service?: string | null;
+      provider_order_id?: string | null;
+      provider_shipment_id?: string | null;
+      provider_courier_id?: string | null;
+      pickup_reference?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      notification_sent?: boolean;
+    } | null;
+    packages?: Array<{
+      id: string;
+      sequence: number;
+      ship_date?: string | null;
+      delivered_at?: string | null;
+      carrier?: string | null;
+      service?: string | null;
+      label_provider?: string | null;
+      tracking_number?: string | null;
+      tracking_url?: string | null;
+      label_url?: string | null;
+      label_file_name?: string | null;
+      label_state?: LabelStatus;
+      label_cost?: number | null;
+      label_currency?: string | null;
+      package_weight_grams?: number | null;
+      package_length_cm?: number | null;
+      package_width_cm?: number | null;
+      package_height_cm?: number | null;
+      carrier_service?: string | null;
+      provider_order_id?: string | null;
+      provider_shipment_id?: string | null;
+      provider_courier_id?: string | null;
+      pickup_reference?: string | null;
+      no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      notification_sent?: boolean;
+    }>;
     timeline?: Array<{
       key: string;
       label: string;
@@ -308,6 +405,18 @@ interface LabelFormState {
   carrier_service: string;
 }
 
+interface PackageFormState {
+  ship_date: string;
+  shipping_carrier: string;
+  shipping_service: string;
+  tracking_number: string;
+  tracking_link: string;
+  no_tracking: boolean;
+  no_tracking_reason: string;
+  notify_buyer: boolean;
+  delivered_at: string;
+}
+
 interface PackagingChecklistState {
   product_quality_checked: boolean;
   size_color_verified: boolean;
@@ -316,6 +425,104 @@ interface PackagingChecklistState {
   gift_wrap_applied: boolean;
   invoice_included: boolean;
   checked_by: string;
+}
+
+interface BuyerMessageSnippet {
+  id: string;
+  label: string;
+  template: BuyerUpdateTemplate;
+  subject: string;
+  message: string;
+  include_tracking: boolean;
+}
+
+interface OrderNoteSnippet {
+  id: string;
+  label: string;
+  target: 'customer' | 'internal';
+  content: string;
+}
+
+function createSnippetId(label: string) {
+  const normalized = label
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return `${normalized || 'snippet'}-${Date.now()}`;
+}
+
+function normalizeBuyerSnippets(value: unknown): BuyerMessageSnippet[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .filter(
+      (entry): entry is Record<string, unknown> =>
+        !!entry && typeof entry === 'object' && !Array.isArray(entry)
+    )
+    .map((entry, index) => {
+      const templateValue = String(entry.template || 'custom');
+      const template = Object.prototype.hasOwnProperty.call(
+        BUYER_UPDATE_TEMPLATES,
+        templateValue
+      )
+        ? (templateValue as BuyerUpdateTemplate)
+        : 'custom';
+      const label =
+        typeof entry.label === 'string' && entry.label.trim().length > 0
+          ? entry.label.trim()
+          : `Snippet ${index + 1}`;
+      const subject =
+        typeof entry.subject === 'string'
+          ? entry.subject
+          : BUYER_UPDATE_TEMPLATES[template].subject;
+      const message =
+        typeof entry.message === 'string'
+          ? entry.message
+          : BUYER_UPDATE_TEMPLATES[template].message;
+
+      return {
+        id:
+          typeof entry.id === 'string' && entry.id.trim().length > 0
+            ? entry.id
+            : createSnippetId(label),
+        label,
+        template,
+        subject,
+        message,
+        include_tracking: entry.include_tracking !== false,
+      };
+    });
+}
+
+function normalizeNoteSnippets(value: unknown): OrderNoteSnippet[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .filter(
+      (entry): entry is Record<string, unknown> =>
+        !!entry && typeof entry === 'object' && !Array.isArray(entry)
+    )
+    .map((entry, index) => {
+      const label =
+        typeof entry.label === 'string' && entry.label.trim().length > 0
+          ? entry.label.trim()
+          : `Note ${index + 1}`;
+      const target: OrderNoteSnippet['target'] =
+        entry.target === 'internal' ? 'internal' : 'customer';
+
+      return {
+        id:
+          typeof entry.id === 'string' && entry.id.trim().length > 0
+            ? entry.id
+            : createSnippetId(label),
+        label,
+        target,
+        content: typeof entry.content === 'string' ? entry.content : '',
+      };
+    })
+    .filter((entry) => entry.content.trim().length > 0);
 }
 
 function buildPackagingChecklistForm(
@@ -359,9 +566,14 @@ interface CarrierRatesResult {
     service: string;
     amount: number;
     currency: string;
+    estimated_delivery_days?: number | null;
   }>;
   message?: string;
 }
+
+type WorkflowPackageRecord = NonNullable<
+  NonNullable<OrderDetails['workflow']>['packages']
+>[number];
 
 function getOrderDisplayNumber(order?: OrderDetails | null) {
   return order?.order_number || order?.display_id || order?.id || 'your order';
@@ -473,32 +685,82 @@ function getRecommendedBuyerTemplates(order: OrderDetails | null) {
   return unsent.length > 0 ? unsent : unique;
 }
 
-function buildLabelForm(orderData?: OrderDetails | null): LabelFormState {
-  const label = orderData?.workflow?.label;
-  const currency = label?.currency || orderData?.currency_code || 'INR';
+function buildPackageLabelForm(
+  orderData?: OrderDetails | null,
+  pkg?: WorkflowPackageRecord | null
+): LabelFormState {
+  const primaryPackageId = orderData?.workflow?.primary_package?.id || null;
+  const workflowLabel =
+    !pkg || pkg.id === primaryPackageId ? orderData?.workflow?.label : null;
+  const currency =
+    pkg?.label_currency ||
+    workflowLabel?.currency ||
+    orderData?.currency_code ||
+    'INR';
 
   return {
-    label_status: label?.status || 'draft',
-    label_url: label?.url || '',
-    label_file_name: label?.file_name || '',
-    label_cost: formatMinorUnitsForInput(label?.cost),
+    label_status: pkg?.label_state || workflowLabel?.status || 'draft',
+    label_url: pkg?.label_url || workflowLabel?.url || '',
+    label_file_name: pkg?.label_file_name || workflowLabel?.file_name || '',
+    label_cost: formatMinorUnitsForInput(pkg?.label_cost ?? workflowLabel?.cost),
     label_currency: currency,
     package_weight_grams:
-      label?.package_weight_grams != null
-        ? String(label.package_weight_grams)
-        : '',
+      pkg?.package_weight_grams != null
+        ? String(pkg.package_weight_grams)
+        : workflowLabel?.package_weight_grams != null
+          ? String(workflowLabel.package_weight_grams)
+          : '',
     package_length_cm:
-      label?.package_length_cm != null ? String(label.package_length_cm) : '',
+      pkg?.package_length_cm != null
+        ? String(pkg.package_length_cm)
+        : workflowLabel?.package_length_cm != null
+          ? String(workflowLabel.package_length_cm)
+          : '',
     package_width_cm:
-      label?.package_width_cm != null ? String(label.package_width_cm) : '',
+      pkg?.package_width_cm != null
+        ? String(pkg.package_width_cm)
+        : workflowLabel?.package_width_cm != null
+          ? String(workflowLabel.package_width_cm)
+          : '',
     package_height_cm:
-      label?.package_height_cm != null ? String(label.package_height_cm) : '',
-    carrier_service: label?.carrier_service || '',
+      pkg?.package_height_cm != null
+        ? String(pkg.package_height_cm)
+        : workflowLabel?.package_height_cm != null
+          ? String(workflowLabel.package_height_cm)
+          : '',
+    carrier_service: pkg?.carrier_service || workflowLabel?.carrier_service || '',
   };
+}
+
+function buildPackageForm(pkg?: WorkflowPackageRecord | null): PackageFormState {
+  return {
+    ship_date: pkg?.ship_date?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+    shipping_carrier: pkg?.carrier || '',
+    shipping_service: pkg?.service || '',
+    tracking_number: pkg?.tracking_number || '',
+    tracking_link: pkg?.tracking_url || '',
+    no_tracking: pkg?.no_tracking === true,
+    no_tracking_reason: pkg?.no_tracking_reason || '',
+    notify_buyer: false,
+    delivered_at: pkg?.delivered_at?.slice(0, 10) || '',
+  };
+}
+
+function getWorkflowPackages(order?: OrderDetails | null) {
+  return order?.workflow?.packages || [];
+}
+
+function getPackageById(
+  order: OrderDetails | null | undefined,
+  packageId: string | null | undefined
+) {
+  if (!order || !packageId) return null;
+  return getWorkflowPackages(order).find((pkg) => pkg.id === packageId) || null;
 }
 
 export default function OrderDetailsPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = params.id as string;
   const { showNotification } = useNotification();
 
@@ -518,14 +780,25 @@ export default function OrderDetailsPage() {
     ship_date: new Date().toISOString().slice(0, 10),
     tracking_number: '',
     shipping_carrier: '',
+    shipping_service: '',
     tracking_link: '',
+    no_tracking: false,
+    no_tracking_reason: '',
     customer_note: '',
     internal_note: '',
     notify_buyer: true,
   });
-  const [labelForm, setLabelForm] = useState<LabelFormState>(() =>
-    buildLabelForm()
+  const [addPackageForm, setAddPackageForm] = useState<PackageFormState>(() =>
+    buildPackageForm()
   );
+  const [editingPackageId, setEditingPackageId] = useState<string | null>(null);
+  const [editPackageForm, setEditPackageForm] = useState<PackageFormState>(() =>
+    buildPackageForm()
+  );
+  const [labelForm, setLabelForm] = useState<LabelFormState>(() =>
+    buildPackageLabelForm()
+  );
+  const [labelPackageId, setLabelPackageId] = useState<string | null>(null);
   const [labelUploading, setLabelUploading] = useState(false);
   const [carrierReadiness, setCarrierReadiness] =
     useState<CarrierReadiness | null>(null);
@@ -541,8 +814,11 @@ export default function OrderDetailsPage() {
     message: BUYER_UPDATE_TEMPLATES.processing_started.message,
     include_tracking: true,
   });
+  const [buyerSnippets, setBuyerSnippets] = useState<BuyerMessageSnippet[]>([]);
+  const [noteSnippets, setNoteSnippets] = useState<OrderNoteSnippet[]>([]);
   const [packagingChecklist, setPackagingChecklist] =
     useState<PackagingChecklistState>(() => buildPackagingChecklistForm());
+  const requestedAction = searchParams.get('action');
 
   useEffect(() => {
     const loadOrder = async () => {
@@ -561,16 +837,37 @@ export default function OrderDetailsPage() {
           customer_note: orderData?.workflow?.customer_note || '',
           internal_note: orderData?.workflow?.internal_note || '',
         });
+        const primaryPackage =
+          orderData?.workflow?.primary_package || orderData?.workflow?.packages?.[0];
+        const nextLabelPackageId =
+          primaryPackage?.id || orderData?.workflow?.packages?.[0]?.id || null;
         setCompleteForm({
-          ship_date: new Date().toISOString().slice(0, 10),
-          tracking_number: orderData?.tracking_number || '',
-          shipping_carrier: orderData?.shipping_carrier || '',
-          tracking_link: orderData?.tracking_link || '',
+          ship_date:
+            primaryPackage?.ship_date?.slice(0, 10) ||
+            new Date().toISOString().slice(0, 10),
+          tracking_number:
+            primaryPackage?.tracking_number || orderData?.tracking_number || '',
+          shipping_carrier:
+            primaryPackage?.carrier || orderData?.shipping_carrier || '',
+          shipping_service: primaryPackage?.service || '',
+          tracking_link:
+            primaryPackage?.tracking_url || orderData?.tracking_link || '',
+          no_tracking: primaryPackage?.no_tracking === true,
+          no_tracking_reason: primaryPackage?.no_tracking_reason || '',
           customer_note: orderData?.workflow?.customer_note || '',
           internal_note: orderData?.workflow?.internal_note || '',
           notify_buyer: true,
         });
-        setLabelForm(buildLabelForm(orderData));
+        setAddPackageForm(buildPackageForm());
+        setEditingPackageId(null);
+        setEditPackageForm(buildPackageForm(primaryPackage || null));
+        setLabelPackageId(nextLabelPackageId);
+        setLabelForm(
+          buildPackageLabelForm(
+            orderData,
+            nextLabelPackageId ? getPackageById(orderData, nextLabelPackageId) : null
+          )
+        );
         setPackagingChecklist(buildPackagingChecklistForm(orderData));
         try {
           const carrierData = await api.getOrderCarrierReadiness(id);
@@ -591,6 +888,101 @@ export default function OrderDetailsPage() {
 
     void loadOrder();
   }, [id]);
+
+  useEffect(() => {
+    const loadWorkflowSnippets = async () => {
+      try {
+        const settingsResponse = await api.getSettings();
+        const generalSettings = settingsResponse?.settings?.general || {};
+        setBuyerSnippets(
+          normalizeBuyerSnippets(generalSettings.order_workflow_buyer_snippets)
+        );
+        setNoteSnippets(
+          normalizeNoteSnippets(generalSettings.order_workflow_note_snippets)
+        );
+      } catch (error) {
+        console.error('Failed to load order workflow snippets', error);
+      }
+    };
+
+    void loadWorkflowSnippets();
+  }, []);
+
+  useEffect(() => {
+    if (!order || !requestedAction) return;
+
+    if (requestedAction === 'complete') {
+      setCompleteModalOpen(true);
+      return;
+    }
+
+    if (requestedAction === 'edit-tracking') {
+      const primaryPackage = order.workflow?.primary_package || order.workflow?.packages?.[0];
+      if (primaryPackage) {
+        setEditingPackageId(primaryPackage.id);
+        setEditPackageForm(buildPackageForm(primaryPackage));
+      }
+    }
+
+    const sectionId =
+      requestedAction === 'message-buyer'
+        ? 'buyer-communication'
+        : requestedAction === 'add-package' || requestedAction === 'edit-tracking'
+          ? 'fulfillment-and-tracking'
+          : null;
+
+    if (!sectionId) return;
+
+    const timer = window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [order, requestedAction]);
+
+  useEffect(() => {
+    if (!order) return;
+
+    const packages = getWorkflowPackages(order);
+    const resolvedPackageId =
+      labelPackageId && packages.some((pkg) => pkg.id === labelPackageId)
+        ? labelPackageId
+        : order.workflow?.primary_package?.id || packages[0]?.id || null;
+
+    if (resolvedPackageId !== labelPackageId) {
+      setLabelPackageId(resolvedPackageId);
+    }
+
+    setLabelForm(
+      buildPackageLabelForm(order, getPackageById(order, resolvedPackageId))
+    );
+  }, [labelPackageId, order]);
+
+  useEffect(() => {
+    setCarrierRates(null);
+    setCarrierReadiness(null);
+  }, [labelPackageId]);
+
+  const persistBuyerSnippets = async (nextSnippets: BuyerMessageSnippet[]) => {
+    await api.updateSetting(
+      'order_workflow_buyer_snippets',
+      nextSnippets,
+      'general'
+    );
+    setBuyerSnippets(nextSnippets);
+  };
+
+  const persistNoteSnippets = async (nextSnippets: OrderNoteSnippet[]) => {
+    await api.updateSetting(
+      'order_workflow_note_snippets',
+      nextSnippets,
+      'general'
+    );
+    setNoteSnippets(nextSnippets);
+  };
 
   const formatCurrency = (amount: number, currency = 'USD') =>
     new Intl.NumberFormat('en-US', {
@@ -613,6 +1005,14 @@ export default function OrderDetailsPage() {
     ...(order?.workflow?.communication_events || []),
   ].reverse();
   const recommendedTemplates = getRecommendedBuyerTemplates(order);
+  const selectedLabelPackage =
+    getPackageById(order, labelPackageId) || order?.workflow?.primary_package || null;
+  const customerNoteSnippets = noteSnippets.filter(
+    (snippet) => snippet.target === 'customer'
+  );
+  const internalNoteSnippets = noteSnippets.filter(
+    (snippet) => snippet.target === 'internal'
+  );
 
   const handleStatusChange = async (status: string) => {
     try {
@@ -648,17 +1048,31 @@ export default function OrderDetailsPage() {
   };
 
   const handleCompleteOrder = async () => {
-    if (!completeForm.tracking_number.trim()) {
-      showNotification('error', 'Tracking number is required to complete the order');
+    if (!completeForm.no_tracking && !completeForm.tracking_number.trim()) {
+      showNotification(
+        'error',
+        'Tracking number is required unless this shipment has no tracking'
+      );
       return;
     }
 
     try {
       setUpdating(true);
-      await api.addOrderTracking(id, {
-        tracking_number: completeForm.tracking_number.trim(),
-        shipping_carrier: normalizeWorkflowValue(completeForm.shipping_carrier) || undefined,
-        tracking_link: normalizeWorkflowValue(completeForm.tracking_link) || undefined,
+      await api.completeOrder(id, {
+        tracking_number: completeForm.no_tracking
+          ? null
+          : completeForm.tracking_number.trim(),
+        shipping_carrier:
+          normalizeWorkflowValue(completeForm.shipping_carrier) || undefined,
+        shipping_service:
+          normalizeWorkflowValue(completeForm.shipping_service) || undefined,
+        tracking_link: completeForm.no_tracking
+          ? null
+          : normalizeWorkflowValue(completeForm.tracking_link) || undefined,
+        no_tracking: completeForm.no_tracking,
+        no_tracking_reason: completeForm.no_tracking
+          ? normalizeWorkflowValue(completeForm.no_tracking_reason)
+          : null,
         ship_date: normalizeWorkflowValue(completeForm.ship_date),
         customer_note: normalizeWorkflowValue(completeForm.customer_note),
         internal_note: normalizeWorkflowValue(completeForm.internal_note),
@@ -677,13 +1091,125 @@ export default function OrderDetailsPage() {
         customer_note: refreshedOrder?.workflow?.customer_note || '',
         internal_note: refreshedOrder?.workflow?.internal_note || '',
       });
-      setLabelForm(buildLabelForm(refreshedOrder));
+      setLabelForm(
+        buildPackageLabelForm(
+          refreshedOrder,
+          getPackageById(refreshedOrder, labelPackageId)
+        )
+      );
       setCompleteModalOpen(false);
-      showNotification('success', 'Order completed and tracking saved');
+      showNotification('success', 'Order completed and shipment saved');
     } catch (error: unknown) {
       showNotification(
         'error',
         error instanceof Error ? error.message : 'Failed to complete order'
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleAddPackage = async () => {
+    if (!addPackageForm.no_tracking && !addPackageForm.tracking_number.trim()) {
+      showNotification(
+        'error',
+        'Tracking number is required unless this package has no tracking'
+      );
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      await api.addOrderPackage(id, {
+        ship_date: normalizeWorkflowValue(addPackageForm.ship_date),
+        shipping_carrier:
+          normalizeWorkflowValue(addPackageForm.shipping_carrier) || undefined,
+        shipping_service:
+          normalizeWorkflowValue(addPackageForm.shipping_service) || undefined,
+        tracking_number: addPackageForm.no_tracking
+          ? null
+          : addPackageForm.tracking_number.trim(),
+        tracking_link: addPackageForm.no_tracking
+          ? null
+          : normalizeWorkflowValue(addPackageForm.tracking_link) || undefined,
+        no_tracking: addPackageForm.no_tracking,
+        no_tracking_reason: addPackageForm.no_tracking
+          ? normalizeWorkflowValue(addPackageForm.no_tracking_reason)
+          : null,
+        notify_buyer: addPackageForm.notify_buyer,
+      });
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
+      setItems(refreshed?.items || refreshedOrder?.items || []);
+      setAddPackageForm(buildPackageForm());
+      showNotification('success', 'Package added to order');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to add package'
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const startEditingPackage = (pkg: WorkflowPackageRecord) => {
+    setEditingPackageId(pkg.id);
+    setEditPackageForm(buildPackageForm(pkg));
+  };
+
+  const cancelEditingPackage = () => {
+    setEditingPackageId(null);
+    setEditPackageForm(buildPackageForm());
+  };
+
+  const handleUpdatePackage = async () => {
+    if (!editingPackageId) return;
+
+    if (!editPackageForm.no_tracking && !editPackageForm.tracking_number.trim()) {
+      showNotification(
+        'error',
+        'Tracking number is required unless this package has no tracking'
+      );
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      await api.updateOrderPackage(id, editingPackageId, {
+        ship_date: normalizeWorkflowValue(editPackageForm.ship_date),
+        shipping_carrier:
+          normalizeWorkflowValue(editPackageForm.shipping_carrier) || undefined,
+        shipping_service:
+          normalizeWorkflowValue(editPackageForm.shipping_service) || undefined,
+        tracking_number: editPackageForm.no_tracking
+          ? null
+          : editPackageForm.tracking_number.trim(),
+        tracking_link: editPackageForm.no_tracking
+          ? null
+          : normalizeWorkflowValue(editPackageForm.tracking_link) || undefined,
+        no_tracking: editPackageForm.no_tracking,
+        no_tracking_reason: editPackageForm.no_tracking
+          ? normalizeWorkflowValue(editPackageForm.no_tracking_reason)
+          : null,
+        notify_buyer: editPackageForm.notify_buyer,
+        delivered_at: normalizeWorkflowValue(editPackageForm.delivered_at),
+      });
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
+      setItems(refreshed?.items || refreshedOrder?.items || []);
+      const refreshedPackage = (
+        refreshedOrder?.workflow?.packages || []
+      ).find((pkg: WorkflowPackageRecord) => pkg.id === editingPackageId);
+      setEditPackageForm(buildPackageForm(refreshedPackage || null));
+      setEditingPackageId(null);
+      showNotification('success', 'Package updated');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to update package'
       );
     } finally {
       setUpdating(false);
@@ -716,7 +1242,12 @@ export default function OrderDetailsPage() {
         customer_note: refreshedOrder?.workflow?.customer_note || '',
         internal_note: refreshedOrder?.workflow?.internal_note || '',
       });
-      setLabelForm(buildLabelForm(refreshedOrder));
+      setLabelForm(
+        buildPackageLabelForm(
+          refreshedOrder,
+          getPackageById(refreshedOrder, labelPackageId)
+        )
+      );
       showNotification('success', 'Order workflow updated');
     } catch (error: unknown) {
       showNotification(
@@ -730,33 +1261,65 @@ export default function OrderDetailsPage() {
 
   const handleLabelSave = async (nextStatus?: LabelStatus) => {
     const labelStatus = nextStatus || labelForm.label_status;
+    const targetPackageId = labelPackageId;
 
     try {
       setUpdating(true);
-      await api.updateOrderLabel(id, {
-        label_status: labelStatus,
-        label_url: normalizeWorkflowValue(labelForm.label_url),
-        label_file_name: normalizeWorkflowValue(labelForm.label_file_name),
-        label_cost: parseMoneyToMinorUnits(labelForm.label_cost),
-        label_currency:
-          normalizeWorkflowValue(labelForm.label_currency)?.toUpperCase() ||
-          order?.currency_code ||
-          'INR',
-        package_weight_grams: parseOptionalInteger(
-          labelForm.package_weight_grams
-        ),
-        package_length_cm: parseOptionalInteger(labelForm.package_length_cm),
-        package_width_cm: parseOptionalInteger(labelForm.package_width_cm),
-        package_height_cm: parseOptionalInteger(labelForm.package_height_cm),
-        carrier_service: normalizeWorkflowValue(labelForm.carrier_service),
-      });
+      if (targetPackageId) {
+        await api.updateOrderPackage(id, targetPackageId, {
+          label_state: labelStatus,
+          label_url: normalizeWorkflowValue(labelForm.label_url),
+          label_file_name: normalizeWorkflowValue(labelForm.label_file_name),
+          label_cost: parseMoneyToMinorUnits(labelForm.label_cost),
+          label_currency:
+            normalizeWorkflowValue(labelForm.label_currency)?.toUpperCase() ||
+            order?.currency_code ||
+            'INR',
+          package_weight_grams: parseOptionalInteger(
+            labelForm.package_weight_grams
+          ),
+          package_length_cm: parseOptionalInteger(labelForm.package_length_cm),
+          package_width_cm: parseOptionalInteger(labelForm.package_width_cm),
+          package_height_cm: parseOptionalInteger(labelForm.package_height_cm),
+          carrier_service: normalizeWorkflowValue(labelForm.carrier_service),
+        });
+      } else {
+        await api.updateOrderLabel(id, {
+          label_status: labelStatus,
+          label_url: normalizeWorkflowValue(labelForm.label_url),
+          label_file_name: normalizeWorkflowValue(labelForm.label_file_name),
+          label_cost: parseMoneyToMinorUnits(labelForm.label_cost),
+          label_currency:
+            normalizeWorkflowValue(labelForm.label_currency)?.toUpperCase() ||
+            order?.currency_code ||
+            'INR',
+          package_weight_grams: parseOptionalInteger(
+            labelForm.package_weight_grams
+          ),
+          package_length_cm: parseOptionalInteger(labelForm.package_length_cm),
+          package_width_cm: parseOptionalInteger(labelForm.package_width_cm),
+          package_height_cm: parseOptionalInteger(labelForm.package_height_cm),
+          carrier_service: normalizeWorkflowValue(labelForm.carrier_service),
+        });
+      }
       const refreshed = await api.getOrder(id);
       const refreshedOrder = refreshed?.order || refreshed;
       setOrder(refreshedOrder);
       setItems(refreshed?.items || refreshedOrder?.items || []);
-      setLabelForm(buildLabelForm(refreshedOrder));
+      setLabelForm(
+        buildPackageLabelForm(
+          refreshedOrder,
+          getPackageById(refreshedOrder, targetPackageId)
+        )
+      );
       try {
-        const carrierData = await api.getOrderCarrierReadiness(id);
+        const carrierData = await api.getOrderCarrierReadiness(id, {
+          provider:
+            selectedCarrierProvider === 'auto'
+              ? null
+              : selectedCarrierProvider,
+          package_id: targetPackageId,
+        });
         setCarrierReadiness(carrierData?.readiness || null);
         const configuredProvider =
           carrierData?.readiness?.configured_providers?.[0];
@@ -792,6 +1355,7 @@ export default function OrderDetailsPage() {
 
     try {
       setLabelUploading(true);
+      const targetPackageId = labelPackageId;
       const uploaded = await api.uploadOrderLabel(file);
       const nextLabelForm = {
         ...labelForm,
@@ -800,27 +1364,52 @@ export default function OrderDetailsPage() {
         label_file_name: uploaded.originalName || uploaded.filename || file.name,
       };
       setLabelForm(nextLabelForm);
-      await api.updateOrderLabel(id, {
-        label_status: 'created',
-        label_url: nextLabelForm.label_url,
-        label_file_name: nextLabelForm.label_file_name,
-        label_cost: parseMoneyToMinorUnits(nextLabelForm.label_cost),
-        label_currency:
-          normalizeWorkflowValue(nextLabelForm.label_currency)?.toUpperCase() ||
-          order?.currency_code ||
-          'INR',
-        package_weight_grams: parseOptionalInteger(
-          nextLabelForm.package_weight_grams
-        ),
-        package_length_cm: parseOptionalInteger(nextLabelForm.package_length_cm),
-        package_width_cm: parseOptionalInteger(nextLabelForm.package_width_cm),
-        package_height_cm: parseOptionalInteger(nextLabelForm.package_height_cm),
-        carrier_service: normalizeWorkflowValue(nextLabelForm.carrier_service),
-      });
+      if (targetPackageId) {
+        await api.updateOrderPackage(id, targetPackageId, {
+          label_state: 'created',
+          label_url: nextLabelForm.label_url,
+          label_file_name: nextLabelForm.label_file_name,
+          label_cost: parseMoneyToMinorUnits(nextLabelForm.label_cost),
+          label_currency:
+            normalizeWorkflowValue(nextLabelForm.label_currency)?.toUpperCase() ||
+            order?.currency_code ||
+            'INR',
+          package_weight_grams: parseOptionalInteger(
+            nextLabelForm.package_weight_grams
+          ),
+          package_length_cm: parseOptionalInteger(nextLabelForm.package_length_cm),
+          package_width_cm: parseOptionalInteger(nextLabelForm.package_width_cm),
+          package_height_cm: parseOptionalInteger(nextLabelForm.package_height_cm),
+          carrier_service: normalizeWorkflowValue(nextLabelForm.carrier_service),
+        });
+      } else {
+        await api.updateOrderLabel(id, {
+          label_status: 'created',
+          label_url: nextLabelForm.label_url,
+          label_file_name: nextLabelForm.label_file_name,
+          label_cost: parseMoneyToMinorUnits(nextLabelForm.label_cost),
+          label_currency:
+            normalizeWorkflowValue(nextLabelForm.label_currency)?.toUpperCase() ||
+            order?.currency_code ||
+            'INR',
+          package_weight_grams: parseOptionalInteger(
+            nextLabelForm.package_weight_grams
+          ),
+          package_length_cm: parseOptionalInteger(nextLabelForm.package_length_cm),
+          package_width_cm: parseOptionalInteger(nextLabelForm.package_width_cm),
+          package_height_cm: parseOptionalInteger(nextLabelForm.package_height_cm),
+          carrier_service: normalizeWorkflowValue(nextLabelForm.carrier_service),
+        });
+      }
       const refreshed = await api.getOrder(id);
       const refreshedOrder = refreshed?.order || refreshed;
       setOrder(refreshedOrder);
-      setLabelForm(buildLabelForm(refreshedOrder));
+      setLabelForm(
+        buildPackageLabelForm(
+          refreshedOrder,
+          getPackageById(refreshedOrder, targetPackageId)
+        )
+      );
       showNotification('success', 'Label PDF uploaded and attached');
     } catch (error: unknown) {
       showNotification(
@@ -835,7 +1424,13 @@ export default function OrderDetailsPage() {
   const handleCarrierReadiness = async () => {
     try {
       setCarrierLoading(true);
-      const carrierData = await api.getOrderCarrierReadiness(id);
+      const carrierData = await api.getOrderCarrierReadiness(id, {
+        provider:
+          selectedCarrierProvider === 'auto'
+            ? null
+            : selectedCarrierProvider,
+        package_id: labelPackageId,
+      });
       setCarrierReadiness(carrierData?.readiness || null);
       const configuredProvider = carrierData?.readiness?.configured_providers?.[0];
       setSelectedCarrierProvider(configuredProvider || 'auto');
@@ -861,6 +1456,7 @@ export default function OrderDetailsPage() {
           selectedCarrierProvider === 'auto'
             ? null
             : selectedCarrierProvider,
+        package_id: labelPackageId,
       });
       setCarrierRates(result);
       setCarrierReadiness(result?.readiness || carrierReadiness);
@@ -875,11 +1471,155 @@ export default function OrderDetailsPage() {
     }
   };
 
+  const handleCarrierLabelPurchase = async (courierId: string | number) => {
+    try {
+      setCarrierLoading(true);
+      const result = await api.purchaseOrderCarrierLabel(id, {
+        provider:
+          selectedCarrierProvider === 'auto'
+            ? 'shiprocket'
+            : selectedCarrierProvider,
+        package_id: labelPackageId,
+        courier_id: courierId,
+      });
+      const nextOrder = result?.order;
+      if (nextOrder) {
+        setOrder(nextOrder);
+        setLabelForm(
+          buildPackageLabelForm(nextOrder, getPackageById(nextOrder, labelPackageId))
+        );
+      }
+      setCarrierRates(null);
+      showNotification('success', 'Carrier label purchased');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to purchase carrier label'
+      );
+    } finally {
+      setCarrierLoading(false);
+    }
+  };
+
   const handleBuyerTemplateChange = (template: BuyerUpdateTemplate) => {
     setBuyerUpdateForm((current) => ({
       ...current,
       ...buildBuyerUpdateDraft(order, template),
     }));
+  };
+
+  const applyBuyerSnippet = (snippet: BuyerMessageSnippet) => {
+    setBuyerUpdateForm({
+      template: snippet.template,
+      subject: snippet.subject,
+      message: snippet.message,
+      include_tracking: snippet.include_tracking,
+    });
+  };
+
+  const handleSaveBuyerSnippet = async () => {
+    if (!buyerUpdateForm.subject.trim() || !buyerUpdateForm.message.trim()) {
+      showNotification('error', 'Subject and message are required before saving');
+      return;
+    }
+
+    const label = window.prompt('Snippet name', buyerUpdateForm.subject.trim());
+    if (!label) return;
+
+    try {
+      const nextSnippets = [
+        ...buyerSnippets,
+        {
+          id: createSnippetId(label),
+          label: label.trim(),
+          template: buyerUpdateForm.template,
+          subject: buyerUpdateForm.subject.trim(),
+          message: buyerUpdateForm.message.trim(),
+          include_tracking: buyerUpdateForm.include_tracking,
+        },
+      ];
+      await persistBuyerSnippets(nextSnippets);
+      showNotification('success', 'Buyer snippet saved');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to save buyer snippet'
+      );
+    }
+  };
+
+  const handleDeleteBuyerSnippet = async (snippetId: string) => {
+    try {
+      const nextSnippets = buyerSnippets.filter((snippet) => snippet.id !== snippetId);
+      await persistBuyerSnippets(nextSnippets);
+      showNotification('success', 'Buyer snippet removed');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to delete buyer snippet'
+      );
+    }
+  };
+
+  const applyNoteSnippet = (snippet: OrderNoteSnippet) => {
+    setWorkflowForm((current) => ({
+      ...current,
+      customer_note:
+        snippet.target === 'customer' ? snippet.content : current.customer_note,
+      internal_note:
+        snippet.target === 'internal' ? snippet.content : current.internal_note,
+    }));
+  };
+
+  const handleSaveNoteSnippet = async (target: 'customer' | 'internal') => {
+    const content =
+      target === 'customer'
+        ? workflowForm.customer_note.trim()
+        : workflowForm.internal_note.trim();
+
+    if (!content) {
+      showNotification('error', 'Write the note first, then save it as a snippet');
+      return;
+    }
+
+    const defaultLabel =
+      target === 'customer' ? 'Customer note snippet' : 'Internal note snippet';
+    const label = window.prompt('Snippet name', defaultLabel);
+    if (!label) return;
+
+    try {
+      const nextSnippets = [
+        ...noteSnippets,
+        {
+          id: createSnippetId(label),
+          label: label.trim(),
+          target,
+          content,
+        },
+      ];
+      await persistNoteSnippets(nextSnippets);
+      showNotification('success', 'Note snippet saved');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to save note snippet'
+      );
+    }
+  };
+
+  const handleDeleteNoteSnippet = async (snippetId: string) => {
+    try {
+      const nextSnippets = noteSnippets.filter((snippet) => snippet.id !== snippetId);
+      await persistNoteSnippets(nextSnippets);
+      showNotification('success', 'Note snippet removed');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to delete note snippet'
+      );
+    }
   };
 
   const handleBuyerUpdateSend = async () => {
@@ -1076,6 +1816,36 @@ export default function OrderDetailsPage() {
                     placeholder="Delhivery, Shiprocket, India Post"
                   />
                 </label>
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Service
+                  </span>
+                  <input
+                    type="text"
+                    value={completeForm.shipping_service}
+                    onChange={(event) =>
+                      setCompleteForm((current) => ({
+                        ...current,
+                        shipping_service: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="Surface, Air, Express"
+                  />
+                </label>
+                <label className="flex items-center gap-3 rounded-[1rem] border border-[var(--kv-border)] px-4 py-3 text-sm text-[var(--kv-text)]">
+                  <input
+                    type="checkbox"
+                    checked={completeForm.no_tracking}
+                    onChange={(event) =>
+                      setCompleteForm((current) => ({
+                        ...current,
+                        no_tracking: event.target.checked,
+                      }))
+                    }
+                  />
+                  <span>This order doesn&apos;t have tracking</span>
+                </label>
               </div>
 
               <label className="text-sm text-[var(--kv-text)]">
@@ -1084,7 +1854,7 @@ export default function OrderDetailsPage() {
                 </span>
                 <input
                   type="text"
-                  required
+                  required={!completeForm.no_tracking}
                   value={completeForm.tracking_number}
                   onChange={(event) =>
                     setCompleteForm((current) => ({
@@ -1094,6 +1864,7 @@ export default function OrderDetailsPage() {
                   }
                   className="w-full border px-4 py-3 text-sm"
                   placeholder="Tracking number"
+                  disabled={completeForm.no_tracking}
                 />
               </label>
 
@@ -1112,8 +1883,29 @@ export default function OrderDetailsPage() {
                   }
                   className="w-full border px-4 py-3 text-sm"
                   placeholder="https://..."
+                  disabled={completeForm.no_tracking}
                 />
               </label>
+
+              {completeForm.no_tracking ? (
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    No-tracking reason
+                  </span>
+                  <input
+                    type="text"
+                    value={completeForm.no_tracking_reason}
+                    onChange={(event) =>
+                      setCompleteForm((current) => ({
+                        ...current,
+                        no_tracking_reason: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="Hand delivery, local pickup, bespoke courier"
+                  />
+                </label>
+              ) : null}
 
               <label className="text-sm text-[var(--kv-text)]">
                 <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
@@ -1431,6 +2223,7 @@ export default function OrderDetailsPage() {
           </Surface>
 
           <Surface className="overflow-hidden">
+            <div id="buyer-communication" />
             <SectionHeader title="Buyer communication" />
             <div className="space-y-4 px-5 py-5 md:px-6">
               <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
@@ -1448,6 +2241,14 @@ export default function OrderDetailsPage() {
                   </div>
                 </div>
               </div>
+
+              {labelPackageId ? (
+                <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                  Shiprocket actions will use package #
+                  {getPackageById(order, labelPackageId)?.sequence || 1}
+                  {' '}and its current dimensions.
+                </div>
+              ) : null}
 
               <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
@@ -1472,6 +2273,60 @@ export default function OrderDetailsPage() {
                 <p className="mt-3 text-sm text-[var(--kv-muted)]">
                   Suggestions adapt to the current order status and hide updates that have already been sent.
                 </p>
+              </div>
+
+              <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Saved snippets
+                    </p>
+                    <p className="mt-2 text-sm text-[var(--kv-muted)]">
+                      Save your own buyer update copy for repeated situations.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void handleSaveBuyerSnippet()}
+                    className="rounded-full border border-[var(--kv-border)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-text)]"
+                  >
+                    Save current
+                  </button>
+                </div>
+                {buyerSnippets.length > 0 ? (
+                  <div className="mt-4 space-y-2">
+                    {buyerSnippets.map((snippet) => (
+                      <div
+                        key={snippet.id}
+                        className="flex items-center justify-between gap-3 rounded-[1rem] bg-[var(--kv-soft)] px-3 py-3 text-sm"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => applyBuyerSnippet(snippet)}
+                          className="min-w-0 flex-1 text-left"
+                        >
+                          <span className="block truncate font-semibold text-[var(--kv-text)]">
+                            {snippet.label}
+                          </span>
+                          <span className="block truncate text-[var(--kv-muted)]">
+                            {snippet.subject}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteBuyerSnippet(snippet.id)}
+                          className="rounded-full border border-[var(--kv-border)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-4 rounded-[1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                    No saved snippets yet.
+                  </p>
+                )}
               </div>
 
               <label className="text-sm text-[var(--kv-text)]">
@@ -1746,6 +2601,104 @@ export default function OrderDetailsPage() {
                   className="w-full border px-4 py-3 text-sm"
                 />
               </label>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Customer note snippets
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => void handleSaveNoteSnippet('customer')}
+                      className="rounded-full border border-[var(--kv-border)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-text)]"
+                    >
+                      Save current
+                    </button>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    {customerNoteSnippets.length > 0 ? (
+                      customerNoteSnippets.map((snippet) => (
+                        <div
+                          key={snippet.id}
+                          className="flex items-center justify-between gap-3 rounded-[1rem] bg-[var(--kv-soft)] px-3 py-3 text-sm"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => applyNoteSnippet(snippet)}
+                            className="min-w-0 flex-1 text-left"
+                          >
+                            <span className="block truncate font-semibold text-[var(--kv-text)]">
+                              {snippet.label}
+                            </span>
+                            <span className="block truncate text-[var(--kv-muted)]">
+                              {snippet.content}
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleDeleteNoteSnippet(snippet.id)}
+                            className="rounded-full border border-[var(--kv-border)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="rounded-[1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                        No saved customer note snippets yet.
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Internal note snippets
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => void handleSaveNoteSnippet('internal')}
+                      className="rounded-full border border-[var(--kv-border)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-text)]"
+                    >
+                      Save current
+                    </button>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    {internalNoteSnippets.length > 0 ? (
+                      internalNoteSnippets.map((snippet) => (
+                        <div
+                          key={snippet.id}
+                          className="flex items-center justify-between gap-3 rounded-[1rem] bg-[var(--kv-soft)] px-3 py-3 text-sm"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => applyNoteSnippet(snippet)}
+                            className="min-w-0 flex-1 text-left"
+                          >
+                            <span className="block truncate font-semibold text-[var(--kv-text)]">
+                              {snippet.label}
+                            </span>
+                            <span className="block truncate text-[var(--kv-muted)]">
+                              {snippet.content}
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleDeleteNoteSnippet(snippet.id)}
+                            className="rounded-full border border-[var(--kv-border)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="rounded-[1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                        No saved internal note snippets yet.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
               <label className="text-sm text-[var(--kv-text)]">
                 <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
                   Customer note
@@ -1792,6 +2745,7 @@ export default function OrderDetailsPage() {
           </Surface>
 
           <Surface className="overflow-hidden">
+            <div id="manual-shipping-label" />
             <SectionHeader title="Manual shipping label" />
             <div className="space-y-4 px-5 py-5 md:px-6">
               <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
@@ -1804,6 +2758,7 @@ export default function OrderDetailsPage() {
                       {LABEL_STATUS_LABELS[labelForm.label_status]}
                     </p>
                     <p className="text-[var(--kv-muted)]">
+                      {labelPackageId ? `Package ${getPackageById(order, labelPackageId)?.sequence || 1} - ` : ''}
                       {labelForm.label_file_name ||
                         labelForm.label_url ||
                         'No label attached'}
@@ -1811,6 +2766,26 @@ export default function OrderDetailsPage() {
                   </div>
                 </div>
               </div>
+
+              {(order.workflow?.packages || []).length > 0 ? (
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Label package
+                  </span>
+                  <select
+                    value={labelPackageId || ''}
+                    onChange={(event) => setLabelPackageId(event.target.value || null)}
+                    className="w-full border px-4 py-3 text-sm"
+                  >
+                    {(order.workflow?.packages || []).map((pkg) => (
+                      <option key={pkg.id} value={pkg.id}>
+                        Package #{pkg.sequence}
+                        {pkg.tracking_number ? ` - ${pkg.tracking_number}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
 
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="text-sm text-[var(--kv-text)]">
@@ -2042,6 +3017,60 @@ export default function OrderDetailsPage() {
                 </button>
               </div>
 
+              {selectedLabelPackage?.label_provider ||
+              selectedLabelPackage?.provider_shipment_id ||
+              selectedLabelPackage?.pickup_reference ? (
+                <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-text)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Provider references
+                  </p>
+                  <div className="mt-3 space-y-1 text-[var(--kv-muted)]">
+                    {selectedLabelPackage?.label_provider ? (
+                      <p>Provider: {selectedLabelPackage.label_provider}</p>
+                    ) : null}
+                    {selectedLabelPackage?.provider_order_id ? (
+                      <p>Provider order: {selectedLabelPackage.provider_order_id}</p>
+                    ) : null}
+                    {selectedLabelPackage?.provider_shipment_id ? (
+                      <p>Shipment: {selectedLabelPackage.provider_shipment_id}</p>
+                    ) : null}
+                    {selectedLabelPackage?.provider_courier_id ? (
+                      <p>Courier id: {selectedLabelPackage.provider_courier_id}</p>
+                    ) : null}
+                    {selectedLabelPackage?.pickup_reference ? (
+                      <p>Pickup ref: {selectedLabelPackage.pickup_reference}</p>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="grid gap-3 md:grid-cols-3">
+                <button
+                  type="button"
+                  onClick={() => void handleLabelSave('purchased')}
+                  disabled={updating}
+                  className="rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)] disabled:opacity-60"
+                >
+                  Mark purchased
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleLabelSave('voided')}
+                  disabled={updating}
+                  className="rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)] disabled:opacity-60"
+                >
+                  Mark voided
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleLabelSave('refunded')}
+                  disabled={updating}
+                  className="rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)] disabled:opacity-60"
+                >
+                  Mark refunded
+                </button>
+              </div>
+
               <button
                 type="button"
                 onClick={() => void handleLabelSave()}
@@ -2180,14 +3209,31 @@ export default function OrderDetailsPage() {
                   {carrierRates.rates.map((rate) => (
                     <div
                       key={rate.id}
-                      className="flex items-center justify-between rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-3 text-sm"
+                      className="flex items-center justify-between gap-4 rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-3 text-sm"
                     >
-                      <span className="font-semibold text-[var(--kv-text)]">
-                        {rate.service}
-                      </span>
-                      <span className="text-[var(--kv-muted)]">
-                        {formatCurrency(rate.amount, rate.currency)}
-                      </span>
+                      <div>
+                        <span className="font-semibold text-[var(--kv-text)]">
+                          {rate.service}
+                        </span>
+                        {rate.estimated_delivery_days ? (
+                          <p className="mt-1 text-[var(--kv-muted)]">
+                            ETA {rate.estimated_delivery_days} days
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[var(--kv-muted)]">
+                          {formatCurrency(rate.amount, rate.currency)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => void handleCarrierLabelPurchase(rate.id)}
+                          disabled={carrierLoading}
+                          className="rounded-full bg-[var(--kv-text)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white disabled:opacity-60"
+                        >
+                          Buy label
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -2216,99 +3262,397 @@ export default function OrderDetailsPage() {
           </Surface>
 
           <Surface className="overflow-hidden">
+            <div id="fulfillment-and-tracking" />
             <SectionHeader title="Fulfillment and tracking" />
             <div className="px-5 py-5 md:px-6">
-              {order.tracking_number ? (
-                <div className="space-y-4 text-sm">
-                  <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
-                      Tracking number
-                    </p>
-                    <p className="mt-2 font-semibold text-[var(--kv-text)]">
-                      {order.tracking_number}
-                    </p>
-                    {order.shipping_carrier ? (
-                      <p className="mt-2 text-[var(--kv-muted)]">
-                        Carrier: {order.shipping_carrier}
-                      </p>
-                    ) : null}
+              <div className="space-y-4">
+                {(order.workflow?.packages || []).length > 0 ? (
+                  <div className="space-y-3">
+                    {(order.workflow?.packages || []).map((pkg) => (
+                      <div
+                        key={pkg.id}
+                        className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4 text-sm"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                              Package #{pkg.sequence}
+                            </p>
+                            <p className="mt-2 font-semibold text-[var(--kv-text)]">
+                              {pkg.no_tracking
+                                ? 'No tracking attached'
+                                : pkg.tracking_number || 'Tracking pending'}
+                            </p>
+                            <p className="mt-2 text-[var(--kv-muted)]">
+                              {[pkg.carrier, pkg.service].filter(Boolean).join(' • ') ||
+                                'Carrier not set'}
+                            </p>
+                            {pkg.ship_date ? (
+                              <p className="mt-1 text-[var(--kv-muted)]">
+                                Ship date: {formatDateLabel(pkg.ship_date)}
+                              </p>
+                            ) : null}
+                            {pkg.delivered_at ? (
+                              <p className="mt-1 text-[var(--kv-muted)]">
+                                Delivered: {formatDateLabel(pkg.delivered_at)}
+                              </p>
+                            ) : null}
+                            {pkg.no_tracking_reason ? (
+                              <p className="mt-1 text-[var(--kv-muted)]">
+                                Reason: {pkg.no_tracking_reason}
+                              </p>
+                            ) : null}
+                            {pkg.label_provider ||
+                            pkg.provider_shipment_id ||
+                            pkg.pickup_reference ? (
+                              <div className="mt-2 space-y-1 text-[var(--kv-muted)]">
+                                {pkg.label_provider ? (
+                                  <p>Provider: {pkg.label_provider}</p>
+                                ) : null}
+                                {pkg.provider_shipment_id ? (
+                                  <p>Shipment ref: {pkg.provider_shipment_id}</p>
+                                ) : null}
+                                {pkg.pickup_reference ? (
+                                  <p>Pickup ref: {pkg.pickup_reference}</p>
+                                ) : null}
+                              </div>
+                            ) : null}
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <span className="rounded-full bg-[var(--kv-soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                              {pkg.label_state || 'draft'}
+                            </span>
+                            {pkg.tracking_url ? (
+                              <ActionButton
+                                href={pkg.tracking_url}
+                                icon={Truck}
+                                variant="secondary"
+                              >
+                                Track
+                              </ActionButton>
+                            ) : null}
+                            <button
+                              type="button"
+                              onClick={() => startEditingPackage(pkg)}
+                              className="rounded-full border border-[var(--kv-border)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-text)]"
+                            >
+                              Edit package
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLabelPackageId(pkg.id);
+                                document.getElementById('manual-shipping-label')?.scrollIntoView({
+                                  behavior: 'smooth',
+                                  block: 'start',
+                                });
+                              }}
+                              className="rounded-full border border-[var(--kv-border)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-text)]"
+                            >
+                              Manage label
+                            </button>
+                          </div>
+                        </div>
+                        {editingPackageId === pkg.id ? (
+                          <form
+                            onSubmit={(event) => {
+                              event.preventDefault();
+                              void handleUpdatePackage();
+                            }}
+                            className="mt-4 space-y-4 rounded-[1rem] bg-[var(--kv-soft)] px-4 py-4"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                                Edit package #{pkg.sequence}
+                              </p>
+                              <button
+                                type="button"
+                                onClick={cancelEditingPackage}
+                                className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-3">
+                              <input
+                                type="date"
+                                value={editPackageForm.ship_date}
+                                onChange={(event) =>
+                                  setEditPackageForm((current) => ({
+                                    ...current,
+                                    ship_date: event.target.value,
+                                  }))
+                                }
+                                className="w-full border px-4 py-3 text-sm"
+                              />
+                              <input
+                                type="text"
+                                value={editPackageForm.shipping_carrier}
+                                onChange={(event) =>
+                                  setEditPackageForm((current) => ({
+                                    ...current,
+                                    shipping_carrier: event.target.value,
+                                  }))
+                                }
+                                placeholder="Carrier"
+                                className="w-full border px-4 py-3 text-sm"
+                              />
+                              <input
+                                type="text"
+                                value={editPackageForm.shipping_service}
+                                onChange={(event) =>
+                                  setEditPackageForm((current) => ({
+                                    ...current,
+                                    shipping_service: event.target.value,
+                                  }))
+                                }
+                                placeholder="Service"
+                                className="w-full border px-4 py-3 text-sm"
+                              />
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                              <input
+                                type="text"
+                                value={editPackageForm.tracking_number}
+                                onChange={(event) =>
+                                  setEditPackageForm((current) => ({
+                                    ...current,
+                                    tracking_number: event.target.value,
+                                  }))
+                                }
+                                placeholder="Tracking number"
+                                className="w-full border px-4 py-3 text-sm"
+                                disabled={editPackageForm.no_tracking}
+                              />
+                              <input
+                                type="url"
+                                value={editPackageForm.tracking_link}
+                                onChange={(event) =>
+                                  setEditPackageForm((current) => ({
+                                    ...current,
+                                    tracking_link: event.target.value,
+                                  }))
+                                }
+                                placeholder="Tracking URL"
+                                className="w-full border px-4 py-3 text-sm"
+                                disabled={editPackageForm.no_tracking}
+                              />
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                              <label className="text-sm text-[var(--kv-text)]">
+                                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                                  Delivered on
+                                </span>
+                                <input
+                                  type="date"
+                                  value={editPackageForm.delivered_at}
+                                  onChange={(event) =>
+                                    setEditPackageForm((current) => ({
+                                      ...current,
+                                      delivered_at: event.target.value,
+                                    }))
+                                  }
+                                  className="w-full border px-4 py-3 text-sm"
+                                />
+                              </label>
+                              <div className="rounded-[1rem] border border-[var(--kv-border)] px-4 py-3 text-sm text-[var(--kv-muted)]">
+                                Save a delivery date to push this package and the order timeline forward.
+                              </div>
+                            </div>
+
+                            <label className="flex items-center gap-3 text-sm text-[var(--kv-text)]">
+                              <input
+                                type="checkbox"
+                                checked={editPackageForm.no_tracking}
+                                onChange={(event) =>
+                                  setEditPackageForm((current) => ({
+                                    ...current,
+                                    no_tracking: event.target.checked,
+                                  }))
+                                }
+                              />
+                              <span>This package doesn&apos;t have tracking</span>
+                            </label>
+                            {editPackageForm.no_tracking ? (
+                              <input
+                                type="text"
+                                value={editPackageForm.no_tracking_reason}
+                                onChange={(event) =>
+                                  setEditPackageForm((current) => ({
+                                    ...current,
+                                    no_tracking_reason: event.target.value,
+                                  }))
+                                }
+                                placeholder="Reason for no tracking"
+                                className="w-full border px-4 py-3 text-sm"
+                              />
+                            ) : null}
+                            <label className="flex items-center gap-3 text-sm text-[var(--kv-text)]">
+                              <input
+                                type="checkbox"
+                                checked={editPackageForm.notify_buyer}
+                                onChange={(event) =>
+                                  setEditPackageForm((current) => ({
+                                    ...current,
+                                    notify_buyer: event.target.checked,
+                                  }))
+                                }
+                              />
+                              <span>Notify buyer about this update</span>
+                            </label>
+
+                            <button
+                              type="submit"
+                              disabled={updating}
+                              className="w-full rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                            >
+                              {updating ? 'Saving...' : 'Save package changes'}
+                            </button>
+                          </form>
+                        ) : null}
+                      </div>
+                    ))}
                   </div>
-                  {order.tracking_link ? (
-                    <ActionButton
-                      href={order.tracking_link}
-                      icon={Truck}
-                      variant="secondary"
-                    >
-                      Open tracking link
-                    </ActionButton>
-                  ) : null}
-                </div>
-              ) : (
-                <form
-                  onSubmit={async (event) => {
-                    event.preventDefault();
-                    const formData = new FormData(event.currentTarget);
-                    const payload = {
-                      tracking_number: formData.get('tracking_number') as string,
-                      shipping_carrier:
-                        (formData.get('shipping_carrier') as string) || undefined,
-                      tracking_link:
-                        (formData.get('tracking_link') as string) || undefined,
-                    };
+                ) : (
+                  <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                    No shipment packages have been created yet.
+                  </div>
+                )}
 
-                    if (!payload.tracking_number) {
-                      return;
-                    }
-
-                    try {
-                      setUpdating(true);
-                      await api.addOrderTracking(id, payload);
-                      const refreshed = await api.getOrder(id);
-                      const refreshedOrder = refreshed?.order || refreshed;
-                      setOrder(refreshedOrder);
-                      setLabelForm(buildLabelForm(refreshedOrder));
-                      showNotification('success', 'Tracking saved');
-                    } catch (error: unknown) {
-                      showNotification(
-                        'error',
-                        error instanceof Error
-                          ? error.message
-                          : 'Failed to save tracking'
-                      );
-                    } finally {
-                      setUpdating(false);
-                    }
-                  }}
-                  className="space-y-4"
-                >
-                  <input
-                    name="tracking_number"
-                    type="text"
-                    required
-                    placeholder="Tracking number"
-                    className="w-full border px-4 py-3 text-sm"
-                  />
-                  <input
-                    name="shipping_carrier"
-                    type="text"
-                    placeholder="Carrier"
-                    className="w-full border px-4 py-3 text-sm"
-                  />
-                  <input
-                    name="tracking_link"
-                    type="url"
-                    placeholder="Tracking URL"
-                    className="w-full border px-4 py-3 text-sm"
-                  />
-                  <button
-                    type="submit"
-                    disabled={updating}
-                    className="w-full rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4">
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Add package
+                    </p>
+                    <p className="mt-2 text-sm text-[var(--kv-muted)]">
+                      Add a second shipment, split parcel, or later tracking update without reopening the order.
+                    </p>
+                  </div>
+                  <form
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      void handleAddPackage();
+                    }}
+                    className="space-y-4"
                   >
-                    {updating ? 'Saving…' : 'Add tracking number'}
-                  </button>
-                </form>
-              )}
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <input
+                        type="date"
+                        value={addPackageForm.ship_date}
+                        onChange={(event) =>
+                          setAddPackageForm((current) => ({
+                            ...current,
+                            ship_date: event.target.value,
+                          }))
+                        }
+                        className="w-full border px-4 py-3 text-sm"
+                      />
+                      <input
+                        type="text"
+                        value={addPackageForm.shipping_carrier}
+                        onChange={(event) =>
+                          setAddPackageForm((current) => ({
+                            ...current,
+                            shipping_carrier: event.target.value,
+                          }))
+                        }
+                        placeholder="Carrier"
+                        className="w-full border px-4 py-3 text-sm"
+                      />
+                      <input
+                        type="text"
+                        value={addPackageForm.shipping_service}
+                        onChange={(event) =>
+                          setAddPackageForm((current) => ({
+                            ...current,
+                            shipping_service: event.target.value,
+                          }))
+                        }
+                        placeholder="Service"
+                        className="w-full border px-4 py-3 text-sm"
+                      />
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <input
+                        type="text"
+                        value={addPackageForm.tracking_number}
+                        onChange={(event) =>
+                          setAddPackageForm((current) => ({
+                            ...current,
+                            tracking_number: event.target.value,
+                          }))
+                        }
+                        placeholder="Tracking number"
+                        className="w-full border px-4 py-3 text-sm"
+                        disabled={addPackageForm.no_tracking}
+                      />
+                      <input
+                        type="url"
+                        value={addPackageForm.tracking_link}
+                        onChange={(event) =>
+                          setAddPackageForm((current) => ({
+                            ...current,
+                            tracking_link: event.target.value,
+                          }))
+                        }
+                        placeholder="Tracking URL"
+                        className="w-full border px-4 py-3 text-sm"
+                        disabled={addPackageForm.no_tracking}
+                      />
+                    </div>
+                    <label className="flex items-center gap-3 text-sm text-[var(--kv-text)]">
+                      <input
+                        type="checkbox"
+                        checked={addPackageForm.no_tracking}
+                        onChange={(event) =>
+                          setAddPackageForm((current) => ({
+                            ...current,
+                            no_tracking: event.target.checked,
+                          }))
+                        }
+                      />
+                      <span>This package doesn&apos;t have tracking</span>
+                    </label>
+                    {addPackageForm.no_tracking ? (
+                      <input
+                        type="text"
+                        value={addPackageForm.no_tracking_reason}
+                        onChange={(event) =>
+                          setAddPackageForm((current) => ({
+                            ...current,
+                            no_tracking_reason: event.target.value,
+                          }))
+                        }
+                        placeholder="Reason for no tracking"
+                        className="w-full border px-4 py-3 text-sm"
+                      />
+                    ) : null}
+                    <label className="flex items-center gap-3 text-sm text-[var(--kv-text)]">
+                      <input
+                        type="checkbox"
+                        checked={addPackageForm.notify_buyer}
+                        onChange={(event) =>
+                          setAddPackageForm((current) => ({
+                            ...current,
+                            notify_buyer: event.target.checked,
+                          }))
+                        }
+                      />
+                      <span>Notify buyer about this package</span>
+                    </label>
+                    <button
+                      type="submit"
+                      disabled={updating}
+                      className="w-full rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                    >
+                      {updating ? 'Saving…' : 'Add package'}
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
           </Surface>
         </div>
