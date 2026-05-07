@@ -10,9 +10,8 @@ export async function getAuthToken(): Promise<string> {
   const now = Date.now();
   if (cachedToken && now < tokenExpiry) return cachedToken;
 
-  const email = process.env.MCP_SERVICE_EMAIL || process.env.ADMIN_EMAIL;
-  const password =
-    process.env.MCP_SERVICE_PASSWORD || process.env.ADMIN_PASSWORD;
+  const email = process.env.MCP_SERVICE_EMAIL;
+  const password = process.env.MCP_SERVICE_PASSWORD;
 
   if (!email || !password) {
     throw new Error(
@@ -21,7 +20,9 @@ export async function getAuthToken(): Promise<string> {
   }
 
   const res = await axios.post(`${API_BASE}/auth/login`, { email, password });
-  const token = res.data?.data?.token || res.headers['set-cookie']?.[0]?.match(/admin_token=([^;]+)/)?.[1];
+  const token =
+    res.data?.data?.token ||
+    res.headers['set-cookie']?.[0]?.match(/admin_token=([^;]+)/)?.[1];
 
   if (!token) {
     throw new Error(

@@ -54,6 +54,10 @@ function setWwwAuthenticateHeader(res: Response) {
   res.setHeader('WWW-Authenticate', value);
 }
 
+function hasValidBearerAuth(req: Request): boolean {
+  return req.headers['authorization'] === `Bearer ${SECRET}`;
+}
+
 // CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -65,7 +69,7 @@ app.use((req, res, next) => {
 
 // ── Health ────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', server: 'kvastram-mcp' });
+  res.json({ status: 'ok' });
 });
 
 
@@ -200,8 +204,7 @@ app.post('/token', (req, res) => {
 
 // ── MCP POST handler (shared between / and /mcp) ─────────────
 async function handleMcpPost(req: Request, res: Response): Promise<void> {
-  const auth = req.headers['authorization'];
-  if (!auth || auth !== `Bearer ${SECRET}`) {
+  if (!hasValidBearerAuth(req)) {
     // RFC 6750 §3.1 — WWW-Authenticate lets clients discover OAuth server
     setWwwAuthenticateHeader(res);
     res.status(401).json({ error: 'Unauthorized' });
@@ -241,8 +244,7 @@ app.post('/mcp', handleMcpPost);
 
 // GET /mcp for SSE stream (some clients use this)
 app.get('/mcp', async (req, res) => {
-  const auth = req.headers['authorization'];
-  if (!auth || auth !== `Bearer ${SECRET}`) {
+  if (!hasValidBearerAuth(req)) {
     setWwwAuthenticateHeader(res);
     res.status(401).json({ error: 'Unauthorized' });
     return;
@@ -256,6 +258,12 @@ app.get('/mcp', async (req, res) => {
 });
 
 app.delete('/mcp', async (req, res) => {
+  if (!hasValidBearerAuth(req)) {
+    setWwwAuthenticateHeader(res);
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
   const sessionId = req.headers['mcp-session-id'] as string | undefined;
   if (sessionId && sessions.has(sessionId)) {
     const t = sessions.get(sessionId)!;
