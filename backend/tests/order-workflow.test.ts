@@ -67,4 +67,78 @@ describe('order workflow metadata', () => {
     expect(metadata.customer_note).toBe('Buyer-facing note');
     expect(metadata.internal_note).toBe('Updated internal note');
   });
+
+  it('hydrates manual label metadata into the workflow summary', () => {
+    const summary = buildWorkflowSummary({
+      status: 'processing',
+      created_at: '2026-05-01T10:00:00.000Z',
+      metadata: {
+        workflow_status: 'processing',
+        label_status: 'created',
+        label_url: 'https://cdn.example.com/label.pdf',
+        label_file_name: 'label-1001.pdf',
+        label_cost: 12500,
+        label_currency: 'INR',
+        package_weight_grams: 450,
+        package_length_cm: 28,
+        package_width_cm: 20,
+        package_height_cm: 6,
+        carrier_service: 'Delhivery Surface',
+        label_created_at: '2026-05-07T07:00:00.000Z',
+      },
+    });
+
+    expect(summary.label.status).toBe('created');
+    expect(summary.label.status_label).toBe('Label created');
+    expect(summary.label.url).toBe('https://cdn.example.com/label.pdf');
+    expect(summary.label.file_name).toBe('label-1001.pdf');
+    expect(summary.label.cost).toBe(12500);
+    expect(summary.label.currency).toBe('INR');
+    expect(summary.label.package_weight_grams).toBe(450);
+    expect(summary.label.package_length_cm).toBe(28);
+    expect(summary.label.package_width_cm).toBe(20);
+    expect(summary.label.package_height_cm).toBe(6);
+    expect(summary.label.carrier_service).toBe('Delhivery Surface');
+    expect(summary.label.created_at).toBe('2026-05-07T07:00:00.000Z');
+  });
+
+  it('clears nullable label fields when label updates are sent', () => {
+    const metadata = mergeWorkflowMetadata(
+      {
+        label_status: 'created',
+        label_url: 'https://cdn.example.com/label.pdf',
+        label_file_name: 'label-1001.pdf',
+        label_cost: 12500,
+        label_currency: 'INR',
+        package_weight_grams: 450,
+        package_length_cm: 28,
+        package_width_cm: 20,
+        package_height_cm: 6,
+        carrier_service: 'Delhivery Surface',
+      },
+      {
+        label_status: 'draft',
+        label_url: null,
+        label_file_name: null,
+        label_cost: null,
+        label_currency: null,
+        package_weight_grams: null,
+        package_length_cm: null,
+        package_width_cm: null,
+        package_height_cm: null,
+        carrier_service: null,
+      }
+    );
+
+    expect(metadata.label_status).toBe('draft');
+    expect(metadata.label_url).toBeNull();
+    expect(metadata.label_file_name).toBeNull();
+    expect(metadata.label_cost).toBeNull();
+    expect(metadata.label_currency).toBeNull();
+    expect(metadata.package_weight_grams).toBeNull();
+    expect(metadata.package_length_cm).toBeNull();
+    expect(metadata.package_width_cm).toBeNull();
+    expect(metadata.package_height_cm).toBeNull();
+    expect(metadata.carrier_service).toBeNull();
+  });
 });

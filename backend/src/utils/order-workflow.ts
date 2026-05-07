@@ -6,6 +6,8 @@ export type WorkflowStatus =
   | 'cancelled'
   | 'refunded';
 
+export type LabelStatus = 'draft' | 'created' | 'printed' | 'voided' | 'refunded';
+
 export interface WorkflowTimelineEvent {
   key: WorkflowStatus;
   label: string;
@@ -31,6 +33,18 @@ export interface WorkflowMetadata {
   processed_at?: string | null;
   shipped_at?: string | null;
   delivered_at?: string | null;
+  label_status?: LabelStatus;
+  label_url?: string | null;
+  label_file_name?: string | null;
+  label_cost?: number | null;
+  label_currency?: string | null;
+  package_weight_grams?: number | null;
+  package_length_cm?: number | null;
+  package_width_cm?: number | null;
+  package_height_cm?: number | null;
+  carrier_service?: string | null;
+  label_created_at?: string | null;
+  label_printed_at?: string | null;
 }
 
 type OrderLike = {
@@ -59,10 +73,22 @@ const WORKFLOW_LABELS: Record<WorkflowStatus, string> = {
   refunded: 'Refunded',
 };
 
+const LABEL_STATUS_LABELS: Record<LabelStatus, string> = {
+  draft: 'Draft',
+  created: 'Label created',
+  printed: 'Printed',
+  voided: 'Voided',
+  refunded: 'Refunded',
+};
+
 function toIso(value?: string | Date | null): string | null {
   if (!value) return null;
   const date = value instanceof Date ? value : new Date(value);
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function numberOrNull(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
 export function normalizeWorkflowStatus(
@@ -82,6 +108,22 @@ export function normalizeWorkflowStatus(
   }
 
   if (normalized === 'canceled') return 'cancelled';
+  return null;
+}
+
+export function normalizeLabelStatus(value?: string | null): LabelStatus | null {
+  const normalized = (value || '').toLowerCase();
+
+  if (
+    normalized === 'draft' ||
+    normalized === 'created' ||
+    normalized === 'printed' ||
+    normalized === 'voided' ||
+    normalized === 'refunded'
+  ) {
+    return normalized;
+  }
+
   return null;
 }
 
@@ -133,6 +175,32 @@ export function getWorkflowMetadata(metadata: unknown): WorkflowMetadata {
       typeof source.shipped_at === 'string' ? source.shipped_at : null,
     delivered_at:
       typeof source.delivered_at === 'string' ? source.delivered_at : null,
+    label_status: normalizeLabelStatus(
+      typeof source.label_status === 'string' ? source.label_status : null
+    ) || undefined,
+    label_url:
+      typeof source.label_url === 'string' ? source.label_url : null,
+    label_file_name:
+      typeof source.label_file_name === 'string'
+        ? source.label_file_name
+        : null,
+    label_cost: numberOrNull(source.label_cost),
+    label_currency:
+      typeof source.label_currency === 'string' ? source.label_currency : null,
+    package_weight_grams: numberOrNull(source.package_weight_grams),
+    package_length_cm: numberOrNull(source.package_length_cm),
+    package_width_cm: numberOrNull(source.package_width_cm),
+    package_height_cm: numberOrNull(source.package_height_cm),
+    carrier_service:
+      typeof source.carrier_service === 'string' ? source.carrier_service : null,
+    label_created_at:
+      typeof source.label_created_at === 'string'
+        ? source.label_created_at
+        : null,
+    label_printed_at:
+      typeof source.label_printed_at === 'string'
+        ? source.label_printed_at
+        : null,
   };
 }
 
@@ -287,6 +355,43 @@ export function mergeWorkflowMetadata(
     ? updates.internal_note ?? null
     : existing.internal_note ?? null;
 
+  merged.label_status = hasUpdate('label_status')
+    ? updates.label_status ?? existing.label_status ?? 'draft'
+    : existing.label_status ?? 'draft';
+  merged.label_url = hasUpdate('label_url')
+    ? updates.label_url ?? null
+    : existing.label_url ?? null;
+  merged.label_file_name = hasUpdate('label_file_name')
+    ? updates.label_file_name ?? null
+    : existing.label_file_name ?? null;
+  merged.label_cost = hasUpdate('label_cost')
+    ? updates.label_cost ?? null
+    : existing.label_cost ?? null;
+  merged.label_currency = hasUpdate('label_currency')
+    ? updates.label_currency ?? null
+    : existing.label_currency ?? null;
+  merged.package_weight_grams = hasUpdate('package_weight_grams')
+    ? updates.package_weight_grams ?? null
+    : existing.package_weight_grams ?? null;
+  merged.package_length_cm = hasUpdate('package_length_cm')
+    ? updates.package_length_cm ?? null
+    : existing.package_length_cm ?? null;
+  merged.package_width_cm = hasUpdate('package_width_cm')
+    ? updates.package_width_cm ?? null
+    : existing.package_width_cm ?? null;
+  merged.package_height_cm = hasUpdate('package_height_cm')
+    ? updates.package_height_cm ?? null
+    : existing.package_height_cm ?? null;
+  merged.carrier_service = hasUpdate('carrier_service')
+    ? updates.carrier_service ?? null
+    : existing.carrier_service ?? null;
+  merged.label_created_at = hasUpdate('label_created_at')
+    ? updates.label_created_at ?? null
+    : existing.label_created_at ?? null;
+  merged.label_printed_at = hasUpdate('label_printed_at')
+    ? updates.label_printed_at ?? null
+    : existing.label_printed_at ?? null;
+
   const timelineSource = Array.isArray(existing.timeline) ? existing.timeline : [];
   const filteredTimeline = timelineSource.filter(
     (entry) =>
@@ -343,6 +448,21 @@ export function buildWorkflowSummary(order: OrderLike) {
     needs_attention: overdueShipBy || workflowStatus === 'cancelled' || workflowStatus === 'refunded',
     overdue_ship_by: overdueShipBy,
     overdue_tracking: overdueTracking,
+    label: {
+      status: metadata.label_status || 'draft',
+      status_label: LABEL_STATUS_LABELS[metadata.label_status || 'draft'],
+      url: metadata.label_url || null,
+      file_name: metadata.label_file_name || null,
+      cost: metadata.label_cost ?? null,
+      currency: metadata.label_currency || null,
+      package_weight_grams: metadata.package_weight_grams ?? null,
+      package_length_cm: metadata.package_length_cm ?? null,
+      package_width_cm: metadata.package_width_cm ?? null,
+      package_height_cm: metadata.package_height_cm ?? null,
+      carrier_service: metadata.carrier_service || null,
+      created_at: metadata.label_created_at || null,
+      printed_at: metadata.label_printed_at || null,
+    },
     timeline: buildWorkflowTimeline(order),
   };
 }

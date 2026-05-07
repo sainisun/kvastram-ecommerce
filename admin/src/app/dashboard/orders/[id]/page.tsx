@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
   ArrowLeft,
+  ExternalLink,
+  FileText,
   PackageCheck,
   Mail,
   MapPin,
@@ -33,6 +35,8 @@ type WorkflowStatus =
   | 'cancelled'
   | 'refunded';
 
+type LabelStatus = 'draft' | 'created' | 'printed' | 'voided' | 'refunded';
+
 const STATUS_LABELS: Record<WorkflowStatus, string> = {
   pending: 'Pending',
   processing: 'Processing',
@@ -41,6 +45,22 @@ const STATUS_LABELS: Record<WorkflowStatus, string> = {
   cancelled: 'Cancelled',
   refunded: 'Refunded',
 };
+
+const LABEL_STATUS_LABELS: Record<LabelStatus, string> = {
+  draft: 'Draft',
+  created: 'Label created',
+  printed: 'Printed',
+  voided: 'Voided',
+  refunded: 'Refunded',
+};
+
+const LABEL_STATUS_OPTIONS: LabelStatus[] = [
+  'draft',
+  'created',
+  'printed',
+  'voided',
+  'refunded',
+];
 
 const VALID_TRANSITIONS: Record<WorkflowStatus, WorkflowStatus[]> = {
   pending: ['processing', 'cancelled'],
@@ -66,6 +86,25 @@ function getStatusOptions(status: string) {
 function normalizeWorkflowValue(value: string) {
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function parseOptionalInteger(value: string) {
+  const normalized = normalizeWorkflowValue(value);
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? Math.max(0, Math.round(parsed)) : null;
+}
+
+function parseMoneyToMinorUnits(value: string) {
+  const normalized = normalizeWorkflowValue(value);
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? Math.max(0, Math.round(parsed * 100)) : null;
+}
+
+function formatMinorUnitsForInput(value?: number | null) {
+  if (typeof value !== 'number') return '';
+  return String(value / 100);
 }
 
 interface OrderDetails {
@@ -105,6 +144,21 @@ interface OrderDetails {
     needs_attention?: boolean;
     overdue_ship_by?: boolean;
     overdue_tracking?: boolean;
+    label?: {
+      status?: LabelStatus;
+      status_label?: string;
+      url?: string | null;
+      file_name?: string | null;
+      cost?: number | null;
+      currency?: string | null;
+      package_weight_grams?: number | null;
+      package_length_cm?: number | null;
+      package_width_cm?: number | null;
+      package_height_cm?: number | null;
+      carrier_service?: string | null;
+      created_at?: string | null;
+      printed_at?: string | null;
+    };
     timeline?: Array<{
       key: string;
       label: string;
@@ -123,6 +177,43 @@ interface OrderItem {
   total?: number;
   unit_price: number;
   quantity: number;
+}
+
+interface LabelFormState {
+  label_status: LabelStatus;
+  label_url: string;
+  label_file_name: string;
+  label_cost: string;
+  label_currency: string;
+  package_weight_grams: string;
+  package_length_cm: string;
+  package_width_cm: string;
+  package_height_cm: string;
+  carrier_service: string;
+}
+
+function buildLabelForm(orderData?: OrderDetails | null): LabelFormState {
+  const label = orderData?.workflow?.label;
+  const currency = label?.currency || orderData?.currency_code || 'INR';
+
+  return {
+    label_status: label?.status || 'draft',
+    label_url: label?.url || '',
+    label_file_name: label?.file_name || '',
+    label_cost: formatMinorUnitsForInput(label?.cost),
+    label_currency: currency,
+    package_weight_grams:
+      label?.package_weight_grams != null
+        ? String(label.package_weight_grams)
+        : '',
+    package_length_cm:
+      label?.package_length_cm != null ? String(label.package_length_cm) : '',
+    package_width_cm:
+      label?.package_width_cm != null ? String(label.package_width_cm) : '',
+    package_height_cm:
+      label?.package_height_cm != null ? String(label.package_height_cm) : '',
+    carrier_service: label?.carrier_service || '',
+  };
 }
 
 export default function OrderDetailsPage() {
@@ -151,6 +242,9 @@ export default function OrderDetailsPage() {
     internal_note: '',
     notify_buyer: true,
   });
+  const [labelForm, setLabelForm] = useState<LabelFormState>(() =>
+    buildLabelForm()
+  );
 
   useEffect(() => {
     const loadOrder = async () => {
@@ -178,6 +272,7 @@ export default function OrderDetailsPage() {
           internal_note: orderData?.workflow?.internal_note || '',
           notify_buyer: true,
         });
+        setLabelForm(buildLabelForm(orderData));
       } catch (error) {
         console.error('Failed to load order:', error);
       } finally {
@@ -269,6 +364,7 @@ export default function OrderDetailsPage() {
         customer_note: refreshedOrder?.workflow?.customer_note || '',
         internal_note: refreshedOrder?.workflow?.internal_note || '',
       });
+      setLabelForm(buildLabelForm(refreshedOrder));
       setCompleteModalOpen(false);
       showNotification('success', 'Order completed and tracking saved');
     } catch (error: unknown) {
@@ -307,11 +403,55 @@ export default function OrderDetailsPage() {
         customer_note: refreshedOrder?.workflow?.customer_note || '',
         internal_note: refreshedOrder?.workflow?.internal_note || '',
       });
+      setLabelForm(buildLabelForm(refreshedOrder));
       showNotification('success', 'Order workflow updated');
     } catch (error: unknown) {
       showNotification(
         'error',
         error instanceof Error ? error.message : 'Failed to update workflow'
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleLabelSave = async (nextStatus?: LabelStatus) => {
+    const labelStatus = nextStatus || labelForm.label_status;
+
+    try {
+      setUpdating(true);
+      await api.updateOrderLabel(id, {
+        label_status: labelStatus,
+        label_url: normalizeWorkflowValue(labelForm.label_url),
+        label_file_name: normalizeWorkflowValue(labelForm.label_file_name),
+        label_cost: parseMoneyToMinorUnits(labelForm.label_cost),
+        label_currency:
+          normalizeWorkflowValue(labelForm.label_currency)?.toUpperCase() ||
+          order?.currency_code ||
+          'INR',
+        package_weight_grams: parseOptionalInteger(
+          labelForm.package_weight_grams
+        ),
+        package_length_cm: parseOptionalInteger(labelForm.package_length_cm),
+        package_width_cm: parseOptionalInteger(labelForm.package_width_cm),
+        package_height_cm: parseOptionalInteger(labelForm.package_height_cm),
+        carrier_service: normalizeWorkflowValue(labelForm.carrier_service),
+      });
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
+      setItems(refreshed?.items || refreshedOrder?.items || []);
+      setLabelForm(buildLabelForm(refreshedOrder));
+      showNotification(
+        'success',
+        nextStatus === 'printed'
+          ? 'Label marked as printed'
+          : 'Label workflow saved'
+      );
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to save label workflow'
       );
     } finally {
       setUpdating(false);
@@ -905,6 +1045,253 @@ export default function OrderDetailsPage() {
           </Surface>
 
           <Surface className="overflow-hidden">
+            <SectionHeader title="Manual shipping label" />
+            <div className="space-y-4 px-5 py-5 md:px-6">
+              <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--kv-accent-deep)]">
+                    <FileText size={18} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[var(--kv-text)]">
+                      {LABEL_STATUS_LABELS[labelForm.label_status]}
+                    </p>
+                    <p className="text-[var(--kv-muted)]">
+                      {labelForm.label_file_name ||
+                        labelForm.label_url ||
+                        'No label attached'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Label status
+                  </span>
+                  <select
+                    value={labelForm.label_status}
+                    onChange={(event) =>
+                      setLabelForm((current) => ({
+                        ...current,
+                        label_status: event.target.value as LabelStatus,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                  >
+                    {LABEL_STATUS_OPTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {LABEL_STATUS_LABELS[status]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Label cost
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={labelForm.label_cost}
+                    onChange={(event) =>
+                      setLabelForm((current) => ({
+                        ...current,
+                        label_cost: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="0.00"
+                  />
+                </label>
+              </div>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Label URL
+                </span>
+                <input
+                  type="url"
+                  value={labelForm.label_url}
+                  onChange={(event) =>
+                    setLabelForm((current) => ({
+                      ...current,
+                      label_url: event.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="https://..."
+                />
+              </label>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    File name
+                  </span>
+                  <input
+                    type="text"
+                    value={labelForm.label_file_name}
+                    onChange={(event) =>
+                      setLabelForm((current) => ({
+                        ...current,
+                        label_file_name: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="label.pdf"
+                  />
+                </label>
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Currency
+                  </span>
+                  <input
+                    type="text"
+                    maxLength={3}
+                    value={labelForm.label_currency}
+                    onChange={(event) =>
+                      setLabelForm((current) => ({
+                        ...current,
+                        label_currency: event.target.value.toUpperCase(),
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm uppercase"
+                    placeholder="INR"
+                  />
+                </label>
+              </div>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Carrier service
+                </span>
+                <input
+                  type="text"
+                  value={labelForm.carrier_service}
+                  onChange={(event) =>
+                    setLabelForm((current) => ({
+                      ...current,
+                      carrier_service: event.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="Delhivery Surface"
+                />
+              </label>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Weight grams
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={labelForm.package_weight_grams}
+                    onChange={(event) =>
+                      setLabelForm((current) => ({
+                        ...current,
+                        package_weight_grams: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="450"
+                  />
+                </label>
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Length cm
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={labelForm.package_length_cm}
+                    onChange={(event) =>
+                      setLabelForm((current) => ({
+                        ...current,
+                        package_length_cm: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="28"
+                  />
+                </label>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Width cm
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={labelForm.package_width_cm}
+                    onChange={(event) =>
+                      setLabelForm((current) => ({
+                        ...current,
+                        package_width_cm: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="20"
+                  />
+                </label>
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Height cm
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={labelForm.package_height_cm}
+                    onChange={(event) =>
+                      setLabelForm((current) => ({
+                        ...current,
+                        package_height_cm: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="6"
+                  />
+                </label>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-2">
+                {labelForm.label_url ? (
+                  <ActionButton
+                    href={labelForm.label_url}
+                    icon={ExternalLink}
+                    variant="secondary"
+                  >
+                    Open label
+                  </ActionButton>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => void handleLabelSave('printed')}
+                  disabled={updating || !labelForm.label_url}
+                  className="rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)] disabled:opacity-60"
+                >
+                  Mark printed
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => void handleLabelSave()}
+                disabled={updating}
+                className="w-full rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                {updating ? 'Saving...' : 'Save label workflow'}
+              </button>
+            </div>
+          </Surface>
+
+          <Surface className="overflow-hidden">
             <SectionHeader title="Fulfillment and tracking" />
             <div className="px-5 py-5 md:px-6">
               {order.tracking_number ? (
@@ -955,6 +1342,7 @@ export default function OrderDetailsPage() {
                       const refreshed = await api.getOrder(id);
                       const refreshedOrder = refreshed?.order || refreshed;
                       setOrder(refreshedOrder);
+                      setLabelForm(buildLabelForm(refreshedOrder));
                       showNotification('success', 'Tracking saved');
                     } catch (error: unknown) {
                       showNotification(

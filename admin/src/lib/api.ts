@@ -617,6 +617,32 @@ export const api = {
     return res.json();
   },
 
+  updateOrderLabel: async (
+    id: string,
+    data: {
+      label_status?: 'draft' | 'created' | 'printed' | 'voided' | 'refunded';
+      label_url?: string | null;
+      label_file_name?: string | null;
+      label_cost?: number | null;
+      label_currency?: string | null;
+      package_weight_grams?: number | null;
+      package_length_cm?: number | null;
+      package_width_cm?: number | null;
+      package_height_cm?: number | null;
+      carrier_service?: string | null;
+    }
+  ) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/label`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update order label');
+    return res.json();
+  },
+
   updateOrderStatus: async (id: string, status: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/status`, {
       method: 'PUT',

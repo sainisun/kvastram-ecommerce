@@ -189,6 +189,26 @@ const UpdateWorkflowSchema = z.object({
   internal_note: z.string().max(2000).nullable().optional(),
 });
 
+const UpdateLabelSchema = z.object({
+  label_status: z
+    .enum(['draft', 'created', 'printed', 'voided', 'refunded'])
+    .optional(),
+  label_url: z
+    .string()
+    .url('Must be a valid URL')
+    .nullable()
+    .optional()
+    .or(z.literal('')),
+  label_file_name: z.string().max(255).nullable().optional(),
+  label_cost: z.number().int().nonnegative().nullable().optional(),
+  label_currency: z.string().trim().min(3).max(3).nullable().optional(),
+  package_weight_grams: z.number().int().nonnegative().nullable().optional(),
+  package_length_cm: z.number().int().nonnegative().nullable().optional(),
+  package_width_cm: z.number().int().nonnegative().nullable().optional(),
+  package_height_cm: z.number().int().nonnegative().nullable().optional(),
+  carrier_service: z.string().max(255).nullable().optional(),
+});
+
 ordersRouter.post(
   '/:id/tracking',
   zValidator('json', AddTrackingSchema),
@@ -220,6 +240,27 @@ ordersRouter.patch(
       c,
       { order: updated },
       'Order workflow updated successfully'
+    );
+  })
+);
+
+// PATCH /orders/:id/label - Save manual shipping label metadata
+ordersRouter.patch(
+  '/:id/label',
+  zValidator('json', UpdateLabelSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+
+    const updated = await orderService.updateLabel(id, {
+      ...data,
+      label_url: data.label_url === '' ? null : data.label_url,
+    });
+
+    return successResponse(
+      c,
+      { order: updated },
+      'Order label workflow updated successfully'
     );
   })
 );

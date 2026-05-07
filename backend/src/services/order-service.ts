@@ -14,8 +14,10 @@ import { sanitizeSearchInput } from '../utils/validation';
 import {
   buildWorkflowSummary,
   deriveWorkflowStatus,
+  getWorkflowMetadata,
   mergeWorkflowMetadata,
 } from '../utils/order-workflow';
+import type { LabelStatus, WorkflowMetadata } from '../utils/order-workflow';
 
 // --- TYPES ---
 export type OrderStatus =
@@ -474,6 +476,95 @@ class OrderService {
     if (!existingOrder) throw new Error('Order not found');
 
     const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, data);
+
+    const [updated] = await db
+      .update(orders)
+      .set({
+        metadata: nextMetadata,
+        updated_at: new Date(),
+      })
+      .where(eq(orders.id, id))
+      .returning();
+
+    return applyWorkflowSummary(updated as Record<string, any>);
+  }
+
+  async updateLabel(
+    id: string,
+    data: {
+      label_status?: LabelStatus;
+      label_url?: string | null;
+      label_file_name?: string | null;
+      label_cost?: number | null;
+      label_currency?: string | null;
+      package_weight_grams?: number | null;
+      package_length_cm?: number | null;
+      package_width_cm?: number | null;
+      package_height_cm?: number | null;
+      carrier_service?: string | null;
+    }
+  ) {
+    const [existingOrder] = await db
+      .select({
+        id: orders.id,
+        metadata: orders.metadata,
+        status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
+        tracking_number: orders.tracking_number,
+      })
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    if (!existingOrder) throw new Error('Order not found');
+
+    const existingMetadata = getWorkflowMetadata(existingOrder.metadata);
+    const updates: Partial<WorkflowMetadata> = {};
+    const copyNullable = <K extends keyof WorkflowMetadata>(
+      sourceKey: keyof typeof data,
+      metadataKey: K
+    ) => {
+      if (Object.prototype.hasOwnProperty.call(data, sourceKey)) {
+        updates[metadataKey] = (data[sourceKey] ?? null) as WorkflowMetadata[K];
+      }
+    };
+
+    copyNullable('label_url', 'label_url');
+    copyNullable('label_file_name', 'label_file_name');
+    copyNullable('label_cost', 'label_cost');
+    copyNullable('package_weight_grams', 'package_weight_grams');
+    copyNullable('package_length_cm', 'package_length_cm');
+    copyNullable('package_width_cm', 'package_width_cm');
+    copyNullable('package_height_cm', 'package_height_cm');
+    copyNullable('carrier_service', 'carrier_service');
+
+    if (Object.prototype.hasOwnProperty.call(data, 'label_currency')) {
+      updates.label_currency = data.label_currency
+        ? data.label_currency.toUpperCase()
+        : null;
+    }
+
+    const nextStatus =
+      data.label_status ||
+      existingMetadata.label_status ||
+      (data.label_url ? 'created' : 'draft');
+    updates.label_status = nextStatus;
+
+    const now = new Date().toISOString();
+    const hasCreatedLabel =
+      nextStatus === 'created' || nextStatus === 'printed';
+    updates.label_created_at = hasCreatedLabel
+      ? existingMetadata.label_created_at || now
+      : existingMetadata.label_created_at || null;
+    updates.label_printed_at =
+      nextStatus === 'printed'
+        ? existingMetadata.label_printed_at || now
+        : existingMetadata.label_printed_at || null;
+
+    const nextMetadata = mergeWorkflowMetadata(
+      existingOrder.metadata,
+      updates
+    );
 
     const [updated] = await db
       .update(orders)
