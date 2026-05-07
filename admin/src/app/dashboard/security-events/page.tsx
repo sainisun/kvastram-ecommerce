@@ -34,9 +34,20 @@ interface SecurityEventStats {
   total: number;
   warn: number;
   error: number;
+  last_1h: number;
   last_24h: number;
   top_event_24h: string | null;
   top_event_count_24h: number;
+}
+
+interface SecurityEventAlert {
+  event: string;
+  title: string;
+  description: string;
+  severity: 'warn' | 'error';
+  count: number;
+  threshold: number;
+  window_hours: number;
 }
 
 const SEVERITY_FILTERS: Array<{ label: string; value: SeverityFilter }> = [
@@ -74,10 +85,12 @@ export default function SecurityEventsPage() {
     total: 0,
     warn: 0,
     error: 0,
+    last_1h: 0,
     last_24h: 0,
     top_event_24h: null,
     top_event_count_24h: 0,
   });
+  const [alerts, setAlerts] = useState<SecurityEventAlert[]>([]);
   const [activeFilter, setActiveFilter] = useState<SeverityFilter>('all');
   const [search, setSearch] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<SecurityEventRow | null>(null);
@@ -96,11 +109,13 @@ export default function SecurityEventsPage() {
           total: 0,
           warn: 0,
           error: 0,
+          last_1h: 0,
           last_24h: 0,
           top_event_24h: null,
           top_event_count_24h: 0,
         }
       );
+      setAlerts((data.alerts || []) as SecurityEventAlert[]);
       setSelectedEvent((current) => {
         if (!current) return nextEvents[0] || null;
         return nextEvents.find((item) => item.id === current.id) || nextEvents[0] || null;
@@ -160,9 +175,88 @@ export default function SecurityEventsPage() {
           hint="Higher-severity security signals."
         />
         <MetricCard
+          label="Last Hour"
+          value={stats.last_1h}
+          icon={RefreshCw}
+          hint={
+            stats.last_1h > 0
+              ? 'Fresh signal window for abuse spikes.'
+              : 'No fresh signal in the last hour'
+          }
+        />
+      </div>
+
+      <Surface className="p-4 md:p-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
+              Active Alerts
+            </p>
+            <p className="mt-1 text-sm text-[var(--kv-muted)]">
+              Threshold-based spikes from the past hour so the team can react before abuse spreads.
+            </p>
+          </div>
+          <span className="rounded-full bg-[var(--kv-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+            {alerts.length} active
+          </span>
+        </div>
+
+        {alerts.length > 0 ? (
+          <div className="mt-4 grid gap-3 lg:grid-cols-2">
+            {alerts.map((alert) => (
+              <div
+                key={`${alert.event}-${alert.severity}`}
+                className={`rounded-[1.2rem] border px-4 py-4 ${
+                  alert.severity === 'error'
+                    ? 'border-[rgba(208,76,52,0.24)] bg-[#fff3ef]'
+                    : 'border-[rgba(184,123,39,0.24)] bg-[#fff8eb]'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--kv-text)]">
+                      {alert.title}
+                    </p>
+                    <p className="mt-1 text-sm text-[var(--kv-muted)]">
+                      {alert.description}
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${
+                      alert.severity === 'error'
+                        ? 'bg-[#fff0ed] text-[var(--kv-danger)]'
+                        : 'bg-[#fbf3e0] text-[var(--kv-warning)]'
+                    }`}
+                  >
+                    {alert.severity}
+                  </span>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                  <span className="rounded-full bg-white px-3 py-1">
+                    {alert.count} events / {alert.window_hours}h
+                  </span>
+                  <span className="rounded-full bg-white px-3 py-1">
+                    Threshold {alert.threshold}
+                  </span>
+                  <span className="rounded-full bg-white px-3 py-1">
+                    {alert.event}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-4 rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+            No threshold-based spikes are active right now.
+          </div>
+        )}
+      </Surface>
+
+      <div className="grid gap-4 md:grid-cols-1">
+        <MetricCard
           label="Last 24h"
           value={stats.last_24h}
-          icon={RefreshCw}
+          icon={ShieldAlert}
           hint={
             stats.top_event_24h
               ? `${stats.top_event_24h} (${stats.top_event_count_24h})`
