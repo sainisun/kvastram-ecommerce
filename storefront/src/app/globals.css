@@ -3673,11 +3673,6 @@ a:active,
 .collections-as-seen-section {
   background: white;
 }
-.collections-as-seen-container {
-  width: 100%;
-  margin-inline: auto;
-  padding-inline: 24px;
-}
 .collections-as-seen-head {
   margin-bottom: 34px;
   text-align: center;
@@ -3928,9 +3923,6 @@ body.reel-player-open [aria-label='Cookie consent'] {
 }
 
 @media (min-width: 640px) {
-  .collections-as-seen-container {
-    padding-inline: 32px;
-  }
   .watch-buy-carousel {
     grid-auto-columns: minmax(190px, 30%);
   }
@@ -3940,9 +3932,6 @@ body.reel-player-open [aria-label='Cookie consent'] {
 }
 
 @media (min-width: 1024px) {
-  .collections-as-seen-container {
-    padding-inline: 40px;
-  }
   .watch-buy-carousel {
     grid-auto-columns: minmax(220px, 23%);
   }

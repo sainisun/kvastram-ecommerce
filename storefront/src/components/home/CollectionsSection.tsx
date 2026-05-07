@@ -11,7 +11,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
 
   return (
     <section className="kv-section collections-as-seen-section">
-      <div className="collections-as-seen-container">
+      <div className="kv-container">
         <div className="collections-as-seen-head">
           <h2>Curated Collections</h2>
         </div>
@@ -58,4 +58,3 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
     </section>
   );
 }
-
