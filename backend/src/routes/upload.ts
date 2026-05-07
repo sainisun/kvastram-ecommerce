@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { createHash } from 'crypto';
 import { z } from 'zod';
 import {
@@ -22,7 +22,7 @@ const FileUploadSchema = z.object({
   size: z.number().int().positive().max(VIDEO_MAX_FILE_SIZE),
 });
 
-uploadRouter.use('*', verifyAuth);
+uploadRouter.use('*', verifyAdminOrMcpService);
 
 uploadRouter.post('/', async (c) => {
   try {

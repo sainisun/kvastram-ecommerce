@@ -3,11 +3,11 @@ import { z } from 'zod';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { trust_items } from '../../db/schema';
-import { verifyAdmin } from '../../middleware/auth';
+import { verifyAdminOrMcpService } from '../../middleware/auth';
 
 const app = new Hono();
 
-app.use('*', verifyAdmin);
+app.use('*', verifyAdminOrMcpService);
 
 const trustItemSchema = z.object({
   label: z.string().trim().min(1).max(255),

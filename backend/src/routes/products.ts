@@ -4,7 +4,7 @@ import {
   CreateProductSchema,
   UpdateProductSchema,
 } from '../services/product-service';
-import { verifyAuth, verifyAdmin } from '../middleware/auth';
+import { verifyAuth, verifyAdminOrMcpService } from '../middleware/auth';
 import { z } from 'zod';
 import {
   successResponse,
@@ -223,8 +223,8 @@ const createProductHandler = asyncHandler(async (c) => {
   );
 });
 
-productsRouter.post('', verifyAdmin, createProductHandler);
-productsRouter.post('/', verifyAdmin, createProductHandler);
+productsRouter.post('', verifyAdminOrMcpService, createProductHandler);
+productsRouter.post('/', verifyAdminOrMcpService, createProductHandler);
 
 // POST /products/bulk-create - Bulk create products (Protected)
 const BulkCreateSchema = z.object({
@@ -233,7 +233,7 @@ const BulkCreateSchema = z.object({
 
 productsRouter.post(
   '/bulk-create',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const body = await c.req.json();
     const result = BulkCreateSchema.safeParse(body);
@@ -280,7 +280,7 @@ productsRouter.post(
 // PUT /products/:id - Update product (Protected)
 productsRouter.put(
   '/:id',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const body = await c.req.json();
@@ -325,7 +325,7 @@ const BulkUpdateSchema = z.object({
 
 productsRouter.post(
   '/bulk-update',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const body = await c.req.json();
     const result = BulkUpdateSchema.safeParse(body);
@@ -388,7 +388,7 @@ const BulkDeleteSchema = z.object({
 
 productsRouter.post(
   '/bulk-delete',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const body = await c.req.json();
     const result = BulkDeleteSchema.safeParse(body);
@@ -425,7 +425,7 @@ productsRouter.post(
 // DELETE /products/:id - Delete product (Protected)
 productsRouter.delete(
   '/:id',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const product = await productService.retrieve(id);
@@ -506,7 +506,7 @@ productsRouter.get(
 // POST /products/:id/variants - Create a new variant
 productsRouter.post(
   '/:id/variants',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const productId = c.req.param('id');
     const body = await c.req.json();
@@ -577,7 +577,7 @@ productsRouter.post(
 // PUT /products/:productId/variants/:variantId - Update a variant
 productsRouter.put(
   '/:productId/variants/:variantId',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const variantId = c.req.param('variantId');
     const body = await c.req.json();
@@ -628,7 +628,7 @@ productsRouter.put(
 // DELETE /products/:productId/variants/:variantId - Delete a variant
 productsRouter.delete(
   '/:productId/variants/:variantId',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const variantId = c.req.param('variantId');
 
@@ -660,7 +660,7 @@ productsRouter.delete(
 // POST /products/:id/options - Create a product option (e.g., "Size")
 productsRouter.post(
   '/:id/options',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const productId = c.req.param('id');
     const body = await c.req.json();

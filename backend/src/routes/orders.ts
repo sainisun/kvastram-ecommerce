@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { verifyAdmin } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { generateInvoice } from '../services/pdf-service';
@@ -14,7 +14,7 @@ import { successResponse, paginatedResponse } from '../utils/api-response';
 const ordersRouter = new Hono();
 
 // Apply admin authentication to all routes
-ordersRouter.use('*', verifyAdmin);
+ordersRouter.use('*', verifyAdminOrMcpService);
 
 // GET /orders - List all orders with filters
 ordersRouter.get(
@@ -178,11 +178,11 @@ const AddTrackingSchema = z.object({
 });
 
 const UpdateWorkflowSchema = z.object({
-  ship_by_date: z.string().optional(),
-  estimated_delivery_start: z.string().optional(),
-  estimated_delivery_end: z.string().optional(),
-  customer_note: z.string().max(2000).optional(),
-  internal_note: z.string().max(2000).optional(),
+  ship_by_date: z.string().nullable().optional(),
+  estimated_delivery_start: z.string().nullable().optional(),
+  estimated_delivery_end: z.string().nullable().optional(),
+  customer_note: z.string().max(2000).nullable().optional(),
+  internal_note: z.string().max(2000).nullable().optional(),
 });
 
 ordersRouter.post(

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
-import { verifyAdmin } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { customerService } from '../services/customer-service';
 import {
   asyncHandler,
@@ -26,7 +26,7 @@ const UpdateCustomerSchema = z.object({
 });
 
 // Apply admin authentication to all routes
-customersRouter.use('*', verifyAdmin);
+customersRouter.use('*', verifyAdminOrMcpService);
 
 // Get all customers with pagination and filters
 customersRouter.get(

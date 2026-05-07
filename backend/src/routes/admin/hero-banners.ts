@@ -3,12 +3,12 @@ import { z } from 'zod';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { hero_banners } from '../../db/schema';
-import { verifyAdmin } from '../../middleware/auth';
+import { verifyAdminOrMcpService } from '../../middleware/auth';
 import { uploadImageToCloudinary } from '../../utils/cloudinary';
 
 const app = new Hono();
 
-app.use('*', verifyAdmin);
+app.use('*', verifyAdminOrMcpService);
 
 const heroBannerFieldsSchema = z.object({
   title: z.string().trim().max(255).nullable(),

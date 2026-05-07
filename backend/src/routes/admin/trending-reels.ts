@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { asc, eq } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { trending_reels } from '../../db/schema';
-import { verifyAdmin } from '../../middleware/auth';
+import { verifyAdminOrMcpService } from '../../middleware/auth';
 import {
   uploadImageToCloudinary,
   uploadVideoToCloudinary,
@@ -11,7 +11,7 @@ import {
 
 const app = new Hono();
 
-app.use('*', verifyAdmin);
+app.use('*', verifyAdminOrMcpService);
 
 const trendingReelFieldsSchema = z.object({
   category: z.string().trim().max(100).nullable().optional(),

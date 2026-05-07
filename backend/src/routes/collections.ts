@@ -2,7 +2,7 @@ import { Hono, type Context } from 'hono';
 import { getCookie } from 'hono/cookie';
 import { verify } from 'hono/jwt';
 import { zValidator } from '@hono/zod-validator';
-import { verifyAdmin } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { db } from '../db/client';
 import { product_collections, products, collection_products } from '../db/schema';
 import { eq, desc, inArray, sql, and, ne } from 'drizzle-orm';
@@ -28,7 +28,7 @@ async function isVerifiedAdminRequest(c: Context) {
 
   try {
     const payload = (await verify(token, config.jwt.secret, 'HS256')) as { role?: string };
-    return payload.role === 'admin';
+    return payload.role === 'admin' || payload.role === 'mcp_service';
   } catch {
     return false;
   }
@@ -179,7 +179,7 @@ collectionsRouter.get('/:id', async (c) => {
 });
 
 // GET /collections/:id/products — junction table se
-collectionsRouter.get('/:id/products', verifyAdmin, async (c) => {
+collectionsRouter.get('/:id/products', verifyAdminOrMcpService, async (c) => {
   const id = c.req.param('id');
   try {
     const rows = await db
@@ -207,7 +207,7 @@ collectionsRouter.get('/:id/products', verifyAdmin, async (c) => {
 // PUT /collections/:id/products — M2M junction update
 collectionsRouter.put(
   '/:id/products',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   zValidator('json', ProductAssignmentSchema),
   async (c) => {
     const id = c.req.param('id');
@@ -262,7 +262,7 @@ collectionsRouter.put(
 // POST /collections
 collectionsRouter.post(
   '/',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   zValidator('json', CollectionSchema),
   async (c) => {
     const data = c.req.valid('json');
@@ -330,7 +330,7 @@ collectionsRouter.post(
 // PUT /collections/:id
 collectionsRouter.put(
   '/:id',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   zValidator('json', CollectionSchema.partial()),
   async (c) => {
     const id = c.req.param('id');
@@ -394,7 +394,7 @@ collectionsRouter.put(
 );
 
 // DELETE /collections/:id
-collectionsRouter.delete('/:id', verifyAdmin, async (c) => {
+collectionsRouter.delete('/:id', verifyAdminOrMcpService, async (c) => {
   const id = c.req.param('id');
   try {
     // Soft delete

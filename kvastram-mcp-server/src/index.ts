@@ -1,5 +1,9 @@
 import 'dotenv/config';
-import express, { type Request, type Response } from 'express';
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from 'express';
 import { createServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -17,6 +21,10 @@ const PORT = Number(process.env.PORT) || 3002;
 const SECRET = process.env.MCP_SECRET_TOKEN;
 const BASE_URL = process.env.MCP_BASE_URL || `http://localhost:${PORT}`;
 const publicOAuthEnabled = process.env.MCP_PUBLIC_OAUTH_ENABLED === 'true';
+const MCP_RATE_LIMIT_WINDOW_MS = Number(
+  process.env.MCP_RATE_LIMIT_WINDOW_MS || 60_000
+);
+const MCP_RATE_LIMIT_MAX = Number(process.env.MCP_RATE_LIMIT_MAX || 120);
 
 if (!SECRET) {
   console.error('❌ MCP_SECRET_TOKEN is not set in .env');
@@ -26,6 +34,7 @@ if (!SECRET) {
 // In-memory stores
 const authCodes = new Map<string, { redirect_uri: string; expires: number }>();
 const sessions = new Map<string, StreamableHTTPServerTransport>();
+const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>();
 
 function createMcpServer(): McpServer {
   const server = new McpServer({ name: 'kvastram-admin', version: '1.0.0' });
@@ -58,6 +67,79 @@ function hasValidBearerAuth(req: Request): boolean {
   return req.headers['authorization'] === `Bearer ${SECRET}`;
 }
 
+function getClientIp(req: Request): string {
+  const forwarded = req.headers['x-forwarded-for'];
+
+  if (typeof forwarded === 'string' && forwarded.trim()) {
+    return forwarded.split(',')[0]!.trim();
+  }
+
+  if (Array.isArray(forwarded) && forwarded[0]) {
+    return forwarded[0].split(',')[0]!.trim();
+  }
+
+  return req.socket.remoteAddress || 'unknown';
+}
+
+function logSecurityEvent(
+  level: 'warn' | 'error',
+  req: Request,
+  event: string,
+  details?: Record<string, unknown>
+) {
+  console[level](
+    `[MCP] ${event} ${JSON.stringify({
+      ip: getClientIp(req),
+      method: req.method,
+      path: req.path,
+      sessionId: req.headers['mcp-session-id'] || null,
+      ...details,
+    })}`
+  );
+}
+
+function enforceMcpRateLimit(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (req.path !== '/' && req.path !== '/mcp') {
+    next();
+    return;
+  }
+
+  const now = Date.now();
+  const key = `${getClientIp(req)}:${req.method}:${req.path}`;
+  const current = rateLimitBuckets.get(key);
+
+  if (!current || current.resetAt <= now) {
+    rateLimitBuckets.set(key, {
+      count: 1,
+      resetAt: now + MCP_RATE_LIMIT_WINDOW_MS,
+    });
+    next();
+    return;
+  }
+
+  if (current.count >= MCP_RATE_LIMIT_MAX) {
+    const retryAfterSeconds = Math.max(
+      1,
+      Math.ceil((current.resetAt - now) / 1000)
+    );
+
+    res.setHeader('Retry-After', String(retryAfterSeconds));
+    logSecurityEvent('warn', req, 'Rate limit exceeded', {
+      limit: MCP_RATE_LIMIT_MAX,
+      windowMs: MCP_RATE_LIMIT_WINDOW_MS,
+    });
+    res.status(429).json({ error: 'Too many requests' });
+    return;
+  }
+
+  current.count += 1;
+  next();
+}
+
 // CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -66,6 +148,8 @@ app.use((req, res, next) => {
   if (req.method === 'OPTIONS') { res.sendStatus(204); return; }
   next();
 });
+
+app.use(enforceMcpRateLimit);
 
 // ── Health ────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

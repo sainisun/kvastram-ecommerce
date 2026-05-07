@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { verifyAdmin } from '../middleware/auth'; // BUG-010 FIX: was verifyAuth
+import { verifyAdmin, verifyAdminOrMcpService } from '../middleware/auth'; // BUG-010 FIX: was verifyAuth
 import { z } from 'zod';
 import {
   marketingService,
@@ -15,7 +15,7 @@ import { emailService } from '../services/email-service';
 const app = new Hono();
 
 // GET / — Marketing overview (admin)
-app.get('/', verifyAdmin, async (c) => {
+app.get('/', verifyAdminOrMcpService, async (c) => {
   try {
     const [allCampaigns, allDiscounts] = await Promise.all([
       marketingService.getAllCampaigns(),
@@ -59,7 +59,7 @@ app.get('/campaigns/active', async (c) => {
 });
 
 // Get all campaigns (admin)
-app.get('/campaigns', verifyAdmin, async (c) => {
+app.get('/campaigns', verifyAdminOrMcpService, async (c) => {
   try {
     const allCampaigns = await marketingService.getAllCampaigns();
     return c.json({ campaigns: allCampaigns });
@@ -69,7 +69,7 @@ app.get('/campaigns', verifyAdmin, async (c) => {
 });
 
 // Create campaign
-app.post('/campaigns', verifyAdmin, async (c) => {
+app.post('/campaigns', verifyAdminOrMcpService, async (c) => {
   try {
     const body = await c.req.json();
     const validated = CampaignSchema.parse(body);
@@ -84,7 +84,7 @@ app.post('/campaigns', verifyAdmin, async (c) => {
 });
 
 // Update campaign
-app.put('/campaigns/:id', verifyAdmin, async (c) => {
+app.put('/campaigns/:id', verifyAdminOrMcpService, async (c) => {
   try {
     const id = c.req.param('id');
     const body = await c.req.json();
@@ -100,7 +100,7 @@ app.put('/campaigns/:id', verifyAdmin, async (c) => {
 });
 
 // Delete campaign
-app.delete('/campaigns/:id', verifyAdmin, async (c) => {
+app.delete('/campaigns/:id', verifyAdminOrMcpService, async (c) => {
   try {
     const id = c.req.param('id');
     await marketingService.deleteCampaign(id);
@@ -113,7 +113,7 @@ app.delete('/campaigns/:id', verifyAdmin, async (c) => {
 // --- DISCOUNTS ---
 
 // Get all discounts
-app.get('/discounts', verifyAdmin, async (c) => {
+app.get('/discounts', verifyAdminOrMcpService, async (c) => {
   try {
     const allDiscounts = await marketingService.getAllDiscounts();
     return c.json({ discounts: allDiscounts });
@@ -123,7 +123,7 @@ app.get('/discounts', verifyAdmin, async (c) => {
 });
 
 // Create discount
-app.post('/discounts', verifyAdmin, async (c) => {
+app.post('/discounts', verifyAdminOrMcpService, async (c) => {
   try {
     const body = await c.req.json();
     const validated = DiscountSchema.parse(body);
@@ -141,7 +141,7 @@ app.post('/discounts', verifyAdmin, async (c) => {
 });
 
 // Update discount
-app.put('/discounts/:id', verifyAdmin, async (c) => {
+app.put('/discounts/:id', verifyAdminOrMcpService, async (c) => {
   try {
     const id = c.req.param('id');
     const body = await c.req.json();
@@ -157,7 +157,7 @@ app.put('/discounts/:id', verifyAdmin, async (c) => {
 });
 
 // Delete discount
-app.delete('/discounts/:id', verifyAdmin, async (c) => {
+app.delete('/discounts/:id', verifyAdminOrMcpService, async (c) => {
   try {
     const id = c.req.param('id');
     await marketingService.deleteDiscount(id);

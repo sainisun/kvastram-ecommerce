@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { analyticsService } from '../services/analytics-service';
-import { verifyAdmin } from '../middleware/auth'; // BUG-014 FIX: was verifyAuth
+import { verifyAdminOrMcpService } from '../middleware/auth'; // BUG-014 FIX: was verifyAuth
 
 const analyticsRouter = new Hono();
 
 // GET /analytics/overview
-analyticsRouter.get('/overview', verifyAdmin, async (c) => {
+analyticsRouter.get('/overview', verifyAdminOrMcpService, async (c) => {
   try {
     const overview = await analyticsService.getOverview();
     return c.json(overview);
@@ -16,7 +16,7 @@ analyticsRouter.get('/overview', verifyAdmin, async (c) => {
 });
 
 // GET /analytics/sales-trend
-analyticsRouter.get('/sales-trend', verifyAdmin, async (c) => {
+analyticsRouter.get('/sales-trend', verifyAdminOrMcpService, async (c) => {
   // OPT-005: Validate and clamp days parameter
   const rawDays = c.req.query('days') ? parseInt(c.req.query('days')!) : 30;
   const days = Math.max(1, Math.min(365, isNaN(rawDays) ? 30 : rawDays));
@@ -30,7 +30,7 @@ analyticsRouter.get('/sales-trend', verifyAdmin, async (c) => {
 });
 
 // GET /analytics/orders-by-status
-analyticsRouter.get('/orders-by-status', verifyAdmin, async (c) => {
+analyticsRouter.get('/orders-by-status', verifyAdminOrMcpService, async (c) => {
   try {
     const statusData = await analyticsService.getOrdersByStatus();
     return c.json(statusData);

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { verifyAdmin } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { db } from '../db/client';
 import { categories, product_categories, products } from '../db/schema';
 import { eq, desc, count } from 'drizzle-orm';
@@ -67,7 +67,7 @@ categoriesRouter.get('/tree', async (c) => {
 
 // GET /categories/:idOrSlug — accepts UUID or slug
 // GET /categories/:id/products
-categoriesRouter.get('/:id/products', verifyAdmin, async (c) => {
+categoriesRouter.get('/:id/products', verifyAdminOrMcpService, async (c) => {
   const id = c.req.param('id');
   try {
     const rows = await db
@@ -93,7 +93,7 @@ categoriesRouter.get('/:id/products', verifyAdmin, async (c) => {
 // PUT /categories/:id/products
 categoriesRouter.put(
   '/:id/products',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   zValidator('json', ProductAssignmentSchema),
   async (c) => {
     const id = c.req.param('id');
@@ -157,7 +157,7 @@ categoriesRouter.get('/:id', async (c) => {
 // POST /categories
 categoriesRouter.post(
   '/',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   zValidator('json', CategorySchema),
   async (c) => {
     const data = c.req.valid('json');
@@ -210,7 +210,7 @@ const ReorderSchema = z.object({
 
 categoriesRouter.put(
   '/reorder',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   zValidator('json', ReorderSchema),
   async (c) => {
     const data = c.req.valid('json');
@@ -249,7 +249,7 @@ categoriesRouter.put(
 // PUT /categories/:id
 categoriesRouter.put(
   '/:id',
-  verifyAdmin,
+  verifyAdminOrMcpService,
   zValidator('json', CategorySchema.partial()),
   async (c) => {
     const id = c.req.param('id');
@@ -295,7 +295,7 @@ categoriesRouter.put(
 );
 
 // DELETE /categories/:id
-categoriesRouter.delete('/:id', verifyAdmin, async (c) => {
+categoriesRouter.delete('/:id', verifyAdminOrMcpService, async (c) => {
   const id = c.req.param('id');
   try {
     await db.delete(categories).where(eq(categories.id, id));

@@ -36,6 +36,36 @@ export interface AuthContextVariables {
   user: UserPayload;
 }
 
+function createRoleVerifier(allowedRoles: string[]) {
+  return async (
+    c: Context<{ Variables: AuthContextVariables }>,
+    next: Next
+  ) => {
+    const token = getToken(c);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized: Missing or invalid token' }, 401);
+    }
+
+    try {
+      const payload = (await verify(
+        token,
+        JWT_SECRET,
+        'HS256'
+      )) as unknown as UserPayload;
+
+      if (!allowedRoles.includes(payload.role)) {
+        return c.json({ error: 'Forbidden: Access denied' }, 403);
+      }
+
+      c.set('user', payload);
+      await next();
+    } catch (error) {
+      return c.json({ error: 'Unauthorized: Invalid token' }, 401);
+    }
+  };
+}
+
 export const verifyAuth = async (
   c: Context<{ Variables: AuthContextVariables }>,
   next: Next
@@ -60,27 +90,10 @@ export const verifyAdmin = async (
   c: Context<{ Variables: AuthContextVariables }>,
   next: Next
 ) => {
-  const token = getToken(c);
-
-  if (!token) {
-    return c.json({ error: 'Unauthorized: Missing or invalid token' }, 401);
-  }
-
-  try {
-    const payload = (await verify(
-      token,
-      JWT_SECRET,
-      'HS256'
-    )) as unknown as UserPayload;
-
-    // Check if user has admin role
-    if (payload.role !== 'admin') {
-      return c.json({ error: 'Forbidden: Admin access required' }, 403);
-    }
-
-    c.set('user', payload);
-    await next();
-  } catch (error) {
-    return c.json({ error: 'Unauthorized: Invalid token' }, 401);
-  }
+  return createRoleVerifier(['admin'])(c, next);
 };
+
+export const verifyAdminOrMcpService = createRoleVerifier([
+  'admin',
+  'mcp_service',
+]);
