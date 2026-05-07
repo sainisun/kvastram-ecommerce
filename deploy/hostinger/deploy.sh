@@ -100,11 +100,19 @@ wait_for_service_health backend 150
 log "Running manual backend migrations"
 docker compose -f "$COMPOSE_FILE" exec -T backend node dist/run-manual-migrations.js
 
-log "Building and starting storefront, admin, and MCP"
-compose_up_with_retry frontend-services storefront admin mcp
+log "Building and starting storefront and admin"
+compose_up_with_retry frontend-services storefront admin
 wait_for_service_health storefront 180
 wait_for_service_health admin 180
-wait_for_service_health mcp 120
+
+log "Building and starting MCP (best effort)"
+if [[ -f /root/kvastram-secrets/mcp.env ]]; then
+  docker compose -f "$COMPOSE_FILE" up -d --build mcp || {
+    echo "MCP deploy failed; continuing because storefront/admin/backend are healthy."
+  }
+else
+  echo "Skipping MCP: /root/kvastram-secrets/mcp.env is not present."
+fi
 
 log "Final service status"
 docker compose -f "$COMPOSE_FILE" ps
