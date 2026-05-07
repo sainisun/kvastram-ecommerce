@@ -61,7 +61,8 @@ services:
       - HOSTNAME=0.0.0.0
       - NODE_ENV=production
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "127.0.0.1:3000:3000"
     healthcheck:
@@ -91,7 +92,8 @@ services:
       - HOSTNAME=0.0.0.0
       - NODE_ENV=production
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "127.0.0.1:3001:3000"
     healthcheck:
@@ -114,7 +116,8 @@ services:
       # Keep MCP runtime secrets outside the git checkout to prevent deploy drift.
       - /root/kvastram-secrets/mcp.env
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "127.0.0.1:3002:3002"
     healthcheck:
