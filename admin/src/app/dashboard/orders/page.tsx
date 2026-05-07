@@ -253,10 +253,14 @@ export default function OrdersPage() {
             return shipBy === new Date().toISOString().slice(0, 10);
           }
           if (openFilter === 'ready_to_ship') {
-            return workflowStatus === 'processing' && !order.workflow?.has_tracking;
+            return workflowStatus === 'processing';
           }
           if (openFilter === 'missing_tracking') {
-            return workflowStatus === 'processing' && !order.workflow?.has_tracking;
+            return (
+              workflowStatus === 'processing' &&
+              !order.workflow?.has_tracking &&
+              order.workflow?.primary_package?.no_tracking !== true
+            );
           }
           return true;
         }).length;
@@ -492,7 +496,11 @@ export default function OrdersPage() {
                     <td className="px-6 py-4">
                       <Link href={`/dashboard/orders/${order.id}`} className="text-xs font-bold text-[var(--on-surface)] hover:text-[var(--on-tertiary-container)]">#{order.order_number}</Link>
                       <p className="mt-1 text-[10px] text-[var(--on-surface-variant)]">
-                        {order.workflow?.has_tracking ? 'Tracking added' : 'Tracking pending'}
+                        {primaryPackage?.no_tracking
+                          ? 'No tracking required'
+                          : order.workflow?.has_tracking
+                            ? 'Tracking added'
+                            : 'Tracking pending'}
                       </p>
                       {primaryPackage?.tracking_number ? (
                         <p className="mt-1 text-[10px] text-[var(--on-surface-variant)]">

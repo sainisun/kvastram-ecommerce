@@ -214,6 +214,7 @@ const CompleteOrderSchema = z.object({
   customer_note: z.string().max(2000).nullable().optional(),
   internal_note: z.string().max(2000).nullable().optional(),
   notify_buyer: z.boolean().default(true),
+  send_admin_copy: z.boolean().default(false),
 });
 
 const PackageSchema = z.object({

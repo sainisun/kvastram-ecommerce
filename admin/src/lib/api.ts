@@ -597,6 +597,7 @@ export const api = {
       customer_note?: string | null;
       internal_note?: string | null;
       notify_buyer?: boolean;
+      send_admin_copy?: boolean;
     }
   ) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/tracking`, {
@@ -623,6 +624,7 @@ export const api = {
       customer_note?: string | null;
       internal_note?: string | null;
       notify_buyer?: boolean;
+      send_admin_copy?: boolean;
     }
   ) => {
     const res = await fetchWithTimeout(

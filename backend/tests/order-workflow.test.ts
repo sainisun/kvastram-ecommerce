@@ -250,4 +250,28 @@ describe('order workflow metadata', () => {
     expect(summary.label.pickup_reference).toBe('pickup-99');
     expect(summary.label.url).toBe('https://cdn.example.com/shiprocket-label.pdf');
   });
+
+  it('does not flag intentional no-tracking shipments as overdue tracking issues', () => {
+    const summary = buildWorkflowSummary({
+      status: 'processing',
+      created_at: '2026-05-01T10:00:00.000Z',
+      metadata: {
+        workflow_status: 'processing',
+        ship_by_date: '2026-05-01',
+        packages: [
+          {
+            id: 'pkg_1',
+            sequence: 1,
+            ship_date: '2026-05-01T12:00:00.000Z',
+            no_tracking: true,
+            no_tracking_reason: 'Local hand delivery',
+          },
+        ],
+      },
+    });
+
+    expect(summary.has_tracking).toBe(false);
+    expect(summary.primary_package?.no_tracking).toBe(true);
+    expect(summary.overdue_tracking).toBe(false);
+  });
 });

@@ -701,6 +701,11 @@ export function buildWorkflowSummary(order: OrderLike) {
   const workflowStatus = deriveWorkflowStatus(order);
   const packages = getWorkflowPackages(order);
   const primaryPackage = getPrimaryWorkflowPackage(order);
+  const hasTracking =
+    packages.some((pkg) => !!pkg.tracking_number) || !!order.tracking_number;
+  const trackingExempt =
+    packages.some((pkg) => pkg.no_tracking === true) ||
+    primaryPackage?.no_tracking === true;
   const shipByDate = metadata.ship_by_date || null;
   const now = new Date();
   const shipBy = shipByDate ? new Date(shipByDate) : null;
@@ -712,7 +717,8 @@ export function buildWorkflowSummary(order: OrderLike) {
   const overdueTracking =
     workflowStatus === 'processing' &&
     overdueShipBy &&
-    !order.tracking_number;
+    !hasTracking &&
+    !trackingExempt;
 
   return {
     status: workflowStatus,
@@ -722,8 +728,7 @@ export function buildWorkflowSummary(order: OrderLike) {
     estimated_delivery_end: metadata.estimated_delivery_end || null,
     customer_note: metadata.customer_note || null,
     internal_note: metadata.internal_note || null,
-    has_tracking:
-      packages.some((pkg) => !!pkg.tracking_number) || !!order.tracking_number,
+    has_tracking: hasTracking,
     needs_attention: overdueShipBy || workflowStatus === 'cancelled' || workflowStatus === 'refunded',
     overdue_ship_by: overdueShipBy,
     overdue_tracking: overdueTracking,

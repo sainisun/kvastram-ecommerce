@@ -787,6 +787,7 @@ export default function OrderDetailsPage() {
     customer_note: '',
     internal_note: '',
     notify_buyer: true,
+    send_admin_copy: false,
   });
   const [addPackageForm, setAddPackageForm] = useState<PackageFormState>(() =>
     buildPackageForm()
@@ -857,6 +858,7 @@ export default function OrderDetailsPage() {
           customer_note: orderData?.workflow?.customer_note || '',
           internal_note: orderData?.workflow?.internal_note || '',
           notify_buyer: true,
+          send_admin_copy: false,
         });
         setAddPackageForm(buildPackageForm());
         setEditingPackageId(null);
@@ -1013,6 +1015,18 @@ export default function OrderDetailsPage() {
   const internalNoteSnippets = noteSnippets.filter(
     (snippet) => snippet.target === 'internal'
   );
+  const completeOrderSubject = `Your Kvastram order #${
+    order?.order_number || id.slice(0, 8)
+  } has shipped`;
+  const completeOrderPreview = completeForm.no_tracking
+    ? 'Buyer will receive a shipped update without tracking details.'
+    : completeForm.tracking_number.trim()
+      ? `Buyer will receive tracking ${completeForm.tracking_number.trim()}${
+          completeForm.shipping_carrier.trim()
+            ? ` via ${completeForm.shipping_carrier.trim()}`
+            : ''
+        }.`
+      : 'Buyer notification is ready once tracking details are added.';
 
   const handleStatusChange = async (status: string) => {
     try {
@@ -1077,6 +1091,7 @@ export default function OrderDetailsPage() {
         customer_note: normalizeWorkflowValue(completeForm.customer_note),
         internal_note: normalizeWorkflowValue(completeForm.internal_note),
         notify_buyer: completeForm.notify_buyer,
+        send_admin_copy: completeForm.send_admin_copy,
       });
       const refreshed = await api.getOrder(id);
       const refreshedOrder = refreshed?.order || refreshed;
@@ -1959,6 +1974,42 @@ export default function OrderDetailsPage() {
                   <span className="block font-semibold">Notify buyer</span>
                   <span className="mt-1 block text-[var(--kv-muted)]">
                     Send the shipping notification email after tracking is saved.
+                  </span>
+                </span>
+              </label>
+
+              <div className="rounded-[1.1rem] border border-[var(--kv-border)] bg-white px-4 py-4 text-sm text-[var(--kv-text)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Buyer email preview
+                </p>
+                <p className="mt-2 font-semibold text-[var(--kv-text)]">
+                  {completeOrderSubject}
+                </p>
+                <p className="mt-2 text-[var(--kv-muted)]">{completeOrderPreview}</p>
+                {completeForm.customer_note ? (
+                  <p className="mt-3 rounded-2xl bg-[var(--kv-soft)] px-3 py-3 text-[var(--kv-text)]">
+                    {completeForm.customer_note}
+                  </p>
+                ) : null}
+              </div>
+
+              <label className="flex items-start gap-3 rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-text)]">
+                <input
+                  type="checkbox"
+                  checked={completeForm.send_admin_copy}
+                  onChange={(event) =>
+                    setCompleteForm((current) => ({
+                      ...current,
+                      send_admin_copy: event.target.checked,
+                    }))
+                  }
+                  className="mt-1 h-4 w-4"
+                  disabled={!completeForm.notify_buyer}
+                />
+                <span>
+                  <span className="block font-semibold">Email admin copy</span>
+                  <span className="mt-1 block text-[var(--kv-muted)]">
+                    Send the same shipment email to the admin inbox for reference.
                   </span>
                 </span>
               </label>

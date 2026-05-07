@@ -23,6 +23,7 @@ import {
 import { alias } from 'drizzle-orm/pg-core';
 import { generateInvoice } from '../services/pdf-service';
 import { carrierService } from '../services/carrier-service';
+import { settingService } from '../services/setting-service';
 import { sanitizeSearchInput } from '../utils/validation';
 import {
   buildWorkflowSummary,
@@ -362,29 +363,92 @@ function sendStatusNotification(data: {
   currency_code?: string | null;
   status: string;
   tracking_number?: string | null;
+  shipping_carrier?: string | null;
+  tracking_link?: string | null;
+  send_admin_copy?: boolean;
 }) {
   if (!data.email) return;
   const email = data.email;
 
   import('./email-service')
-    .then(({ emailService }) => {
-      if (data.status === 'shipped' && data.tracking_number) {
-        return;
-      }
+    .then(async ({ emailService }) => {
+      const sendOrderEmail = async (recipient: string) => {
+        if (data.status === 'shipped' && data.tracking_number) {
+          return emailService.sendShippingNotification({
+            email: recipient,
+            order_number: data.order_number ?? '',
+            tracking_number: data.tracking_number,
+            shipping_carrier: data.shipping_carrier ?? undefined,
+            tracking_link: data.tracking_link ?? undefined,
+          });
+        }
 
-      return emailService.sendOrderStatusUpdate(
-        {
-          order_number: data.order_number ?? '',
-          total: data.total || 0,
-          currency_code: data.currency_code || 'INR',
-          status: data.status,
-        },
-        email
-      );
+        return emailService.sendOrderStatusUpdate(
+          {
+            order_number: data.order_number ?? '',
+            total: data.total || 0,
+            currency_code: data.currency_code || 'INR',
+            status: data.status,
+          },
+          recipient
+        );
+      };
+
+      await sendOrderEmail(email);
+
+      if (data.send_admin_copy !== true) return;
+
+      const storeEmailSetting = await settingService.getByKey('store_email');
+      const adminCopyEmail =
+        typeof storeEmailSetting?.value === 'string' && storeEmailSetting.value.includes('@')
+          ? storeEmailSetting.value.trim()
+          : process.env.ADMIN_EMAIL?.trim() || null;
+
+      if (
+        adminCopyEmail &&
+        adminCopyEmail.toLowerCase() !== email.toLowerCase()
+      ) {
+        await sendOrderEmail(adminCopyEmail);
+      }
     })
     .catch((err) =>
       console.error('[OrderService] Failed to load email service:', err)
     );
+}
+
+function appendCommunicationEvent(
+  metadata: Record<string, unknown> | null | undefined,
+  event: {
+    template: string;
+    subject: string;
+    message: string;
+    channel?: string;
+    status?: string;
+    sent_at?: string;
+  }
+) {
+  const baseMetadata =
+    metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+      ? metadata
+      : {};
+  const existingEvents = Array.isArray(baseMetadata.communication_events)
+    ? baseMetadata.communication_events
+    : [];
+
+  return {
+    ...baseMetadata,
+    communication_events: [
+      ...existingEvents,
+      {
+        template: event.template,
+        subject: event.subject,
+        message: event.message,
+        sent_at: event.sent_at || new Date().toISOString(),
+        channel: event.channel || 'email',
+        status: event.status || 'queued',
+      },
+    ],
+  };
 }
 
 // --- SERVICE CLASS ---
@@ -421,6 +485,8 @@ class OrderService {
             ilike(sql`coalesce(${shippingAddr.address_1}, '')`, pattern),
             ilike(sql`coalesce(${shippingAddr.city}, '')`, pattern),
             ilike(sql`coalesce(${shippingAddr.postal_code}, '')`, pattern),
+            sql`coalesce(${orders.metadata}->>'customer_note', '') ilike ${pattern}`,
+            sql`coalesce(${orders.metadata}->>'internal_note', '') ilike ${pattern}`,
             sql`exists (
               select 1
               from ${line_items}
@@ -528,7 +594,8 @@ class OrderService {
         case 'missing_tracking':
           return (
             (order.status === 'processing' || order.status === 'shipped') &&
-            !order.workflow?.has_tracking
+            !order.workflow?.has_tracking &&
+            order.workflow?.primary_package?.no_tracking !== true
           );
         default:
           return true;
@@ -911,6 +978,7 @@ class OrderService {
       customer_note?: string | null;
       internal_note?: string | null;
       notify_buyer?: boolean;
+      send_admin_copy?: boolean;
     }
   ) {
     const [existingOrder] = await db
@@ -919,6 +987,8 @@ class OrderService {
         email: orders.email,
         order_number: orders.display_id,
         metadata: orders.metadata,
+        total: orders.total,
+        currency_code: orders.currency_code,
       })
       .from(orders)
       .where(eq(orders.id, id));
@@ -953,14 +1023,32 @@ class OrderService {
           data.notify_buyer !== false ? new Date().toISOString() : null,
       }
     );
-    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+    const autoNotificationSubject = `Your Kvastram order #${
+      existingOrder.order_number ?? id.slice(0, 8)
+    } has shipped`;
+    const autoNotificationMessage =
+      data.no_tracking === true
+        ? 'Your order is on its way. This shipment does not include a tracking number.'
+        : 'Tracking details have been added to your order and your shipment is on its way.';
+    const nextMetadata = mergeWorkflowMetadata(
+      data.notify_buyer !== false
+        ? appendCommunicationEvent(existingOrder.metadata, {
+            template: 'shipped',
+            subject: autoNotificationSubject,
+            message: autoNotificationMessage,
+            status: 'queued',
+          })
+        : existingOrder.metadata,
+      {
       workflow_status: 'shipped',
       shipped_at: shippedAt,
       customer_note: data.customer_note,
       internal_note: data.internal_note,
       packages: nextPackages,
-    });
+      }
+    );
     const trackingFields = deriveLegacyTrackingFields(nextPackages);
+    const addedPackage = nextPackages[nextPackages.length - 1] || null;
 
     const [updated] = await db
       .update(orders)
@@ -976,32 +1064,18 @@ class OrderService {
       .where(eq(orders.id, id))
       .returning();
 
-    if (
-      existingOrder.email &&
-      data.notify_buyer !== false &&
-      data.no_tracking !== true &&
-      trackingFields.tracking_number
-    ) {
-      import('./email-service')
-        .then(({ emailService }) => {
-          emailService
-            .sendShippingNotification({
-              email: existingOrder.email!,
-              order_number: existingOrder.order_number ?? id.slice(0, 8),
-              tracking_number: trackingFields.tracking_number!,
-              shipping_carrier: trackingFields.shipping_carrier ?? undefined,
-              tracking_link: trackingFields.tracking_link ?? undefined,
-            })
-            .catch((err) =>
-              console.error(
-                '[OrderService] Failed to send shipping notification:',
-                err
-              )
-            );
-        })
-        .catch((err) =>
-          console.error('[OrderService] Failed to load email service:', err)
-        );
+    if (existingOrder.email && data.notify_buyer !== false) {
+      sendStatusNotification({
+        email: existingOrder.email,
+        order_number: existingOrder.order_number ?? id.slice(0, 8),
+        total: existingOrder.total,
+        currency_code: existingOrder.currency_code,
+        status: 'shipped',
+        tracking_number: trackingFields.tracking_number,
+        shipping_carrier: trackingFields.shipping_carrier,
+        tracking_link: trackingFields.tracking_link,
+        send_admin_copy: (data as { send_admin_copy?: boolean }).send_admin_copy === true,
+      });
     }
 
     return applyWorkflowSummary(updated as Record<string, any>);
@@ -1023,10 +1097,14 @@ class OrderService {
     const [existingOrder] = await db
       .select({
         id: orders.id,
+        email: orders.email,
+        order_number: orders.display_id,
         metadata: orders.metadata,
         tracking_number: orders.tracking_number,
         shipping_carrier: orders.shipping_carrier,
         tracking_link: orders.tracking_link,
+        total: orders.total,
+        currency_code: orders.currency_code,
       })
       .from(orders)
       .where(eq(orders.id, id));
@@ -1051,15 +1129,33 @@ class OrderService {
         no_tracking_reason:
           data.no_tracking === true ? data.no_tracking_reason ?? null : null,
         notify_buyer: data.notify_buyer !== false,
-        notification_sent: false,
-        notification_sent_at: null,
+        notification_sent: data.notify_buyer !== false,
+        notification_sent_at:
+          data.notify_buyer !== false ? new Date().toISOString() : null,
       }
     );
-    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+    const addPackageSubject = `Package update for your Kvastram order #${
+      existingOrder.order_number ?? id.slice(0, 8)
+    }`;
+    const addPackageMessage =
+      data.no_tracking === true
+        ? 'A new package has been added to your shipment without a tracking number.'
+        : 'A new package has been added to your order with updated shipping details.';
+    const nextMetadata = mergeWorkflowMetadata(
+      data.notify_buyer !== false
+        ? appendCommunicationEvent(existingOrder.metadata, {
+            template: 'shipped',
+            subject: addPackageSubject,
+            message: addPackageMessage,
+            status: 'queued',
+          })
+        : existingOrder.metadata,
+      {
       workflow_status: 'shipped',
       shipped_at: getWorkflowMetadata(existingOrder.metadata).shipped_at || shippedAt,
       packages: nextPackages,
-    });
+      }
+    );
     const trackingFields = deriveLegacyTrackingFields(nextPackages);
 
     const [updated] = await db
@@ -1075,6 +1171,19 @@ class OrderService {
       })
       .where(eq(orders.id, id))
       .returning();
+
+    if (existingOrder.email && data.notify_buyer !== false) {
+      sendStatusNotification({
+        email: existingOrder.email,
+        order_number: existingOrder.order_number ?? id.slice(0, 8),
+        total: existingOrder.total,
+        currency_code: existingOrder.currency_code,
+        status: 'shipped',
+        tracking_number: addedPackage?.tracking_number || trackingFields.tracking_number,
+        shipping_carrier: addedPackage?.carrier || trackingFields.shipping_carrier,
+        tracking_link: addedPackage?.tracking_url || trackingFields.tracking_link,
+      });
+    }
 
     return applyWorkflowSummary(updated as Record<string, any>);
   }
@@ -1112,11 +1221,15 @@ class OrderService {
     const [existingOrder] = await db
       .select({
         id: orders.id,
+        email: orders.email,
+        order_number: orders.display_id,
         metadata: orders.metadata,
         status: orders.status,
         payment_status: orders.payment_status,
         fulfillment_status: orders.fulfillment_status,
         tracking_number: orders.tracking_number,
+        total: orders.total,
+        currency_code: orders.currency_code,
       })
       .from(orders)
       .where(eq(orders.id, id));
@@ -1138,6 +1251,16 @@ class OrderService {
       no_tracking: data.no_tracking,
       no_tracking_reason: data.no_tracking_reason,
       notify_buyer: data.notify_buyer,
+      notification_sent:
+        Object.prototype.hasOwnProperty.call(data, 'notify_buyer')
+          ? data.notify_buyer === true
+          : undefined,
+      notification_sent_at:
+        Object.prototype.hasOwnProperty.call(data, 'notify_buyer')
+          ? data.notify_buyer === true
+            ? new Date().toISOString()
+            : null
+          : undefined,
       label_url: data.label_url,
       label_file_name: data.label_file_name,
       label_state: data.label_state,
@@ -1156,7 +1279,34 @@ class OrderService {
       delivered_at: data.delivered_at,
     });
     const primaryPackage = getPrimaryPackage(nextPackages);
-    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+    const updatedPackage =
+      nextPackages.find((pkg) => pkg.id === packageId) || primaryPackage;
+    const updateStatus = data.delivered_at
+      ? 'delivered'
+      : updatedPackage?.ship_date
+        ? 'shipped'
+        : existingOrder.status;
+    const updateSubject =
+      updateStatus === 'delivered'
+        ? `Your Kvastram order #${existingOrder.order_number ?? id.slice(0, 8)} was marked delivered`
+        : `Shipping details updated for your Kvastram order #${existingOrder.order_number ?? id.slice(0, 8)}`;
+    const updateMessage =
+      updateStatus === 'delivered'
+        ? 'Your order has been marked as delivered.'
+        : data.no_tracking === true
+          ? 'Shipping details were updated for your order. This package does not include tracking.'
+          : 'Shipping details were updated for your order, including the latest tracking information.';
+    const nextMetadata = mergeWorkflowMetadata(
+      Object.prototype.hasOwnProperty.call(data, 'notify_buyer') &&
+        data.notify_buyer !== false
+        ? appendCommunicationEvent(existingOrder.metadata, {
+            template: updateStatus === 'delivered' ? 'order_update' : 'shipped',
+            subject: updateSubject,
+            message: updateMessage,
+            status: 'queued',
+          })
+        : existingOrder.metadata,
+      {
       workflow_status: data.delivered_at ? 'delivered' : undefined,
       shipped_at:
         getWorkflowMetadata(existingOrder.metadata).shipped_at ||
@@ -1164,7 +1314,8 @@ class OrderService {
         null,
       delivered_at: data.delivered_at,
       packages: nextPackages,
-    });
+      }
+    );
     const trackingFields = deriveLegacyTrackingFields(nextPackages);
 
     const [updated] = await db
@@ -1190,6 +1341,23 @@ class OrderService {
       })
       .where(eq(orders.id, id))
       .returning();
+
+    if (
+      existingOrder.email &&
+      Object.prototype.hasOwnProperty.call(data, 'notify_buyer') &&
+      data.notify_buyer !== false
+    ) {
+      sendStatusNotification({
+        email: existingOrder.email,
+        order_number: existingOrder.order_number ?? id.slice(0, 8),
+        total: existingOrder.total,
+        currency_code: existingOrder.currency_code,
+        status: data.delivered_at ? 'delivered' : 'shipped',
+        tracking_number: updatedPackage?.tracking_number || trackingFields.tracking_number,
+        shipping_carrier: updatedPackage?.carrier || trackingFields.shipping_carrier,
+        tracking_link: updatedPackage?.tracking_url || trackingFields.tracking_link,
+      });
+    }
 
     return applyWorkflowSummary(updated as Record<string, any>);
   }
@@ -1716,14 +1884,21 @@ class OrderService {
         dueSoon += 1;
       }
 
+      const workflowSummary = buildWorkflowSummary(row);
+      const hasTracking = workflowSummary.has_tracking;
+      const trackingExempt =
+        workflowSummary.primary_package?.no_tracking === true ||
+        workflowSummary.packages?.some((pkg) => pkg.no_tracking === true) === true;
+
       if (
         (workflowStatus === 'processing' || workflowStatus === 'shipped') &&
-        !row.tracking_number
+        !hasTracking &&
+        !trackingExempt
       ) {
         missingTracking += 1;
       }
 
-      if (workflowStatus === 'shipped' && !row.tracking_number) {
+      if (workflowStatus === 'shipped' && !hasTracking && !trackingExempt) {
         shippedMissingTracking += 1;
       }
 
@@ -1794,7 +1969,7 @@ class OrderService {
 
       if (workflowStatus === 'shipped' || workflowStatus === 'delivered') {
         shippedOrDelivered += 1;
-        if (row.tracking_number) {
+        if (hasTracking || trackingExempt) {
           shippedOrDeliveredWithTracking += 1;
         }
       }
