@@ -777,6 +777,188 @@ class OrderService {
     };
   }
 
+  async getFulfillmentMetrics() {
+    const orderRows = await db
+      .select({
+        id: orders.id,
+        status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
+        tracking_number: orders.tracking_number,
+        metadata: orders.metadata,
+        created_at: orders.created_at,
+        updated_at: orders.updated_at,
+      })
+      .from(orders);
+
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(now);
+    todayEnd.setHours(23, 59, 59, 999);
+
+    let dueToday = 0;
+    let overdue = 0;
+    let missingTracking = 0;
+    let deliveredAwaitingFollowup = 0;
+    let delayedOrders = 0;
+    let packagingIncomplete = 0;
+    let shippableOrders = 0;
+    let shippedOrDelivered = 0;
+    let onTimeShipped = 0;
+    let shippedWithShipBy = 0;
+    let processingTimeTotalMs = 0;
+    let processingTimeCount = 0;
+    const alerts: Array<{
+      key: string;
+      label: string;
+      count: number;
+      severity: 'info' | 'warning' | 'danger';
+    }> = [];
+
+    for (const row of orderRows) {
+      const workflowStatus = deriveWorkflowStatus(row);
+      const metadata = getWorkflowMetadata(row.metadata);
+      const shipBy = metadata.ship_by_date
+        ? new Date(metadata.ship_by_date)
+        : null;
+      const hasValidShipBy = !!shipBy && !Number.isNaN(shipBy.getTime());
+      const isActive =
+        workflowStatus === 'pending' || workflowStatus === 'processing';
+
+      if (
+        hasValidShipBy &&
+        shipBy >= todayStart &&
+        shipBy <= todayEnd &&
+        isActive
+      ) {
+        dueToday += 1;
+      }
+
+      if (hasValidShipBy && shipBy < todayStart && isActive) {
+        overdue += 1;
+      }
+
+      if (workflowStatus === 'processing' && !row.tracking_number) {
+        missingTracking += 1;
+      }
+
+      const communications = metadata.communication_events || [];
+      const hasDeliveryFollowup = communications.some(
+        (event) => event.template === 'delivered_followup'
+      );
+      if (workflowStatus === 'delivered' && !hasDeliveryFollowup) {
+        deliveredAwaitingFollowup += 1;
+      }
+
+      const shippedAt = metadata.shipped_at ? new Date(metadata.shipped_at) : null;
+      const deliveredAt = metadata.delivered_at
+        ? new Date(metadata.delivered_at)
+        : null;
+      if (
+        workflowStatus === 'shipped' &&
+        shippedAt &&
+        !Number.isNaN(shippedAt.getTime()) &&
+        now.getTime() - shippedAt.getTime() > 7 * 24 * 60 * 60 * 1000
+      ) {
+        delayedOrders += 1;
+      }
+
+      const checklist = metadata.packaging_checklist || {};
+      const checklistValues = [
+        checklist.product_quality_checked,
+        checklist.size_color_verified,
+        checklist.care_card_included,
+        checklist.thank_you_note_included,
+        checklist.invoice_included,
+      ];
+      if (
+        workflowStatus === 'processing' &&
+        checklistValues.some((value) => value !== true)
+      ) {
+        packagingIncomplete += 1;
+      }
+
+      if (!['cancelled', 'refunded'].includes(workflowStatus)) {
+        shippableOrders += 1;
+      }
+
+      if (workflowStatus === 'shipped' || workflowStatus === 'delivered') {
+        shippedOrDelivered += 1;
+      }
+
+      if (hasValidShipBy && shippedAt && !Number.isNaN(shippedAt.getTime())) {
+        shippedWithShipBy += 1;
+        if (shippedAt <= shipBy) {
+          onTimeShipped += 1;
+        }
+      }
+
+      if (
+        row.created_at &&
+        shippedAt &&
+        !Number.isNaN(shippedAt.getTime())
+      ) {
+        const createdAt = new Date(row.created_at);
+        if (!Number.isNaN(createdAt.getTime()) && shippedAt >= createdAt) {
+          processingTimeTotalMs += shippedAt.getTime() - createdAt.getTime();
+          processingTimeCount += 1;
+        }
+      } else if (
+        row.created_at &&
+        deliveredAt &&
+        !Number.isNaN(deliveredAt.getTime())
+      ) {
+        const createdAt = new Date(row.created_at);
+        if (!Number.isNaN(createdAt.getTime()) && deliveredAt >= createdAt) {
+          processingTimeTotalMs += deliveredAt.getTime() - createdAt.getTime();
+          processingTimeCount += 1;
+        }
+      }
+    }
+
+    const pushAlert = (
+      key: string,
+      label: string,
+      count: number,
+      severity: 'info' | 'warning' | 'danger'
+    ) => {
+      if (count > 0) alerts.push({ key, label, count, severity });
+    };
+
+    pushAlert('overdue', 'Orders past ship-by date', overdue, 'danger');
+    pushAlert('missing_tracking', 'Processing orders missing tracking', missingTracking, 'warning');
+    pushAlert(
+      'delivered_followup',
+      'Delivered orders awaiting follow-up',
+      deliveredAwaitingFollowup,
+      'info'
+    );
+    pushAlert('packaging_incomplete', 'Processing orders with incomplete packaging checks', packagingIncomplete, 'warning');
+
+    return {
+      due_today: dueToday,
+      overdue,
+      missing_tracking: missingTracking,
+      delivered_awaiting_followup: deliveredAwaitingFollowup,
+      delayed_orders: delayedOrders,
+      packaging_incomplete: packagingIncomplete,
+      tracking_coverage_percent:
+        shippableOrders > 0
+          ? Math.round((shippedOrDelivered / shippableOrders) * 100)
+          : 0,
+      on_time_shipping_percent:
+        shippedWithShipBy > 0
+          ? Math.round((onTimeShipped / shippedWithShipBy) * 100)
+          : 0,
+      average_processing_hours:
+        processingTimeCount > 0
+          ? Math.round(processingTimeTotalMs / processingTimeCount / 36_000) / 100
+          : 0,
+      alerts,
+    };
+  }
+
   // Helper for Invoice
   async getInvoiceData(id: string) {
     // Same logic as getOrder but structured for PDF

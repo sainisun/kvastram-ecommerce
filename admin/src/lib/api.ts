@@ -750,6 +750,18 @@ export const api = {
     return response.data;
   },
 
+  getFulfillmentMetrics: async () => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/orders/stats/fulfillment`,
+      {
+        // No Authorization header needed - cookie is sent automatically
+      }
+    );
+    if (!res.ok) throw new Error('Failed to fetch fulfillment metrics');
+    const response = await res.json();
+    return response.data;
+  },
+
   updateOrdersBulk: async (order_ids: string[], status: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/bulk-update-status`,

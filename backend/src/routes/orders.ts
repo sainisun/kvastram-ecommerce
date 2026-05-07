@@ -60,6 +60,19 @@ ordersRouter.get(
   })
 );
 
+// GET /orders/stats/fulfillment - Operational fulfillment metrics
+ordersRouter.get(
+  '/stats/fulfillment',
+  asyncHandler(async (c) => {
+    const stats = await orderService.getFulfillmentMetrics();
+    return successResponse(
+      c,
+      stats,
+      'Fulfillment metrics retrieved successfully'
+    );
+  })
+);
+
 // GET /orders/stats/chart - Revenue chart data for dashboard
 ordersRouter.get(
   '/stats/chart',

@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
+  Activity,
   AlertTriangle,
+  BarChart3,
   CalendarDays,
   CheckCircle2,
   Clock3,
+  Gauge,
+  MessageSquare,
   PackageCheck,
   RefreshCw,
   Truck,
@@ -47,6 +51,24 @@ interface FulfillmentOrder {
     overdue_ship_by?: boolean;
     overdue_tracking?: boolean;
   };
+}
+
+interface FulfillmentMetrics {
+  due_today: number;
+  overdue: number;
+  missing_tracking: number;
+  delivered_awaiting_followup: number;
+  delayed_orders: number;
+  packaging_incomplete: number;
+  tracking_coverage_percent: number;
+  on_time_shipping_percent: number;
+  average_processing_hours: number;
+  alerts: Array<{
+    key: string;
+    label: string;
+    count: number;
+    severity: 'info' | 'warning' | 'danger';
+  }>;
 }
 
 const tabLabels: Record<FulfillmentTab, string> = {
@@ -142,17 +164,23 @@ function nextAction(order: FulfillmentOrder) {
 
 export default function FulfillmentPage() {
   const [orders, setOrders] = useState<FulfillmentOrder[]>([]);
+  const [metrics, setMetrics] = useState<FulfillmentMetrics | null>(null);
   const [activeTab, setActiveTab] = useState<FulfillmentTab>('new');
   const [loading, setLoading] = useState(true);
 
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await api.getOrders(200, 0, '', 'all');
+      const [data, fulfillmentMetrics] = await Promise.all([
+        api.getOrders(200, 0, '', 'all'),
+        api.getFulfillmentMetrics(),
+      ]);
       setOrders(data?.orders || data || []);
+      setMetrics(fulfillmentMetrics || null);
     } catch (error) {
       console.error('Failed to fetch fulfillment queue:', error);
       setOrders([]);
+      setMetrics(null);
     } finally {
       setLoading(false);
     }
@@ -190,6 +218,10 @@ export default function FulfillmentPage() {
   const missingTrackingCount = orders.filter(
     (order) => order.status === 'processing' && !order.workflow?.has_tracking
   ).length;
+  const dueTodayCount = metrics?.due_today ?? counts.due_today;
+  const overdueMetric = metrics?.overdue ?? overdueCount;
+  const missingTrackingMetric =
+    metrics?.missing_tracking ?? missingTrackingCount;
 
   return (
     <div className="space-y-6 px-4 pb-8 md:px-8">
@@ -207,24 +239,24 @@ export default function FulfillmentPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Due today"
-          value={counts.due_today}
+          value={dueTodayCount}
           icon={CalendarDays}
           hint="Pending or processing orders with today's ship-by date."
-          tone={counts.due_today > 0 ? 'warning' : 'default'}
+          tone={dueTodayCount > 0 ? 'warning' : 'default'}
         />
         <MetricCard
           label="Overdue"
-          value={overdueCount}
+          value={overdueMetric}
           icon={AlertTriangle}
           hint="Ship-by date has passed."
-          tone={overdueCount > 0 ? 'danger' : 'default'}
+          tone={overdueMetric > 0 ? 'danger' : 'default'}
         />
         <MetricCard
           label="Missing tracking"
-          value={missingTrackingCount}
+          value={missingTrackingMetric}
           icon={Truck}
           hint="Processing orders still need tracking details."
-          tone={missingTrackingCount > 0 ? 'warning' : 'default'}
+          tone={missingTrackingMetric > 0 ? 'warning' : 'default'}
         />
         <MetricCard
           label="In transit"
@@ -234,6 +266,94 @@ export default function FulfillmentPage() {
           tone="accent"
         />
       </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <MetricCard
+          label="Delivered follow-up"
+          value={metrics?.delivered_awaiting_followup ?? 0}
+          icon={MessageSquare}
+          hint="Delivered orders that still need a buyer follow-up."
+          tone={(metrics?.delivered_awaiting_followup ?? 0) > 0 ? 'warning' : 'default'}
+        />
+        <MetricCard
+          label="Packaging incomplete"
+          value={metrics?.packaging_incomplete ?? 0}
+          icon={PackageCheck}
+          hint="Processing orders missing personal-brand pack-out checks."
+          tone={(metrics?.packaging_incomplete ?? 0) > 0 ? 'warning' : 'default'}
+        />
+        <MetricCard
+          label="Tracking coverage"
+          value={`${metrics?.tracking_coverage_percent ?? 0}%`}
+          icon={Gauge}
+          hint="Share of active non-cancelled orders that reached shipment."
+          tone="accent"
+        />
+        <MetricCard
+          label="On-time shipping"
+          value={`${metrics?.on_time_shipping_percent ?? 0}%`}
+          icon={BarChart3}
+          hint="Orders shipped on or before their ship-by date."
+          tone="accent"
+        />
+      </div>
+
+      <Surface className="overflow-hidden">
+        <div className="grid gap-4 px-5 py-5 md:grid-cols-[0.9fr_1.1fr] md:px-6">
+          <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--kv-accent-deep)]">
+                <Activity size={18} />
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Processing time
+                </p>
+                <p className="mt-1 text-xl font-semibold text-[var(--kv-text)]">
+                  {metrics?.average_processing_hours ?? 0}h
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+              Automation alerts
+            </p>
+            {metrics?.alerts?.length ? (
+              <div className="grid gap-2 md:grid-cols-2">
+                {metrics.alerts.map((alert) => (
+                  <div
+                    key={alert.key}
+                    className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-3 text-sm"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="font-medium text-[var(--kv-text)]">
+                        {alert.label}
+                      </span>
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          alert.severity === 'danger'
+                            ? 'bg-[var(--kv-danger)]/10 text-[var(--kv-danger)]'
+                            : alert.severity === 'warning'
+                              ? 'bg-[var(--kv-warning)]/15 text-[var(--kv-text)]'
+                              : 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
+                        }`}
+                      >
+                        {alert.count}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                No automation alerts right now.
+              </p>
+            )}
+          </div>
+        </div>
+      </Surface>
 
       <Surface className="overflow-hidden">
         <div className="border-b border-[var(--kv-border)] px-5 py-4 md:px-6">
