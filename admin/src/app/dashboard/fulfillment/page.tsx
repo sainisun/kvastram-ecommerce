@@ -63,6 +63,8 @@ interface FulfillmentMetrics {
   tracking_coverage_percent: number;
   on_time_shipping_percent: number;
   average_processing_hours: number;
+  issue_refund_rate_percent: number;
+  repeat_after_followup_percent: number;
   alerts: Array<{
     key: string;
     label: string;
@@ -171,11 +173,26 @@ export default function FulfillmentPage() {
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const [data, fulfillmentMetrics] = await Promise.all([
+      const [firstPage, fulfillmentMetrics] = await Promise.all([
         api.getOrders(200, 0, '', 'all'),
         api.getFulfillmentMetrics(),
       ]);
-      setOrders(data?.orders || data || []);
+      let allOrders: FulfillmentOrder[] = firstPage?.orders || firstPage || [];
+      const totalPages = firstPage?.pagination?.total_pages || 1;
+
+      if (totalPages > 1) {
+        const remainingPages = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, index) =>
+            api.getOrders(200, (index + 1) * 200, '', 'all')
+          )
+        );
+        allOrders = [
+          ...allOrders,
+          ...remainingPages.flatMap((page) => page?.orders || page || []),
+        ];
+      }
+
+      setOrders(allOrders);
       setMetrics(fulfillmentMetrics || null);
     } catch (error) {
       console.error('Failed to fetch fulfillment queue:', error);
@@ -286,7 +303,7 @@ export default function FulfillmentPage() {
           label="Tracking coverage"
           value={`${metrics?.tracking_coverage_percent ?? 0}%`}
           icon={Gauge}
-          hint="Share of active non-cancelled orders that reached shipment."
+          hint="Shipped or delivered orders that have tracking attached."
           tone="accent"
         />
         <MetricCard
@@ -294,6 +311,23 @@ export default function FulfillmentPage() {
           value={`${metrics?.on_time_shipping_percent ?? 0}%`}
           icon={BarChart3}
           hint="Orders shipped on or before their ship-by date."
+          tone="accent"
+        />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <MetricCard
+          label="Issue/refund rate"
+          value={`${metrics?.issue_refund_rate_percent ?? 0}%`}
+          icon={AlertTriangle}
+          hint="Share of orders cancelled or refunded."
+          tone={(metrics?.issue_refund_rate_percent ?? 0) > 0 ? 'warning' : 'default'}
+        />
+        <MetricCard
+          label="Repeat after follow-up"
+          value={`${metrics?.repeat_after_followup_percent ?? 0}%`}
+          icon={MessageSquare}
+          hint="Delivered follow-ups that were followed by another order."
           tone="accent"
         />
       </div>

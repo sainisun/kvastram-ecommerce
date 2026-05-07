@@ -678,10 +678,14 @@ export const api = {
     id: string,
     data: {
       template:
+        | 'order_received'
         | 'processing_started'
         | 'packed_with_care'
+        | 'shipped'
         | 'delayed'
         | 'delivered_followup'
+        | 'review_request'
+        | 'return_refund_update'
         | 'custom';
       subject: string;
       message: string;
@@ -853,6 +857,27 @@ export const api = {
       xhr.timeout = 120000;
       xhr.send(formData);
     });
+  },
+
+  uploadOrderLabel: async (
+    file: File
+  ): Promise<{
+    url: string;
+    filename: string;
+    originalName: string;
+    size: number;
+    type: string;
+  }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetchWithTimeout(`${API_BASE_URL}/upload/order-label`, {
+      method: 'POST',
+      body: formData,
+      timeout: 120000,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to upload order label');
+    return res.json();
   },
 
   // Settings endpoints

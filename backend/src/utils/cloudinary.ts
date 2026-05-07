@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 
 interface CloudinaryUploadOptions {
   folder?: string;
-  resourceType?: 'image' | 'video';
+  resourceType?: 'image' | 'video' | 'raw';
 }
 
 interface CloudinaryUploadResult {
@@ -110,6 +110,16 @@ export async function uploadVideoToCloudinary(
   return uploadImageToCloudinary(file, {
     ...options,
     resourceType: 'video',
+  });
+}
+
+export async function uploadRawFileToCloudinary(
+  file: File,
+  options: CloudinaryUploadOptions = {}
+): Promise<CloudinaryUploadResult> {
+  return uploadImageToCloudinary(file, {
+    ...options,
+    resourceType: 'raw',
   });
 }
 

@@ -235,10 +235,14 @@ const CarrierRatesSchema = z.object({
 
 const BuyerUpdateSchema = z.object({
   template: z.enum([
+    'order_received',
     'processing_started',
     'packed_with_care',
+    'shipped',
     'delayed',
     'delivered_followup',
+    'review_request',
+    'return_refund_update',
     'custom',
   ]),
   subject: z.string().trim().min(3).max(180),

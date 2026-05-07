@@ -10,6 +10,7 @@ import {
 } from '../utils/safe-file-upload';
 import {
   uploadImageToCloudinary,
+  uploadRawFileToCloudinary,
   uploadVideoToCloudinary,
   uploadFromUrl,
 } from '../utils/cloudinary';
@@ -102,6 +103,63 @@ uploadRouter.post('/', async (c) => {
   } catch (error: any) {
     console.error('❌ Upload error:', error);
     return c.json({ error: 'Failed to upload file', details: error.message }, 500);
+  }
+});
+
+uploadRouter.post('/order-label', async (c) => {
+  try {
+    const body = await c.req.parseBody();
+    const file = body['file'];
+
+    if (!file || !(file instanceof File)) {
+      return c.json({ error: 'No label PDF uploaded' }, 400);
+    }
+
+    const effectiveMimeType = file.type || 'application/pdf';
+    const validationResult = FileUploadSchema.safeParse({
+      filename: file.name,
+      mimeType: effectiveMimeType,
+      size: file.size,
+    });
+
+    if (!validationResult.success) {
+      return c.json(
+        { error: 'Invalid label upload parameters', details: validationResult.error.errors },
+        400
+      );
+    }
+
+    if (
+      !file.name.toLowerCase().endsWith('.pdf') ||
+      effectiveMimeType !== 'application/pdf'
+    ) {
+      return c.json({ error: 'Only PDF label files are supported' }, 400);
+    }
+
+    const validation = validateFileUpload(file.name, effectiveMimeType, file.size);
+    if (!validation.valid) {
+      return c.json({ error: validation.error }, 400);
+    }
+
+    const result = await uploadRawFileToCloudinary(file, {
+      folder: 'kvastram/orders/labels',
+    });
+
+    const buffer = await file.arrayBuffer();
+    const fileHash = createHash('sha256').update(Buffer.from(buffer)).digest('hex');
+
+    return c.json({
+      url: result.secureUrl,
+      publicId: result.publicId,
+      filename: validation.secureFilename || file.name,
+      originalName: file.name,
+      size: file.size,
+      type: effectiveMimeType,
+      hash: fileHash,
+    });
+  } catch (error: any) {
+    console.error('Label upload error:', error);
+    return c.json({ error: 'Failed to upload label PDF', details: error.message }, 500);
   }
 });
 

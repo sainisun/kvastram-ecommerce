@@ -785,6 +785,8 @@ class OrderService {
         payment_status: orders.payment_status,
         fulfillment_status: orders.fulfillment_status,
         tracking_number: orders.tracking_number,
+        customer_id: orders.customer_id,
+        email: orders.email,
         metadata: orders.metadata,
         created_at: orders.created_at,
         updated_at: orders.updated_at,
@@ -803,12 +805,17 @@ class OrderService {
     let deliveredAwaitingFollowup = 0;
     let delayedOrders = 0;
     let packagingIncomplete = 0;
-    let shippableOrders = 0;
     let shippedOrDelivered = 0;
+    let shippedOrDeliveredWithTracking = 0;
+    let issueOrRefundOrders = 0;
+    let dueSoon = 0;
+    let shippedMissingTracking = 0;
     let onTimeShipped = 0;
     let shippedWithShipBy = 0;
     let processingTimeTotalMs = 0;
     let processingTimeCount = 0;
+    let deliveredFollowupCount = 0;
+    let repeatAfterFollowupCount = 0;
     const alerts: Array<{
       key: string;
       label: string;
@@ -839,8 +846,24 @@ class OrderService {
         overdue += 1;
       }
 
-      if (workflowStatus === 'processing' && !row.tracking_number) {
+      if (
+        hasValidShipBy &&
+        shipBy > now &&
+        shipBy.getTime() - now.getTime() <= 24 * 60 * 60 * 1000 &&
+        isActive
+      ) {
+        dueSoon += 1;
+      }
+
+      if (
+        (workflowStatus === 'processing' || workflowStatus === 'shipped') &&
+        !row.tracking_number
+      ) {
         missingTracking += 1;
+      }
+
+      if (workflowStatus === 'shipped' && !row.tracking_number) {
+        shippedMissingTracking += 1;
       }
 
       const communications = metadata.communication_events || [];
@@ -849,6 +872,31 @@ class OrderService {
       );
       if (workflowStatus === 'delivered' && !hasDeliveryFollowup) {
         deliveredAwaitingFollowup += 1;
+      }
+
+      const followupEvents = communications.filter(
+        (event) => event.template === 'delivered_followup' && event.sent_at
+      );
+      if (followupEvents.length > 0) {
+        deliveredFollowupCount += 1;
+        const firstFollowupAt = followupEvents
+          .map((event) => new Date(event.sent_at as string))
+          .filter((date) => !Number.isNaN(date.getTime()))
+          .sort((a, b) => a.getTime() - b.getTime())[0];
+        if (firstFollowupAt) {
+          const rowCustomerKey = row.customer_id || row.email;
+          const hasLaterOrder = orderRows.some((candidate) => {
+            const candidateCustomerKey = candidate.customer_id || candidate.email;
+            if (!rowCustomerKey || candidateCustomerKey !== rowCustomerKey) return false;
+            if (candidate.id === row.id || !candidate.created_at) return false;
+            const candidateCreatedAt = new Date(candidate.created_at);
+            return (
+              !Number.isNaN(candidateCreatedAt.getTime()) &&
+              candidateCreatedAt > firstFollowupAt
+            );
+          });
+          if (hasLaterOrder) repeatAfterFollowupCount += 1;
+        }
       }
 
       const shippedAt = metadata.shipped_at ? new Date(metadata.shipped_at) : null;
@@ -879,12 +927,15 @@ class OrderService {
         packagingIncomplete += 1;
       }
 
-      if (!['cancelled', 'refunded'].includes(workflowStatus)) {
-        shippableOrders += 1;
+      if (workflowStatus === 'cancelled' || workflowStatus === 'refunded') {
+        issueOrRefundOrders += 1;
       }
 
       if (workflowStatus === 'shipped' || workflowStatus === 'delivered') {
         shippedOrDelivered += 1;
+        if (row.tracking_number) {
+          shippedOrDeliveredWithTracking += 1;
+        }
       }
 
       if (hasValidShipBy && shippedAt && !Number.isNaN(shippedAt.getTime())) {
@@ -927,7 +978,14 @@ class OrderService {
     };
 
     pushAlert('overdue', 'Orders past ship-by date', overdue, 'danger');
-    pushAlert('missing_tracking', 'Processing orders missing tracking', missingTracking, 'warning');
+    pushAlert('due_soon', 'Orders due to ship in the next 24 hours', dueSoon, 'warning');
+    pushAlert('missing_tracking', 'Active orders missing tracking', missingTracking, 'warning');
+    pushAlert(
+      'shipped_missing_tracking',
+      'Shipped orders missing tracking',
+      shippedMissingTracking,
+      'danger'
+    );
     pushAlert(
       'delivered_followup',
       'Delivered orders awaiting follow-up',
@@ -943,9 +1001,17 @@ class OrderService {
       delivered_awaiting_followup: deliveredAwaitingFollowup,
       delayed_orders: delayedOrders,
       packaging_incomplete: packagingIncomplete,
+      issue_refund_rate_percent:
+        orderRows.length > 0
+          ? Math.round((issueOrRefundOrders / orderRows.length) * 100)
+          : 0,
+      repeat_after_followup_percent:
+        deliveredFollowupCount > 0
+          ? Math.round((repeatAfterFollowupCount / deliveredFollowupCount) * 100)
+          : 0,
       tracking_coverage_percent:
-        shippableOrders > 0
-          ? Math.round((shippedOrDelivered / shippableOrders) * 100)
+        shippedOrDelivered > 0
+          ? Math.round((shippedOrDeliveredWithTracking / shippedOrDelivered) * 100)
           : 0,
       on_time_shipping_percent:
         shippedWithShipBy > 0

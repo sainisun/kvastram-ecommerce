@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Send,
   Truck,
+  Upload,
   User,
 } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -42,10 +43,14 @@ type WorkflowStatus =
 
 type LabelStatus = 'draft' | 'created' | 'printed' | 'voided' | 'refunded';
 type BuyerUpdateTemplate =
+  | 'order_received'
   | 'processing_started'
   | 'packed_with_care'
+  | 'shipped'
   | 'delayed'
   | 'delivered_followup'
+  | 'review_request'
+  | 'return_refund_update'
   | 'custom';
 
 const STATUS_LABELS: Record<WorkflowStatus, string> = {
@@ -77,6 +82,12 @@ const BUYER_UPDATE_TEMPLATES: Record<
   BuyerUpdateTemplate,
   { label: string; subject: string; message: string }
 > = {
+  order_received: {
+    label: 'Order received',
+    subject: 'We have received your Kvastram order',
+    message:
+      'Thank you for your Kvastram order. We have received it safely and will begin preparing it with care.',
+  },
   processing_started: {
     label: 'Processing started',
     subject: 'Your Kvastram order is now being prepared',
@@ -89,6 +100,12 @@ const BUYER_UPDATE_TEMPLATES: Record<
     message:
       'Your Kvastram piece has been checked, packed with care, and is moving into shipping. Thank you for giving us the time to prepare it properly.',
   },
+  shipped: {
+    label: 'Shipped',
+    subject: 'Your Kvastram order is on its way',
+    message:
+      'Your Kvastram order has been shipped. We have included the tracking details below so you can follow its journey.',
+  },
   delayed: {
     label: 'Delayed',
     subject: 'A quick update on your Kvastram order',
@@ -100,6 +117,18 @@ const BUYER_UPDATE_TEMPLATES: Record<
     subject: 'Checking in on your Kvastram order',
     message:
       'We hope your Kvastram order reached you safely. If anything needs attention, reply to this email and our team will help.',
+  },
+  review_request: {
+    label: 'Review request',
+    subject: 'How did your Kvastram piece feel?',
+    message:
+      'We hope your Kvastram piece feels special. If you have a moment, your review helps other buyers understand the craft and care behind it.',
+  },
+  return_refund_update: {
+    label: 'Return/refund update',
+    subject: 'Update on your Kvastram support request',
+    message:
+      'We are sharing an update on your return or refund request. Reply to this email if anything needs more attention from our team.',
   },
   custom: {
     label: 'Custom',
@@ -376,6 +405,7 @@ export default function OrderDetailsPage() {
   const [labelForm, setLabelForm] = useState<LabelFormState>(() =>
     buildLabelForm()
   );
+  const [labelUploading, setLabelUploading] = useState(false);
   const [carrierReadiness, setCarrierReadiness] =
     useState<CarrierReadiness | null>(null);
   const [carrierRates, setCarrierRates] = useState<CarrierRatesResult | null>(
@@ -617,6 +647,55 @@ export default function OrderDetailsPage() {
       );
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleLabelUpload = async (file?: File | null) => {
+    if (!file) return;
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      showNotification('error', 'Only PDF label files can be uploaded');
+      return;
+    }
+
+    try {
+      setLabelUploading(true);
+      const uploaded = await api.uploadOrderLabel(file);
+      const nextLabelForm = {
+        ...labelForm,
+        label_status: 'created' as LabelStatus,
+        label_url: uploaded.url,
+        label_file_name: uploaded.originalName || uploaded.filename || file.name,
+      };
+      setLabelForm(nextLabelForm);
+      await api.updateOrderLabel(id, {
+        label_status: 'created',
+        label_url: nextLabelForm.label_url,
+        label_file_name: nextLabelForm.label_file_name,
+        label_cost: parseMoneyToMinorUnits(nextLabelForm.label_cost),
+        label_currency:
+          normalizeWorkflowValue(nextLabelForm.label_currency)?.toUpperCase() ||
+          order?.currency_code ||
+          'INR',
+        package_weight_grams: parseOptionalInteger(
+          nextLabelForm.package_weight_grams
+        ),
+        package_length_cm: parseOptionalInteger(nextLabelForm.package_length_cm),
+        package_width_cm: parseOptionalInteger(nextLabelForm.package_width_cm),
+        package_height_cm: parseOptionalInteger(nextLabelForm.package_height_cm),
+        carrier_service: normalizeWorkflowValue(nextLabelForm.carrier_service),
+      });
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
+      setLabelForm(buildLabelForm(refreshedOrder));
+      showNotification('success', 'Label PDF uploaded and attached');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to upload label PDF'
+      );
+    } finally {
+      setLabelUploading(false);
     }
   };
 
@@ -1605,6 +1684,21 @@ export default function OrderDetailsPage() {
                   />
                 </label>
               </div>
+
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)]">
+                <Upload size={16} />
+                {labelUploading ? 'Uploading label...' : 'Upload label PDF'}
+                <input
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  className="sr-only"
+                  disabled={labelUploading || updating}
+                  onChange={(event) => {
+                    void handleLabelUpload(event.target.files?.[0] || null);
+                    event.target.value = '';
+                  }}
+                />
+              </label>
 
               <label className="text-sm text-[var(--kv-text)]">
                 <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
