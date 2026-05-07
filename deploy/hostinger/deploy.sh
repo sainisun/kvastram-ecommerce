@@ -25,13 +25,13 @@ compose_up_with_retry() {
   local retry_label="$1"
   shift
 
-  if docker compose -f "$COMPOSE_FILE" up -d --build "$@"; then
+  if docker compose -f "$COMPOSE_FILE" up -d --build --no-deps "$@"; then
     return 0
   fi
 
   echo "Retrying $retry_label after removing stale containers..."
   docker compose -f "$COMPOSE_FILE" rm -fsv "$@" || true
-  docker compose -f "$COMPOSE_FILE" up -d --build "$@"
+  docker compose -f "$COMPOSE_FILE" up -d --build --no-deps "$@"
 }
 
 wait_for_service_health() {
