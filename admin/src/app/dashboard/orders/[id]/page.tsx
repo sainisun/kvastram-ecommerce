@@ -189,6 +189,17 @@ function parseMoneyToMinorUnits(value: string) {
   return Number.isFinite(parsed) ? Math.max(0, Math.round(parsed * 100)) : null;
 }
 
+function formatDateLabel(value?: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
 function formatMinorUnitsForInput(value?: number | null) {
   if (typeof value !== 'number') return '';
   return String(value / 100);
@@ -352,6 +363,116 @@ interface CarrierRatesResult {
   message?: string;
 }
 
+function getOrderDisplayNumber(order?: OrderDetails | null) {
+  return order?.order_number || order?.display_id || order?.id || 'your order';
+}
+
+function getBuyerFirstName(order?: OrderDetails | null) {
+  const firstName = order?.customer_first_name?.trim();
+  return firstName && firstName.length > 0 ? firstName : 'there';
+}
+
+function hasCommunicationTemplate(
+  order: OrderDetails | null,
+  template: BuyerUpdateTemplate
+) {
+  return (order?.workflow?.communication_events || []).some(
+    (event) => event.template === template
+  );
+}
+
+function buildBuyerUpdateDraft(
+  order: OrderDetails | null,
+  template: BuyerUpdateTemplate
+) {
+  const defaults = BUYER_UPDATE_TEMPLATES[template];
+  if (!order) {
+    return {
+      template,
+      subject: defaults.subject,
+      message: defaults.message,
+      include_tracking: template === 'shipped',
+    };
+  }
+
+  const firstName = getBuyerFirstName(order);
+  const orderNumber = getOrderDisplayNumber(order);
+  const etaStart = formatDateLabel(order.workflow?.estimated_delivery_start);
+  const etaEnd = formatDateLabel(order.workflow?.estimated_delivery_end);
+  const etaRange =
+    etaStart && etaEnd
+      ? `${etaStart} to ${etaEnd}`
+      : etaStart || etaEnd || 'the expected delivery window';
+  const shipBy = formatDateLabel(order.workflow?.ship_by_date);
+  const trackingTone = order.tracking_number
+    ? 'You can use the tracking details in this email to follow every movement.'
+    : 'We will share tracking as soon as it is ready.';
+
+  const dynamicMessages: Record<BuyerUpdateTemplate, string> = {
+    order_received: `Hi ${firstName},\n\nThank you for placing order #${orderNumber} with Kvastram. We have received it safely and our team will begin preparing it with care.\n\nWe will keep you posted as it moves through the next steps.`,
+    processing_started: `Hi ${firstName},\n\nYour Kvastram order #${orderNumber} is now being prepared. We are checking the piece carefully before it moves to packing.\n\n${
+      shipBy
+        ? `We are currently working toward a ship-by date of ${shipBy}.`
+        : 'We will share the shipping timeline as soon as it is locked in.'
+    }`,
+    packed_with_care: `Hi ${firstName},\n\nYour order #${orderNumber} has been quality checked and packed with care. It is now moving into the shipping stage.\n\n${
+      etaStart || etaEnd
+        ? `At the moment, we expect delivery around ${etaRange}.`
+        : 'We will share the delivery window as soon as the shipment is booked.'
+    }`,
+    shipped: `Hi ${firstName},\n\nYour Kvastram order #${orderNumber} is now on its way.\n\n${trackingTone}\n\n${
+      etaStart || etaEnd
+        ? `Our current delivery estimate is ${etaRange}.`
+        : 'We will keep a close eye on the shipment while it travels to you.'
+    }`,
+    delayed: `Hi ${firstName},\n\nA quick update on order #${orderNumber}: we need a little more time before it can move to the next step.\n\nWe are actively watching it and will send the next update as soon as we have firmer movement to share.`,
+    delivered_followup: `Hi ${firstName},\n\nWe are checking in on order #${orderNumber} and hope it reached you safely.\n\nIf anything needs attention, simply reply to this email and our team will help right away. If everything feels good, we hope the piece settles beautifully into your wardrobe.`,
+    review_request: `Hi ${firstName},\n\nWe hope order #${orderNumber} feels special in person.\n\nIf you have a moment, a review from you would help other buyers understand the craft and care behind Kvastram.`,
+    return_refund_update: `Hi ${firstName},\n\nWe wanted to share an update on your support request for order #${orderNumber}.\n\nIf anything still needs clarification, reply here and our team will keep it moving for you.`,
+    custom: defaults.message,
+  };
+
+  return {
+    template,
+    subject:
+      template === 'custom'
+        ? defaults.subject
+        : `${defaults.subject} (#${orderNumber})`,
+    message: dynamicMessages[template] || defaults.message,
+    include_tracking: template === 'shipped',
+  };
+}
+
+function getRecommendedBuyerTemplates(order: OrderDetails | null) {
+  if (!order) return ['processing_started', 'packed_with_care'] as BuyerUpdateTemplate[];
+
+  const status = normalizeStatus(order.status);
+  const recommendations: BuyerUpdateTemplate[] = [];
+
+  if (status === 'pending') {
+    recommendations.push('order_received', 'processing_started');
+  } else if (status === 'processing') {
+    recommendations.push('processing_started', 'packed_with_care', 'delayed');
+  } else if (status === 'shipped') {
+    recommendations.push('shipped', 'delayed');
+  } else if (status === 'delivered') {
+    recommendations.push('delivered_followup', 'review_request');
+  } else if (status === 'cancelled' || status === 'refunded') {
+    recommendations.push('return_refund_update');
+  }
+
+  recommendations.push('custom');
+
+  const unique = recommendations.filter(
+    (template, index) => recommendations.indexOf(template) === index
+  );
+  const unsent = unique.filter((template) =>
+    template === 'custom' ? true : !hasCommunicationTemplate(order, template)
+  );
+
+  return unsent.length > 0 ? unsent : unique;
+}
+
 function buildLabelForm(orderData?: OrderDetails | null): LabelFormState {
   const label = orderData?.workflow?.label;
   const currency = label?.currency || orderData?.currency_code || 'INR';
@@ -412,6 +533,8 @@ export default function OrderDetailsPage() {
     null
   );
   const [carrierLoading, setCarrierLoading] = useState(false);
+  const [selectedCarrierProvider, setSelectedCarrierProvider] =
+    useState<CarrierProvider | 'auto'>('auto');
   const [buyerUpdateForm, setBuyerUpdateForm] = useState({
     template: 'processing_started' as BuyerUpdateTemplate,
     subject: BUYER_UPDATE_TEMPLATES.processing_started.subject,
@@ -452,9 +575,13 @@ export default function OrderDetailsPage() {
         try {
           const carrierData = await api.getOrderCarrierReadiness(id);
           setCarrierReadiness(carrierData?.readiness || null);
+          const configuredProvider =
+            carrierData?.readiness?.configured_providers?.[0];
+          setSelectedCarrierProvider(configuredProvider || 'auto');
         } catch (carrierError) {
           console.error('Failed to load carrier readiness:', carrierError);
         }
+        setBuyerUpdateForm(buildBuyerUpdateDraft(orderData, 'processing_started'));
       } catch (error) {
         console.error('Failed to load order:', error);
       } finally {
@@ -485,6 +612,7 @@ export default function OrderDetailsPage() {
   const communicationEvents = [
     ...(order?.workflow?.communication_events || []),
   ].reverse();
+  const recommendedTemplates = getRecommendedBuyerTemplates(order);
 
   const handleStatusChange = async (status: string) => {
     try {
@@ -630,6 +758,11 @@ export default function OrderDetailsPage() {
       try {
         const carrierData = await api.getOrderCarrierReadiness(id);
         setCarrierReadiness(carrierData?.readiness || null);
+        const configuredProvider =
+          carrierData?.readiness?.configured_providers?.[0];
+        if (selectedCarrierProvider === 'auto') {
+          setSelectedCarrierProvider(configuredProvider || 'auto');
+        }
       } catch (carrierError) {
         console.error('Failed to refresh carrier readiness:', carrierError);
       }
@@ -704,6 +837,8 @@ export default function OrderDetailsPage() {
       setCarrierLoading(true);
       const carrierData = await api.getOrderCarrierReadiness(id);
       setCarrierReadiness(carrierData?.readiness || null);
+      const configuredProvider = carrierData?.readiness?.configured_providers?.[0];
+      setSelectedCarrierProvider(configuredProvider || 'auto');
       setCarrierRates(null);
       showNotification('success', 'Carrier readiness refreshed');
     } catch (error: unknown) {
@@ -721,7 +856,12 @@ export default function OrderDetailsPage() {
   const handleCarrierRates = async () => {
     try {
       setCarrierLoading(true);
-      const result = await api.getOrderCarrierRates(id);
+      const result = await api.getOrderCarrierRates(id, {
+        provider:
+          selectedCarrierProvider === 'auto'
+            ? null
+            : selectedCarrierProvider,
+      });
       setCarrierRates(result);
       setCarrierReadiness(result?.readiness || carrierReadiness);
       showNotification('success', 'Carrier rate check completed');
@@ -736,12 +876,9 @@ export default function OrderDetailsPage() {
   };
 
   const handleBuyerTemplateChange = (template: BuyerUpdateTemplate) => {
-    const nextTemplate = BUYER_UPDATE_TEMPLATES[template];
     setBuyerUpdateForm((current) => ({
       ...current,
-      template,
-      subject: nextTemplate.subject,
-      message: nextTemplate.message,
+      ...buildBuyerUpdateDraft(order, template),
     }));
   };
 
@@ -762,6 +899,14 @@ export default function OrderDetailsPage() {
       const refreshed = await api.getOrder(id);
       const refreshedOrder = refreshed?.order || refreshed;
       setOrder(refreshedOrder);
+      setBuyerUpdateForm(
+        buildBuyerUpdateDraft(
+          refreshedOrder,
+          normalizeStatus(refreshedOrder.status) === 'delivered'
+            ? 'review_request'
+            : buyerUpdateForm.template
+        )
+      );
       showNotification('success', 'Buyer update sent');
     } catch (error: unknown) {
       showNotification(
@@ -1302,6 +1447,31 @@ export default function OrderDetailsPage() {
                     </p>
                   </div>
                 </div>
+              </div>
+
+              <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Recommended next updates
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {recommendedTemplates.map((template) => (
+                    <button
+                      key={template}
+                      type="button"
+                      onClick={() => handleBuyerTemplateChange(template)}
+                      className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${
+                        buyerUpdateForm.template === template
+                          ? 'bg-[var(--kv-accent)] text-white'
+                          : 'bg-[var(--kv-soft)] text-[var(--kv-text)]'
+                      }`}
+                    >
+                      {BUYER_UPDATE_TEMPLATES[template].label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-3 text-sm text-[var(--kv-muted)]">
+                  Suggestions adapt to the current order status and hide updates that have already been sent.
+                </p>
               </div>
 
               <label className="text-sm text-[var(--kv-text)]">
@@ -1971,6 +2141,33 @@ export default function OrderDetailsPage() {
                   </div>
                 </div>
               ) : null}
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Provider
+                </span>
+                <select
+                  value={selectedCarrierProvider}
+                  onChange={(event) =>
+                    setSelectedCarrierProvider(
+                      event.target.value as CarrierProvider | 'auto'
+                    )
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                >
+                  <option value="auto">Auto-select first connected provider</option>
+                  {carrierReadiness?.providers?.map((provider) => (
+                    <option
+                      key={provider.provider}
+                      value={provider.provider}
+                      disabled={!provider.configured}
+                    >
+                      {provider.label}
+                      {provider.configured ? '' : ' (needs env)'}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
               {carrierRates?.message ? (
                 <div className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4 text-sm text-[var(--kv-muted)]">
