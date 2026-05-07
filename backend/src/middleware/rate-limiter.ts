@@ -1,5 +1,6 @@
 import { rateLimiter } from 'hono-rate-limiter';
 import { Context } from 'hono';
+import { getClientIp } from '../utils/client-ip';
 
 // Get environment
 const isTest = process.env.NODE_ENV === 'test';
@@ -13,13 +14,7 @@ const createLimiter = (windowMs: number, limit: number) => {
       windowMs: windowMs * 100, // Much longer window in test
       limit: limit * 100, // Much higher limit in test
       standardHeaders: 'draft-7',
-      keyGenerator: (c: Context) => {
-        const forwarded = c.req.header('x-forwarded-for');
-        const realIp = c.req.header('x-real-ip');
-        return forwarded
-          ? forwarded.split(',')[0].trim()
-          : realIp || 'anonymous';
-      },
+      keyGenerator: (c: Context) => getClientIp(c),
       handler: (c: Context) => {
         return c.json(
           {
@@ -36,11 +31,7 @@ const createLimiter = (windowMs: number, limit: number) => {
     windowMs,
     limit,
     standardHeaders: 'draft-7',
-    keyGenerator: (c: Context) => {
-      const forwarded = c.req.header('x-forwarded-for');
-      const realIp = c.req.header('x-real-ip');
-      return forwarded ? forwarded.split(',')[0].trim() : realIp || 'anonymous';
-    },
+    keyGenerator: (c: Context) => getClientIp(c),
     handler: (c: Context) => {
       return c.json(
         {
@@ -68,3 +59,9 @@ export const generalLimiter = createLimiter(60 * 1000, isDev ? 500 : 6000);
 // Test: 300 requests per 1500 min (10 * 100 = 1000, windowMs * 100 = 1500 min), Dev: 3 requests per 15 min
 // Prevents email bombing attacks on resend verification endpoint
 export const emailLimiter = createLimiter(15 * 60 * 1000, isDev ? 3 : 10);
+
+// 5. Order Tracking Limiter (Enumeration-sensitive public lookup)
+export const trackingLimiter = createLimiter(
+  15 * 60 * 1000,
+  isDev ? 30 : 60
+);

@@ -1,6 +1,7 @@
 import { Context, Next } from 'hono';
 import { db } from '../db/client';
 import { admin_audit_log } from '../db/schema';
+import { getClientIp } from '../utils/client-ip';
 
 type AuditAction =
   | 'category.create' | 'category.update' | 'category.delete'
@@ -28,7 +29,7 @@ export function auditLog(entityType: string, action: AuditAction) {
       const user = (c as any).get?.('user');
       const userId = user?.sub || 'unknown';
       const userRole = user?.role || 'unknown';
-      const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
+      const ip = getClientIp(c);
 
       // Try to get response body as new_value
       let newValue: Record<string, unknown> | null = null;

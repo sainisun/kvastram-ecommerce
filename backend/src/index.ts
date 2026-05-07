@@ -9,6 +9,7 @@ import {
   authLimiter,
   checkoutLimiter,
   generalLimiter,
+  trackingLimiter,
 } from './middleware/rate-limiter';
 import {
   defaultTimeout,
@@ -286,10 +287,16 @@ app.use('/store/checkout/*', checkoutLimiter);
 app.use('/store/payments/*', checkoutLimiter);
 
 // OPT-006: Rate limit public form endpoints (spam prevention)
+app.use('/contact', authLimiter); // Strict: same as auth
 app.use('/contact/*', authLimiter); // Strict: same as auth
+app.use('/newsletter', authLimiter); // Strict: same as auth
 app.use('/newsletter/*', authLimiter); // Strict: same as auth
 app.use('/store/studio-inquiries', authLimiter); // Strict: customer inquiry spam prevention
 app.use('/store/studio-inquiries/*', authLimiter); // Strict: customer inquiry spam prevention
+app.use('/store/back-in-stock', authLimiter); // Strict: restock signup spam prevention
+app.use('/store/back-in-stock/*', authLimiter); // Strict: restock signup spam prevention
+app.use('/store/orders/track', trackingLimiter); // Strict: enumeration-sensitive public lookup
+app.use('/store/orders/track/*', trackingLimiter); // Strict: enumeration-sensitive public lookup
 
 // 3. General API Limits (For browsing/products/etc)
 const generalApiRoutes = [
@@ -310,6 +317,16 @@ const generalApiRoutes = [
   '/wholesale/*',
   '/reviews/*',
   '/testimonials/*',
+  '/store/orders',
+  '/store/orders/*',
+  '/store/cart',
+  '/store/cart/*',
+  '/store/back-in-stock',
+  '/store/back-in-stock/*',
+  '/store/settings',
+  '/store/settings/*',
+  '/store/wishlist',
+  '/store/wishlist/*',
   '/store/customers/*', // OPT-007: Added missing store customer route
   '/admin/abandoned-carts/*',
   '/admin/bulk-discounts/*',
