@@ -21,6 +21,19 @@ require_file() {
   fi
 }
 
+compose_up_with_retry() {
+  local retry_label="$1"
+  shift
+
+  if docker compose -f "$COMPOSE_FILE" up -d --build "$@"; then
+    return 0
+  fi
+
+  echo "Retrying $retry_label after removing stale containers..."
+  docker compose -f "$COMPOSE_FILE" rm -fsv "$@" || true
+  docker compose -f "$COMPOSE_FILE" up -d --build "$@"
+}
+
 wait_for_service_health() {
   local service="$1"
   local timeout_seconds="${2:-120}"
@@ -81,14 +94,14 @@ docker compose -f "$COMPOSE_FILE" up -d postgres
 wait_for_service_health postgres 90
 
 log "Building and starting backend"
-docker compose -f "$COMPOSE_FILE" up -d --build --remove-orphans backend
+compose_up_with_retry backend backend
 wait_for_service_health backend 150
 
 log "Running manual backend migrations"
 docker compose -f "$COMPOSE_FILE" exec -T backend node dist/run-manual-migrations.js
 
 log "Building and starting storefront, admin, and MCP"
-docker compose -f "$COMPOSE_FILE" up -d --build --remove-orphans storefront admin mcp
+compose_up_with_retry frontend-services storefront admin mcp
 wait_for_service_health storefront 180
 wait_for_service_health admin 180
 wait_for_service_health mcp 120
