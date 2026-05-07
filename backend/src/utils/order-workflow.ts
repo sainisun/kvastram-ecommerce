@@ -17,6 +17,15 @@ export interface WorkflowTimelineEvent {
   current: boolean;
 }
 
+export interface WorkflowCommunicationEvent {
+  template?: string;
+  subject?: string;
+  message?: string;
+  sent_at?: string | null;
+  channel?: string;
+  status?: string;
+}
+
 export interface WorkflowMetadata {
   workflow_status?: WorkflowStatus;
   ship_by_date?: string | null;
@@ -45,6 +54,7 @@ export interface WorkflowMetadata {
   carrier_service?: string | null;
   label_created_at?: string | null;
   label_printed_at?: string | null;
+  communication_events?: WorkflowCommunicationEvent[];
 }
 
 type OrderLike = {
@@ -201,6 +211,27 @@ export function getWorkflowMetadata(metadata: unknown): WorkflowMetadata {
       typeof source.label_printed_at === 'string'
         ? source.label_printed_at
         : null,
+    communication_events: Array.isArray(source.communication_events)
+      ? source.communication_events
+          .filter(
+            (entry): entry is Record<string, unknown> =>
+              !!entry && typeof entry === 'object' && !Array.isArray(entry)
+          )
+          .map((entry) => ({
+            template:
+              typeof entry.template === 'string' ? entry.template : undefined,
+            subject:
+              typeof entry.subject === 'string' ? entry.subject : undefined,
+            message:
+              typeof entry.message === 'string' ? entry.message : undefined,
+            sent_at:
+              typeof entry.sent_at === 'string' ? entry.sent_at : null,
+            channel:
+              typeof entry.channel === 'string' ? entry.channel : undefined,
+            status:
+              typeof entry.status === 'string' ? entry.status : undefined,
+          }))
+      : undefined,
   };
 }
 
@@ -391,6 +422,9 @@ export function mergeWorkflowMetadata(
   merged.label_printed_at = hasUpdate('label_printed_at')
     ? updates.label_printed_at ?? null
     : existing.label_printed_at ?? null;
+  merged.communication_events = hasUpdate('communication_events')
+    ? updates.communication_events ?? []
+    : existing.communication_events ?? [];
 
   const timelineSource = Array.isArray(existing.timeline) ? existing.timeline : [];
   const filteredTimeline = timelineSource.filter(
@@ -463,6 +497,7 @@ export function buildWorkflowSummary(order: OrderLike) {
       created_at: metadata.label_created_at || null,
       printed_at: metadata.label_printed_at || null,
     },
+    communication_events: metadata.communication_events || [],
     timeline: buildWorkflowTimeline(order),
   };
 }

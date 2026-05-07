@@ -674,6 +674,31 @@ export const api = {
     return response.data;
   },
 
+  sendOrderBuyerUpdate: async (
+    id: string,
+    data: {
+      template:
+        | 'processing_started'
+        | 'packed_with_care'
+        | 'delayed'
+        | 'delivered_followup'
+        | 'custom';
+      subject: string;
+      message: string;
+      include_tracking?: boolean;
+    }
+  ) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/buyer-update`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to send buyer update');
+    return res.json();
+  },
+
   updateOrderStatus: async (id: string, status: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/status`, {
       method: 'PUT',

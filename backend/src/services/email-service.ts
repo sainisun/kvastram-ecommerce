@@ -453,6 +453,50 @@ class EmailService {
     return this.sendEmail({ to: data.email, subject, text, html });
   }
 
+  async sendBuyerOrderUpdate(data: {
+    email: string;
+    order_number: string | number;
+    subject: string;
+    message: string;
+    tracking_number?: string | null;
+    shipping_carrier?: string | null;
+    tracking_link?: string | null;
+  }) {
+    const trackingText = data.tracking_number
+      ? `\n\nTracking: ${data.tracking_number}${data.shipping_carrier ? `\nCarrier: ${data.shipping_carrier}` : ''}${data.tracking_link ? `\nTrack here: ${data.tracking_link}` : ''}`
+      : '';
+    const text = `${data.message}${trackingText}\n\nBest regards,\nKvastram Team`;
+    const trackingHtml = data.tracking_number
+      ? `
+        <div style="background: #f9f7f5; border-left: 4px solid #1a1614; padding: 16px; margin: 24px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Tracking:</strong> ${safeString(data.tracking_number)}</p>
+          ${data.shipping_carrier ? `<p style="margin: 0 0 8px 0;"><strong>Carrier:</strong> ${safeString(data.shipping_carrier)}</p>` : ''}
+          ${data.tracking_link ? `<p style="margin: 0;"><a href="${safeString(data.tracking_link)}" style="color:#007bff;">Track your order</a></p>` : ''}
+        </div>`
+      : '';
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        <div style="background: #1a1614; padding: 24px; text-align: center;">
+          <h2 style="color: #f5c842; margin: 0; font-size: 22px; letter-spacing: 2px;">KVASTRAM</h2>
+        </div>
+        <div style="padding: 32px 24px;">
+          <p style="color:#777; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;">Order #${safeString(String(data.order_number))}</p>
+          <div>${safeString(data.message).replace(/\n/g, '<br>')}</div>
+          ${trackingHtml}
+          <p style="margin-top: 24px;">Best regards,<br>Kvastram Team</p>
+        </div>
+      </div>
+    `;
+
+    return this.sendEmail({
+      to: data.email,
+      subject: data.subject,
+      text,
+      html,
+    });
+  }
+
   // 🔔 Back-in-Stock Notification Email
   async sendBackInStockNotification(data: {
     email: string;

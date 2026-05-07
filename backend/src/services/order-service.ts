@@ -597,6 +597,83 @@ class OrderService {
     return carrierService.getRates(data.order, options);
   }
 
+  async sendBuyerUpdate(
+    id: string,
+    data: {
+      template: string;
+      subject: string;
+      message: string;
+      include_tracking?: boolean;
+    }
+  ) {
+    const [existingOrder] = await db
+      .select({
+        id: orders.id,
+        email: orders.email,
+        order_number: orders.display_id,
+        metadata: orders.metadata,
+        tracking_number: orders.tracking_number,
+        shipping_carrier: orders.shipping_carrier,
+        tracking_link: orders.tracking_link,
+      })
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    if (!existingOrder) throw new Error('Order not found');
+    if (!existingOrder.email) throw new Error('Order email is missing');
+
+    const sentAt = new Date().toISOString();
+
+    const { emailService } = await import('./email-service');
+    const sent = await emailService.sendBuyerOrderUpdate({
+      email: existingOrder.email,
+      order_number: existingOrder.order_number ?? id.slice(0, 8),
+      subject: data.subject,
+      message: data.message,
+      tracking_number:
+        data.include_tracking === false ? null : existingOrder.tracking_number,
+      shipping_carrier:
+        data.include_tracking === false ? null : existingOrder.shipping_carrier,
+      tracking_link:
+        data.include_tracking === false ? null : existingOrder.tracking_link,
+    });
+
+    const baseMetadata =
+      existingOrder.metadata &&
+      typeof existingOrder.metadata === 'object' &&
+      !Array.isArray(existingOrder.metadata)
+        ? (existingOrder.metadata as Record<string, unknown>)
+        : {};
+    const existingEvents = Array.isArray(baseMetadata.communication_events)
+      ? baseMetadata.communication_events
+      : [];
+    const nextMetadata = {
+      ...baseMetadata,
+      communication_events: [
+        ...existingEvents,
+        {
+          template: data.template,
+          subject: data.subject,
+          message: data.message,
+          sent_at: sentAt,
+          channel: 'email',
+          status: sent === false ? 'failed' : 'sent',
+        },
+      ],
+    };
+
+    const [updated] = await db
+      .update(orders)
+      .set({
+        metadata: nextMetadata,
+        updated_at: new Date(),
+      })
+      .where(eq(orders.id, id))
+      .returning();
+
+    return applyWorkflowSummary(updated as Record<string, any>);
+  }
+
   async deleteOrder(id: string) {
     // Delete line items
     try {

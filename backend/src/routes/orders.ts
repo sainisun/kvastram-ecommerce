@@ -220,6 +220,19 @@ const CarrierRatesSchema = z.object({
   provider: CarrierProviderSchema.nullable().optional(),
 });
 
+const BuyerUpdateSchema = z.object({
+  template: z.enum([
+    'processing_started',
+    'packed_with_care',
+    'delayed',
+    'delivered_followup',
+    'custom',
+  ]),
+  subject: z.string().trim().min(3).max(180),
+  message: z.string().trim().min(3).max(3000),
+  include_tracking: z.boolean().default(true),
+});
+
 ordersRouter.post(
   '/:id/tracking',
   zValidator('json', AddTrackingSchema),
@@ -308,6 +321,23 @@ ordersRouter.post(
       c,
       result,
       'Carrier rate request completed successfully'
+    );
+  })
+);
+
+// POST /orders/:id/buyer-update - Send a templated buyer communication
+ordersRouter.post(
+  '/:id/buyer-update',
+  zValidator('json', BuyerUpdateSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+    const updated = await orderService.sendBuyerUpdate(id, data);
+
+    return successResponse(
+      c,
+      { order: updated },
+      'Buyer update sent successfully'
     );
   })
 );

@@ -141,4 +141,46 @@ describe('order workflow metadata', () => {
     expect(metadata.package_height_cm).toBeNull();
     expect(metadata.carrier_service).toBeNull();
   });
+
+  it('hydrates buyer communication events into workflow summary', () => {
+    const summary = buildWorkflowSummary({
+      status: 'processing',
+      created_at: '2026-05-01T10:00:00.000Z',
+      metadata: {
+        communication_events: [
+          {
+            template: 'packed_with_care',
+            subject: 'Your order has been packed',
+            message: 'Packed with care.',
+            sent_at: '2026-05-07T09:00:00.000Z',
+            channel: 'email',
+            status: 'sent',
+          },
+          {
+            template: 123,
+            subject: null,
+            sent_at: '2026-05-07T10:00:00.000Z',
+          },
+        ],
+      },
+    });
+
+    expect(summary.communication_events).toHaveLength(2);
+    expect(summary.communication_events[0]).toEqual({
+      template: 'packed_with_care',
+      subject: 'Your order has been packed',
+      message: 'Packed with care.',
+      sent_at: '2026-05-07T09:00:00.000Z',
+      channel: 'email',
+      status: 'sent',
+    });
+    expect(summary.communication_events[1]).toEqual({
+      template: undefined,
+      subject: undefined,
+      message: undefined,
+      sent_at: '2026-05-07T10:00:00.000Z',
+      channel: undefined,
+      status: undefined,
+    });
+  });
 });

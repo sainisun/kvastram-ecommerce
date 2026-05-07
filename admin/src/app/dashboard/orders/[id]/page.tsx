@@ -10,10 +10,12 @@ import {
   PackageCheck,
   Mail,
   MapPin,
+  MessageSquare,
   Package,
   Printer,
   RadioTower,
   RefreshCw,
+  Send,
   Truck,
   User,
 } from 'lucide-react';
@@ -38,6 +40,12 @@ type WorkflowStatus =
   | 'refunded';
 
 type LabelStatus = 'draft' | 'created' | 'printed' | 'voided' | 'refunded';
+type BuyerUpdateTemplate =
+  | 'processing_started'
+  | 'packed_with_care'
+  | 'delayed'
+  | 'delivered_followup'
+  | 'custom';
 
 const STATUS_LABELS: Record<WorkflowStatus, string> = {
   pending: 'Pending',
@@ -63,6 +71,41 @@ const LABEL_STATUS_OPTIONS: LabelStatus[] = [
   'voided',
   'refunded',
 ];
+
+const BUYER_UPDATE_TEMPLATES: Record<
+  BuyerUpdateTemplate,
+  { label: string; subject: string; message: string }
+> = {
+  processing_started: {
+    label: 'Processing started',
+    subject: 'Your Kvastram order is now being prepared',
+    message:
+      'Your order is now being prepared by our team. We will share the next update as soon as it is packed and ready to ship.',
+  },
+  packed_with_care: {
+    label: 'Packed with care',
+    subject: 'Your Kvastram order has been packed with care',
+    message:
+      'Your Kvastram piece has been checked, packed with care, and is moving into shipping. Thank you for giving us the time to prepare it properly.',
+  },
+  delayed: {
+    label: 'Delayed',
+    subject: 'A quick update on your Kvastram order',
+    message:
+      'We need a little more time with your order. We are keeping a close eye on it and will share the next update as soon as possible.',
+  },
+  delivered_followup: {
+    label: 'Delivered follow-up',
+    subject: 'Checking in on your Kvastram order',
+    message:
+      'We hope your Kvastram order reached you safely. If anything needs attention, reply to this email and our team will help.',
+  },
+  custom: {
+    label: 'Custom',
+    subject: 'Update on your Kvastram order',
+    message: '',
+  },
+};
 
 const VALID_TRANSITIONS: Record<WorkflowStatus, WorkflowStatus[]> = {
   pending: ['processing', 'cancelled'],
@@ -146,6 +189,14 @@ interface OrderDetails {
     needs_attention?: boolean;
     overdue_ship_by?: boolean;
     overdue_tracking?: boolean;
+    communication_events?: Array<{
+      template?: string;
+      subject?: string;
+      message?: string;
+      sent_at?: string | null;
+      channel?: string;
+      status?: string;
+    }>;
     label?: {
       status?: LabelStatus;
       status_label?: string;
@@ -282,6 +333,12 @@ export default function OrderDetailsPage() {
     null
   );
   const [carrierLoading, setCarrierLoading] = useState(false);
+  const [buyerUpdateForm, setBuyerUpdateForm] = useState({
+    template: 'processing_started' as BuyerUpdateTemplate,
+    subject: BUYER_UPDATE_TEMPLATES.processing_started.subject,
+    message: BUYER_UPDATE_TEMPLATES.processing_started.message,
+    include_tracking: true,
+  });
 
   useEffect(() => {
     const loadOrder = async () => {
@@ -343,6 +400,9 @@ export default function OrderDetailsPage() {
       completed: index === 0,
       current: index === 1,
     }));
+  const communicationEvents = [
+    ...(order?.workflow?.communication_events || []),
+  ].reverse();
 
   const handleStatusChange = async (status: string) => {
     try {
@@ -541,6 +601,44 @@ export default function OrderDetailsPage() {
       );
     } finally {
       setCarrierLoading(false);
+    }
+  };
+
+  const handleBuyerTemplateChange = (template: BuyerUpdateTemplate) => {
+    const nextTemplate = BUYER_UPDATE_TEMPLATES[template];
+    setBuyerUpdateForm((current) => ({
+      ...current,
+      template,
+      subject: nextTemplate.subject,
+      message: nextTemplate.message,
+    }));
+  };
+
+  const handleBuyerUpdateSend = async () => {
+    if (!buyerUpdateForm.subject.trim() || !buyerUpdateForm.message.trim()) {
+      showNotification('error', 'Subject and message are required');
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      await api.sendOrderBuyerUpdate(id, {
+        template: buyerUpdateForm.template,
+        subject: buyerUpdateForm.subject.trim(),
+        message: buyerUpdateForm.message.trim(),
+        include_tracking: buyerUpdateForm.include_tracking,
+      });
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
+      showNotification('success', 'Buyer update sent');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to send buyer update'
+      );
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -1029,6 +1127,165 @@ export default function OrderDetailsPage() {
                   No shipping address captured for this order.
                 </p>
               )}
+            </div>
+          </Surface>
+
+          <Surface className="overflow-hidden">
+            <SectionHeader title="Buyer communication" />
+            <div className="space-y-4 px-5 py-5 md:px-6">
+              <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--kv-accent-deep)]">
+                    <MessageSquare size={18} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[var(--kv-text)]">
+                      Send a buyer update
+                    </p>
+                    <p className="text-[var(--kv-muted)]">
+                      Use a warm template, edit the copy, and log it on the order.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Template
+                </span>
+                <select
+                  value={buyerUpdateForm.template}
+                  onChange={(event) =>
+                    handleBuyerTemplateChange(
+                      event.target.value as BuyerUpdateTemplate
+                    )
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                >
+                  {Object.entries(BUYER_UPDATE_TEMPLATES).map(
+                    ([key, template]) => (
+                      <option key={key} value={key}>
+                        {template.label}
+                      </option>
+                    )
+                  )}
+                </select>
+              </label>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Subject
+                </span>
+                <input
+                  type="text"
+                  value={buyerUpdateForm.subject}
+                  onChange={(event) =>
+                    setBuyerUpdateForm((current) => ({
+                      ...current,
+                      subject: event.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                />
+              </label>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Message
+                </span>
+                <textarea
+                  value={buyerUpdateForm.message}
+                  onChange={(event) =>
+                    setBuyerUpdateForm((current) => ({
+                      ...current,
+                      message: event.target.value,
+                    }))
+                  }
+                  rows={5}
+                  className="w-full border px-4 py-3 text-sm"
+                />
+              </label>
+
+              <label className="flex items-start gap-3 rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-text)]">
+                <input
+                  type="checkbox"
+                  checked={buyerUpdateForm.include_tracking}
+                  onChange={(event) =>
+                    setBuyerUpdateForm((current) => ({
+                      ...current,
+                      include_tracking: event.target.checked,
+                    }))
+                  }
+                  className="mt-1 h-4 w-4"
+                />
+                <span>
+                  <span className="block font-semibold">Include tracking</span>
+                  <span className="mt-1 block text-[var(--kv-muted)]">
+                    Add tracking details when this order already has them.
+                  </span>
+                </span>
+              </label>
+
+              <button
+                type="button"
+                onClick={() => void handleBuyerUpdateSend()}
+                disabled={updating}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                <Send size={16} />
+                {updating ? 'Sending...' : 'Send buyer update'}
+              </button>
+
+              <div className="border-t border-[var(--kv-border)] pt-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Communication timeline
+                </p>
+                <div className="mt-3 space-y-3">
+                  {communicationEvents.length === 0 ? (
+                    <p className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                      No buyer updates sent yet.
+                    </p>
+                  ) : (
+                    communicationEvents.map((event, index) => (
+                      <div
+                        key={`${event.sent_at || 'event'}-${index}`}
+                        className="rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-4 text-sm"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-semibold text-[var(--kv-text)]">
+                              {event.subject || 'Buyer update'}
+                            </p>
+                            <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--kv-muted)]">
+                              {event.template || 'custom'} via{' '}
+                              {event.channel || 'email'}
+                            </p>
+                          </div>
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                              event.status === 'failed'
+                                ? 'bg-[var(--kv-danger)]/10 text-[var(--kv-danger)]'
+                                : 'bg-[var(--kv-accent-soft)] text-[var(--kv-accent-deep)]'
+                            }`}
+                          >
+                            {event.status || 'sent'}
+                          </span>
+                        </div>
+                        {event.message ? (
+                          <p className="mt-3 line-clamp-3 text-[var(--kv-muted)]">
+                            {event.message}
+                          </p>
+                        ) : null}
+                        {event.sent_at ? (
+                          <p className="mt-3 text-xs text-[var(--kv-muted)]">
+                            {new Date(event.sent_at).toLocaleString()}
+                          </p>
+                        ) : null}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           </Surface>
 
