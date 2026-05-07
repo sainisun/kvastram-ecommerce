@@ -383,7 +383,18 @@ class OrderService {
     return targets.length;
   }
 
-  async addTracking(id: string, data: { tracking_number: string; shipping_carrier?: string; tracking_link?: string; }) {
+  async addTracking(
+    id: string,
+    data: {
+      tracking_number: string;
+      shipping_carrier?: string;
+      tracking_link?: string;
+      ship_date?: string | null;
+      customer_note?: string | null;
+      internal_note?: string | null;
+      notify_buyer?: boolean;
+    }
+  ) {
     const [existingOrder] = await db
       .select({
         id: orders.id,
@@ -396,9 +407,16 @@ class OrderService {
 
     if (!existingOrder) throw new Error('Order not found');
 
+    const shipDate = data.ship_date ? new Date(data.ship_date) : new Date();
+    const shippedAt = Number.isNaN(shipDate.getTime())
+      ? new Date().toISOString()
+      : shipDate.toISOString();
+
     const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
       workflow_status: 'shipped',
-      shipped_at: new Date().toISOString(),
+      shipped_at: shippedAt,
+      customer_note: data.customer_note,
+      internal_note: data.internal_note,
     });
 
     const [updated] = await db
@@ -416,7 +434,7 @@ class OrderService {
       .returning();
 
     // Send shipping notification email (fire-and-forget)
-    if (existingOrder.email) {
+    if (existingOrder.email && data.notify_buyer !== false) {
       import('./email-service').then(({ emailService }) => {
         emailService.sendShippingNotification({
           email: existingOrder.email!,

@@ -175,6 +175,10 @@ const AddTrackingSchema = z.object({
   tracking_number: z.string().min(1, 'Tracking number is required'),
   shipping_carrier: z.string().optional(),
   tracking_link: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  ship_date: z.string().nullable().optional(),
+  customer_note: z.string().max(2000).nullable().optional(),
+  internal_note: z.string().max(2000).nullable().optional(),
+  notify_buyer: z.boolean().default(true),
 });
 
 const UpdateWorkflowSchema = z.object({

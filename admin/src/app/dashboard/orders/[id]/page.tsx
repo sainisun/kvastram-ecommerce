@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
   ArrowLeft,
+  PackageCheck,
   Mail,
   MapPin,
   Package,
@@ -133,12 +134,22 @@ export default function OrderDetailsPage() {
   const [items, setItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [completeModalOpen, setCompleteModalOpen] = useState(false);
   const [workflowForm, setWorkflowForm] = useState({
     ship_by_date: '',
     estimated_delivery_start: '',
     estimated_delivery_end: '',
     customer_note: '',
     internal_note: '',
+  });
+  const [completeForm, setCompleteForm] = useState({
+    ship_date: new Date().toISOString().slice(0, 10),
+    tracking_number: '',
+    shipping_carrier: '',
+    tracking_link: '',
+    customer_note: '',
+    internal_note: '',
+    notify_buyer: true,
   });
 
   useEffect(() => {
@@ -157,6 +168,15 @@ export default function OrderDetailsPage() {
             orderData?.workflow?.estimated_delivery_end || '',
           customer_note: orderData?.workflow?.customer_note || '',
           internal_note: orderData?.workflow?.internal_note || '',
+        });
+        setCompleteForm({
+          ship_date: new Date().toISOString().slice(0, 10),
+          tracking_number: orderData?.tracking_number || '',
+          shipping_carrier: orderData?.shipping_carrier || '',
+          tracking_link: orderData?.tracking_link || '',
+          customer_note: orderData?.workflow?.customer_note || '',
+          internal_note: orderData?.workflow?.internal_note || '',
+          notify_buyer: true,
         });
       } catch (error) {
         console.error('Failed to load order:', error);
@@ -216,6 +236,48 @@ export default function OrderDetailsPage() {
       link.remove();
     } catch (error) {
       console.error('Invoice download failed:', error);
+    }
+  };
+
+  const handleCompleteOrder = async () => {
+    if (!completeForm.tracking_number.trim()) {
+      showNotification('error', 'Tracking number is required to complete the order');
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      await api.addOrderTracking(id, {
+        tracking_number: completeForm.tracking_number.trim(),
+        shipping_carrier: normalizeWorkflowValue(completeForm.shipping_carrier) || undefined,
+        tracking_link: normalizeWorkflowValue(completeForm.tracking_link) || undefined,
+        ship_date: normalizeWorkflowValue(completeForm.ship_date),
+        customer_note: normalizeWorkflowValue(completeForm.customer_note),
+        internal_note: normalizeWorkflowValue(completeForm.internal_note),
+        notify_buyer: completeForm.notify_buyer,
+      });
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
+      setItems(refreshed?.items || refreshedOrder?.items || []);
+      setWorkflowForm({
+        ship_by_date: refreshedOrder?.workflow?.ship_by_date || '',
+        estimated_delivery_start:
+          refreshedOrder?.workflow?.estimated_delivery_start || '',
+        estimated_delivery_end:
+          refreshedOrder?.workflow?.estimated_delivery_end || '',
+        customer_note: refreshedOrder?.workflow?.customer_note || '',
+        internal_note: refreshedOrder?.workflow?.internal_note || '',
+      });
+      setCompleteModalOpen(false);
+      showNotification('success', 'Order completed and tracking saved');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to complete order'
+      );
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -280,6 +342,10 @@ export default function OrderDetailsPage() {
     );
   }
 
+  const canCompleteOrder = !['delivered', 'cancelled', 'refunded'].includes(
+    normalizeStatus(order.status)
+  );
+
   return (
     <div className="space-y-6 px-4 pb-8 md:space-y-8 md:px-8">
       <div className="pt-2">
@@ -298,6 +364,15 @@ export default function OrderDetailsPage() {
         description={`Placed ${order.created_at ? new Date(order.created_at).toLocaleString() : 'recently'} by ${order.email}.`}
         actions={
           <>
+            {canCompleteOrder ? (
+              <ActionButton
+                onClick={() => setCompleteModalOpen(true)}
+                icon={PackageCheck}
+                variant="primary"
+              >
+                Complete order
+              </ActionButton>
+            ) : null}
             <ActionButton onClick={handleInvoiceDownload} icon={Printer} variant="secondary">
               Invoice
             </ActionButton>
@@ -311,6 +386,187 @@ export default function OrderDetailsPage() {
           </>
         }
       />
+
+      {completeModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 px-4 py-6">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[1.35rem] bg-white shadow-2xl">
+            <div className="flex items-start justify-between gap-4 border-b border-[var(--kv-border)] px-5 py-5 md:px-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
+                  Fulfillment
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
+                  Complete order
+                </h2>
+                <p className="mt-2 text-sm text-[var(--kv-muted)]">
+                  Save ship date, tracking, and the buyer-facing note for this shipment.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCompleteModalOpen(false)}
+                className="rounded-full border border-[var(--kv-border)] px-3 py-1.5 text-sm font-semibold text-[var(--kv-text)]"
+              >
+                Close
+              </button>
+            </div>
+
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                void handleCompleteOrder();
+              }}
+              className="space-y-4 px-5 py-5 md:px-6"
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Ship date
+                  </span>
+                  <input
+                    type="date"
+                    value={completeForm.ship_date}
+                    onChange={(event) =>
+                      setCompleteForm((current) => ({
+                        ...current,
+                        ship_date: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                  />
+                </label>
+                <label className="text-sm text-[var(--kv-text)]">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                    Carrier
+                  </span>
+                  <input
+                    type="text"
+                    value={completeForm.shipping_carrier}
+                    onChange={(event) =>
+                      setCompleteForm((current) => ({
+                        ...current,
+                        shipping_carrier: event.target.value,
+                      }))
+                    }
+                    className="w-full border px-4 py-3 text-sm"
+                    placeholder="Delhivery, Shiprocket, India Post"
+                  />
+                </label>
+              </div>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Tracking number
+                </span>
+                <input
+                  type="text"
+                  required
+                  value={completeForm.tracking_number}
+                  onChange={(event) =>
+                    setCompleteForm((current) => ({
+                      ...current,
+                      tracking_number: event.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="Tracking number"
+                />
+              </label>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Tracking URL
+                </span>
+                <input
+                  type="url"
+                  value={completeForm.tracking_link}
+                  onChange={(event) =>
+                    setCompleteForm((current) => ({
+                      ...current,
+                      tracking_link: event.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="https://..."
+                />
+              </label>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Note to buyer
+                </span>
+                <textarea
+                  value={completeForm.customer_note}
+                  onChange={(event) =>
+                    setCompleteForm((current) => ({
+                      ...current,
+                      customer_note: event.target.value,
+                    }))
+                  }
+                  rows={4}
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="Your Kvastram piece has been packed with care and is on its way."
+                />
+              </label>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Internal note
+                </span>
+                <textarea
+                  value={completeForm.internal_note}
+                  onChange={(event) =>
+                    setCompleteForm((current) => ({
+                      ...current,
+                      internal_note: event.target.value,
+                    }))
+                  }
+                  rows={3}
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="Packaging, carrier pickup, or support notes."
+                />
+              </label>
+
+              <label className="flex items-start gap-3 rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-text)]">
+                <input
+                  type="checkbox"
+                  checked={completeForm.notify_buyer}
+                  onChange={(event) =>
+                    setCompleteForm((current) => ({
+                      ...current,
+                      notify_buyer: event.target.checked,
+                    }))
+                  }
+                  className="mt-1 h-4 w-4"
+                />
+                <span>
+                  <span className="block font-semibold">Notify buyer</span>
+                  <span className="mt-1 block text-[var(--kv-muted)]">
+                    Send the shipping notification email after tracking is saved.
+                  </span>
+                </span>
+              </label>
+
+              <div className="flex flex-col gap-3 border-t border-[var(--kv-border)] pt-4 md:flex-row md:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setCompleteModalOpen(false)}
+                  className="rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                >
+                  {updating ? 'Completing...' : 'Complete order'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
         <div className="space-y-6">

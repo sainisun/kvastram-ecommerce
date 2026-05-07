@@ -573,7 +573,18 @@ export const api = {
     return response.data;
   },
 
-  addOrderTracking: async (id: string, data: { tracking_number: string, shipping_carrier?: string, tracking_link?: string }) => {
+  addOrderTracking: async (
+    id: string,
+    data: {
+      tracking_number: string;
+      shipping_carrier?: string;
+      tracking_link?: string;
+      ship_date?: string | null;
+      customer_note?: string | null;
+      internal_note?: string | null;
+      notify_buyer?: boolean;
+    }
+  ) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/tracking`, {
       method: 'POST',
       headers: {
