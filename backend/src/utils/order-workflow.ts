@@ -268,17 +268,24 @@ export function mergeWorkflowMetadata(
   merged.processed_at = processedAt;
   merged.shipped_at = shippedAt;
   merged.delivered_at = deliveredAt;
-  merged.ship_by_date = updates.ship_by_date ?? existing.ship_by_date ?? null;
-  merged.estimated_delivery_start =
-    updates.estimated_delivery_start ??
-    existing.estimated_delivery_start ??
-    null;
-  merged.estimated_delivery_end =
-    updates.estimated_delivery_end ?? existing.estimated_delivery_end ?? null;
-  merged.customer_note =
-    updates.customer_note ?? existing.customer_note ?? null;
-  merged.internal_note =
-    updates.internal_note ?? existing.internal_note ?? null;
+  const hasUpdate = (key: keyof WorkflowMetadata) =>
+    Object.prototype.hasOwnProperty.call(updates, key);
+
+  merged.ship_by_date = hasUpdate('ship_by_date')
+    ? updates.ship_by_date ?? null
+    : existing.ship_by_date ?? null;
+  merged.estimated_delivery_start = hasUpdate('estimated_delivery_start')
+    ? updates.estimated_delivery_start ?? null
+    : existing.estimated_delivery_start ?? null;
+  merged.estimated_delivery_end = hasUpdate('estimated_delivery_end')
+    ? updates.estimated_delivery_end ?? null
+    : existing.estimated_delivery_end ?? null;
+  merged.customer_note = hasUpdate('customer_note')
+    ? updates.customer_note ?? null
+    : existing.customer_note ?? null;
+  merged.internal_note = hasUpdate('internal_note')
+    ? updates.internal_note ?? null
+    : existing.internal_note ?? null;
 
   const timelineSource = Array.isArray(existing.timeline) ? existing.timeline : [];
   const filteredTimeline = timelineSource.filter(

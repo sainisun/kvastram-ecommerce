@@ -186,6 +186,8 @@ class OrderService {
         id: orders.id,
         order_number: orders.display_id,
         status: orders.status,
+        payment_status: orders.payment_status,
+        fulfillment_status: orders.fulfillment_status,
         email: orders.email,
         subtotal: orders.subtotal,
         tax_total: orders.tax_total,
@@ -198,6 +200,7 @@ class OrderService {
         tracking_number: orders.tracking_number,
         shipping_carrier: orders.shipping_carrier,
         tracking_link: orders.tracking_link,
+        metadata: orders.metadata,
         customer_first_name: customers.first_name,
         customer_last_name: customers.last_name,
         customer_email: customers.email,
@@ -431,11 +434,11 @@ class OrderService {
   async updateWorkflow(
     id: string,
     data: {
-      ship_by_date?: string;
-      estimated_delivery_start?: string;
-      estimated_delivery_end?: string;
-      customer_note?: string;
-      internal_note?: string;
+      ship_by_date?: string | null;
+      estimated_delivery_start?: string | null;
+      estimated_delivery_end?: string | null;
+      customer_note?: string | null;
+      internal_note?: string | null;
     }
   ) {
     const [existingOrder] = await db
@@ -515,6 +518,7 @@ class OrderService {
       shipped_orders: countByStatus['shipped'] || 0,
       delivered_orders: countByStatus['delivered'] || 0,
       cancelled_orders: countByStatus['cancelled'] || 0,
+      refunded_orders: countByStatus['refunded'] || 0,
       avg_order_value: totalOrdersNum > 0 ? Math.round(totalRevenueNum / totalOrdersNum) : 0,
     };
   }

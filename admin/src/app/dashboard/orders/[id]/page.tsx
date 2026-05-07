@@ -24,6 +24,49 @@ import {
 
 const timelineSteps = ['pending', 'processing', 'shipped', 'delivered'];
 
+type WorkflowStatus =
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'refunded';
+
+const STATUS_LABELS: Record<WorkflowStatus, string> = {
+  pending: 'Pending',
+  processing: 'Processing',
+  shipped: 'Shipped',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+  refunded: 'Refunded',
+};
+
+const VALID_TRANSITIONS: Record<WorkflowStatus, WorkflowStatus[]> = {
+  pending: ['processing', 'cancelled'],
+  processing: ['shipped', 'cancelled', 'refunded'],
+  shipped: ['delivered', 'cancelled', 'refunded'],
+  delivered: ['refunded'],
+  cancelled: [],
+  refunded: [],
+};
+
+function normalizeStatus(status: string): WorkflowStatus {
+  const normalized = status.toLowerCase() === 'canceled' ? 'cancelled' : status.toLowerCase();
+  return Object.prototype.hasOwnProperty.call(STATUS_LABELS, normalized)
+    ? (normalized as WorkflowStatus)
+    : 'pending';
+}
+
+function getStatusOptions(status: string) {
+  const current = normalizeStatus(status);
+  return [current, ...VALID_TRANSITIONS[current]];
+}
+
+function normalizeWorkflowValue(value: string) {
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 interface OrderDetails {
   id: string;
   order_number?: string;
@@ -179,11 +222,29 @@ export default function OrderDetailsPage() {
   const handleWorkflowSave = async () => {
     try {
       setUpdating(true);
-      const response = await api.updateOrderWorkflow(id, workflowForm);
-      const updatedOrder = response?.data?.order || response?.order;
-      if (updatedOrder) {
-        setOrder((current) => (current ? { ...current, ...updatedOrder } : current));
-      }
+      await api.updateOrderWorkflow(id, {
+        ship_by_date: normalizeWorkflowValue(workflowForm.ship_by_date),
+        estimated_delivery_start: normalizeWorkflowValue(
+          workflowForm.estimated_delivery_start
+        ),
+        estimated_delivery_end: normalizeWorkflowValue(
+          workflowForm.estimated_delivery_end
+        ),
+        customer_note: normalizeWorkflowValue(workflowForm.customer_note),
+        internal_note: normalizeWorkflowValue(workflowForm.internal_note),
+      });
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
+      setWorkflowForm({
+        ship_by_date: refreshedOrder?.workflow?.ship_by_date || '',
+        estimated_delivery_start:
+          refreshedOrder?.workflow?.estimated_delivery_start || '',
+        estimated_delivery_end:
+          refreshedOrder?.workflow?.estimated_delivery_end || '',
+        customer_note: refreshedOrder?.workflow?.customer_note || '',
+        internal_note: refreshedOrder?.workflow?.internal_note || '',
+      });
       showNotification('success', 'Order workflow updated');
     } catch (error: unknown) {
       showNotification(
@@ -262,15 +323,15 @@ export default function OrderDetailsPage() {
                 <div className="mt-3 flex items-center gap-3">
                   <StatusBadge status={order.status} className="text-sm" />
                   <select
-                    value={order.status}
+                    value={normalizeStatus(order.status)}
                     onChange={(event) => void handleStatusChange(event.target.value)}
                     disabled={updating}
                     className="border px-4 py-3 text-sm"
                   >
-                    {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map(
+                    {getStatusOptions(order.status).map(
                       (status) => (
                         <option key={status} value={status}>
-                          {status}
+                          {STATUS_LABELS[status]}
                         </option>
                       )
                     )}

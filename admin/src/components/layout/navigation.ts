@@ -72,6 +72,12 @@ export const retailNavGroups: NavGroup[] = [
         description: 'Manage fulfillment',
       },
       {
+        label: 'Fulfillment',
+        href: '/dashboard/fulfillment',
+        icon: Truck,
+        description: 'Post-order queue',
+      },
+      {
         label: 'Customers',
         href: '/dashboard/customers',
         icon: Users,

@@ -5,7 +5,14 @@ import Link from 'next/link';
 import { Download, RefreshCw, Search, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
 
-type OrderFilter = 'all' | 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+type WorkflowStatus =
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'refunded';
+type OrderFilter = 'all' | WorkflowStatus;
 
 interface Order {
   id: string;
@@ -35,6 +42,7 @@ interface OrderStats {
   shipped_orders: number;
   delivered_orders: number;
   cancelled_orders: number;
+  refunded_orders?: number;
   avg_order_value: number;
 }
 
@@ -45,7 +53,38 @@ const FILTERS: Array<{ label: string; value: OrderFilter }> = [
   { label: 'Shipped',    value: 'shipped' },
   { label: 'Delivered',  value: 'delivered' },
   { label: 'Cancelled',  value: 'cancelled' },
+  { label: 'Refunded',   value: 'refunded' },
 ];
+
+const STATUS_LABELS: Record<WorkflowStatus, string> = {
+  pending: 'Pending',
+  processing: 'Processing',
+  shipped: 'Shipped',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+  refunded: 'Refunded',
+};
+
+const VALID_TRANSITIONS: Record<WorkflowStatus, WorkflowStatus[]> = {
+  pending: ['processing', 'cancelled'],
+  processing: ['shipped', 'cancelled', 'refunded'],
+  shipped: ['delivered', 'cancelled', 'refunded'],
+  delivered: ['refunded'],
+  cancelled: [],
+  refunded: [],
+};
+
+function normalizeStatus(status: string): WorkflowStatus {
+  const normalized = status.toLowerCase() === 'canceled' ? 'cancelled' : status.toLowerCase();
+  return Object.prototype.hasOwnProperty.call(STATUS_LABELS, normalized)
+    ? (normalized as WorkflowStatus)
+    : 'pending';
+}
+
+function getStatusOptions(status: string) {
+  const current = normalizeStatus(status);
+  return [current, ...VALID_TRANSITIONS[current]];
+}
 
 const STATUS_STYLE: Record<string, { badge: string; border: string }> = {
   paid:       { badge: 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]', border: 'border-[var(--tertiary-container)]' },
@@ -55,6 +94,7 @@ const STATUS_STYLE: Record<string, { badge: string; border: string }> = {
   processing: { badge: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]', border: 'border-[var(--secondary-container)]' },
   shipped:    { badge: 'bg-[var(--primary-fixed)] text-[var(--on-primary-fixed-variant)]', border: 'border-[var(--primary-fixed)]' },
   cancelled:  { badge: 'bg-[var(--error-container)] text-[var(--on-error-container)]', border: 'border-[var(--error-container)]' },
+  refunded:   { badge: 'bg-[var(--error-container)] text-[var(--on-error-container)]', border: 'border-[var(--error-container)]' },
 };
 function ss(status: string) { return STATUS_STYLE[status.toLowerCase()] ?? STATUS_STYLE.pending; }
 
@@ -140,7 +180,7 @@ export default function OrdersPage() {
     await Promise.all([fetchOrders(), fetchStats()]);
   };
 
-  const statCount = (v: OrderFilter) => ({ all: stats?.total_orders, pending: stats?.pending_orders, processing: stats?.processing_orders, shipped: stats?.shipped_orders, delivered: stats?.delivered_orders, cancelled: stats?.cancelled_orders })[v] || 0;
+  const statCount = (v: OrderFilter) => ({ all: stats?.total_orders, pending: stats?.pending_orders, processing: stats?.processing_orders, shipped: stats?.shipped_orders, delivered: stats?.delivered_orders, cancelled: stats?.cancelled_orders, refunded: stats?.refunded_orders })[v] || 0;
   const attentionCount = orders.filter((order) => order.workflow?.needs_attention).length;
   const overdueCount = orders.filter((order) => order.workflow?.overdue_ship_by).length;
 
@@ -279,8 +319,8 @@ export default function OrdersPage() {
                     <td className="px-6 py-4 text-[10px] text-[var(--on-surface-variant)]">{fmtDate(order.created_at)}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 justify-end">
-                        <select value={order.status} onChange={e => void singleUpdate(order.id, e.target.value)} className="bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-1.5 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
-                          {FILTERS.filter(f => f.value !== 'all').map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                        <select value={normalizeStatus(order.status)} onChange={e => void singleUpdate(order.id, e.target.value)} className="bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-1.5 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
+                          {getStatusOptions(order.status).map(status => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
                         </select>
                         <Link href={`/dashboard/orders/${order.id}`} className="px-3 py-1.5 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">View</Link>
                         <button onClick={() => void handleDelete(order.id, order.order_number)} className="w-8 h-8 rounded-full border border-[var(--error-container)] bg-[var(--error-container)]/30 text-[var(--error)] flex items-center justify-center hover:bg-[var(--error-container)] transition-colors"><Trash2 size={13} /></button>
@@ -314,8 +354,8 @@ export default function OrdersPage() {
                 <p className="text-xs font-black text-[var(--on-surface)] mt-1">{fmtCurrency(order.total, order.currency_code || 'INR')}</p>
                 <div className="mt-3 flex gap-2">
                   <Link href={`/dashboard/orders/${order.id}`} className="flex-1 text-center px-4 py-2 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)]">View</Link>
-                  <select value={order.status} onChange={e => void singleUpdate(order.id, e.target.value)} className="flex-1 bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-2 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
-                    {FILTERS.filter(f => f.value !== 'all').map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                  <select value={normalizeStatus(order.status)} onChange={e => void singleUpdate(order.id, e.target.value)} className="flex-1 bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-2 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
+                    {getStatusOptions(order.status).map(status => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
                   </select>
                 </div>
               </div>

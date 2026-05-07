@@ -588,11 +588,11 @@ export const api = {
   updateOrderWorkflow: async (
     id: string,
     data: {
-      ship_by_date?: string;
-      estimated_delivery_start?: string;
-      estimated_delivery_end?: string;
-      customer_note?: string;
-      internal_note?: string;
+      ship_by_date?: string | null;
+      estimated_delivery_start?: string | null;
+      estimated_delivery_end?: string | null;
+      customer_note?: string | null;
+      internal_note?: string | null;
     }
   ) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/workflow`, {
