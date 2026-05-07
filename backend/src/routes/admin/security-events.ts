@@ -39,15 +39,20 @@ router.get('/', verifyAdmin, async (c) => {
       .limit(300);
 
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const sinceIso = since.toISOString();
     const [stats] = await db
       .select({
         total: sql<number>`count(*)`,
         warn: sql<number>`count(*) filter (where ${security_events.severity} = 'warn')`,
         error: sql<number>`count(*) filter (where ${security_events.severity} = 'error')`,
-        last_24h: sql<number>`count(*) filter (where ${security_events.created_at} >= ${sinceIso})`,
       })
       .from(security_events);
+
+    const [last24hStats] = await db
+      .select({
+        count: sql<number>`count(*)`,
+      })
+      .from(security_events)
+      .where(gte(security_events.created_at, since));
 
     const [topEvent] = await db
       .select({
@@ -55,7 +60,7 @@ router.get('/', verifyAdmin, async (c) => {
         count: sql<number>`count(*)`,
       })
       .from(security_events)
-      .where(gte(security_events.created_at, sinceIso))
+      .where(gte(security_events.created_at, since))
       .groupBy(security_events.event)
       .orderBy(sql`count(*) desc`, desc(security_events.event))
       .limit(1);
@@ -72,7 +77,7 @@ router.get('/', verifyAdmin, async (c) => {
         total: Number(stats?.total || 0),
         warn: Number(stats?.warn || 0),
         error: Number(stats?.error || 0),
-        last_24h: Number(stats?.last_24h || 0),
+        last_24h: Number(last24hStats?.count || 0),
         top_event_24h: topEvent?.event || null,
         top_event_count_24h: Number(topEvent?.count || 0),
       },
