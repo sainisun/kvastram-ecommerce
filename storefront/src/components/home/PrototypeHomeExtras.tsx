@@ -75,35 +75,60 @@ function slotHref(slot: HomepageMerchandisingSlot) {
   return '/products';
 }
 
-function MerchSlotCard({ slot }: { slot: HomepageMerchandisingSlot }) {
+type MerchSlotCardVariant = 'default' | 'categoryOverlay';
+
+function MerchSlotCard({
+  slot,
+  variant = 'default',
+}: {
+  slot: HomepageMerchandisingSlot;
+  variant?: MerchSlotCardVariant;
+}) {
+  const isCategoryOverlay = variant === 'categoryOverlay';
+  const cardClassName = isCategoryOverlay
+    ? 'homepage-category-merch-card group'
+    : 'relative min-h-[320px] min-w-[78%] snap-start overflow-hidden rounded-lg bg-gradient-to-br from-[#7d3f25] via-[#a85d3a] to-[#d8b295] p-8 text-white sm:min-w-[42%] lg:min-w-[31%]';
+  const imageSizes = isCategoryOverlay
+    ? '(max-width: 740px) 80vw, (max-width: 999px) 60vw, 23vw'
+    : '(max-width: 768px) 78vw, 31vw';
+
   return (
     <Link
       href={slotHref(slot)}
-      className="relative min-h-[320px] min-w-[78%] snap-start overflow-hidden rounded-lg bg-gradient-to-br from-[#7d3f25] via-[#a85d3a] to-[#d8b295] p-8 text-white sm:min-w-[42%] lg:min-w-[31%]"
+      className={cardClassName}
     >
       {slot.image_url ? (
         <OptimizedImage
           src={slot.image_url}
           alt={slot.title}
           fill
-          sizes="(max-width: 768px) 78vw, 31vw"
-          className="object-cover"
+          sizes={imageSizes}
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
       ) : null}
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.06),rgba(0,0,0,0.54))]" />
-      <div className="relative z-10 flex h-full flex-col justify-end">
-        <div className="text-body-xs uppercase tracking-token-wider text-white/75">
-          {slot.eyebrow || 'Kvastram Edit'}
+
+      {isCategoryOverlay ? (
+        <div className="homepage-category-merch-info">
+          <h3>{slot.title}</h3>
         </div>
-        <h3 className="mt-3 font-heading text-display-md leading-token-tight">
-          {slot.title}
-        </h3>
-        {slot.copy ? (
-          <p className="mt-3 max-w-[18rem] text-body-sm leading-7 text-white/82">
-            {slot.copy}
-          </p>
-        ) : null}
-      </div>
+      ) : (
+        <>
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.06),rgba(0,0,0,0.54))]" />
+          <div className="relative z-10 flex h-full flex-col justify-end">
+            <div className="text-body-xs uppercase tracking-token-wider text-white/75">
+              {slot.eyebrow || 'Kvastram Edit'}
+            </div>
+            <h3 className="mt-3 font-heading text-display-md leading-token-tight">
+              {slot.title}
+            </h3>
+            {slot.copy ? (
+              <p className="mt-3 max-w-[18rem] text-body-sm leading-7 text-white/82">
+                {slot.copy}
+              </p>
+            ) : null}
+          </div>
+        </>
+      )}
     </Link>
   );
 }
@@ -247,7 +272,11 @@ export function PrototypeHomeExtras({
           {fabricCards.length > 0 ? (
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {fabricCards.map((slot) => (
-                <MerchSlotCard key={slot.id} slot={slot} />
+                <MerchSlotCard
+                  key={slot.id}
+                  slot={slot}
+                  variant="categoryOverlay"
+                />
               ))}
             </div>
           ) : (
@@ -265,7 +294,11 @@ export function PrototypeHomeExtras({
           {occasionCards.length > 0 ? (
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {occasionCards.map((slot) => (
-                <MerchSlotCard key={slot.id} slot={slot} />
+                <MerchSlotCard
+                  key={slot.id}
+                  slot={slot}
+                  variant="categoryOverlay"
+                />
               ))}
             </div>
           ) : (

@@ -3762,7 +3762,66 @@ a:active,
   letter-spacing: var(--tracking-normal);
   text-transform: uppercase;
 }
+.homepage-category-merch-card {
+  display: block;
+  flex: 0 0 auto;
+  position: relative;
+  min-width: 80vw;
+  aspect-ratio: 5 / 7;
+  scroll-snap-align: start;
+  overflow: hidden;
+  border-radius: 0;
+  background: linear-gradient(135deg, #7d3f25, #a85d3a 48%, #d8b295);
+  color: white;
+}
 
+.homepage-category-merch-card:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.72));
+  z-index: 1;
+  pointer-events: none;
+}
+
+.homepage-category-merch-info {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 24px;
+  z-index: 2;
+  width: 100%;
+  padding-inline: 24px;
+  text-align: center;
+}
+
+.homepage-category-merch-info h3 {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding-inline: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(255,255,255,.85);
+  color: white;
+  font-family: var(--font-display);
+  font-size: var(--text-display-sm);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-normal);
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+@media screen and (min-width: 741px) {
+  .homepage-category-merch-card {
+    min-width: 60vw;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .homepage-category-merch-card {
+    min-width: 23vw;
+  }
+}
 /* ═══════════════════════════════════════════════════
    PROTOTYPE PARITY — REELS
    ═══════════════════════════════════════════════════ */
