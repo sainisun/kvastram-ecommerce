@@ -39,12 +39,13 @@ router.get('/', verifyAdmin, async (c) => {
       .limit(300);
 
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const sinceIso = since.toISOString();
     const [stats] = await db
       .select({
         total: sql<number>`count(*)`,
         warn: sql<number>`count(*) filter (where ${security_events.severity} = 'warn')`,
         error: sql<number>`count(*) filter (where ${security_events.severity} = 'error')`,
-        last_24h: sql<number>`count(*) filter (where ${security_events.created_at} >= ${since})`,
+        last_24h: sql<number>`count(*) filter (where ${security_events.created_at} >= ${sinceIso})`,
       })
       .from(security_events);
 
@@ -54,7 +55,7 @@ router.get('/', verifyAdmin, async (c) => {
         count: sql<number>`count(*)`,
       })
       .from(security_events)
-      .where(gte(security_events.created_at, since))
+      .where(gte(security_events.created_at, sinceIso))
       .groupBy(security_events.event)
       .orderBy(sql`count(*) desc`, desc(security_events.event))
       .limit(1);
