@@ -183,4 +183,34 @@ describe('order workflow metadata', () => {
       status: undefined,
     });
   });
+
+  it('hydrates packaging checklist into workflow summary', () => {
+    const summary = buildWorkflowSummary({
+      status: 'processing',
+      created_at: '2026-05-01T10:00:00.000Z',
+      metadata: {
+        packaging_checklist: {
+          product_quality_checked: true,
+          size_color_verified: true,
+          care_card_included: true,
+          thank_you_note_included: false,
+          gift_wrap_applied: true,
+          invoice_included: false,
+          checked_at: '2026-05-07T11:00:00.000Z',
+          checked_by: 'Asha',
+        },
+      },
+    });
+
+    expect(summary.packaging_checklist).toEqual({
+      product_quality_checked: true,
+      size_color_verified: true,
+      care_card_included: true,
+      thank_you_note_included: false,
+      gift_wrap_applied: true,
+      invoice_included: false,
+      checked_at: '2026-05-07T11:00:00.000Z',
+      checked_by: 'Asha',
+    });
+  });
 });

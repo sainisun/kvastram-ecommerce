@@ -674,6 +674,55 @@ class OrderService {
     return applyWorkflowSummary(updated as Record<string, any>);
   }
 
+  async updatePackagingChecklist(
+    id: string,
+    data: {
+      product_quality_checked?: boolean;
+      size_color_verified?: boolean;
+      care_card_included?: boolean;
+      thank_you_note_included?: boolean;
+      gift_wrap_applied?: boolean;
+      invoice_included?: boolean;
+      checked_by?: string | null;
+    }
+  ) {
+    const [existingOrder] = await db
+      .select({
+        id: orders.id,
+        metadata: orders.metadata,
+      })
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    if (!existingOrder) throw new Error('Order not found');
+
+    const metadata = getWorkflowMetadata(existingOrder.metadata);
+    const checklist = {
+      product_quality_checked: data.product_quality_checked === true,
+      size_color_verified: data.size_color_verified === true,
+      care_card_included: data.care_card_included === true,
+      thank_you_note_included: data.thank_you_note_included === true,
+      gift_wrap_applied: data.gift_wrap_applied === true,
+      invoice_included: data.invoice_included === true,
+      checked_at: new Date().toISOString(),
+      checked_by: data.checked_by || metadata.packaging_checklist?.checked_by || null,
+    };
+    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
+      packaging_checklist: checklist,
+    });
+
+    const [updated] = await db
+      .update(orders)
+      .set({
+        metadata: nextMetadata,
+        updated_at: new Date(),
+      })
+      .where(eq(orders.id, id))
+      .returning();
+
+    return applyWorkflowSummary(updated as Record<string, any>);
+  }
+
   async deleteOrder(id: string) {
     // Delete line items
     try {

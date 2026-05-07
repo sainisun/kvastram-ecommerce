@@ -26,6 +26,17 @@ export interface WorkflowCommunicationEvent {
   status?: string;
 }
 
+export interface PackagingChecklist {
+  product_quality_checked?: boolean;
+  size_color_verified?: boolean;
+  care_card_included?: boolean;
+  thank_you_note_included?: boolean;
+  gift_wrap_applied?: boolean;
+  invoice_included?: boolean;
+  checked_at?: string | null;
+  checked_by?: string | null;
+}
+
 export interface WorkflowMetadata {
   workflow_status?: WorkflowStatus;
   ship_by_date?: string | null;
@@ -55,6 +66,7 @@ export interface WorkflowMetadata {
   label_created_at?: string | null;
   label_printed_at?: string | null;
   communication_events?: WorkflowCommunicationEvent[];
+  packaging_checklist?: PackagingChecklist;
 }
 
 type OrderLike = {
@@ -99,6 +111,10 @@ function toIso(value?: string | Date | null): string | null {
 
 function numberOrNull(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function booleanOrFalse(value: unknown): boolean {
+  return value === true;
 }
 
 export function normalizeWorkflowStatus(
@@ -232,6 +248,49 @@ export function getWorkflowMetadata(metadata: unknown): WorkflowMetadata {
               typeof entry.status === 'string' ? entry.status : undefined,
           }))
       : undefined,
+    packaging_checklist:
+      source.packaging_checklist &&
+      typeof source.packaging_checklist === 'object' &&
+      !Array.isArray(source.packaging_checklist)
+        ? {
+            product_quality_checked: booleanOrFalse(
+              (source.packaging_checklist as Record<string, unknown>)
+                .product_quality_checked
+            ),
+            size_color_verified: booleanOrFalse(
+              (source.packaging_checklist as Record<string, unknown>)
+                .size_color_verified
+            ),
+            care_card_included: booleanOrFalse(
+              (source.packaging_checklist as Record<string, unknown>)
+                .care_card_included
+            ),
+            thank_you_note_included: booleanOrFalse(
+              (source.packaging_checklist as Record<string, unknown>)
+                .thank_you_note_included
+            ),
+            gift_wrap_applied: booleanOrFalse(
+              (source.packaging_checklist as Record<string, unknown>)
+                .gift_wrap_applied
+            ),
+            invoice_included: booleanOrFalse(
+              (source.packaging_checklist as Record<string, unknown>)
+                .invoice_included
+            ),
+            checked_at:
+              typeof (source.packaging_checklist as Record<string, unknown>)
+                .checked_at === 'string'
+                ? ((source.packaging_checklist as Record<string, unknown>)
+                    .checked_at as string)
+                : null,
+            checked_by:
+              typeof (source.packaging_checklist as Record<string, unknown>)
+                .checked_by === 'string'
+                ? ((source.packaging_checklist as Record<string, unknown>)
+                    .checked_by as string)
+                : null,
+          }
+        : undefined,
   };
 }
 
@@ -425,6 +484,9 @@ export function mergeWorkflowMetadata(
   merged.communication_events = hasUpdate('communication_events')
     ? updates.communication_events ?? []
     : existing.communication_events ?? [];
+  merged.packaging_checklist = hasUpdate('packaging_checklist')
+    ? updates.packaging_checklist ?? {}
+    : existing.packaging_checklist ?? {};
 
   const timelineSource = Array.isArray(existing.timeline) ? existing.timeline : [];
   const filteredTimeline = timelineSource.filter(
@@ -498,6 +560,16 @@ export function buildWorkflowSummary(order: OrderLike) {
       printed_at: metadata.label_printed_at || null,
     },
     communication_events: metadata.communication_events || [],
+    packaging_checklist: metadata.packaging_checklist || {
+      product_quality_checked: false,
+      size_color_verified: false,
+      care_card_included: false,
+      thank_you_note_included: false,
+      gift_wrap_applied: false,
+      invoice_included: false,
+      checked_at: null,
+      checked_by: null,
+    },
     timeline: buildWorkflowTimeline(order),
   };
 }

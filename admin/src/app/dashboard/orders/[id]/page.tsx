@@ -8,6 +8,7 @@ import {
   ExternalLink,
   FileText,
   PackageCheck,
+  ClipboardCheck,
   Mail,
   MapPin,
   MessageSquare,
@@ -107,6 +108,18 @@ const BUYER_UPDATE_TEMPLATES: Record<
   },
 };
 
+const PACKAGING_CHECKS: Array<{
+  key: keyof Omit<PackagingChecklistState, 'checked_by'>;
+  label: string;
+}> = [
+  { key: 'product_quality_checked', label: 'Product quality checked' },
+  { key: 'size_color_verified', label: 'Size and color verified' },
+  { key: 'care_card_included', label: 'Care card included' },
+  { key: 'thank_you_note_included', label: 'Thank-you note included' },
+  { key: 'gift_wrap_applied', label: 'Gift wrap applied' },
+  { key: 'invoice_included', label: 'Invoice included' },
+];
+
 const VALID_TRANSITIONS: Record<WorkflowStatus, WorkflowStatus[]> = {
   pending: ['processing', 'cancelled'],
   processing: ['shipped', 'cancelled', 'refunded'],
@@ -197,6 +210,16 @@ interface OrderDetails {
       channel?: string;
       status?: string;
     }>;
+    packaging_checklist?: {
+      product_quality_checked?: boolean;
+      size_color_verified?: boolean;
+      care_card_included?: boolean;
+      thank_you_note_included?: boolean;
+      gift_wrap_applied?: boolean;
+      invoice_included?: boolean;
+      checked_at?: string | null;
+      checked_by?: string | null;
+    };
     label?: {
       status?: LabelStatus;
       status_label?: string;
@@ -243,6 +266,32 @@ interface LabelFormState {
   package_width_cm: string;
   package_height_cm: string;
   carrier_service: string;
+}
+
+interface PackagingChecklistState {
+  product_quality_checked: boolean;
+  size_color_verified: boolean;
+  care_card_included: boolean;
+  thank_you_note_included: boolean;
+  gift_wrap_applied: boolean;
+  invoice_included: boolean;
+  checked_by: string;
+}
+
+function buildPackagingChecklistForm(
+  orderData?: OrderDetails | null
+): PackagingChecklistState {
+  const checklist = orderData?.workflow?.packaging_checklist;
+
+  return {
+    product_quality_checked: checklist?.product_quality_checked === true,
+    size_color_verified: checklist?.size_color_verified === true,
+    care_card_included: checklist?.care_card_included === true,
+    thank_you_note_included: checklist?.thank_you_note_included === true,
+    gift_wrap_applied: checklist?.gift_wrap_applied === true,
+    invoice_included: checklist?.invoice_included === true,
+    checked_by: checklist?.checked_by || '',
+  };
 }
 
 type CarrierProvider = 'shiprocket' | 'delhivery' | 'easypost' | 'shippo';
@@ -339,6 +388,8 @@ export default function OrderDetailsPage() {
     message: BUYER_UPDATE_TEMPLATES.processing_started.message,
     include_tracking: true,
   });
+  const [packagingChecklist, setPackagingChecklist] =
+    useState<PackagingChecklistState>(() => buildPackagingChecklistForm());
 
   useEffect(() => {
     const loadOrder = async () => {
@@ -367,6 +418,7 @@ export default function OrderDetailsPage() {
           notify_buyer: true,
         });
         setLabelForm(buildLabelForm(orderData));
+        setPackagingChecklist(buildPackagingChecklistForm(orderData));
         try {
           const carrierData = await api.getOrderCarrierReadiness(id);
           setCarrierReadiness(carrierData?.readiness || null);
@@ -636,6 +688,30 @@ export default function OrderDetailsPage() {
       showNotification(
         'error',
         error instanceof Error ? error.message : 'Failed to send buyer update'
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handlePackagingChecklistSave = async () => {
+    try {
+      setUpdating(true);
+      await api.updateOrderPackagingChecklist(id, {
+        ...packagingChecklist,
+        checked_by: normalizeWorkflowValue(packagingChecklist.checked_by),
+      });
+      const refreshed = await api.getOrder(id);
+      const refreshedOrder = refreshed?.order || refreshed;
+      setOrder(refreshedOrder);
+      setPackagingChecklist(buildPackagingChecklistForm(refreshedOrder));
+      showNotification('success', 'Packaging checklist saved');
+    } catch (error: unknown) {
+      showNotification(
+        'error',
+        error instanceof Error
+          ? error.message
+          : 'Failed to save packaging checklist'
       );
     } finally {
       setUpdating(false);
@@ -1286,6 +1362,85 @@ export default function OrderDetailsPage() {
                   )}
                 </div>
               </div>
+            </div>
+          </Surface>
+
+          <Surface className="overflow-hidden">
+            <SectionHeader title="Packaging checklist" />
+            <div className="space-y-4 px-5 py-5 md:px-6">
+              <div className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--kv-accent-deep)]">
+                    <ClipboardCheck size={18} />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[var(--kv-text)]">
+                      Personal brand pack-out
+                    </p>
+                    <p className="text-[var(--kv-muted)]">
+                      Confirm the order feels checked, thoughtful, and ready to receive.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {PACKAGING_CHECKS.map((check) => (
+                  <label
+                    key={check.key}
+                    className="flex items-center justify-between gap-3 rounded-[1.1rem] border border-[var(--kv-border)] px-4 py-3 text-sm text-[var(--kv-text)]"
+                  >
+                    <span className="font-medium">{check.label}</span>
+                    <input
+                      type="checkbox"
+                      checked={packagingChecklist[check.key]}
+                      onChange={(event) =>
+                        setPackagingChecklist((current) => ({
+                          ...current,
+                          [check.key]: event.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4"
+                    />
+                  </label>
+                ))}
+              </div>
+
+              <label className="text-sm text-[var(--kv-text)]">
+                <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                  Checked by
+                </span>
+                <input
+                  type="text"
+                  value={packagingChecklist.checked_by}
+                  onChange={(event) =>
+                    setPackagingChecklist((current) => ({
+                      ...current,
+                      checked_by: event.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-3 text-sm"
+                  placeholder="Team member"
+                />
+              </label>
+
+              {order.workflow?.packaging_checklist?.checked_at ? (
+                <p className="rounded-[1.1rem] bg-[var(--kv-soft)] px-4 py-3 text-sm text-[var(--kv-muted)]">
+                  Last checked{' '}
+                  {new Date(
+                    order.workflow.packaging_checklist.checked_at
+                  ).toLocaleString()}
+                </p>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={() => void handlePackagingChecklistSave()}
+                disabled={updating}
+                className="w-full rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                {updating ? 'Saving...' : 'Save packaging checklist'}
+              </button>
             </div>
           </Surface>
 

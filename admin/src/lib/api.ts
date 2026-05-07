@@ -699,6 +699,33 @@ export const api = {
     return res.json();
   },
 
+  updateOrderPackagingChecklist: async (
+    id: string,
+    data: {
+      product_quality_checked: boolean;
+      size_color_verified: boolean;
+      care_card_included: boolean;
+      thank_you_note_included: boolean;
+      gift_wrap_applied: boolean;
+      invoice_included: boolean;
+      checked_by?: string | null;
+    }
+  ) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/orders/${id}/packaging-checklist`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok)
+      return handleApiError(res, 'Failed to update packaging checklist');
+    return res.json();
+  },
+
   updateOrderStatus: async (id: string, status: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/status`, {
       method: 'PUT',

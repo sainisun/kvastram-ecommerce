@@ -233,6 +233,16 @@ const BuyerUpdateSchema = z.object({
   include_tracking: z.boolean().default(true),
 });
 
+const PackagingChecklistSchema = z.object({
+  product_quality_checked: z.boolean().default(false),
+  size_color_verified: z.boolean().default(false),
+  care_card_included: z.boolean().default(false),
+  thank_you_note_included: z.boolean().default(false),
+  gift_wrap_applied: z.boolean().default(false),
+  invoice_included: z.boolean().default(false),
+  checked_by: z.string().max(120).nullable().optional(),
+});
+
 ordersRouter.post(
   '/:id/tracking',
   zValidator('json', AddTrackingSchema),
@@ -338,6 +348,23 @@ ordersRouter.post(
       c,
       { order: updated },
       'Buyer update sent successfully'
+    );
+  })
+);
+
+// PATCH /orders/:id/packaging-checklist - Save personal brand fulfillment checks
+ordersRouter.patch(
+  '/:id/packaging-checklist',
+  zValidator('json', PackagingChecklistSchema),
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const data = (c.req as any).valid('json');
+    const updated = await orderService.updatePackagingChecklist(id, data);
+
+    return successResponse(
+      c,
+      { order: updated },
+      'Packaging checklist updated successfully'
     );
   })
 );
