@@ -1009,6 +1009,10 @@ export default function OrderDetailsPage() {
   const recommendedTemplates = getRecommendedBuyerTemplates(order);
   const selectedLabelPackage =
     getPackageById(order, labelPackageId) || order?.workflow?.primary_package || null;
+  const primaryShipment =
+    order?.workflow?.primary_package || order?.workflow?.packages?.[0] || null;
+  const packageCount =
+    order?.workflow?.packages?.length || (primaryShipment ? 1 : 0);
   const customerNoteSnippets = noteSnippets.filter(
     (snippet) => snippet.target === 'customer'
   );
@@ -1027,6 +1031,34 @@ export default function OrderDetailsPage() {
             : ''
         }.`
       : 'Buyer notification is ready once tracking details are added.';
+
+  const openTrackingEditor = () => {
+    if (primaryShipment) {
+      startEditingPackage(primaryShipment);
+    } else if (
+      !['delivered', 'cancelled', 'refunded'].includes(
+        normalizeStatus(order?.status || 'pending')
+      )
+    ) {
+      setCompleteModalOpen(true);
+    }
+
+    document.getElementById('fulfillment-and-tracking')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
+
+  const openLabelManager = () => {
+    if (primaryShipment?.id) {
+      setLabelPackageId(primaryShipment.id);
+    }
+
+    document.getElementById('manual-shipping-label')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
 
   const handleStatusChange = async (status: string) => {
     try {
@@ -2034,6 +2066,237 @@ export default function OrderDetailsPage() {
           </div>
         </div>
       ) : null}
+
+      <Surface className="overflow-hidden">
+        <div className="border-b border-[var(--kv-border)] px-5 py-4 md:px-6">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
+                Shipping workbench
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
+                Track, label, package, and notify from one place
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm text-[var(--kv-muted)]">
+                This is the shipment-first surface. Tracking link, no-tracking reason,
+                package count, label state, and buyer update shortcuts stay visible
+                before the rest of the order detail.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <ActionButton onClick={openTrackingEditor} icon={Truck}>
+                {primaryShipment ? 'Edit tracking' : 'Start shipment'}
+              </ActionButton>
+              <ActionButton onClick={openLabelManager} icon={FileText} variant="secondary">
+                Manage label
+              </ActionButton>
+              <ActionButton
+                onClick={() =>
+                  document.getElementById('buyer-communication')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  })
+                }
+                icon={MessageSquare}
+                variant="secondary"
+              >
+                Buyer updates
+              </ActionButton>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 px-5 py-5 md:px-6 xl:grid-cols-[1.05fr_1.25fr_1fr_1fr]">
+          <div className="border border-[var(--kv-border)] px-4 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+              Workflow
+            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <StatusBadge status={order.status} className="text-[11px]" />
+            </div>
+            <div className="mt-3 space-y-2 text-sm text-[var(--kv-muted)]">
+              <p>
+                Ship by:{' '}
+                <span className="font-medium text-[var(--kv-text)]">
+                  {order.workflow?.ship_by_date
+                    ? formatDateLabel(order.workflow.ship_by_date)
+                    : 'Not set'}
+                </span>
+              </p>
+              <p>
+                ETA:{' '}
+                <span className="font-medium text-[var(--kv-text)]">
+                  {order.workflow?.estimated_delivery_start &&
+                  order.workflow?.estimated_delivery_end
+                    ? `${formatDateLabel(order.workflow?.estimated_delivery_start)} - ${formatDateLabel(order.workflow?.estimated_delivery_end)}`
+                    : 'Not set'}
+                </span>
+              </p>
+              <p>
+                Buyer note:{' '}
+                <span className="font-medium text-[var(--kv-text)]">
+                  {order.workflow?.customer_note || 'Not added yet'}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div className="border border-[var(--kv-border)] px-4 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+              Primary shipment
+            </p>
+            {primaryShipment ? (
+              <>
+                <p className="mt-3 text-lg font-semibold text-[var(--kv-text)]">
+                  {primaryShipment.no_tracking
+                    ? 'No tracking selected'
+                    : primaryShipment.tracking_number || 'Tracking not filled yet'}
+                </p>
+                <p className="mt-2 text-sm text-[var(--kv-muted)]">
+                  {[primaryShipment.carrier, primaryShipment.service]
+                    .filter(Boolean)
+                    .join(' • ') || 'Carrier and service not filled yet'}
+                </p>
+                <div className="mt-3 space-y-2 text-sm text-[var(--kv-muted)]">
+                  <p>
+                    Tracking link:{' '}
+                    <span className="font-medium text-[var(--kv-text)]">
+                      {primaryShipment.tracking_url ? 'Added' : 'Missing'}
+                    </span>
+                  </p>
+                  {primaryShipment.no_tracking_reason ? (
+                    <p>
+                      No-tracking reason:{' '}
+                      <span className="font-medium text-[var(--kv-text)]">
+                        {primaryShipment.no_tracking_reason}
+                      </span>
+                    </p>
+                  ) : null}
+                  {primaryShipment.ship_date ? (
+                    <p>
+                      Ship date:{' '}
+                      <span className="font-medium text-[var(--kv-text)]">
+                        {formatDateLabel(primaryShipment.ship_date)}
+                      </span>
+                    </p>
+                  ) : null}
+                </div>
+                {primaryShipment.tracking_url ? (
+                  <div className="mt-4">
+                    <ActionButton
+                      href={primaryShipment.tracking_url}
+                      icon={ExternalLink}
+                      variant="secondary"
+                    >
+                      Open tracking link
+                    </ActionButton>
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <p className="mt-3 text-sm text-[var(--kv-muted)]">
+                No package exists yet. Use Complete order to create package #1 and
+                save the first tracking or no-tracking decision.
+              </p>
+            )}
+          </div>
+
+          <div className="border border-[var(--kv-border)] px-4 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+              Packages
+            </p>
+            <p className="mt-3 text-lg font-semibold text-[var(--kv-text)]">
+              {packageCount}
+            </p>
+            <div className="mt-3 space-y-2 text-sm text-[var(--kv-muted)]">
+              <p>
+                Latest label state:{' '}
+                <span className="font-medium text-[var(--kv-text)]">
+                  {primaryShipment?.label_state || order.workflow?.label?.status || 'draft'}
+                </span>
+              </p>
+              <p>
+                Label link:{' '}
+                <span className="font-medium text-[var(--kv-text)]">
+                  {primaryShipment?.label_url || order.workflow?.label?.url
+                    ? 'Available'
+                    : 'Not attached'}
+                </span>
+              </p>
+              <p>
+                Provider:{' '}
+                <span className="font-medium text-[var(--kv-text)]">
+                  {primaryShipment?.label_provider || order.workflow?.label?.provider || 'Manual / not set'}
+                </span>
+              </p>
+            </div>
+            <div className="mt-4">
+              <ActionButton
+                onClick={() =>
+                  document.getElementById('fulfillment-and-tracking')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  })
+                }
+                icon={Package}
+                variant="secondary"
+              >
+                Open packages
+              </ActionButton>
+            </div>
+          </div>
+
+          <div className="border border-[var(--kv-border)] px-4 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+              Quick actions
+            </p>
+            <div className="mt-3 space-y-2">
+              <button
+                type="button"
+                onClick={openTrackingEditor}
+                className="flex w-full items-center justify-between border border-[var(--kv-border)] px-3 py-3 text-sm font-medium text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+              >
+                <span>Fill tracking / no tracking</span>
+                <Truck size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={openLabelManager}
+                className="flex w-full items-center justify-between border border-[var(--kv-border)] px-3 py-3 text-sm font-medium text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+              >
+                <span>Open label workflow</span>
+                <FileText size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  document.getElementById('fulfillment-and-tracking')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  })
+                }
+                className="flex w-full items-center justify-between border border-[var(--kv-border)] px-3 py-3 text-sm font-medium text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+              >
+                <span>Add another package</span>
+                <Package size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  document.getElementById('buyer-communication')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  })
+                }
+                className="flex w-full items-center justify-between border border-[var(--kv-border)] px-3 py-3 text-sm font-medium text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+              >
+                <span>Send buyer update</span>
+                <Send size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </Surface>
 
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.95fr]">
         <div className="space-y-6">
@@ -3314,7 +3577,10 @@ export default function OrderDetailsPage() {
 
           <Surface className="overflow-hidden">
             <div id="fulfillment-and-tracking" />
-            <SectionHeader title="Fulfillment and tracking" />
+            <SectionHeader
+              title="Packages and tracking"
+              description="Every package keeps its own tracking link, no-tracking reason, label state, and delivery update."
+            />
             <div className="px-5 py-5 md:px-6">
               <div className="space-y-4">
                 {(order.workflow?.packages || []).length > 0 ? (
@@ -3329,6 +3595,23 @@ export default function OrderDetailsPage() {
                             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
                               Package #{pkg.sequence}
                             </p>
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              {pkg.id === primaryShipment?.id ? (
+                                <span className="rounded-full bg-[var(--kv-accent-soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-accent-deep)]">
+                                  Primary shipment
+                                </span>
+                              ) : null}
+                              {pkg.no_tracking ? (
+                                <span className="rounded-full bg-[#fff8ea] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8a6620]">
+                                  No tracking
+                                </span>
+                              ) : null}
+                              {pkg.tracking_url ? (
+                                <span className="rounded-full bg-[var(--kv-soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                                  Tracking link added
+                                </span>
+                              ) : null}
+                            </div>
                             <p className="mt-2 font-semibold text-[var(--kv-text)]">
                               {pkg.no_tracking
                                 ? 'No tracking attached'
@@ -3353,6 +3636,12 @@ export default function OrderDetailsPage() {
                                 Reason: {pkg.no_tracking_reason}
                               </p>
                             ) : null}
+                            <p className="mt-1 text-[var(--kv-muted)]">
+                              Tracking link:{' '}
+                              <span className="font-medium text-[var(--kv-text)]">
+                                {pkg.tracking_url ? 'Saved' : 'Missing'}
+                              </span>
+                            </p>
                             {pkg.label_provider ||
                             pkg.provider_shipment_id ||
                             pkg.pickup_reference ? (
@@ -3379,7 +3668,7 @@ export default function OrderDetailsPage() {
                                 icon={Truck}
                                 variant="secondary"
                               >
-                                Track
+                                Open tracking
                               </ActionButton>
                             ) : null}
                             <button
@@ -3387,7 +3676,7 @@ export default function OrderDetailsPage() {
                               onClick={() => startEditingPackage(pkg)}
                               className="rounded-full border border-[var(--kv-border)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-text)]"
                             >
-                              Edit package
+                              Edit tracking
                             </button>
                             <button
                               type="button"
@@ -3579,7 +3868,7 @@ export default function OrderDetailsPage() {
                       Add package
                     </p>
                     <p className="mt-2 text-sm text-[var(--kv-muted)]">
-                      Add a second shipment, split parcel, or later tracking update without reopening the order.
+                      Create package #2 or later, save a fresh tracking link, or mark a split shipment as no-tracking without reopening the order.
                     </p>
                   </div>
                   <form

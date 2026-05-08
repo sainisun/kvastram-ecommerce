@@ -3,8 +3,29 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Download, RefreshCw, Search, Trash2 } from 'lucide-react';
+import {
+  CircleAlert,
+  Clock3,
+  Download,
+  ExternalLink,
+  Mail,
+  MapPin,
+  PackageCheck,
+  PackagePlus,
+  RefreshCw,
+  Search,
+  Truck,
+  Trash2,
+  User,
+} from 'lucide-react';
 import { api } from '@/lib/api';
+import {
+  ActionButton,
+  MetricCard,
+  SegmentedTabs,
+  StatusBadge,
+  Surface,
+} from '@/components/ui/admin-ui';
 
 type WorkflowStatus =
   | 'pending'
@@ -54,17 +75,30 @@ interface Order {
     primary_package?: {
       id: string;
       sequence: number;
+      ship_date?: string | null;
+      delivered_at?: string | null;
+      carrier?: string | null;
+      service?: string | null;
       tracking_number?: string | null;
       tracking_url?: string | null;
       no_tracking?: boolean;
+      no_tracking_reason?: string | null;
       label_url?: string | null;
+      label_state?: string | null;
     } | null;
     packages?: Array<{
       id: string;
       sequence: number;
+      ship_date?: string | null;
+      delivered_at?: string | null;
+      carrier?: string | null;
+      service?: string | null;
       tracking_number?: string | null;
       tracking_url?: string | null;
       no_tracking?: boolean;
+      no_tracking_reason?: string | null;
+      label_url?: string | null;
+      label_state?: string | null;
     }>;
   };
 }
@@ -82,13 +116,13 @@ interface OrderStats {
 }
 
 const FILTERS: Array<{ label: string; value: OrderFilter }> = [
-  { label: 'All',        value: 'all' },
-  { label: 'Pending',    value: 'pending' },
+  { label: 'All', value: 'all' },
+  { label: 'Pending', value: 'pending' },
   { label: 'Processing', value: 'processing' },
-  { label: 'Shipped',    value: 'shipped' },
-  { label: 'Delivered',  value: 'delivered' },
-  { label: 'Cancelled',  value: 'cancelled' },
-  { label: 'Refunded',   value: 'refunded' },
+  { label: 'Shipped', value: 'shipped' },
+  { label: 'Delivered', value: 'delivered' },
+  { label: 'Cancelled', value: 'cancelled' },
+  { label: 'Refunded', value: 'refunded' },
 ];
 
 const QUEUE_TABS: Array<{ label: string; value: QueueTab }> = [
@@ -125,7 +159,8 @@ const VALID_TRANSITIONS: Record<WorkflowStatus, WorkflowStatus[]> = {
 };
 
 function normalizeStatus(status: string): WorkflowStatus {
-  const normalized = status.toLowerCase() === 'canceled' ? 'cancelled' : status.toLowerCase();
+  const normalized =
+    status.toLowerCase() === 'canceled' ? 'cancelled' : status.toLowerCase();
   return Object.prototype.hasOwnProperty.call(STATUS_LABELS, normalized)
     ? (normalized as WorkflowStatus)
     : 'pending';
@@ -136,23 +171,20 @@ function getStatusOptions(status: string) {
   return [current, ...VALID_TRANSITIONS[current]];
 }
 
-const STATUS_STYLE: Record<string, { badge: string; border: string }> = {
-  paid:       { badge: 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]', border: 'border-[var(--tertiary-container)]' },
-  completed:  { badge: 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]', border: 'border-[var(--tertiary-container)]' },
-  delivered:  { badge: 'bg-[var(--tertiary-container)] text-[var(--on-tertiary-container)]', border: 'border-[var(--tertiary-container)]' },
-  pending:    { badge: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]', border: 'border-[var(--secondary-container)]' },
-  processing: { badge: 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]', border: 'border-[var(--secondary-container)]' },
-  shipped:    { badge: 'bg-[var(--primary-fixed)] text-[var(--on-primary-fixed-variant)]', border: 'border-[var(--primary-fixed)]' },
-  cancelled:  { badge: 'bg-[var(--error-container)] text-[var(--on-error-container)]', border: 'border-[var(--error-container)]' },
-  refunded:   { badge: 'bg-[var(--error-container)] text-[var(--on-error-container)]', border: 'border-[var(--error-container)]' },
-};
-function ss(status: string) { return STATUS_STYLE[status.toLowerCase()] ?? STATUS_STYLE.pending; }
-
 function fmtCurrency(amount: number, currency = 'INR') {
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency, maximumFractionDigits: 0 }).format(amount / 100);
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount / 100);
 }
-function fmtDate(v: string) {
-  return new Date(v).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+
+function fmtDate(value: string) {
+  return new Date(value).toLocaleDateString('en-IN', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 function getWorkflowStatus(order: Order): WorkflowStatus {
@@ -164,7 +196,11 @@ function getDestinationLabel(order: Order) {
     .filter(Boolean)
     .join(' ')
     .trim();
-  const location = [order.shipping_city, order.shipping_postal_code, order.shipping_country_code]
+  const location = [
+    order.shipping_city,
+    order.shipping_postal_code,
+    order.shipping_country_code,
+  ]
     .filter(Boolean)
     .join(', ')
     .trim();
@@ -195,19 +231,49 @@ function getQueueCount(stats: OrderStats | null, queue: QueueTab) {
   return (stats.cancelled_orders || 0) + (stats.refunded_orders || 0);
 }
 
+function getTrackingHeadline(order: Order) {
+  const primaryPackage = getPrimaryPackage(order);
+
+  if (primaryPackage?.no_tracking) {
+    return {
+      title: 'No tracking required',
+      detail:
+        primaryPackage.no_tracking_reason ||
+        'This shipment is intentionally marked without tracking.',
+      tone: 'border-[#f0d7a1] bg-[#fff8ea]',
+    };
+  }
+
+  if (primaryPackage?.tracking_number) {
+    return {
+      title: primaryPackage.tracking_number,
+      detail: primaryPackage.tracking_url
+        ? 'Tracking link added'
+        : 'Tracking link still needs to be added',
+      tone: 'border-[var(--kv-accent)]/20 bg-[var(--kv-accent-soft)]',
+    };
+  }
+
+  return {
+    title: 'Tracking not filled',
+    detail: 'Add tracking link or mark this shipment as no-tracking.',
+    tone: 'border-[var(--kv-danger)]/15 bg-[#fdf1ef]',
+  };
+}
+
 export default function OrdersPage() {
   const router = useRouter();
-  const [orders, setOrders]           = useState<Order[]>([]);
-  const [stats, setStats]             = useState<OrderStats | null>(null);
-  const [loading, setLoading]         = useState(true);
-  const [search, setSearch]           = useState('');
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [stats, setStats] = useState<OrderStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderFilter>('all');
   const [queueTab, setQueueTab] = useState<QueueTab>('open');
   const [openFilter, setOpenFilter] = useState<OpenFilter>('all');
   const [sortBy, setSortBy] = useState<SortOption>('ship_by');
   const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
-  const [page, setPage]               = useState(1);
-  const [totalPages, setTotalPages]   = useState(1);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -223,25 +289,35 @@ export default function OrdersPage() {
       );
       setOrders(data?.orders || data || []);
       setTotalPages(data?.pagination?.total_pages || 1);
-    } catch { setOrders([]); setTotalPages(1); }
-    finally { setLoading(false); }
+    } catch {
+      setOrders([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
   }, [openFilter, page, queueTab, search, sortBy, statusFilter]);
 
   const fetchStats = async () => {
     try {
-      const d = await api.getOrderStats();
-      setStats(d || null);
+      const data = await api.getOrderStats();
+      setStats(data || null);
     } catch (error) {
       console.error('Failed to fetch order stats:', error);
       setStats(null);
     }
   };
 
-  useEffect(() => { void fetchOrders(); }, [fetchOrders]);
-  useEffect(() => { void fetchStats(); }, []);
+  useEffect(() => {
+    void fetchOrders();
+  }, [fetchOrders]);
+
+  useEffect(() => {
+    void fetchStats();
+  }, []);
 
   const filteredOpenCount = useMemo(() => {
     if (queueTab !== 'open') return 0;
+
     return openFilter === 'all'
       ? orders.length
       : orders.filter((order) => {
@@ -266,22 +342,24 @@ export default function OrdersPage() {
         }).length;
   }, [openFilter, orders, queueTab]);
 
-  const getName = (o: Order) =>
-    o.customer_first_name && o.customer_last_name
-      ? `${o.customer_first_name} ${o.customer_last_name}`
+  const getName = (order: Order) =>
+    order.customer_first_name && order.customer_last_name
+      ? `${order.customer_first_name} ${order.customer_last_name}`
       : 'Guest customer';
 
   const toggleOne = (id: string) => {
     const next = new Set(selectedOrders);
-    if (next.has(id)) {
-      next.delete(id);
-    } else {
-      next.add(id);
-    }
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
     setSelectedOrders(next);
   };
+
   const toggleAll = () =>
-    setSelectedOrders(selectedOrders.size === orders.length ? new Set() : new Set(orders.map(o => o.id)));
+    setSelectedOrders(
+      selectedOrders.size === orders.length
+        ? new Set()
+        : new Set(orders.map((order) => order.id))
+    );
 
   const bulkUpdate = async (nextStatus: OrderFilter) => {
     if (!selectedOrders.size || nextStatus === 'all') return;
@@ -298,327 +376,506 @@ export default function OrdersPage() {
   const handleExport = async () => {
     const blob = await api.exportOrders(search, statusFilter);
     const url = URL.createObjectURL(blob);
-    const a = Object.assign(document.createElement('a'), { href: url, download: `orders-${new Date().toISOString().slice(0, 10)}.csv` });
-    document.body.appendChild(a); a.click(); a.remove();
+    const link = Object.assign(document.createElement('a'), {
+      href: url,
+      download: `orders-${new Date().toISOString().slice(0, 10)}.csv`,
+    });
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
-  const handleDelete = async (id: string, num: string) => {
-    if (!window.confirm(`Delete order #${num}?`)) return;
+  const handleDelete = async (id: string, number: string) => {
+    if (!window.confirm(`Delete order #${number}?`)) return;
     await api.deleteOrder(id);
     await Promise.all([fetchOrders(), fetchStats()]);
   };
 
-  const statCount = (v: OrderFilter) => ({ all: stats?.total_orders, pending: stats?.pending_orders, processing: stats?.processing_orders, shipped: stats?.shipped_orders, delivered: stats?.delivered_orders, cancelled: stats?.cancelled_orders, refunded: stats?.refunded_orders })[v] || 0;
+  const statCount = (value: OrderFilter) =>
+    (
+      {
+        all: stats?.total_orders,
+        pending: stats?.pending_orders,
+        processing: stats?.processing_orders,
+        shipped: stats?.shipped_orders,
+        delivered: stats?.delivered_orders,
+        cancelled: stats?.cancelled_orders,
+        refunded: stats?.refunded_orders,
+      } as Record<OrderFilter, number | undefined>
+    )[value] || 0;
+
   const attentionCount = orders.filter((order) => order.workflow?.needs_attention).length;
   const overdueCount = orders.filter((order) => order.workflow?.overdue_ship_by).length;
 
   return (
     <div className="space-y-6 px-4 py-6 md:px-6">
-
-      {/* ── Header ── */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-[2.75rem] font-black leading-none tracking-tight text-[var(--on-surface)]">Orders &amp; Shipping</h2>
-          <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">Work the shipping queue, complete packages, and keep buyer updates moving.</p>
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-3xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[var(--kv-accent-deep)]">
+            Orders
+          </p>
+          <h2 className="mt-2 text-[2.6rem] font-[var(--font-display)] leading-none text-[var(--kv-text)]">
+            Orders &amp; Shipping
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-[var(--kv-muted)]">
+            Work the shipping queue with buyer, destination, package state, tracking
+            link, no-tracking reason, and label actions visible in the same place.
+          </p>
         </div>
-        <div className="flex items-center gap-2 mt-2">
-          <button onClick={() => void Promise.all([fetchOrders(), fetchStats()])} className="flex items-center gap-2 bg-[var(--surface-container-lowest)] border border-[var(--outline-variant)] text-[var(--on-surface)] px-4 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-[var(--surface-container-low)] transition-colors">
-            <RefreshCw size={14} /> Refresh
-          </button>
-          <button onClick={() => void handleExport()} className="flex items-center gap-2 bg-[var(--primary)] text-white px-4 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition-opacity">
-            <Download size={14} /> Export
-          </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <ActionButton
+            onClick={() => void Promise.all([fetchOrders(), fetchStats()])}
+            icon={RefreshCw}
+            variant="secondary"
+          >
+            Refresh queue
+          </ActionButton>
+          <ActionButton onClick={() => void handleExport()} icon={Download}>
+            Export orders
+          </ActionButton>
         </div>
       </div>
 
-      {/* ── Stat cards ── */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {[
-          { label: 'Total Orders', value: stats?.total_orders ?? 0 },
-          { label: 'Revenue',      value: fmtCurrency(stats?.total_revenue || 0) },
-          { label: 'Pending',      value: stats?.pending_orders ?? 0, warn: (stats?.pending_orders || 0) > 0 },
-          { label: 'Avg Value',    value: fmtCurrency(stats?.avg_order_value || 0) },
-        ].map(c => (
-          <div key={c.label} className={`bg-[var(--surface-container-lowest)] p-5 rounded-xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] ${c.warn ? 'ring-1 ring-[var(--error)]/30' : ''}`}>
-            <p className="text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">{c.label}</p>
-            <p className={`text-xl font-black mt-1 ${c.warn ? 'text-[var(--error)]' : 'text-[var(--on-surface)]'}`}>{c.value}</p>
-          </div>
-        ))}
+      <div className="grid gap-4 md:grid-cols-4">
+        <MetricCard
+          label="Open Queue"
+          value={getQueueCount(stats, 'open')}
+          icon={PackageCheck}
+          hint="Orders still being worked"
+          tone="accent"
+        />
+        <MetricCard
+          label="Completed"
+          value={getQueueCount(stats, 'completed')}
+          icon={Truck}
+          hint="Shipped or delivered"
+          tone="success"
+        />
+        <MetricCard
+          label="Needs Attention"
+          value={attentionCount}
+          icon={CircleAlert}
+          hint={overdueCount > 0 ? `${overdueCount} ship-by overdue` : 'Review flagged orders'}
+          tone={attentionCount > 0 ? 'warning' : 'default'}
+        />
+        <MetricCard
+          label="Revenue"
+          value={fmtCurrency(stats?.total_revenue || 0)}
+          icon={Clock3}
+          hint={`Avg ${fmtCurrency(stats?.avg_order_value || 0)}`}
+        />
       </div>
 
-      {(attentionCount > 0 || overdueCount > 0) && (
-        <div className="rounded-xl border border-[var(--error-container)] bg-[var(--error-container)]/20 px-5 py-4 text-sm text-[var(--on-surface)]">
-          <p className="font-bold uppercase tracking-widest text-[10px] text-[var(--error)]">
-            Needs Attention
-          </p>
-          <p className="mt-2">
-            {attentionCount} orders need review.
-            {overdueCount > 0 ? ` ${overdueCount} are past their ship-by date.` : ''}
-          </p>
-        </div>
-      )}
-
-      {/* ── Filter tabs + search ── */}
-      <div className="bg-[var(--surface-container-lowest)] rounded-xl p-4 shadow-[0_4px_12px_rgba(25,28,30,0.04)] space-y-4">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          {QUEUE_TABS.map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => {
-                setQueueTab(tab.value);
-                setPage(1);
-              }}
-              className={`flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                queueTab === tab.value
-                  ? 'bg-[var(--primary)] text-white'
-                  : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container)]'
-              }`}
-            >
-              {tab.label}
-              {getQueueCount(stats, tab.value) > 0 && (
-                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${queueTab === tab.value ? 'bg-white/20 text-white' : 'bg-[var(--outline-variant)]/50 text-[var(--on-surface-variant)]'}`}>
-                  {getQueueCount(stats, tab.value)}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {queueTab === 'open' && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-            {OPEN_FILTERS.map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => {
-                  setOpenFilter(filter.value);
-                  setPage(1);
-                }}
-                className={`flex-shrink-0 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                  openFilter === filter.value
-                    ? 'bg-[var(--surface-container-high)] text-[var(--on-surface)] ring-1 ring-[var(--primary)]/20'
-                    : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container)]'
-                }`}
-              >
-                {filter.label}
-                {openFilter === filter.value && filteredOpenCount > 0 ? ` (${filteredOpenCount})` : ''}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="flex gap-3 flex-wrap">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--on-surface-variant)]" />
-            <input
-              type="search"
-              placeholder="Search order #, buyer, email, address, item, notes..."
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(1); }}
-              className="w-full bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full pl-9 pr-4 py-2.5 text-sm text-[var(--on-surface)] placeholder:text-[var(--on-surface-variant)] focus:outline-none focus:border-[var(--on-tertiary-container)] focus:ring-2 focus:ring-[var(--on-tertiary-container)]/10"
-            />
-          </div>
-          <select
-            value={sortBy}
-            onChange={(e) => {
-              setSortBy(e.target.value as SortOption);
+      <Surface className="p-5 md:p-6">
+        <div className="space-y-4">
+          <SegmentedTabs
+            value={queueTab}
+            options={QUEUE_TABS.map((tab) => ({
+              label: tab.label,
+              value: tab.value,
+              count: getQueueCount(stats, tab.value),
+            }))}
+            onChange={(value) => {
+              setQueueTab(value);
               setPage(1);
             }}
-            className="min-w-[180px] rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-4 py-2.5 text-sm font-medium text-[var(--on-surface)] focus:outline-none"
-          >
-            <option value="ship_by">Sort: Ship By</option>
-            <option value="destination">Sort: Destination</option>
-            <option value="newest">Sort: Newest</option>
-            <option value="oldest">Sort: Oldest</option>
-          </select>
-          {selectedOrders.size > 0 && (
-            <div className="flex gap-2 flex-wrap">
-              {(['processing','shipped','delivered','cancelled'] as const).map(s => (
-                <button key={s} onClick={() => void bulkUpdate(s)} className="px-4 py-2 rounded-full bg-[var(--surface-container)] border border-[var(--outline-variant)] text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-high)] transition-colors capitalize">
-                  Mark {s}
+          />
+
+          {queueTab === 'open' ? (
+            <SegmentedTabs
+              value={openFilter}
+              options={OPEN_FILTERS.map((filter) => ({
+                label: filter.label,
+                value: filter.value,
+                count: filter.value === openFilter ? filteredOpenCount : undefined,
+              }))}
+              onChange={(value) => {
+                setOpenFilter(value);
+                setPage(1);
+              }}
+            />
+          ) : null}
+
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+            <div className="relative flex-1">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--kv-muted)]"
+              />
+              <input
+                type="search"
+                placeholder="Search order #, buyer, email, shipping address, item title, notes"
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setPage(1);
+                }}
+                className="w-full rounded-2xl border border-[var(--kv-border)] bg-[var(--kv-soft)] pl-10 pr-4 py-3 text-sm text-[var(--kv-text)] placeholder:text-[var(--kv-muted)] focus:outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <select
+                value={sortBy}
+                onChange={(event) => {
+                  setSortBy(event.target.value as SortOption);
+                  setPage(1);
+                }}
+                className="min-w-[190px] rounded-2xl border border-[var(--kv-border)] bg-white px-4 py-3 text-sm text-[var(--kv-text)] focus:outline-none"
+              >
+                <option value="ship_by">Sort by ship by</option>
+                <option value="destination">Sort by destination</option>
+                <option value="newest">Sort by newest</option>
+                <option value="oldest">Sort by oldest</option>
+              </select>
+
+              <select
+                value={statusFilter}
+                onChange={(event) => {
+                  setStatusFilter(event.target.value as OrderFilter);
+                  setPage(1);
+                }}
+                className="min-w-[190px] rounded-2xl border border-[var(--kv-border)] bg-white px-4 py-3 text-sm text-[var(--kv-text)] focus:outline-none"
+              >
+                {FILTERS.map((filter) => (
+                  <option key={filter.value} value={filter.value}>
+                    {filter.label}
+                    {statCount(filter.value) > 0 ? ` (${statCount(filter.value)})` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {selectedOrders.size > 0 ? (
+            <div className="flex flex-wrap items-center gap-2 rounded-[1.1rem] border border-[var(--kv-border)] bg-white px-4 py-4">
+              <p className="mr-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                Bulk actions
+              </p>
+              {(['processing', 'shipped', 'delivered', 'cancelled'] as const).map((status) => (
+                <button
+                  key={status}
+                  onClick={() => void bulkUpdate(status)}
+                  className="rounded-full border border-[var(--kv-border)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+                >
+                  Mark {STATUS_LABELS[status]}
                 </button>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
+      </Surface>
 
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-          {FILTERS.map(f => (
-            <button
-              key={f.value}
-              onClick={() => { setStatusFilter(f.value); setPage(1); }}
-              className={`flex-shrink-0 flex items-center gap-1.5 rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                statusFilter === f.value
-                  ? 'bg-[var(--secondary-container)] text-[var(--on-secondary-container)]'
-                  : 'bg-[var(--surface-container-low)] text-[var(--on-surface-variant)] hover:bg-[var(--surface-container)]'
-              }`}
-            >
-              {f.label}
-              {statCount(f.value) > 0 && (
-                <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${statusFilter === f.value ? 'bg-black/10 text-[var(--on-secondary-container)]' : 'bg-[var(--outline-variant)]/50 text-[var(--on-surface-variant)]'}`}>
-                  {statCount(f.value)}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Orders list ── */}
-      <div className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] overflow-hidden">
-        {/* Desktop table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-[var(--outline-variant)]/40">
-                <th className="px-6 py-4 text-left">
-                  <input type="checkbox" checked={orders.length > 0 && selectedOrders.size === orders.length} onChange={toggleAll} className="h-4 w-4 rounded" />
-                </th>
-                {['Order','Buyer','Destination','Amount','Status','Ship By','Actions'].map(h => (
-                  <th key={h} className="px-6 py-4 text-left text-[0.6875rem] font-bold uppercase tracking-widest text-[var(--on-surface-variant)]">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={8} className="px-6 py-14 text-center text-sm text-[var(--on-surface-variant)]">Loading orders...</td></tr>
-              ) : orders.length === 0 ? (
-                <tr><td colSpan={8} className="px-6 py-14 text-center text-sm text-[var(--on-surface-variant)]">No orders match the current queue.</td></tr>
-              ) : orders.map(order => {
-                const workflowStatus = getWorkflowStatus(order);
-                const workflowLabel = order.workflow?.status_label || STATUS_LABELS[workflowStatus];
-                const s = ss(workflowStatus);
-                const destination = getDestinationLabel(order);
-                const primaryPackage = getPrimaryPackage(order);
-                const hasLabel = Boolean(order.workflow?.label?.url);
-                return (
-                  <tr key={order.id} className={`border-b border-[var(--surface-container-low)] border-l-4 ${s.border} hover:bg-[var(--surface-container-low)]/40 transition-colors`}>
-                    <td className="px-6 py-4"><input type="checkbox" checked={selectedOrders.has(order.id)} onChange={() => toggleOne(order.id)} className="h-4 w-4 rounded" /></td>
-                    <td className="px-6 py-4">
-                      <Link href={`/dashboard/orders/${order.id}`} className="text-xs font-bold text-[var(--on-surface)] hover:text-[var(--on-tertiary-container)]">#{order.order_number}</Link>
-                      <p className="mt-1 text-[10px] text-[var(--on-surface-variant)]">
-                        {primaryPackage?.no_tracking
-                          ? 'No tracking required'
-                          : order.workflow?.has_tracking
-                            ? 'Tracking added'
-                            : 'Tracking pending'}
-                      </p>
-                      {primaryPackage?.tracking_number ? (
-                        <p className="mt-1 text-[10px] text-[var(--on-surface-variant)]">
-                          Package #{primaryPackage.sequence} · {primaryPackage.tracking_number}
-                        </p>
-                      ) : null}
-                      {order.workflow?.needs_attention ? (
-                        <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-[var(--error)]">
-                          {order.workflow?.overdue_ship_by ? 'Ship-by overdue' : order.workflow?.overdue_tracking ? 'Missing tracking' : 'Review required'}
-                        </p>
-                      ) : null}
-                    </td>
-                    <td className="px-6 py-4"><p className="text-xs font-medium text-[var(--on-surface)]">{getName(order)}</p><p className="text-[10px] text-[var(--on-surface-variant)]">{order.email}</p></td>
-                    <td className="px-6 py-4"><p className="text-xs font-medium text-[var(--on-surface)]">{destination.name}</p><p className="text-[10px] text-[var(--on-surface-variant)]">{destination.location}</p></td>
-                    <td className="px-6 py-4 text-xs font-black text-[var(--on-surface)]">{fmtCurrency(order.total, order.currency_code || 'INR')}</td>
-                    <td className="px-6 py-4"><span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{workflowLabel}</span></td>
-                    <td className="px-6 py-4 text-[10px] text-[var(--on-surface-variant)]">
-                      {order.workflow?.ship_by_date ? fmtDate(order.workflow.ship_by_date) : 'Not set'}
-                      <p className="mt-1">{fmtDate(order.created_at)}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex max-w-[340px] flex-wrap items-center justify-end gap-2">
-                        {canCompleteOrder(order) ? (
-                          <button
-                            onClick={() => router.push(`/dashboard/orders/${order.id}?action=complete`)}
-                            className="rounded-full bg-[var(--primary)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white hover:opacity-90"
-                          >
-                            Complete order
-                          </button>
-                        ) : null}
-                        <button
-                          onClick={() => router.push(`/dashboard/orders/${order.id}?action=add-package`)}
-                          className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]"
-                        >
-                          Add package
-                        </button>
-                        <button
-                          onClick={() => router.push(`/dashboard/orders/${order.id}?action=edit-tracking`)}
-                          className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]"
-                        >
-                          Edit tracking
-                        </button>
-                        {hasLabel ? (
-                          <a
-                            href={order.workflow?.label?.url || '#'}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]"
-                          >
-                            Open label
-                          </a>
-                        ) : null}
-                        <button
-                          onClick={() => router.push(`/dashboard/orders/${order.id}?action=message-buyer`)}
-                          className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]"
-                        >
-                          Message buyer
-                        </button>
-                        <select value={workflowStatus} onChange={e => void singleUpdate(order.id, e.target.value)} className="bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-1.5 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
-                          {getStatusOptions(workflowStatus).map(status => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
-                        </select>
-                        <Link href={`/dashboard/orders/${order.id}`} className="px-3 py-1.5 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">Open order</Link>
-                        <button onClick={() => void handleDelete(order.id, order.order_number)} className="w-8 h-8 rounded-full border border-[var(--error-container)] bg-[var(--error-container)]/30 text-[var(--error)] flex items-center justify-center hover:bg-[var(--error-container)] transition-colors"><Trash2 size={13} /></button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile list */}
-        <div className="md:hidden divide-y divide-[var(--surface-container-low)]">
-          {loading ? (
-            <p className="p-6 text-center text-sm text-[var(--on-surface-variant)]">Loading orders...</p>
-          ) : orders.length === 0 ? (
-            <p className="p-6 text-center text-sm text-[var(--on-surface-variant)]">No orders match the current queue.</p>
-          ) : orders.map(order => {
+      <div className="space-y-4">
+        {loading ? (
+          <Surface className="px-6 py-14 text-center text-sm text-[var(--kv-muted)]">
+            Loading the shipping queue...
+          </Surface>
+        ) : orders.length === 0 ? (
+          <Surface className="px-6 py-14 text-center text-sm text-[var(--kv-muted)]">
+            No orders match this queue right now.
+          </Surface>
+        ) : (
+          orders.map((order) => {
             const workflowStatus = getWorkflowStatus(order);
-            const s = ss(workflowStatus);
             const destination = getDestinationLabel(order);
-            return (
-              <div key={order.id} className={`p-4 border-l-4 ${s.border}`}>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <Link href={`/dashboard/orders/${order.id}`} className="text-xs font-bold text-[var(--on-surface)]">#{order.order_number}</Link>
-                    <p className="text-[10px] text-[var(--on-surface-variant)] mt-0.5">{fmtDate(order.created_at)}</p>
-                  </div>
-                  <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{order.workflow?.status_label || STATUS_LABELS[workflowStatus]}</span>
-                </div>
-                <p className="text-xs font-medium text-[var(--on-surface)] mt-2">{getName(order)}</p>
-                <p className="text-[10px] text-[var(--on-surface-variant)] mt-1">{destination.location}</p>
-                <p className="text-xs font-black text-[var(--on-surface)] mt-1">{fmtCurrency(order.total, order.currency_code || 'INR')}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {canCompleteOrder(order) ? (
-                    <button onClick={() => router.push(`/dashboard/orders/${order.id}?action=complete`)} className="flex-1 rounded-full bg-[var(--primary)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white">
-                      Complete
-                    </button>
-                  ) : null}
-                  <Link href={`/dashboard/orders/${order.id}`} className="flex-1 text-center px-4 py-2 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)]">Open order</Link>
-                  <select value={workflowStatus} onChange={e => void singleUpdate(order.id, e.target.value)} className="flex-1 bg-[var(--surface-container-low)] border border-[var(--outline-variant)] rounded-full px-3 py-2 text-[10px] font-bold text-[var(--on-surface)] focus:outline-none">
-                    {getStatusOptions(workflowStatus).map(status => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
-                  </select>
-                </div>
-              </div>
+            const primaryPackage = getPrimaryPackage(order);
+            const packageCount = order.workflow?.packages?.length || (primaryPackage ? 1 : 0);
+            const trackingSummary = getTrackingHeadline(order);
+            const hasLabel = Boolean(
+              primaryPackage?.label_url || order.workflow?.label?.url
             );
-          })}
-        </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-[var(--surface-container-low)] px-6 py-4">
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-4 py-2 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)] disabled:opacity-40 hover:bg-[var(--surface-container-low)] transition-colors">Previous</button>
-            <span className="text-[10px] font-medium text-[var(--on-surface-variant)]">Page {page} of {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-4 py-2 rounded-full border border-[var(--outline-variant)] text-[10px] font-bold text-[var(--on-surface)] disabled:opacity-40 hover:bg-[var(--surface-container-low)] transition-colors">Next</button>
-          </div>
+            return (
+              <Surface key={order.id} className="overflow-hidden">
+                <div className="border-b border-[var(--kv-border)] px-5 py-4 md:px-6">
+                  <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                    <div className="flex items-start gap-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedOrders.has(order.id)}
+                        onChange={() => toggleOne(order.id)}
+                        className="mt-1 h-4 w-4 rounded"
+                      />
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/dashboard/orders/${order.id}`}
+                            className="text-lg font-semibold text-[var(--kv-text)] hover:text-[var(--kv-accent-deep)]"
+                          >
+                            Order #{order.order_number}
+                          </Link>
+                          <StatusBadge status={workflowStatus} className="text-[11px]" />
+                          {order.workflow?.overdue_ship_by ? (
+                            <span className="inline-flex items-center rounded-full bg-[#faebe9] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-danger)]">
+                              Ship-by overdue
+                            </span>
+                          ) : null}
+                          {hasLabel ? (
+                            <span className="inline-flex items-center rounded-full bg-[var(--kv-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                              Label ready
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="mt-2 text-sm text-[var(--kv-muted)]">
+                          Placed {fmtDate(order.created_at)}. This card keeps shipment actions
+                          visible instead of hiding them in the old table flow.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      {canCompleteOrder(order) ? (
+                        <ActionButton
+                          onClick={() =>
+                            router.push(`/dashboard/orders/${order.id}?action=complete`)
+                          }
+                          icon={PackageCheck}
+                        >
+                          Complete order
+                        </ActionButton>
+                      ) : null}
+                      <ActionButton
+                        onClick={() =>
+                          router.push(`/dashboard/orders/${order.id}?action=edit-tracking`)
+                        }
+                        icon={Truck}
+                        variant="secondary"
+                      >
+                        Tracking / no tracking
+                      </ActionButton>
+                      <ActionButton
+                        onClick={() =>
+                          router.push(`/dashboard/orders/${order.id}?action=add-package`)
+                        }
+                        icon={PackagePlus}
+                        variant="secondary"
+                      >
+                        Add package
+                      </ActionButton>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 px-5 py-5 md:px-6 xl:grid-cols-[1fr_1fr_1.15fr_1.05fr]">
+                  <div className="border border-[var(--kv-border)] px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Buyer
+                    </p>
+                    <div className="mt-3 flex items-start gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-[var(--kv-accent-deep)]">
+                        <User size={18} />
+                      </span>
+                      <div>
+                        <p className="font-semibold text-[var(--kv-text)]">{getName(order)}</p>
+                        <p className="mt-1 text-sm text-[var(--kv-muted)]">{order.email}</p>
+                        <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                          Order value
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-[var(--kv-text)]">
+                          {fmtCurrency(order.total, order.currency_code || 'INR')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-[var(--kv-border)] px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Destination
+                    </p>
+                    <div className="mt-3 flex items-start gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--kv-soft)] text-[var(--kv-accent-deep)]">
+                        <MapPin size={18} />
+                      </span>
+                      <div>
+                        <p className="font-semibold text-[var(--kv-text)]">{destination.name}</p>
+                        <p className="mt-1 text-sm leading-6 text-[var(--kv-muted)]">
+                          {destination.location}
+                        </p>
+                        <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                          Ship by
+                        </p>
+                        <p className="mt-1 text-sm font-semibold text-[var(--kv-text)]">
+                          {order.workflow?.ship_by_date
+                            ? fmtDate(order.workflow.ship_by_date)
+                            : 'Not set'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={`border px-4 py-4 ${trackingSummary.tone}`}>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Primary shipment
+                    </p>
+                    <div className="mt-3 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-base font-semibold text-[var(--kv-text)]">
+                          {trackingSummary.title}
+                        </p>
+                        <p className="mt-1 text-sm text-[var(--kv-muted)]">
+                          {trackingSummary.detail}
+                        </p>
+                        <div className="mt-3 space-y-1 text-sm text-[var(--kv-muted)]">
+                          <p>
+                            Package count:{' '}
+                            <span className="font-medium text-[var(--kv-text)]">
+                              {packageCount}
+                            </span>
+                          </p>
+                          <p>
+                            Carrier:{' '}
+                            <span className="font-medium text-[var(--kv-text)]">
+                              {[primaryPackage?.carrier, primaryPackage?.service]
+                                .filter(Boolean)
+                                .join(' • ') || 'Not filled yet'}
+                            </span>
+                          </p>
+                          <p>
+                            Label state:{' '}
+                            <span className="font-medium text-[var(--kv-text)]">
+                              {primaryPackage?.label_state || 'draft'}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[var(--kv-accent-deep)]">
+                        <Truck size={18} />
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="border border-[var(--kv-border)] px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                      Shipping actions
+                    </p>
+                    <div className="mt-3 space-y-2">
+                      {primaryPackage?.tracking_url ? (
+                        <a
+                          href={primaryPackage.tracking_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center justify-between border border-[var(--kv-border)] px-3 py-3 text-sm font-medium text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+                        >
+                          <span>Open tracking link</span>
+                          <ExternalLink size={16} />
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            router.push(`/dashboard/orders/${order.id}?action=edit-tracking`)
+                          }
+                          className="flex w-full items-center justify-between border border-dashed border-[var(--kv-border)] px-3 py-3 text-sm font-medium text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+                        >
+                          <span>Add tracking link</span>
+                          <Truck size={16} />
+                        </button>
+                      )}
+
+                      {hasLabel ? (
+                        <a
+                          href={primaryPackage?.label_url || order.workflow?.label?.url || '#'}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center justify-between border border-[var(--kv-border)] px-3 py-3 text-sm font-medium text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+                        >
+                          <span>Open shipping label</span>
+                          <ExternalLink size={16} />
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            router.push(`/dashboard/orders/${order.id}?action=add-package`)
+                          }
+                          className="flex w-full items-center justify-between border border-dashed border-[var(--kv-border)] px-3 py-3 text-sm font-medium text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
+                        >
+                          <span>Create label or package</span>
+                          <PackagePlus size={16} />
+                        </button>
+                      )}
+
+                      <div className="flex items-center gap-2 pt-2">
+                        <select
+                          value={workflowStatus}
+                          onChange={(event) =>
+                            void singleUpdate(order.id, event.target.value)
+                          }
+                          className="min-w-0 flex-1 border border-[var(--kv-border)] bg-white px-3 py-3 text-sm text-[var(--kv-text)] focus:outline-none"
+                        >
+                          {getStatusOptions(workflowStatus).map((status) => (
+                            <option key={status} value={status}>
+                              {STATUS_LABELS[status]}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => void handleDelete(order.id, order.order_number)}
+                          className="inline-flex h-11 w-11 items-center justify-center border border-[var(--kv-danger)]/20 bg-[#faebe9] text-[var(--kv-danger)] hover:bg-[#f6ddda]"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-[var(--kv-border)] bg-[var(--kv-soft)] px-5 py-4 md:px-6">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                      <span>{order.workflow?.needs_attention ? 'Needs review' : 'Ready to work'}</span>
+                      <span>•</span>
+                      <span>
+                        {primaryPackage?.tracking_url
+                          ? 'Tracking link saved'
+                          : primaryPackage?.no_tracking
+                            ? 'No-tracking saved'
+                            : 'Tracking link missing'}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <ActionButton
+                        href={`/dashboard/orders/${order.id}?action=message-buyer`}
+                        icon={Mail}
+                        variant="secondary"
+                      >
+                        Message buyer
+                      </ActionButton>
+                      <ActionButton href={`/dashboard/orders/${order.id}`} icon={ExternalLink}>
+                        Open order
+                      </ActionButton>
+                    </div>
+                  </div>
+                </div>
+              </Surface>
+            );
+          })
         )}
+
+        {totalPages > 1 ? (
+          <Surface className="px-5 py-4 md:px-6">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                disabled={page === 1}
+                className="rounded-2xl border border-[var(--kv-border)] px-4 py-2 text-sm font-semibold text-[var(--kv-text)] disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-[var(--kv-muted)]">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                disabled={page === totalPages}
+                className="rounded-2xl border border-[var(--kv-border)] px-4 py-2 text-sm font-semibold text-[var(--kv-text)] disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          </Surface>
+        ) : null}
       </div>
     </div>
   );
