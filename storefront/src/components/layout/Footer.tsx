@@ -33,23 +33,6 @@ const companyLinks = [
   { label: 'Wholesale / B2B', href: '/wholesale', highlight: true },
 ];
 
-const mobileShopLinks = [
-  { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Best Sellers', href: '/products' },
-  { label: 'Collections', href: '/collections' },
-  { label: 'Shawls & Wraps', href: '/categories/scarves-wraps' },
-  { label: 'Kurtis & Tops', href: '/categories/suits-kurtas' },
-  { label: 'Accessories', href: '/categories/accessories' },
-  { label: 'Sale', href: '/sale' },
-];
-
-const mobileHelpLinks = [
-  { label: 'Track Order', href: '/track' },
-  { label: 'Shipping & Returns', href: '/pages/shipping-returns' },
-  { label: 'Contact Us', href: '/contact' },
-  { label: 'FAQ', href: '/faq' },
-];
-
 const socialLinks = [
   {
     label: 'Instagram',
@@ -145,88 +128,29 @@ const socialLinks = [
   },
 ];
 
-function MobileFooter() {
-  return (
-    <div className="bg-[#f5f0eb] md:hidden">
-      <div className="grid grid-cols-2 gap-8 px-6 py-16">
-        <div>
-          <h4 className="mb-6 text-body-xs type-semibold uppercase tracking-token-wide text-stone-700">
-            Shop
-          </h4>
-          <div className="space-y-3">
-            {mobileShopLinks.map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                className="block text-body-md type-regular leading-token-relaxed text-stone-900 transition-colors hover:text-stone-600"
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h4 className="mb-6 text-body-xs type-semibold uppercase tracking-token-wide text-stone-700">
-            Help
-          </h4>
-          <div className="space-y-3">
-            {mobileHelpLinks.map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                className="block text-body-md type-regular leading-token-relaxed text-stone-900 transition-colors hover:text-stone-600"
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-stone-200 px-6 py-6">
-        <div className="flex items-center justify-center gap-4 text-stone-500">
-          {socialLinks.slice(0, 3).map(({ label, href, icon: Icon, color }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className={`transition-colors ${color}`}
-            >
-              <Icon size={16} />
-            </a>
-          ))}
-        </div>
-        <p className="mt-4 text-center text-body-xs text-stone-500">
-          Copyright {new Date().getFullYear()} Kvastram. All rights reserved.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function DesktopFooter() {
   return (
-    <div className="hidden bg-[#1a1614] text-white md:block">
-      <div className="footer-watermark-prem overflow-hidden px-12 pt-10" aria-hidden="true">
+    <div className="kvastram-footer bg-[#1a1614] text-[#f8f3ec]">
+      <div
+        className="footer-watermark-prem overflow-hidden px-6 pt-8 sm:px-8 md:px-12 md:pt-10"
+        aria-hidden="true"
+      >
         Kvastram
       </div>
 
-      <div className="mx-auto max-w-[1440px] px-12 pb-12 pt-12 lg:px-20 lg:pt-24">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5">
-          <div className="space-y-5 lg:col-span-1">
+      <div className="mx-auto max-w-[1440px] px-6 pb-10 pt-10 sm:px-8 md:px-12 md:pb-12 md:pt-12 lg:px-20 lg:pt-24">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-12">
+          <div className="space-y-5 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
-              <span className="font-body text-display-sm type-semibold uppercase tracking-token-wider text-white">
+              <span className="kf-logo font-body text-display-sm type-semibold uppercase tracking-token-wider text-white">
                 KVASTRAM
               </span>
             </Link>
-            <p className="font-body text-body-md type-light leading-token-relaxed text-stone-400">
+            <p className="kf-link font-body text-body-md type-light leading-token-relaxed text-[#d8d0c7]">
               Handcrafted luxury fashion connecting global citizens with the
               finest artisanal craftsmanship from India and beyond.
             </p>
-            <div className="font-body space-y-3 text-body-xs type-light text-stone-500">
+            <div className="kf-muted font-body space-y-3 text-body-xs type-light text-[#c9beb3]">
               <p>support@kvastram.com</p>
               <p>Mon-Fri, 9am-6pm IST</p>
             </div>
@@ -238,7 +162,7 @@ function DesktopFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className={`text-stone-500 transition-colors duration-200 ${color}`}
+                  className={`kf-social text-[#d8d0c7] transition-colors duration-200 ${color}`}
                 >
                   <Icon size={18} />
                 </a>
@@ -247,7 +171,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-stone-400">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-[#efe7dd]">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -255,7 +179,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="font-body text-body-md type-light text-stone-400 transition-colors hover:text-white"
+                    className="kf-link font-body text-body-md type-light text-[#d8d0c7] transition-colors hover:text-white"
                   >
                     {label}
                   </Link>
@@ -265,7 +189,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-stone-400">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-[#efe7dd]">
               Support
             </h4>
             <ul className="space-y-3">
@@ -273,7 +197,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="font-body text-body-md type-light text-stone-400 transition-colors hover:text-white"
+                    className="kf-link font-body text-body-md type-light text-[#d8d0c7] transition-colors hover:text-white"
                   >
                     {label}
                   </Link>
@@ -283,7 +207,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-stone-400">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-[#efe7dd]">
               Company
             </h4>
             <ul className="space-y-3">
@@ -293,8 +217,8 @@ function DesktopFooter() {
                     href={href}
                     className={`font-body text-body-md transition-colors ${
                       highlight
-                        ? 'type-medium text-amber-400 hover:text-amber-300'
-                        : 'type-light text-stone-400 hover:text-white'
+                        ? 'kf-highlight type-medium text-[#f0c36b] hover:text-[#ffd98e]'
+                        : 'kf-link type-light text-[#d8d0c7] hover:text-white'
                     }`}
                   >
                     {label}
@@ -305,41 +229,41 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-stone-400">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-[#efe7dd]">
               Stay Updated
             </h4>
-            <p className="font-body mb-4 text-body-md type-light leading-token-relaxed text-stone-500">
+            <p className="kf-muted font-body mb-4 text-body-md type-light leading-token-relaxed text-[#c9beb3]">
               Get 10% off your first order plus early access to new collections.
             </p>
             <NewsletterForm minimal />
-            <div className="font-body mt-4 text-body-xs text-stone-600">
+            <div className="kf-dim font-body mt-4 text-body-xs text-[#b8aca0]">
               No spam. Unsubscribe anytime.
             </div>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-stone-800">
-        <div className="mx-auto max-w-[1440px] px-12 py-12 lg:px-20">
+      <div className="border-t border-[#3a3029]">
+        <div className="mx-auto max-w-[1440px] px-6 py-8 sm:px-8 md:px-12 md:py-12 lg:px-20">
           <PaymentIcons className="mb-4" />
-          <div className="font-body flex flex-col items-center justify-between gap-6 text-body-xs text-stone-600 sm:flex-row">
+          <div className="kf-legal font-body flex flex-col items-center justify-between gap-4 text-center text-body-xs text-[#c9beb3] sm:flex-row sm:text-left">
             <p>Copyright {new Date().getFullYear()} Kvastram. All rights reserved.</p>
             <div className="flex gap-6">
               <Link
                 href="/pages/privacy-policy"
-                className="font-body transition-colors hover:text-stone-400"
+                className="kf-legal-link font-body transition-colors hover:text-white"
               >
                 Privacy
               </Link>
               <Link
                 href="/pages/terms-of-service"
-                className="font-body transition-colors hover:text-stone-400"
+                className="kf-legal-link font-body transition-colors hover:text-white"
               >
                 Terms
               </Link>
               <Link
                 href="/pages/cookie-policy"
-                className="font-body transition-colors hover:text-stone-400"
+                className="kf-legal-link font-body transition-colors hover:text-white"
               >
                 Cookies
               </Link>
@@ -354,9 +278,7 @@ function DesktopFooter() {
 export function Footer() {
   return (
     <footer>
-      <MobileFooter />
       <DesktopFooter />
     </footer>
   );
 }
-

@@ -5006,3 +5006,44 @@ body.reel-player-open [aria-label='Cookie consent'] {
   font-weight: var(--weight-regular);
   line-height: var(--leading-normal);
 }
+
+/* Footer contrast overrides for the global monochrome theme layer. */
+.kvastram-footer .kf-logo,
+.kvastram-footer .kf-heading {
+  color: #f8f3ec !important;
+}
+
+.kvastram-footer .kf-link,
+.kvastram-footer .kf-social {
+  color: #d8d0c7 !important;
+}
+
+.kvastram-footer .kf-muted,
+.kvastram-footer .kf-legal,
+.kvastram-footer .kf-legal-link {
+  color: #c9beb3 !important;
+}
+
+.kvastram-footer .kf-dim {
+  color: #b8aca0 !important;
+}
+
+.kvastram-footer .kf-highlight {
+  color: #f0c36b !important;
+}
+
+.kvastram-footer a:hover {
+  color: #ffffff !important;
+}
+
+.kvastram-footer input {
+  color: #f8f3ec !important;
+}
+
+.kvastram-footer input::placeholder {
+  color: #b8aca0 !important;
+}
+
+.kvastram-footer [class*='bg-black'] span {
+  color: #ffffff !important;
+}
