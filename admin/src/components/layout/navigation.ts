@@ -70,13 +70,13 @@ export const retailNavGroups: NavGroup[] = [
         href: '/dashboard/orders',
         icon: ShoppingBag,
         badge: 'pendingOrders',
-        description: 'Manage fulfillment',
+        description: 'Orders and shipping',
       },
       {
-        label: 'Fulfillment',
+        label: 'Fulfillment Analytics',
         href: '/dashboard/fulfillment',
         icon: Truck,
-        description: 'Post-order queue',
+        description: 'Secondary post-order metrics',
       },
       {
         label: 'Customers',

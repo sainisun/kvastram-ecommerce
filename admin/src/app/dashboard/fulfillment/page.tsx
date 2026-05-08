@@ -5,14 +5,14 @@ import Link from 'next/link';
 import {
   Activity,
   AlertTriangle,
+  ArrowRight,
   BarChart3,
   CalendarDays,
-  CheckCircle2,
-  Clock3,
   Gauge,
   MessageSquare,
   PackageCheck,
   RefreshCw,
+  ShoppingBag,
   Truck,
 } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -21,7 +21,6 @@ import {
   MetricCard,
   PageHeader,
   SegmentedTabs,
-  StatusBadge,
   Surface,
 } from '@/components/ui/admin-ui';
 
@@ -100,14 +99,6 @@ function parseDate(value?: string | null) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function formatCurrency(amount: number, currency = 'INR') {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount / 100);
-}
-
 function formatDate(value?: string | null) {
   const date = parseDate(value);
   if (!date) return 'Not set';
@@ -162,6 +153,25 @@ function nextAction(order: FulfillmentOrder) {
   if (status === 'shipped') return 'Track package';
   if (status === 'delivered') return 'Follow up';
   return 'Review order';
+}
+
+function getOrdersHref(tab: FulfillmentTab) {
+  if (tab === 'due_today') {
+    return '/dashboard/orders?queue=open&open_filter=due_today';
+  }
+  if (tab === 'new') {
+    return '/dashboard/orders?queue=open&open_filter=new';
+  }
+  if (tab === 'ready') {
+    return '/dashboard/orders?queue=open&open_filter=ready_to_ship';
+  }
+  if (tab === 'in_transit') {
+    return '/dashboard/orders?queue=completed&status=shipped';
+  }
+  if (tab === 'delivered') {
+    return '/dashboard/orders?queue=completed&status=delivered';
+  }
+  return '/dashboard/orders?queue=issues';
 }
 
 export default function FulfillmentPage() {
@@ -243,13 +253,22 @@ export default function FulfillmentPage() {
   return (
     <div className="space-y-6 px-4 pb-8 md:px-8">
       <PageHeader
-        eyebrow="Fulfillment"
-        title="Fulfillment Workspace"
-        description="Scan the active post-order queue, catch overdue work, and move orders toward shipment without hunting through every order."
+        eyebrow="Fulfillment Analytics"
+        title="Fulfillment Analytics"
+        description="Keep this page for overdue work, coverage, and alerts. The live shipment workflow now belongs in Orders & Shipping."
         actions={
-          <ActionButton onClick={() => void fetchOrders()} icon={RefreshCw} variant="secondary">
-            Refresh
-          </ActionButton>
+          <>
+            <ActionButton href="/dashboard/orders" icon={ShoppingBag}>
+              Open Orders & Shipping
+            </ActionButton>
+            <ActionButton
+              onClick={() => void fetchOrders()}
+              icon={RefreshCw}
+              variant="secondary"
+            >
+              Refresh
+            </ActionButton>
+          </>
         }
       />
 
@@ -390,7 +409,28 @@ export default function FulfillmentPage() {
       </Surface>
 
       <Surface className="overflow-hidden">
-        <div className="border-b border-[var(--kv-border)] px-5 py-4 md:px-6">
+        <div className="border-b border-[var(--kv-border)] px-5 py-5 md:px-6">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--kv-muted)]">
+                Workflow location
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-[var(--kv-text)]">
+                Complete shipping work happens in Orders & Shipping
+              </h2>
+              <p className="mt-2 text-sm text-[var(--kv-muted)]">
+                Tracking link, no-tracking reason, complete order, add package, edit
+                tracking, and label actions are all on the orders queue and the order detail.
+                This page stays focused on monitoring and workload slices.
+              </p>
+            </div>
+            <ActionButton href={getOrdersHref(activeTab)} icon={ArrowRight}>
+              Open this queue in Orders
+            </ActionButton>
+          </div>
+        </div>
+
+        <div className="space-y-5 px-5 py-5 md:px-6">
           <SegmentedTabs
             value={activeTab}
             onChange={setActiveTab}
@@ -400,145 +440,98 @@ export default function FulfillmentPage() {
               count: counts[tab],
             }))}
           />
-        </div>
 
-        <div className="hidden overflow-x-auto md:block">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-[var(--kv-border)] bg-[var(--kv-soft)]/70">
-                {['Order', 'Customer', 'Status', 'Ship By', 'Tracking', 'Total', 'Action'].map(
-                  (heading) => (
-                    <th
-                      key={heading}
-                      className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]"
-                    >
-                      {heading}
-                    </th>
-                  )
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-sm text-[var(--kv-muted)]">
-                    Loading fulfillment queue.
-                  </td>
-                </tr>
-              ) : visibleOrders.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-sm text-[var(--kv-muted)]">
-                    This queue is clear.
-                  </td>
-                </tr>
-              ) : (
-                visibleOrders.map((order) => (
-                  <tr
-                    key={order.id}
-                    className="border-b border-[var(--kv-border)]/70 hover:bg-[var(--kv-soft)]/45"
-                  >
-                    <td className="px-5 py-4">
-                      <Link
-                        href={`/dashboard/orders/${order.id}`}
-                        className="text-sm font-semibold text-[var(--kv-text)] hover:text-[var(--kv-accent-deep)]"
-                      >
-                        #{order.order_number}
-                      </Link>
-                      {isOverdue(order) ? (
-                        <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--kv-danger)]">
-                          Overdue
-                        </p>
-                      ) : null}
-                    </td>
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-medium text-[var(--kv-text)]">{customerName(order)}</p>
-                      <p className="mt-1 text-xs text-[var(--kv-muted)]">{order.email}</p>
-                    </td>
-                    <td className="px-5 py-4">
-                      <StatusBadge status={order.status} />
-                    </td>
-                    <td className="px-5 py-4 text-sm text-[var(--kv-text)]">
-                      {formatDate(order.workflow?.ship_by_date)}
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className="inline-flex items-center gap-2 text-sm text-[var(--kv-text)]">
-                        {order.workflow?.has_tracking ? (
-                          <CheckCircle2 size={16} className="text-[var(--kv-success)]" />
-                        ) : (
-                          <Clock3 size={16} className="text-[var(--kv-warning)]" />
-                        )}
-                        {order.workflow?.has_tracking ? 'Added' : 'Pending'}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 text-sm font-semibold text-[var(--kv-text)]">
-                      {formatCurrency(order.total, order.currency_code || 'INR')}
-                    </td>
-                    <td className="px-5 py-4">
-                      <Link
-                        href={`/dashboard/orders/${order.id}`}
-                        className="inline-flex min-w-32 justify-center rounded-2xl bg-[var(--kv-text)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--kv-accent-deep)]"
-                      >
-                        {nextAction(order)}
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="divide-y divide-[var(--kv-border)] md:hidden">
-          {loading ? (
-            <p className="px-5 py-10 text-center text-sm text-[var(--kv-muted)]">
-              Loading fulfillment queue.
-            </p>
-          ) : visibleOrders.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-[var(--kv-muted)]">
-              This queue is clear.
-            </p>
-          ) : (
-            visibleOrders.map((order) => (
-              <div key={order.id} className="space-y-3 px-5 py-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <Link
-                      href={`/dashboard/orders/${order.id}`}
-                      className="text-sm font-semibold text-[var(--kv-text)]"
-                    >
-                      #{order.order_number}
-                    </Link>
-                    <p className="mt-1 text-xs text-[var(--kv-muted)]">{customerName(order)}</p>
-                  </div>
-                  <StatusBadge status={order.status} />
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <p className="font-semibold uppercase tracking-[0.16em] text-[var(--kv-muted)]">
-                      Ship by
-                    </p>
-                    <p className="mt-1 text-[var(--kv-text)]">
-                      {formatDate(order.workflow?.ship_by_date)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-semibold uppercase tracking-[0.16em] text-[var(--kv-muted)]">
-                      Tracking
-                    </p>
-                    <p className="mt-1 text-[var(--kv-text)]">
-                      {order.workflow?.has_tracking ? 'Added' : 'Pending'}
-                    </p>
-                  </div>
+          <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+            <div className="rounded-[1.1rem] border border-[var(--kv-border)] bg-white px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                Current bucket
+              </p>
+              <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <p className="text-2xl font-semibold text-[var(--kv-text)]">
+                    {tabLabels[activeTab]}
+                  </p>
+                  <p className="mt-1 text-sm text-[var(--kv-muted)]">
+                    {counts[activeTab]} order{counts[activeTab] === 1 ? '' : 's'} in this slice.
+                  </p>
                 </div>
                 <Link
-                  href={`/dashboard/orders/${order.id}`}
-                  className="inline-flex w-full justify-center rounded-2xl bg-[var(--kv-text)] px-4 py-3 text-sm font-semibold text-white"
+                  href={getOrdersHref(activeTab)}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-[var(--kv-border)] px-4 py-3 text-sm font-semibold text-[var(--kv-text)] hover:bg-[var(--kv-soft)]"
                 >
-                  {nextAction(order)}
+                  Work this queue
+                  <ArrowRight size={16} />
                 </Link>
               </div>
-            ))
-          )}
+              <div className="mt-4 space-y-3">
+                {loading ? (
+                  <p className="rounded-[1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                    Loading fulfillment slice.
+                  </p>
+                ) : visibleOrders.length === 0 ? (
+                  <p className="rounded-[1rem] bg-[var(--kv-soft)] px-4 py-4 text-sm text-[var(--kv-muted)]">
+                    No orders are sitting in this slice right now.
+                  </p>
+                ) : (
+                  visibleOrders.slice(0, 5).map((order) => (
+                    <Link
+                      key={order.id}
+                      href={`/dashboard/orders/${order.id}`}
+                      className="flex items-center justify-between gap-3 rounded-[1rem] border border-[var(--kv-border)] px-4 py-3 hover:bg-[var(--kv-soft)]"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-[var(--kv-text)]">
+                          #{order.order_number}
+                        </p>
+                        <p className="mt-1 text-xs text-[var(--kv-muted)]">
+                          {customerName(order)} · {formatDate(order.workflow?.ship_by_date)}
+                        </p>
+                      </div>
+                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                        {nextAction(order)}
+                      </span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-[1.1rem] border border-[var(--kv-border)] bg-[var(--kv-soft)] px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                What belongs here
+              </p>
+              <div className="mt-3 space-y-3 text-sm text-[var(--kv-muted)]">
+                <p>Use this page to monitor overdue work, coverage, and alerts.</p>
+                <p>
+                  Use Orders &amp; Shipping to actually fill tracking, mark no-tracking,
+                  complete orders, buy labels, or add packages.
+                </p>
+              </div>
+              <div className="mt-4 grid gap-3">
+                <Link
+                  href="/dashboard/orders?queue=open&open_filter=all"
+                  className="flex items-center justify-between rounded-[1rem] bg-white px-4 py-3 text-sm font-medium text-[var(--kv-text)]"
+                >
+                  <span>Open queue</span>
+                  <span>{counts.new + counts.due_today + counts.ready}</span>
+                </Link>
+                <Link
+                  href="/dashboard/orders?queue=completed"
+                  className="flex items-center justify-between rounded-[1rem] bg-white px-4 py-3 text-sm font-medium text-[var(--kv-text)]"
+                >
+                  <span>Completed shipments</span>
+                  <span>{counts.in_transit + counts.delivered}</span>
+                </Link>
+                <Link
+                  href="/dashboard/orders?queue=issues"
+                  className="flex items-center justify-between rounded-[1rem] bg-white px-4 py-3 text-sm font-medium text-[var(--kv-text)]"
+                >
+                  <span>Issues queue</span>
+                  <span>{counts.issues}</span>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </Surface>
     </div>

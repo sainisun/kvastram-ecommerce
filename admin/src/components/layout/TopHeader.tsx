@@ -18,6 +18,7 @@ interface TopHeaderProps {
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Kvastram',
   '/dashboard/orders': 'Orders',
+  '/dashboard/fulfillment': 'Fulfillment Analytics',
   '/dashboard/products': 'Products',
   '/dashboard/customers': 'Customers',
   '/dashboard/analytics': 'Analytics',
@@ -50,7 +51,7 @@ const MOCK_NOTIFICATIONS = [
   {
     id: 1,
     title: 'New Order Received',
-    sub: 'Just now - needs fulfillment',
+    sub: 'Just now - needs shipping',
     dot: 'bg-[var(--on-tertiary-container)]',
     read: false,
   },
@@ -169,7 +170,7 @@ export default function TopHeader({
                       {pendingOrders > 1 ? 's' : ''}
                     </p>
                     <p className="text-[10px] text-[var(--on-surface-variant)]">
-                      Need fulfillment
+                      Needs shipping attention
                     </p>
                   </div>
                 </div>

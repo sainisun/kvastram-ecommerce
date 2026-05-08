@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   CircleAlert,
   Clock3,
@@ -261,16 +261,47 @@ function getTrackingHeadline(order: Order) {
   };
 }
 
+function parseQueueParam(value: string | null): QueueTab {
+  return value === 'completed' || value === 'issues' ? value : 'open';
+}
+
+function parseOpenFilterParam(value: string | null): OpenFilter {
+  return OPEN_FILTERS.some((filter) => filter.value === value)
+    ? (value as OpenFilter)
+    : 'all';
+}
+
+function parseOrderFilterParam(value: string | null): OrderFilter {
+  return FILTERS.some((filter) => filter.value === value)
+    ? (value as OrderFilter)
+    : 'all';
+}
+
+function parseSortParam(value: string | null): SortOption {
+  return value === 'destination' || value === 'newest' || value === 'oldest'
+    ? value
+    : 'ship_by';
+}
+
 export default function OrdersPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<OrderStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<OrderFilter>('all');
-  const [queueTab, setQueueTab] = useState<QueueTab>('open');
-  const [openFilter, setOpenFilter] = useState<OpenFilter>('all');
-  const [sortBy, setSortBy] = useState<SortOption>('ship_by');
+  const [search, setSearch] = useState(() => searchParams.get('search') || '');
+  const [statusFilter, setStatusFilter] = useState<OrderFilter>(() =>
+    parseOrderFilterParam(searchParams.get('status'))
+  );
+  const [queueTab, setQueueTab] = useState<QueueTab>(() =>
+    parseQueueParam(searchParams.get('queue'))
+  );
+  const [openFilter, setOpenFilter] = useState<OpenFilter>(() =>
+    parseOpenFilterParam(searchParams.get('open_filter'))
+  );
+  const [sortBy, setSortBy] = useState<SortOption>(() =>
+    parseSortParam(searchParams.get('sort'))
+  );
   const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -314,6 +345,15 @@ export default function OrdersPage() {
   useEffect(() => {
     void fetchStats();
   }, []);
+
+  useEffect(() => {
+    setSearch(searchParams.get('search') || '');
+    setStatusFilter(parseOrderFilterParam(searchParams.get('status')));
+    setQueueTab(parseQueueParam(searchParams.get('queue')));
+    setOpenFilter(parseOpenFilterParam(searchParams.get('open_filter')));
+    setSortBy(parseSortParam(searchParams.get('sort')));
+    setPage(1);
+  }, [searchParams]);
 
   const filteredOpenCount = useMemo(() => {
     if (queueTab !== 'open') return 0;
@@ -385,6 +425,16 @@ export default function OrdersPage() {
     link.remove();
   };
 
+  const resetQueueView = () => {
+    router.replace('/dashboard/orders');
+    setSearch('');
+    setStatusFilter('all');
+    setQueueTab('open');
+    setOpenFilter('all');
+    setSortBy('ship_by');
+    setPage(1);
+  };
+
   const handleDelete = async (id: string, number: string) => {
     if (!window.confirm(`Delete order #${number}?`)) return;
     await api.deleteOrder(id);
@@ -406,6 +456,13 @@ export default function OrdersPage() {
 
   const attentionCount = orders.filter((order) => order.workflow?.needs_attention).length;
   const overdueCount = orders.filter((order) => order.workflow?.overdue_ship_by).length;
+  const totalOrders = stats?.total_orders || 0;
+  const hasActiveFilters =
+    search.length > 0 ||
+    statusFilter !== 'all' ||
+    queueTab !== 'open' ||
+    openFilter !== 'all' ||
+    sortBy !== 'ship_by';
 
   return (
     <div className="space-y-6 px-4 py-6 md:px-6">
@@ -572,8 +629,60 @@ export default function OrdersPage() {
             Loading the shipping queue...
           </Surface>
         ) : orders.length === 0 ? (
-          <Surface className="px-6 py-14 text-center text-sm text-[var(--kv-muted)]">
-            No orders match this queue right now.
+          <Surface className="px-6 py-14">
+            <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--kv-muted)]">
+                Orders &amp; Shipping
+              </p>
+              <h3 className="mt-3 text-2xl font-semibold text-[var(--kv-text)]">
+                {totalOrders === 0
+                  ? 'No orders have reached the shipping queue yet'
+                  : 'No orders match this queue right now'}
+              </h3>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--kv-muted)]">
+                {totalOrders === 0
+                  ? 'Complete order, tracking link, no-tracking reason, add package, and label actions appear on each order row and on the order detail as soon as the first order is placed.'
+                  : 'Try clearing filters or opening a different queue. The shipping actions live on the order rows and order detail once a matching order is visible.'}
+              </p>
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                {hasActiveFilters ? (
+                  <ActionButton onClick={resetQueueView} icon={RefreshCw} variant="secondary">
+                    Reset queue view
+                  </ActionButton>
+                ) : null}
+                <ActionButton href="/dashboard/fulfillment" icon={CircleAlert} variant="secondary">
+                  Open fulfillment analytics
+                </ActionButton>
+              </div>
+
+              <div className="mt-8 grid w-full gap-3 md:grid-cols-3">
+                <div className="rounded-[1rem] border border-[var(--kv-border)] bg-white px-4 py-4 text-left">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                    Row actions
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--kv-text)]">
+                    Complete order, tracking / no tracking, add package, message buyer.
+                  </p>
+                </div>
+                <div className="rounded-[1rem] border border-[var(--kv-border)] bg-white px-4 py-4 text-left">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                    Order detail
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--kv-text)]">
+                    Shipping workbench, label manager, package tracking, buyer updates.
+                  </p>
+                </div>
+                <div className="rounded-[1rem] border border-[var(--kv-border)] bg-white px-4 py-4 text-left">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--kv-muted)]">
+                    Secondary page
+                  </p>
+                  <p className="mt-2 text-sm text-[var(--kv-text)]">
+                    Fulfillment Analytics now stays focused on workload and monitoring.
+                  </p>
+                </div>
+              </div>
+            </div>
           </Surface>
         ) : (
           orders.map((order) => {
@@ -618,8 +727,8 @@ export default function OrdersPage() {
                           ) : null}
                         </div>
                         <p className="mt-2 text-sm text-[var(--kv-muted)]">
-                          Placed {fmtDate(order.created_at)}. This card keeps shipment actions
-                          visible instead of hiding them in the old table flow.
+                          Placed {fmtDate(order.created_at)}. Open the order, complete the
+                          shipment, or add tracking from here.
                         </p>
                       </div>
                     </div>

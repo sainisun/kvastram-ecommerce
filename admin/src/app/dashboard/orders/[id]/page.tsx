@@ -2078,9 +2078,8 @@ export default function OrderDetailsPage() {
                 Track, label, package, and notify from one place
               </h2>
               <p className="mt-2 max-w-3xl text-sm text-[var(--kv-muted)]">
-                This is the shipment-first surface. Tracking link, no-tracking reason,
-                package count, label state, and buyer update shortcuts stay visible
-                before the rest of the order detail.
+                Keep tracking, no-tracking, package count, label state, and buyer
+                updates visible before the rest of the order detail.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
