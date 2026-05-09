@@ -223,3 +223,134 @@ DO UPDATE SET
   seo_title = EXCLUDED.seo_title,
   seo_description = EXCLUDED.seo_description,
   updated_at = now();
+
+INSERT INTO pages (
+  id,
+  title,
+  slug,
+  content,
+  is_visible,
+  seo_title,
+  seo_description,
+  created_at,
+  updated_at
+)
+VALUES (
+  gen_random_uuid(),
+  'Shipping & Returns',
+  'shipping-returns',
+  $CONTENT$
+<p><strong>Effective Date:</strong> 9 May 2026</p>
+
+<h2>1. Order Processing</h2>
+<p>Every Kvastram piece is handmade with care in Jaipur, Rajasthan, so we take a little time to prepare your order properly.</p>
+<p>Standard orders are usually processed within <strong>2-5 business days</strong>. This applies to most handmade kantha quilts, block-print clothing, bags, sarees, jackets, tote bags, lehengas, kurtas, and other ready designs.</p>
+<p>Custom or personalised orders usually take <strong>5-10 business days</strong> to process, depending on the work involved.</p>
+<p>During busy seasons such as Diwali, Christmas, and New Year, processing may take a little longer than usual. If there is any major delay, we will do our best to keep you informed.</p>
+
+<h2>2. Domestic Shipping (India)</h2>
+<p>We ship across India from Jaipur.</p>
+<p>Orders of <strong>Rs. 2,000 and above</strong> qualify for free shipping within India.</p>
+<p>For orders below Rs. 2,000, a flat or weight-based shipping fee of approximately <strong>Rs. 80-Rs. 120</strong> may apply. The final shipping charge will be shown at checkout.</p>
+<p>Estimated delivery time within India is usually <strong>4-8 business days</strong> after dispatch.</p>
+<p>We ship domestic orders through trusted partners such as <strong>India Post Speed Post, Shiprocket, Delhivery, and DTDC</strong>.</p>
+<p>For remote pin codes, rural areas, or locations with limited courier access, delivery may take a few extra days. In some cases, India Post may be used because it has wider coverage.</p>
+
+<h2>3. International Shipping</h2>
+<p>Kvastram ships to the USA, UK, EU, Australia, Canada, UAE, and more than 50 countries worldwide.</p>
+<p>International shipping charges are calculated at checkout based on your order weight and delivery destination.</p>
+<p>Estimated delivery times after dispatch are:</p>
+<ul>
+  <li><strong>USA and Canada:</strong> 12-20 business days</li>
+  <li><strong>UK:</strong> 10-16 business days</li>
+  <li><strong>EU:</strong> 12-18 business days</li>
+  <li><strong>Australia and New Zealand:</strong> 14-22 business days</li>
+  <li><strong>UAE and Middle East:</strong> 8-14 business days</li>
+  <li><strong>Rest of World:</strong> 15-25 business days</li>
+</ul>
+<p>We use <strong>India Post International, FedEx, and DHL</strong> for international shipments, depending on destination, service availability, and parcel type.</p>
+<p>Please note that international delivery timelines can sometimes be affected by customs clearance, local postal services, weather, holidays, or other delays outside our control.</p>
+
+<h2>4. Tracking Your Order</h2>
+<p>Once your order has been dispatched, we will send you a tracking email with your tracking number and courier details.</p>
+<p>Tracking may take <strong>24-48 hours</strong> to update after dispatch, so please do not worry if the link does not show movement immediately.</p>
+<p>You can track your Kvastram order at <a href="https://kvastram.com/track">https://kvastram.com/track</a>.</p>
+<p>For India Post shipments, you may also track directly at <a href="https://www.indiapost.gov.in">https://www.indiapost.gov.in</a>.</p>
+
+<h2>5. Customs &amp; Import Duties</h2>
+<p>For international orders, customs duties, import taxes, VAT, handling fees, or local charges are not included in the product price or shipping fee.</p>
+<p>These charges are the customer&apos;s responsibility and are collected by your local customs office or courier partner, if applicable.</p>
+<p>We are required to declare the full and correct value of every parcel. We cannot undervalue an order or mark it as a gift.</p>
+<p>If a parcel is refused because of unpaid customs duties, taxes, or import charges, we may issue a partial refund only after the parcel is safely returned to us. Any shipping fees, return charges, customs costs, or courier deductions will be deducted from the refund.</p>
+
+<h2>6. Return Policy</h2>
+<p>We want you to love your Kvastram piece. If something is not right, you may request a return within <strong>7 days of delivery</strong>.</p>
+<p>To be eligible for return, the item must be unused, unwashed, unworn, and in its original condition with tags and packaging intact.</p>
+<p>To initiate a return, please email us at <a href="mailto:support@kvastram.com">support@kvastram.com</a> with your order number, reason for return, and clear photos of the item.</p>
+<p>For regular returns within India, return shipping is the customer&apos;s responsibility. If the item is defective or we made an error, we will cover the return shipping cost.</p>
+<p>Please remember that our products are handmade. Small differences in print placement, stitching, colour tone, fabric texture, or kantha embroidery are natural signs of handcraft, not defects. These variations are what make each Kvastram piece special.</p>
+
+<h2>7. Exchange Policy</h2>
+<p>We offer size exchanges for clothing items within <strong>7 days of delivery</strong>, subject to availability.</p>
+<p>The item must be unused, unwashed, unworn, and in original condition with tags and packaging.</p>
+<p>For India orders, the customer pays the return shipping to send the original item back to us. Once we receive and approve it, we will ship the exchange item free of charge within India.</p>
+<p>Custom or personalised orders cannot be exchanged unless they arrive defective or incorrect.</p>
+
+<h2>8. Refund Policy</h2>
+<p>Once your return is received and approved, refunds are processed as follows:</p>
+<ul>
+  <li><strong>Refund to original payment method:</strong> 5-7 business days</li>
+  <li><strong>Store credit:</strong> 1-2 business days</li>
+  <li><strong>Bank transfer, where applicable:</strong> 7-10 business days</li>
+</ul>
+<p>Original shipping charges are non-refundable.</p>
+<p>For orders that received free shipping, the actual shipping cost paid by us may be deducted from the refund amount.</p>
+<p>Refund timelines may vary slightly depending on your bank, payment provider, or card issuer.</p>
+
+<h2>9. Damaged or Wrong Items</h2>
+<p>If your order arrives damaged, defective, or different from what you ordered, please contact us within <strong>48 hours of delivery</strong>.</p>
+<p>Email us at <a href="mailto:support@kvastram.com">support@kvastram.com</a> with your order number and clear photos of the product, packaging, and issue.</p>
+<p>For damaged, defective, or wrong items, we will arrange a free return pickup within India where service is available, or provide a prepaid return label where possible.</p>
+<p>Once verified, we will offer a full refund or replacement at no extra cost to you.</p>
+
+<h2>10. Non-Returnable Items</h2>
+<p>The following items cannot be returned:</p>
+<ul>
+  <li>Custom or personalised orders</li>
+  <li>Washed, worn, used, or altered items</li>
+  <li>Items without original tags or packaging</li>
+  <li>Final Sale items</li>
+  <li>Unauthorised returns sent without contacting us first</li>
+</ul>
+<p>If you are unsure whether your item is eligible, please write to us before sending it back.</p>
+
+<h2>11. Custom &amp; Personalised Orders</h2>
+<p>Custom and personalised pieces are made specially for you.</p>
+<p>A <strong>50% advance payment</strong> is required to begin custom work.</p>
+<p>Production time is usually <strong>7-15 business days</strong>, depending on the design, fabric, embroidery, stitching, and artisan workload.</p>
+<p>Once production has started, custom orders cannot be cancelled.</p>
+<p>Custom and personalised orders are non-returnable and non-refundable unless they arrive defective or we have made an error.</p>
+
+<h2>12. Contact Us</h2>
+<p>We are always happy to help.</p>
+<p><strong>Email:</strong> <a href="mailto:support@kvastram.com">support@kvastram.com</a><br>
+<strong>WhatsApp:</strong> <a href="https://wa.me/message/kvastram">https://wa.me/message/kvastram</a><br>
+<strong>Track your order:</strong> <a href="https://kvastram.com/track">https://kvastram.com/track</a></p>
+<p>We usually respond within <strong>24-48 hours</strong>.</p>
+<p><strong>Support hours:</strong> Monday to Friday, 9:00 am to 6:00 pm IST</p>
+<p>Thank you for choosing Kvastram. Every order supports handmade craft, slow fashion, and artisan work from Jaipur, India.</p>
+$CONTENT$,
+  true,
+  'Shipping & Returns | Kvastram',
+  'Shipping, delivery, customs, returns, exchanges, refunds, and support details for handmade Kvastram orders from Jaipur, India.',
+  now(),
+  now()
+)
+ON CONFLICT (slug)
+DO UPDATE SET
+  title = EXCLUDED.title,
+  content = EXCLUDED.content,
+  is_visible = EXCLUDED.is_visible,
+  seo_title = EXCLUDED.seo_title,
+  seo_description = EXCLUDED.seo_description,
+  updated_at = now();
