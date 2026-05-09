@@ -51,7 +51,7 @@ export function CookieConsent() {
               <p className="text-body-xs text-stone-500 type-light mt-0.5 leading-token-relaxed">
                 Choose which categories of cookies & tracking you allow.{' '}
                 <Link
-                  href="/privacy-policy"
+                  href="/pages/privacy-policy"
                   className="text-stone-900 underline underline-offset-2 hover:text-amber-600 transition-colors"
                 >
                   Learn more

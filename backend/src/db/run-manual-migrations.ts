@@ -33,6 +33,7 @@ const MIGRATION_FILES = [
   '20260430_add_studio_inquiry_messages.sql',
   '20260430_storefront_prototype_parity.sql',
   '20260507_add_security_events.sql',
+  '20260509_privacy_policy_update.sql',
 ];
 
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
