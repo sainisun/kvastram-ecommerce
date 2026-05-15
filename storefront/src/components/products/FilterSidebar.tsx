@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { storefrontAttributeFilters } from '@/config/storefront-discovery';
 
 interface Category {
   id: string;
@@ -27,13 +26,34 @@ interface FilterSidebarProps {
   tags: Tag[];
   collections?: Collection[];
   className?: string;
+  onApply?: () => void;
+  onClose?: () => void;
 }
+
+type DraftFilters = {
+  category_id: string;
+  tag_id: string;
+  collection_id: string;
+};
+
+const FILTER_QUERY_KEYS = [
+  'category_id',
+  'tag_id',
+  'collection_id',
+  'attribute_code',
+  'attribute_value',
+  'min_price',
+  'max_price',
+  'page',
+];
 
 export default function FilterSidebar({
   categories,
   tags,
   collections = [],
   className = '',
+  onApply,
+  onClose,
 }: Readonly<FilterSidebarProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -46,6 +66,11 @@ export default function FilterSidebar({
   const currentAttributeValue = searchParams.get('attribute_value');
   const currentMinPrice = searchParams.get('min_price') || '';
   const currentMaxPrice = searchParams.get('max_price') || '';
+  const [draftFilters, setDraftFilters] = useState<DraftFilters>({
+    category_id: currentCategoryId || '',
+    tag_id: currentTagId || '',
+    collection_id: currentCollectionId || '',
+  });
   const [minPrice, setMinPrice] = useState(
     currentMinPrice ? String(Math.round(Number(currentMinPrice) / 100)) : ''
   );
@@ -53,60 +78,61 @@ export default function FilterSidebar({
     currentMaxPrice ? String(Math.round(Number(currentMaxPrice) / 100)) : ''
   );
 
-  const updateFilter = (
-    type:
-      | 'category_id'
-      | 'tag_id'
-      | 'collection_id'
-      | 'attribute_code'
-      | 'attribute_value',
-    value: string | null
-  ) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('page');
-    if (value) {
-      params.set(type, value);
-    } else {
-      params.delete(type);
-    }
-    router.push(`/products?${params.toString()}`);
+  const pushProductsUrl = (params: URLSearchParams) => {
+    const nextQuery = params.toString();
+    router.push(nextQuery ? `/products?${nextQuery}` : '/products');
   };
 
-  const applyPriceFilter = () => {
+  const updateDraftFilter = (
+    type: 'category_id' | 'tag_id' | 'collection_id',
+    value: string | null
+  ) => {
+    setDraftFilters((current) => ({
+      ...current,
+      [type]: current[type] === value || value === null ? '' : value,
+    }));
+  };
+
+  const applyFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
-    params.delete('page');
+    FILTER_QUERY_KEYS.forEach((key) => params.delete(key));
+
+    if (draftFilters.category_id) {
+      params.set('category_id', draftFilters.category_id);
+    }
+
+    if (draftFilters.collection_id) {
+      params.set('collection_id', draftFilters.collection_id);
+    }
+
+    if (draftFilters.tag_id) {
+      params.set('tag_id', draftFilters.tag_id);
+    }
 
     if (minPrice.trim()) {
       params.set('min_price', String(Number(minPrice) * 100));
-    } else {
-      params.delete('min_price');
     }
 
     if (maxPrice.trim()) {
       params.set('max_price', String(Number(maxPrice) * 100));
-    } else {
-      params.delete('max_price');
     }
 
-    router.push(`/products?${params.toString()}`);
+    pushProductsUrl(params);
+    onApply?.();
   };
 
-  const updateAttributeFilter = (code: string, value: string) => {
+  const clearAllFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
-    params.delete('page');
+    FILTER_QUERY_KEYS.forEach((key) => params.delete(key));
 
-    const isSame =
-      currentAttributeCode === code && currentAttributeValue === value;
-
-    if (isSame) {
-      params.delete('attribute_code');
-      params.delete('attribute_value');
-    } else {
-      params.set('attribute_code', code);
-      params.set('attribute_value', value);
-    }
-
-    router.push(`/products?${params.toString()}`);
+    setDraftFilters({
+      category_id: '',
+      tag_id: '',
+      collection_id: '',
+    });
+    setMinPrice('');
+    setMaxPrice('');
+    pushProductsUrl(params);
   };
 
   const toggleCategory = (id: string) => {
@@ -117,17 +143,24 @@ export default function FilterSidebar({
     );
   };
 
-  const hasActiveFilters =
+  const hasActiveFilters = Boolean(
     currentCategoryId ||
-    currentTagId ||
-    currentCollectionId ||
-    currentAttributeCode ||
-    currentAttributeValue ||
-    currentMinPrice ||
-    currentMaxPrice;
+      currentTagId ||
+      currentCollectionId ||
+      currentAttributeCode ||
+      currentAttributeValue ||
+      currentMinPrice ||
+      currentMaxPrice ||
+      draftFilters.category_id ||
+      draftFilters.tag_id ||
+      draftFilters.collection_id ||
+      minPrice ||
+      maxPrice
+  );
 
   return (
-    <div className={`space-y-7 ${className}`}>
+    <div className={`flex min-h-full flex-col ${className}`}>
+      <div className="flex-1 space-y-7">
       <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
         <h3 className="filter-sidebar-title">
           Filters
@@ -135,7 +168,7 @@ export default function FilterSidebar({
         {hasActiveFilters ? (
           <button
             type="button"
-            onClick={() => router.push('/products')}
+            onClick={clearAllFilters}
             className="filter-clear-button underline underline-offset-4 transition"
           >
             Clear All
@@ -146,7 +179,7 @@ export default function FilterSidebar({
       {categories.length > 0 ? (
         <FilterGroup label="Categories">
           {categories.map((cat) => {
-            const isActive = currentCategoryId === cat.id;
+            const isActive = draftFilters.category_id === cat.id;
             const isExpanded = expandedCats.includes(cat.id);
 
             return (
@@ -155,7 +188,10 @@ export default function FilterSidebar({
                   <FilterButton
                     active={isActive}
                     onClick={() =>
-                      updateFilter('category_id', isActive ? null : cat.id)
+                      updateDraftFilter(
+                        'category_id',
+                        isActive ? null : cat.id
+                      )
                     }
                   >
                     {cat.name}
@@ -181,11 +217,11 @@ export default function FilterSidebar({
                     {cat.children.map((sub) => (
                       <FilterButton
                         key={sub.id}
-                        active={currentCategoryId === sub.id}
+                        active={draftFilters.category_id === sub.id}
                         onClick={() =>
-                          updateFilter(
+                          updateDraftFilter(
                             'category_id',
-                            currentCategoryId === sub.id ? null : sub.id
+                            draftFilters.category_id === sub.id ? null : sub.id
                           )
                         }
                         small
@@ -206,11 +242,11 @@ export default function FilterSidebar({
           {collections.map((col) => (
             <FilterButton
               key={col.id}
-              active={currentCollectionId === col.id}
+              active={draftFilters.collection_id === col.id}
               onClick={() =>
-                updateFilter(
+                updateDraftFilter(
                   'collection_id',
-                  currentCollectionId === col.id ? null : col.id
+                  draftFilters.collection_id === col.id ? null : col.id
                 )
               }
             >
@@ -242,54 +278,20 @@ export default function FilterSidebar({
               className="w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-body-sm"
             />
           </div>
-          <button
-            type="button"
-            onClick={applyPriceFilter}
-            className="w-full rounded-md bg-[var(--ink)] px-4 py-2 text-body-xs uppercase tracking-token-wider text-white transition hover:opacity-90"
-          >
-            Apply Price
-          </button>
         </div>
       </FilterGroup>
-
-      {storefrontAttributeFilters.map((group) => (
-        <FilterGroup key={group.code} label={group.label}>
-          <div className="flex flex-wrap gap-2">
-            {group.values.map((item) => {
-              const isActive =
-                currentAttributeCode === group.code &&
-                currentAttributeValue === item.value;
-
-              return (
-                <button
-                  key={`${group.code}-${item.value}`}
-                  type="button"
-                  onClick={() => updateAttributeFilter(group.code, item.value)}
-                  className={`filter-tag-button rounded-full border px-3 py-2 transition ${
-                    isActive
-                      ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
-                      : 'filter-tag-button-inactive border-[var(--line)] bg-white hover:border-[var(--ink)]'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
-        </FilterGroup>
-      ))}
 
       {tags.length > 0 ? (
         <FilterGroup label="Tags">
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => {
-              const isActive = currentTagId === tag.id;
+              const isActive = draftFilters.tag_id === tag.id;
               return (
                 <button
                   key={tag.id}
                   type="button"
                   onClick={() =>
-                    updateFilter('tag_id', isActive ? null : tag.id)
+                    updateDraftFilter('tag_id', isActive ? null : tag.id)
                   }
                   className={`filter-tag-button rounded-full border px-3 py-2 transition ${
                     isActive
@@ -304,6 +306,24 @@ export default function FilterSidebar({
           </div>
         </FilterGroup>
       ) : null}
+      </div>
+
+      <div className="sticky bottom-0 -mx-4 mt-8 grid gap-3 border-t border-stone-200 bg-white px-4 py-4 sm:-mx-0 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={applyFilters}
+          className="h-11 bg-stone-950 px-5 text-body-xs type-bold uppercase tracking-token-wider text-white transition-opacity hover:opacity-90"
+        >
+          Apply
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="h-11 border border-stone-300 bg-white px-5 text-body-xs type-bold uppercase tracking-token-wider text-stone-950 transition-colors hover:border-stone-950"
+        >
+          Close
+        </button>
+      </div>
     </div>
   );
 }

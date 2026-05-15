@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowUpDown,
@@ -13,15 +12,8 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import CategoryBannerCarousel from '@/components/products/CategoryBannerCarousel';
-import CategoryCircleStrip from '@/components/products/CategoryCircleStrip';
 import FilterSidebar from '@/components/products/FilterSidebar';
 import ProductGrid from '@/components/ProductGrid';
-import {
-  storefrontAttributeFilters,
-  storefrontDiscoveryQuickLinks,
-} from '@/config/storefront-discovery';
-import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 import { Product } from '@/types';
 
@@ -96,13 +88,11 @@ export default function CatalogClient({
   tags,
   collections = [],
   totalProducts,
-  categoryPageBanners = [],
-  categoryCircles = [],
   spotlightProducts = [],
 }: CatalogClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const filterDrawerRef = useRef<HTMLDivElement | null>(null);
   const filterButtonRef = useRef<HTMLButtonElement | null>(null);
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -130,17 +120,13 @@ export default function CatalogClient({
   const activeCollection = currentCollectionId
     ? collections.find((collection) => collection.id === currentCollectionId)
     : null;
-  const activeAttributeGroup = currentAttributeCode
-    ? storefrontAttributeFilters.find((group) => group.code === currentAttributeCode)
-    : null;
-  const activeAttribute = activeAttributeGroup?.values.find(
-    (item) => item.value === currentAttributeValue
-  );
-
-  const topCategories = categories.slice(0, 6);
-  const featuredCollections = collections
-    .slice(0, 6)
-    .filter((collection) => Boolean(collection.handle));
+  const activeFilterCount = [
+    currentCategoryId,
+    currentTagId,
+    currentCollectionId,
+    currentAttributeCode && currentAttributeValue,
+    currentMinPrice || currentMaxPrice,
+  ].filter(Boolean).length;
 
   const totalPages = Math.ceil(total / limit);
 
@@ -151,7 +137,7 @@ export default function CatalogClient({
   }, [initialProducts, totalProducts]);
 
   useEffect(() => {
-    if (!mobileFilterOpen) return;
+    if (!filterDrawerOpen) return;
 
     const previousOverflow = document.body.style.overflow;
     const triggerButton = filterButtonRef.current;
@@ -159,7 +145,7 @@ export default function CatalogClient({
     filterDrawerRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMobileFilterOpen(false);
+      if (event.key === 'Escape') setFilterDrawerOpen(false);
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -168,7 +154,7 @@ export default function CatalogClient({
       window.removeEventListener('keydown', handleKeyDown);
       triggerButton?.focus();
     };
-  }, [mobileFilterOpen]);
+  }, [filterDrawerOpen]);
 
   const fetchProducts = useCallback(
     async (pageNum: number, sortValue?: string) => {
@@ -214,7 +200,8 @@ export default function CatalogClient({
   const updateQuery = (mutate: (params: URLSearchParams) => void) => {
     const params = new URLSearchParams(searchParams.toString());
     mutate(params);
-    router.push(`/products?${params.toString()}`);
+    const nextQuery = params.toString();
+    router.push(nextQuery ? `/products?${nextQuery}` : '/products');
   };
 
   const handlePageChange = (newPage: number) => {
@@ -253,112 +240,88 @@ export default function CatalogClient({
   const endItem = Math.min(page * limit, total);
 
   return (
-    <div className="min-h-screen bg-[var(--cream)]">
-      {categoryPageBanners.length > 0 ? (
-        <CategoryBannerCarousel banners={categoryPageBanners} />
-      ) : null}
-
-      {categoryCircles.length > 0 ? (
-        <CategoryCircleStrip circles={categoryCircles} />
-      ) : null}
-
-      <div className="border-b border-[var(--line)] bg-white py-4">
-        <div className="catalog-breadcrumb kv-container flex flex-wrap gap-2">
-          <Link href="/">Home</Link>
-          <span>{'>'}</span>
-          <span className="catalog-breadcrumb-current">Shop All</span>
-        </div>
-      </div>
-
-      <section className="kv-section-sm">
-        <div className="kv-container">
-          <div className="kv-tag">Shop All</div>
-          <h1 className="kv-title max-w-2xl">Complete artisan catalog</h1>
-          <p className="kv-sub mt-2 max-w-3xl">
-            Browse real Kvastram products with backend-backed filters only.
-          </p>
-        </div>
-      </section>
-
-      <div className="bg-white py-6">
-        <div className="kv-container pb-12 md:pb-16 lg:pb-24">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
-            <div className="filter-chips flex gap-3 overflow-x-auto pb-1 no-scrollbar lg:max-w-[calc(100%-180px)]">
-              <button
-                onClick={() =>
-                  updateQuery((params) => {
-                    params.delete('category_id');
-                    params.delete('tag_id');
-                    params.delete('collection_id');
-                    params.delete('attribute_code');
-                    params.delete('attribute_value');
-                    params.delete('min_price');
-                    params.delete('max_price');
-                  })
-                }
-                className={
-                  !currentCategoryId &&
-                  !currentTagId &&
-                  !currentCollectionId &&
-                  !currentAttributeCode &&
-                  !currentAttributeValue &&
-                  !currentMinPrice &&
-                  !currentMaxPrice
-                    ? 'bg-stone-950'
-                    : ''
-                }
-              >
-                All
-              </button>
-
-              {topCategories.map((category) => {
-                const isActive = currentCategoryId === category.id;
-
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() =>
-                      updateQuery((params) => {
-                        if (isActive) {
-                          params.delete('category_id');
-                        } else {
-                          params.set('category_id', category.id);
-                          params.delete('tag_id');
-                          params.delete('collection_id');
-                        }
-                      })
-                    }
-                    className={isActive ? 'bg-stone-950' : ''}
-                  >
-                    {category.name}
-                  </button>
-                );
-              })}
-
-              {featuredCollections.map((collection) => (
-                <Link
-                  key={collection.id}
-                  href={`/collections/${collection.handle}`}
-                  className="catalog-filter-link inline-flex items-center rounded-full border border-[var(--line)] bg-white px-4 py-2"
-                >
-                  {collection.title}
-                </Link>
-              ))}
+    <div className="min-h-screen bg-white">
+      <div className="bg-white">
+        <div className="kv-container pb-12 pt-6 md:pb-16 md:pt-8 lg:pb-24">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-4">
+            <div className="min-w-0">
+              <h1 className="catalog-page-heading">Products</h1>
             </div>
 
-            <button
-              ref={filterButtonRef}
-              onClick={() => setMobileFilterOpen(true)}
-              className="kv-btn lg:hidden"
-              aria-label="Open filters"
-            >
-              <SlidersHorizontal size={14} />
-              Filters
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <button
+                ref={filterButtonRef}
+                type="button"
+                onClick={() => setFilterDrawerOpen(true)}
+                className="group inline-flex h-10 items-center gap-2 border border-stone-900 bg-white px-4 text-body-xs type-bold uppercase tracking-token-wider text-stone-950 transition-colors hover:bg-stone-950 hover:text-white"
+                aria-label="Open filters"
+              >
+                <SlidersHorizontal size={14} />
+                Filter
+                {activeFilterCount > 0 ? (
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-stone-950 px-1.5 text-[10px] leading-none text-white group-hover:bg-white group-hover:text-stone-950">
+                    {activeFilterCount}
+                  </span>
+                ) : null}
+              </button>
+
+              <div className="catalog-count">
+                {total > 0
+                  ? `${startItem}-${endItem} of ${total} Items`
+                  : `${total} Items`}
+              </div>
+
+              <div
+                className="hidden items-center overflow-hidden border border-stone-200 bg-white sm:flex"
+                aria-label="Product grid density"
+              >
+                <button
+                  type="button"
+                  onClick={() => setGridDensity('grid')}
+                  className={`flex h-10 w-10 items-center justify-center transition-colors ${
+                    gridDensity === 'grid'
+                      ? 'bg-stone-900 text-white'
+                      : 'text-stone-500 hover:text-stone-900'
+                  }`}
+                  aria-label="Grid view"
+                  title="Grid view"
+                >
+                  <Grid2X2 size={15} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGridDensity('compact')}
+                  className={`flex h-10 w-10 items-center justify-center transition-colors ${
+                    gridDensity === 'compact'
+                      ? 'bg-stone-900 text-white'
+                      : 'text-stone-500 hover:text-stone-900'
+                  }`}
+                  aria-label="Compact view"
+                  title="Compact view"
+                >
+                  <Rows3 size={15} />
+                </button>
+              </div>
+
+              <div className="flex h-10 items-center gap-2 border border-stone-200 px-3">
+                <ArrowUpDown size={14} className="text-stone-400" />
+                <select
+                  value={currentSort}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                  className="catalog-sort-select cursor-pointer border-none bg-transparent focus:outline-none hover:text-black"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-2">
+          {activeFilterCount > 0 ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               {activeCategory ? (
                 <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
                   {activeCategory.name}
@@ -367,7 +330,7 @@ export default function CatalogClient({
                     aria-label="Remove category filter"
                     className="text-stone-400 transition-colors hover:text-stone-900"
                   >
-                    {'X'}
+                    <X size={12} />
                   </button>
                 </span>
               ) : null}
@@ -380,7 +343,7 @@ export default function CatalogClient({
                     aria-label="Remove tag filter"
                     className="text-stone-400 transition-colors hover:text-stone-900"
                   >
-                    {'X'}
+                    <X size={12} />
                   </button>
                 </span>
               ) : null}
@@ -393,14 +356,14 @@ export default function CatalogClient({
                     aria-label="Remove collection filter"
                     className="text-stone-400 transition-colors hover:text-stone-900"
                   >
-                    {'X'}
+                    <X size={12} />
                   </button>
                 </span>
               ) : null}
 
-              {activeAttributeGroup && activeAttribute ? (
+              {currentAttributeCode && currentAttributeValue ? (
                 <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
-                  {activeAttributeGroup.label}: {activeAttribute.label}
+                  Attribute filter
                   <button
                     onClick={() =>
                       updateQuery((params) => {
@@ -411,7 +374,7 @@ export default function CatalogClient({
                     aria-label="Remove attribute filter"
                     className="text-stone-400 transition-colors hover:text-stone-900"
                   >
-                    {'X'}
+                    <X size={12} />
                   </button>
                 </span>
               ) : null}
@@ -439,223 +402,98 @@ export default function CatalogClient({
                     aria-label="Remove price filter"
                     className="text-stone-400 transition-colors hover:text-stone-900"
                   >
-                    {'X'}
+                    <X size={12} />
                   </button>
                 </span>
               ) : null}
             </div>
+          ) : null}
 
-            <div className="flex items-center gap-4">
-              <div className="catalog-count">
-                {total > 0 ? `${startItem}-${endItem} of ${total} Items` : `${total} Items`}
-              </div>
+          <main className="mt-6 min-w-0">
+            <ProductGrid
+              initialProducts={products}
+              loading={loading}
+              spotlightProducts={spotlightProducts}
+              density={gridDensity}
+            />
 
-              <div
-                className="hidden items-center overflow-hidden rounded-full border border-stone-200 bg-white sm:flex"
-                aria-label="Product grid density"
-              >
+            {totalPages > 1 ? (
+              <div className="mt-16 flex items-center justify-center gap-2">
                 <button
-                  type="button"
-                  onClick={() => setGridDensity('grid')}
-                  className={`flex h-9 w-9 items-center justify-center transition-colors ${
-                    gridDensity === 'grid'
-                      ? 'bg-stone-900 text-white'
-                      : 'text-stone-500 hover:text-stone-900'
-                  }`}
-                  aria-label="Grid view"
-                  title="Grid view"
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1 || loading}
+                  className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Previous page"
                 >
-                  <Grid2X2 size={15} />
+                  <ChevronLeft size={20} />
                 </button>
+
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (page <= 3) {
+                    pageNum = i + 1;
+                  } else if (page >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = page - 2 + i;
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      disabled={loading}
+                      className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
+                        page === pageNum
+                          ? 'bg-stone-900 text-white'
+                          : 'text-stone-600 hover:bg-stone-50 hover:text-black'
+                      }`}
+                      aria-label={`Page ${pageNum}`}
+                      aria-current={page === pageNum ? 'page' : undefined}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
                 <button
-                  type="button"
-                  onClick={() => setGridDensity('compact')}
-                  className={`flex h-9 w-9 items-center justify-center transition-colors ${
-                    gridDensity === 'compact'
-                      ? 'bg-stone-900 text-white'
-                      : 'text-stone-500 hover:text-stone-900'
-                  }`}
-                  aria-label="Compact view"
-                  title="Compact view"
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page === totalPages || loading}
+                  className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Next page"
                 >
-                  <Rows3 size={15} />
+                  <ChevronRight size={20} />
                 </button>
               </div>
-
-              <div className="flex items-center gap-2">
-                <ArrowUpDown size={14} className="text-stone-400" />
-                <select
-                  value={currentSort}
-                  onChange={(e) => handleSortChange(e.target.value)}
-                  className="catalog-sort-select cursor-pointer border-none bg-transparent focus:outline-none hover:text-black"
-                >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr,0.85fr]">
-            <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6">
-              <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
-                Curated Browsing
-              </p>
-              <h2 className="mt-3 text-body-xl font-serif text-stone-900">
-                Shop by intent, not only by product type
-              </h2>
-              <p className="mt-3 max-w-2xl text-body-sm text-stone-600">
-                Use curated routes to move faster through occasion, fabric, and
-                color-led discovery without losing buying momentum.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                {storefrontDiscoveryQuickLinks.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="rounded-full border border-stone-200 bg-white px-4 py-2 text-body-sm text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-stone-200 bg-white p-6">
-              <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
-                Checkout Confidence
-              </p>
-              <h2 className="mt-3 text-body-xl font-serif text-stone-900">
-                Policy and payment clarity before cart drop-off
-              </h2>
-              <p className="mt-3 text-body-sm text-stone-600">
-                Buyers can verify shipping, returns, and payment guidance before
-                they reach Razorpay or the final checkout step.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Link
-                  href={storefrontTrust.policyRoutes.shipping}
-                  className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-                >
-                  Shipping
-                </Link>
-                <Link
-                  href={storefrontTrust.policyRoutes.returns}
-                  className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-                >
-                  Returns
-                </Link>
-                <Link
-                  href={storefrontTrust.policyRoutes.paymentHelp}
-                  className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-                >
-                  Payment Help
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
-            <aside className="hidden lg:block">
-              <div className="sticky top-28">
-                <FilterSidebar
-                  categories={categories}
-                  tags={tags}
-                  collections={collections}
-                  className="rounded-lg border border-[var(--line)] bg-[var(--cream)] p-5"
-                />
-              </div>
-            </aside>
-
-            <main className="min-w-0">
-              <ProductGrid
-                initialProducts={products}
-                loading={loading}
-                spotlightProducts={spotlightProducts}
-                density={gridDensity}
-              />
-
-              {totalPages > 1 ? (
-                <div className="mt-16 flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page === 1 || loading}
-                    className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label="Previous page"
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum: number;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (page <= 3) {
-                      pageNum = i + 1;
-                    } else if (page >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = page - 2 + i;
-                    }
-
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => handlePageChange(pageNum)}
-                        disabled={loading}
-                        className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
-                          page === pageNum
-                            ? 'bg-stone-900 text-white'
-                            : 'text-stone-600 hover:bg-stone-50 hover:text-black'
-                        }`}
-                        aria-label={`Page ${pageNum}`}
-                        aria-current={page === pageNum ? 'page' : undefined}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
-
-                  <button
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={page === totalPages || loading}
-                    className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label="Next page"
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                </div>
-              ) : null}
-            </main>
-          </div>
+            ) : null}
+          </main>
         </div>
       </div>
 
-      {mobileFilterOpen ? (
+      {filterDrawerOpen ? (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/50"
-            onClick={() => setMobileFilterOpen(false)}
+            className="fixed inset-0 z-40 bg-black/40"
+            onClick={() => setFilterDrawerOpen(false)}
             aria-hidden="true"
           />
           <div
             ref={filterDrawerRef}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="mobile-filter-title"
+            aria-labelledby="catalog-filter-title"
             tabIndex={-1}
-            className="fixed inset-0 z-50 w-full bg-white shadow-xl transition-transform duration-300 sm:inset-y-0 sm:left-0 sm:right-auto sm:max-w-[420px]"
+            className="fixed inset-x-0 bottom-0 z-50 max-h-[90vh] w-full bg-white shadow-xl transition-transform duration-300 sm:inset-y-0 sm:left-0 sm:right-auto sm:max-h-none sm:max-w-[430px]"
           >
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between border-b border-stone-100 p-4">
-                <h2 id="mobile-filter-title" className="catalog-filter-title">
-                  Filters
+                <h2 id="catalog-filter-title" className="catalog-filter-title">
+                  Filter
                 </h2>
                 <button
-                  onClick={() => setMobileFilterOpen(false)}
+                  onClick={() => setFilterDrawerOpen(false)}
                   className="p-2 text-stone-500 hover:text-black"
                   aria-label="Close filters"
                 >
@@ -667,6 +505,8 @@ export default function CatalogClient({
                   categories={categories}
                   tags={tags}
                   collections={collections}
+                  onApply={() => setFilterDrawerOpen(false)}
+                  onClose={() => setFilterDrawerOpen(false)}
                 />
               </div>
             </div>

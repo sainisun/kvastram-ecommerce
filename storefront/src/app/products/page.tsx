@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
-import { permanentRedirect } from 'next/navigation';
 
 import CatalogClient from '@/components/products/CatalogClient';
 import { api } from '@/lib/api';
-import { buildCatalogMetadata, findCategoryById } from '@/lib/seo';
+import { buildCatalogMetadata } from '@/lib/seo';
 import type { Product } from '@/types';
 
 export const revalidate = 60;
@@ -31,11 +30,6 @@ async function fetchWithTimeout<T>(
   }
 }
 
-function appendSort(handle: string, sort?: string) {
-  if (!sort || sort === 'newest') return handle;
-  return `${handle}?sort=${encodeURIComponent(sort)}`;
-}
-
 export default async function CatalogPage({
   searchParams,
 }: {
@@ -45,42 +39,11 @@ export default async function CatalogPage({
   const categoryId = params.category_id as string | undefined;
   const tagId = params.tag_id as string | undefined;
   const collectionId = params.collection_id as string | undefined;
+  const attributeCode = params.attribute_code as string | undefined;
+  const attributeValue = params.attribute_value as string | undefined;
+  const minPrice = params.min_price as string | undefined;
+  const maxPrice = params.max_price as string | undefined;
   const sort = params.sort as string | undefined;
-
-  if (categoryId || collectionId) {
-    const [categoriesResult, collectionsResult] = await Promise.all([
-      api.getCategories(),
-      api.getCollections(),
-    ]);
-
-    if (categoryId) {
-      const category = findCategoryById(
-        categoriesResult.categories || [],
-        categoryId
-      );
-
-      if (category?.slug || category?.handle) {
-        permanentRedirect(
-          appendSort(
-            `/collections/${category.slug || category.handle}`,
-            sort
-          )
-        );
-      }
-    }
-
-    if (collectionId) {
-      const collection = (collectionsResult.collections || []).find(
-        (item: { id: string; handle?: string }) => item.id === collectionId
-      );
-
-      if (collection?.handle) {
-        permanentRedirect(
-          appendSort(`/collections/${collection.handle}`, sort)
-        );
-      }
-    }
-  }
 
   let productsData: {
     products: Product[];
@@ -96,7 +59,13 @@ export default async function CatalogPage({
     const productsResult = await fetchWithTimeout(
       api.getProducts({
         limit: 50,
+        category_id: categoryId,
         tag_id: tagId,
+        collection_id: collectionId,
+        attribute_code: attributeCode,
+        attribute_value: attributeValue,
+        min_price: minPrice ? Number(minPrice) : undefined,
+        max_price: maxPrice ? Number(maxPrice) : undefined,
         sort,
         cache: false,
       }),
