@@ -17,14 +17,18 @@ export function cloudinaryUrlOrNull(value: unknown): string | null {
   return isCloudinaryUrl(value) ? value : null;
 }
 
+function forceSeoSafeImageExtension(src: string): string {
+  return src.replace(/\.(heic|heif)(?=$|[?#])/i, '.jpg');
+}
+
 /**
  * Inject f_auto,q_auto into a Cloudinary URL so the CDN converts HEIC/HEIF
- * (and any other format) to the best format the browser supports (WebP/AVIF/JPEG).
+ * and any other format to the best format the browser supports.
  * Non-Cloudinary URLs are returned unchanged.
  */
 export function optimizeCloudinaryUrl(src: string): string {
   if (!isCloudinaryUrl(src)) return src;
-  // Already has transformations — insert f_auto,q_auto if not present
-  if (src.includes('f_auto') || src.includes('q_auto')) return src;
-  return src.replace('/upload/', '/upload/f_auto,q_auto/');
+  const seoSafeSrc = forceSeoSafeImageExtension(src);
+  if (seoSafeSrc.includes('f_auto') || seoSafeSrc.includes('q_auto')) return seoSafeSrc;
+  return seoSafeSrc.replace('/upload/', '/upload/f_auto,q_auto/');
 }

@@ -12,12 +12,34 @@ import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-stat
 
 const ORDERS_PER_PAGE = 10;
 
+type CustomerReturn = {
+  id: string;
+  order_id: string;
+  status: 'pending' | 'approved' | 'rejected' | 'refunded' | string;
+};
+
+function getReturnStatusClasses(status: string) {
+  switch (status) {
+    case 'approved':
+      return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+    case 'refunded':
+      return 'border-stone-200 bg-stone-900 text-white';
+    case 'rejected':
+      return 'border-red-200 bg-red-50 text-red-700';
+    default:
+      return 'border-amber-200 bg-amber-50 text-amber-700';
+  }
+}
+
 export default function OrdersListPage() {
   const { customer, loading } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [returnsByOrderId, setReturnsByOrderId] = useState<
+    Record<string, CustomerReturn>
+  >({});
 
   useEffect(() => {
     if (!loading && !customer) {
@@ -26,19 +48,29 @@ export default function OrdersListPage() {
   }, [loading, customer, router]);
 
   useEffect(() => {
-    // Wait until auth is resolved and customer exists
     if (loading || !customer) {
       return;
     }
 
-    api
-      .getCustomerOrders()
-      .then((data) => {
-        setOrders(data.orders || []);
+    Promise.all([
+      api.getCustomerOrders(),
+      api.getCustomerReturns().catch(() => ({ returns: [] })),
+    ])
+      .then(([ordersData, returnsData]) => {
+        setOrders(ordersData.orders || []);
+        const byOrderId = (returnsData.returns || []).reduce(
+          (acc: Record<string, CustomerReturn>, item: CustomerReturn) => {
+            acc[item.order_id] = item;
+            return acc;
+          },
+          {}
+        );
+        setReturnsByOrderId(byOrderId);
         setOrdersLoading(false);
       })
       .catch(() => {
         setOrders([]);
+        setReturnsByOrderId({});
         setOrdersLoading(false);
       });
   }, [customer, loading]);
@@ -77,6 +109,27 @@ export default function OrdersListPage() {
 
         <h1 className="account-page-title mb-8">My Orders</h1>
 
+        <div className="mb-6 flex flex-wrap gap-3">
+          <Link
+            href="/help"
+            className="border border-stone-300 bg-white px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+          >
+            Help Center
+          </Link>
+          <Link
+            href="/payment-help"
+            className="border border-stone-300 bg-white px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+          >
+            Payment Help
+          </Link>
+          <Link
+            href="/returns"
+            className="border border-stone-300 bg-white px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+          >
+            View Returns Hub
+          </Link>
+        </div>
+
         {/* Orders List */}
         <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
           {ordersLoading ? (
@@ -108,7 +161,7 @@ export default function OrdersListPage() {
                 {paginatedOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="p-6 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                    className="flex items-center justify-between p-6 transition-colors hover:bg-stone-50"
                   >
                     <div>
                       <Link
@@ -130,6 +183,15 @@ export default function OrdersListPage() {
                       <p className="account-caption mt-1">
                         {order.items?.length || 0} items
                       </p>
+                      {returnsByOrderId[order.id] ? (
+                        <span
+                          className={`mt-3 inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${getReturnStatusClasses(
+                            returnsByOrderId[order.id].status
+                          )}`}
+                        >
+                          Return {returnsByOrderId[order.id].status}
+                        </span>
+                      ) : null}
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="account-name">

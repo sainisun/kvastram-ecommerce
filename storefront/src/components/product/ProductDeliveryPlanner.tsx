@@ -1,0 +1,186 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+
+import CountrySelect from '@/components/ui/CountrySelect';
+import { storefrontTrust } from '@/config/storefront-trust';
+import { api } from '@/lib/api';
+import { useShop } from '@/context/shop-context';
+
+type ShippingOption = {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  estimated_days?: string;
+  currency_code?: string;
+};
+
+function formatShippingPrice(amount: number, currencyCode?: string) {
+  const currency = currencyCode?.toUpperCase() || 'INR';
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount / 100);
+}
+
+export default function ProductDeliveryPlanner() {
+  const { currentRegion } = useShop();
+  const [countryCode, setCountryCode] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [serviceabilityMessage, setServiceabilityMessage] = useState('');
+
+  useEffect(() => {
+    if (!countryCode && currentRegion?.currency_code?.toLowerCase() === 'inr') {
+      setCountryCode('IN');
+    }
+  }, [countryCode, currentRegion?.currency_code]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchShippingPreview = async () => {
+      if (!countryCode) {
+        setShippingOptions([]);
+        return;
+      }
+
+      setShippingLoading(true);
+      try {
+        const data = await api.getShippingOptions(
+          countryCode,
+          currentRegion?.id,
+          postalCode
+        );
+        if (!cancelled) {
+          setShippingOptions(data.options || []);
+          setServiceabilityMessage(data.serviceability?.message || '');
+        }
+      } catch {
+        if (!cancelled) {
+          setShippingOptions([]);
+          setServiceabilityMessage('');
+        }
+      } finally {
+        if (!cancelled) {
+          setShippingLoading(false);
+        }
+      }
+    };
+
+    const timer = setTimeout(fetchShippingPreview, 250);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [countryCode, currentRegion?.id, postalCode]);
+
+  const plannerSummary = useMemo(() => {
+    if (!countryCode) {
+      return 'Select your country to preview likely shipping methods before checkout.';
+    }
+
+    if (shippingLoading) {
+      return 'Loading country-level shipping options...';
+    }
+
+    if (shippingOptions.length === 0) {
+      return 'We will confirm final courier availability after your full address is entered at checkout.';
+    }
+
+    return `${shippingOptions.length} shipping method${shippingOptions.length > 1 ? 's' : ''} currently available for this destination preview.`;
+  }, [countryCode, shippingLoading, shippingOptions.length]);
+
+  return (
+    <div className="soft-card" style={{ marginTop: 16 }}>
+      <strong className="pdp-trust-label">Delivery planning</strong>
+      <p className="pdp-trust-sublabel" style={{ marginTop: 8 }}>
+        Preview country-level shipping methods before checkout. Final courier
+        availability, delivery timing, and charges are confirmed after full
+        address entry.
+      </p>
+
+      <div
+        className="grid gap-4"
+        style={{ marginTop: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}
+      >
+        <div>
+          <p className="pdp-trust-sublabel" style={{ marginBottom: 8 }}>
+            Delivery country
+          </p>
+          <CountrySelect
+            name="country"
+            value={countryCode}
+            onChange={setCountryCode}
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="pdp-postal-code"
+            className="pdp-trust-sublabel"
+            style={{ display: 'block', marginBottom: 8 }}
+          >
+            Postal code
+          </label>
+          <input
+            id="pdp-postal-code"
+            type="text"
+            value={postalCode}
+            onChange={(event) => setPostalCode(event.target.value)}
+            placeholder="Add for checkout readiness"
+            className="w-full rounded-md border border-stone-200 bg-white px-3 py-3 text-body-sm text-stone-900 focus:border-stone-900 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <p className="pdp-trust-sublabel" style={{ marginTop: 12 }}>
+        {serviceabilityMessage || plannerSummary}
+      </p>
+
+      {shippingOptions.length > 0 ? (
+        <div
+          className="grid gap-3"
+          style={{ marginTop: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}
+        >
+          {shippingOptions.slice(0, 3).map((option) => (
+            <div
+              key={option.id}
+              className="rounded-lg border border-stone-200 bg-white p-4"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-body-sm font-medium text-stone-900">
+                    {option.name}
+                  </p>
+                  {option.description ? (
+                    <p className="mt-1 text-body-xs text-stone-500">
+                      {option.description}
+                    </p>
+                  ) : null}
+                </div>
+                <p className="text-body-sm font-medium text-stone-900">
+                  {option.price === 0
+                    ? 'Free'
+                    : formatShippingPrice(option.price, option.currency_code)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="option-row" style={{ marginTop: 12 }}>
+        <Link href={storefrontTrust.policyRoutes.shipping} className="btn btn-outline">
+          Shipping Policy
+        </Link>
+        <Link href="/checkout" className="btn btn-outline">
+          Continue to Checkout
+        </Link>
+      </div>
+    </div>
+  );
+}

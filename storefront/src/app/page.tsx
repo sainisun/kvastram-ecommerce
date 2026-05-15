@@ -5,8 +5,6 @@ import { cloudinaryUrlOrNull } from '@/lib/media';
 import {
   buildBreadcrumbJsonLd,
   buildHomepageMetadata,
-  buildOrganizationJsonLd,
-  buildWebsiteJsonLd,
   serializeJsonLd,
 } from '@/lib/seo';
 import { CircularCategories } from '@/components/home/CircularCategories';
@@ -337,8 +335,6 @@ export default async function Home() {
       : [];
 
   const homepageSchema = [
-    buildOrganizationJsonLd(),
-    buildWebsiteJsonLd(),
     buildBreadcrumbJsonLd([{ name: 'Home', path: '/' }]),
   ];
 

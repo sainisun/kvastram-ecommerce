@@ -29,6 +29,8 @@ import { CheckoutSkeleton } from '@/components/ui/Skeleton';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import RazorpayButton from '@/components/checkout/RazorpayButton';
 import PayPalButton from '@/components/checkout/PayPalButton';
+import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
+import { storefrontTrust } from '@/config/storefront-trust';
 
 // Initialize Stripe
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -137,7 +139,7 @@ function ExpressCheckoutForm({
       } else {
         onSuccess();
       }
-    } catch (_err) {
+    } catch {
       onError('An unexpected error occurred during payment');
     } finally {
       setIsLoading(false);
@@ -203,6 +205,7 @@ export default function CheckoutPage() {
     useState<ShippingOption | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(25000);
+  const [shippingPreviewMessage, setShippingPreviewMessage] = useState('');
 
   // PHASE 1.4: Tax Calculation State
   const [taxAmount, setTaxAmount] = useState(0);
@@ -249,6 +252,7 @@ export default function CheckoutPage() {
       if (!formData.country_code) {
         setShippingOptions([]);
         setSelectedShipping(null);
+        setShippingPreviewMessage('');
         return;
       }
 
@@ -256,17 +260,24 @@ export default function CheckoutPage() {
       try {
         const data = await api.getShippingOptions(
           formData.country_code,
-          currentRegion?.id
+          currentRegion?.id,
+          formData.postal_code
         );
+        setShippingPreviewMessage(data.serviceability?.message || '');
         if (data.options && data.options.length > 0) {
           setShippingOptions(data.options);
           setFreeShippingThreshold(data.free_shipping_threshold || 25000);
           // Auto-select first option
           setSelectedShipping(data.options[0]);
+        } else {
+          setShippingOptions([]);
+          setSelectedShipping(null);
         }
       } catch (error) {
         console.error('Failed to fetch shipping options:', error);
         setShippingOptions([]);
+        setSelectedShipping(null);
+        setShippingPreviewMessage('');
       } finally {
         setShippingLoading(false);
       }
@@ -275,7 +286,7 @@ export default function CheckoutPage() {
     // Debounce the fetch
     const timer = setTimeout(fetchShippingOptions, 300);
     return () => clearTimeout(timer);
-  }, [formData.country_code, currentRegion?.id]);
+  }, [formData.country_code, formData.postal_code, currentRegion?.id]);
 
   // PHASE 1.4: Fetch tax when country or cart total changes
   useEffect(() => {
@@ -310,7 +321,7 @@ export default function CheckoutPage() {
 
     const timer = setTimeout(fetchTax, 500);
     return () => clearTimeout(timer);
-  }, [formData.country_code, cartTotal, discount?.amount, currentRegion?.id]);
+  }, [formData.country_code, cartTotal, discount?.amount, currentRegion?.id, settings]);
 
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) return;
@@ -406,7 +417,7 @@ export default function CheckoutPage() {
             Need help with your order?
           </p>
           <a
-            href="https://wa.me/message/kvastram"
+            href={buildWhatsAppHref('Hi, I need help with checkout on Kvastram')}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-body-xs text-green-700 type-bold hover:text-green-800 transition-colors"
@@ -638,8 +649,38 @@ export default function CheckoutPage() {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 p-4 mb-6 text-body-sm">
-                {error}
+              <div className="mb-6 space-y-3">
+                <div className="bg-red-50 border border-red-200 text-red-600 p-4 text-body-sm">
+                  {error}
+                </div>
+                <div className="border border-[var(--line)] bg-[var(--cream)] p-4 text-body-xs color-muted">
+                  <p className="type-medium color-ink">Need help completing payment?</p>
+                  <p className="mt-2">
+                    Do not retry blindly if you are unsure whether a payment was
+                    charged. Use payment help or contact support with your order
+                    reference.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <Link
+                      href={storefrontTrust.policyRoutes.paymentHelp}
+                      className="underline underline-offset-4"
+                    >
+                      Payment Help
+                    </Link>
+                    <Link
+                      href={`${storefrontTrust.policyRoutes.contact}?order=${orderId || orderUUID}&email=${encodeURIComponent(formData.email)}`}
+                      className="underline underline-offset-4"
+                    >
+                      Contact Support
+                    </Link>
+                    <Link
+                      href={storefrontTrust.policyRoutes.track}
+                      className="underline underline-offset-4"
+                    >
+                      Track Order
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -859,6 +900,11 @@ export default function CheckoutPage() {
                       Select your country to see available shipping methods
                     </div>
                   )}
+                  {!shippingLoading && shippingPreviewMessage ? (
+                    <p className="mt-3 text-body-xs color-muted">
+                      {shippingPreviewMessage}
+                    </p>
+                  ) : null}
                 </div>
 
                 {/* D3: Gift Wrapping */}
@@ -940,7 +986,7 @@ export default function CheckoutPage() {
                     <span className="text-body-sm color-muted group-hover:color-ink">
                       I agree to the{' '}
                       <Link
-                        href="/pages/terms-of-service"
+                        href={storefrontTrust.policyRoutes.terms}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline hover:color-ink"
@@ -949,12 +995,30 @@ export default function CheckoutPage() {
                       </Link>{' '}
                       and{' '}
                       <Link
-                        href="/pages/privacy-policy"
+                        href={storefrontTrust.policyRoutes.privacy}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline hover:color-ink"
                       >
                         Privacy Policy
+                      </Link>
+                      ,{' '}
+                      <Link
+                        href={storefrontTrust.policyRoutes.shipping}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:color-ink"
+                      >
+                        Shipping
+                      </Link>{' '}
+                      and{' '}
+                      <Link
+                        href={storefrontTrust.policyRoutes.refundPolicy}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:color-ink"
+                      >
+                        Refund Policy
                       </Link>
                     </span>
                   </label>
@@ -975,6 +1039,11 @@ export default function CheckoutPage() {
                 <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
                   Payment
                 </h3>
+                <p className="mb-4 text-body-sm color-muted">
+                  {currency.toLowerCase() === 'inr'
+                    ? storefrontTrust.paymentMethodsIndia
+                    : storefrontTrust.paymentMethodsInternational}
+                </p>
 
                 {/* Razorpay — Indian customers (INR) */}
                 {currency.toLowerCase() === 'inr' &&
@@ -1063,6 +1132,38 @@ export default function CheckoutPage() {
                 >
                   Back to Shipping
                 </button>
+
+                <div className="mt-6 border border-[var(--line)] bg-[var(--cream)] p-4 text-body-xs color-muted">
+                  <p className="type-medium color-ink">Payment and policy help</p>
+                  <p className="mt-2">{storefrontTrust.paymentSummary}</p>
+                  <p className="mt-2">{storefrontTrust.shippingSummary}</p>
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <Link
+                      href={storefrontTrust.policyRoutes.shipping}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      Shipping
+                    </Link>
+                    <Link
+                      href={storefrontTrust.policyRoutes.returns}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      Returns
+                    </Link>
+                    <Link
+                      href={storefrontTrust.policyRoutes.paymentHelp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      Payment Help
+                    </Link>
+                  </div>
+                </div>
               </div>
             )}
           </div>

@@ -12,6 +12,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { storefrontTrust } from '@/config/storefront-trust';
 
 interface OrderStatus {
   id: string;
@@ -189,8 +190,30 @@ export default function TrackOrderPage() {
         </form>
 
         {error && (
-          <div className="mt-6 border border-red-200 bg-red-50 p-4 text-center text-red-600">
-            {error}
+          <div className="mt-6 space-y-4">
+            <div className="border border-red-200 bg-red-50 p-4 text-center text-red-600">
+              {error}
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              <Link
+                href={storefrontTrust.policyRoutes.paymentHelp}
+                className="border border-stone-200 bg-white px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+              >
+                Payment Help
+              </Link>
+              <Link
+                href={`${storefrontTrust.policyRoutes.contact}?reason=tracking`}
+                className="border border-stone-200 bg-white px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+              >
+                Contact Support
+              </Link>
+              <Link
+                href={storefrontTrust.policyRoutes.returns}
+                className="border border-stone-200 bg-white px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+              >
+                Returns Help
+              </Link>
+            </div>
           </div>
         )}
 
@@ -364,6 +387,32 @@ export default function TrackOrderPage() {
                     </p>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            <div className="border border-stone-100 bg-stone-50 p-5">
+              <h3 className="mb-4 font-heading text-display-sm text-stone-900">
+                More help for this order
+              </h3>
+              <div className="grid gap-3 md:grid-cols-3">
+                <Link
+                  href={storefrontTrust.policyRoutes.paymentHelp}
+                  className="border border-stone-300 bg-white px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                >
+                  Payment Help
+                </Link>
+                <Link
+                  href={storefrontTrust.policyRoutes.returns}
+                  className="border border-stone-300 bg-white px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                >
+                  Returns Help
+                </Link>
+                <Link
+                  href={`${storefrontTrust.policyRoutes.contact}?reason=order-support&order=${order.display_id || order.id}&email=${encodeURIComponent(email)}`}
+                  className="border border-stone-300 bg-white px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                >
+                  Contact Support
+                </Link>
               </div>
             </div>
           </div>

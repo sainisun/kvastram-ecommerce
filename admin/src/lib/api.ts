@@ -344,6 +344,222 @@ export const api = {
     return response.data;
   },
 
+  getProductSeo: async (productId: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/seo`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch product SEO');
+    const response = await res.json();
+    return response.data;
+  },
+
+  updateProductSeo: async (productId: string, data: unknown) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/seo`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update product SEO');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getProductDiscovery: async (productId: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/discovery`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch product discovery data');
+    const response = await res.json();
+    return response.data;
+  },
+
+  updateProductDiscovery: async (productId: string, data: unknown) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/discovery`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update product discovery data');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getProductAttributes: async (productId: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/attributes`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch product attributes');
+    const response = await res.json();
+    return response.data;
+  },
+
+  updateProductAttributes: async (productId: string, attributes: unknown[]) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/attributes`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ attributes }),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update product attributes');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getProductMerchant: async (productId: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/merchant`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch merchant data');
+    const response = await res.json();
+    return response.data;
+  },
+
+  updateProductMerchant: async (productId: string, variants: unknown[]) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/merchant`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ variants }),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update merchant data');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getProductMediaSeo: async (productId: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/media-seo`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch product media SEO');
+    const response = await res.json();
+    return response.data;
+  },
+
+  updateProductMediaSeo: async (productId: string, images: unknown[]) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/media-seo`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ images }),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update product media SEO');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getProductSeoScore: async (productId: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/seo-score`);
+    if (!res.ok) return handleApiError(res, 'Failed to calculate product SEO score');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getSeoAttributes: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/attributes`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch SEO attributes');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getSearchSynonyms: async (locale = 'en') => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/search/synonyms?locale=${encodeURIComponent(locale)}`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch search synonyms');
+    const response = await res.json();
+    return response.data;
+  },
+
+  createSearchSynonym: async (data: unknown) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/search/synonyms`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create search synonym');
+    const response = await res.json();
+    return response.data;
+  },
+
+  updateSearchSynonym: async (id: string, data: unknown) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/search/synonyms/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update search synonym');
+    const response = await res.json();
+    return response.data;
+  },
+
+  deleteSearchSynonym: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/search/synonyms/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to delete search synonym');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getSeoLandingPages: async (status = '') => {
+    const query = status ? `?status=${encodeURIComponent(status)}` : '';
+    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/landing-pages${query}`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch SEO landing pages');
+    const response = await res.json();
+    return response.data;
+  },
+
+  createSeoLandingPage: async (data: unknown) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/landing-pages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create SEO landing page');
+    const response = await res.json();
+    return response.data;
+  },
+
+  updateSeoLandingPage: async (id: string, data: unknown) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/landing-pages/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update SEO landing page');
+    const response = await res.json();
+    return response.data;
+  },
+
+  deleteSeoLandingPage: async (id: string) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/landing-pages/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to archive SEO landing page');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getZeroResultSearches: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/search/analytics/zero-results`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch zero-result searches');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getTopSearchQueries: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/search/analytics/top-queries`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch top search queries');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getAttributeGapReport: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/search/analytics/attribute-gaps`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch attribute gap report');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getGoogleMerchantProducts: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/merchant/google/products.json`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch Google Merchant products');
+    const response = await res.json();
+    return response.data;
+  },
+
+  getGoogleMerchantDiagnostics: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/merchant/google/diagnostics`);
+    if (!res.ok) return handleApiError(res, 'Failed to fetch Google Merchant diagnostics');
+    const response = await res.json();
+    return response.data;
+  },
+
   // Customer endpoints
   getCustomers: async (page = 1, search = '', filter = 'all') => {
     let url = `${API_BASE_URL}/customers?page=${page}&limit=20`;

@@ -49,6 +49,10 @@ import tagsRoutes from './routes/tags';
 import collectionsRoutes from './routes/collections';
 import redirectsRoutes from './routes/redirects';
 import testimonialsRoutes from './routes/testimonials';
+import seoRoutes from './routes/seo';
+import searchRoutes from './routes/search';
+import merchantRoutes from './routes/merchant';
+import artisansRoutes from './routes/artisans';
 
 import analyticsRoutes from './routes/analytics';
 import auth2faRoutes from './routes/auth-2fa';
@@ -100,6 +104,7 @@ import homepageMerchandisingRoutes from './routes/homepage-merchandising';
 
 import docsApp from './docs';
 import { initSocketServer, io } from './services/socket';
+import { startSeoCronScheduler, stopSeoCronScheduler } from './cron';
 
 const app = new Hono();
 
@@ -219,6 +224,10 @@ csrfForStateChanging([
   '/categories/*',
   '/tags/*',
   '/collections/*',
+  '/seo/*',
+  '/search/*',
+  '/merchant/*',
+  '/artisans/*',
   '/wholesale/*',
   '/reviews/*',
   '/testimonials/*',
@@ -328,6 +337,10 @@ const generalApiRoutes = [
   '/categories/*',
   '/tags/*',
   '/collections/*',
+  '/seo/*',
+  '/search/*',
+  '/merchant/*',
+  '/artisans/*',
   '/analytics/*',
   '/wholesale/*',
   '/reviews/*',
@@ -399,6 +412,10 @@ app.route('/pages', pageRoutes);
 app.route('/categories', categoriesRoutes);
 app.route('/tags', tagsRoutes);
 app.route('/collections', collectionsRoutes);
+app.route('/seo', seoRoutes);
+app.route('/search', searchRoutes);
+app.route('/merchant', merchantRoutes);
+app.route('/artisans', artisansRoutes);
 app.route('/redirects', redirectsRoutes);
 app.route('/testimonials', testimonialsRoutes);
 
@@ -485,9 +502,11 @@ const server = serve({
 
 // Attach Socket.io for real-time inventory updates
 initSocketServer(server as import('node:http').Server, allowedOrigins);
+startSeoCronScheduler();
 
 // OPT-003: Graceful shutdown handler
 const gracefulShutdown = (signal: string) => {
+  stopSeoCronScheduler();
   console.log(`\n🛑 Received ${signal}. Shutting down gracefully...`);
   // Close Socket.IO first so clients reconnect cleanly
   if (io) io.close();

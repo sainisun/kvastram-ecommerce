@@ -79,13 +79,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const [products, categoriesData, collectionsData, pagesData, postsData] =
+    const [products, categoriesData, collectionsData, pagesData, postsData, seoLandingData] =
       await Promise.all([
         fetchAllProducts(),
         api.getCategories(),
         api.getCollections(),
         api.getPages(),
         api.getPosts(),
+        api.getSeoLandingPages(),
       ]);
 
     const categoryEntries = flattenCategories(categoriesData.categories || [])
@@ -98,8 +99,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
 
     const collectionEntries = (collectionsData.collections || [])
-      .filter((collection: { handle?: string; status?: string }) =>
-        collection.handle && collection.status === 'active'
+      .filter((collection: {
+        handle?: string;
+        status?: string;
+        is_indexable?: boolean | null;
+        robots_policy?: string | null;
+        product_count?: number;
+      }) =>
+        collection.handle &&
+        collection.status === 'active' &&
+        collection.is_indexable !== false &&
+        !collection.robots_policy?.startsWith('noindex') &&
+        (collection.product_count ?? 0) > 0
       )
       .map((collection: { handle: string; updated_at?: string }) => ({
         url: `${SITE_URL}/collections/${collection.handle}`,
@@ -108,6 +119,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           : new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
+      }));
+
+    const seoLandingEntries = (seoLandingData.landing_pages || [])
+      .filter((page: { slug?: string; robots_index?: boolean; status?: string }) =>
+        page.slug && page.status === 'active' && page.robots_index !== false
+      )
+      .map((page: { slug: string; updated_at?: string; priority?: number }) => ({
+        url: `${SITE_URL}/collections/${page.slug}`,
+        lastModified: page.updated_at ? new Date(page.updated_at) : new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: page.priority ? Math.min(Math.max(page.priority / 100, 0.1), 0.9) : 0.65,
       }));
 
     const productEntries = products
@@ -149,6 +171,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...baseEntries,
       ...categoryEntries,
       ...collectionEntries,
+      ...seoLandingEntries,
       ...productEntries,
       ...pageEntries,
       ...postEntries,

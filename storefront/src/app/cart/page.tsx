@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
+import { storefrontTrust } from '@/config/storefront-trust';
 import {
   Trash2,
   Minus,
@@ -46,12 +47,14 @@ export default function CartPage() {
 
   // Dynamic shipping state
   const [countryCode, setCountryCode] = useState('');
+  const [postalCode, setPostalCode] = useState('');
   const [_shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedShipping, setSelectedShipping] =
     useState<ShippingOption | null>(null);
   const [selectedShippingOption, setSelectedShippingOption] =
     useState<string>('');
   const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingMessage, setShippingMessage] = useState('');
 
   // Fetch shipping options when country changes
   useEffect(() => {
@@ -60,6 +63,7 @@ export default function CartPage() {
         setShippingOptions([]);
         setSelectedShipping(null);
         setSelectedShippingOption('');
+        setShippingMessage('');
         return;
       }
 
@@ -67,19 +71,26 @@ export default function CartPage() {
       try {
         const data = await api.getShippingOptions(
           countryCode,
-          currentRegion.id
+          currentRegion.id,
+          postalCode
         );
+        setShippingMessage(data.serviceability?.message || '');
         if (data.options && data.options.length > 0) {
           setShippingOptions(data.options);
           // Auto-select first option
           setSelectedShipping(data.options[0]);
           setSelectedShippingOption(data.options[0].id);
+        } else {
+          setShippingOptions([]);
+          setSelectedShipping(null);
+          setSelectedShippingOption('');
         }
       } catch (error) {
         console.error('Failed to fetch shipping options:', error);
         setShippingOptions([]);
         setSelectedShipping(null);
         setSelectedShippingOption('');
+        setShippingMessage('');
       } finally {
         setShippingLoading(false);
       }
@@ -87,7 +98,7 @@ export default function CartPage() {
 
     const timer = setTimeout(fetchShippingOptions, 300);
     return () => clearTimeout(timer);
-  }, [countryCode, items.length, currentRegion?.id]);
+  }, [countryCode, postalCode, items.length, currentRegion?.id]);
 
   // Handle shipping option selection
   const handleShippingOptionChange = (optionId: string) => {
@@ -104,7 +115,7 @@ export default function CartPage() {
       const res = await api.validateCoupon(promoCode, cartTotal);
       setDiscount({ code: res.code, amount: res.discount_amount });
       showNotification('success', `Coupon ${res.code} applied!`);
-    } catch (_error) {
+    } catch {
       showNotification('error', 'Invalid promo code');
     } finally {
       setPromoLoading(false);
@@ -145,6 +156,69 @@ export default function CartPage() {
         .catch(() => {});
     }
   }, [items.length]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchCartRecommendations = async () => {
+      if (items.length === 0 || !items[0]?.handle) {
+        setRecommendations([]);
+        return;
+      }
+
+      const product = await api.getProduct(items[0].handle!);
+      const cartHandles = new Set(items.map((item) => item.handle).filter(Boolean));
+
+      let relatedProducts =
+        product.semantic_related_products?.filter(
+          (related) => related.handle && !cartHandles.has(related.handle)
+        ) || [];
+
+      if (relatedProducts.length === 0) {
+        const requests: Promise<{ products?: Product[] }>[] = [];
+        const categoryIds = Array.from(
+          new Set(product.categories?.map((category) => category.id) || [])
+        ).slice(0, 2);
+
+        for (const categoryId of categoryIds) {
+          requests.push(api.getProducts({ category_id: categoryId, limit: 6 }));
+        }
+
+        if (product.collection?.id) {
+          requests.push(api.getProducts({ collection_id: product.collection.id, limit: 6 }));
+        }
+
+        const results = await Promise.all(requests);
+        const relatedMap = new Map<string, Product>();
+
+        for (const result of results) {
+          for (const related of result.products || []) {
+            if (!related.handle || cartHandles.has(related.handle)) continue;
+            if (relatedMap.has(related.id)) continue;
+            relatedMap.set(related.id, related);
+            if (relatedMap.size >= 4) break;
+          }
+          if (relatedMap.size >= 4) break;
+        }
+
+        relatedProducts = Array.from(relatedMap.values());
+      }
+
+      if (!cancelled) {
+        setRecommendations(relatedProducts.slice(0, 4));
+      }
+    };
+
+    fetchCartRecommendations().catch(() => {
+      if (!cancelled) {
+        setRecommendations([]);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [items]);
 
   const handleAddRecommendation = (product: Product) => {
     const variant = product.variants?.[0];
@@ -408,6 +482,82 @@ export default function CartPage() {
                 Continue Shopping
               </Link>
             </div>
+
+            {recommendations.length > 0 ? (
+              <section className="mt-12 rounded-lg border border-[var(--line)] bg-white p-6">
+                <div className="mb-6 flex items-center gap-3">
+                  <Sparkles size={18} className="text-amber-500" />
+                  <div>
+                    <p className="text-body-xs type-bold uppercase tracking-token-wider color-muted">
+                      Pair With Your Bag
+                    </p>
+                    <h2 className="mt-1 text-body-xl type-medium color-ink">
+                      Complete the look before checkout
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4 lg:gap-x-6">
+                  {recommendations.map((product) => {
+                    const variant = product.variants?.[0];
+                    const prices = variant?.prices || [];
+                    const inrPriceObj =
+                      prices.find((p) => p.currency_code?.toLowerCase() === 'inr') ||
+                      prices[0];
+                    const price = inrPriceObj ? formatCartPrice(inrPriceObj.amount) : '';
+
+                    return (
+                      <div key={product.id} className="group flex flex-col">
+                        <Link
+                          href={`/products/${product.handle || product.id}`}
+                          className="relative mb-4 block aspect-[3/4] overflow-hidden rounded-sm bg-[var(--soft)]"
+                        >
+                          {product.thumbnail ? (
+                            <OptimizedImage
+                              src={product.thumbnail}
+                              alt={product.title}
+                              fill
+                              className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center color-muted">
+                              <ShoppingBag size={32} />
+                            </div>
+                          )}
+                        </Link>
+                        <Link
+                          href={`/products/${product.handle || product.id}`}
+                          className="mb-3 space-y-1"
+                        >
+                          <p className="text-body-xs color-muted type-bold tracking-token-wider uppercase">
+                            {product.collection?.title || 'Kvastram'}
+                          </p>
+                          <h3 className="font-serif text-body-md color-ink leading-token-tight transition-colors group-hover:color-muted">
+                            {product.title}
+                          </h3>
+                          {price ? (
+                            <p className="text-body-sm type-medium color-ink">
+                              {price}
+                            </p>
+                          ) : null}
+                        </Link>
+                        <button
+                          onClick={() => handleAddRecommendation(product)}
+                          disabled={addingRec === product.id || !variant}
+                          className={`w-full border py-2.5 text-body-xs type-bold uppercase tracking-token-wider transition-all ${
+                            addingRec === product.id
+                              ? 'border-green-600 bg-green-600 text-white'
+                              : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white'
+                          }`}
+                        >
+                          {addingRec === product.id ? 'Added' : 'Quick Add'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
           </div>
 
           {/* Order Summary */}
@@ -519,11 +669,23 @@ export default function CartPage() {
                   <option value="LK">Sri Lanka</option>
                   <option value="NP">Nepal</option>
                 </select>
+                <input
+                  type="text"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                  placeholder="Postal code for better preview"
+                  className="mt-3 w-full rounded-md border border-[var(--line)] px-3 py-2 text-body-sm focus:outline-none focus:ring-1 focus:ring-[var(--ink)]"
+                />
                 {shippingLoading && (
                   <p className="text-body-xs color-muted mt-1">
                     Loading shipping options...
                   </p>
                 )}
+                {!shippingLoading && shippingMessage ? (
+                  <p className="mt-2 text-body-xs color-muted">
+                    {shippingMessage}
+                  </p>
+                ) : null}
 
                 {/* Shipping Options Radio Group */}
                 {_shippingOptions.length > 0 && (
@@ -666,7 +828,35 @@ export default function CartPage() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>Secure checkout powered by Stripe</span>
+                <span>
+                  {storefrontTrust.paymentShortSummary}
+                </span>
+              </div>
+
+              <div className="mt-4 rounded-md border border-[var(--line)] bg-[var(--cream)] p-4 text-body-xs color-muted">
+                <p className="type-medium color-ink">Before you pay</p>
+                <p className="mt-2">{storefrontTrust.shippingSummary}</p>
+                <p className="mt-2">{storefrontTrust.returnSummary}</p>
+                <div className="mt-3 flex flex-wrap gap-3">
+                  <Link
+                    href={storefrontTrust.policyRoutes.shipping}
+                    className="underline underline-offset-4"
+                  >
+                    Shipping
+                  </Link>
+                  <Link
+                    href={storefrontTrust.policyRoutes.returns}
+                    className="underline underline-offset-4"
+                  >
+                    Returns
+                  </Link>
+                  <Link
+                    href={storefrontTrust.policyRoutes.paymentHelp}
+                    className="underline underline-offset-4"
+                  >
+                    Payment Help
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

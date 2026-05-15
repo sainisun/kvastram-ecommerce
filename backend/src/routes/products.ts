@@ -1,4 +1,7 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
+import { getCookie } from 'hono/cookie';
+import { verify } from 'hono/jwt';
+import { createHash } from 'crypto';
 import {
   productService,
   CreateProductSchema,
@@ -17,16 +20,184 @@ import {
   ValidationError,
 } from '../middleware/error-handler';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
+import { config } from '../config';
 import { db } from '../db/client';
 import {
   product_variants,
   product_options,
   product_option_values,
   money_amounts,
+  products,
+  product_images,
+  product_categories,
+  product_seo,
+  product_discovery,
+  product_attributes,
+  attribute_values,
+  product_attribute_values,
+  product_variant_merchant,
+  product_media_seo,
+  product_embeddings,
 } from '../db/schema';
 import { eq, inArray } from 'drizzle-orm';
 
 const productsRouter = new Hono();
+
+const jsonArray = z.array(z.string()).default([]);
+
+async function isVerifiedAdminRequest(c: Context) {
+  const authHeader = c.req.header('authorization');
+  const bearerToken = authHeader?.startsWith('Bearer ')
+    ? authHeader.split(' ')[1]
+    : null;
+  const token = bearerToken || getCookie(c, 'admin_token');
+
+  if (!token) return false;
+
+  try {
+    const payload = (await verify(token, config.jwt.secret, 'HS256')) as { role?: string };
+    return payload.role === 'admin' || payload.role === 'mcp_service';
+  } catch {
+    return false;
+  }
+}
+
+async function resolvePublicProductStatus(c: Context, requestedStatus: string) {
+  const isAdminRequest = await isVerifiedAdminRequest(c);
+
+  if (isAdminRequest) {
+    return requestedStatus === 'all' ? undefined : requestedStatus || undefined;
+  }
+
+  return 'published';
+}
+
+const ProductSeoSchema = z.object({
+  seo_title: z.string().optional().nullable(),
+  meta_description: z.string().optional().nullable(),
+  canonical_url: z.string().optional().nullable(),
+  robots_index: z.boolean().optional(),
+  robots_follow: z.boolean().optional(),
+  og_title: z.string().optional().nullable(),
+  og_description: z.string().optional().nullable(),
+  og_image_url: z.string().optional().nullable(),
+  twitter_card: z.string().optional().nullable(),
+  schema_overrides: z.record(z.unknown()).optional().nullable(),
+  localized_metadata: z.record(z.unknown()).optional().nullable(),
+  hreflang_group_id: z.string().optional().nullable(),
+});
+
+const ProductDiscoverySchema = z.object({
+  primary_keyword: z.string().optional().nullable(),
+  secondary_keywords: jsonArray.optional(),
+  long_tail_keywords: jsonArray.optional(),
+  search_intents: jsonArray.optional(),
+  semantic_entities: jsonArray.optional(),
+  negative_keywords: jsonArray.optional(),
+  product_document: z.string().optional().nullable(),
+  document_hash: z.string().optional().nullable(),
+  metadata: z.record(z.unknown()).optional().nullable(),
+});
+
+const ProductAttributeAssignmentSchema = z.object({
+  attribute_id: z.string().uuid(),
+  value_id: z.string().uuid().optional().nullable(),
+  raw_value: z.string().optional().nullable(),
+  source: z.string().optional().default('admin'),
+  confidence: z.number().int().min(0).max(100).optional().default(100),
+  metadata: z.record(z.unknown()).optional().nullable(),
+});
+
+const ProductMerchantSchema = z.object({
+  variants: z.array(
+    z.object({
+      variant_id: z.string().uuid(),
+      gtin: z.string().optional().nullable(),
+      mpn: z.string().optional().nullable(),
+      item_group_id: z.string().optional().nullable(),
+      color: z.string().optional().nullable(),
+      size: z.string().optional().nullable(),
+      size_system: z.string().optional().nullable(),
+      size_type: z.string().optional().nullable(),
+      gender: z.string().optional().nullable(),
+      age_group: z.string().optional().nullable(),
+      condition: z.string().optional().default('new'),
+      google_product_category: z.string().optional().nullable(),
+      material: z.string().optional().nullable(),
+      pattern: z.string().optional().nullable(),
+      shipping_weight: z.number().int().optional().nullable(),
+      feed_enabled: z.boolean().optional(),
+      metadata: z.record(z.unknown()).optional().nullable(),
+    })
+  ),
+});
+
+const ProductMediaSeoSchema = z.object({
+  images: z.array(
+    z.object({
+      image_id: z.string().uuid(),
+      alt_text: z.string().optional().nullable(),
+      image_role: z.string().optional().nullable(),
+      view_type: z.string().optional().nullable(),
+      color: z.string().optional().nullable(),
+      seo_filename: z.string().optional().nullable(),
+      cloudinary_public_id: z.string().optional().nullable(),
+      media_type: z.enum(['image', 'video']).optional(),
+      metadata: z.record(z.unknown()).optional().nullable(),
+    })
+  ),
+});
+
+async function calculateProductSeoScore(productId: string) {
+  const [product] = await db.select().from(products).where(eq(products.id, productId)).limit(1);
+  if (!product) throw new NotFoundError('Product not found');
+
+  const [seo] = await db.select().from(product_seo).where(eq(product_seo.product_id, productId)).limit(1);
+  const images = await db.select().from(product_images).where(eq(product_images.product_id, productId));
+  const categories = await db
+    .select()
+    .from(product_categories)
+    .where(eq(product_categories.product_id, productId));
+  const attrs = await db
+    .select()
+    .from(product_attribute_values)
+    .where(eq(product_attribute_values.product_id, productId));
+
+  const checks = [
+    { key: 'title', ok: Boolean(product.title?.trim()), points: 10 },
+    { key: 'slug', ok: Boolean(product.handle?.trim()), points: 10 },
+    { key: 'description', ok: Boolean(product.description?.trim()), points: 10 },
+    { key: 'image', ok: images.length > 0 || Boolean(product.thumbnail), points: 10 },
+    { key: 'category', ok: categories.length > 0, points: 10 },
+    { key: 'seo_title', ok: Boolean(seo?.seo_title || product.seo_title), points: 10 },
+    { key: 'meta_description', ok: Boolean(seo?.meta_description || product.seo_description), points: 10 },
+    { key: 'canonical', ok: Boolean(seo?.canonical_url || product.handle), points: 10 },
+    { key: 'robots', ok: seo?.robots_index !== false && seo?.robots_follow !== false, points: 10 },
+    { key: 'attributes', ok: attrs.length > 0 || Boolean(product.material), points: 10 },
+  ];
+
+  const score = checks.reduce((total, check) => total + (check.ok ? check.points : 0), 0);
+  const blocking = checks
+    .filter((check) => !check.ok && ['title', 'slug', 'image', 'category', 'seo_title', 'meta_description', 'attributes'].includes(check.key))
+    .map((check) => check.key);
+
+  await db
+    .insert(product_seo)
+    .values({
+      product_id: productId,
+      seo_title: product.seo_title,
+      meta_description: product.seo_description,
+      canonical_url: `/products/${product.handle}`,
+      seo_score: score,
+      updated_at: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: product_seo.product_id,
+      set: { seo_score: score, updated_at: new Date() },
+    });
+
+  return { score, checks, blocking_errors: blocking };
+}
 
 // GET /products - List products with advanced filters (Public)
 const listProductsHandler = asyncHandler(async (c) => {
@@ -42,10 +213,13 @@ const listProductsHandler = asyncHandler(async (c) => {
     category_id = '',
     tag_id = '',
     collection_id = '',
+    attribute_code = '',
+    attribute_value = '',
   } = query;
 
   const limitNum = Math.min(parseInt(limit) || 20, 100);
   const offsetNum = Math.max(parseInt(offset) || 0, 0);
+  const effectiveStatus = await resolvePublicProductStatus(c, status);
 
   // Only use search service when there's actual text search query
   // For sorting/filtering without text search, use listDetailed
@@ -60,11 +234,13 @@ const listProductsHandler = asyncHandler(async (c) => {
       query: search,
       minPrice: min_price ? Number(min_price) : undefined,
       maxPrice: max_price ? Number(max_price) : undefined,
-      status: status || undefined,
+      status: effectiveStatus,
       sortBy,
       categoryId: category_id || undefined,
       tagId: tag_id || undefined,
       collectionId: collection_id || undefined,
+      attributeCode: attribute_code || undefined,
+      attributeValue: attribute_value || undefined,
     });
 
     // Manual pagination for search results
@@ -87,10 +263,12 @@ const listProductsHandler = asyncHandler(async (c) => {
     limit: limitNum,
     offset: offsetNum,
     sort: sort || 'created_at',
-    status: status || undefined,
+    status: effectiveStatus,
     categoryId: category_id || undefined,
     tagId: tag_id || undefined,
     collectionId: collection_id || undefined,
+    attributeCode: attribute_code || undefined,
+    attributeValue: attribute_value || undefined,
   });
 
   return paginatedResponse(
@@ -170,6 +348,298 @@ productsRouter.get(
       validProducts,
       'Featured products retrieved successfully'
     );
+  })
+);
+
+// GET /products/:id/seo - Product SEO controls
+productsRouter.get(
+  '/:id/seo',
+  verifyAuth,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const [seo] = await db.select().from(product_seo).where(eq(product_seo.product_id, id)).limit(1);
+    return successResponse(c, { seo: seo || null }, 'Product SEO retrieved successfully');
+  })
+);
+
+productsRouter.put(
+  '/:id/seo',
+  verifyAdminOrMcpService,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const body = await c.req.json();
+    const result = ProductSeoSchema.safeParse(body);
+    if (!result.success) throw new ValidationError('Invalid product SEO data', result.error.errors);
+
+    await db
+      .insert(product_seo)
+      .values({ product_id: id, ...result.data, updated_at: new Date() })
+      .onConflictDoUpdate({
+        target: product_seo.product_id,
+        set: { ...result.data, updated_at: new Date() },
+      });
+
+    await db
+      .update(products)
+      .set({
+        seo_title: result.data.seo_title ?? undefined,
+        seo_description: result.data.meta_description ?? undefined,
+        updated_at: new Date(),
+      })
+      .where(eq(products.id, id));
+
+    const score = await calculateProductSeoScore(id);
+    const [seo] = await db.select().from(product_seo).where(eq(product_seo.product_id, id)).limit(1);
+    return successResponse(c, { seo, score }, 'Product SEO updated successfully');
+  })
+);
+
+// GET/PUT /products/:id/discovery - Semantic keyword and intent controls
+productsRouter.get(
+  '/:id/discovery',
+  verifyAuth,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const [discovery] = await db
+      .select()
+      .from(product_discovery)
+      .where(eq(product_discovery.product_id, id))
+      .limit(1);
+    return successResponse(c, { discovery: discovery || null }, 'Product discovery data retrieved successfully');
+  })
+);
+
+productsRouter.put(
+  '/:id/discovery',
+  verifyAdminOrMcpService,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const body = await c.req.json();
+    const result = ProductDiscoverySchema.safeParse(body);
+    if (!result.success) throw new ValidationError('Invalid product discovery data', result.error.errors);
+
+    const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1);
+    if (!product) throw new NotFoundError('Product not found');
+
+    const productDocument =
+      result.data.product_document ||
+      [
+        product.title,
+        product.subtitle,
+        product.description,
+        product.material,
+        result.data.primary_keyword,
+        ...(result.data.secondary_keywords || []),
+        ...(result.data.long_tail_keywords || []),
+        ...(result.data.semantic_entities || []),
+      ]
+        .filter(Boolean)
+        .join(' ');
+    const documentHash = createHash('sha256').update(productDocument).digest('hex');
+
+    await db
+      .insert(product_discovery)
+      .values({
+        product_id: id,
+        ...result.data,
+        product_document: productDocument,
+        document_hash: documentHash,
+        updated_at: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: product_discovery.product_id,
+        set: {
+          ...result.data,
+          product_document: productDocument,
+          document_hash: documentHash,
+          updated_at: new Date(),
+        },
+      });
+
+    await db
+      .insert(product_embeddings)
+      .values({
+        product_id: id,
+        locale: 'en',
+        document: productDocument,
+        source_hash: documentHash,
+        updated_at: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: product_embeddings.product_id,
+        set: {
+          document: productDocument,
+          source_hash: documentHash,
+          updated_at: new Date(),
+        },
+      });
+
+    const [discovery] = await db
+      .select()
+      .from(product_discovery)
+      .where(eq(product_discovery.product_id, id))
+      .limit(1);
+    return successResponse(c, { discovery }, 'Product discovery data updated successfully');
+  })
+);
+
+// GET/PUT /products/:id/attributes - Structured fashion/product facets
+productsRouter.get(
+  '/:id/attributes',
+  verifyAuth,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const assignments = await db
+      .select({
+        id: product_attribute_values.id,
+        product_id: product_attribute_values.product_id,
+        attribute_id: product_attribute_values.attribute_id,
+        value_id: product_attribute_values.value_id,
+        raw_value: product_attribute_values.raw_value,
+        source: product_attribute_values.source,
+        confidence: product_attribute_values.confidence,
+        attribute_code: product_attributes.code,
+        attribute_label: product_attributes.label,
+        value_label: attribute_values.label,
+        value_slug: attribute_values.slug,
+      })
+      .from(product_attribute_values)
+      .leftJoin(product_attributes, eq(product_attribute_values.attribute_id, product_attributes.id))
+      .leftJoin(attribute_values, eq(product_attribute_values.value_id, attribute_values.id))
+      .where(eq(product_attribute_values.product_id, id));
+
+    return successResponse(c, { attributes: assignments }, 'Product attributes retrieved successfully');
+  })
+);
+
+productsRouter.put(
+  '/:id/attributes',
+  verifyAdminOrMcpService,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const body = await c.req.json();
+    const result = z.object({ attributes: z.array(ProductAttributeAssignmentSchema) }).safeParse(body);
+    if (!result.success) throw new ValidationError('Invalid product attributes data', result.error.errors);
+
+    await db.delete(product_attribute_values).where(eq(product_attribute_values.product_id, id));
+    if (result.data.attributes.length > 0) {
+      await db.insert(product_attribute_values).values(
+        result.data.attributes.map((attribute) => ({
+          product_id: id,
+          ...attribute,
+          updated_at: new Date(),
+        }))
+      );
+    }
+
+    const score = await calculateProductSeoScore(id);
+    return successResponse(c, { score }, 'Product attributes updated successfully');
+  })
+);
+
+// GET/PUT /products/:id/merchant - Google Merchant apparel fields
+productsRouter.get(
+  '/:id/merchant',
+  verifyAuth,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const variants = await db.select().from(product_variants).where(eq(product_variants.product_id, id));
+    const variantIds = variants.map((variant) => variant.id);
+    const merchant = variantIds.length
+      ? await db.select().from(product_variant_merchant).where(inArray(product_variant_merchant.variant_id, variantIds))
+      : [];
+    return successResponse(c, { merchant }, 'Product merchant data retrieved successfully');
+  })
+);
+
+productsRouter.put(
+  '/:id/merchant',
+  verifyAdminOrMcpService,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const body = await c.req.json();
+    const result = ProductMerchantSchema.safeParse(body);
+    if (!result.success) throw new ValidationError('Invalid merchant data', result.error.errors);
+
+    const variants = await db.select().from(product_variants).where(eq(product_variants.product_id, id));
+    const validVariantIds = new Set(variants.map((variant) => variant.id));
+
+    for (const row of result.data.variants) {
+      if (!validVariantIds.has(row.variant_id)) {
+        throw new ValidationError('Variant does not belong to this product');
+      }
+      await db
+        .insert(product_variant_merchant)
+        .values({ ...row, updated_at: new Date() })
+        .onConflictDoUpdate({
+          target: product_variant_merchant.variant_id,
+          set: { ...row, updated_at: new Date() },
+        });
+    }
+
+    return successResponse(c, { updated: result.data.variants.length }, 'Merchant data updated successfully');
+  })
+);
+
+// GET/PUT /products/:id/media-seo - Per-image SEO metadata
+productsRouter.get(
+  '/:id/media-seo',
+  verifyAuth,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const images = await db.select().from(product_images).where(eq(product_images.product_id, id));
+    const imageIds = images.map((image) => image.id);
+    const mediaSeo = imageIds.length
+      ? await db.select().from(product_media_seo).where(inArray(product_media_seo.image_id, imageIds))
+      : [];
+    return successResponse(c, { media_seo: mediaSeo }, 'Product media SEO retrieved successfully');
+  })
+);
+
+productsRouter.put(
+  '/:id/media-seo',
+  verifyAdminOrMcpService,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const body = await c.req.json();
+    const result = ProductMediaSeoSchema.safeParse(body);
+    if (!result.success) throw new ValidationError('Invalid product media SEO data', result.error.errors);
+
+    const images = await db.select().from(product_images).where(eq(product_images.product_id, id));
+    const validImageIds = new Set(images.map((image) => image.id));
+
+    for (const row of result.data.images) {
+      if (!validImageIds.has(row.image_id)) {
+        throw new ValidationError('Image does not belong to this product');
+      }
+      await db
+        .insert(product_media_seo)
+        .values({ ...row, updated_at: new Date() })
+        .onConflictDoUpdate({
+          target: product_media_seo.image_id,
+          set: { ...row, updated_at: new Date() },
+        });
+
+      if (row.alt_text !== undefined) {
+        await db
+          .update(product_images)
+          .set({ alt_text: row.alt_text, updated_at: new Date() })
+          .where(eq(product_images.id, row.image_id));
+      }
+    }
+
+    const score = await calculateProductSeoScore(id);
+    return successResponse(c, { updated: result.data.images.length, score }, 'Product media SEO updated successfully');
+  })
+);
+
+productsRouter.get(
+  '/:id/seo-score',
+  verifyAuth,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const score = await calculateProductSeoScore(id);
+    return successResponse(c, score, 'Product SEO score calculated successfully');
   })
 );
 

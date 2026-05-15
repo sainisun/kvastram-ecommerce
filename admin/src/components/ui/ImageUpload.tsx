@@ -158,7 +158,7 @@ export default function ImageUpload({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.heic', '.heif'],
+      'image/*': ['.png', '.jpg', '.jpeg', '.webp', '.gif'],
     },
     disabled: uploading,
   });
@@ -222,7 +222,7 @@ export default function ImageUpload({
               : 'Click to upload or drag and drop'}
         </p>
         <p className="text-sm text-gray-500 mt-1">
-          PNG, JPG, WebP, HEIC or GIF (Max 50MB)
+          PNG, JPG, WebP or GIF (Max 50MB)
         </p>
       </div>
 

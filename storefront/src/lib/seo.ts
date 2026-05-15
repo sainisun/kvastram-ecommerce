@@ -37,15 +37,29 @@ type MetadataOptions = {
   keywords?: string[];
   type?: 'website' | 'article';
   noindex?: boolean;
+  canonicalUrl?: string | null;
+  robotsFollow?: boolean;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  ogImage?: string | null;
+  twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
+  languages?: Record<string, string>;
+  ogLocale?: string;
 };
 
 type CollectionMetadataOptions = {
   name: string;
+  title?: string | null;
   path: string;
   description: string;
   image?: string | null;
   kind: 'category' | 'collection';
   keywords?: string[];
+  noindex?: boolean;
+  robotsFollow?: boolean;
+  canonicalUrl?: string | null;
+  languages?: Record<string, string>;
+  ogLocale?: string;
 };
 
 type ProductPriceInfo = {
@@ -149,6 +163,51 @@ export function toAbsoluteUrl(path: string): string {
   return new URL(path, SITE_URL).toString();
 }
 
+export function normalizeCloudinaryDeliveryUrl(pathOrUrl?: string | null): string | null {
+  if (!pathOrUrl) return null;
+  const url = toAbsoluteUrl(pathOrUrl);
+  if (!url.includes('/res.cloudinary.com/')) return url;
+  const seoSafeUrl = url.replace(/\.(heic|heif)(?=$|[?#])/i, '.jpg');
+  if (seoSafeUrl.includes('/f_auto')) return seoSafeUrl;
+  return seoSafeUrl.replace('/upload/', '/upload/f_auto,q_auto/');
+}
+
+export const SUPPORTED_LOCALES = ['en-in', 'en-us', 'en-gb', 'en-au', 'en-eu'] as const;
+const DEFAULT_LANGUAGES = ['en-IN', 'en-US', 'en-GB', 'en-AU', 'en-EU'];
+const OG_LOCALE_BY_LANGUAGE: Record<string, string> = {
+  'en-IN': 'en_IN',
+  'en-US': 'en_US',
+  'en-GB': 'en_GB',
+  'en-AU': 'en_AU',
+  'en-EU': 'en_150',
+};
+
+function inferLanguageFromPath(path: string) {
+  const firstSegment = path.split('/').filter(Boolean)[0]?.toLowerCase();
+  const matched = DEFAULT_LANGUAGES.find((language) => language.toLowerCase() === firstSegment);
+  return matched || 'en-IN';
+}
+
+export function getOgLocaleForLocale(locale?: string | null) {
+  if (!locale) return undefined;
+  const normalized = locale.toLowerCase();
+  const language = DEFAULT_LANGUAGES.find(
+    (candidate) => candidate.toLowerCase() === normalized
+  );
+  return language ? OG_LOCALE_BY_LANGUAGE[language] : undefined;
+}
+
+export function buildDefaultLanguageAlternates(path: string): Record<string, string> {
+  const normalizedPath = path === '/' ? '' : path;
+  return {
+    ...Object.fromEntries(DEFAULT_LANGUAGES.map((language) => {
+      const localePath = language.toLowerCase();
+      return [language, toAbsoluteUrl(`/${localePath}${normalizedPath}`)];
+    })),
+    'x-default': toAbsoluteUrl(path),
+  };
+}
+
 export function titleFromHandle(handle: string): string {
   return handle
     .split('-')
@@ -241,6 +300,9 @@ export function getProductCategoryLabel(product: Product): string {
 }
 
 export function getProductMaterial(product: Product): string {
+  const structuredMaterial = getProductAttribute(product, 'fabric') || getProductAttribute(product, 'material');
+  if (structuredMaterial) return structuredMaterial;
+
   return (
     product.material ||
     product.variants?.find((variant) => variant.title)?.title ||
@@ -272,6 +334,9 @@ export function getProductPrice(product: Product): ProductPriceInfo | null {
 }
 
 export function getProductColor(product: Product): string | null {
+  const structuredColor = getProductAttribute(product, 'color');
+  if (structuredColor) return structuredColor;
+
   const title = product.title.toLowerCase();
   return (
     COLOR_KEYWORDS.find((color) => title.includes(color))?.replace(
@@ -279,6 +344,11 @@ export function getProductColor(product: Product): string | null {
       (match) => match.toUpperCase()
     ) || null
   );
+}
+
+export function getProductAttribute(product: Product, code: string): string | null {
+  const match = product.attributes?.find((attribute) => attribute.attribute_code === code);
+  return match?.value_label || match?.raw_value || null;
 }
 
 export function buildProductPrimaryKeyword(product: Product): string {
@@ -316,7 +386,7 @@ export function buildProductImageAlt(
 }
 
 export function buildProductSeoTitle(product: Product): string {
-  const customTitle = product.seo_title?.trim();
+  const customTitle = product.seo?.seo_title?.trim() || product.seo_title?.trim();
   if (customTitle) {
     return truncateAtWord(customTitle, 60);
   }
@@ -330,7 +400,8 @@ export function buildProductSeoTitle(product: Product): string {
 }
 
 export function buildProductMetaDescription(product: Product): string {
-  const customDescription = product.seo_description?.trim();
+  const customDescription =
+    product.seo?.meta_description?.trim() || product.seo_description?.trim();
   if (customDescription) {
     return truncateAtWord(customDescription, 155);
   }
@@ -358,12 +429,19 @@ export function buildProductMetaDescription(product: Product): string {
 export function buildProductKeywords(product: Product): string[] {
   const categoryLabel = getProductCategoryLabel(product);
   const keywordBundle = getCategoryKeywordBundle(categoryLabel);
+  const discoveryKeywords = [
+    product.discovery?.primary_keyword,
+    ...(product.discovery?.secondary_keywords || []),
+    ...(product.discovery?.long_tail_keywords || []),
+    ...(product.discovery?.semantic_entities || []),
+  ].filter(Boolean) as string[];
 
-  return [
+  return Array.from(new Set([
     buildProductPrimaryKeyword(product),
+    ...discoveryKeywords,
     ...keywordBundle.secondary,
     `${categoryLabel.toLowerCase()} online`,
-  ];
+  ]));
 }
 
 export function buildCollectionTitle({
@@ -408,11 +486,26 @@ export function createMetadata({
   keywords = [],
   type = 'website',
   noindex = false,
+  canonicalUrl,
+  robotsFollow = true,
+  ogTitle,
+  ogDescription,
+  ogImage,
+  twitterCard = 'summary_large_image',
+  languages,
+  ogLocale,
 }: MetadataOptions): Metadata {
-  const canonical = toAbsoluteUrl(path);
-  const imageUrl = toAbsoluteUrl(image || DEFAULT_OG_IMAGE);
+  const canonical = toAbsoluteUrl(canonicalUrl || path);
+  const imageUrl =
+    normalizeCloudinaryDeliveryUrl(ogImage || image || DEFAULT_OG_IMAGE) ||
+    toAbsoluteUrl(DEFAULT_OG_IMAGE);
   const trimmedTitle = truncateAtWord(title, 60);
   const trimmedDescription = truncateAtWord(description, 155);
+  const trimmedOgTitle = truncateAtWord(ogTitle || title, 60);
+  const trimmedOgDescription = truncateAtWord(ogDescription || description, 155);
+  const effectiveLanguages = languages || buildDefaultLanguageAlternates(path);
+  const effectiveOgLocale =
+    ogLocale || OG_LOCALE_BY_LANGUAGE[inferLanguageFromPath(path)] || 'en_IN';
 
   return {
     title: trimmedTitle,
@@ -420,15 +513,16 @@ export function createMetadata({
     keywords,
     alternates: {
       canonical,
+      languages: effectiveLanguages,
     },
     robots: noindex
-      ? { index: false, follow: false }
+      ? { index: false, follow: robotsFollow }
       : {
           index: true,
-          follow: true,
+          follow: robotsFollow,
           googleBot: {
             index: true,
-            follow: true,
+            follow: robotsFollow,
             'max-image-preview': 'large',
             'max-snippet': -1,
             'max-video-preview': -1,
@@ -437,10 +531,10 @@ export function createMetadata({
     openGraph: {
       type,
       url: canonical,
-      title: trimmedTitle,
-      description: trimmedDescription,
+      title: trimmedOgTitle,
+      description: trimmedOgDescription,
       siteName: SITE_NAME,
-      locale: 'en_IN',
+      locale: effectiveOgLocale,
       images: [
         {
           url: imageUrl,
@@ -449,9 +543,9 @@ export function createMetadata({
       ],
     },
     twitter: {
-      card: 'summary_large_image',
-      title: trimmedTitle,
-      description: trimmedDescription,
+      card: twitterCard,
+      title: trimmedOgTitle,
+      description: trimmedOgDescription,
       images: [imageUrl],
     },
   };
@@ -491,20 +585,31 @@ export function buildCatalogMetadata(): Metadata {
 
 export function buildCollectionMetadata({
   name,
+  title,
   path,
   description,
   image,
   kind,
   keywords = [],
+  noindex = false,
+  robotsFollow = true,
+  canonicalUrl,
+  languages,
+  ogLocale,
 }: CollectionMetadataOptions): Metadata {
   const keywordBundle = getCategoryKeywordBundle(name);
 
   return createMetadata({
-    title: buildCollectionTitle({ name, kind }),
+    title: title || buildCollectionTitle({ name, kind }),
     description,
     path,
     image,
     keywords: keywords.length > 0 ? keywords : [keywordBundle.primary, ...keywordBundle.secondary],
+    noindex,
+    robotsFollow,
+    canonicalUrl,
+    languages,
+    ogLocale,
   });
 }
 
@@ -541,13 +646,54 @@ export function buildArticleMetadata({
   });
 }
 
-export function buildProductMetadata(product: Product): Metadata {
+export function buildNoindexPageMetadata({
+  title,
+  description,
+  path,
+  image,
+  keywords = [],
+  robotsFollow = false,
+}: Omit<MetadataOptions, 'type'>): Metadata {
+  return createMetadata({
+    title,
+    description,
+    path,
+    image,
+    keywords,
+    noindex: true,
+    robotsFollow,
+  });
+}
+
+export function buildProductMetadata(
+  product: Product,
+  options: { ogLocale?: string } = {}
+): Metadata {
+  const localizedMetadata = product.seo?.localized_metadata || {};
+  const languages = Object.fromEntries(
+    Object.entries(localizedMetadata)
+      .filter(([, value]) => value?.path)
+      .map(([locale, value]) => [locale, toAbsoluteUrl(value.path || getProductPath(product))])
+  );
+
   return createMetadata({
     title: buildProductSeoTitle(product),
     description: buildProductMetaDescription(product),
     path: getProductPath(product),
     image: product.thumbnail || product.images?.[0]?.url || DEFAULT_OG_IMAGE,
     keywords: buildProductKeywords(product),
+    canonicalUrl: product.seo?.canonical_url || undefined,
+    noindex: product.seo?.robots_index === false,
+    robotsFollow: product.seo?.robots_follow !== false,
+    ogTitle: product.seo?.og_title,
+    ogDescription: product.seo?.og_description,
+    ogImage: product.seo?.og_image_url,
+    twitterCard:
+      product.seo?.twitter_card === 'summary'
+        ? 'summary'
+        : 'summary_large_image',
+    languages: Object.keys(languages).length > 0 ? languages : buildDefaultLanguageAlternates(getProductPath(product)),
+    ogLocale: options.ogLocale,
   });
 }
 
@@ -601,21 +747,45 @@ export function buildBreadcrumbJsonLd(items: BreadcrumbItem[]) {
 export function buildProductJsonLd(product: Product) {
   const price = getProductPrice(product);
   const images =
-    product.images?.map((image) => toAbsoluteUrl(image.url)) ||
-    (product.thumbnail ? [toAbsoluteUrl(product.thumbnail)] : []);
+    product.images
+      ?.map((image) => normalizeCloudinaryDeliveryUrl(image.url))
+      .filter(Boolean) ||
+    (product.thumbnail ? [normalizeCloudinaryDeliveryUrl(product.thumbnail)] : []);
 
-  return {
+  const artisan = (product as Product & {
+    artisan?: {
+      name?: string;
+      slug?: string;
+      craft_specialty?: string | null;
+    } | null;
+  }).artisan;
+  const approvedReviewCount = Number(product.review_count || 0);
+
+  const baseProduct = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
+    '@type': product.variants && product.variants.length > 1 ? 'ProductGroup' : 'Product',
     name: product.title,
     image: images,
     description: buildProductMetaDescription(product),
     sku: product.variants?.[0]?.sku || undefined,
+    productGroupID: product.variants && product.variants.length > 1 ? product.id : undefined,
     brand: {
       '@type': 'Brand',
       name: SITE_NAME,
     },
+    creator: artisan?.name
+      ? {
+          '@type': 'Person',
+          name: artisan.name,
+          url: artisan.slug ? toAbsoluteUrl(`/artisans/${artisan.slug}`) : undefined,
+          knowsAbout: artisan.craft_specialty || undefined,
+        }
+      : undefined,
+    isRelatedTo: toAbsoluteUrl('/size-guide'),
     category: getProductCategoryLabel(product),
+    material: getProductMaterial(product),
+    pattern: getProductAttribute(product, 'pattern') || product.variants?.[0]?.merchant?.pattern || undefined,
+    color: getProductColor(product) || product.variants?.[0]?.merchant?.color || undefined,
     offers: price
       ? {
           '@type': 'Offer',
@@ -626,6 +796,39 @@ export function buildProductJsonLd(product: Product) {
             (product.variants?.[0]?.inventory_quantity || 0) > 0
               ? 'https://schema.org/InStock'
               : 'https://schema.org/OutOfStock',
+          itemCondition: 'https://schema.org/NewCondition',
+          shippingDetails: {
+            '@type': 'OfferShippingDetails',
+            shippingDestination: [
+              { '@type': 'DefinedRegion', addressCountry: 'IN' },
+              { '@type': 'DefinedRegion', addressCountry: 'US' },
+              { '@type': 'DefinedRegion', addressCountry: 'GB' },
+              { '@type': 'DefinedRegion', addressCountry: 'AU' },
+            ],
+            deliveryTime: {
+              '@type': 'ShippingDeliveryTime',
+              handlingTime: {
+                '@type': 'QuantitativeValue',
+                minValue: 1,
+                maxValue: 3,
+                unitCode: 'DAY',
+              },
+              transitTime: {
+                '@type': 'QuantitativeValue',
+                minValue: 8,
+                maxValue: 18,
+                unitCode: 'DAY',
+              },
+            },
+          },
+          hasMerchantReturnPolicy: {
+            '@type': 'MerchantReturnPolicy',
+            applicableCountry: ['IN', 'US', 'GB', 'AU'],
+            returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+            merchantReturnDays: 30,
+            returnMethod: 'https://schema.org/ReturnByMail',
+            returnFees: 'https://schema.org/ReturnFeesCustomerResponsibility',
+          },
           seller: {
             '@type': 'Organization',
             name: SITE_NAME,
@@ -633,13 +836,134 @@ export function buildProductJsonLd(product: Product) {
         }
       : undefined,
     aggregateRating:
-      product.avg_rating && product.review_count
+      product.avg_rating && approvedReviewCount >= 3
         ? {
             '@type': 'AggregateRating',
             ratingValue: product.avg_rating,
-            reviewCount: product.review_count,
+            reviewCount: approvedReviewCount,
           }
         : undefined,
+    hasVariant:
+      product.variants && product.variants.length > 1
+        ? product.variants.map((variant) => {
+            const variantPrice =
+              variant.prices?.find((row) => row.currency_code.toLowerCase() === 'inr') ||
+              variant.prices?.[0];
+            const amountInMajor = variantPrice ? variantPrice.amount / 100 : undefined;
+            return {
+              '@type': 'Product',
+              name: `${product.title} - ${variant.title}`,
+              sku: variant.sku || undefined,
+              gtin: variant.merchant?.gtin || undefined,
+              mpn: variant.merchant?.mpn || variant.sku || undefined,
+              color: variant.merchant?.color || getProductColor(product) || undefined,
+              size: variant.merchant?.size || variant.title || undefined,
+              material: variant.merchant?.material || getProductMaterial(product),
+              pattern: variant.merchant?.pattern || getProductAttribute(product, 'pattern') || undefined,
+              offers: variantPrice
+                ? {
+                    '@type': 'Offer',
+                    url: toAbsoluteUrl(getProductPath(product)),
+                    priceCurrency: variantPrice.currency_code.toUpperCase(),
+                    price: amountInMajor,
+                    availability:
+                      (variant.inventory_quantity || 0) > 0
+                        ? 'https://schema.org/InStock'
+                        : 'https://schema.org/OutOfStock',
+                    itemCondition: 'https://schema.org/NewCondition',
+                  }
+                : undefined,
+            };
+          })
+        : undefined,
+  };
+
+  return {
+    ...baseProduct,
+    ...(product.seo?.schema_overrides || {}),
+  };
+}
+
+export function buildSizeChartJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SizeChart',
+    name: `${SITE_NAME} Size Guide`,
+    url: toAbsoluteUrl('/size-guide'),
+    description:
+      'Kvastram size guide for handcrafted clothing, jackets, and accessories with US, UK, EU, and India-friendly measurement references.',
+  };
+}
+
+export function buildPersonJsonLd(artisan: {
+  name: string;
+  slug: string;
+  bio?: string | null;
+  craft_specialty?: string | null;
+  location?: string | null;
+  image_url?: string | null;
+  knows_about?: unknown;
+  has_occupation?: string | null;
+  same_as?: unknown;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: artisan.name,
+    url: toAbsoluteUrl(`/artisans/${artisan.slug}`),
+    description: artisan.bio || undefined,
+    image: normalizeCloudinaryDeliveryUrl(artisan.image_url),
+    knowsAbout: Array.isArray(artisan.knows_about)
+      ? artisan.knows_about
+      : artisan.craft_specialty
+        ? [artisan.craft_specialty]
+        : undefined,
+    hasOccupation: artisan.has_occupation || artisan.craft_specialty || 'Textile artisan',
+    homeLocation: artisan.location
+      ? {
+          '@type': 'Place',
+          name: artisan.location,
+        }
+      : undefined,
+    sameAs: Array.isArray(artisan.same_as) ? artisan.same_as : undefined,
+  };
+}
+
+export function buildProductFaqJsonLd(product: Product) {
+  const material = getProductMaterial(product);
+  const category = getProductCategoryLabel(product);
+  const craft = getProductAttribute(product, 'technique') || 'handcrafted artisan technique';
+  const care = product.care_instructions || 'Dry clean or gentle hand wash separately.';
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What is ${product.title} made from?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${product.title} is made with ${material}.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How is this ${category.toLowerCase()} crafted?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `This piece is connected to ${craft} and Kvastram's Jaipur artisan-made fashion positioning.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How should I care for ${product.title}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: care,
+        },
+      },
+    ],
   };
 }
 
@@ -662,7 +986,7 @@ export function buildCollectionPageJsonLd({
     name,
     url: toAbsoluteUrl(path),
     description,
-    image: image ? toAbsoluteUrl(image) : undefined,
+    image: normalizeCloudinaryDeliveryUrl(image),
     mainEntity:
       items && items.length > 0
         ? {
@@ -716,7 +1040,7 @@ export function buildArticleJsonLd({
     '@type': 'Article',
     headline: title,
     description,
-    image: image ? [toAbsoluteUrl(image)] : [],
+    image: image ? [normalizeCloudinaryDeliveryUrl(image)] : [],
     author: {
       '@type': 'Organization',
       name: SITE_NAME,

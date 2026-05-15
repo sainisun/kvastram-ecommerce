@@ -15,7 +15,14 @@ import { WholesaleCartProvider } from '@/context/wholesale-cart-context';
 import { WholesaleProvider } from '@/context/wholesale-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import { LogRocketProvider } from '@/components/LogRocketProvider';
-import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo';
+import {
+  buildOrganizationJsonLd,
+  buildWebsiteJsonLd,
+  DEFAULT_OG_IMAGE,
+  serializeJsonLd,
+  SITE_NAME,
+  SITE_URL,
+} from '@/lib/seo';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -54,6 +61,7 @@ export default async function RootLayout({
   const csrfToken = await import('@/lib/csrf').then((module) =>
     module.CsrfManager.getServerToken()
   );
+  const globalSchema = [buildOrganizationJsonLd(), buildWebsiteJsonLd()];
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -73,6 +81,10 @@ export default async function RootLayout({
 
       </head>
       <body className="font-body antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(globalSchema) }}
+        />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-body-sm focus:type-medium focus:text-white"

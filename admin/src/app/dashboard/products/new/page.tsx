@@ -296,8 +296,12 @@ export default function NewProductPage() {
           }
         }
       }
-      showNotification('success', 'Product created successfully');
-      router.push('/dashboard/products');
+      showNotification('success', 'Product created with an automatic SEO baseline. Review SEO & Discovery before publishing broadly.');
+      if (productId) {
+        router.push(`/dashboard/products/${productId}`);
+      } else {
+        router.push('/dashboard/products');
+      }
     } catch (error: any) {
       showNotification('error', error.message || 'Failed to create product');
     } finally {
@@ -723,6 +727,11 @@ export default function NewProductPage() {
             <h2 className="text-base font-bold text-gray-800 mb-4">
               Search Engine Optimisation
             </h2>
+            <p className="mb-4 text-xs leading-relaxed text-gray-500">
+              On save, Kvastram auto-creates the advanced SEO baseline: canonical, robots, schema-ready discovery document,
+              structured attribute guesses, media SEO, Merchant draft fields, and vector-ready product text. Review the full
+              SEO & Discovery panel on the next screen.
+            </p>
             <div className="space-y-4">
               <div>
                 <label htmlFor="seo_title" className={labelCls}>Page Title</label>

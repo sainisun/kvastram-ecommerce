@@ -79,6 +79,19 @@ export interface ApiProductResponse {
   care_instructions?: string;
   seo_title?: string;
   seo_description?: string;
+  seo?: Record<string, unknown> | null;
+  discovery?: Record<string, unknown> | null;
+  attributes?: Record<string, unknown>[];
+  merchant?: Record<string, unknown>[];
+  media_seo?: Record<string, unknown>[];
+  artisan?: {
+    id?: string;
+    name?: string;
+    slug?: string;
+    craft_specialty?: string | null;
+    location?: string | null;
+  } | null;
+  semantic_related_products?: ApiProductResponse[];
   avg_rating?: number;
   review_count?: number;
   created_at: string;
@@ -112,6 +125,7 @@ export interface ApiVariantResponse {
   manage_inventory: boolean;
   prices?: ApiPriceResponse[];
   compare_at_price?: number | null;
+  merchant?: Record<string, unknown> | null;
   position?: number;
   created_at?: string;
   updated_at?: string;

@@ -21,10 +21,38 @@ interface Collection {
   homepage_section?: string;
   seo_title?: string;
   seo_desc?: string;
+  is_indexable?: boolean;
+  robots_policy?: string;
+  canonical_url?: string | null;
+  seasonal_flag?: 'evergreen' | 'seasonal' | 'campaign' | string;
+  faq_items?: Array<{ question: string; answer: string }>;
+  answer_capsule?: string | null;
   metadata?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
+
+const emptyCollectionForm = {
+  title: '',
+  handle: '',
+  image: '',
+  type: '',
+  status: 'draft' as string,
+  description: '',
+  show_in_megamenu: false,
+  homepage_section: '',
+  seo_title: '',
+  seo_desc: '',
+  is_indexable: true,
+  robots_policy: 'index,follow',
+  canonical_url: '',
+  seasonal_flag: 'evergreen',
+  answer_capsule: '',
+  faq_question_1: '',
+  faq_answer_1: '',
+  faq_question_2: '',
+  faq_answer_2: '',
+};
 
 export default function CollectionsPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -33,18 +61,7 @@ export default function CollectionsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<AssignedProduct[]>([]);
   const [productsLoaded, setProductsLoaded] = useState(true);
-  const [formData, setFormData] = useState({
-    title: '',
-    handle: '',
-    image: '',
-    type: '',
-    status: 'draft' as string,
-    description: '',
-    show_in_megamenu: false,
-    homepage_section: '',
-    seo_title: '',
-    seo_desc: '',
-  });
+  const [formData, setFormData] = useState(emptyCollectionForm);
 
   const fetchCollections = async () => {
     try {
@@ -70,6 +87,21 @@ export default function CollectionsPage() {
       }
 
       let collectionId = editingId;
+      const payload = {
+        ...formData,
+        faq_items: [
+          formData.faq_question_1 && formData.faq_answer_1
+            ? { question: formData.faq_question_1, answer: formData.faq_answer_1 }
+            : null,
+          formData.faq_question_2 && formData.faq_answer_2
+            ? { question: formData.faq_question_2, answer: formData.faq_answer_2 }
+            : null,
+        ].filter(Boolean),
+        canonical_url: formData.canonical_url || null,
+        answer_capsule: formData.answer_capsule || null,
+        seasonal_flag: formData.seasonal_flag || (formData.type === 'seasonal' ? 'seasonal' : 'evergreen'),
+      };
+
       if (editingId) {
         if (formData.status === 'active') {
           await api.updateCollectionProducts(
@@ -77,9 +109,9 @@ export default function CollectionsPage() {
             selectedProducts.map((product) => product.id)
           );
         }
-        await api.updateCollection(editingId, formData);
+        await api.updateCollection(editingId, payload);
       } else {
-        const response = await api.createCollection(formData);
+        const response = await api.createCollection(payload);
         collectionId = response.collection?.id;
       }
 
@@ -89,7 +121,7 @@ export default function CollectionsPage() {
           selectedProducts.map((product) => product.id)
         );
       }
-      setFormData({ title: '', handle: '', image: '', type: '', status: 'draft', description: '', show_in_megamenu: false, homepage_section: '', seo_title: '', seo_desc: '' });
+      setFormData(emptyCollectionForm);
       setSelectedProducts([]);
       setProductsLoaded(true);
       setShowForm(false);
@@ -105,6 +137,7 @@ export default function CollectionsPage() {
   };
 
   const handleEdit = async (collection: Collection) => {
+    const faqItems = collection.faq_items || [];
     setFormData({
       title: collection.title,
       handle: collection.handle,
@@ -116,6 +149,15 @@ export default function CollectionsPage() {
       homepage_section: collection.homepage_section || '',
       seo_title: collection.seo_title || '',
       seo_desc: collection.seo_desc || '',
+      is_indexable: collection.is_indexable !== false,
+      robots_policy: collection.robots_policy || 'index,follow',
+      canonical_url: collection.canonical_url || '',
+      seasonal_flag: collection.seasonal_flag || (collection.type === 'seasonal' ? 'seasonal' : 'evergreen'),
+      answer_capsule: collection.answer_capsule || '',
+      faq_question_1: faqItems[0]?.question || '',
+      faq_answer_1: faqItems[0]?.answer || '',
+      faq_question_2: faqItems[1]?.question || '',
+      faq_answer_2: faqItems[1]?.answer || '',
     });
     setEditingId(collection.id);
     setProductsLoaded(false);
@@ -163,7 +205,7 @@ export default function CollectionsPage() {
           onClick={() => {
             setShowForm(!showForm);
             setEditingId(null);
-            setFormData({ title: '', handle: '', image: '', type: '', status: 'draft', description: '', show_in_megamenu: false, homepage_section: '', seo_title: '', seo_desc: '' });
+            setFormData(emptyCollectionForm);
             setSelectedProducts([]);
             setProductsLoaded(true);
           }}
@@ -300,7 +342,7 @@ export default function CollectionsPage() {
               </div>
             </div>
             <details className="border border-gray-200 rounded-lg">
-              <summary className="px-4 py-2 text-sm font-medium text-gray-700 cursor-pointer">SEO Fields</summary>
+              <summary className="px-4 py-2 text-sm font-medium text-gray-700 cursor-pointer">Advanced SEO & Discovery</summary>
               <div className="p-4 space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">Meta Title</label>
@@ -323,6 +365,113 @@ export default function CollectionsPage() {
                     className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
                   />
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Robots Policy</label>
+                    <select
+                      value={formData.robots_policy}
+                      onChange={(e) => {
+                        const robotsPolicy = e.target.value;
+                        setFormData({
+                          ...formData,
+                          robots_policy: robotsPolicy,
+                          is_indexable: robotsPolicy === 'index,follow',
+                        });
+                      }}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                    >
+                      <option value="index,follow">Index, follow</option>
+                      <option value="noindex,follow">Noindex, follow</option>
+                      <option value="noindex,nofollow">Noindex, nofollow</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Canonical URL</label>
+                    <input
+                      type="text"
+                      value={formData.canonical_url}
+                      onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                      placeholder="/collections/summer-cotton-dresses"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <label className="flex items-center gap-2 text-xs font-medium text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={formData.is_indexable}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          is_indexable: e.target.checked,
+                          robots_policy: e.target.checked ? 'index,follow' : 'noindex,follow',
+                        })
+                      }
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    Allow sitemap/indexing
+                  </label>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Seasonal flag</label>
+                    <select
+                      value={formData.seasonal_flag}
+                      onChange={(e) => setFormData({ ...formData, seasonal_flag: e.target.value })}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                    >
+                      <option value="evergreen">Evergreen</option>
+                      <option value="seasonal">Seasonal</option>
+                      <option value="campaign">Campaign</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Answer Capsule</label>
+                  <textarea
+                    value={formData.answer_capsule}
+                    onChange={(e) => setFormData({ ...formData, answer_capsule: e.target.value })}
+                    maxLength={1000}
+                    rows={2}
+                    className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                    placeholder="Short AI-search answer for this collection, e.g. what it is, who it is for, fabric/craft, shipping promise."
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-medium text-gray-600">FAQ 1</label>
+                    <input
+                      type="text"
+                      value={formData.faq_question_1}
+                      onChange={(e) => setFormData({ ...formData, faq_question_1: e.target.value })}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                      placeholder="Question"
+                    />
+                    <textarea
+                      value={formData.faq_answer_1}
+                      onChange={(e) => setFormData({ ...formData, faq_answer_1: e.target.value })}
+                      rows={2}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                      placeholder="Answer"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs font-medium text-gray-600">FAQ 2</label>
+                    <input
+                      type="text"
+                      value={formData.faq_question_2}
+                      onChange={(e) => setFormData({ ...formData, faq_question_2: e.target.value })}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                      placeholder="Question"
+                    />
+                    <textarea
+                      value={formData.faq_answer_2}
+                      onChange={(e) => setFormData({ ...formData, faq_answer_2: e.target.value })}
+                      rows={2}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                      placeholder="Answer"
+                    />
+                  </div>
+                </div>
               </div>
             </details>
             <div className="flex gap-3">
@@ -338,7 +487,7 @@ export default function CollectionsPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingId(null);
-                  setFormData({ title: '', handle: '', image: '', type: '', status: 'draft', description: '', show_in_megamenu: false, homepage_section: '', seo_title: '', seo_desc: '' });
+                  setFormData(emptyCollectionForm);
                   setSelectedProducts([]);
                   setProductsLoaded(true);
                 }}
@@ -397,6 +546,12 @@ export default function CollectionsPage() {
                 )}
                 {collection.type && (
                   <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium">{collection.type}</span>
+                )}
+                {collection.is_indexable === false && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 font-medium">noindex</span>
+                )}
+                {collection.seasonal_flag && collection.seasonal_flag !== 'evergreen' && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 font-medium">{collection.seasonal_flag}</span>
                 )}
               </div>
               <div className="w-40 py-3 px-4 text-sm text-gray-500">

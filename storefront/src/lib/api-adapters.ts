@@ -9,33 +9,62 @@
  *   const frontendProduct = adaptProduct(apiProduct);
  */
 
-import type { Product, ProductVariant } from '@/types';
+import type { Product, ProductImage, ProductMediaMetadata, ProductVariant } from '@/types';
 import type {
   ApiProductResponse,
   ApiVariantResponse,
   ApiPriceResponse,
   ApiCollectionResponse,
 } from '@/types/api-contracts';
+import { optimizeCloudinaryUrl } from './media';
+
+type AdaptProductOptions = {
+  includeRelated?: boolean;
+};
+
+function normalizeMediaUrl<T extends string | null | undefined>(url: T): T {
+  return (typeof url === 'string' ? optimizeCloudinaryUrl(url) : url) as T;
+}
+
+function normalizeImageMetadata(metadata: unknown): ProductMediaMetadata | null | undefined {
+  if (metadata == null) return metadata as null | undefined;
+  if (typeof metadata !== 'object') return undefined;
+  const normalized = { ...(metadata as Record<string, unknown>) };
+  if (typeof normalized.thumbnail_url === 'string') {
+    normalized.thumbnail_url = normalizeMediaUrl(normalized.thumbnail_url);
+  }
+  if (
+    typeof normalized.mime_type === 'string' &&
+    /^image\/hei[cf]$/i.test(normalized.mime_type)
+  ) {
+    normalized.mime_type = 'image/jpeg';
+  }
+  return normalized as ProductMediaMetadata;
+}
 
 /**
  * Adapt single API product response to frontend Product type
  * Handles any differences between API and frontend types
  */
-export function adaptProduct(apiProduct: ApiProductResponse): Product {
+export function adaptProduct(apiProduct: ApiProductResponse, options: AdaptProductOptions = {}): Product {
+  const includeRelated = options.includeRelated ?? true;
+
   return {
     id: apiProduct.id,
     title: apiProduct.title,
     description: apiProduct.description ?? '',
     handle: apiProduct.handle,
-    thumbnail: apiProduct.thumbnail,
+    thumbnail: normalizeMediaUrl(apiProduct.thumbnail),
     subtitle: apiProduct.subtitle,
     status: apiProduct.status,
     variants: apiProduct.variants ? adaptProductVariants(apiProduct.variants) : undefined,
     options: apiProduct.options,
     images: apiProduct.images?.map((image) => ({
       ...image,
+      url: normalizeMediaUrl(image.url),
       alt: image.alt ?? image.alt_text,
-    })),
+      metadata: normalizeImageMetadata(image.metadata),
+    })) as ProductImage[] | undefined,
     material: apiProduct.material,
     origin_country: apiProduct.origin_country,
     // size_guide can be a string or object in the API, keep as-is for frontend
@@ -43,6 +72,16 @@ export function adaptProduct(apiProduct: ApiProductResponse): Product {
     care_instructions: apiProduct.care_instructions,
     seo_title: apiProduct.seo_title,
     seo_description: apiProduct.seo_description,
+    seo: apiProduct.seo as Product['seo'],
+    discovery: apiProduct.discovery as Product['discovery'],
+    attributes: apiProduct.attributes as Product['attributes'],
+    merchant: apiProduct.merchant as Product['merchant'],
+    media_seo: apiProduct.media_seo as Product['media_seo'],
+    artisan: apiProduct.artisan as Product['artisan'],
+    semantic_related_products:
+      includeRelated && apiProduct.semantic_related_products
+        ? adaptProducts(apiProduct.semantic_related_products as ApiProductResponse[], { includeRelated: false })
+        : undefined,
     avg_rating: apiProduct.avg_rating,
     review_count: apiProduct.review_count,
     created_at: apiProduct.created_at,
@@ -66,12 +105,12 @@ export function adaptProduct(apiProduct: ApiProductResponse): Product {
 /**
  * Adapt array of API products to frontend Product array
  */
-export function adaptProducts(apiProducts: ApiProductResponse[]): Product[] {
+export function adaptProducts(apiProducts: ApiProductResponse[], options: AdaptProductOptions = {}): Product[] {
   if (!Array.isArray(apiProducts)) {
     console.warn('[adaptProducts] Received non-array:', apiProducts);
     return [];
   }
-  return apiProducts.map(adaptProduct);
+  return apiProducts.map((product) => adaptProduct(product, options));
 }
 
 /**
@@ -85,6 +124,7 @@ export function adaptProductVariant(apiVariant: ApiVariantResponse): ProductVari
     inventory_quantity: apiVariant.inventory_quantity,
     prices: apiVariant.prices ? adaptPrices(apiVariant.prices) : undefined,
     compare_at_price: apiVariant.compare_at_price,
+    merchant: apiVariant.merchant as ProductVariant['merchant'],
   };
 }
 

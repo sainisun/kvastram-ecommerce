@@ -11,6 +11,8 @@ import {
   HeartHandshake,
 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
+import { storefrontTrust } from '@/config/storefront-trust';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -86,12 +88,26 @@ function SuccessContent() {
         <p className="text-stone-500 mb-8 max-w-md type-light">
           {error || 'Something went wrong with your payment. Please try again.'}
         </p>
-        <Link
-          href="/checkout"
-          className="bg-stone-900 text-white px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold hover:bg-stone-800 transition-colors"
-        >
-          Try Again
-        </Link>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/checkout"
+            className="bg-stone-900 text-white px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold hover:bg-stone-800 transition-colors"
+          >
+            Try Again
+          </Link>
+          <Link
+            href={storefrontTrust.policyRoutes.paymentHelp}
+            className="border border-stone-300 px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold text-stone-900 hover:bg-stone-50 transition-colors"
+          >
+            Payment Help
+          </Link>
+          <Link
+            href={`${storefrontTrust.policyRoutes.contact}?order=${orderId || ''}`}
+            className="border border-stone-300 px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold text-stone-900 hover:bg-stone-50 transition-colors"
+          >
+            Contact Support
+          </Link>
+        </div>
       </div>
     );
   }
@@ -211,7 +227,7 @@ function SuccessContent() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-body-sm">
             <a
-              href="https://wa.me/message/kvastram"
+              href={buildWhatsAppHref('Hi, I need help with my Kvastram order')}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 type-bold text-green-700 hover:text-green-800 transition-colors"
@@ -220,11 +236,18 @@ function SuccessContent() {
             </a>
             <span className="hidden sm:block text-stone-300">|</span>
             <a
-              href="mailto:support@kvastram.com"
+              href={`mailto:${storefrontTrust.supportEmail}`}
               className="inline-flex items-center gap-2 type-bold text-stone-700 hover:text-stone-900 transition-colors"
             >
               <span>✉️</span> Email Us
             </a>
+            <span className="hidden sm:block text-stone-300">|</span>
+            <Link
+              href={storefrontTrust.policyRoutes.returns}
+              className="inline-flex items-center gap-2 type-bold text-stone-700 hover:text-stone-900 transition-colors"
+            >
+              Returns Help
+            </Link>
           </div>
         </div>
       </div>
@@ -245,4 +268,3 @@ export default function CheckoutSuccessPage() {
     </Suspense>
   );
 }
-

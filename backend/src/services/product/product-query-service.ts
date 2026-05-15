@@ -14,10 +14,23 @@ import {
   product_categories,
   collection_products,
   product_tags,
+  product_seo,
+  product_discovery,
+  product_attributes,
+  attribute_values,
+  product_attribute_values,
+  product_variant_merchant,
+  product_media_seo,
+  product_embeddings,
+  product_artisans,
+  artisans,
+  search_synonyms,
+  search_query_logs,
 } from '../../db/schema';
 import { eq, desc, asc, sql, or, and, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { escapeLikeWildcards } from '../../utils/validation';
+import { embedText, toVectorLiteral } from '../../jobs/generateEmbeddings';
 import type { ProductFilter, ProductSearch } from './product-validator';
 
 // --- Types for merged data ---
@@ -44,6 +57,11 @@ interface ProductWithStats {
   variant_count: number;
   total_inventory: number;
   images: (typeof product_images.$inferSelect)[];
+  seo?: typeof product_seo.$inferSelect | null;
+  discovery?: typeof product_discovery.$inferSelect | null;
+  attributes?: unknown[];
+  media_seo?: unknown[];
+  semantic_related_products?: unknown[];
   variants: Array<{
     id: string;
     title: string;
@@ -54,6 +72,7 @@ interface ProductWithStats {
       amount: number;
       currency_code: string;
     }>;
+    merchant?: typeof product_variant_merchant.$inferSelect | null;
   }>;
 }
 
@@ -66,6 +85,8 @@ export class ProductQueryService {
     categoryId?: string;
     tagId?: string;
     collectionId?: string;
+    attributeCode?: string;
+    attributeValue?: string;
   }): Promise<ReturnType<typeof eq>[]> {
     const conditions: ReturnType<typeof eq>[] = [];
 
@@ -130,6 +151,35 @@ export class ProductQueryService {
           inArray(
             products.id,
             tagMatches.map((t) => t.product_id)
+          )
+        );
+      }
+    }
+
+    if (filters.attributeCode && filters.attributeValue) {
+      const attrMatches = await db
+        .select({ product_id: product_attribute_values.product_id })
+        .from(product_attribute_values)
+        .leftJoin(product_attributes, eq(product_attribute_values.attribute_id, product_attributes.id))
+        .leftJoin(attribute_values, eq(product_attribute_values.value_id, attribute_values.id))
+        .where(
+          and(
+            eq(product_attributes.code, filters.attributeCode),
+            or(
+              eq(attribute_values.slug, filters.attributeValue),
+              eq(attribute_values.label, filters.attributeValue),
+              sql`lower(coalesce(${product_attribute_values.raw_value}, '')) = ${filters.attributeValue.toLowerCase()}`
+            )
+          )
+        );
+
+      if (attrMatches.length === 0) {
+        conditions.push(sql`FALSE`);
+      } else {
+        conditions.push(
+          inArray(
+            products.id,
+            attrMatches.map((match) => match.product_id)
           )
         );
       }
@@ -291,6 +341,189 @@ export class ProductQueryService {
     });
   }
 
+  private async enrichProducts<T extends { id: string; images?: any[]; variants?: any[] }>(
+    productsList: T[],
+    includeRelatedProducts = true
+  ): Promise<T[]> {
+    if (productsList.length === 0) return productsList;
+
+    const productIds = productsList.map((product) => product.id);
+    const imageIds = productsList.flatMap((product) => product.images?.map((image) => image.id) || []);
+    const variantIds = productsList.flatMap((product) => product.variants?.map((variant) => variant.id) || []);
+
+    const [seoRows, discoveryRows, attributeRows, merchantRows, mediaRows, artisanRows] = await Promise.all([
+      db.select().from(product_seo).where(inArray(product_seo.product_id, productIds)),
+      db.select().from(product_discovery).where(inArray(product_discovery.product_id, productIds)),
+      db
+        .select({
+          id: product_attribute_values.id,
+          product_id: product_attribute_values.product_id,
+          attribute_id: product_attribute_values.attribute_id,
+          value_id: product_attribute_values.value_id,
+          raw_value: product_attribute_values.raw_value,
+          source: product_attribute_values.source,
+          confidence: product_attribute_values.confidence,
+          attribute_code: product_attributes.code,
+          attribute_label: product_attributes.label,
+          value_label: attribute_values.label,
+          value_slug: attribute_values.slug,
+          synonyms: attribute_values.synonyms,
+        })
+        .from(product_attribute_values)
+        .leftJoin(product_attributes, eq(product_attribute_values.attribute_id, product_attributes.id))
+        .leftJoin(attribute_values, eq(product_attribute_values.value_id, attribute_values.id))
+        .where(inArray(product_attribute_values.product_id, productIds)),
+      variantIds.length
+        ? db.select().from(product_variant_merchant).where(inArray(product_variant_merchant.variant_id, variantIds))
+        : Promise.resolve([]),
+      imageIds.length
+        ? db.select().from(product_media_seo).where(inArray(product_media_seo.image_id, imageIds))
+        : Promise.resolve([]),
+      db
+        .select({
+          product_id: product_artisans.product_id,
+          id: artisans.id,
+          name: artisans.name,
+          slug: artisans.slug,
+          craft_specialty: artisans.craft_specialty,
+          location: artisans.location,
+        })
+        .from(product_artisans)
+        .leftJoin(artisans, eq(product_artisans.artisan_id, artisans.id))
+        .where(inArray(product_artisans.product_id, productIds)),
+    ]);
+
+    const seoByProduct = new Map(seoRows.map((row) => [row.product_id, row]));
+    const discoveryByProduct = new Map(discoveryRows.map((row) => [row.product_id, row]));
+    const merchantByVariant = new Map(merchantRows.map((row) => [row.variant_id, row]));
+    const mediaByImage = new Map(mediaRows.map((row) => [row.image_id, row]));
+    const artisanByProduct = new Map(artisanRows.map((row) => [row.product_id, row]));
+    const attrsByProduct = new Map<string, typeof attributeRows>();
+
+    for (const row of attributeRows) {
+      const rows = attrsByProduct.get(row.product_id) || [];
+      rows.push(row);
+      attrsByProduct.set(row.product_id, rows);
+    }
+
+    const relatedByProduct = includeRelatedProducts
+      ? await this.fetchSemanticRelatedProducts(productsList, attrsByProduct)
+      : new Map<string, unknown[]>();
+
+    return productsList.map((product) => ({
+      ...product,
+      seo: seoByProduct.get(product.id) || null,
+      discovery: discoveryByProduct.get(product.id) || null,
+      attributes: attrsByProduct.get(product.id) || [],
+      media_seo: product.images?.map((image) => mediaByImage.get(image.id)).filter(Boolean) || [],
+      artisan: artisanByProduct.get(product.id) || null,
+      semantic_related_products: relatedByProduct.get(product.id) || [],
+      images: product.images?.map((image) => {
+        const mediaSeo = mediaByImage.get(image.id);
+        return mediaSeo
+          ? {
+              ...image,
+              alt_text: mediaSeo.alt_text || image.alt_text,
+              media_seo: mediaSeo,
+            }
+          : image;
+      }),
+      variants: product.variants?.map((variant) => ({
+        ...variant,
+        merchant: merchantByVariant.get(variant.id) || null,
+      })),
+    })) as T[];
+  }
+
+  private async fetchSemanticRelatedProducts<T extends { id: string }>(
+    productsList: T[],
+    attrsByProduct: Map<string, Array<{ value_id: string | null; raw_value: string | null; attribute_code: string | null }>>
+  ) {
+    const relatedByProduct = new Map<string, unknown[]>();
+    if (productsList.length === 0) return relatedByProduct;
+
+    for (const product of productsList.slice(0, 20)) {
+      const attrs = attrsByProduct.get(product.id) || [];
+      const valueIds = attrs
+        .map((attr) => attr.value_id)
+        .filter((valueId): valueId is string => Boolean(valueId));
+      const rawValues = attrs
+        .map((attr) => attr.raw_value?.trim().toLowerCase())
+        .filter((value): value is string => Boolean(value));
+
+      if (valueIds.length === 0 && rawValues.length === 0) {
+        relatedByProduct.set(product.id, []);
+        continue;
+      }
+
+      const matchedByValue = valueIds.length
+        ? await db
+            .select({
+              product_id: product_attribute_values.product_id,
+              matches: sql<number>`count(*)`,
+            })
+            .from(product_attribute_values)
+            .where(
+              and(
+                inArray(product_attribute_values.value_id, valueIds),
+                sql`${product_attribute_values.product_id} <> ${product.id}`
+              )
+            )
+            .groupBy(product_attribute_values.product_id)
+        : [];
+
+      const matchedByRaw = rawValues.length
+        ? await db
+            .select({
+              product_id: product_attribute_values.product_id,
+              matches: sql<number>`count(*)`,
+            })
+            .from(product_attribute_values)
+            .where(
+              and(
+                inArray(sql<string>`lower(coalesce(${product_attribute_values.raw_value}, ''))`, rawValues),
+                sql`${product_attribute_values.product_id} <> ${product.id}`
+              )
+            )
+            .groupBy(product_attribute_values.product_id)
+        : [];
+
+      const scores = new Map<string, number>();
+      for (const row of [...matchedByValue, ...matchedByRaw]) {
+        scores.set(row.product_id, (scores.get(row.product_id) || 0) + Number(row.matches || 0));
+      }
+
+      const candidateIds = Array.from(scores.entries())
+        .sort((left, right) => right[1] - left[1])
+        .map(([productId]) => productId)
+        .slice(0, 8);
+
+      if (candidateIds.length === 0) {
+        relatedByProduct.set(product.id, []);
+        continue;
+      }
+
+      const candidates = await db.query.products.findMany({
+        where: and(inArray(products.id, candidateIds), eq(products.status, 'published')),
+        with: {
+          variants: { with: { prices: true } },
+          collection: true,
+          images: true,
+          categories: { with: { category: true } },
+          tags: { with: { tag: true } },
+        },
+      });
+
+      const orderedCandidates = candidateIds
+        .map((candidateId) => candidates.find((candidate) => candidate.id === candidateId))
+        .filter((candidate): candidate is (typeof candidates)[number] => Boolean(candidate))
+        .slice(0, 4);
+      relatedByProduct.set(product.id, await this.enrichProducts(orderedCandidates, false));
+    }
+
+    return relatedByProduct;
+  }
+
   /**
    * List products with advanced filtering and stats
    */
@@ -305,6 +538,8 @@ export class ProductQueryService {
       categoryId: filters.categoryId,
       tagId: filters.tagId,
       collectionId: filters.collectionId,
+      attributeCode: filters.attributeCode,
+      attributeValue: filters.attributeValue,
     });
 
     let totalCount = 0;
@@ -390,7 +625,7 @@ export class ProductQueryService {
     }
 
     return {
-      products: productsWithStats,
+      products: await this.enrichProducts(productsWithStats),
       total: totalCount,
       limit: limitNum,
       offset: offsetNum,
@@ -413,7 +648,7 @@ export class ProductQueryService {
         },
       },
     });
-    return data;
+    return this.enrichProducts(data);
   }
 
   /**
@@ -421,7 +656,7 @@ export class ProductQueryService {
    */
   async retrieveMany(ids: string[]) {
     if (ids.length === 0) return [];
-    return db.query.products.findMany({
+    const data = await db.query.products.findMany({
       where: inArray(products.id, ids),
       with: {
         variants: { with: { prices: true } },
@@ -431,6 +666,7 @@ export class ProductQueryService {
         tags: { with: { tag: true } },
       },
     });
+    return this.enrichProducts(data);
   }
 
   async retrieve(idOrHandle: string) {
@@ -467,7 +703,7 @@ export class ProductQueryService {
       throw new Error(`Product with id/handle ${idOrHandle} not found`);
     }
 
-    return product;
+    return (await this.enrichProducts([product]))[0];
   }
 
   /**
@@ -488,6 +724,8 @@ export class ProductQueryService {
       categoryId,
       tagId,
       collectionId,
+      attributeCode,
+      attributeValue,
     } = searchFilters;
 
     // Add collection filter
@@ -514,17 +752,66 @@ export class ProductQueryService {
 
     // Text Search (Title, Description, Handle)
     if (query) {
-      const safePattern = `%${escapeLikeWildcards(query.toLowerCase())}%`;
-      const matchTitle = sql`lower(${products.title}) LIKE ${safePattern}`;
-      const matchDesc = sql`lower(${products.description}) LIKE ${safePattern}`;
+      const normalizedQuery = query.toLowerCase().trim();
+      const synonymRows = await db
+        .select()
+        .from(search_synonyms)
+        .where(eq(search_synonyms.locale, 'en'));
+      const queryTerms = new Set([normalizedQuery]);
+
+      for (const row of synonymRows) {
+        const synonyms = Array.isArray(row.synonyms) ? row.synonyms : [];
+        if (row.normalized_term === normalizedQuery || synonyms.includes(normalizedQuery)) {
+          queryTerms.add(row.normalized_term);
+          synonyms.forEach((term) => queryTerms.add(String(term).toLowerCase()));
+        }
+      }
+
+      const termConditions = Array.from(queryTerms).flatMap((term) => {
+        const safePattern = `%${escapeLikeWildcards(term)}%`;
+        return [
+          sql`search_vector @@ websearch_to_tsquery('english', ${term})`,
+          sql`lower(${products.title}) LIKE ${safePattern}`,
+          sql`lower(${products.subtitle}) LIKE ${safePattern}`,
+          sql`lower(${products.description}) LIKE ${safePattern}`,
+          sql`lower(${products.material}) LIKE ${safePattern}`,
+          sql`similarity(lower(${products.title}), ${term}) > 0.22`,
+        ];
+      });
 
       // Combine with OR
-      conditions.push(or(matchTitle, matchDesc) as ReturnType<typeof eq>);
+      conditions.push(or(...termConditions) as ReturnType<typeof eq>);
     }
 
     // Filters
     if (status) {
       conditions.push(eq(products.status, status));
+    }
+
+    if (attributeCode && attributeValue) {
+      const attrMatches = await db
+        .select({ product_id: product_attribute_values.product_id })
+        .from(product_attribute_values)
+        .leftJoin(product_attributes, eq(product_attribute_values.attribute_id, product_attributes.id))
+        .leftJoin(attribute_values, eq(product_attribute_values.value_id, attribute_values.id))
+        .where(
+          and(
+            eq(product_attributes.code, attributeCode),
+            or(
+              eq(attribute_values.slug, attributeValue),
+              eq(attribute_values.label, attributeValue),
+              sql`lower(coalesce(${product_attribute_values.raw_value}, '')) = ${attributeValue.toLowerCase()}`
+            )
+          )
+        );
+
+      if (attrMatches.length === 0) return [];
+      conditions.push(
+        inArray(
+          products.id,
+          attrMatches.map((match) => match.product_id)
+        )
+      );
     }
 
     // Category Filter
@@ -606,7 +893,51 @@ export class ProductQueryService {
       );
     }
 
-    return processedResults;
+    let usedVectorFallback = false;
+    if (query && processedResults.length === 0) {
+      const embedding = await embedText(query).catch(() => null);
+      if (embedding) {
+        const vectorLiteral = toVectorLiteral(embedding);
+        const vectorRows = await db
+          .select({
+            product_id: product_embeddings.product_id,
+            distance: sql<number>`${product_embeddings.embedding} <=> ${vectorLiteral}::vector`,
+          })
+          .from(product_embeddings)
+          .where(sql`${product_embeddings.embedding} is not null`)
+          .orderBy(sql`${product_embeddings.embedding} <=> ${vectorLiteral}::vector`)
+          .limit(20);
+
+        const candidateIds = vectorRows.map((row) => row.product_id);
+        if (candidateIds.length > 0) {
+          const vectorProducts = await db.query.products.findMany({
+            where: and(inArray(products.id, candidateIds), status ? eq(products.status, status) : undefined),
+            with: {
+              variants: { with: { prices: true } },
+              images: true,
+              collection: true,
+              categories: { with: { category: true } },
+              tags: { with: { tag: true } },
+            },
+          });
+          const ordered = candidateIds
+            .map((id) => vectorProducts.find((product) => product.id === id))
+            .filter((product): product is (typeof vectorProducts)[number] => Boolean(product));
+          processedResults = ordered.map((product) => ({ ...product, price: 0 }));
+          usedVectorFallback = processedResults.length > 0;
+        }
+      }
+    }
+
+    await db.insert(search_query_logs).values({
+      query,
+      normalized_query: query.toLowerCase().trim(),
+      result_count: processedResults.length,
+      source: 'storefront',
+      metadata: usedVectorFallback ? { fallback: 'vector' } : undefined,
+    }).catch(() => undefined);
+
+    return this.enrichProducts(processedResults);
   }
 
   /**

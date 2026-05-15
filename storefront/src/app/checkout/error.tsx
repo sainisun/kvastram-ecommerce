@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, RefreshCw, ShoppingBag } from 'lucide-react';
+import { storefrontTrust } from '@/config/storefront-trust';
 
 export default function CheckoutError({
   error,
@@ -34,6 +35,34 @@ export default function CheckoutError({
           <p className="text-body-sm text-stone-500 mb-8">
             Please try again. If the problem persists, contact our support team.
           </p>
+
+          <div className="mb-8 rounded-md border border-stone-200 bg-stone-50 p-4 text-left text-body-sm text-stone-600">
+            <p className="font-medium text-stone-900">Need help before retrying?</p>
+            <p className="mt-2">
+              If you are unsure whether a payment was charged, use payment help
+              or contact support before placing another attempt.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3 text-body-xs uppercase tracking-token-wider">
+              <Link
+                href={storefrontTrust.policyRoutes.paymentHelp}
+                className="text-stone-900 underline underline-offset-4"
+              >
+                Payment Help
+              </Link>
+              <Link
+                href={storefrontTrust.policyRoutes.contact}
+                className="text-stone-900 underline underline-offset-4"
+              >
+                Contact Support
+              </Link>
+              <Link
+                href={storefrontTrust.policyRoutes.track}
+                className="text-stone-900 underline underline-offset-4"
+              >
+                Track Order
+              </Link>
+            </div>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button

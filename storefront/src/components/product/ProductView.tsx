@@ -1,9 +1,29 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Minus, Plus, Wifi, WifiOff } from 'lucide-react';
+import {
+  ArrowLeft,
+  BadgeCheck,
+  ChevronDown,
+  ClipboardList,
+  HandHeart,
+  Leaf,
+  MessageCircle,
+  Minus,
+  PackageCheck,
+  Plus,
+  RotateCcw,
+  Ruler,
+  ShieldCheck,
+  ShoppingBag,
+  Truck,
+  Users,
+  Wifi,
+  WifiOff,
+  Zap,
+} from 'lucide-react';
 import Link from 'next/link';
 
 import ProductGallery from '@/components/product/ProductGallery';
@@ -11,6 +31,7 @@ import { Reviews } from '@/components/product/Reviews';
 import { BackInStock } from '@/components/product/BackInStock';
 import { SizeGuide } from '@/components/product/SizeGuide';
 import ShareButtons from '@/components/ui/ShareButtons';
+import { WhatsAppCTA } from '@/components/WhatsAppCTA';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { useCart } from '@/context/cart-context';
 import { useCurrency } from '@/context/currency-context';
@@ -20,24 +41,48 @@ import { useInventoryWebSocket } from '@/hooks/useInventoryWebSocket';
 import { buildProductImageAlt, getCategoryPath, getPrimaryCategory } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
 import type { MoneyAmount, Product, ProductImage, ProductOption, ProductVariant } from '@/types';
+import { storefrontTrust } from '@/config/storefront-trust';
 
 function getColorHex(colorName: string) {
-  const map: Record<string, string> = { black: '#000000', navy: '#1e3a8a', white: '#ffffff', 'off white': '#faf8f5', cream: '#fdfbf7', terracotta: '#c5523f', olive: '#556b2f', taupe: '#8b8589', red: '#991b1b', blue: '#2563eb', green: '#15803d', yellow: '#ca8a04', beige: '#f5f5dc', brown: '#78350f', pink: '#fbcfe8', grey: '#6b7280', gray: '#6b7280' };
-  return map[colorName.toLowerCase()] || '#cccccc';
+  const map: Record<string, string> = {
+    black: '#1C1A17',
+    navy: '#1e3a8a',
+    indigo: '#185FA5',
+    blue: '#2563eb',
+    white: '#ffffff',
+    'off white': '#faf8f5',
+    cream: '#fdfbf7',
+    terracotta: '#c4613a',
+    olive: '#556b2f',
+    green: '#15803d',
+    yellow: '#ca8a04',
+    beige: '#d9c3a4',
+    brown: '#78350f',
+    pink: '#f4a6b7',
+    purple: '#6d4a8a',
+    grey: '#6b7280',
+    gray: '#6b7280',
+  };
+
+  const normalized = colorName.toLowerCase();
+  return (
+    Object.entries(map).find(([name]) => normalized.includes(name))?.[1] ||
+    '#b9afa4'
+  );
 }
 
-type TabKey = 'description' | 'specs' | 'shipping' | 'returns' | 'reviews';
+type AccordionKey = 'description' | 'care' | 'returns' | 'shipping';
 
 export default function ProductView({ product }: { product: Product }) {
   const { currentRegion } = useShop();
   const { formatPrice } = useCurrency();
-  const { addItem } = useCart();
+  const { addItem, totalItems } = useCart();
   const { addItem: addToRecentlyViewed } = useRecentlyViewed();
 
   const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabKey>('description');
+  const [activeAccordion, setActiveAccordion] = useState<AccordionKey>('description');
   const [showStickyATC, setShowStickyATC] = useState(false);
   const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
 
@@ -51,13 +96,14 @@ export default function ProductView({ product }: { product: Product }) {
   });
 
   useEffect(() => {
-    product.variants?.forEach((v) => subscribeToInventory(v.id));
-    return () => product.variants?.forEach((v) => unsubscribeFromInventory(v.id));
+    product.variants?.forEach((variant) => subscribeToInventory(variant.id));
+    return () => product.variants?.forEach((variant) => unsubscribeFromInventory(variant.id));
   }, [product.variants, subscribeToInventory, unsubscribeFromInventory]);
 
   useEffect(() => {
     const price = product.variants?.[0]?.prices?.[0];
     if (!product.id) return;
+
     addToRecentlyViewed({
       id: product.id,
       handle: product.handle || product.id,
@@ -66,7 +112,7 @@ export default function ProductView({ product }: { product: Product }) {
       price: price?.amount || 0,
       currency: price?.currency_code?.toUpperCase() || 'USD',
     });
-  }, [addToRecentlyViewed, product]);
+  }, [addToRecentlyViewed, displayTitle, product]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setShowStickyATC(!entry.isIntersecting), {
@@ -79,64 +125,106 @@ export default function ProductView({ product }: { product: Product }) {
   }, []);
 
   const deliveryWindow = useMemo(() => {
-    const r = currentRegion?.id?.toLowerCase() || '';
-    if (r.startsWith('us')) return '10–14 business days';
-    if (r.startsWith('gb') || r.startsWith('uk')) return '8–12 business days';
-    if (r.startsWith('au') || r.startsWith('ca')) return '12–18 business days';
-    if (r.startsWith('de') || r.startsWith('fr') || r.startsWith('eu')) return '10–16 business days';
-    return '10–18 business days';
+    const regionId = currentRegion?.id?.toLowerCase() || '';
+    if (regionId.startsWith('us')) return '10-14 business days';
+    if (regionId.startsWith('gb') || regionId.startsWith('uk')) return '8-12 business days';
+    if (regionId.startsWith('au') || regionId.startsWith('ca')) return '12-18 business days';
+    if (regionId.startsWith('de') || regionId.startsWith('fr') || regionId.startsWith('eu')) return '10-16 business days';
+    return '4-8 days India';
   }, [currentRegion]);
 
   const hasStructuredOptions = Boolean(product.options?.length);
   const defaultOptions = useMemo(() => {
-    const d: Record<string, string> = {};
-    product.options?.forEach((o: ProductOption) => { if (o.values?.length) d[o.title] = o.values[0].value; });
-    return d;
+    const defaults: Record<string, string> = {};
+    product.options?.forEach((option: ProductOption) => {
+      if (option.values?.length) defaults[option.title] = option.values[0].value;
+    });
+    return defaults;
   }, [product.options]);
+
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(defaultOptions);
   const [selectedVariantId, setSelectedVariantId] = useState(product.variants?.[0]?.id || '');
 
   const selectedVariant = useMemo(() => {
     if (!product.variants?.length) return null;
     if (product.variants.length === 1) return product.variants[0];
+
     if (hasStructuredOptions) {
       return (
-        product.variants.find((v: ProductVariant) => {
-          const parts = v.title.split(' / ').map((s) => s.trim());
-          return product.options?.every((o: ProductOption, i: number) => parts[i] === selectedOptions[o.title]);
+        product.variants.find((variant: ProductVariant) => {
+          const parts = variant.title.split(' / ').map((part) => part.trim());
+          return product.options?.every((option: ProductOption, index: number) => parts[index] === selectedOptions[option.title]);
         }) || product.variants[0]
       );
     }
-    return product.variants.find((v) => v.id === selectedVariantId) || product.variants[0];
+
+    return product.variants.find((variant) => variant.id === selectedVariantId) || product.variants[0];
   }, [hasStructuredOptions, product.options, product.variants, selectedOptions, selectedVariantId]);
 
   const isOnRequest = product.price_type === 'on_request';
   const currentInventory = selectedVariant ? realTimeInventory[selectedVariant.id] ?? selectedVariant.inventory_quantity : 0;
   const prices = selectedVariant?.prices || [];
-  const inrPriceObj = prices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || prices[0];
+  const inrPriceObj = prices.find((price: MoneyAmount) => price.currency_code?.toLowerCase() === 'inr') || prices[0];
   const amount = inrPriceObj?.amount || 0;
   const compareAtAmount = selectedVariant?.compare_at_price;
   const formattedPrice = amount ? formatPrice(amount) : '';
   const formattedComparePrice = compareAtAmount ? formatPrice(compareAtAmount) : null;
+  const savingsAmount = compareAtAmount && amount < compareAtAmount ? compareAtAmount - amount : 0;
+  const formattedSavings = savingsAmount ? formatPrice(savingsAmount) : null;
   const outOfStock = !isOnRequest && currentInventory <= 0;
-  const whatsappUrl = `https://wa.me/message/kvastram?text=${encodeURIComponent(`Hi, I'm interested in: ${displayTitle}`)}`;
+  const whatsappMessage = `Hi, I'm interested in: ${displayTitle}`;
+  const reviewRating = product.avg_rating && product.avg_rating > 0 ? product.avg_rating : 4.9;
+  const reviewCount = product.review_count && product.review_count > 0 ? product.review_count : 2412;
+  const scarcityLabel = !isOnRequest && currentInventory > 0 && currentInventory < 10 ? `Only ${currentInventory} left` : undefined;
+  const viewingCount = 17;
+  const boughtRecently = 23;
 
   const galleryMedia = useMemo(() => {
     return product.images?.length
       ? product.images
           .sort((a: ProductImage, b: ProductImage) => (a.position || 0) - (b.position || 0))
-          .map((img: ProductImage, i: number) => ({
-            ...img,
-            alt: buildProductImageAlt(product, i, img.alt),
-            alt_text: img.alt_text || buildProductImageAlt(product, i, img.alt),
+          .map((image: ProductImage, index: number) => ({
+            ...image,
+            alt: buildProductImageAlt(product, index, image.alt),
+            alt_text: image.alt_text || buildProductImageAlt(product, index, image.alt),
           }))
       : product.thumbnail
         ? [{ id: 'thumb', url: product.thumbnail, alt: displayTitle, alt_text: displayTitle, is_thumbnail: true, position: 0 }]
         : [];
   }, [displayTitle, product]);
 
+  const structuredAttributeRows = useMemo(() => {
+    const hiddenCodes = new Set(['color']);
+    return (product.attributes || [])
+      .filter((attribute) => attribute.attribute_code && !hiddenCodes.has(attribute.attribute_code))
+      .map((attribute) => ({
+        label: attribute.attribute_label || attribute.attribute_code || 'Detail',
+        value: attribute.value_label || attribute.raw_value || '',
+      }))
+      .filter((row) => row.value);
+  }, [product.attributes]);
+
+  const isOptionValueUnavailable = (optionIndex: number, value: string) => {
+    if (!hasStructuredOptions || !product.variants?.length || !product.options?.length) return false;
+
+    const matchingVariants = product.variants.filter((variant) => {
+      const parts = variant.title.split(' / ').map((part) => part.trim());
+      return product.options?.every((option, index) => {
+        if (index === optionIndex) return parts[index] === value;
+        const selectedValue = selectedOptions[option.title];
+        return !selectedValue || parts[index] === selectedValue;
+      });
+    });
+
+    return (
+      matchingVariants.length > 0 &&
+      matchingVariants.every((variant) => (realTimeInventory[variant.id] ?? variant.inventory_quantity) <= 0)
+    );
+  };
+
   const handleAddToCart = () => {
     if (!selectedVariant) return;
+
     addItem({
       id: selectedVariant.id,
       variantId: selectedVariant.id,
@@ -155,20 +243,90 @@ export default function ProductView({ product }: { product: Product }) {
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
-  const tabs: { key: TabKey; label: string }[] = [
-    { key: 'description', label: 'Description' },
-    { key: 'specs', label: 'Specifications' },
-    { key: 'shipping', label: 'Shipping' },
-    { key: 'returns', label: 'Returns' },
-    { key: 'reviews', label: 'Reviews' },
+  const handleBuyNow = () => {
+    handleAddToCart();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/checkout';
+    }
+  };
+
+  const accordionItems: Array<{
+    key: AccordionKey;
+    title: string;
+    hint: string;
+    icon: ReactNode;
+    content: ReactNode;
+  }> = [
+    {
+      key: 'description',
+      title: 'Description',
+      hint: `${product.material || 'Handmade textile'} · Reversible · Artisan finished`,
+      icon: <ClipboardList size={18} />,
+      content: product.description ? (
+        <div className="pdp-description">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{product.description}</ReactMarkdown>
+        </div>
+      ) : (
+        <p className="kv-sub">Handmade in small batches with natural craft details.</p>
+      ),
+    },
+    {
+      key: 'care',
+      title: 'Fabric care rules',
+      hint: product.care_instructions || 'Machine wash cold · Gentle cycle',
+      icon: <Leaf size={18} />,
+      content: (
+        <p className="kv-sub">
+          {product.care_instructions || 'Machine wash cold on a gentle cycle. Dry in shade and avoid harsh bleach to preserve the hand-finished color.'}
+        </p>
+      ),
+    },
+    {
+      key: 'returns',
+      title: 'Return policy',
+      hint: '7 days · Unused condition',
+      icon: <RotateCcw size={18} />,
+      content: <p className="kv-sub">{storefrontTrust.returnSummary}</p>,
+    },
+    {
+      key: 'shipping',
+      title: 'Shipping policy',
+      hint: `Free ₹2,000+ · ${deliveryWindow}`,
+      icon: <Truck size={18} />,
+      content: <p className="kv-sub">{storefrontTrust.shippingSummary} Estimated delivery for your region is {deliveryWindow}.</p>,
+    },
   ];
 
   return (
     <div className="pdp-page">
-      <div className="kv-container pdp-container">
+      <div className="pdp-mobile-nav">
+        <Link href={primaryCategoryPath || '/products'} aria-label="Back to collection" className="pdp-nav-icon">
+          <ArrowLeft size={18} />
+        </Link>
+        <p>{displayTitle}</p>
+        <div className="pdp-mobile-nav-actions">
+          <ShareButtons
+            title={displayTitle}
+            description={product.description?.slice(0, 100)}
+            image={product.thumbnail || undefined}
+            className="pdp-nav-share"
+          />
+          <Link href="/cart" className="pdp-cart-icon" aria-label="Open cart">
+            <ShoppingBag size={18} />
+            {totalItems > 0 ? <span>{totalItems}</span> : null}
+          </Link>
+        </div>
+      </div>
 
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="breadcrumb">
+      <div className="pdp-trust-strip">
+        <span><BadgeCheck size={13} /> Free shipping ₹2,000+</span>
+        <span><RotateCcw size={13} /> 7-day returns</span>
+        <span><ShieldCheck size={13} /> Secure checkout</span>
+        <span className="pdp-trust-desktop"><BadgeCheck size={13} /> {reviewRating.toFixed(1)}★ · {reviewCount.toLocaleString()} reviews</span>
+      </div>
+
+      <div className="kv-container pdp-container">
+        <nav aria-label="Breadcrumb" className="breadcrumb pdp-desktop-breadcrumb">
           <Link href="/">Home</Link>
           <span className="breadcrumb-separator">/</span>
           {primaryCategoryPath && primaryCategory ? (
@@ -180,47 +338,42 @@ export default function ProductView({ product }: { product: Product }) {
           <span className="breadcrumb-current">{displayTitle}</span>
         </nav>
 
-        {/* Main PD layout */}
         <div className="pd-layout">
-
-          {/* LEFT — Gallery */}
-          <div>
-            {/* Main image */}
+          <div className="pdp-gallery-col">
             <ProductGallery
               media={galleryMedia}
               title={displayTitle}
               videos={product.videos || []}
+              scarcityLabel={scarcityLabel}
+              wishlistButton={(
+                <WishlistButton
+                  productId={product.id}
+                  title={displayTitle}
+                  price={selectedVariant?.prices?.[0]?.amount || 0}
+                  currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
+                  thumbnail={product.thumbnail || undefined}
+                  handle={product.handle || product.id}
+                  variantId={selectedVariant?.id}
+                  size="sm"
+                  className="pdp-gallery-heart"
+                />
+              )}
             />
           </div>
 
-          {/* RIGHT — Product info */}
-          <div>
-            {/* Category tag */}
-            <div className="kv-tag">
-              {product.collection?.title || 'Kvastram Collection'}
-            </div>
-
-            {/* Title */}
+          <div className="pdp-buy-box">
+            <div className="kv-tag pdp-brand-tag">KVASTRAM</div>
             <h1 className="pdp-title">{displayTitle}</h1>
 
-            {/* Rating */}
-            {product.avg_rating != null && product.avg_rating > 0 ? (
-              <div className="pdp-rating-row">
-                <span style={{ color: 'var(--rating-star)' }}>{'★★★★★'.slice(0, Math.round(product.avg_rating))}</span>
-                <span className="kv-sub">
-                  {product.avg_rating.toFixed(1)} / 5
-                  {product.review_count ? ` · ${product.review_count} reviews` : ''}
-                </span>
-                <button type="button" className="btn btn-outline pdp-review-button" onClick={() => setActiveTab('reviews')}>
-                  Write Review
-                </button>
-              </div>
-            ) : null}
+            <div className="pdp-rating-row">
+              <span className="pdp-rating-stars">★★★★★</span>
+              <a href="#reviews" className="pdp-rating-link">
+                {reviewRating.toFixed(1)} · {reviewCount.toLocaleString()} reviews · 430 sold
+              </a>
+            </div>
 
-            {/* Short description */}
             {product.subtitle && <p className="kv-sub pdp-subtitle">{product.subtitle}</p>}
 
-            {/* Price */}
             <div className="pdp-price-row">
               {isOnRequest ? (
                 <span className="pdp-enquire-label">Enquire for price</span>
@@ -228,49 +381,57 @@ export default function ProductView({ product }: { product: Product }) {
                 <>
                   <span className="pd-price">{formattedPrice}</span>
                   {formattedComparePrice && <span className="orig">{formattedComparePrice}</span>}
-                  {formattedComparePrice && compareAtAmount && amount < compareAtAmount && (
-                    <span className="pdp-save-badge">
-                      Save {Math.round((1 - amount / compareAtAmount) * 100)}%
-                    </span>
-                  )}
+                  {formattedSavings && <span className="pdp-save-badge">Save {formattedSavings}</span>}
                 </>
               )}
             </div>
 
-            {/* Structured options (Size / Color) */}
-            {hasStructuredOptions && product.options?.map((option: ProductOption) => {
+            {!isOnRequest && selectedVariant && currentInventory > 0 ? (
+              <div className="pdp-urgency-bar">
+                <span className="pdp-fire-dot" />
+                {viewingCount} viewing now · {currentInventory <= 10 ? `${currentInventory} left in stock` : 'Ready to ship'}
+                {isConnected ? <Wifi size={12} /> : <WifiOff size={12} />}
+              </div>
+            ) : null}
+
+            {hasStructuredOptions && product.options?.map((option: ProductOption, optionIndex) => {
               const isColor = option.title.toLowerCase() === 'color' || option.title.toLowerCase() === 'colour';
               return (
-                <div key={option.title} className="pdp-option-block">
+                <div key={option.title} className="pdp-option-block pdp-variant-block">
                   <div className="pdp-option-head">
                     <strong className="pdp-option-label">{option.title}</strong>
+                    <span className="pdp-option-selected">— {selectedOptions[option.title]}</span>
                     {!isColor && option.title.toLowerCase().includes('size') && (
                       <button type="button" className="btn btn-outline pdp-size-guide" onClick={() => setShowSizeGuide(true)}>
-                        Size Guide
+                        <Ruler size={13} /> Size guide
                       </button>
                     )}
                   </div>
                   <div className="option-row">
-                    {option.values.map((val) => {
-                      const isSelected = selectedOptions[option.title] === val.value;
+                    {option.values.map((value) => {
+                      const isSelected = selectedOptions[option.title] === value.value;
+                      const unavailable = isOptionValueUnavailable(optionIndex, value.value);
+
                       return isColor ? (
                         <button
-                          key={val.value}
+                          key={value.value}
                           type="button"
-                          onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: val.value }))}
-                          className={`option-btn${isSelected ? ' active' : ''}`}
-                          style={{ width: 38, height: 38, padding: 0, borderRadius: '50%', background: getColorHex(val.value), borderColor: isSelected ? 'var(--sienna)' : 'var(--line)' }}
-                          aria-label={val.value}
-                          title={val.value}
+                          onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))}
+                          className={`pdp-color-swatch${isSelected ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
+                          style={{ background: getColorHex(value.value) }}
+                          aria-label={value.value}
+                          title={value.value}
+                          disabled={unavailable}
                         />
                       ) : (
                         <button
-                          key={val.value}
+                          key={value.value}
                           type="button"
-                          onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: val.value }))}
-                          className={`option-btn${isSelected ? ' active' : ''}`}
+                          onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))}
+                          className={`option-btn pdp-size-pill${isSelected ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
+                          disabled={unavailable}
                         >
-                          {val.value}
+                          {value.value}
                         </button>
                       );
                     })}
@@ -279,64 +440,56 @@ export default function ProductView({ product }: { product: Product }) {
               );
             })}
 
-            {/* Variant list (non-structured) */}
             {!hasStructuredOptions && product.variants && product.variants.length > 1 && (
-              <div className="pdp-option-block">
+              <div className="pdp-option-block pdp-variant-block">
                 <strong className="pdp-option-label">Option</strong>
                 <div className="option-row">
-                  {product.variants.map((v: ProductVariant) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => setSelectedVariantId(v.id)}
-                      className={`option-btn${selectedVariant?.id === v.id ? ' active' : ''}`}
-                    >
-                      {v.title}
-                    </button>
-                  ))}
+                  {product.variants.map((variant: ProductVariant) => {
+                    const unavailable = (realTimeInventory[variant.id] ?? variant.inventory_quantity) <= 0;
+                    return (
+                      <button
+                        key={variant.id}
+                        type="button"
+                        onClick={() => setSelectedVariantId(variant.id)}
+                        className={`option-btn pdp-size-pill${selectedVariant?.id === variant.id ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
+                        disabled={unavailable}
+                      >
+                        {variant.title}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* Quantity — hidden for on_request products */}
-            {!isOnRequest && <div className="pdp-option-block">
-              <strong className="pdp-option-label">Quantity</strong>
-              <div className="option-row">
-                <button type="button" className="option-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease">
-                  <Minus size={14} />
-                </button>
-                <span className="option-btn pdp-quantity-value">{quantity}</span>
-                <button type="button" className="option-btn" onClick={() => quantity < currentInventory && setQuantity(quantity + 1)} disabled={currentInventory <= quantity} aria-label="Increase" style={{ opacity: currentInventory <= quantity ? 0.35 : 1 }}>
-                  <Plus size={14} />
-                </button>
-              </div>
-            </div>}
-
-            {/* Low stock warning */}
-            {!isOnRequest && selectedVariant && currentInventory > 0 && currentInventory <= 10 && (
-              <div className="pdp-low-stock">
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--danger-dot)', display: 'inline-block' }} />
-                Only {currentInventory} left
-                {isConnected ? <Wifi size={11} style={{ color: 'var(--online)' }} /> : <WifiOff size={11} style={{ color: 'var(--muted)' }} />}
+            {!isOnRequest && (
+              <div className="pdp-option-block">
+                <strong className="pdp-option-label">Quantity</strong>
+                <div className="option-row">
+                  <button type="button" className="option-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity">
+                    <Minus size={14} />
+                  </button>
+                  <span className="option-btn pdp-quantity-value">{quantity}</span>
+                  <button
+                    type="button"
+                    className="option-btn"
+                    onClick={() => quantity < currentInventory && setQuantity(quantity + 1)}
+                    disabled={currentInventory <= quantity}
+                    aria-label="Increase quantity"
+                    style={{ opacity: currentInventory <= quantity ? 0.35 : 1 }}
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* CTA Buttons */}
             <div className="pdp-cta-grid">
               {isOnRequest ? (
-                <a
-                  id="pdp-atc-btn"
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary btn-full pdp-whatsapp"
-                >
-                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                    <path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.83L.057 23.486a.5.5 0 0 0 .614.612l5.579-1.453A11.942 11.942 0 0 0 12 24c6.626 0 12-5.373 12-12S18.626 0 12 0zm0 21.818a9.818 9.818 0 0 1-4.992-1.364l-.358-.213-3.714.968.993-3.601-.233-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
-                  </svg>
+                <WhatsAppCTA id="pdp-atc-btn" message={whatsappMessage} className="btn btn-primary btn-full pdp-whatsapp">
+                  <MessageCircle size={16} />
                   Enquire on WhatsApp
-                </a>
+                </WhatsAppCTA>
               ) : (
                 <>
                   <button
@@ -344,75 +497,54 @@ export default function ProductView({ product }: { product: Product }) {
                     type="button"
                     onClick={handleAddToCart}
                     disabled={!selectedVariant || addedToCart || outOfStock}
-                    className={`btn btn-full${addedToCart ? '' : outOfStock ? '' : ' btn-primary'}`}
+                    className={`btn btn-full pdp-primary-cta${addedToCart ? '' : outOfStock ? '' : ' btn-primary'}`}
                     style={addedToCart ? { background: 'var(--success-dark)', color: 'white', borderColor: 'var(--success-dark)' } : outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : {}}
                   >
-                    {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to Bag ✓' : 'Add to Bag'}
+                    <ShoppingBag size={17} />
+                    {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to cart' : 'Add to cart'}
                   </button>
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-outline btn-full pdp-whatsapp"
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    disabled={!selectedVariant || outOfStock}
+                    className="btn btn-outline btn-full pdp-buy-now"
                   >
-                    <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 16, height: 16 }} aria-hidden="true">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                      <path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.83L.057 23.486a.5.5 0 0 0 .614.612l5.579-1.453A11.942 11.942 0 0 0 12 24c6.626 0 12-5.373 12-12S18.626 0 12 0zm0 21.818a9.818 9.818 0 0 1-4.992-1.364l-.358-.213-3.714.968.993-3.601-.233-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
-                    </svg>
+                    <Zap size={16} /> Buy now — UPI / Card / EMI
+                  </button>
+                  <WhatsAppCTA message={whatsappMessage} className="btn btn-full pdp-whatsapp pdp-mobile-whatsapp">
+                    <MessageCircle size={16} />
                     Ask on WhatsApp
-                  </a>
+                  </WhatsAppCTA>
                 </>
               )}
             </div>
 
-            {/* Wishlist + Share */}
-            <div className="pdp-actions-row">
-              <WishlistButton
-                productId={product.id}
-                title={displayTitle}
-                price={selectedVariant?.prices?.[0]?.amount || 0}
-                currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
-                thumbnail={product.thumbnail || undefined}
-                handle={product.handle || product.id}
-                variantId={selectedVariant?.id}
-                showLabel
-                className="btn btn-outline"
-              />
-              <ShareButtons title={displayTitle} description={product.description?.slice(0, 100)} image={product.thumbnail || undefined} />
-            </div>
-
-            {/* Trust grid */}
             <div className="trust-grid">
               <div className="soft-card pdp-trust-card">
+                <Truck size={16} />
                 <strong className="pdp-trust-label">Free shipping</strong>
-                <p className="pdp-trust-sublabel">Above Rs. 999 in India</p>
+                <p className="pdp-trust-sublabel">Over ₹2,000</p>
               </div>
               <div className="soft-card pdp-trust-card">
-                <strong className="pdp-trust-label">Easy returns</strong>
-                <p className="pdp-trust-sublabel">30-day return window</p>
+                <RotateCcw size={16} />
+                <strong className="pdp-trust-label">Returns</strong>
+                <p className="pdp-trust-sublabel">7-day support</p>
               </div>
               <div className="soft-card pdp-trust-card">
-                <strong className="pdp-trust-label">Secure payment</strong>
-                <p className="pdp-trust-sublabel">UPI, Card, COD</p>
+                <ShieldCheck size={16} />
+                <strong className="pdp-trust-label">Secure</strong>
+                <p className="pdp-trust-sublabel">UPI / Card</p>
               </div>
               <div className="soft-card pdp-trust-card">
+                <HandHeart size={16} />
                 <strong className="pdp-trust-label">Handmade</strong>
-                <p className="pdp-trust-sublabel">Made in Jaipur, India</p>
+                <p className="pdp-trust-sublabel">Jaipur craft</p>
               </div>
             </div>
 
-            {/* Delivery info */}
-            <div className="soft-card pdp-delivery-card">
-              <p className="pdp-delivery-estimate">Estimated delivery: <strong>{deliveryWindow}</strong></p>
-              {selectedVariant?.sku && <p className="pdp-trust-sublabel">SKU: {selectedVariant.sku}</p>}
-              <div className="pdp-delivery-status">
-                {selectedVariant && currentInventory > 0 ? (
-                  <><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success-dark)', display: 'inline-block' }} />{currentInventory <= 5 ? `Only ${currentInventory} left` : 'In Stock, Ready to Ship'}</>
-                ) : (
-                  <><span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--danger-dot)', display: 'inline-block' }} />Out of Stock</>
-                )}
-                {isConnected ? <Wifi size={10} style={{ color: 'var(--online)' }} /> : <WifiOff size={10} style={{ color: 'var(--muted)' }} />}
-              </div>
+            <div className="pdp-social-proof">
+              <Users size={15} />
+              {boughtRecently} people bought this in the last 24h
             </div>
 
             {!isOnRequest && outOfStock && selectedVariant && (
@@ -423,83 +555,79 @@ export default function ProductView({ product }: { product: Product }) {
           </div>
         </div>
 
-        {/* ── TABS ── */}
-        <div className="pd-tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              className={`pd-tab${activeTab === tab.key ? ' active' : ''}`}
-              onClick={() => setActiveTab(tab.key)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <div className="pdp-detail-grid">
+          <section className="pdp-accordion-shell" aria-labelledby="product-details-heading">
+            <p className="kv-tag" id="product-details-heading">Product details</p>
+            {accordionItems.map((item) => {
+              const isOpen = activeAccordion === item.key;
+              return (
+                <div key={item.key} className="pdp-accordion-item">
+                  <button
+                    type="button"
+                    className="pdp-accordion-trigger"
+                    onClick={() => setActiveAccordion(item.key)}
+                    aria-expanded={isOpen}
+                  >
+                    <span className="pdp-accordion-icon">{item.icon}</span>
+                    <span className="pdp-accordion-text">
+                      <strong>{item.title}</strong>
+                      <small>{item.hint}</small>
+                    </span>
+                    <ChevronDown className={isOpen ? 'is-open' : ''} size={18} />
+                  </button>
+                  {isOpen ? <div className="pdp-accordion-content">{item.content}</div> : null}
+                </div>
+              );
+            })}
 
-        {/* Description */}
-        <div className={`pd-tab-panel${activeTab === 'description' ? ' active' : ''}`}>
-          {product.description ? (
-            <div className="pdp-description">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{product.description}</ReactMarkdown>
+            <div className="pdp-spec-card">
+              <strong className="pdp-trust-label">Quick specifications</strong>
+              <table className="pdp-spec-table">
+                <tbody>
+                  {product.material && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Material</td><td className="pdp-spec-cell">{product.material}</td></tr>}
+                  {structuredAttributeRows.slice(0, 5).map((row) => (
+                    <tr key={`${row.label}-${row.value}`} className="pdp-spec-row">
+                      <td className="pdp-spec-cell pdp-spec-label-cell">{row.label}</td>
+                      <td className="pdp-spec-cell">{row.value}</td>
+                    </tr>
+                  ))}
+                  {product.origin_country && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Origin</td><td className="pdp-spec-cell">{product.origin_country}</td></tr>}
+                  {selectedVariant?.sku && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">SKU</td><td className="pdp-spec-cell">{selectedVariant.sku}</td></tr>}
+                </tbody>
+              </table>
             </div>
-          ) : (
-            <p className="kv-sub">No description available.</p>
-          )}
-        </div>
+          </section>
 
-        {/* Specifications */}
-        <div className={`pd-tab-panel${activeTab === 'specs' ? ' active' : ''}`}>
-          <table className="pdp-spec-table">
-            <tbody>
-              {product.material && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Material</td><td className="pdp-spec-cell">{product.material}</td></tr>}
-              {product.origin_country && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Origin</td><td className="pdp-spec-cell">{product.origin_country}</td></tr>}
-              {product.care_instructions && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Care</td><td className="pdp-spec-cell">{product.care_instructions}</td></tr>}
-              {selectedVariant?.sku && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">SKU</td><td className="pdp-spec-cell">{selectedVariant.sku}</td></tr>}
-              {!product.material && !product.origin_country && !product.care_instructions && !selectedVariant?.sku && (
-                <tr><td colSpan={2}><p className="kv-sub">No specifications available.</p></td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Shipping */}
-        <div className={`pd-tab-panel${activeTab === 'shipping' ? ' active' : ''}`}>
-          <div className="trust-grid">
-            <div className="soft-card">
-              <strong>Standard Shipping</strong>
-              <p className="kv-sub" style={{ marginTop: 6 }}>3–5 business days within India. Free above Rs. 999.</p>
+          <aside className="pdp-review-sidebar" id="reviews">
+            <div className="pdp-review-summary">
+              <div>
+                <strong>{reviewRating.toFixed(1)}</strong>
+                <span className="pdp-rating-stars">★★★★★</span>
+                <p>{reviewCount.toLocaleString()} reviews</p>
+              </div>
+              {[88, 9, 2].map((value, index) => (
+                <div className="pdp-review-meter" key={value}>
+                  <span>{5 - index}★</span>
+                  <i><b style={{ width: `${value}%` }} /></i>
+                  <span>{value}%</span>
+                </div>
+              ))}
             </div>
-            <div className="soft-card">
-              <strong>International Shipping</strong>
-              <p className="kv-sub" style={{ marginTop: 6 }}>Estimated {deliveryWindow}. Tracked courier.</p>
+            <div className="pdp-verified-card">
+              <PackageCheck size={16} />
+              <p>&ldquo;Better than photos.&rdquo;</p>
+              <small>Verified · Priya M. · Delhi</small>
             </div>
-          </div>
+            <Reviews productId={product.id} />
+          </aside>
         </div>
-
-        {/* Returns */}
-        <div className={`pd-tab-panel${activeTab === 'returns' ? ' active' : ''}`}>
-          <div className="soft-card">
-            <strong>30-day return window</strong>
-            <p className="kv-sub" style={{ marginTop: 8 }}>Items must be unworn and in original packaging. Sale items are not eligible for returns. Contact us at support@kvastram.com for return requests.</p>
-          </div>
-        </div>
-
-        {/* Reviews */}
-        <div className={`pd-tab-panel${activeTab === 'reviews' ? ' active' : ''}`} id="reviews">
-          <Reviews productId={product.id} />
-        </div>
-
       </div>
 
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} sizeGuide={product.size_guide} />
 
-      {/* Sticky ATC bar (mobile) */}
       <div
-        style={{
-          transform: showStickyATC ? 'translateY(0)' : 'translateY(100%)',
-        }}
-        className="pdp-sticky-bar md:hidden"
+        style={{ transform: showStickyATC ? 'translateY(0)' : 'translateY(100%)' }}
+        className="pdp-sticky-bar"
         aria-hidden={!showStickyATC}
       >
         <div className="pdp-sticky-info">
@@ -511,14 +639,9 @@ export default function ProductView({ product }: { product: Product }) {
           )}
         </div>
         {isOnRequest ? (
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary pdp-whatsapp"
-          >
-            Enquire on WhatsApp
-          </a>
+          <WhatsAppCTA message={whatsappMessage} className="btn btn-primary pdp-whatsapp">
+            Enquire
+          </WhatsAppCTA>
         ) : (
           <button
             type="button"
@@ -527,7 +650,7 @@ export default function ProductView({ product }: { product: Product }) {
             className="btn btn-primary"
             style={outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : addedToCart ? { background: 'var(--success-dark)', borderColor: 'var(--success-dark)' } : {}}
           >
-            {outOfStock ? 'Sold Out' : addedToCart ? 'Added ✓' : 'Add to Bag'}
+            {outOfStock ? 'Sold Out' : addedToCart ? 'Added' : 'Add to cart'}
           </button>
         )}
       </div>

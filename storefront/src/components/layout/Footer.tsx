@@ -4,9 +4,12 @@ import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import { PaymentIcons } from '@/components/ui/SecurityBadges';
 import NewsletterForm from '@/components/NewsletterForm';
+import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
+import { storefrontTrust } from '@/config/storefront-trust';
 
 const shopLinks = [
   { label: 'New Arrivals', href: '/products?sort=newest' },
+  { label: 'Curated Edits', href: '/edits' },
   { label: 'Kantha Quilts & Throws', href: '/collections/kantha-essentials' },
   { label: 'Handmade Bags & Totes', href: '/categories/tote-bags' },
   { label: 'Block Print Clothing', href: '/collections/block-print-edit' },
@@ -16,13 +19,16 @@ const shopLinks = [
 ];
 
 const supportLinks = [
-  { label: 'Track Order', href: '/track' },
-  { label: 'Shipping & Returns', href: '/pages/shipping-returns' },
-  { label: 'Contact Us', href: '/contact' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'Size Guide', href: '/pages/size-guide' },
-  { label: 'Privacy Policy', href: '/pages/privacy-policy' },
-  { label: 'Terms of Service', href: '/pages/terms-of-service' },
+  { label: 'Help Center', href: storefrontTrust.policyRoutes.help },
+  { label: 'Track Order', href: storefrontTrust.policyRoutes.track },
+  { label: 'Shipping Policy', href: storefrontTrust.policyRoutes.shipping },
+  { label: 'Returns & Refunds', href: storefrontTrust.policyRoutes.returns },
+  { label: 'Payment Help', href: storefrontTrust.policyRoutes.paymentHelp },
+  { label: 'Contact Us', href: storefrontTrust.policyRoutes.contact },
+  { label: 'FAQ', href: storefrontTrust.policyRoutes.faq },
+  { label: 'Size Guide', href: '/size-guide' },
+  { label: 'Privacy Policy', href: storefrontTrust.policyRoutes.privacy },
+  { label: 'Terms of Service', href: storefrontTrust.policyRoutes.terms },
 ];
 
 const companyLinks = [
@@ -31,6 +37,26 @@ const companyLinks = [
   { label: 'What is Kantha?', href: '/journal/what-is-kantha' },
   { label: 'Slow Fashion Journal', href: '/journal' },
   { label: 'Wholesale / B2B', href: '/wholesale', highlight: true },
+];
+
+const mobileShopLinks = [
+  { label: 'New Arrivals', href: '/products?sort=newest' },
+  { label: 'Curated Edits', href: '/edits' },
+  { label: 'Best Sellers', href: '/products' },
+  { label: 'Collections', href: '/collections' },
+  { label: 'Shawls & Wraps', href: '/categories/scarves-wraps' },
+  { label: 'Kurtis & Tops', href: '/categories/suits-kurtas' },
+  { label: 'Accessories', href: '/categories/accessories' },
+  { label: 'Sale', href: '/sale' },
+];
+
+const mobileHelpLinks = [
+  { label: 'Help Center', href: storefrontTrust.policyRoutes.help },
+  { label: 'Track Order', href: storefrontTrust.policyRoutes.track },
+  { label: 'Shipping Policy', href: storefrontTrust.policyRoutes.shipping },
+  { label: 'Returns & Refunds', href: storefrontTrust.policyRoutes.returns },
+  { label: 'Contact Us', href: storefrontTrust.policyRoutes.contact },
+  { label: 'FAQ', href: storefrontTrust.policyRoutes.faq },
 ];
 
 const socialLinks = [
@@ -66,7 +92,7 @@ const socialLinks = [
   },
   {
     label: 'WhatsApp',
-    href: 'https://wa.me/message/kvastram',
+    href: buildWhatsAppHref('Hi, I need help from Kvastram'),
     icon: MessageCircle,
     color: 'hover:text-green-500',
   },
@@ -128,9 +154,71 @@ const socialLinks = [
   },
 ];
 
+function MobileFooter() {
+  return (
+    <div className="bg-[#f5f0eb] md:hidden">
+      <div className="grid grid-cols-2 gap-8 px-6 py-16">
+        <div>
+          <h4 className="mb-6 text-body-xs type-semibold uppercase tracking-token-wide text-stone-700">
+            Shop
+          </h4>
+          <div className="space-y-3">
+            {mobileShopLinks.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="block text-body-md type-regular leading-token-relaxed text-stone-900 transition-colors hover:text-stone-600"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h4 className="mb-6 text-body-xs type-semibold uppercase tracking-token-wide text-stone-700">
+            Help
+          </h4>
+          <div className="space-y-3">
+            {mobileHelpLinks.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="block text-body-md type-regular leading-token-relaxed text-stone-900 transition-colors hover:text-stone-600"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-stone-200 px-6 py-6">
+        <div className="flex items-center justify-center gap-4 text-stone-500">
+          {socialLinks.slice(0, 3).map(({ label, href, icon: Icon, color }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              className={`transition-colors ${color}`}
+            >
+              <Icon size={16} />
+            </a>
+          ))}
+        </div>
+        <p className="mt-4 text-center text-body-xs text-stone-500">
+          Copyright {new Date().getFullYear()} Kvastram. All rights reserved.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function DesktopFooter() {
   return (
-    <div className="kvastram-footer bg-[#1a1614] text-[#f8f3ec]">
+    <div className="kvastram-footer hidden bg-[#1a1614] text-[#f8f3ec] md:block">
       <div
         className="footer-watermark-prem overflow-hidden px-6 pt-8 sm:px-8 md:px-12 md:pt-10"
         aria-hidden="true"
@@ -151,8 +239,10 @@ function DesktopFooter() {
               finest artisanal craftsmanship from India and beyond.
             </p>
             <div className="kf-muted font-body space-y-3 text-body-xs type-light text-[#c9beb3]">
-              <p>support@kvastram.com</p>
-              <p>Mon-Fri, 9am-6pm IST</p>
+              <p>{storefrontTrust.supportEmail}</p>
+              <p>{storefrontTrust.supportPhone}</p>
+              <p>{storefrontTrust.supportHours}</p>
+              <p>{storefrontTrust.locationLabel}</p>
             </div>
             <div className="flex flex-wrap gap-3 pt-2">
               {socialLinks.map(({ label, href, icon: Icon, color }) => (
@@ -250,19 +340,19 @@ function DesktopFooter() {
             <p>Copyright {new Date().getFullYear()} Kvastram. All rights reserved.</p>
             <div className="flex gap-6">
               <Link
-                href="/pages/privacy-policy"
+                href={storefrontTrust.policyRoutes.privacy}
                 className="kf-legal-link font-body transition-colors hover:text-white"
               >
                 Privacy
               </Link>
               <Link
-                href="/pages/terms-of-service"
+                href={storefrontTrust.policyRoutes.terms}
                 className="kf-legal-link font-body transition-colors hover:text-white"
               >
                 Terms
               </Link>
               <Link
-                href="/pages/cookie-policy"
+                href={storefrontTrust.policyRoutes.cookies}
                 className="kf-legal-link font-body transition-colors hover:text-white"
               >
                 Cookies
@@ -278,6 +368,7 @@ function DesktopFooter() {
 export function Footer() {
   return (
     <footer>
+      <MobileFooter />
       <DesktopFooter />
     </footer>
   );

@@ -115,6 +115,12 @@ interface OrderStats {
   avg_order_value: number;
 }
 
+interface FulfillmentMetrics {
+  due_today: number;
+  overdue: number;
+  missing_tracking: number;
+}
+
 const FILTERS: Array<{ label: string; value: OrderFilter }> = [
   { label: 'All', value: 'all' },
   { label: 'Pending', value: 'pending' },
@@ -288,6 +294,7 @@ export default function OrdersPage() {
   const searchParams = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<OrderStats | null>(null);
+  const [fulfillmentMetrics, setFulfillmentMetrics] = useState<FulfillmentMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const [statusFilter, setStatusFilter] = useState<OrderFilter>(() =>
@@ -330,11 +337,16 @@ export default function OrdersPage() {
 
   const fetchStats = async () => {
     try {
-      const data = await api.getOrderStats();
-      setStats(data || null);
+      const [orderStats, fulfillmentStats] = await Promise.all([
+        api.getOrderStats(),
+        api.getFulfillmentMetrics(),
+      ]);
+      setStats(orderStats || null);
+      setFulfillmentMetrics(fulfillmentStats || null);
     } catch (error) {
       console.error('Failed to fetch order stats:', error);
       setStats(null);
+      setFulfillmentMetrics(null);
     }
   };
 
@@ -382,10 +394,13 @@ export default function OrdersPage() {
         }).length;
   }, [openFilter, orders, queueTab]);
 
-  const getName = (order: Order) =>
-    order.customer_first_name && order.customer_last_name
-      ? `${order.customer_first_name} ${order.customer_last_name}`
-      : 'Guest customer';
+  const getName = (order: Order) => {
+    const fullName = [order.customer_first_name, order.customer_last_name]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+    return fullName || 'Guest customer';
+  };
 
   const toggleOne = (id: string) => {
     const next = new Set(selectedOrders);
@@ -454,8 +469,26 @@ export default function OrdersPage() {
       } as Record<OrderFilter, number | undefined>
     )[value] || 0;
 
-  const attentionCount = orders.filter((order) => order.workflow?.needs_attention).length;
-  const overdueCount = orders.filter((order) => order.workflow?.overdue_ship_by).length;
+  const attentionCount =
+    (fulfillmentMetrics?.overdue ?? orders.filter((order) => order.workflow?.overdue_ship_by).length) +
+    (fulfillmentMetrics?.missing_tracking ??
+      orders.filter(
+        (order) =>
+          order.workflow?.status === 'processing' &&
+          !order.workflow?.has_tracking &&
+          order.workflow?.primary_package?.no_tracking !== true
+      ).length);
+  const overdueCount =
+    fulfillmentMetrics?.overdue ??
+    orders.filter((order) => order.workflow?.overdue_ship_by).length;
+  const missingTrackingCount =
+    fulfillmentMetrics?.missing_tracking ??
+    orders.filter(
+      (order) =>
+        order.workflow?.status === 'processing' &&
+        !order.workflow?.has_tracking &&
+        order.workflow?.primary_package?.no_tracking !== true
+    ).length;
   const totalOrders = stats?.total_orders || 0;
   const hasActiveFilters =
     search.length > 0 ||
@@ -512,7 +545,13 @@ export default function OrdersPage() {
           label="Needs Attention"
           value={attentionCount}
           icon={CircleAlert}
-          hint={overdueCount > 0 ? `${overdueCount} ship-by overdue` : 'Review flagged orders'}
+          hint={
+            attentionCount > 0
+              ? `${overdueCount} ship-by overdue${
+                  missingTrackingCount > 0 ? ` · ${missingTrackingCount} missing tracking` : ''
+                }`
+              : 'Review flagged orders'
+          }
           tone={attentionCount > 0 ? 'warning' : 'default'}
         />
         <MetricCard

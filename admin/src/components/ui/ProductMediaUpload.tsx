@@ -3,8 +3,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 
-// Cloudinary HEIC/HEIF images can't be displayed by browsers directly.
-// Adding f_auto makes Cloudinary serve WebP/JPEG instead.
+// Cloudinary delivery uses f_auto/q_auto, but uploads are restricted to browser-safe source formats.
 function toDisplayUrl(url: string): string {
   if (!url || !url.includes('res.cloudinary.com')) return url;
   if (url.includes('/f_auto')) return url;
@@ -254,7 +253,7 @@ function SortableMediaCard({
               Poster
               <input
                 type="file"
-                accept=".jpg,.jpeg,.png,.webp,.heic,.heif,image/jpeg,image/png,image/webp,image/heic,image/heif"
+                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                 className="hidden"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
@@ -489,8 +488,6 @@ export default function ProductMediaUpload({
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/png': ['.png'],
       'image/webp': ['.webp'],
-      'image/heic': ['.heic'],
-      'image/heif': ['.heif'],
       'video/mp4': ['.mp4'],
       'video/quicktime': ['.mov'],
     },
@@ -557,7 +554,7 @@ export default function ProductMediaUpload({
             : 'Drag and drop media, or click to browse'}
         </p>
         <p className="mt-2 text-sm text-gray-500">
-          JPG, PNG, WEBP, HEIC up to 50MB each. MP4 or MOV up to 50MB each.
+          JPG, PNG, or WEBP up to 50MB each. MP4 or MOV up to 50MB each.
         </p>
         <p className="mt-1 text-sm text-gray-500">
           Portrait media works best for the new mobile-first product page.

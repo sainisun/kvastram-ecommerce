@@ -33,6 +33,11 @@ const MIGRATION_FILES = [
   '20260430_add_studio_inquiry_messages.sql',
   '20260430_storefront_prototype_parity.sql',
   '20260507_add_security_events.sql',
+  '20260508_populate_ai_seo_defaults.sql',
+  '20260509_collection_seo_controls.sql',
+  '20260509_normalize_trailing_dash_handles.sql',
+  '20260509_product_search_vector.sql',
+  '20260509_seo_gap_closure.sql',
   '20260509_privacy_policy_update.sql',
 ];
 

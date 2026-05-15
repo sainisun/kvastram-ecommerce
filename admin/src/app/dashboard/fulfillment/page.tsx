@@ -110,9 +110,11 @@ function formatDate(value?: string | null) {
 }
 
 function customerName(order: FulfillmentOrder) {
-  return order.customer_first_name && order.customer_last_name
-    ? `${order.customer_first_name} ${order.customer_last_name}`
-    : 'Guest customer';
+  const fullName = [order.customer_first_name, order.customer_last_name]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  return fullName || 'Guest customer';
 }
 
 function isDueToday(order: FulfillmentOrder) {
@@ -249,6 +251,9 @@ export default function FulfillmentPage() {
   const overdueMetric = metrics?.overdue ?? overdueCount;
   const missingTrackingMetric =
     metrics?.missing_tracking ?? missingTrackingCount;
+  const openQueueCount = orders.filter((order) =>
+    ['pending', 'processing'].includes(order.status.toLowerCase())
+  ).length;
 
   return (
     <div className="space-y-6 px-4 pb-8 md:px-8">
@@ -513,7 +518,7 @@ export default function FulfillmentPage() {
                   className="flex items-center justify-between rounded-[1rem] bg-white px-4 py-3 text-sm font-medium text-[var(--kv-text)]"
                 >
                   <span>Open queue</span>
-                  <span>{counts.new + counts.due_today + counts.ready}</span>
+                  <span>{openQueueCount}</span>
                 </Link>
                 <Link
                   href="/dashboard/orders?queue=completed"

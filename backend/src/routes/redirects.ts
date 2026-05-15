@@ -33,7 +33,14 @@ redirectsRouter.get('/lookup', async (c) => {
     const match = await db.query.redirects.findFirst({
       where: eq(redirects.from_path, path),
     });
-    return c.json({ redirect: match || null });
+    return c.json({
+      redirect: match
+        ? {
+            ...match,
+            status_code: match.status,
+          }
+        : null,
+    });
   } catch {
     return c.json({ redirect: null });
   }

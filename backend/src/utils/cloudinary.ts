@@ -10,6 +10,21 @@ interface CloudinaryUploadResult {
   publicId: string;
 }
 
+export function normalizeCloudinaryUrl(url?: string | null): string | null {
+  if (!url) return null;
+  if (!url.includes('/res.cloudinary.com/')) return url;
+
+  const seoSafeUrl = url.replace(/\.(heic|heif)(?=$|[?#])/i, '.jpg');
+  if (seoSafeUrl.includes('/f_auto') && seoSafeUrl.includes('/q_auto')) {
+    return seoSafeUrl;
+  }
+  if (seoSafeUrl.includes('/upload/')) {
+    return seoSafeUrl.replace('/upload/', '/upload/f_auto,q_auto/');
+  }
+
+  return seoSafeUrl;
+}
+
 function getRequiredEnv(name: string): string {
   const value = process.env[name];
   if (!value) {

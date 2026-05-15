@@ -17,6 +17,11 @@ import CategoryBannerCarousel from '@/components/products/CategoryBannerCarousel
 import CategoryCircleStrip from '@/components/products/CategoryCircleStrip';
 import FilterSidebar from '@/components/products/FilterSidebar';
 import ProductGrid from '@/components/ProductGrid';
+import {
+  storefrontAttributeFilters,
+  storefrontDiscoveryQuickLinks,
+} from '@/config/storefront-discovery';
+import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 import { Product } from '@/types';
 
@@ -111,6 +116,10 @@ export default function CatalogClient({
   const currentCategoryId = searchParams.get('category_id');
   const currentTagId = searchParams.get('tag_id');
   const currentCollectionId = searchParams.get('collection_id');
+  const currentAttributeCode = searchParams.get('attribute_code');
+  const currentAttributeValue = searchParams.get('attribute_value');
+  const currentMinPrice = searchParams.get('min_price');
+  const currentMaxPrice = searchParams.get('max_price');
 
   const activeCategory = currentCategoryId
     ? findCategoryById(categories, currentCategoryId)
@@ -121,6 +130,12 @@ export default function CatalogClient({
   const activeCollection = currentCollectionId
     ? collections.find((collection) => collection.id === currentCollectionId)
     : null;
+  const activeAttributeGroup = currentAttributeCode
+    ? storefrontAttributeFilters.find((group) => group.code === currentAttributeCode)
+    : null;
+  const activeAttribute = activeAttributeGroup?.values.find(
+    (item) => item.value === currentAttributeValue
+  );
 
   const topCategories = categories.slice(0, 6);
   const featuredCollections = collections
@@ -139,6 +154,7 @@ export default function CatalogClient({
     if (!mobileFilterOpen) return;
 
     const previousOverflow = document.body.style.overflow;
+    const triggerButton = filterButtonRef.current;
     document.body.style.overflow = 'hidden';
     filterDrawerRef.current?.focus();
 
@@ -150,7 +166,7 @@ export default function CatalogClient({
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleKeyDown);
-      filterButtonRef.current?.focus();
+      triggerButton?.focus();
     };
   }, [mobileFilterOpen]);
 
@@ -166,6 +182,10 @@ export default function CatalogClient({
           category_id: currentCategoryId || undefined,
           tag_id: currentTagId || undefined,
           collection_id: currentCollectionId || undefined,
+          attribute_code: currentAttributeCode || undefined,
+          attribute_value: currentAttributeValue || undefined,
+          min_price: currentMinPrice ? Number(currentMinPrice) : undefined,
+          max_price: currentMaxPrice ? Number(currentMaxPrice) : undefined,
         });
 
         if (result.products) {
@@ -178,7 +198,17 @@ export default function CatalogClient({
         setLoading(false);
       }
     },
-    [limit, currentSort, currentCategoryId, currentTagId, currentCollectionId]
+    [
+      limit,
+      currentSort,
+      currentCategoryId,
+      currentTagId,
+      currentCollectionId,
+      currentAttributeCode,
+      currentAttributeValue,
+      currentMinPrice,
+      currentMaxPrice,
+    ]
   );
 
   const updateQuery = (mutate: (params: URLSearchParams) => void) => {
@@ -206,7 +236,16 @@ export default function CatalogClient({
     fetchProducts(1, newSort);
   };
 
-  const clearFilter = (key: 'category_id' | 'tag_id' | 'collection_id') => {
+  const clearFilter = (
+    key:
+      | 'category_id'
+      | 'tag_id'
+      | 'collection_id'
+      | 'attribute_code'
+      | 'attribute_value'
+      | 'min_price'
+      | 'max_price'
+  ) => {
     updateQuery((params) => params.delete(key));
   };
 
@@ -251,9 +290,23 @@ export default function CatalogClient({
                     params.delete('category_id');
                     params.delete('tag_id');
                     params.delete('collection_id');
+                    params.delete('attribute_code');
+                    params.delete('attribute_value');
+                    params.delete('min_price');
+                    params.delete('max_price');
                   })
                 }
-                className={!currentCategoryId && !currentTagId && !currentCollectionId ? 'bg-stone-950' : ''}
+                className={
+                  !currentCategoryId &&
+                  !currentTagId &&
+                  !currentCollectionId &&
+                  !currentAttributeCode &&
+                  !currentAttributeValue &&
+                  !currentMinPrice &&
+                  !currentMaxPrice
+                    ? 'bg-stone-950'
+                    : ''
+                }
               >
                 All
               </button>
@@ -344,6 +397,52 @@ export default function CatalogClient({
                   </button>
                 </span>
               ) : null}
+
+              {activeAttributeGroup && activeAttribute ? (
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
+                  {activeAttributeGroup.label}: {activeAttribute.label}
+                  <button
+                    onClick={() =>
+                      updateQuery((params) => {
+                        params.delete('attribute_code');
+                        params.delete('attribute_value');
+                      })
+                    }
+                    aria-label="Remove attribute filter"
+                    className="text-stone-400 transition-colors hover:text-stone-900"
+                  >
+                    {'X'}
+                  </button>
+                </span>
+              ) : null}
+
+              {(currentMinPrice || currentMaxPrice) ? (
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
+                  Price:{' '}
+                  {[
+                    currentMinPrice
+                      ? `${Math.round(Number(currentMinPrice) / 100)}+`
+                      : null,
+                    currentMaxPrice
+                      ? `up to ${Math.round(Number(currentMaxPrice) / 100)}`
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  <button
+                    onClick={() =>
+                      updateQuery((params) => {
+                        params.delete('min_price');
+                        params.delete('max_price');
+                      })
+                    }
+                    aria-label="Remove price filter"
+                    className="text-stone-400 transition-colors hover:text-stone-900"
+                  >
+                    {'X'}
+                  </button>
+                </span>
+              ) : null}
             </div>
 
             <div className="flex items-center gap-4">
@@ -396,6 +495,65 @@ export default function CatalogClient({
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr,0.85fr]">
+            <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6">
+              <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
+                Curated Browsing
+              </p>
+              <h2 className="mt-3 text-body-xl font-serif text-stone-900">
+                Shop by intent, not only by product type
+              </h2>
+              <p className="mt-3 max-w-2xl text-body-sm text-stone-600">
+                Use curated routes to move faster through occasion, fabric, and
+                color-led discovery without losing buying momentum.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                {storefrontDiscoveryQuickLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-full border border-stone-200 bg-white px-4 py-2 text-body-sm text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-stone-200 bg-white p-6">
+              <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
+                Checkout Confidence
+              </p>
+              <h2 className="mt-3 text-body-xl font-serif text-stone-900">
+                Policy and payment clarity before cart drop-off
+              </h2>
+              <p className="mt-3 text-body-sm text-stone-600">
+                Buyers can verify shipping, returns, and payment guidance before
+                they reach Razorpay or the final checkout step.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link
+                  href={storefrontTrust.policyRoutes.shipping}
+                  className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                >
+                  Shipping
+                </Link>
+                <Link
+                  href={storefrontTrust.policyRoutes.returns}
+                  className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                >
+                  Returns
+                </Link>
+                <Link
+                  href={storefrontTrust.policyRoutes.paymentHelp}
+                  className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                >
+                  Payment Help
+                </Link>
               </div>
             </div>
           </div>

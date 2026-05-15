@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { MessageCircle, X, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { storefrontTrust } from '@/config/storefront-trust';
 
 declare global {
   interface Window {
@@ -37,7 +39,34 @@ export function ChatWidget() {
     { label: 'Track my order', action: 'I want to track my order' },
     { label: 'Return an item', action: 'How do I return an item?' },
     { label: 'Shipping info', action: 'What are the shipping options?' },
+    { label: 'Payment help', action: 'I need help with payment' },
   ];
+
+  const getBotResponse = (message: string) => {
+    const lowerMsg = message.toLowerCase();
+
+    if (lowerMsg.includes('track') || lowerMsg.includes('order')) {
+      return `You can track your order at ${storefrontTrust.policyRoutes.track}. Enter your order ID and email to see live status updates.`;
+    }
+
+    if (lowerMsg.includes('return') || lowerMsg.includes('refund')) {
+      return `Eligible return guidance is available at ${storefrontTrust.policyRoutes.returns}. Signed-in customers can also open an order and request a return from their account when the order is eligible.`;
+    }
+
+    if (lowerMsg.includes('shipping') || lowerMsg.includes('delivery')) {
+      return storefrontTrust.shippingSummary;
+    }
+
+    if (lowerMsg.includes('payment') || lowerMsg.includes('failed')) {
+      return `Use ${storefrontTrust.policyRoutes.paymentHelp} if a payment attempt fails or you are unsure whether you were charged.`;
+    }
+
+    if (lowerMsg.includes('contact') || lowerMsg.includes('support')) {
+      return `Reach us at ${storefrontTrust.supportEmail} or ${storefrontTrust.supportPhone} during ${storefrontTrust.supportHours}.`;
+    }
+
+    return `Thank you for your message. For order issues, payments, or policy questions, our support team can help at ${storefrontTrust.supportEmail}.`;
+  };
 
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
@@ -46,38 +75,11 @@ export function ChatWidget() {
     setMessages((prev) => [...prev, { role: 'user', text: userMessage }]);
     setInputText('');
 
-    // Simple auto-response (replace with Tawk.to or AI for real responses)
     setTimeout(() => {
-      const botResponses: Record<string, string> = {
-        track:
-          'You can track your order at /track. Enter your order ID to see the status.',
-        order:
-          'You can track your order at /track. Enter your order ID to see the status.',
-        return:
-          'To return an item, go to your account > Orders > View Order > Request Return. Our return policy allows returns within 30 days.',
-        shipping:
-          'We offer free shipping on orders over $100. Standard delivery takes 5-7 business days. Express shipping available at checkout.',
-        exchange:
-          "For exchanges, please return the item and place a new order. We'll refund shipping costs for defective items.",
-        refund:
-          'Refunds are processed within 5-10 business days after return is approved.',
-        contact:
-          'You can reach us at support@kvastram.com or call +1 (555) 123-4567.',
-        default:
-          "Thank you for your message! Our team typically replies within minutes. Is there anything specific you'd like to know?",
-      };
-
-      const lowerMsg = userMessage.toLowerCase();
-      let response = botResponses['default'];
-
-      for (const [key, value] of Object.entries(botResponses)) {
-        if (lowerMsg.includes(key)) {
-          response = value;
-          break;
-        }
-      }
-
-      setMessages((prev) => [...prev, { role: 'bot', text: response }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'bot', text: getBotResponse(userMessage) },
+      ]);
     }, 500);
   };
 
@@ -85,26 +87,10 @@ export function ChatWidget() {
     setMessages((prev) => [...prev, { role: 'user', text: action }]);
 
     setTimeout(() => {
-      const botResponses: Record<string, string> = {
-        track:
-          'You can track your order at /track. Enter your order ID to see the status.',
-        return:
-          'To return an item, go to your account > Orders > View Order > Request Return. Our return policy allows returns within 30 days.',
-        shipping:
-          'We offer free shipping on orders over $100. Standard delivery takes 5-7 business days. Express shipping available at checkout.',
-      };
-
-      const lowerMsg = action.toLowerCase();
-      let response = botResponses['default'] || 'Thank you for your message!';
-
-      for (const [key, value] of Object.entries(botResponses)) {
-        if (lowerMsg.includes(key)) {
-          response = value;
-          break;
-        }
-      }
-
-      setMessages((prev) => [...prev, { role: 'bot', text: response }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'bot', text: getBotResponse(action) },
+      ]);
     }, 500);
   };
 
@@ -173,39 +159,56 @@ export function ChatWidget() {
                 {/* Messages Area */}
                 <div className="flex-1 p-4 overflow-y-auto bg-stone-50">
                   <div className="space-y-4">
-                    {/* Welcome Message */}
-                    <div className="flex justify-start">
-                      <div className="bg-white border border-stone-200 rounded-lg rounded-tl-sm px-4 py-3 max-w-[80%]">
-                        <p className="text-body-sm text-stone-700">
-                          Hello! Welcome to Kvastram. How can we help you today?
-                        </p>
+                    {messages.map((message, index) => (
+                      <div
+                        key={`${message.role}-${index}`}
+                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[85%] rounded-lg px-4 py-3 text-body-sm ${
+                            message.role === 'user'
+                              ? 'rounded-tr-sm bg-stone-900 text-white'
+                              : 'rounded-tl-sm border border-stone-200 bg-white text-stone-700'
+                          }`}
+                        >
+                          {message.text}
+                        </div>
                       </div>
-                    </div>
+                    ))}
 
-                    {/* Quick Replies */}
                     <div className="flex flex-wrap gap-2">
-                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-body-xs text-stone-600 hover:border-stone-400 transition-colors">
-                        Track my order
-                      </button>
-                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-body-xs text-stone-600 hover:border-stone-400 transition-colors">
-                        Return an item
-                      </button>
-                      <button className="px-3 py-1.5 bg-white border border-stone-200 rounded-full text-body-xs text-stone-600 hover:border-stone-400 transition-colors">
-                        Shipping info
-                      </button>
+                      {quickReplies.map((reply) => (
+                        <button
+                          key={reply.label}
+                          type="button"
+                          onClick={() => handleQuickReply(reply.action)}
+                          className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-body-xs text-stone-600 transition-colors hover:border-stone-400"
+                        >
+                          {reply.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Input Area */}
                 <div className="p-4 bg-white border-t border-stone-100">
                   <div className="flex gap-2">
                     <input
                       type="text"
                       placeholder="Type your message..."
+                      value={inputText}
+                      onChange={(event) => setInputText(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') handleSendMessage();
+                      }}
                       className="flex-1 px-4 py-2 border border-stone-200 rounded-full text-body-sm focus:outline-none focus:border-stone-900"
                     />
-                    <button className="w-10 h-10 bg-stone-900 text-white rounded-full flex items-center justify-center hover:bg-stone-800 transition-colors">
+                    <button
+                      type="button"
+                      onClick={handleSendMessage}
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-stone-900 text-white transition-colors hover:bg-stone-800"
+                      aria-label="Send message"
+                    >
                       <svg
                         className="w-4 h-4"
                         fill="none"
@@ -221,8 +224,19 @@ export function ChatWidget() {
                       </svg>
                     </button>
                   </div>
-                  <p className="text-body-xs text-stone-400 text-center mt-2">
-                    Typically replies within minutes
+                  <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-body-xs text-stone-500">
+                    <Link href={storefrontTrust.policyRoutes.paymentHelp} className="underline underline-offset-4">
+                      Payment Help
+                    </Link>
+                    <Link href={storefrontTrust.policyRoutes.returns} className="underline underline-offset-4">
+                      Returns
+                    </Link>
+                    <Link href={storefrontTrust.policyRoutes.contact} className="underline underline-offset-4">
+                      Contact
+                    </Link>
+                  </div>
+                  <p className="mt-2 text-center text-body-xs text-stone-400">
+                    {storefrontTrust.supportHours}
                   </p>
                 </div>
               </div>

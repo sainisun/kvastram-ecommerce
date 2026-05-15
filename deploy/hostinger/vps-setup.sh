@@ -5,7 +5,7 @@
 # ============================================================
 set -euo pipefail
 
-DOMAIN="kvastram.com"
+DOMAIN="vintaaj.com"
 REPO_URL="https://github.com/sainisun/kvastram-ecommerce.git"
 APP_DIR="/root/kvastram-platform"
 
@@ -224,12 +224,13 @@ echo "  Your services:"
 echo "  • Storefront: http://${DOMAIN}"
 echo "  • Admin:      http://admin.${DOMAIN}"
 echo "  • API:        http://api.${DOMAIN}"
+echo "  • MCP:        http://mcp.${DOMAIN}"
 echo ""
 echo "  NEXT STEPS:"
 echo "  1. Set up DNS A records pointing to: $(curl -s ifconfig.me)"
 echo "  2. Wait for DNS propagation (5min - 48hrs)"
 echo "  3. Run SSL setup:"
-echo "     sudo certbot --nginx -d ${DOMAIN} -d www.${DOMAIN} -d admin.${DOMAIN} -d api.${DOMAIN}"
+echo "     sudo certbot --nginx -d ${DOMAIN} -d www.${DOMAIN} -d admin.${DOMAIN} -d api.${DOMAIN} -d mcp.${DOMAIN}"
 echo "  4. Run manual DB migrations (one-time after first deploy):"
 echo "     docker exec -it kvastram-backend-1 npm run migrate:manual"
 echo "  5. Fill in API secrets in $APP_DIR/backend/.env.production:"

@@ -33,6 +33,19 @@ export interface Product {
   price_type?: 'fixed' | 'on_request';
   seo_title?: string;
   seo_description?: string;
+  seo?: ProductSeo | null;
+  discovery?: ProductDiscovery | null;
+  attributes?: ProductAttributeValue[];
+  merchant?: ProductMerchantValue[];
+  media_seo?: ProductMediaSeo[];
+  artisan?: {
+    id?: string;
+    name?: string;
+    slug?: string;
+    craft_specialty?: string | null;
+    location?: string | null;
+  } | null;
+  semantic_related_products?: Product[];
   avg_rating?: number;
   review_count?: number;
   created_at: string;
@@ -80,6 +93,7 @@ export interface ProductVariant {
   inventory_quantity: number;
   prices?: MoneyAmount[];
   compare_at_price?: number | null;
+  merchant?: ProductMerchantValue | null;
 }
 
 export interface MoneyAmount {
@@ -105,6 +119,7 @@ export interface ProductImage {
   position?: number;
   is_thumbnail?: boolean | null;
   metadata?: ProductMediaMetadata | null;
+  media_seo?: ProductMediaSeo | null;
 }
 
 export interface ProductCategory {
@@ -112,6 +127,75 @@ export interface ProductCategory {
   name: string;
   handle: string;
   description?: string;
+}
+
+export interface ProductSeo {
+  product_id: string;
+  seo_title?: string | null;
+  meta_description?: string | null;
+  canonical_url?: string | null;
+  robots_index?: boolean | null;
+  robots_follow?: boolean | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image_url?: string | null;
+  twitter_card?: string | null;
+  schema_overrides?: Record<string, unknown> | null;
+  localized_metadata?: Record<string, { path?: string; title?: string; description?: string }> | null;
+  hreflang_group_id?: string | null;
+  seo_score?: number | null;
+}
+
+export interface ProductDiscovery {
+  product_id: string;
+  primary_keyword?: string | null;
+  secondary_keywords?: string[] | null;
+  long_tail_keywords?: string[] | null;
+  search_intents?: string[] | null;
+  semantic_entities?: string[] | null;
+  negative_keywords?: string[] | null;
+  product_document?: string | null;
+}
+
+export interface ProductAttributeValue {
+  id?: string;
+  product_id?: string;
+  attribute_id?: string;
+  value_id?: string | null;
+  raw_value?: string | null;
+  attribute_code?: string | null;
+  attribute_label?: string | null;
+  value_label?: string | null;
+  value_slug?: string | null;
+  synonyms?: string[] | null;
+}
+
+export interface ProductMerchantValue {
+  variant_id?: string;
+  gtin?: string | null;
+  mpn?: string | null;
+  item_group_id?: string | null;
+  color?: string | null;
+  size?: string | null;
+  size_system?: string | null;
+  size_type?: string | null;
+  gender?: string | null;
+  age_group?: string | null;
+  condition?: string | null;
+  google_product_category?: string | null;
+  material?: string | null;
+  pattern?: string | null;
+  shipping_weight?: number | null;
+  feed_enabled?: boolean | null;
+}
+
+export interface ProductMediaSeo {
+  image_id?: string;
+  alt_text?: string | null;
+  image_role?: string | null;
+  view_type?: string | null;
+  color?: string | null;
+  seo_filename?: string | null;
 }
 
 export interface Review {

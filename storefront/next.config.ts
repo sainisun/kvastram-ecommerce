@@ -42,6 +42,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'api.vintaaj.com',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
       {
@@ -58,7 +63,7 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   trailingSlash: false,
-  output: 'standalone',
+  output: process.platform === 'win32' ? undefined : 'standalone',
   turbopack: {
     root: process.cwd(),
   },
@@ -86,6 +91,10 @@ const nextConfig = {
       {
         source: '/uploads/:path*',
         destination: `${apiUrl}/uploads/:path*`,
+      },
+      {
+        source: '/merchant/:path*',
+        destination: `${apiUrl}/merchant/:path*`,
       },
     ];
   },

@@ -524,7 +524,7 @@ export default function TrendingReelsManager() {
                       </span>
                       <input
                         type="file"
-                        accept=".jpg,.jpeg,.png,.webp,.heic,.heif,image/jpeg,image/png,image/webp,image/heic,image/heif"
+                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                         className="hidden"
                         onChange={(event) =>
                           handleThumbnailChange(event.target.files?.[0] || null)

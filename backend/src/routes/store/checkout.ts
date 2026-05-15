@@ -18,6 +18,7 @@ import {
 import { eq, and, gte, sql, inArray } from 'drizzle-orm';
 import { config } from '../../config';
 import { calculateTax, type TaxBreakdown } from '../../utils/tax-calculator';
+import { carrierService } from '../../services/carrier-service';
 
 const checkoutRouter = new Hono();
 
@@ -26,6 +27,12 @@ const checkoutRouter = new Hono();
 const ValidateCouponSchema = z.object({
   code: z.string().min(1),
   cart_total: z.number().min(0), // in cents
+});
+
+const ShippingOptionsQuerySchema = z.object({
+  country_code: z.string().length(2),
+  region_id: z.string().uuid().optional(),
+  postal_code: z.string().min(3).max(20).optional(),
 });
 
 const PlaceOrderSchema = z.object({
@@ -179,7 +186,208 @@ const validateDiscount = async (
   return { discount, discountAmount };
 };
 
+function getDefaultShippingOptions(input: {
+  countryCode: string;
+  currencyCode: string;
+  domesticRate: number;
+  intlRate: number;
+  freeThreshold: number;
+}) {
+  const isDomestic = input.countryCode === 'IN';
+  const baseRate = isDomestic ? input.domesticRate : input.intlRate;
+
+  return {
+    options: [
+      {
+        id: isDomestic ? 'domestic-standard' : 'international-standard',
+        name: isDomestic ? 'Standard Shipping' : 'Standard International Shipping',
+        description: isDomestic ? 'Final ETA confirmed at checkout' : 'Tracked delivery with final ETA at checkout',
+        price: baseRate,
+        estimated_days: isDomestic ? '3-7' : '7-14',
+        currency_code: input.currencyCode,
+      },
+      {
+        id: isDomestic ? 'domestic-priority' : 'international-priority',
+        name: isDomestic ? 'Priority Shipping' : 'Priority International Shipping',
+        description: isDomestic ? 'Faster dispatch when available' : 'Faster international processing when available',
+        price: Math.round(baseRate * 1.45),
+        estimated_days: isDomestic ? '2-5' : '5-10',
+        currency_code: input.currencyCode,
+      },
+    ],
+    free_shipping_threshold: input.freeThreshold,
+    currency_code: input.currencyCode,
+  };
+}
+
 // --- ROUTES ---
+
+// GET /store/checkout/shipping-options
+checkoutRouter.get(
+  '/shipping-options',
+  zValidator('query', ShippingOptionsQuerySchema),
+  async (c) => {
+    try {
+      const { country_code, region_id, postal_code } = c.req.valid('query');
+      const countryCode = country_code.toUpperCase();
+
+      const allSettings = await db.select().from(store_settings);
+      const settingsMap = allSettings.reduce((acc, curr) => {
+        acc[curr.key] = curr.value;
+        return acc;
+      }, {} as Record<string, any>);
+
+      const [region] = region_id
+        ? await db
+            .select({ id: regions.id, currency_code: regions.currency_code })
+            .from(regions)
+            .where(eq(regions.id, region_id))
+            .limit(1)
+        : [];
+
+      const domesticRate =
+        (Number.isFinite(Number(settingsMap['domestic_shipping_rate']))
+          ? Number(settingsMap['domestic_shipping_rate'])
+          : 10) * 100;
+      const intlRate =
+        (Number.isFinite(Number(settingsMap['international_shipping_rate']))
+          ? Number(settingsMap['international_shipping_rate'])
+          : 30) * 100;
+      const freeThreshold =
+        (Number.isFinite(Number(settingsMap['free_shipping_threshold']))
+          ? Number(settingsMap['free_shipping_threshold'])
+          : 100) * 100;
+      const allowedCountries: string[] = (
+        settingsMap['shipping_countries'] || 'IN, US, CA, GB, AE'
+      )
+        .split(',')
+        .map((value: string) => value.trim().toUpperCase())
+        .filter(Boolean);
+
+      if (!allowedCountries.includes(countryCode)) {
+        return c.json(
+          {
+            options: [],
+            free_shipping_threshold: freeThreshold,
+            currency_code: region?.currency_code?.toUpperCase() || 'INR',
+            serviceability: {
+              checked: Boolean(postal_code),
+              live: false,
+              serviceable: false,
+              message: `Shipping is currently unavailable to ${countryCode}.`,
+            },
+          },
+          200
+        );
+      }
+
+      const fallback = getDefaultShippingOptions({
+        countryCode,
+        currencyCode: region?.currency_code?.toUpperCase() || 'INR',
+        domesticRate,
+        intlRate,
+        freeThreshold,
+      });
+
+      if (!postal_code || countryCode !== 'IN') {
+        return c.json({
+          ...fallback,
+          serviceability: {
+            checked: Boolean(postal_code),
+            live: false,
+            serviceable: null,
+            message:
+              countryCode === 'IN'
+                ? 'Add your postal code for a better India delivery preview.'
+                : 'Final courier availability and delivery timing are confirmed at checkout.',
+          },
+        });
+      }
+
+      const previewOrder = {
+        email: 'preview@kvastram.com',
+        payment_status: 'paid',
+        shipping_address: {
+          first_name: 'Preview',
+          last_name: 'Customer',
+          address_1: 'Preview address',
+          city: 'Preview city',
+          postal_code,
+          country_code: countryCode,
+          phone: '9999999999',
+        },
+        workflow: {
+          label: {
+            package_weight_grams: 500,
+            package_length_cm: 25,
+            package_width_cm: 20,
+            package_height_cm: 4,
+          },
+        },
+      };
+
+      try {
+        const liveRates = await carrierService.getRates(previewOrder);
+        if (liveRates.rates.length > 0) {
+          const liveCurrency =
+            liveRates.rates[0]?.currency ||
+            region?.currency_code?.toUpperCase() ||
+            'INR';
+          return c.json({
+            options: liveRates.rates.map((rate) => ({
+              id: rate.id,
+              name: rate.service,
+              description: rate.estimated_delivery_days
+                ? `Estimated ${rate.estimated_delivery_days} day delivery`
+                : 'Courier ETA confirmed at checkout',
+              price: rate.amount,
+              estimated_days: rate.estimated_delivery_days
+                ? String(rate.estimated_delivery_days)
+                : '',
+              currency_code: rate.currency,
+            })),
+            free_shipping_threshold: freeThreshold,
+            currency_code: liveCurrency,
+            serviceability: {
+              checked: true,
+              live: true,
+              serviceable: true,
+              message:
+                liveRates.message ||
+                'Serviceability preview found live courier options for this postal code.',
+            },
+          });
+        }
+
+        return c.json({
+          ...fallback,
+          serviceability: {
+            checked: true,
+            live: true,
+            serviceable: false,
+            message:
+              liveRates.message ||
+              'No live courier options were returned for this postal code preview.',
+          },
+        });
+      } catch (error: any) {
+        return c.json({
+          ...fallback,
+          serviceability: {
+            checked: true,
+            live: false,
+            serviceable: null,
+            message:
+              error?.message ||
+              'Live serviceability preview is not available right now. Final shipping is still confirmed at checkout.',
+          },
+        });
+      }
+    } catch (error: any) {
+      return c.json({ error: error.message || 'Failed to load shipping options' }, 400);
+    }
+  }
+);
 
 // POST /store/checkout/validate-coupon
 checkoutRouter.post(

@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
   Mail,
@@ -12,18 +13,49 @@ import {
 } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
+import { storefrontTrust } from '@/config/storefront-trust';
+
+const reasonLabels: Record<string, string> = {
+  payment: 'Payment Support',
+  returns: 'Returns Support',
+  tracking: 'Tracking Support',
+  visit: 'Atelier / Visit Enquiry',
+  'order-support': 'Order Support',
+};
+
+function buildReasonPrefill(reason: string | null, orderReference: string | null) {
+  if (!reason && !orderReference) return '';
+
+  const orderLine = orderReference
+    ? `Order reference: #${orderReference}\n`
+    : '';
+
+  switch (reason) {
+    case 'payment':
+      return `${orderLine}I need help confirming whether my payment attempt went through.\n\nPayment method used:\nPayment time:\nWhat happened:\n`;
+    case 'returns':
+      return `${orderLine}I need help with a return or refund request.\n\nItem(s):\nReason:\nCurrent item condition:\n`;
+    case 'tracking':
+      return `${orderLine}I need help with order tracking or shipment visibility.\n\nWhat I can see right now:\nWhat I need help with:\n`;
+    case 'visit':
+      return `I want help with an atelier visit, stockist enquiry, or in-person buying request.\n\nCity:\nWhat I want to shop:\nPreferred timing:\n`;
+    case 'order-support':
+      return `${orderLine}I need general support for this order.\n\nIssue summary:\nWhat I need help with:\n`;
+    default:
+      return orderReference ? `I need help with order #${orderReference}.\n\n` : '';
+  }
+}
 
 function ContactContent() {
   const searchParams = useSearchParams();
   const orderReference = searchParams.get('order');
   const emailPrefill = searchParams.get('email');
+  const reason = searchParams.get('reason');
   const [formData, setFormData] = useState(() => ({
     firstName: '',
     lastName: '',
     email: emailPrefill || '',
-    message: orderReference
-      ? `I need help with order #${orderReference}.\n\n`
-      : '',
+    message: buildReasonPrefill(reason, orderReference),
   }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -150,9 +182,9 @@ function ContactContent() {
               <Mail className="text-stone-400 mt-1" />
               <div>
                 <h3 className="type-semibold text-stone-900">Email Us</h3>
-                <p className="text-stone-500">concierge@kvastram.com</p>
+                <p className="text-stone-500">{storefrontTrust.supportEmail}</p>
                 <p className="text-stone-400 text-body-sm mt-1">
-                  Replies within 2 hours.
+                  {storefrontTrust.supportHours}
                 </p>
               </div>
             </div>
@@ -162,21 +194,21 @@ function ContactContent() {
                 <h3 className="type-semibold text-stone-900">
                   Call or WhatsApp
                 </h3>
-                <p className="text-stone-500">+91 98765 43210</p>
+                <p className="text-stone-500">{storefrontTrust.supportPhone}</p>
                 <p className="text-stone-400 text-body-sm mt-1">
-                  Mon-Fri, 9am - 6pm IST
+                  {storefrontTrust.supportHours}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <MapPin className="text-stone-400 mt-1" />
               <div>
-                <h3 className="type-semibold text-stone-900">Atelier</h3>
-                <p className="text-stone-500">
-                  12, Heritage Lane, Hauz Khas Village
-                  <br />
-                  New Delhi, 110016, India
-                </p>
+                <h3 className="type-semibold text-stone-900">
+                  Business Address
+                </h3>
+                <p className="text-stone-500">{storefrontTrust.addressLines[0]}</p>
+                <p className="text-stone-500">{storefrontTrust.addressLines[1]}</p>
+                <p className="text-stone-500">{storefrontTrust.addressLines[2]}</p>
               </div>
             </div>
           </div>
@@ -184,9 +216,17 @@ function ContactContent() {
 
         {/* Form */}
         <div className="bg-stone-50 p-8 md:p-12 rounded-none">
-          {orderReference ? (
+          {orderReference || reason ? (
             <div className="mb-6 border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700">
-              Support request for order <strong>#{orderReference}</strong>
+              {reason ? (
+                <span>{reasonLabels[reason] || 'Support Request'}</span>
+              ) : null}
+              {reason && orderReference ? <span> for </span> : null}
+              {orderReference ? (
+                <span>
+                  order <strong>#{orderReference}</strong>
+                </span>
+              ) : null}
             </div>
           ) : null}
           {status === 'success' ? (
@@ -255,6 +295,32 @@ function ContactContent() {
                 error={touched.message ? errors.message : undefined}
               />
 
+              <div className="border border-stone-200 bg-white px-4 py-4 text-body-sm text-stone-600">
+                Need help with a payment or return instead of a general inquiry?
+                Review the payment help and returns pages before sending a
+                support message.
+                <div className="mt-3 flex flex-wrap gap-3">
+                  <Link
+                    href={storefrontTrust.policyRoutes.help}
+                    className="inline-flex border border-stone-300 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-50"
+                  >
+                    Help Center
+                  </Link>
+                  <Link
+                    href={storefrontTrust.policyRoutes.paymentHelp}
+                    className="inline-flex border border-stone-300 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-50"
+                  >
+                    Payment Help
+                  </Link>
+                  <Link
+                    href={storefrontTrust.policyRoutes.returns}
+                    className="inline-flex border border-stone-300 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-50"
+                  >
+                    Returns Help
+                  </Link>
+                </div>
+              </div>
+
               {status === 'error' && (
                 <div className="flex items-center gap-2 text-red-600 text-body-sm">
                   <AlertCircle size={16} />
@@ -291,4 +357,3 @@ export default function ContactPage() {
     </Suspense>
   );
 }
-

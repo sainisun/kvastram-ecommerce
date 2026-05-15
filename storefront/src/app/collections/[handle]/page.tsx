@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { notFound, permanentRedirect, redirect } from 'next/navigation';
 
@@ -6,6 +7,9 @@ import PageHero from '@/components/hero/PageHero';
 import ProductGrid from '@/components/ProductGrid';
 import CategoryBannerCarousel from '@/components/products/CategoryBannerCarousel';
 import CategoryCircleStrip from '@/components/products/CategoryCircleStrip';
+import OptimizedImage from '@/components/ui/OptimizedImage';
+import { storefrontDiscoveryQuickLinks } from '@/config/storefront-discovery';
+import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 import {
   buildBreadcrumbJsonLd,
@@ -13,6 +17,7 @@ import {
   buildCollectionMetadata,
   buildCollectionPageJsonLd,
   findCategoryBySlug,
+  getOgLocaleForLocale,
   serializeJsonLd,
   titleFromHandle,
 } from '@/lib/seo';
@@ -23,8 +28,19 @@ type Props = {
   searchParams: Promise<{ sort?: string; preview?: string }>;
 };
 
+type LandingSeoFields = {
+  product_count?: number;
+  seo_title?: string | null;
+  seo_desc?: string | null;
+  canonical_url?: string | null;
+  is_indexable?: boolean | null;
+  robots_policy?: string | null;
+  faq_items?: Array<{ question: string; answer: string }> | null;
+  answer_capsule?: string | null;
+};
+
 type LandingData =
-  | {
+  | ({
       kind: 'category';
       id: string;
       handle: string;
@@ -34,8 +50,8 @@ type LandingData =
       children: Array<{ id: string; name: string; slug?: string }>;
       status?: string;
       type?: string;
-    }
-  | {
+    } & LandingSeoFields)
+  | ({
       kind: 'collection';
       id: string;
       handle: string;
@@ -45,12 +61,27 @@ type LandingData =
       children: [];
       status?: string;
       type?: string;
-    };
+    } & LandingSeoFields)
+  | ({
+      kind: 'seo_landing';
+      id: string;
+      handle: string;
+      title: string;
+      description: string;
+      image?: string | null;
+      children: [];
+      status?: string;
+      type?: string;
+      intro_content?: string | null;
+      outro_content?: string | null;
+      rule_definition?: Record<string, unknown> | null;
+    } & LandingSeoFields);
 
 async function resolveLanding(handle: string): Promise<LandingData | null> {
-  const [categoriesData, collectionsData] = await Promise.all([
+  const [categoriesData, collectionsData, seoLandingPage] = await Promise.all([
     api.getCategories(),
     api.getCollections(),
+    api.getSeoLandingPage(handle),
   ]);
 
   const category = findCategoryBySlug(categoriesData.categories || [], handle);
@@ -73,10 +104,38 @@ async function resolveLanding(handle: string): Promise<LandingData | null> {
     };
   }
 
-  const collection = (collectionsData.collections || []).find(
+  let collection = (collectionsData.collections || []).find(
     (item: { id: string; handle?: string }) =>
       item.handle === handle || item.id === handle
   );
+
+  const directCollection = await api.getCollection(handle);
+  if (directCollection.collection) {
+    collection = directCollection.collection;
+  }
+
+  if (!collection && seoLandingPage?.status === 'active') {
+    return {
+      kind: 'seo_landing',
+      id: seoLandingPage.id,
+      handle: seoLandingPage.slug || handle,
+      title: seoLandingPage.title || titleFromHandle(handle),
+      description:
+        seoLandingPage.meta_description ||
+        buildCollectionDescription({
+          name: seoLandingPage.title || titleFromHandle(handle),
+          description: seoLandingPage.intro_content || undefined,
+        }),
+      image: seoLandingPage.metadata?.image_url || null,
+      children: [],
+      status: seoLandingPage.status,
+      type: 'seo_landing',
+      intro_content: seoLandingPage.intro_content,
+      outro_content: seoLandingPage.outro_content,
+      rule_definition: seoLandingPage.rule_definition,
+      product_count: seoLandingPage.metadata?.product_count,
+    };
+  }
 
   if (!collection) return null;
 
@@ -102,7 +161,53 @@ async function resolveLanding(handle: string): Promise<LandingData | null> {
     children: [],
     status: collection.status,
     type: collection.type,
+    product_count: collection.product_count,
+    seo_title: collection.seo_title,
+    seo_desc: collection.seo_desc,
+    canonical_url: collection.canonical_url,
+    is_indexable: collection.is_indexable,
+    robots_policy: collection.robots_policy,
+    faq_items: collection.faq_items,
+    answer_capsule: collection.answer_capsule,
   };
+}
+
+async function fetchLandingProductCount(landing: LandingData) {
+  if (typeof landing.product_count === 'number') {
+    return landing.product_count;
+  }
+
+  const response = await api.getProducts({
+    limit: 1,
+    ...(landing.kind === 'category'
+      ? { category_id: landing.id }
+      : landing.kind === 'collection'
+        ? { collection_id: landing.id }
+        : {
+            category_id:
+              typeof landing.rule_definition?.category_id === 'string'
+                ? landing.rule_definition.category_id
+                : undefined,
+            collection_id:
+              typeof landing.rule_definition?.collection_id === 'string'
+                ? landing.rule_definition.collection_id
+                : undefined,
+            search:
+              typeof landing.rule_definition?.search === 'string'
+                ? landing.rule_definition.search
+                : undefined,
+            attribute_code:
+              typeof landing.rule_definition?.attribute_code === 'string'
+                ? landing.rule_definition.attribute_code
+                : undefined,
+            attribute_value:
+              typeof landing.rule_definition?.attribute_value === 'string'
+                ? landing.rule_definition.attribute_value
+                : undefined,
+          }),
+  });
+
+  return response.total || response.products?.length || 0;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -116,12 +221,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const productCount = await fetchLandingProductCount(landing);
+  const requestHeaders = await headers();
+  const robotsPolicy = landing.robots_policy || 'index,follow';
+  const noindex =
+    productCount === 0 ||
+    landing.is_indexable === false ||
+    robotsPolicy.startsWith('noindex');
+
   return buildCollectionMetadata({
     name: landing.title,
+    title: landing.seo_title,
     path: `/collections/${landing.handle}`,
-    description: landing.description,
+    description: landing.seo_desc || landing.description,
     image: landing.image,
-    kind: landing.kind,
+    kind: landing.kind === 'category' ? 'category' : 'collection',
+    noindex,
+    robotsFollow: !robotsPolicy.endsWith('nofollow'),
+    canonicalUrl: landing.canonical_url || undefined,
+    ogLocale: getOgLocaleForLocale(requestHeaders.get('x-kvastram-locale')),
   });
 }
 
@@ -145,7 +263,30 @@ export default async function CollectionPage({
         sort,
         ...(landing.kind === 'category'
           ? { category_id: landing.id }
-          : { collection_id: landing.id }),
+          : landing.kind === 'collection'
+            ? { collection_id: landing.id }
+            : {
+                category_id:
+                  typeof landing.rule_definition?.category_id === 'string'
+                    ? landing.rule_definition.category_id
+                    : undefined,
+                collection_id:
+                  typeof landing.rule_definition?.collection_id === 'string'
+                    ? landing.rule_definition.collection_id
+                    : undefined,
+                search:
+                  typeof landing.rule_definition?.search === 'string'
+                    ? landing.rule_definition.search
+                    : undefined,
+                attribute_code:
+                  typeof landing.rule_definition?.attribute_code === 'string'
+                    ? landing.rule_definition.attribute_code
+                    : undefined,
+                attribute_value:
+                  typeof landing.rule_definition?.attribute_value === 'string'
+                    ? landing.rule_definition.attribute_value
+                    : undefined,
+              }),
       }),
       api.getBanners(),
       api.getCategoryCircles(),
@@ -160,6 +301,7 @@ export default async function CollectionPage({
   const categoryCircles = circlesResponse.circles || [];
   const spotlightProducts = spotlightResponse.featuredProducts || [];
   const featuredProducts = products.slice(0, 4);
+  const collectionDiscoveryLinks = storefrontDiscoveryQuickLinks.slice(0, 4);
 
   // Task 5.5: Related collections — same type, active, excluding current
   const relatedCollections: Array<{ id: string; handle: string; title: string; cover_image_url?: string; image?: string }> =
@@ -189,6 +331,22 @@ export default async function CollectionPage({
       { name: 'Collections', path: '/collections' },
       { name: landing.title, path: `/collections/${landing.handle}` },
     ]),
+    ...(landing.faq_items && landing.faq_items.length > 0
+      ? [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: landing.faq_items.map((item) => ({
+              '@type': 'Question',
+              name: item.question,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: item.answer,
+              },
+            })),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -252,7 +410,10 @@ export default async function CollectionPage({
                 : `Explore the ${landing.title} Collection`}
             </h2>
             <p className="collection-detail-copy mt-4 max-w-3xl">
-              {landing.description}
+              {landing.answer_capsule ||
+                (landing.kind === 'seo_landing' && landing.intro_content
+                  ? landing.intro_content
+                  : landing.description)}
             </p>
           </div>
 
@@ -303,6 +464,54 @@ export default async function CollectionPage({
           </div>
         </section>
 
+        <section className="grid gap-6 border-b border-stone-100 py-10 md:grid-cols-[1.3fr,0.7fr]">
+          <div>
+            <h2 className="collection-section-title">Shop by intent</h2>
+            <p className="collection-detail-copy mt-3 max-w-2xl">
+              If you are still exploring, jump into curated discovery routes by
+              occasion, material, or color instead of exiting the storefront.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {collectionDiscoveryLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-full border border-stone-200 px-4 py-2 text-sm text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
+            <p className="collection-card-kicker">Need purchase clarity?</p>
+            <h3 className="mt-2 text-lg font-medium text-stone-900">
+              Shipping, returns, and payment help are visible before checkout.
+            </h3>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                href={storefrontTrust.policyRoutes.shipping}
+                className="collection-subcategory-link border border-stone-200 bg-white px-4 py-2 transition-colors hover:border-stone-900 hover:text-stone-900"
+              >
+                Shipping
+              </Link>
+              <Link
+                href={storefrontTrust.policyRoutes.returns}
+                className="collection-subcategory-link border border-stone-200 bg-white px-4 py-2 transition-colors hover:border-stone-900 hover:text-stone-900"
+              >
+                Returns
+              </Link>
+              <Link
+                href={storefrontTrust.policyRoutes.paymentHelp}
+                className="collection-subcategory-link border border-stone-200 bg-white px-4 py-2 transition-colors hover:border-stone-900 hover:text-stone-900"
+              >
+                Payment Help
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {featuredProducts.length > 0 && (
           <section className="py-12 md:py-16 lg:py-24">
             <h2 className="collection-section-title">
@@ -340,36 +549,73 @@ export default async function CollectionPage({
               <p className="collection-empty-copy">
                 No products found in this section right now. Check back soon.
               </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                {collectionDiscoveryLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </section>
+
+        {landing.kind === 'seo_landing' && landing.outro_content ? (
+          <section className="border-t border-stone-100 py-10">
+            <p className="collection-detail-copy mx-auto max-w-3xl text-center">
+              {landing.outro_content}
+            </p>
+          </section>
+        ) : null}
+
+        {landing.faq_items && landing.faq_items.length > 0 ? (
+          <section className="border-t border-stone-100 py-10">
+            <div className="mx-auto max-w-3xl space-y-6">
+              {landing.faq_items.map((item) => (
+                <div key={item.question}>
+                  <h2 className="collection-sidebar-heading">{item.question}</h2>
+                  <p className="collection-detail-copy mt-2">{item.answer}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {/* Task 5.5: Related Collections */}
         {relatedCollections.length > 0 && (
           <section className="border-t border-stone-100 py-12 md:py-16">
             <h2 className="collection-section-title mb-8">Related Collections</h2>
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {relatedCollections.map((col) => (
-                <Link
-                  key={col.id}
-                  href={`/collections/${col.handle}`}
-                  className="group relative overflow-hidden rounded-lg border border-stone-200 transition-colors hover:border-stone-900"
-                >
-                  {(col.cover_image_url || col.image) && (
-                    <div className="aspect-[4/3] overflow-hidden bg-stone-100">
-                      <img
-                        src={col.cover_image_url || col.image}
-                        alt={col.title}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
+              {relatedCollections.map((col) => {
+                const collectionImage = col.cover_image_url || col.image;
+
+                return (
+                  <Link
+                    key={col.id}
+                    href={`/collections/${col.handle}`}
+                    className="group relative overflow-hidden rounded-lg border border-stone-200 transition-colors hover:border-stone-900"
+                  >
+                    {collectionImage ? (
+                      <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+                        <OptimizedImage
+                          src={collectionImage}
+                          alt={col.title}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                    ) : null}
+                    <div className="p-4">
+                      <p className="font-medium text-stone-900">{col.title}</p>
+                      <p className="mt-1 text-sm text-stone-500">Shop collection →</p>
                     </div>
-                  )}
-                  <div className="p-4">
-                    <p className="font-medium text-stone-900">{col.title}</p>
-                    <p className="mt-1 text-sm text-stone-500">Shop collection →</p>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </section>
         )}

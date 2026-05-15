@@ -670,7 +670,7 @@ export const carrierService = {
       label_currency: toCurrency(input.order.currency_code),
       carrier_service:
         courierName || input.order.workflow?.label?.carrier_service || null,
-      tracking_number,
+      tracking_number: trackingNumber,
       tracking_url: buildTrackingUrl(selectedProvider, trackingNumber),
       shipping_carrier: courierName,
       shiprocket_order_id: shiprocketOrderId,

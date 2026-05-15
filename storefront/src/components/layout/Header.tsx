@@ -59,16 +59,18 @@ const DEFAULT_NAV_LINKS: NavLink[] = [
     highlight: true,
   },
   { label: 'Collections', url: '/collections', order: 5 },
-  { label: 'Reels', url: '/reels', order: 6 },
-  { label: 'Sale', url: '/sale', order: 7, highlight: true },
-  { label: 'About', url: '/about', order: 8 },
-  { label: 'Contact', url: '/contact', order: 9 },
+  { label: 'Edits', url: '/edits', order: 6 },
+  { label: 'Reels', url: '/reels', order: 7 },
+  { label: 'Sale', url: '/sale', order: 8, highlight: true },
+  { label: 'About', url: '/about', order: 9 },
+  { label: 'Contact', url: '/contact', order: 10 },
 ];
 
 const DEFAULT_QUICK_LINKS: NavLink[] = [
   { label: 'Bestsellers', url: '/bestsellers', order: 1 },
-  { label: 'Gift Cards', url: '/gift-cards', order: 2 },
-  { label: 'New In', url: '/products?sort=newest', order: 3 },
+  { label: 'Curated Edits', url: '/edits', order: 2 },
+  { label: 'Gift Cards', url: '/gift-cards', order: 3 },
+  { label: 'New In', url: '/products?sort=newest', order: 4 },
 ];
 
 export function Header() {
@@ -79,7 +81,7 @@ export function Header() {
   const [showSearch, setShowSearch] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCartDrawer, setShowCartDrawer] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [_isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -235,8 +237,10 @@ export function Header() {
               onClick={() => setMobileMenuOpen(true)}
               className="icon-btn"
               aria-label="Open menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-menu"
             >
-              <Menu size={22} />
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
 
             {/* Center: Logo */}
@@ -257,6 +261,18 @@ export function Header() {
               >
                 <Search size={20} />
               </button>
+              <Link
+                href="/wishlist"
+                className="icon-btn"
+                aria-label={`Wishlist with ${wishlistCount} items`}
+              >
+                <Heart size={20} />
+                {wishlistCount > 0 && (
+                  <span className="badge bg-[var(--sienna)]">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
               <button
                 type="button"
                 onClick={() => setShowCartDrawer(true)}

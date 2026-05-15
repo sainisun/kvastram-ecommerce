@@ -19,6 +19,7 @@ import Link from 'next/link';
 import ProductMediaUpload, {
   type ProductMediaItem,
 } from '@/components/ui/ProductMediaUpload';
+import ProductSeoDiscoveryPanel from '@/components/ProductSeoDiscoveryPanel';
 import { useNotification } from '@/context/notification-context';
 
 interface Region {
@@ -1180,6 +1181,13 @@ export default function EditProductPage() {
               </div>
             </div>
           </div>
+
+          <ProductSeoDiscoveryPanel
+            productId={id}
+            productHandle={formData.handle}
+            variants={variants}
+            mediaItems={mediaItems}
+          />
 
         </div>
         {/* end right column */}

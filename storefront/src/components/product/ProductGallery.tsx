@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import {
   ChevronLeft,
@@ -16,6 +16,8 @@ interface ProductGalleryProps {
   media: ProductImage[];
   title: string;
   videos?: ProductVideo[];
+  scarcityLabel?: string;
+  wishlistButton?: ReactNode;
 }
 
 type GalleryItem = {
@@ -61,6 +63,8 @@ export default function ProductGallery({
   media,
   title,
   videos = [],
+  scarcityLabel,
+  wishlistButton,
 }: ProductGalleryProps) {
   const items = useMemo(
     () => buildGalleryItems(media, title, videos),
@@ -195,7 +199,7 @@ export default function ProductGallery({
               data-index={index}
               className="relative w-full shrink-0 snap-center bg-[#fafafa]"
             >
-              <div className="relative aspect-[3/4] max-h-[75vh] overflow-hidden">
+              <div className="pdp-gallery-frame relative overflow-hidden">
                 {item.type === 'video' ? (
                   <>
                     <video
@@ -246,6 +250,12 @@ export default function ProductGallery({
                     Reel
                   </div>
                 )}
+                {scarcityLabel && item.type !== 'video' ? (
+                  <span className="pdp-gallery-badge">{scarcityLabel}</span>
+                ) : null}
+                {wishlistButton ? (
+                  <div className="pdp-gallery-wishlist">{wishlistButton}</div>
+                ) : null}
               </div>
             </div>
           ))}
@@ -259,8 +269,8 @@ export default function ProductGallery({
                   key={`${item.id}-dot`}
                   type="button"
                   onClick={() => scrollToIndex(index)}
-                  className={`h-2.5 rounded-full transition-all ${
-                    activeIndex === index ? 'w-8 bg-stone-900' : 'w-2.5 bg-stone-300'
+                  className={`pdp-gallery-dot ${
+                    activeIndex === index ? 'active' : ''
                   }`}
                   aria-label={`View media ${index + 1}`}
                 />
@@ -319,7 +329,7 @@ export default function ProductGallery({
 
       <div className="hidden lg:block">
         <div className="space-y-4">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-lg)] bg-[#fafafa] lg:h-[calc(100vh-8rem)] lg:min-h-[720px] lg:aspect-auto">
+          <div className="pdp-gallery-frame pdp-gallery-frame-desktop relative overflow-hidden bg-[#fafafa]">
             {activeItem.type === 'video' ? (
               <>
                 <video
@@ -385,6 +395,12 @@ export default function ProductGallery({
                 </button>
               </>
             )}
+            {scarcityLabel && activeItem.type !== 'video' ? (
+              <span className="pdp-gallery-badge">{scarcityLabel}</span>
+            ) : null}
+            {wishlistButton ? (
+              <div className="pdp-gallery-wishlist">{wishlistButton}</div>
+            ) : null}
           </div>
 
           {items.length > 1 && (
@@ -403,11 +419,13 @@ export default function ProductGallery({
                 ))}
               </div>
 
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-4 gap-3">
                 {items.map((item, index) => (
                   <button
                     key={`${item.id}-desktop-thumb`}
                     type="button"
+                    onMouseEnter={() => goToIndex(index)}
+                    onFocus={() => goToIndex(index)}
                     onClick={() => goToIndex(index)}
                     className={`relative aspect-[4/5] overflow-hidden rounded-[var(--radius-md)] border ${
                       activeIndex === index

@@ -75,6 +75,29 @@ interface OrderWithDetails extends Order {
   };
 }
 
+type CustomerReturn = {
+  id: string;
+  order_id: string;
+  reason: string;
+  status: 'pending' | 'approved' | 'rejected' | 'refunded' | string;
+  refund_amount?: number | null;
+  admin_notes?: string | null;
+  created_at: string;
+};
+
+function getReturnStatusClasses(status: string) {
+  switch (status) {
+    case 'approved':
+      return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+    case 'refunded':
+      return 'border-stone-200 bg-stone-900 text-white';
+    case 'rejected':
+      return 'border-red-200 bg-red-50 text-red-700';
+    default:
+      return 'border-amber-200 bg-amber-50 text-amber-700';
+  }
+}
+
 export default function OrderDetailsPage() {
   const { customer, loading } = useAuth();
   const { addItem } = useCart();
@@ -94,6 +117,7 @@ export default function OrderDetailsPage() {
   const [returnError, setReturnError] = useState<string | null>(null);
   const [returnReason, setReturnReason] = useState('');
   const [returnItems, setReturnItems] = useState<Record<string, number>>({});
+  const [existingReturn, setExistingReturn] = useState<CustomerReturn | null>(null);
 
   // Handle reorder functionality
   const handleReorder = async () => {
@@ -214,10 +238,18 @@ export default function OrderDetailsPage() {
     setReturnLoading(true);
     setReturnError(null);
     try {
-      await api.requestReturn({
+      const response = await api.requestReturn({
         order_id: order.id,
         reason: returnReason.trim(),
         items: selectedItems,
+      });
+      setExistingReturn({
+        id: response.return_id,
+        order_id: order.id,
+        reason: returnReason.trim(),
+        status: 'pending',
+        refund_amount: 0,
+        created_at: new Date().toISOString(),
       });
       setReturnSuccess(
         'Your return request has been submitted. Our team will review it within 2-3 business days.'
@@ -245,8 +277,16 @@ export default function OrderDetailsPage() {
       if (!params.id) return;
 
       try {
-        const res = await api.getOrder(params.id as string);
-        setOrder(res.order);
+        const [orderRes, returnsRes] = await Promise.all([
+          api.getOrder(params.id as string),
+          api.getCustomerReturns().catch(() => ({ returns: [] })),
+        ]);
+        setOrder(orderRes.order);
+        setExistingReturn(
+          (returnsRes.returns || []).find(
+            (item: CustomerReturn) => item.order_id === orderRes.order.id
+          ) || null
+        );
         setFetching(false);
       } catch {
         setError('Failed to load order');
@@ -534,6 +574,50 @@ export default function OrderDetailsPage() {
                     {returnSuccess}
                   </div>
                 )}
+                {existingReturn ? (
+                  <div className="rounded border border-stone-200 bg-white p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <p className="account-form-label">Return request</p>
+                      <span
+                        className={`rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${getReturnStatusClasses(existingReturn.status)}`}
+                      >
+                        {existingReturn.status}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm text-stone-700">
+                      {existingReturn.reason}
+                    </p>
+                    <p className="mt-2 text-xs text-stone-500">
+                      Submitted{' '}
+                      {new Date(existingReturn.created_at).toLocaleDateString()}
+                    </p>
+                    {existingReturn.admin_notes ? (
+                      <p className="mt-2 text-sm text-stone-500">
+                        Team note: {existingReturn.admin_notes}
+                      </p>
+                    ) : null}
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <Link
+                        href="/help"
+                        className="account-secondary-action border border-stone-300 bg-white px-4 py-2 transition-colors hover:bg-stone-900 hover:text-white"
+                      >
+                        Help Center
+                      </Link>
+                      <Link
+                        href="/returns"
+                        className="account-secondary-action border border-stone-300 bg-white px-4 py-2 transition-colors hover:bg-stone-900 hover:text-white"
+                      >
+                        View Returns Hub
+                      </Link>
+                      <Link
+                        href={`/contact?reason=returns&order=${order.display_id}&email=${encodeURIComponent(order.email)}`}
+                        className="account-secondary-action border border-stone-300 bg-white px-4 py-2 transition-colors hover:bg-stone-900 hover:text-white"
+                      >
+                        Contact Support
+                      </Link>
+                    </div>
+                  </div>
+                ) : null}
                 <button
                   onClick={handleReorder}
                   disabled={
@@ -552,7 +636,7 @@ export default function OrderDetailsPage() {
                     </>
                   )}
                 </button>
-                {canRequestReturn && (
+                {canRequestReturn && !existingReturn && (
                   <button
                     onClick={() => {
                       setShowReturnModal(true);
@@ -580,6 +664,18 @@ export default function OrderDetailsPage() {
                     <Truck size={14} /> Track Package
                   </a>
                 ) : null}
+                <Link
+                  href="/help"
+                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"
+                >
+                  Help Center
+                </Link>
+                <Link
+                  href="/payment-help"
+                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"
+                >
+                  Payment Help
+                </Link>
                 <Link
                   href={`/contact?order=${order.display_id}&email=${encodeURIComponent(order.email)}`}
                   className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"

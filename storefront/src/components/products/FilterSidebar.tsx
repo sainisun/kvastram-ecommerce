@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { storefrontAttributeFilters } from '@/config/storefront-discovery';
 
 interface Category {
   id: string;
@@ -41,9 +42,24 @@ export default function FilterSidebar({
   const currentCategoryId = searchParams.get('category_id');
   const currentTagId = searchParams.get('tag_id');
   const currentCollectionId = searchParams.get('collection_id');
+  const currentAttributeCode = searchParams.get('attribute_code');
+  const currentAttributeValue = searchParams.get('attribute_value');
+  const currentMinPrice = searchParams.get('min_price') || '';
+  const currentMaxPrice = searchParams.get('max_price') || '';
+  const [minPrice, setMinPrice] = useState(
+    currentMinPrice ? String(Math.round(Number(currentMinPrice) / 100)) : ''
+  );
+  const [maxPrice, setMaxPrice] = useState(
+    currentMaxPrice ? String(Math.round(Number(currentMaxPrice) / 100)) : ''
+  );
 
   const updateFilter = (
-    type: 'category_id' | 'tag_id' | 'collection_id',
+    type:
+      | 'category_id'
+      | 'tag_id'
+      | 'collection_id'
+      | 'attribute_code'
+      | 'attribute_value',
     value: string | null
   ) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -56,6 +72,43 @@ export default function FilterSidebar({
     router.push(`/products?${params.toString()}`);
   };
 
+  const applyPriceFilter = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('page');
+
+    if (minPrice.trim()) {
+      params.set('min_price', String(Number(minPrice) * 100));
+    } else {
+      params.delete('min_price');
+    }
+
+    if (maxPrice.trim()) {
+      params.set('max_price', String(Number(maxPrice) * 100));
+    } else {
+      params.delete('max_price');
+    }
+
+    router.push(`/products?${params.toString()}`);
+  };
+
+  const updateAttributeFilter = (code: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('page');
+
+    const isSame =
+      currentAttributeCode === code && currentAttributeValue === value;
+
+    if (isSame) {
+      params.delete('attribute_code');
+      params.delete('attribute_value');
+    } else {
+      params.set('attribute_code', code);
+      params.set('attribute_value', value);
+    }
+
+    router.push(`/products?${params.toString()}`);
+  };
+
   const toggleCategory = (id: string) => {
     setExpandedCats((prev) =>
       prev.includes(id)
@@ -65,7 +118,13 @@ export default function FilterSidebar({
   };
 
   const hasActiveFilters =
-    currentCategoryId || currentTagId || currentCollectionId;
+    currentCategoryId ||
+    currentTagId ||
+    currentCollectionId ||
+    currentAttributeCode ||
+    currentAttributeValue ||
+    currentMinPrice ||
+    currentMaxPrice;
 
   return (
     <div className={`space-y-7 ${className}`}>
@@ -160,6 +219,65 @@ export default function FilterSidebar({
           ))}
         </FilterGroup>
       ) : null}
+
+      <FilterGroup label="Price">
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              placeholder="Min"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              className="w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-body-sm"
+            />
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              placeholder="Max"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-body-sm"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={applyPriceFilter}
+            className="w-full rounded-md bg-[var(--ink)] px-4 py-2 text-body-xs uppercase tracking-token-wider text-white transition hover:opacity-90"
+          >
+            Apply Price
+          </button>
+        </div>
+      </FilterGroup>
+
+      {storefrontAttributeFilters.map((group) => (
+        <FilterGroup key={group.code} label={group.label}>
+          <div className="flex flex-wrap gap-2">
+            {group.values.map((item) => {
+              const isActive =
+                currentAttributeCode === group.code &&
+                currentAttributeValue === item.value;
+
+              return (
+                <button
+                  key={`${group.code}-${item.value}`}
+                  type="button"
+                  onClick={() => updateAttributeFilter(group.code, item.value)}
+                  className={`filter-tag-button rounded-full border px-3 py-2 transition ${
+                    isActive
+                      ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
+                      : 'filter-tag-button-inactive border-[var(--line)] bg-white hover:border-[var(--ink)]'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </FilterGroup>
+      ))}
 
       {tags.length > 0 ? (
         <FilterGroup label="Tags">

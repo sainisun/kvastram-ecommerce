@@ -17,6 +17,16 @@ const isUuid = (val: string): boolean => {
 
 const collectionsRouter = new Hono();
 
+function sanitizeHandle(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 async function isVerifiedAdminRequest(c: Context) {
   const authHeader = c.req.header('authorization');
   const bearerToken = authHeader?.startsWith('Bearer ')
@@ -53,6 +63,19 @@ const CollectionSchema = z.object({
   seo_title: z.string().max(200).optional(),
   seo_desc: z.string().max(300).optional(),
   og_image_url: z.string().optional(),
+  is_indexable: z.boolean().default(true),
+  robots_policy: z.enum(['index,follow', 'noindex,follow', 'noindex,nofollow']).default('index,follow'),
+  canonical_url: z.string().max(500).optional().nullable(),
+  seasonal_flag: z.enum(['evergreen', 'seasonal', 'campaign']).default('evergreen'),
+  faq_items: z
+    .array(
+      z.object({
+        question: z.string().max(200),
+        answer: z.string().max(1000),
+      })
+    )
+    .default([]),
+  answer_capsule: z.string().max(1000).optional().nullable(),
   metadata: z.record(z.any()).optional(),
 });
 
@@ -110,6 +133,12 @@ collectionsRouter.get('/', async (c) => {
         seo_title: product_collections.seo_title,
         seo_desc: product_collections.seo_desc,
         og_image_url: product_collections.og_image_url,
+        is_indexable: product_collections.is_indexable,
+        robots_policy: product_collections.robots_policy,
+        canonical_url: product_collections.canonical_url,
+        seasonal_flag: product_collections.seasonal_flag,
+        faq_items: product_collections.faq_items,
+        answer_capsule: product_collections.answer_capsule,
         metadata: product_collections.metadata,
         created_at: product_collections.created_at,
         updated_at: product_collections.updated_at,
@@ -277,13 +306,7 @@ collectionsRouter.post(
       }
 
       // Auto-generate handle if not provided
-      const handle = data.handle || data.title
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, '-')
-        .replace(/[^a-z0-9-]/g, '')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
+      const handle = sanitizeHandle(data.handle || data.title);
 
       // Active requires cover_image — force draft if no image
       let status = data.status;
@@ -311,6 +334,12 @@ collectionsRouter.post(
           seo_title: data.seo_title,
           seo_desc: data.seo_desc,
           og_image_url: data.og_image_url,
+          is_indexable: data.is_indexable,
+          robots_policy: data.robots_policy,
+          canonical_url: data.canonical_url,
+          seasonal_flag: data.seasonal_flag || (data.type === 'seasonal' ? 'seasonal' : 'evergreen'),
+          faq_items: data.faq_items,
+          answer_capsule: data.answer_capsule,
           metadata: data.metadata,
         })
         .returning();
@@ -374,6 +403,7 @@ collectionsRouter.put(
         .update(product_collections)
         .set({
           ...data,
+          handle: data.handle ? sanitizeHandle(data.handle) : undefined,
           valid_from: data.valid_from ? new Date(data.valid_from) : undefined,
           valid_until: data.valid_until ? new Date(data.valid_until) : undefined,
           updated_at: new Date(),

@@ -161,6 +161,25 @@ interface CustomerUpdateData {
   phone?: string;
 }
 
+interface CustomerAddressInput {
+  first_name?: string;
+  last_name?: string;
+  company?: string;
+  address_1: string;
+  address_2?: string;
+  city: string;
+  province?: string;
+  postal_code: string;
+  country_code: string;
+  phone?: string;
+}
+
+interface CustomerAddressRecord extends CustomerAddressInput {
+  id: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 interface ReviewCreateData {
   rating: number;
   title?: string;
@@ -220,7 +239,10 @@ export const api = {
     return res.json();
   },
 
-  async post<T = unknown>(endpoint: string, body: T) {
+  async post<TResponse = unknown, TBody = unknown>(
+    endpoint: string,
+    body: TBody
+  ) {
     const csrfHeader = await getCsrfHeader();
     const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
       method: 'POST',
@@ -240,10 +262,13 @@ export const api = {
       error.data = data;
       throw error;
     }
-    return res.json() as Promise<T>;
+    return res.json() as Promise<TResponse>;
   },
 
-  async put<T = unknown>(endpoint: string, body: T) {
+  async put<TResponse = unknown, TBody = unknown>(
+    endpoint: string,
+    body: TBody
+  ) {
     const csrfHeader = await getCsrfHeader();
     const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
       method: 'PUT',
@@ -262,7 +287,7 @@ export const api = {
       error.data = data;
       throw error;
     }
-    return res.json() as Promise<T>;
+    return res.json() as Promise<TResponse>;
   },
 
   async delete(endpoint: string) {
@@ -323,7 +348,7 @@ export const api = {
   async getCollections() {
     try {
       const res = await fetchWithTrace(`${API_URL}/collections`, {
-        next: { revalidate: 3600 },
+        cache: 'no-store',
       });
       if (!res.ok) {
         // Silently return fallback when backend not available
@@ -333,6 +358,20 @@ export const api = {
     } catch {
       // Silently return fallback when backend not available
       return { collections: [] };
+    }
+  },
+
+  async getCollection(handle: string) {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/collections/${encodeURIComponent(handle)}`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) {
+        return { collection: null };
+      }
+      return res.json();
+    } catch {
+      return { collection: null };
     }
   },
 
@@ -482,6 +521,8 @@ export const api = {
       category_id?: string;
       tag_id?: string;
       collection_id?: string;
+      attribute_code?: string;
+      attribute_value?: string;
       cache?: boolean;
     } = {}
   ): Promise<{ products: Product[]; total: number; limit?: number; offset?: number }> {
@@ -538,6 +579,58 @@ export const api = {
       return res.json();
     } catch {
       return { suggestions: [] };
+    }
+  },
+
+  async getSeoLandingPages() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/seo/landing-pages?status=active`, {
+        next: { revalidate: 300, tags: ['seo-landing-pages'] },
+      });
+      if (!res.ok) return { landing_pages: [] };
+      const json = await res.json();
+      return json.data || { landing_pages: [] };
+    } catch {
+      return { landing_pages: [] };
+    }
+  },
+
+  async getSeoLandingPage(slug: string) {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/seo/landing-pages/${encodeURIComponent(slug)}`, {
+        next: { revalidate: 300, tags: [`seo-landing-page-${slug}`] },
+      });
+      if (!res.ok) return null;
+      const json = await res.json();
+      return json.data?.landing_page || null;
+    } catch {
+      return null;
+    }
+  },
+
+  async getArtisans() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/artisans`, {
+        next: { revalidate: 3600, tags: ['artisans'] },
+      });
+      if (!res.ok) return { artisans: [] };
+      const json = await res.json();
+      return json.data || { artisans: [] };
+    } catch {
+      return { artisans: [] };
+    }
+  },
+
+  async getArtisan(slug: string) {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/artisans/${encodeURIComponent(slug)}`, {
+        next: { revalidate: 3600, tags: [`artisan-${slug}`] },
+      });
+      if (!res.ok) return null;
+      const json = await res.json();
+      return json.data || null;
+    } catch {
+      return null;
     }
   },
 
@@ -629,10 +722,15 @@ export const api = {
   },
 
   // --- Shipping Options (PHASE 1.3) ---
-  async getShippingOptions(countryCode: string, regionId?: string) {
+  async getShippingOptions(
+    countryCode: string,
+    regionId?: string,
+    postalCode?: string
+  ) {
     try {
       const params = new URLSearchParams({ country_code: countryCode });
       if (regionId) params.append('region_id', regionId);
+      if (postalCode?.trim()) params.append('postal_code', postalCode.trim());
 
       const res = await fetchWithTrace(
         `${API_URL}/store/checkout/shipping-options?${params}`,
@@ -827,6 +925,34 @@ export const api = {
     });
     if (!res.ok) throw new Error('Failed to fetch orders');
     return res.json();
+  },
+
+  async getCustomerAddresses(): Promise<{ addresses: CustomerAddressRecord[] }> {
+    const res = await fetchWithTrace(
+      `${API_URL}/store/customers/me/addresses`,
+      {
+        credentials: 'include',
+      }
+    );
+    if (!res.ok) throw new Error('Failed to fetch addresses');
+    return res.json();
+  },
+
+  async createCustomerAddress(
+    data: CustomerAddressInput
+  ): Promise<{ address: CustomerAddressRecord }> {
+    return api.post('/store/customers/me/addresses', data);
+  },
+
+  async updateCustomerAddress(
+    id: string,
+    data: Partial<CustomerAddressInput>
+  ): Promise<{ address: CustomerAddressRecord }> {
+    return api.put(`/store/customers/me/addresses/${id}`, data);
+  },
+
+  async deleteCustomerAddress(id: string): Promise<{ success: boolean }> {
+    return api.delete(`/store/customers/me/addresses/${id}`);
   },
 
   async getOrder(id: string) {
@@ -1208,6 +1334,14 @@ export const api = {
       const error = await res.json().catch(() => ({}));
       throw new Error(error.message || error.error || 'Failed to submit return request');
     }
+    return res.json();
+  },
+
+  async getCustomerReturns() {
+    const res = await fetchWithTrace(`${API_URL}/store/returns`, {
+      credentials: 'include',
+    });
+    if (!res.ok) throw new Error('Failed to fetch returns');
     return res.json();
   },
 

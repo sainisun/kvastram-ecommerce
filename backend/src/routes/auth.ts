@@ -34,6 +34,20 @@ const COOKIE_OPTIONS = {
   path: '/',
 };
 
+// GET /auth/csrf
+// Compatibility endpoint for storefront helpers. Mutating backend routes are
+// protected by origin/cookie controls today, so this token is advisory.
+authRouter.get(
+  '/csrf',
+  asyncHandler(async (c) => {
+    c.header('Cache-Control', 'no-store');
+    return c.json({
+      csrf_token: crypto.randomUUID(),
+      timestamp: new Date().toISOString(),
+    });
+  })
+);
+
 // POST /auth/login
 authRouter.post(
   '/login',

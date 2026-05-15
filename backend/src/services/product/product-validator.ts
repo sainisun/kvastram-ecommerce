@@ -94,6 +94,8 @@ export const ProductFilterSchema = z.object({
   categoryId: z.string().uuid().optional(),
   tagId: z.string().uuid().optional(),
   collectionId: z.string().uuid().optional(),
+  attributeCode: z.string().optional(),
+  attributeValue: z.string().optional(),
   sort: z.string().optional().default('created_at'),
 });
 
@@ -110,6 +112,8 @@ export const ProductSearchSchema = z.object({
   categoryId: z.string().uuid().optional(),
   tagId: z.string().uuid().optional(),
   collectionId: z.string().uuid().optional(),
+  attributeCode: z.string().optional(),
+  attributeValue: z.string().optional(),
 });
 
 // --- Bulk Update Schema ---

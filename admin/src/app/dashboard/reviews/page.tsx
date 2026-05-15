@@ -13,6 +13,8 @@ interface Review {
   author_name: string;
   created_at: string;
   status: 'pending' | 'approved' | 'rejected' | string;
+  verified_purchase?: boolean;
+  images?: string[];
 }
 
 interface ReviewsResponse {
@@ -148,6 +150,12 @@ export default function ReviewsPage() {
                       <div className="text-xs text-gray-400 mt-0.5">
                         {new Date(review.created_at).toLocaleDateString()}
                       </div>
+                      {review.verified_purchase ? (
+                        <div className="mt-1 text-xs font-semibold text-green-700">Verified purchase</div>
+                      ) : null}
+                      {review.images?.length ? (
+                        <div className="mt-1 text-xs text-gray-400">{review.images.length} image(s)</div>
+                      ) : null}
                     </td>
                     <td className="px-6 py-4">
                       <span

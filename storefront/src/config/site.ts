@@ -76,13 +76,13 @@ export const siteConfig = {
 
     // Contact Info
     emailUs: 'Email Us',
-    emailAddress: 'concierge@kvastram.com',
-    emailReplyTime: 'Replies within 2 hours.',
+    emailAddress: 'support@kvastram.com',
+    emailReplyTime: 'Monday-Friday, 9 AM - 6 PM IST',
     callOrWhatsApp: 'Call or WhatsApp',
-    phoneNumber: '+91 98765 43210',
-    phoneHours: 'Mon-Fri, 9am - 6pm IST',
+    phoneNumber: '+91-9588078064',
+    phoneHours: 'Monday-Friday, 9 AM - 6 PM IST',
     atelier: 'Atelier',
-    address: '12, Heritage Lane, Hauz Khas Village, New Delhi, 110016, India',
+    address: '44C, Vijaypura, Sumel, Jaipur, Rajasthan 302031, India',
 
     // Form Actions
     sendMessage: 'Send Message',

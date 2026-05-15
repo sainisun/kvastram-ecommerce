@@ -34,11 +34,23 @@ uploadRouter.post('/', async (c) => {
       return c.json({ error: 'No file uploaded' }, 400);
     }
 
-    // Normalize MIME type for HEIC/HEIF — browsers often send empty string for these
     const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
-    const effectiveMimeType =
-      file.type ||
-      (ext === 'heic' ? 'image/heic' : ext === 'heif' ? 'image/heif' : file.type);
+    const effectiveMimeType = file.type || '';
+
+    if (
+      ext === 'heic' ||
+      ext === 'heif' ||
+      effectiveMimeType === 'image/heic' ||
+      effectiveMimeType === 'image/heif'
+    ) {
+      return c.json(
+        {
+          error:
+            'HEIC/HEIF uploads are not supported for SEO media. Export images as JPG, PNG, or WebP before uploading.',
+        },
+        400
+      );
+    }
 
     const validationResult = FileUploadSchema.safeParse({
       filename: file.name,
@@ -175,6 +187,16 @@ uploadRouter.post('/from-url', async (c) => {
     // Basic URL validation — must be http/https
     if (!/^https?:\/\//i.test(url)) {
       return c.json({ error: 'url must start with http:// or https://' }, 400);
+    }
+
+    if (/\.(heic|heif)(?:$|\?)/i.test(url)) {
+      return c.json(
+        {
+          error:
+            'HEIC/HEIF source URLs are not supported for SEO media. Use JPG, PNG, or WebP URLs.',
+        },
+        400
+      );
     }
 
     const result = await uploadFromUrl(url, { folder: 'kvastram/products/images' });

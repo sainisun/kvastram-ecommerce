@@ -1,18 +1,18 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound, permanentRedirect } from 'next/navigation';
 
 import ProductGrid from '@/components/ProductGrid';
 import { RecentlyViewedSection as RecentlyViewed } from '@/components/product/RecentlyViewed';
 import ProductView from '@/components/product/ProductView';
+import { ProductSchema } from '@/components/schema/ProductSchema';
 import { api } from '@/lib/api';
 import {
-  buildBreadcrumbJsonLd,
-  buildProductJsonLd,
   buildProductMetadata,
+  getOgLocaleForLocale,
   getCategoryPath,
   getPrimaryCategory,
-  serializeJsonLd,
 } from '@/lib/seo';
 import type { Product } from '@/types';
 
@@ -39,7 +39,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     const product = await getCanonicalProduct(handle);
-    return buildProductMetadata(product);
+    const requestHeaders = await headers();
+    return buildProductMetadata(product, {
+      ogLocale: getOgLocaleForLocale(requestHeaders.get('x-kvastram-locale')),
+    });
   } catch {
     return {
       title: 'Product Not Found',
@@ -67,19 +70,9 @@ export default async function ProductPage({ params }: Props) {
     { name: product.title, path: `/products/${product.handle}` },
   ];
 
-  const jsonLdData = [
-    buildProductJsonLd(product),
-    buildBreadcrumbJsonLd(breadcrumbItems),
-  ];
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: serializeJsonLd(jsonLdData),
-        }}
-      />
+      <ProductSchema product={product} breadcrumbItems={breadcrumbItems} />
 
       <ProductView product={product} />
 
@@ -99,11 +92,15 @@ export default async function ProductPage({ params }: Props) {
           )}
         </div>
         <Suspense fallback={<div>Loading...</div>}>
-          <RelatedProducts
-            categoryIds={product.categories?.map((category) => category.id) || []}
-            collectionId={product.collection?.id}
-            currentId={product.id}
-          />
+          {product.semantic_related_products?.length ? (
+            <ProductGrid initialProducts={product.semantic_related_products.slice(0, 4)} />
+          ) : (
+            <RelatedProducts
+              categoryIds={product.categories?.map((category) => category.id) || []}
+              collectionId={product.collection?.id}
+              currentId={product.id}
+            />
+          )}
         </Suspense>
       </div>
 

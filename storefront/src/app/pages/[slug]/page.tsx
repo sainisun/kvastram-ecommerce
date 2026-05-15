@@ -9,6 +9,7 @@ import {
   buildWebPageJsonLd,
   serializeJsonLd,
 } from '@/lib/seo';
+import { storefrontTrust } from '@/config/storefront-trust';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -91,6 +92,27 @@ export default async function DynamicPage({ params }: Props) {
           className="prose prose-stone prose-lg max-w-none type-light text-stone-800"
           dangerouslySetInnerHTML={{ __html: page.content }}
         />
+
+        <div className="mt-12 grid gap-4 border border-stone-200 bg-stone-50 p-6 md:grid-cols-3">
+          <Link
+            href={storefrontTrust.policyRoutes.help}
+            className="border border-stone-300 bg-white px-6 py-4 text-center text-body-sm font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-100"
+          >
+            Help Center
+          </Link>
+          <Link
+            href={storefrontTrust.policyRoutes.contact}
+            className="border border-stone-300 bg-white px-6 py-4 text-center text-body-sm font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-100"
+          >
+            Contact Support
+          </Link>
+          <Link
+            href={storefrontTrust.policyRoutes.track}
+            className="border border-stone-300 bg-white px-6 py-4 text-center text-body-sm font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-100"
+          >
+            Track Order
+          </Link>
+        </div>
       </div>
     </div>
   );

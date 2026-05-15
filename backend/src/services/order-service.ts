@@ -107,6 +107,17 @@ function deriveLegacyTrackingFields(packages: WorkflowPackage[]) {
   };
 }
 
+function toTimestamp(value: string | number | Date | null | undefined) {
+  if (!value) return 0;
+  return new Date(value).getTime();
+}
+
+function toMetadataRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
 function normalizePackageSequence(packages: WorkflowPackage[]) {
   return packages.map((pkg, index) => ({
     ...pkg,
@@ -480,11 +491,11 @@ class OrderService {
             ilike(orders.email, pattern),
             ilike(customers.first_name, pattern),
             ilike(customers.last_name, pattern),
-            ilike(sql`coalesce(${shippingAddr.first_name}, '')`, pattern),
-            ilike(sql`coalesce(${shippingAddr.last_name}, '')`, pattern),
-            ilike(sql`coalesce(${shippingAddr.address_1}, '')`, pattern),
-            ilike(sql`coalesce(${shippingAddr.city}, '')`, pattern),
-            ilike(sql`coalesce(${shippingAddr.postal_code}, '')`, pattern),
+            sql`coalesce(${shippingAddr.first_name}, '') ilike ${pattern}`,
+            sql`coalesce(${shippingAddr.last_name}, '') ilike ${pattern}`,
+            sql`coalesce(${shippingAddr.address_1}, '') ilike ${pattern}`,
+            sql`coalesce(${shippingAddr.city}, '') ilike ${pattern}`,
+            sql`coalesce(${shippingAddr.postal_code}, '') ilike ${pattern}`,
             sql`coalesce(${orders.metadata}->>'customer_note', '') ilike ${pattern}`,
             sql`coalesce(${orders.metadata}->>'internal_note', '') ilike ${pattern}`,
             sql`exists (
@@ -641,13 +652,13 @@ class OrderService {
 
       if (sort_by === 'oldest') {
         return (
-          new Date(left.created_at).getTime() - new Date(right.created_at).getTime()
+          toTimestamp(left.created_at) - toTimestamp(right.created_at)
         );
       }
 
       if (sort_by === 'newest') {
         return (
-          new Date(right.created_at).getTime() - new Date(left.created_at).getTime()
+          toTimestamp(right.created_at) - toTimestamp(left.created_at)
         );
       }
 
@@ -658,8 +669,8 @@ class OrderService {
       }
 
       return sort_order === 'asc'
-        ? new Date(left.created_at).getTime() - new Date(right.created_at).getTime()
-        : new Date(right.created_at).getTime() - new Date(left.created_at).getTime();
+        ? toTimestamp(left.created_at) - toTimestamp(right.created_at)
+        : toTimestamp(right.created_at) - toTimestamp(left.created_at);
     });
 
     const paginatedOrders = sortedOrders.slice(offset, offset + limit);
@@ -934,6 +945,7 @@ class OrderService {
       packages: nextPackages,
     });
     const trackingFields = deriveLegacyTrackingFields(nextPackages);
+    const addedPackage = nextPackages[nextPackages.length - 1] || null;
 
     const [updated] = await db
       .update(orders)
@@ -1032,7 +1044,7 @@ class OrderService {
         : 'Tracking details have been added to your order and your shipment is on its way.';
     const nextMetadata = mergeWorkflowMetadata(
       data.notify_buyer !== false
-        ? appendCommunicationEvent(existingOrder.metadata, {
+        ? appendCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
             template: 'shipped',
             subject: autoNotificationSubject,
             message: autoNotificationMessage,
@@ -1143,7 +1155,7 @@ class OrderService {
         : 'A new package has been added to your order with updated shipping details.';
     const nextMetadata = mergeWorkflowMetadata(
       data.notify_buyer !== false
-        ? appendCommunicationEvent(existingOrder.metadata, {
+        ? appendCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
             template: 'shipped',
             subject: addPackageSubject,
             message: addPackageMessage,
@@ -1157,6 +1169,7 @@ class OrderService {
       }
     );
     const trackingFields = deriveLegacyTrackingFields(nextPackages);
+    const addedPackage = nextPackages[nextPackages.length - 1] || null;
 
     const [updated] = await db
       .update(orders)
@@ -1299,7 +1312,7 @@ class OrderService {
     const nextMetadata = mergeWorkflowMetadata(
       Object.prototype.hasOwnProperty.call(data, 'notify_buyer') &&
         data.notify_buyer !== false
-        ? appendCommunicationEvent(existingOrder.metadata, {
+        ? appendCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
             template: updateStatus === 'delivered' ? 'order_update' : 'shipped',
             subject: updateSubject,
             message: updateMessage,

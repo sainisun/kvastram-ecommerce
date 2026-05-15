@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: process.platform === 'win32' ? undefined : 'standalone',
   poweredByHeader: false,
   images: {
     remotePatterns: [
@@ -14,6 +14,11 @@ const nextConfig = {
         pathname: '/uploads/**',
       },
       {
+        protocol: 'https',
+        hostname: 'api.vintaaj.com',
+        pathname: '/uploads/**',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
         pathname: '/uploads/**',
@@ -22,6 +27,9 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   compress: true,
+  turbopack: {
+    root: process.cwd(),
+  },
   // Security headers
   async headers() {
     return [

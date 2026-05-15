@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { DrawerNavItem } from './DrawerNavItem';
+import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
 
 interface HeaderCategory {
   id: string;
@@ -85,8 +86,6 @@ interface MobileDrawerProps {
   categories: HeaderCategory[];
   collections: Collection[];
 }
-
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '919999999999';
 
 function sortByDisplayOrder<T extends { display_order?: number }>(items: T[]) {
   return [...items].sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99));
@@ -234,7 +233,7 @@ export function MobileDrawer({
                 Track order
               </a>
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi, I need help`}
+                href={buildWhatsAppHref('Hi, I need help')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-2.5 rounded-md font-[family-name:var(--font-ui)] text-[11px] font-medium uppercase tracking-[0.06em] bg-[#c94e2a] text-white text-center"
