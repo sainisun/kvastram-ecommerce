@@ -5624,6 +5624,12 @@ body.reel-player-open [aria-label='Cookie consent'] {
     padding-top: 24px;
   }
 
+  .pdp-mobile-whatsapp {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
   .pdp-buy-box {
     position: sticky;
     top: 86px;
@@ -5641,10 +5647,6 @@ body.reel-player-open [aria-label='Cookie consent'] {
     min-height: 640px;
   }
 
-  .pdp-mobile-whatsapp {
-    display: none;
-  }
-
   .pdp-detail-grid {
     grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.85fr);
     gap: 44px;
@@ -5658,10 +5660,9 @@ body.reel-player-open [aria-label='Cookie consent'] {
   }
 
   .pdp-sticky-bar {
-    left: 50%;
-    right: auto;
-    width: min(1120px, calc(100% - 48px));
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    width: auto;
     border: 1px solid var(--border);
     border-bottom: 0;
     border-radius: 8px 8px 0 0;
