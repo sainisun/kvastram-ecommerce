@@ -6,7 +6,7 @@ import { HeaderMain } from './HeaderMain';
 import { SearchBar } from './SearchBar';
 import { MegaMenu } from './MegaMenu';
 import { MobileTopBar } from './mobile/MobileTopBar';
-import { MobileDrawer } from './mobile/MobileDrawer';
+import MobileMenu from '@/components/layout/MobileMenu';
 import CartDrawer from '@/components/layout/CartDrawer';
 import SearchOverlay from '@/components/search/SearchOverlay';
 
@@ -41,7 +41,6 @@ export function SiteHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [expandedDrawerItem, setExpandedDrawerItem] = useState<string | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [categories, setCategories] = useState<HeaderCategory[]>([]);
 
@@ -78,13 +77,8 @@ export function SiteHeader() {
     megaLeaveTimer.current = setTimeout(() => setActiveMega(null), 180);
   }, []);
 
-  const handleToggleDrawerItem = useCallback((label: string) => {
-    setExpandedDrawerItem((prev) => (prev === label ? null : label));
-  }, []);
-
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
-    setExpandedDrawerItem(null);
   }, []);
 
   return (
@@ -128,13 +122,10 @@ export function SiteHeader() {
       </header>
 
       {/* Mobile drawer — outside header to escape stacking context */}
-      <MobileDrawer
+      <MobileMenu
         isOpen={drawerOpen}
         onClose={closeDrawer}
-        expandedItem={expandedDrawerItem}
-        onToggleItem={handleToggleDrawerItem}
         categories={categories}
-        collections={collections}
       />
 
       {/* Mobile search overlay */}

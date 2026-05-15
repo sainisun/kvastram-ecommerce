@@ -1,8 +1,10 @@
 'use client';
 
-import { Menu, X, Search, ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
+import { Menu, X, Search, ShoppingBag, Heart } from 'lucide-react';
 import { Logo } from '../Logo';
 import { useCart } from '@/context/cart-context';
+import { useWishlist } from '@/context/wishlist-context';
 
 interface MobileTopBarProps {
   isDrawerOpen: boolean;
@@ -18,6 +20,7 @@ export function MobileTopBar({
   onCartOpen,
 }: MobileTopBarProps) {
   const { totalItems } = useCart();
+  const { totalItems: wishlistCount } = useWishlist();
 
   return (
     <div className="flex md:hidden items-center justify-between h-[54px] px-4 bg-white border-b border-[#d8d2c8]">
@@ -44,6 +47,18 @@ export function MobileTopBar({
         >
           <Search size={20} strokeWidth={1.4} />
         </button>
+        <Link
+          href="/wishlist"
+          className="relative text-[#3d3a36] hover:text-[#1a1714] transition-colors"
+          aria-label={`Wishlist, ${wishlistCount} items`}
+        >
+          <Heart size={20} strokeWidth={1.4} />
+          {wishlistCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#c94e2a] text-white text-[8px] font-medium rounded-full flex items-center justify-center ring-[1.5px] ring-white">
+              {wishlistCount > 9 ? '9+' : wishlistCount}
+            </span>
+          )}
+        </Link>
         <button
           type="button"
           onClick={onCartOpen}
