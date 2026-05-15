@@ -38,8 +38,8 @@ interface Category {
   id: string;
   name: string;
   slug: string;
-  image?: string;
-  header_image_url?: string;
+  image?: string | null;
+  header_image_url?: string | null;
   children?: Category[];
 }
 
@@ -54,9 +54,9 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
-  regions: Region[];
-  currentRegion: Region | null;
-  onRegionChange: (region: Region) => void;
+  regions?: Region[];
+  currentRegion?: Region | null;
+  onRegionChange?: (region: Region) => void;
 }
 
 type SearchResult = Pick<Product, 'id' | 'title' | 'handle' | 'thumbnail' | 'variants'>;
