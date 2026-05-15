@@ -83,7 +83,10 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white" onMouseLeave={handleMegaLeave}>
+      <header
+        className="sticky top-0 z-50 bg-white md:bg-transparent md:px-5 md:pt-3"
+        onMouseLeave={handleMegaLeave}
+      >
         {/* PromoBar — hidden when sticky */}
         <PromoBar isSticky={isSticky} />
 

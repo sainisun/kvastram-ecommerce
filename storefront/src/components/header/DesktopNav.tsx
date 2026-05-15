@@ -40,7 +40,10 @@ export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave }: DesktopNavP
   }, [onMegaLeave]);
 
   return (
-    <nav className="flex items-center gap-9" aria-label="Main navigation">
+    <nav
+      className="flex min-w-0 items-center justify-center gap-5 xl:gap-8"
+      aria-label="Main navigation"
+    >
       {NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
         const isMegaOpen = activeMega === item.label;
@@ -56,7 +59,7 @@ export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave }: DesktopNavP
               className={[
                 'font-[family-name:var(--font-ui)] text-[12px] uppercase tracking-[0.08em] pb-1 transition-colors',
                 isActive || isMegaOpen
-                  ? 'text-[#c94e2a] border-b border-[#c94e2a]'
+                  ? 'text-[#b33e23] border-b border-[#b33e23]'
                   : 'text-[#3d3a36] hover:text-[#1a1714] hover:border-b hover:border-[#b5b0a8]',
               ].join(' ')}
               aria-haspopup={item.hasMega ? 'true' : undefined}
