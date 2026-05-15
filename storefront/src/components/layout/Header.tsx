@@ -237,10 +237,8 @@ export function Header() {
               onClick={() => setMobileMenuOpen(true)}
               className="icon-btn"
               aria-label="Open menu"
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-navigation-menu"
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              <Menu size={22} />
             </button>
 
             {/* Center: Logo */}
@@ -261,18 +259,6 @@ export function Header() {
               >
                 <Search size={20} />
               </button>
-              <Link
-                href="/wishlist"
-                className="icon-btn"
-                aria-label={`Wishlist with ${wishlistCount} items`}
-              >
-                <Heart size={20} />
-                {wishlistCount > 0 && (
-                  <span className="badge bg-[var(--sienna)]">
-                    {wishlistCount}
-                  </span>
-                )}
-              </Link>
               <button
                 type="button"
                 onClick={() => setShowCartDrawer(true)}
