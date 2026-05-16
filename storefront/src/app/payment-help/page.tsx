@@ -1,6 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import {
+  ContentContainer,
+  HighlightBox,
+  InfoCard,
+  InlineCTA,
+  PageHero,
+  SectionBlock,
+} from '@/components/content/ContentPageSystem';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
@@ -14,101 +22,66 @@ export const metadata: Metadata = buildNoindexPageMetadata({
 
 export default function PaymentHelpPage() {
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
-        <div className="mb-12 text-center">
-          <span className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
-            Payment Support
-          </span>
-          <h1 className="mt-4 text-display-xl font-serif text-stone-900">
-            Trouble Completing Payment?
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-body-lg text-stone-600">
-            Use this page if a Razorpay or PayPal attempt fails or if you are
-            unsure whether your order was charged successfully.
-          </p>
-        </div>
+    <>
+      <PageHero
+        eyebrow="Payment Support"
+        title="Trouble Completing Payment?"
+        intro="Use this page if a Razorpay or PayPal attempt fails, or if you are unsure whether your order was charged successfully."
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Payment Help' },
+        ]}
+      />
+      <ContentContainer
+        footer={
+          <InlineCTA
+            title="Still unsure after checking?"
+            body="Share your order reference, payment timestamp, and payment method so support can verify the attempt safely."
+            links={[
+              { label: 'Track Order', href: storefrontTrust.policyRoutes.track },
+              {
+                label: 'Contact Support',
+                href: `${storefrontTrust.policyRoutes.contact}?reason=payment`,
+                variant: 'primary',
+              },
+            ]}
+          />
+        }
+      >
+        <SectionBlock title="Payment Recovery Steps">
+          <div className="info-grid">
+            <InfoCard title="Do not retry blindly" eyebrow="Step 01">
+              First confirm whether a payment failed or is still being processed
+              to avoid duplicate attempts.
+            </InfoCard>
+            <InfoCard title="Check your order status" eyebrow="Step 02">
+              Use your order reference and email on the track page if an order
+              was created before the payment issue happened.
+            </InfoCard>
+            <InfoCard title="Contact support" eyebrow="Step 03">
+              Share the order reference, payment timestamp, and method used so
+              the team can verify it cleanly.
+            </InfoCard>
+          </div>
+        </SectionBlock>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="border border-stone-200 bg-stone-50 p-6">
-            <h2 className="text-body-lg type-semibold text-stone-900">
-              1. Do not retry blindly
-            </h2>
-            <p className="mt-3 text-body-sm text-stone-600">
-              First confirm whether a payment actually failed or is still being
-              processed to avoid duplicate attempts.
-            </p>
+        <SectionBlock title="Accepted Payment Guidance">
+          <div className="grid gap-4 md:grid-cols-2">
+            <InfoCard title="India (INR)" eyebrow="Razorpay">
+              {storefrontTrust.paymentMethodsIndia}
+            </InfoCard>
+            <InfoCard title="International Buyers" eyebrow="PayPal">
+              {storefrontTrust.paymentMethodsInternational}
+            </InfoCard>
           </div>
-          <div className="border border-stone-200 bg-stone-50 p-6">
-            <h2 className="text-body-lg type-semibold text-stone-900">
-              2. Check your order status
-            </h2>
-            <p className="mt-3 text-body-sm text-stone-600">
-              Use your order reference and email address on the track page if an
-              order was created before the payment issue happened.
-            </p>
-          </div>
-          <div className="border border-stone-200 bg-stone-50 p-6">
-            <h2 className="text-body-lg type-semibold text-stone-900">
-              3. Contact support
-            </h2>
-            <p className="mt-3 text-body-sm text-stone-600">
-              Share the order reference, payment timestamp, and the method you
-              used so support can verify the attempt safely.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-12 border border-stone-200 p-8">
-          <h2 className="text-display-sm font-serif text-stone-900">
-            Accepted payment guidance
-          </h2>
-          <div className="mt-4 space-y-4 text-body-md text-stone-700">
-            <div>
-              <p className="type-semibold text-stone-900">India (INR)</p>
-              <p className="mt-1">{storefrontTrust.paymentMethodsIndia}</p>
-            </div>
-            <div>
-              <p className="type-semibold text-stone-900">
-                International buyers
-              </p>
-              <p className="mt-1">
-                {storefrontTrust.paymentMethodsInternational}
-              </p>
-            </div>
-          </div>
-          <p className="mt-3 text-body-sm text-stone-500">
+          <HighlightBox title="International checkout note">
             PayPal is available for international buyers only.
-          </p>
-        </div>
-
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Link
-            href={storefrontTrust.policyRoutes.help}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-          >
-            Help Center
-          </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.track}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-          >
-            Track Order
-          </Link>
-          <Link
-            href={`${storefrontTrust.policyRoutes.contact}?reason=payment`}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-          >
-            Contact Support
-          </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.terms}
-            className="bg-stone-900 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-white transition-colors hover:bg-stone-800"
-          >
+          </HighlightBox>
+          <Link href={storefrontTrust.policyRoutes.terms} className="content-button">
             Review Terms
           </Link>
-        </div>
-      </div>
-    </div>
+        </SectionBlock>
+      </ContentContainer>
+    </>
   );
 }

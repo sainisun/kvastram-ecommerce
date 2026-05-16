@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import './globals.css';
+import '../styles/components/content-pages.css';
 import { Analytics } from '@/components/Analytics';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { RootErrorBoundary } from '@/components/RootErrorBoundary';
