@@ -475,7 +475,7 @@ export default function CatalogClient({
       {filterDrawerOpen ? (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/40"
+            className="fixed inset-0 z-[90] bg-black/40"
             onClick={() => setFilterDrawerOpen(false)}
             aria-hidden="true"
           />
@@ -485,22 +485,23 @@ export default function CatalogClient({
             aria-modal="true"
             aria-labelledby="catalog-filter-title"
             tabIndex={-1}
-            className="fixed inset-x-0 bottom-0 z-50 max-h-[90vh] w-full bg-white shadow-xl transition-transform duration-300 sm:inset-y-0 sm:left-0 sm:right-auto sm:max-h-none sm:max-w-[430px]"
+            className="fixed inset-x-0 bottom-0 z-[100] max-h-[90vh] w-full bg-white shadow-xl transition-transform duration-300 sm:inset-y-0 sm:left-0 sm:right-auto sm:max-h-none sm:w-[360px] sm:max-w-[92vw]"
           >
             <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-stone-100 p-4">
+              <div className="flex items-center justify-between border-b border-stone-100 p-4 sm:border-stone-200 sm:px-5 sm:py-4">
                 <h2 id="catalog-filter-title" className="catalog-filter-title">
-                  Filter
+                  <span className="sm:hidden">Filter</span>
+                  <span className="hidden sm:inline">Filters</span>
                 </h2>
                 <button
                   onClick={() => setFilterDrawerOpen(false)}
-                  className="p-2 text-stone-500 hover:text-black"
+                  className="p-2 text-stone-500 hover:text-black sm:flex sm:h-9 sm:w-9 sm:items-center sm:justify-center sm:border sm:border-stone-200 sm:bg-white sm:p-0 sm:transition-colors sm:hover:border-stone-950 sm:hover:text-stone-950"
                   aria-label="Close filters"
                 >
-                  <X size={24} />
+                  <X className="h-6 w-6 sm:h-[18px] sm:w-[18px]" />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-4">
+              <div className="flex-1 overflow-y-auto p-4 sm:px-5 sm:py-0">
                 <FilterSidebar
                   categories={categories}
                   tags={tags}
