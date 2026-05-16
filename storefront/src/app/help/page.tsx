@@ -2,6 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CreditCard, LifeBuoy, PackageSearch, RotateCcw } from 'lucide-react';
 
+import {
+  ContentContainer,
+  InfoCard,
+  PageHero,
+  SectionBlock,
+} from '@/components/content/ContentPageSystem';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
@@ -50,54 +56,49 @@ const helpCards = [
 
 export default function HelpPage() {
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-5xl px-6 md:px-12 lg:px-20">
-        <div className="mx-auto max-w-3xl text-center">
-          <span className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
-            Support Hub
-          </span>
-          <h1 className="mt-4 text-display-xl font-serif text-stone-900">
-            Kvastram Help Center
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-body-lg text-stone-600">
-            Start here if you need order tracking, payment recovery, return
-            guidance, or direct support. This hub is designed to reduce dead
-            ends and move buyers to the right resolution path faster.
-          </p>
-        </div>
-
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+    <>
+      <PageHero
+        eyebrow="Support Hub"
+        title="Kvastram Help Center"
+        intro="Start here for order tracking, payment recovery, return guidance, and direct support without bouncing between policy pages."
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Help Center' },
+        ]}
+      />
+      <ContentContainer>
+        <SectionBlock title="Choose a Support Path">
+          <div className="grid gap-5 md:grid-cols-2">
           {helpCards.map(({ title, description, href, cta, icon: Icon }) => (
-            <div key={title} className="border border-stone-200 bg-stone-50 p-6">
+            <Link key={title} href={href} className="info-card info-card--link">
               <Icon className="text-stone-900" size={26} />
-              <h2 className="mt-4 text-body-lg type-semibold text-stone-900">
-                {title}
-              </h2>
-              <p className="mt-3 text-body-sm leading-token-relaxed text-stone-600">
-                {description}
-              </p>
-              <Link
-                href={href}
-                className="mt-5 inline-flex border border-stone-300 bg-white px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-100"
-              >
-                {cta}
-              </Link>
-            </div>
+              <h3>{title}</h3>
+              <div className="info-card__body">{description}</div>
+              <span className="info-card__cta">{cta}</span>
+            </Link>
           ))}
-        </div>
+          </div>
+        </SectionBlock>
 
-        <div className="mt-12 border border-stone-200 bg-white p-8">
-          <h2 className="text-display-sm font-serif text-stone-900">
-            Before you contact support
-          </h2>
-          <ul className="mt-5 list-disc space-y-2 pl-5 text-body-sm text-stone-700">
+        <SectionBlock title="Before You Contact Support">
+          <ul className="editorial-text">
             <li>Keep your order reference and purchase email ready.</li>
             <li>Do not retry payment blindly if you are unsure whether it failed.</li>
             <li>Review shipping and refund guidance before assuming eligibility.</li>
             <li>Use the order tracking route first for shipment-status questions.</li>
           </ul>
-        </div>
-      </div>
-    </div>
+          <div className="mt-8">
+            <InfoCard
+              title="Prefer direct help?"
+              eyebrow="Concierge"
+              href={storefrontTrust.policyRoutes.contact}
+              cta="Contact Support"
+            >
+              Send a structured message with your issue and order details.
+            </InfoCard>
+          </div>
+        </SectionBlock>
+      </ContentContainer>
+    </>
   );
 }

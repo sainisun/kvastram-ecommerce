@@ -3,6 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
+import {
+  InfoCard,
+  InlineCTA,
+  PageHero,
+} from '@/components/content/ContentPageSystem';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
@@ -71,50 +76,32 @@ export default function ReturnsPage() {
   }, [orders, returns]);
 
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
-        <div className="mb-12 text-center">
-          <span className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
-            Returns Support
-          </span>
-          <h1 className="mt-4 text-display-xl font-serif text-stone-900">
-            Returns, Refunds, and Exchanges
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-body-lg text-stone-600">
-            Use this page before or after purchase to understand how Kvastram
-            handles eligible return, refund, and cancellation requests.
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="border border-stone-200 bg-stone-50 p-6">
-            <h2 className="text-body-lg type-semibold text-stone-900">
-              Before delivery
-            </h2>
-            <p className="mt-3 text-body-sm text-stone-600">
-              If your order has not shipped yet, contact support as early as
-              possible for cancellation help.
-            </p>
-          </div>
-          <div className="border border-stone-200 bg-stone-50 p-6">
-            <h2 className="text-body-lg type-semibold text-stone-900">
-              After delivery
-            </h2>
-            <p className="mt-3 text-body-sm text-stone-600">
-              Returns and refunds depend on item condition, product type, and
-              policy eligibility. Keep the product unworn and in original
-              packaging.
-            </p>
-          </div>
-          <div className="border border-stone-200 bg-stone-50 p-6">
-            <h2 className="text-body-lg type-semibold text-stone-900">
-              Need a response?
-            </h2>
-            <p className="mt-3 text-body-sm text-stone-600">
-              Include your order reference, email, and reason for the request
-              when you contact support.
-            </p>
-          </div>
+    <>
+      <PageHero
+        eyebrow="Returns Support"
+        title="Returns, Refunds, and Exchanges"
+        intro="Use this page before or after purchase to understand how Kvastram handles eligible return, refund, and cancellation requests."
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Returns' },
+        ]}
+      />
+      <div className="content-page-band">
+      <div className="content-shell max-w-4xl py-12 md:py-16 lg:py-20">
+        <div className="info-grid">
+          <InfoCard title="Before delivery" eyebrow="Cancellation">
+            If your order has not shipped yet, contact support as early as
+            possible for cancellation help.
+          </InfoCard>
+          <InfoCard title="After delivery" eyebrow="Eligibility">
+            Returns and refunds depend on item condition, product type, and
+            policy eligibility. Keep the product unworn and in original
+            packaging.
+          </InfoCard>
+          <InfoCard title="Need a response?" eyebrow="Support">
+            Include your order reference, email, and reason for the request
+            when you contact support.
+          </InfoCard>
         </div>
 
         <div className="mt-12 border border-stone-200 p-8">
@@ -273,32 +260,24 @@ export default function ReturnsPage() {
           )}
         </div>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          <Link
-            href={storefrontTrust.policyRoutes.help}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-          >
-            Help Center
-          </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.refundPolicy}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-          >
-            Read Refund Policy
-          </Link>
-          <Link
-            href={`${storefrontTrust.policyRoutes.contact}?reason=returns`}
-            className="bg-stone-900 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-white transition-colors hover:bg-stone-800"
-          >
-            Contact Support
-          </Link>
-        </div>
-
-        <p className="mt-8 text-body-sm text-stone-500">
-          Support email: {storefrontTrust.supportEmail} | Phone/WhatsApp:{' '}
-          {storefrontTrust.supportPhone}
-        </p>
+        <InlineCTA
+          title="Need help with a return?"
+          body={`Support email: ${storefrontTrust.supportEmail} | Phone/WhatsApp: ${storefrontTrust.supportPhone}`}
+          links={[
+            { label: 'Help Center', href: storefrontTrust.policyRoutes.help },
+            {
+              label: 'Read Refund Policy',
+              href: storefrontTrust.policyRoutes.refundPolicy,
+            },
+            {
+              label: 'Contact Support',
+              href: `${storefrontTrust.policyRoutes.contact}?reason=returns`,
+              variant: 'primary',
+            },
+          ]}
+        />
       </div>
-    </div>
+      </div>
+    </>
   );
 }

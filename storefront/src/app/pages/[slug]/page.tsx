@@ -1,7 +1,13 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import {
+  ContentContainer,
+  enhanceHtmlContent,
+  extractHtmlToc,
+  InlineCTA,
+  PageHero,
+} from '@/components/content/ContentPageSystem';
 import { api } from '@/lib/api';
 import {
   buildBasicPageMetadata,
@@ -63,9 +69,11 @@ export default async function DynamicPage({ params }: Props) {
       { name: page.title, path: `/pages/${slug}` },
     ]),
   ];
+  const enhancedContent = enhanceHtmlContent(page.content);
+  const toc = extractHtmlToc(enhancedContent);
 
   return (
-    <div className="min-h-screen bg-white pb-24 pt-24">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -73,47 +81,41 @@ export default async function DynamicPage({ params }: Props) {
         }}
       />
 
-      <div className="mx-auto max-w-4xl px-6">
-        <nav
-          aria-label="Breadcrumb"
-          className="font-body mb-8 flex items-center gap-2 text-body-xs type-medium uppercase tracking-token-wide text-stone-400"
-        >
-          <Link href="/" className="transition-colors hover:text-stone-900">
-            Home
-          </Link>
-          <span>/</span>
-          <span className="text-stone-700">{page.title}</span>
-        </nav>
+      <PageHero
+        eyebrow="Kvastram Pages"
+        title={page.title}
+        intro={
+          page.seo_description ||
+          `Explore ${page.title} at Kvastram for policies, support information, and brand guidance.`
+        }
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: page.title },
+        ]}
+      />
 
-        <h1 className="mb-12 text-center font-heading text-display-xl type-semibold uppercase tracking-token-wide text-stone-900 md:text-display-xl">
-          {page.title}
-        </h1>
+      <ContentContainer
+        toc={toc}
+        footer={
+          <InlineCTA
+            title="Need help finding the next step?"
+            body="Our help routes connect policy details with order tracking, support, and live customer care."
+            links={[
+              { label: 'Help Center', href: storefrontTrust.policyRoutes.help },
+              {
+                label: 'Contact Support',
+                href: storefrontTrust.policyRoutes.contact,
+              },
+              { label: 'Track Order', href: storefrontTrust.policyRoutes.track },
+            ]}
+          />
+        }
+      >
         <div
-          className="prose prose-stone prose-lg max-w-none type-light text-stone-800"
-          dangerouslySetInnerHTML={{ __html: page.content }}
+          className="content-rich"
+          dangerouslySetInnerHTML={{ __html: enhancedContent }}
         />
-
-        <div className="mt-12 grid gap-4 border border-stone-200 bg-stone-50 p-6 md:grid-cols-3">
-          <Link
-            href={storefrontTrust.policyRoutes.help}
-            className="border border-stone-300 bg-white px-6 py-4 text-center text-body-sm font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-100"
-          >
-            Help Center
-          </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.contact}
-            className="border border-stone-300 bg-white px-6 py-4 text-center text-body-sm font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-100"
-          >
-            Contact Support
-          </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.track}
-            className="border border-stone-300 bg-white px-6 py-4 text-center text-body-sm font-semibold uppercase tracking-[0.18em] text-stone-900 transition-colors hover:bg-stone-100"
-          >
-            Track Order
-          </Link>
-        </div>
-      </div>
-    </div>
+      </ContentContainer>
+    </>
   );
 }

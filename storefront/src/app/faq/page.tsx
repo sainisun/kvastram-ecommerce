@@ -1,56 +1,107 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import {
+  ContentContainer,
+  FAQAccordion,
+  InlineCTA,
+  PageHero,
+  SectionBlock,
+} from '@/components/content/ContentPageSystem';
 import { storefrontFaqs, storefrontTrust } from '@/config/storefront-trust';
+import {
+  buildBasicPageMetadata,
+  buildBreadcrumbJsonLd,
+  serializeJsonLd,
+} from '@/lib/seo';
+
+export const metadata: Metadata = buildBasicPageMetadata({
+  title: 'Frequently Asked Questions | Kvastram',
+  description:
+    'Answers to common Kvastram questions about payments, shipping, returns, order tracking, and customer support.',
+  path: '/faq',
+  keywords: ['Kvastram FAQ', 'Kvastram shipping', 'Kvastram returns'],
+});
 
 export default function FAQPage() {
+  const schema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: storefrontFaqs.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    },
+    buildBreadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'FAQ', path: '/faq' },
+    ]),
+  ];
+
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-3xl px-6 md:px-12 lg:px-20">
-        <h1 className="text-display-xl font-serif text-stone-900 mb-12 text-center">
-          Frequently Asked Questions
-        </h1>
-
-        <div className="space-y-8 divide-y divide-stone-100">
-          {storefrontFaqs.map((item) => (
-            <div key={item.question} className="pt-8">
-              <h3 className="type-bold text-body-xl text-stone-900 mb-3">
-                {item.question}
-              </h3>
-              <p className="text-stone-600 leading-token-relaxed type-light">
-                {item.answer}
-              </p>
-            </div>
-          ))}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
+      />
+      <PageHero
+        eyebrow="Customer Care"
+        title="Frequently Asked Questions"
+        intro="Clear answers for payments, delivery timelines, returns, order tracking, and reaching the Kvastram support team."
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'FAQ' },
+        ]}
+      />
+      <ContentContainer
+        footer={
+          <InlineCTA
+            title="Could not find the answer?"
+            body="Start with the help center or contact support with your order reference so we can resolve it cleanly."
+            links={[
+              { label: 'Help Center', href: storefrontTrust.policyRoutes.help },
+              {
+                label: 'Contact Support',
+                href: storefrontTrust.policyRoutes.contact,
+                variant: 'primary',
+              },
+            ]}
+          />
+        }
+      >
+        <SectionBlock
+          title="Common Questions"
+          intro="Tap a question to open the answer. Each answer links back into the policy and support routes where needed."
+        >
+          <FAQAccordion items={storefrontFaqs} />
+        </SectionBlock>
+        <div className="info-grid">
+          <Link href={storefrontTrust.policyRoutes.shipping} className="info-card info-card--link">
+            <p className="info-card__eyebrow">Delivery</p>
+            <h3>Shipping Policy</h3>
+            <div className="info-card__body">Timelines, charges, international shipping, and tracking guidance.</div>
+            <span className="info-card__cta">Read policy</span>
+          </Link>
+          <Link href={storefrontTrust.policyRoutes.returns} className="info-card info-card--link">
+            <p className="info-card__eyebrow">After Purchase</p>
+            <h3>Returns Help</h3>
+            <div className="info-card__body">Eligibility, refunds, exchanges, and how to start a request.</div>
+            <span className="info-card__cta">Open returns</span>
+          </Link>
+          <Link href={storefrontTrust.policyRoutes.paymentHelp} className="info-card info-card--link">
+            <p className="info-card__eyebrow">Checkout</p>
+            <h3>Payment Help</h3>
+            <div className="info-card__body">Razorpay, PayPal, failed attempts, and safe retry guidance.</div>
+            <span className="info-card__cta">Get help</span>
+          </Link>
         </div>
-
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Link
-            href={storefrontTrust.policyRoutes.help}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-          >
-            Help Center
-          </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.shipping}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-          >
-            Shipping Policy
-          </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.returns}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
-          >
-            Returns Help
-          </Link>
-          <Link
-            href={storefrontTrust.policyRoutes.paymentHelp}
-            className="bg-stone-900 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-white transition-colors hover:bg-stone-800"
-          >
-            Payment Help
-          </Link>
-        </div>
-      </div>
-    </div>
+      </ContentContainer>
+    </>
   );
 }
 

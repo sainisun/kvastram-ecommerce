@@ -54,7 +54,7 @@ export default function AboutPage() {
   return (
     <div className="bg-white">
       {/* Hero */}
-      <div className="bg-[#f8f1eb] px-6 py-16 text-center md:px-12 md:py-20 lg:px-20 lg:py-32">
+      <div className="kv-page-gutter bg-[#f8f1eb] px-6 py-16 text-center md:px-12 md:py-20 lg:px-20 lg:py-32">
         <span className="text-body-xs type-semibold uppercase tracking-token-wider text-stone-500">
           Made in Jaipur, India
         </span>
@@ -70,7 +70,7 @@ export default function AboutPage() {
       </div>
 
       {/* The Story */}
-      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="grid items-start gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <div className="text-body-xs uppercase tracking-token-wider text-stone-400">
@@ -119,12 +119,12 @@ export default function AboutPage() {
       </div>
 
       {/* How we work */}
-      <div className="bg-stone-950 px-6 py-12 text-white md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="mx-auto max-w-[1440px]">
-          <div className="text-body-xs uppercase tracking-token-wider text-stone-400">
+      <div className="kv-page-gutter border-y border-stone-200 bg-[#fff8f2] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="kv-page-frame mx-auto max-w-[1440px]">
+          <div className="text-body-xs uppercase tracking-token-wider text-amber-700">
             How Kvastram works
           </div>
-          <h2 className="mt-4 font-heading text-display-xl type-medium leading-token-tight tracking-token-tight text-white">
+          <h2 className="mt-4 font-heading text-display-xl type-medium leading-token-tight tracking-token-tight text-stone-950">
             From hands in Jaipur to your door
           </h2>
 
@@ -146,12 +146,12 @@ export default function AboutPage() {
                 body: 'We pack each order carefully in Jaipur and ship via tracked courier to 50+ countries. US orders typically arrive in 10–14 days.',
               },
             ].map((item) => (
-              <div key={item.step}>
-                <div className="font-heading text-display-lg type-medium text-stone-700">
+              <div key={item.step} className="border-t border-stone-300 pt-6">
+                <div className="font-heading text-display-lg type-medium text-amber-800">
                   {item.step}
                 </div>
-                <h3 className="mt-3 text-body-lg type-semibold text-white">{item.title}</h3>
-                <p className="mt-3 text-body-md leading-7 text-stone-400">{item.body}</p>
+                <h3 className="mt-3 text-body-lg type-semibold text-stone-950">{item.title}</h3>
+                <p className="mt-3 text-body-md leading-7 text-stone-600">{item.body}</p>
               </div>
             ))}
           </div>
@@ -159,8 +159,8 @@ export default function AboutPage() {
       </div>
 
       {/* Artisans */}
-      <div id="artisans" className="px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="mx-auto max-w-[1440px]">
+      <div id="artisans" className="kv-page-gutter px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="kv-page-frame mx-auto max-w-[1440px]">
           <div className="text-body-xs uppercase tracking-token-wider text-stone-400">
             The people behind every piece
           </div>
@@ -197,8 +197,8 @@ export default function AboutPage() {
       </div>
 
       {/* Sustainability */}
-      <div id="sustainability" className="bg-[#f8f1eb] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="mx-auto max-w-[1440px]">
+      <div id="sustainability" className="kv-page-gutter bg-[#f8f1eb] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="kv-page-frame mx-auto max-w-[1440px]">
           <div className="grid items-center gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
             <div>
               <div className="text-body-xs uppercase tracking-token-wider text-stone-400">
@@ -246,7 +246,7 @@ export default function AboutPage() {
       </div>
 
       {/* CTA */}
-      <div className="px-6 py-12 text-center md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-gutter px-6 py-12 text-center md:px-12 md:py-16 lg:px-20 lg:py-24">
         <h2 className="font-heading text-display-xl type-medium leading-token-tight tracking-token-tight text-stone-950">
           Ready to own something real?
         </h2>
