@@ -1,0 +1,71 @@
+/* ═══════════════════════════════════════════════════
+   PROTOTYPE PARITY — REELS
+   ═══════════════════════════════════════════════════ */
+
+.reels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.reels-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.watch-buy-carousel {
+  grid-auto-columns: minmax(170px, 44%);
+}
+.reel-card {
+  border: 0;
+  text-align: left;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: white;
+  box-shadow: 0 2px 14px rgba(0,0,0,.08);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.reel-media {
+  aspect-ratio: 9 / 15;
+  position: relative;
+  display: flex;
+  align-items: end;
+  padding: 8px;
+  color: white;
+  background:
+    linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, .78)),
+    linear-gradient(135deg, #7d3f25, #d4a76a);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.reel-video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: var(--text-display-md);
+  z-index: 2;
+}
+.reel-info {
+  padding: 8px;
+  flex: 1;
+}
+.reel-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-snug);
+}
+
+body.reel-player-open [aria-label='Cookie consent'] {
+  display: none;
+}

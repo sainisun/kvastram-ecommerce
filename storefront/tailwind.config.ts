@@ -35,6 +35,9 @@ const config: Config = {
           sale: 'var(--color-text-sale)',
         },
         brand: {
+          terracotta: 'var(--terracotta)',
+          accent: 'var(--terracotta)',
+          // Deprecated aliases retained for compatibility; new work should use terracotta/accent.
           sienna:  'var(--sienna)',        // #A85D3A — primary action
           dark:    'var(--sienna-dark)',   // #7D3F25 — hover
           light:   'var(--sienna-light)', // #F2E8E1 — tinted bg

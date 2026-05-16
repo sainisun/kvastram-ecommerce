@@ -1,0 +1,97 @@
+/* Footer contrast overrides for the global monochrome theme layer. */
+.kvastram-footer {
+  background: var(--ds-footer-bg);
+  color: var(--ds-footer-text);
+}
+
+.kvastram-footer .kf-logo,
+.kvastram-footer .kf-heading {
+  color: var(--ds-footer-heading);
+}
+
+.kvastram-footer .kf-link,
+.kvastram-footer .kf-social {
+  color: var(--ds-footer-link);
+}
+
+.kvastram-footer .kf-muted,
+.kvastram-footer .kf-legal,
+.kvastram-footer .kf-legal-link {
+  color: var(--ds-footer-muted);
+}
+
+.kvastram-footer .kf-dim {
+  color: var(--ds-footer-dim);
+}
+
+.kvastram-footer .kf-highlight {
+  color: var(--ds-footer-highlight);
+}
+
+.kvastram-footer .kf-highlight:hover {
+  color: var(--ds-footer-highlight-hover);
+}
+
+.kvastram-footer a:hover,
+.kvastram-footer .kf-social:hover {
+  color: var(--ds-footer-hover);
+}
+
+.kvastram-footer .kf-social-instagram:hover,
+.kvastram-footer .kf-social-tiktok:hover,
+.kvastram-footer .kf-social-twitter:hover {
+  color: var(--ds-footer-highlight);
+}
+
+.kvastram-footer .kf-social-whatsapp:hover {
+  color: var(--ds-success);
+}
+
+.kvastram-footer .kf-social-youtube:hover {
+  color: var(--ds-danger);
+}
+
+.kvastram-footer .kf-social-facebook:hover {
+  color: var(--ds-info);
+}
+
+.kvastram-footer input {
+  color: var(--ds-footer-text);
+}
+
+.kvastram-footer input::placeholder {
+  color: var(--ds-footer-dim);
+}
+
+.kvastram-footer .kf-border {
+  border-color: var(--ds-footer-border);
+}
+
+.kvastram-footer [class*='bg-black'] span {
+  color: var(--ds-footer-hover);
+}
+
+.kvastram-mobile-footer {
+  background: var(--ds-surface-parchment);
+}
+
+.kvastram-mobile-footer .kf-mobile-heading {
+  color: var(--ds-text-secondary);
+}
+
+.kvastram-mobile-footer .kf-mobile-link {
+  color: var(--ds-text-primary);
+}
+
+.kvastram-mobile-footer .kf-mobile-link:hover {
+  color: var(--ds-text-muted);
+}
+
+.kvastram-mobile-footer .kf-mobile-border {
+  border-color: var(--ds-border-subtle);
+}
+
+.kvastram-mobile-footer .kf-mobile-social,
+.kvastram-mobile-footer .kf-mobile-copy {
+  color: var(--ds-text-muted);
+}

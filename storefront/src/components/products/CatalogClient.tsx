@@ -278,10 +278,10 @@ export default function CatalogClient({
                 <button
                   type="button"
                   onClick={() => setGridDensity('grid')}
-                  className={`flex h-10 w-10 items-center justify-center transition-colors ${
+                  className={`flex h-10 w-10 items-center justify-center border transition-colors ${
                     gridDensity === 'grid'
-                      ? 'bg-stone-900 text-white'
-                      : 'text-stone-500 hover:text-stone-900'
+                      ? 'border-stone-950 bg-white text-stone-950'
+                      : 'border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-900'
                   }`}
                   aria-label="Grid view"
                   title="Grid view"
@@ -291,10 +291,10 @@ export default function CatalogClient({
                 <button
                   type="button"
                   onClick={() => setGridDensity('compact')}
-                  className={`flex h-10 w-10 items-center justify-center transition-colors ${
+                  className={`flex h-10 w-10 items-center justify-center border transition-colors ${
                     gridDensity === 'compact'
-                      ? 'bg-stone-900 text-white'
-                      : 'text-stone-500 hover:text-stone-900'
+                      ? 'border-stone-950 bg-white text-stone-950'
+                      : 'border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-900'
                   }`}
                   aria-label="Compact view"
                   title="Compact view"
@@ -447,7 +447,7 @@ export default function CatalogClient({
                       disabled={loading}
                       className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
                         page === pageNum
-                          ? 'bg-stone-900 text-white'
+                          ? 'border border-stone-950 bg-white text-stone-950'
                           : 'text-stone-600 hover:bg-stone-50 hover:text-black'
                       }`}
                       aria-label={`Page ${pageNum}`}

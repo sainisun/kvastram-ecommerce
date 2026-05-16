@@ -4,14 +4,10 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { useCurrency } from '@/context/currency-context';
-import { useShop } from '@/context/shop-context';
-import { useCart } from '@/context/cart-context';
 import { Loader2, Filter, ArrowLeft } from 'lucide-react';
 import Input from '@/components/ui/Input';
-import type { Product, MoneyAmount } from '@/types';
-import { getProductDisplayTitle } from '@/lib/product-title';
+import ProductGrid from '@/components/ProductGrid';
+import type { Product } from '@/types';
 import {
   storefrontAttributeFilters,
   storefrontDiscoveryQuickLinks,
@@ -34,9 +30,6 @@ function SearchContent() {
     attributeCode?: string;
     attributeValue?: string;
   }>({});
-  const { currentRegion } = useShop();
-  const { formatPrice: formatCurrencyPrice } = useCurrency();
-  const { addItem } = useCart();
   const hasActiveFilters = Boolean(
     appliedFilters.min ||
       appliedFilters.max ||
@@ -118,44 +111,9 @@ function SearchContent() {
     setShowFilters(false);
   };
 
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault();
-    const btn = e.currentTarget as HTMLButtonElement;
-
-    if (!product.variants || product.variants.length === 0) return;
-    const variant = product.variants[0];
-    const prices = variant.prices || [];
-    const priceObj =
-      prices.find(
-        (p: MoneyAmount) =>
-          p.currency_code === currentRegion?.currency_code?.toLowerCase()
-      ) || prices[0];
-
-    if (!priceObj) return;
-
-    addItem({
-      id: variant.id,
-      variantId: variant.id,
-      quantity: 1,
-      title: getProductDisplayTitle(product.title),
-      price: priceObj.amount,
-      currency: priceObj.currency_code,
-      thumbnail: product.thumbnail || undefined,
-      material: product.material || undefined,
-      origin: product.origin_country || undefined,
-      sku: variant.sku || undefined,
-      description: product.description || undefined,
-    });
-
-    // Simple feedback
-    const originalText = btn.innerText;
-    btn.innerText = 'Added';
-    setTimeout(() => (btn.innerText = originalText), 1000);
-  };
-
   return (
     <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         {/* Header */}
         <div className="mb-12">
           <Link
@@ -290,10 +248,8 @@ function SearchContent() {
                   key={`${group.code}-${item.value}`}
                   type="button"
                   onClick={() => setAttributeFilter(group.code, item.value)}
-                  className={`rounded-full border px-4 py-2 text-body-sm transition-colors ${
-                    isActive
-                      ? 'border-stone-900 bg-stone-900 text-white'
-                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-stone-900 hover:text-stone-900'
+                  className={`kv-text-chip px-4 py-2 text-body-sm ${
+                    isActive ? 'kv-text-chip--selected' : ''
                   }`}
                 >
                   {group.label}: {item.label}
@@ -406,61 +362,7 @@ function SearchContent() {
           </div>
         ) : products.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-              {products.map((product) => {
-                const displayTitle = getProductDisplayTitle(product.title);
-                return (
-                  <Link
-                    href={`/products/${product.handle || product.id}`}
-                    key={product.id}
-                    className="group block"
-                  >
-                    <div className="relative mb-4 aspect-[3/4] overflow-hidden rounded-sm bg-stone-100">
-                      {product.thumbnail ? (
-                        <OptimizedImage
-                          src={product.thumbnail}
-                          alt={displayTitle}
-                          fill
-                          className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="search-no-image flex h-full w-full items-center justify-center italic">
-                          No Image
-                        </div>
-                      )}
-
-                      <div className="absolute inset-x-0 bottom-0 translate-y-full p-4 transition-transform duration-300 group-hover:translate-y-0">
-                        <button
-                          onClick={(e) => handleAddToCart(e, product)}
-                          className="search-quick-add w-full bg-white py-3 shadow-lg transition-colors hover:bg-stone-900 hover:text-white"
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1 text-center">
-                      <h3 className="search-product-title transition-colors group-hover:text-stone-600">
-                        {displayTitle}
-                      </h3>
-                      <p className="search-product-price pt-1">
-                        {(() => {
-                          const prices = product.variants?.[0]?.prices || [];
-                          const p =
-                            prices.find(
-                              (x: MoneyAmount) =>
-                                x.currency_code?.toLowerCase() === 'inr'
-                            ) || prices[0];
-                          return p
-                            ? formatCurrencyPrice(p.amount)
-                            : 'Contact for price';
-                        })()}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+            <ProductGrid initialProducts={products} />
 
             <div className="mt-12 rounded-2xl border border-stone-200 bg-stone-50 p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

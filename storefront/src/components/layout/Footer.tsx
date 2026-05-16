@@ -78,7 +78,7 @@ const socialLinks = [
         <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
       </svg>
     ),
-    color: 'hover:text-pink-400',
+    color: 'kf-social-instagram',
   },
   {
     label: 'TikTok',
@@ -88,13 +88,13 @@ const socialLinks = [
         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.7a4.85 4.85 0 0 1-1.01-.01z" />
       </svg>
     ),
-    color: 'hover:text-stone-900',
+    color: 'kf-social-tiktok',
   },
   {
     label: 'WhatsApp',
     href: buildWhatsAppHref('Hi, I need help from Kvastram'),
     icon: MessageCircle,
-    color: 'hover:text-green-500',
+    color: 'kf-social-whatsapp',
   },
   {
     label: 'YouTube',
@@ -113,7 +113,7 @@ const socialLinks = [
         <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
       </svg>
     ),
-    color: 'hover:text-red-500',
+    color: 'kf-social-youtube',
   },
   {
     label: 'Facebook',
@@ -131,7 +131,7 @@ const socialLinks = [
         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
       </svg>
     ),
-    color: 'hover:text-blue-500',
+    color: 'kf-social-facebook',
   },
   {
     label: 'Twitter / X',
@@ -150,16 +150,16 @@ const socialLinks = [
         <path d="M4 20l6.768-6.768m2.46-2.46L20 4" />
       </svg>
     ),
-    color: 'hover:text-sky-500',
+    color: 'kf-social-twitter',
   },
 ];
 
 function MobileFooter() {
   return (
-    <div className="bg-[#f5f0eb] md:hidden">
+    <div className="kvastram-mobile-footer md:hidden">
       <div className="grid grid-cols-2 gap-8 px-6 py-16">
         <div>
-          <h4 className="mb-6 text-body-xs type-semibold uppercase tracking-token-wide text-stone-700">
+          <h4 className="kf-mobile-heading mb-6 text-body-xs type-semibold uppercase tracking-token-wide">
             Shop
           </h4>
           <div className="space-y-3">
@@ -167,7 +167,7 @@ function MobileFooter() {
               <Link
                 key={label}
                 href={href}
-                className="block text-body-md type-regular leading-token-relaxed text-stone-900 transition-colors hover:text-stone-600"
+                className="kf-mobile-link block text-body-md type-regular leading-token-relaxed transition-colors"
               >
                 {label}
               </Link>
@@ -176,7 +176,7 @@ function MobileFooter() {
         </div>
 
         <div>
-          <h4 className="mb-6 text-body-xs type-semibold uppercase tracking-token-wide text-stone-700">
+          <h4 className="kf-mobile-heading mb-6 text-body-xs type-semibold uppercase tracking-token-wide">
             Help
           </h4>
           <div className="space-y-3">
@@ -184,7 +184,7 @@ function MobileFooter() {
               <Link
                 key={label}
                 href={href}
-                className="block text-body-md type-regular leading-token-relaxed text-stone-900 transition-colors hover:text-stone-600"
+                className="kf-mobile-link block text-body-md type-regular leading-token-relaxed transition-colors"
               >
                 {label}
               </Link>
@@ -193,8 +193,8 @@ function MobileFooter() {
         </div>
       </div>
 
-      <div className="border-t border-stone-200 px-6 py-6">
-        <div className="flex items-center justify-center gap-4 text-stone-500">
+      <div className="kf-mobile-border border-t px-6 py-6">
+        <div className="kf-mobile-social flex items-center justify-center gap-4">
           {socialLinks.slice(0, 3).map(({ label, href, icon: Icon, color }) => (
             <a
               key={label}
@@ -208,7 +208,7 @@ function MobileFooter() {
             </a>
           ))}
         </div>
-        <p className="mt-4 text-center text-body-xs text-stone-500">
+        <p className="kf-mobile-copy mt-4 text-center text-body-xs">
           Copyright {new Date().getFullYear()} Kvastram. All rights reserved.
         </p>
       </div>
@@ -218,7 +218,7 @@ function MobileFooter() {
 
 function DesktopFooter() {
   return (
-    <div className="kvastram-footer hidden bg-[#1a1614] text-[#f8f3ec] md:block">
+    <div className="kvastram-footer hidden md:block">
       <div
         className="footer-watermark-prem overflow-hidden px-6 pt-8 sm:px-8 md:px-12 md:pt-10"
         aria-hidden="true"
@@ -226,19 +226,19 @@ function DesktopFooter() {
         Kvastram
       </div>
 
-      <div className="mx-auto max-w-[1440px] px-6 pb-10 pt-10 sm:px-8 md:px-12 md:pb-12 md:pt-12 lg:px-20 lg:pt-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 pb-10 pt-10 sm:px-8 md:px-12 md:pb-12 md:pt-12 lg:px-20 lg:pt-24">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-12">
           <div className="space-y-5 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
-              <span className="kf-logo font-body text-display-sm type-semibold uppercase tracking-token-wider text-white">
+              <span className="kf-logo font-body text-display-sm type-semibold uppercase tracking-token-wider">
                 KVASTRAM
               </span>
             </Link>
-            <p className="kf-link font-body text-body-md type-light leading-token-relaxed text-[#d8d0c7]">
+            <p className="kf-link font-body text-body-md type-light leading-token-relaxed">
               Handcrafted luxury fashion connecting global citizens with the
               finest artisanal craftsmanship from India and beyond.
             </p>
-            <div className="kf-muted font-body space-y-3 text-body-xs type-light text-[#c9beb3]">
+            <div className="kf-muted font-body space-y-3 text-body-xs type-light">
               <p>{storefrontTrust.supportEmail}</p>
               <p>{storefrontTrust.supportPhone}</p>
               <p>{storefrontTrust.supportHours}</p>
@@ -252,7 +252,7 @@ function DesktopFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className={`kf-social text-[#d8d0c7] transition-colors duration-200 ${color}`}
+                  className={`kf-social transition-colors duration-200 ${color}`}
                 >
                   <Icon size={18} />
                 </a>
@@ -261,7 +261,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-[#efe7dd]">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -269,7 +269,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="kf-link font-body text-body-md type-light text-[#d8d0c7] transition-colors hover:text-white"
+                    className="kf-link font-body text-body-md type-light transition-colors"
                   >
                     {label}
                   </Link>
@@ -279,7 +279,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-[#efe7dd]">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide">
               Support
             </h4>
             <ul className="space-y-3">
@@ -287,7 +287,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="kf-link font-body text-body-md type-light text-[#d8d0c7] transition-colors hover:text-white"
+                    className="kf-link font-body text-body-md type-light transition-colors"
                   >
                     {label}
                   </Link>
@@ -297,7 +297,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-[#efe7dd]">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide">
               Company
             </h4>
             <ul className="space-y-3">
@@ -307,8 +307,8 @@ function DesktopFooter() {
                     href={href}
                     className={`font-body text-body-md transition-colors ${
                       highlight
-                        ? 'kf-highlight type-medium text-[#f0c36b] hover:text-[#ffd98e]'
-                        : 'kf-link type-light text-[#d8d0c7] hover:text-white'
+                        ? 'kf-highlight type-medium'
+                        : 'kf-link type-light'
                     }`}
                   >
                     {label}
@@ -319,41 +319,41 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide text-[#efe7dd]">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide">
               Stay Updated
             </h4>
-            <p className="kf-muted font-body mb-4 text-body-md type-light leading-token-relaxed text-[#c9beb3]">
+            <p className="kf-muted font-body mb-4 text-body-md type-light leading-token-relaxed">
               Get 10% off your first order plus early access to new collections.
             </p>
             <NewsletterForm minimal />
-            <div className="kf-dim font-body mt-4 text-body-xs text-[#b8aca0]">
+            <div className="kf-dim font-body mt-4 text-body-xs">
               No spam. Unsubscribe anytime.
             </div>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-[#3a3029]">
-        <div className="mx-auto max-w-[1440px] px-6 py-8 sm:px-8 md:px-12 md:py-12 lg:px-20">
+      <div className="kf-border border-t">
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-8 sm:px-8 md:px-12 md:py-12 lg:px-20">
           <PaymentIcons className="mb-4" />
-          <div className="kf-legal font-body flex flex-col items-center justify-between gap-4 text-center text-body-xs text-[#c9beb3] sm:flex-row sm:text-left">
+          <div className="kf-legal font-body flex flex-col items-center justify-between gap-4 text-center text-body-xs sm:flex-row sm:text-left">
             <p>Copyright {new Date().getFullYear()} Kvastram. All rights reserved.</p>
             <div className="flex gap-6">
               <Link
                 href={storefrontTrust.policyRoutes.privacy}
-                className="kf-legal-link font-body transition-colors hover:text-white"
+                className="kf-legal-link font-body transition-colors"
               >
                 Privacy
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.terms}
-                className="kf-legal-link font-body transition-colors hover:text-white"
+                className="kf-legal-link font-body transition-colors"
               >
                 Terms
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.cookies}
-                className="kf-legal-link font-body transition-colors hover:text-white"
+                className="kf-legal-link font-body transition-colors"
               >
                 Cookies
               </Link>

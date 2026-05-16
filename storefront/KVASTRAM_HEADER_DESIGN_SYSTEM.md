@@ -1,6 +1,8 @@
 # Kvastram — Header & Navigation Design System
 ### Claude Code Binding Guide v1.0
 
+> **Status:** Superseded for storefront typography and accent decisions. Use `docs/design-system/storefront-design-system-v1.md` instead. CORAL is no longer the final accent token; TERRACOTTA is canonical. The Cormorant/DM Sans header typography direction is superseded by the Mulmul-inspired restrained sans commerce direction.
+
 > **Scope:** Desktop header · Mega menu · Mobile nav drawer · Responsive behavior  
 > **Stack:** Next.js / React · Tailwind CSS · Framer Motion  
 > **Fonts:** Cormorant Garamond (display) · DM Sans (UI)  

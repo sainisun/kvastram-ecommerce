@@ -7,12 +7,11 @@ import { useNotification } from '@/context/notification-context';
 import { useShop } from '@/context/shop-context';
 import { useWholesale } from '@/context/wholesale-context';
 import { QuickViewModal } from '@/components/product/QuickViewModal';
+import { ProductCard } from '@/components/products/ProductCard';
 import OptimizedImage from '@/components/ui/OptimizedImage';
-import WishlistButton from '@/components/ui/WishlistButton';
 import { useCurrency } from '@/context/currency-context';
 import { buildProductImageAlt } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
-import Link from 'next/link';
 
 interface SpotlightProduct {
   id: string;
@@ -27,6 +26,14 @@ interface ProductGridProps {
   spotlightProducts?: SpotlightProduct[];
   density?: 'grid' | 'compact';
   emptyMessage?: string;
+}
+
+interface ProductPriceInfo {
+  price: string;
+  isWholesale: boolean;
+  savings: number;
+  compareAtLabel?: string | null;
+  discountPercent?: number;
 }
 
 function ProductGrid({
@@ -46,22 +53,13 @@ function ProductGrid({
     fetchPrices,
   } = useWholesale();
   const [addedId, setAddedId] = useState<string | null>(null);
-  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
-    null
-  );
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const products = initialProducts;
   const resolvedLoading = externalLoading === true;
-  const gridClassName =
-    density === 'compact'
-      ? 'products-grid compact'
-      : 'products-grid';
+  const gridClassName = density === 'compact' ? 'products-grid compact' : 'products-grid';
 
   useEffect(() => {
-    if (
-      wholesaleInfo?.hasWholesaleAccess &&
-      products.length > 0 &&
-      fetchPrices
-    ) {
+    if (wholesaleInfo?.hasWholesaleAccess && products.length > 0 && fetchPrices) {
       const variantIds = products
         .map((product) => product.variants?.[0]?.id)
         .filter(Boolean) as string[];
@@ -72,8 +70,8 @@ function ProductGrid({
     }
   }, [wholesaleInfo, products, fetchPrices]);
 
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault();
+  const handleAddToCart = (event: React.MouseEvent<HTMLButtonElement>, product: Product) => {
+    event.preventDefault();
     if (!product.variants || product.variants.length === 0) {
       showNotification('error', 'Product unavailable');
       return;
@@ -108,8 +106,9 @@ function ProductGrid({
     setTimeout(() => setAddedId(null), 1000);
   };
 
-  const getPrice = (product: Product) => {
-    const prices = product.variants?.[0]?.prices || [];
+  const getPrice = (product: Product): ProductPriceInfo => {
+    const variant = product.variants?.[0];
+    const prices = variant?.prices || [];
     const inrPrice =
       prices.find((money: MoneyAmount) => money.currency_code?.toLowerCase() === 'inr') ||
       prices[0];
@@ -119,10 +118,9 @@ function ProductGrid({
     }
 
     const retailPrice = inrPrice.amount;
-    const variantId = product.variants?.[0]?.id;
 
-    if (variantId && wholesaleInfo?.hasWholesaleAccess) {
-      const wholesale = getWholesalePrice(variantId, retailPrice);
+    if (variant?.id && wholesaleInfo?.hasWholesaleAccess) {
+      const wholesale = getWholesalePrice(variant.id, retailPrice);
       if (wholesale.isWholesale) {
         return {
           price: formatPrice(wholesale.price),
@@ -137,6 +135,10 @@ function ProductGrid({
       price: formatPrice(inrPrice.amount),
       isWholesale: false,
       savings: 0,
+      compareAtLabel:
+        variant?.compare_at_price && variant.compare_at_price > inrPrice.amount
+          ? formatPrice(variant.compare_at_price)
+          : null,
     };
   };
 
@@ -145,14 +147,7 @@ function ProductGrid({
       <div className={gridClassName}>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
           <div key={item} className="product-card">
-            <div
-              className="product-media animate-pulse"
-              style={{
-                background:
-                  'linear-gradient(90deg, #ede9e4 25%, #e5e0da 50%, #ede9e4 75%)',
-                backgroundSize: '200% 100%',
-              }}
-            />
+            <div className="product-media animate-pulse bg-[var(--ds-surface-soft)]" />
             <div className="product-info">
               <div className="skeleton-line skeleton-line-brand" />
               <div className="skeleton-line skeleton-line-name" />
@@ -165,138 +160,30 @@ function ProductGrid({
   }
 
   if (products.length === 0) {
-    return (
-      <div className="product-empty-state">
-        {emptyMessage}
-      </div>
-    );
+    return <div className="product-empty-state">{emptyMessage}</div>;
   }
 
   const renderedItems: React.ReactNode[] = [];
 
   products.forEach((product, index) => {
-    const isNew = index < 4;
-    const isOnSale = !!(
-      product.variants?.[0]?.compare_at_price &&
-      product.variants[0].compare_at_price >
-        (product.variants[0].prices?.[0]?.amount || 0)
-    );
-    const stockQty = product.variants?.[0]?.inventory_quantity || 0;
-    const isLowStock = stockQty > 0 && stockQty <= 5;
-    const secondImage = product.images?.[1]?.url;
     const priceInfo = getPrice(product);
-    const displayTitle = getProductDisplayTitle(product.title);
 
     renderedItems.push(
-      <article key={product.id} className="product-card group">
-        <div className="product-media">
-          <Link
-            href={`/products/${product.handle || product.id}`}
-            className="relative block h-full w-full"
-            aria-label={`View ${displayTitle}`}
-          >
-          {product.thumbnail ? (
-            <OptimizedImage
-              src={product.thumbnail}
-              alt={buildProductImageAlt(product, 0)}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
-              className="object-cover"
-            />
-          ) : (
-            <div className="product-no-image flex h-full w-full items-center justify-center bg-[var(--soft)]">
-              No Image
-            </div>
-          )}
-
-          {secondImage ? (
-            <OptimizedImage
-              src={secondImage}
-              alt={buildProductImageAlt(product, 1)}
-              fill
-              sizes="(max-width: 640px) 50vw, 25vw"
-              className="absolute inset-0 object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
-            />
-          ) : null}
-
-          {isNew && !isOnSale ? <span className="product-badge">New</span> : null}
-          {isOnSale ? <span className="product-badge sale">Sale</span> : null}
-          {isLowStock ? (
-            <span className="product-badge low-stock">Almost Gone</span>
-          ) : null}
-
-          </Link>
-
-          <button
-            type="button"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              setQuickViewProduct(product);
-            }}
-            className="quick-view-btn"
-            aria-label={`Quick view ${displayTitle}`}
-          >
-            Quick View
-          </button>
-        </div>
-
-        <div className="product-wish">
-          <WishlistButton
-            productId={product.id}
-            title={displayTitle}
-            price={product.variants?.[0]?.prices?.[0]?.amount || 0}
-            currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
-            thumbnail={product.thumbnail || undefined}
-            handle={product.handle || product.id}
-            variantId={product.variants?.[0]?.id}
-            size="sm"
-          />
-        </div>
-
-        <div className="product-info">
-          <p className="product-cat">
-            {product.collection?.title || 'Kvastram'}
-          </p>
-          <Link href={`/products/${product.handle || product.id}`}>
-            <h3 className="product-name" title={displayTitle}>
-              {displayTitle}
-            </h3>
-          </Link>
-
-          <div className="product-row">
-            <div className="flex items-center gap-1">
-              {priceInfo.isWholesale ? (
-                <span className="wholesale-price">
-                  Wholesale · {priceInfo.price}
-                </span>
-              ) : (
-                <>
-                  <span className="price">{priceInfo.price}</span>
-                  {(() => {
-                    const variant = product.variants?.[0];
-                    const compareAt = variant?.compare_at_price;
-                    const inrPrices = variant?.prices || [];
-                    const inrPriceAmt =
-                      (inrPrices.find((p: MoneyAmount) => p.currency_code?.toLowerCase() === 'inr') || inrPrices[0])?.amount || 0;
-                    if (compareAt && compareAt > inrPriceAmt) {
-                      return <span className="orig">{formatPrice(compareAt)}</span>;
-                    }
-                    return null;
-                  })()}
-                </>
-              )}
-            </div>
-            <button
-              onClick={(e) => handleAddToCart(e, product)}
-              className="mini-cart"
-              aria-label={addedId === product.id ? 'Added to cart' : 'Add to cart'}
-            >
-              {addedId === product.id ? '✓' : '+'}
-            </button>
-          </div>
-        </div>
-      </article>
+      <ProductCard
+        key={product.id}
+        product={product}
+        price={{
+          label: priceInfo.price,
+          isWholesale: priceInfo.isWholesale,
+          compareAtLabel: priceInfo.compareAtLabel,
+        }}
+        index={index}
+        added={addedId === product.id}
+        currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
+        categoryLabel={product.collection?.title || 'Kvastram'}
+        onAddToCart={handleAddToCart}
+        onQuickView={setQuickViewProduct}
+      />
     );
 
     if (spotlightProducts.length > 0 && (index + 1) % 4 === 0) {
@@ -313,7 +200,7 @@ function ProductGrid({
             href={`/products/${spotlightProduct.handle || spotlightProduct.id}`}
             className="product-spotlight md:hidden"
           >
-            <div className="relative aspect-[16/10] overflow-hidden bg-[var(--soft)]">
+            <div className="relative aspect-[16/10] overflow-hidden bg-[var(--ds-surface-soft)]">
               {spotlight.custom_image_url || spotlightProduct.thumbnail ? (
                 <OptimizedImage
                   src={spotlight.custom_image_url || spotlightProduct.thumbnail || ''}
@@ -330,20 +217,14 @@ function ProductGrid({
                 </span>
               ) : null}
             </div>
-            <div className="space-y-3 bg-[var(--cream)] px-4 py-5">
+            <div className="space-y-3 bg-[var(--ds-surface-parchment)] px-4 py-5">
               <div>
-                <p className="spotlight-eyebrow">
-                  Spotlight Pick
-                </p>
-                <h3 className="spotlight-title mt-2">
-                  {spotlightProduct.title}
-                </h3>
+                <p className="spotlight-eyebrow">Spotlight Pick</p>
+                <h3 className="spotlight-title mt-2">{spotlightProduct.title}</h3>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="spotlight-price">
-                  {spotlightPrice.price}
-                </p>
-              <span className="spotlight-action inline-flex items-center rounded-[var(--radius-xs)] bg-[var(--ink)] px-5 py-2">
+                <p className="spotlight-price">{spotlightPrice.price}</p>
+                <span className="spotlight-action inline-flex items-center rounded-[var(--radius-xs)] bg-[var(--ds-text-primary)] px-5 py-2">
                   View
                 </span>
               </div>
@@ -356,9 +237,7 @@ function ProductGrid({
 
   return (
     <>
-      <div className={gridClassName}>
-        {renderedItems}
-      </div>
+      <div className={gridClassName}>{renderedItems}</div>
       <QuickViewModal
         product={quickViewProduct || ({} as Product)}
         isOpen={!!quickViewProduct}

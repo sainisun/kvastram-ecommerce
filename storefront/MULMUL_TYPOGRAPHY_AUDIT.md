@@ -1,5 +1,7 @@
 # Mulmul Typography Audit and Execution Plan
 
+> **Status:** Incorporated into `docs/design-system/storefront-design-system-v1.md`. Use the canonical v1 file for implementation rules.
+
 ## Reference Audit
 
 - shopmulmul.com presents a restrained fashion-commerce typography system: clean sans-serif text, uppercase navigation/category labels, compact product metadata, and limited decorative type.

@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import { cn } from '@/lib/utils';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -11,20 +12,17 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, suffix, className = '', id, ...rest }, ref) => {
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+    const errorId = inputId ? `${inputId}-error` : undefined;
 
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
           <label
             htmlFor={inputId}
-            style={{
-              textTransform: 'uppercase',
-              color: 'var(--muted)',
-            }}
-            className="form-label-typography"
+            className="form-label-typography uppercase text-[var(--ds-text-muted)]"
           >
             {label}
-            {rest.required && <span style={{ color: 'var(--danger)', marginLeft: '3px' }}>*</span>}
+            {rest.required && <span className="ml-1 text-[var(--ds-danger)]">*</span>}
           </label>
         )}
 
@@ -33,29 +31,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             {...rest}
-            style={{
-              width: '100%',
-              height: '44px',
-              padding: suffix ? '0 44px 0 12px' : '0 12px',
-              color: 'var(--ink)',
-              background: 'var(--paper)',
-              border: `1px solid ${error ? 'var(--danger)' : 'var(--line)'}`,
-              borderRadius: 'var(--radius-sm)',
-              outline: 'none',
-              transition: 'border-color 0.15s ease',
-              opacity: rest.disabled ? 0.5 : 1,
-              cursor: rest.disabled ? 'not-allowed' : 'text',
-            }}
-            onFocus={(e) => {
-              if (!error) e.target.style.borderColor = 'var(--sienna)';
-              rest.onFocus?.(e);
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = error ? 'var(--danger)' : 'var(--line)';
-              rest.onBlur?.(e);
-            }}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : rest['aria-describedby']}
             placeholder={rest.placeholder}
-            className={`form-control-typography placeholder-muted sm:h-11 h-12 ${className}`}
+            className={cn(
+              'form-control-typography h-12 w-full border bg-[var(--ds-surface-paper)] px-3 text-[var(--ds-text-primary)] outline-none transition-colors placeholder:text-[var(--ds-text-muted)] focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:h-11',
+              suffix && 'pr-11',
+              error ? 'border-[var(--ds-danger)]' : 'border-[var(--ds-border-subtle)]',
+              className
+            )}
           />
           {suffix && (
             <div className="absolute right-0 top-0 flex h-full items-center pr-3">
@@ -66,12 +50,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {error && (
           <p
+            id={errorId}
             role="alert"
-            style={{
-              color: 'var(--danger)',
-              marginTop: '2px',
-            }}
-            className="input-error-message"
+            className="input-error-message mt-0.5 text-[var(--ds-danger)]"
           >
             {error}
           </p>

@@ -1,0 +1,142 @@
+/* ═══ PDP — Premium Product Detail ═══ */
+.pdp-prem {
+  padding-top: var(--space-24);
+}
+.pdp-grid-prem {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: var(--space-16);
+  min-height: 90vh;
+}
+.pdp-gallery-prem {
+  position: sticky;
+  top: var(--space-24);
+  height: calc(100vh - var(--space-24));
+  overflow: hidden;
+}
+.pdp-info-prem {
+  padding: var(--space-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.pdp-brand-prem {
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pdp-name-prem {
+  font-family: var(--font-display);
+  font-size: var(--text-display-xl);
+  font-weight: 300;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+.pdp-price-prem {
+  font-size: var(--text-display-sm);
+  font-weight: 400;
+}
+
+/* ─── PDP Size Buttons ─── */
+.size-btn-prem {
+  width: var(--space-12);
+  height: var(--space-12);
+  border: 1px solid var(--line);
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+.size-btn-prem:hover,
+.size-btn-prem.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* ─── PDP Add to Bag ─── */
+.add-btn-prem {
+  flex: 1;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  height: 56px;
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.add-btn-prem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(var(--ink-rgb), 0.2);
+}
+
+/* ─── Trust Strip ─── */
+.trust-strip-prem {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-0);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.trust-item-prem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+.trust-text-prem {
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: var(--leading-normal);
+}
+
+/* ─── Accordion (PDP) ─── */
+.accordion-item-prem {
+  border-top: 1px solid var(--line);
+  overflow: hidden;
+}
+.accordion-item-prem:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.accordion-trigger-prem {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: var(--space-5) var(--space-0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.25s;
+  color: var(--ink);
+}
+.accordion-trigger-prem:hover {
+  opacity: 0.6;
+}

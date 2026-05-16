@@ -5,7 +5,7 @@ import { Search, X, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useDebounce } from 'use-debounce';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { CompactProductCard } from '@/components/products/ProductCard';
 import { api } from '@/lib/api';
 import { useCurrency } from '@/context/currency-context';
 import type { Product } from '@/types';
@@ -208,7 +208,6 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   onChange={(e) => setQuery(e.target.value)}
                   aria-label="Search query"
                   aria-controls="search-results"
-                  aria-expanded={results.length > 0 || suggestions.length > 0}
                   autoComplete="off"
                 />
               </form>
@@ -257,7 +256,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           <button
                             key={term}
                             onClick={() => handleSearch(undefined, term)}
-                            className="flex items-center gap-2 px-4 py-2 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full text-body-sm transition-colors border border-stone-200 hover:border-stone-900 text-stone-700"
+                            className="kv-text-chip px-4 py-2 text-body-sm"
                           >
                             <Search size={12} className="opacity-50" />
                             {term}
@@ -307,7 +306,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                             onClose();
                             router.push(href);
                           }}
-                          className="flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-lg transition-all duration-200 group border border-stone-100 hover:border-stone-900"
+                          className="group flex flex-col items-center gap-2 border border-stone-100 bg-white p-4 text-stone-700 transition-all duration-200 hover:border-stone-300 hover:bg-stone-50 hover:text-stone-950"
                         >
                           <span className="text-display-md group-hover:scale-110 transition-transform">
                             {emoji}
@@ -335,7 +334,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         <button
                           key={term}
                           onClick={() => setQuery(term)}
-                          className="px-4 py-2 bg-stone-50 hover:bg-stone-900 hover:text-white rounded-full text-body-sm transition-colors border border-stone-200 hover:border-stone-900 text-stone-600"
+                          className="kv-text-chip px-4 py-2 text-body-sm"
                         >
                           {term}
                         </button>
@@ -392,33 +391,17 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           const price = getSearchResultPrice(product);
 
                           return (
-                            <div
+                            <CompactProductCard
                               key={product.id}
-                              className="group cursor-pointer"
-                              onClick={() => {
-                                onClose();
-                                router.push(`/products/${product.handle || product.id}`);
-                              }}
-                            >
-                              <div className="aspect-[3/4] bg-stone-100 relative rounded-lg overflow-hidden mb-3">
-                                {product.thumbnail && (
-                                  <OptimizedImage
-                                    src={product.thumbnail}
-                                    alt={product.title}
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                  />
-                                )}
-                              </div>
-                              <h4 className="text-body-sm type-medium text-stone-900 group-hover:underline decoration-1 underline-offset-4 line-clamp-1">
-                                {product.title}
-                              </h4>
-                              {price !== undefined && (
-                                <p className="text-body-sm text-stone-500 mt-1">
-                                  from {formatPrice(price)}
-                                </p>
-                              )}
-                            </div>
+                              href={`/products/${product.handle || product.id}`}
+                              title={product.title}
+                              thumbnail={product.thumbnail}
+                              priceLabel={price !== undefined ? `from ${formatPrice(price)}` : undefined}
+                              imageClassName="rounded-lg"
+                              titleClassName="text-body-sm type-medium text-stone-900 group-hover:underline decoration-1 underline-offset-4"
+                              priceClassName="text-body-sm text-stone-500"
+                              onClick={onClose}
+                            />
                           );
                         })}
                       </div>

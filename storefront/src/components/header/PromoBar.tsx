@@ -71,7 +71,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
   if (dismissed || isSticky) return null;
 
   return (
-    <div className="relative flex h-8 items-center justify-center bg-[#1a1714] px-6 md:mx-auto md:h-10 md:w-full md:max-w-[1440px] md:rounded-[999px] md:bg-[#f3b6c8] md:px-6 md:shadow-[0_10px_24px_rgba(142,73,96,0.12)]">
+    <div className="kv-page-frame relative flex h-8 items-center justify-center bg-[#1a1714] px-6 md:mx-auto md:h-10 md:w-full md:max-w-[1440px] md:rounded-[999px] md:bg-[#f3b6c8] md:px-6 md:shadow-[0_10px_24px_rgba(142,73,96,0.12)]">
       <div className="absolute left-5 hidden items-center gap-2 md:flex">
         {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
           <a

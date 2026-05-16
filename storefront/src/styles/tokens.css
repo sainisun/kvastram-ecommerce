@@ -1,0 +1,118 @@
+/* Kvastram Storefront Design System v1
+   Phase 0 and Phase 1 source of truth.
+   Typography direction: Mulmul-inspired restrained sans commerce.
+   Final accent token: TERRACOTTA.
+*/
+
+:root {
+  /* Typography */
+  --ds-font-display: 'Montserrat', 'Avenir Next', Arial, sans-serif;
+  --ds-font-body: 'Montserrat', 'Avenir Next', Arial, sans-serif;
+  --ds-font-ui: var(--ds-font-body);
+
+  --ds-text-display-xl: clamp(2.25rem, 2.25rem, 3.25rem);
+  --ds-text-display-lg: clamp(1.875rem, 1.875rem, 2.5rem);
+  --ds-text-display-md: clamp(1.5rem, 1.5rem, 2rem);
+  --ds-text-display-sm: clamp(1.25rem, 1.25rem, 1.5rem);
+  --ds-text-body-xl: clamp(1rem, 1rem, 1.125rem);
+  --ds-text-body-lg: clamp(0.9375rem, 0.9375rem, 1rem);
+  --ds-text-body-md: clamp(0.875rem, 0.875rem, 0.9375rem);
+  --ds-text-body-sm: clamp(0.8125rem, 0.8125rem, 0.875rem);
+  --ds-text-body-xs: clamp(0.6875rem, 0.6875rem, 0.75rem);
+
+  --ds-weight-light: 300;
+  --ds-weight-regular: 400;
+  --ds-weight-medium: 500;
+  --ds-weight-semibold: 600;
+  --ds-weight-bold: 700;
+
+  --ds-leading-tight: 1.1;
+  --ds-leading-snug: 1.3;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.7;
+
+  --ds-tracking-tight: 0em;
+  --ds-tracking-normal: 0em;
+  --ds-tracking-wide: 0.06em;
+  --ds-tracking-wider: 0.12em;
+
+  /* Surfaces */
+  --ds-surface-page: #f9f7f4;
+  --ds-surface-paper: #ffffff;
+  --ds-surface-soft: #f1ede7;
+  --ds-surface-parchment: #f7f4ef;
+  --ds-surface-parchment-2: #ede8e0;
+  --ds-surface-warm: #e8e2d9;
+
+  /* Text */
+  --ds-text-primary: #1a1714;
+  --ds-text-secondary: #3d3a36;
+  --ds-text-muted: #7a7570;
+  --ds-text-disabled: #b5b0a8;
+  --ds-text-inverse: #ffffff;
+  --ds-text-price: #1a1714;
+  --ds-text-price-old: #888888;
+
+  /* Borders */
+  --ds-border-subtle: #e8e3db;
+  --ds-border-strong: #d8d2c8;
+  --ds-border-dark: #1a1714;
+
+  /* Footer */
+  --ds-footer-bg: #1a1614;
+  --ds-footer-text: #f8f3ec;
+  --ds-footer-heading: #efe7dd;
+  --ds-footer-link: #d8d0c7;
+  --ds-footer-muted: #c9beb3;
+  --ds-footer-dim: #b8aca0;
+  --ds-footer-border: #3a3029;
+  --ds-footer-highlight: #f0c36b;
+  --ds-footer-highlight-hover: #ffd98e;
+  --ds-footer-hover: #ffffff;
+
+  /* Accent: TERRACOTTA is canonical. Sienna/coral names are compatibility aliases only. */
+  --ds-accent-primary: #c4613a;
+  --ds-accent-hover: #9f4528;
+  --ds-accent-soft: #f0e0d6;
+  --ds-accent-rgb: 196, 97, 58;
+  --ds-accent-gold: #b8924a;
+
+  /* Status */
+  --ds-danger: #c0392b;
+  --ds-success: #3e8a5f;
+  --ds-success-bg: #f0fdf4;
+  --ds-success-text: #166534;
+  --ds-success-dark: #15803d;
+  --ds-warning: #ba7517;
+  --ds-warning-bg: #faeeda;
+  --ds-warning-text: #633806;
+  --ds-info: #185fa5;
+  --ds-info-bg: #e6f1fb;
+  --ds-info-text: #124779;
+  --ds-whatsapp: #0f6e56;
+  --ds-whatsapp-bg: #e1f5ee;
+  --ds-online: #16a34a;
+  --ds-danger-dot: #ef4444;
+
+  /* Layout */
+  --ds-prose-width: 65ch;
+  --ds-heading-width: 20ch;
+  --ds-caption-width: 45ch;
+  --ds-content-width: 1280px;
+  --ds-narrow-width: 860px;
+
+  /* Radius */
+  --ds-radius-xs: 2px;
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 12px;
+  --ds-radius-pill: 999px;
+
+  /* Channels and effects */
+  --ds-ink-rgb: 26, 23, 20;
+  --ds-cream-rgb: 249, 247, 244;
+  --ds-surface-paper-rgb: 255, 255, 255;
+  --ds-black-rgb: 0, 0, 0;
+  --ds-shadow: 0 10px 34px rgba(var(--ds-ink-rgb), 0.12);
+  --ds-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

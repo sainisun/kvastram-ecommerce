@@ -50,10 +50,22 @@ interface Region {
   tax_rate: number;
 }
 
+interface Collection {
+  id: string;
+  title?: string;
+  name?: string;
+  handle: string;
+  status?: string;
+  show_in_megamenu?: boolean;
+  cover_image_url?: string | null;
+  image?: string | null;
+}
+
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
+  collections?: Collection[];
   regions?: Region[];
   currentRegion?: Region | null;
   onRegionChange?: (region: Region) => void;
@@ -296,6 +308,7 @@ export default function MobileMenu({
   isOpen,
   onClose,
   categories,
+  collections = [],
 }: MobileMenuProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -328,6 +341,25 @@ export default function MobileMenu({
         };
       }),
     [categories]
+  );
+
+  const featuredCollections = useMemo(
+    () =>
+      collections
+        .filter(
+          (collection) =>
+            collection.status === 'active' && collection.show_in_megamenu
+        )
+        .slice(0, 4)
+        .map((collection, index) => ({
+          label: collection.title || collection.name || 'Collection',
+          href: `/collections/${collection.handle}`,
+          image:
+            collection.cover_image_url ||
+            collection.image ||
+            IMAGE_POOL[index % IMAGE_POOL.length],
+        })),
+    [collections]
   );
 
   const handleClose = useCallback(() => {
@@ -660,27 +692,32 @@ export default function MobileMenu({
 
                 <section className="border-b border-[#E8E3DB] px-4 py-4">
                   <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#5C5750]">
-                    Shop by mood
+                    {featuredCollections.length > 0
+                      ? 'Featured collections'
+                      : 'Shop by mood'}
                   </h2>
                   <div className="no-scrollbar flex gap-4 overflow-x-auto">
-                    {MOODS.map((mood) => (
+                    {(featuredCollections.length > 0
+                      ? featuredCollections
+                      : MOODS
+                    ).map((item) => (
                       <Link
-                        key={mood.label}
-                        href={mood.href}
+                        key={item.label}
+                        href={item.href}
                         onClick={handleClose}
                         className="w-[60px] shrink-0 text-center"
                       >
                         <span className="relative mb-1 block h-12 w-12 overflow-hidden rounded-lg bg-[#F5F1EB]">
                           <OptimizedImage
-                            src={mood.image}
-                            alt={mood.label}
+                            src={item.image}
+                            alt={item.label}
                             fill
                             className="object-cover"
                             sizes="48px"
                           />
                         </span>
                         <span className="block text-[11px] leading-tight text-[#5C5750]">
-                          {mood.label}
+                          {item.label}
                         </span>
                       </Link>
                     ))}

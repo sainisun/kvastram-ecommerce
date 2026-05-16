@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
-import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { useCurrency } from '@/context/currency-context';
+import { CompactProductCard } from '@/components/products/ProductCard';
 
 interface RecentlyViewedRowProps {
   currentProductId: string;
@@ -23,7 +23,7 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
 
   return (
     <section className="border-t border-stone-100 bg-stone-50 py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex items-end justify-between mb-8">
           <div>
             <span className="recently-eyebrow mb-1 block">
@@ -41,39 +41,19 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
           </Link>
         </div>
 
-        {/* Horizontal scroll on mobile, grid on desktop */}
         <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-6 md:gap-6 md:overflow-visible md:pb-0 lg:gap-8 scrollbar-hide">
           {filtered.map((item) => (
-            <Link key={item.id} href={`/products/${item.handle}`} className="flex-none w-36 md:w-auto group">
-              {/* Image */}
-              <div className="aspect-[3/4] bg-stone-100 relative overflow-hidden mb-3 rounded-sm">
-                {item.thumbnail ? (
-                  <OptimizedImage
-                    src={item.thumbnail}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 768px) 144px, 16vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-stone-200">
-                    <span className="recently-empty-image">
-                      No image
-                    </span>
-                  </div>
-                )}
-              </div>
-              {/* Info */}
-              <p
-                className="recently-name mb-1 truncate transition-colors"
-                title={item.title}
-              >
-                {item.title}
-              </p>
-              <p className="recently-price">
-                {formatPrice(item.price)}
-              </p>
-            </Link>
+            <CompactProductCard
+              key={item.id}
+              href={`/products/${item.handle}`}
+              title={item.title}
+              thumbnail={item.thumbnail}
+              priceLabel={formatPrice(item.price)}
+              imageSizes="(max-width: 768px) 144px, 16vw"
+              className="flex-none w-36 md:w-auto"
+              titleClassName="mb-1 truncate"
+              priceClassName="mt-0"
+            />
           ))}
         </div>
       </div>

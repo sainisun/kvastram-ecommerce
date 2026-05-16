@@ -19,7 +19,6 @@ import {
   ShieldCheck,
   ShoppingBag,
   Truck,
-  Users,
   Wifi,
   WifiOff,
   Zap,
@@ -31,6 +30,7 @@ import { Reviews } from '@/components/product/Reviews';
 import { BackInStock } from '@/components/product/BackInStock';
 import { SizeGuide } from '@/components/product/SizeGuide';
 import ShareButtons from '@/components/ui/ShareButtons';
+import { TrustBadge } from '@/components/ui/TrustBadge';
 import { WhatsAppCTA } from '@/components/WhatsAppCTA';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { useCart } from '@/context/cart-context';
@@ -173,11 +173,10 @@ export default function ProductView({ product }: { product: Product }) {
   const formattedSavings = savingsAmount ? formatPrice(savingsAmount) : null;
   const outOfStock = !isOnRequest && currentInventory <= 0;
   const whatsappMessage = `Hi, I'm interested in: ${displayTitle}`;
-  const reviewRating = product.avg_rating && product.avg_rating > 0 ? product.avg_rating : 4.9;
-  const reviewCount = product.review_count && product.review_count > 0 ? product.review_count : 2412;
+  const reviewRating = product.avg_rating && product.avg_rating > 0 ? product.avg_rating : null;
+  const reviewCount = product.review_count && product.review_count > 0 ? product.review_count : null;
+  const hasReviews = Boolean(reviewRating && reviewCount);
   const scarcityLabel = !isOnRequest && currentInventory > 0 && currentInventory < 10 ? `Only ${currentInventory} left` : undefined;
-  const viewingCount = 17;
-  const boughtRecently = 23;
 
   const galleryMedia = useMemo(() => {
     return product.images?.length
@@ -322,7 +321,9 @@ export default function ProductView({ product }: { product: Product }) {
         <span><BadgeCheck size={13} /> Free shipping ₹2,000+</span>
         <span><RotateCcw size={13} /> 7-day returns</span>
         <span><ShieldCheck size={13} /> Secure checkout</span>
-        <span className="pdp-trust-desktop"><BadgeCheck size={13} /> {reviewRating.toFixed(1)}★ · {reviewCount.toLocaleString()} reviews</span>
+        {hasReviews && reviewRating && reviewCount ? (
+          <span className="pdp-trust-desktop"><BadgeCheck size={13} /> {reviewRating.toFixed(1)} stars - {reviewCount.toLocaleString()} reviews</span>
+        ) : null}
       </div>
 
       <div className="kv-container pdp-container">
@@ -365,12 +366,18 @@ export default function ProductView({ product }: { product: Product }) {
             <div className="kv-tag pdp-brand-tag">KVASTRAM</div>
             <h1 className="pdp-title">{displayTitle}</h1>
 
-            <div className="pdp-rating-row">
-              <span className="pdp-rating-stars">★★★★★</span>
-              <a href="#reviews" className="pdp-rating-link">
-                {reviewRating.toFixed(1)} · {reviewCount.toLocaleString()} reviews · 430 sold
-              </a>
-            </div>
+            {hasReviews && reviewRating && reviewCount ? (
+              <div className="pdp-rating-row">
+                <span className="pdp-rating-stars">5 stars</span>
+                <a href="#reviews" className="pdp-rating-link">
+                  {reviewRating.toFixed(1)} - {reviewCount.toLocaleString()} reviews
+                </a>
+              </div>
+            ) : (
+              <div className="pdp-rating-row">
+                <a href="#reviews" className="pdp-rating-link">Be the first to review</a>
+              </div>
+            )}
 
             {product.subtitle && <p className="kv-sub pdp-subtitle">{product.subtitle}</p>}
 
@@ -389,7 +396,7 @@ export default function ProductView({ product }: { product: Product }) {
             {!isOnRequest && selectedVariant && currentInventory > 0 ? (
               <div className="pdp-urgency-bar">
                 <span className="pdp-fire-dot" />
-                {viewingCount} viewing now · {currentInventory <= 10 ? `${currentInventory} left in stock` : 'Ready to ship'}
+                {currentInventory <= 10 ? `${currentInventory} left in stock` : 'Ready to ship'}
                 {isConnected ? <Wifi size={12} /> : <WifiOff size={12} />}
               </div>
             ) : null}
@@ -476,7 +483,6 @@ export default function ProductView({ product }: { product: Product }) {
                     onClick={() => quantity < currentInventory && setQuantity(quantity + 1)}
                     disabled={currentInventory <= quantity}
                     aria-label="Increase quantity"
-                    style={{ opacity: currentInventory <= quantity ? 0.35 : 1 }}
                   >
                     <Plus size={14} />
                   </button>
@@ -497,8 +503,7 @@ export default function ProductView({ product }: { product: Product }) {
                     type="button"
                     onClick={handleAddToCart}
                     disabled={!selectedVariant || addedToCart || outOfStock}
-                    className={`btn btn-full pdp-primary-cta${addedToCart ? '' : outOfStock ? '' : ' btn-primary'}`}
-                    style={addedToCart ? { background: 'var(--success-dark)', color: 'white', borderColor: 'var(--success-dark)' } : outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : {}}
+                    className={`btn btn-full pdp-primary-cta${addedToCart ? ' is-added' : outOfStock ? ' is-disabled' : ' btn-primary'}`}
                   >
                     <ShoppingBag size={17} />
                     {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to cart' : 'Add to cart'}
@@ -520,31 +525,15 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             <div className="trust-grid">
-              <div className="soft-card pdp-trust-card">
-                <Truck size={16} />
-                <strong className="pdp-trust-label">Free shipping</strong>
-                <p className="pdp-trust-sublabel">Over ₹2,000</p>
-              </div>
-              <div className="soft-card pdp-trust-card">
-                <RotateCcw size={16} />
-                <strong className="pdp-trust-label">Returns</strong>
-                <p className="pdp-trust-sublabel">7-day support</p>
-              </div>
-              <div className="soft-card pdp-trust-card">
-                <ShieldCheck size={16} />
-                <strong className="pdp-trust-label">Secure</strong>
-                <p className="pdp-trust-sublabel">UPI / Card</p>
-              </div>
-              <div className="soft-card pdp-trust-card">
-                <HandHeart size={16} />
-                <strong className="pdp-trust-label">Handmade</strong>
-                <p className="pdp-trust-sublabel">Jaipur craft</p>
-              </div>
+              <TrustBadge icon={Truck} label="Free shipping" description="Over Rs. 2,000" className="pdp-trust-card" />
+              <TrustBadge icon={RotateCcw} label="Returns" description="7-day support" className="pdp-trust-card" />
+              <TrustBadge icon={ShieldCheck} label="Secure" description="UPI / Card" className="pdp-trust-card" />
+              <TrustBadge icon={HandHeart} label="Handmade" description="Jaipur craft" className="pdp-trust-card" />
             </div>
 
-            <div className="pdp-social-proof">
-              <Users size={15} />
-              {boughtRecently} people bought this in the last 24h
+            <div className="pdp-integrity-note">
+              <PackageCheck size={15} />
+              Product details and availability are confirmed before checkout.
             </div>
 
             {!isOnRequest && outOfStock && selectedVariant && (
@@ -599,24 +588,19 @@ export default function ProductView({ product }: { product: Product }) {
           </section>
 
           <aside className="pdp-review-sidebar" id="reviews">
-            <div className="pdp-review-summary">
-              <div>
-                <strong>{reviewRating.toFixed(1)}</strong>
-                <span className="pdp-rating-stars">★★★★★</span>
-                <p>{reviewCount.toLocaleString()} reviews</p>
-              </div>
-              {[88, 9, 2].map((value, index) => (
-                <div className="pdp-review-meter" key={value}>
-                  <span>{5 - index}★</span>
-                  <i><b style={{ width: `${value}%` }} /></i>
-                  <span>{value}%</span>
+            {hasReviews && reviewRating && reviewCount ? (
+              <div className="pdp-review-summary">
+                <div>
+                  <strong>{reviewRating.toFixed(1)}</strong>
+                  <span className="pdp-rating-stars">5 stars</span>
+                  <p>{reviewCount.toLocaleString()} reviews</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : null}
             <div className="pdp-verified-card">
               <PackageCheck size={16} />
-              <p>&ldquo;Better than photos.&rdquo;</p>
-              <small>Verified · Priya M. · Delhi</small>
+              <p>Verified customer reviews will appear here after purchase.</p>
+              <small>Reviews are collected from real orders.</small>
             </div>
             <Reviews productId={product.id} />
           </aside>
@@ -626,8 +610,7 @@ export default function ProductView({ product }: { product: Product }) {
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} sizeGuide={product.size_guide} />
 
       <div
-        style={{ transform: showStickyATC ? 'translateY(0)' : 'translateY(100%)' }}
-        className="pdp-sticky-bar"
+        className={`pdp-sticky-bar${showStickyATC ? ' is-visible' : ''}`}
         aria-hidden={!showStickyATC}
       >
         <div className="pdp-sticky-info">
@@ -647,8 +630,7 @@ export default function ProductView({ product }: { product: Product }) {
             type="button"
             onClick={handleAddToCart}
             disabled={!selectedVariant || addedToCart || outOfStock}
-            className="btn btn-primary"
-            style={outOfStock ? { background: '#d1d5db', color: '#6b7280', borderColor: '#d1d5db', cursor: 'not-allowed' } : addedToCart ? { background: 'var(--success-dark)', borderColor: 'var(--success-dark)' } : {}}
+            className={`btn btn-primary pdp-sticky-cta${outOfStock ? ' is-disabled' : addedToCart ? ' is-added' : ''}`}
           >
             {outOfStock ? 'Sold Out' : addedToCart ? 'Added' : 'Add to cart'}
           </button>

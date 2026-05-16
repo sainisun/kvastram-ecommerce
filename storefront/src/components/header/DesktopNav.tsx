@@ -4,18 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useCallback } from 'react';
 
-interface NavItem {
-  label: string;
-  href: string;
-  hasMega?: boolean;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { label: 'Shop', href: '/products', hasMega: true },
-  { label: 'Collections', href: '/collections', hasMega: true },
-  { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'About', href: '/about' },
-];
+import { STOREFRONT_NAV_ITEMS } from '@/config/storefront-navigation';
 
 interface DesktopNavProps {
   activeMega: string | null;
@@ -44,7 +33,7 @@ export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave }: DesktopNavP
       className="flex min-w-0 items-center justify-center gap-5 xl:gap-8"
       aria-label="Main navigation"
     >
-      {NAV_ITEMS.map((item) => {
+      {STOREFRONT_NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
         const isMegaOpen = activeMega === item.label;
 
@@ -59,8 +48,8 @@ export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave }: DesktopNavP
               className={[
                 'font-[family-name:var(--font-ui)] text-[12px] uppercase tracking-[0.08em] pb-1 transition-colors',
                 isActive || isMegaOpen
-                  ? 'text-[#b33e23] border-b border-[#b33e23]'
-                  : 'text-[#3d3a36] hover:text-[#1a1714] hover:border-b hover:border-[#b5b0a8]',
+                  ? 'text-[var(--ds-accent-primary)] border-b border-[var(--ds-accent-primary)]'
+                  : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] hover:border-b hover:border-[var(--ds-text-disabled)]',
               ].join(' ')}
               aria-haspopup={item.hasMega ? 'true' : undefined}
               aria-expanded={item.hasMega ? isMegaOpen : undefined}

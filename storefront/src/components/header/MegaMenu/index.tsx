@@ -1,6 +1,11 @@
 'use client';
 
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
+import {
+  MEGA_FALLBACK_CATEGORY_GROUPS,
+  MEGA_FALLBACK_COLLECTION_GROUPS,
+  MEGA_FALLBACK_SECONDARY_GROUPS,
+} from '@/config/storefront-navigation';
 import { MegaColumn } from './MegaColumn';
 import { MegaFeatureCard } from './MegaFeatureCard';
 
@@ -38,51 +43,6 @@ const megaVariants: Variants = {
   exit: { opacity: 0, y: -4, transition: { duration: 0.12 } },
 };
 
-const FALLBACK_CATEGORY_GROUPS = [
-  {
-    label: 'Clothing',
-    items: [
-      { label: 'Jackets', href: '/categories/jackets' },
-      { label: 'Sarees', href: '/categories/sarees' },
-      { label: 'Suits & Kurtas', href: '/categories/suits-kurtas' },
-      { label: 'Lehengas', href: '/categories/lehengas' },
-      { label: 'T-Shirts & Tops', href: '/categories/t-shirts' },
-    ],
-  },
-];
-
-const FALLBACK_SECONDARY_GROUPS = [
-  {
-    label: 'Bags & Home',
-    items: [
-      { label: 'Tote Bags', href: '/categories/tote-bags' },
-      { label: 'Toiletry Pouches', href: '/categories/toiletry-pouches' },
-      { label: 'Clutches', href: '/categories/clutches' },
-    ],
-  },
-  {
-    label: 'Home & Acc',
-    items: [
-      { label: 'Home Textiles', href: '/categories/home-textiles' },
-      { label: 'Scarves & Wraps', href: '/categories/scarves-wraps' },
-      { label: 'Accessories', href: '/categories/accessories' },
-    ],
-  },
-];
-
-const FALLBACK_COLLECTION_GROUPS = [
-  {
-    label: 'Collections',
-    items: [
-      { label: 'Kantha Essentials', href: '/collections/kantha-essentials' },
-      { label: 'Festival Ready', href: '/collections/festival-ready' },
-      { label: 'Gifts Under Rs. 2,000', href: '/collections/gifts-under-2000' },
-      { label: 'Block Print Edit', href: '/collections/block-print-edit' },
-      { label: 'New Arrivals', href: '/products?sort=newest', isNew: true },
-    ],
-  },
-];
-
 function sortByDisplayOrder<T extends { display_order?: number }>(items: T[]) {
   return [...items].sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99));
 }
@@ -110,7 +70,7 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
           })),
         },
       ]
-    : FALLBACK_CATEGORY_GROUPS;
+    : MEGA_FALLBACK_CATEGORY_GROUPS;
 
   const subcategoryItems = headerCategories
     .flatMap((category) => category.children || [])
@@ -123,7 +83,7 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
 
   const secondaryGroups = subcategoryItems.length
     ? [{ label: 'More to explore', items: subcategoryItems }]
-    : FALLBACK_SECONDARY_GROUPS;
+    : MEGA_FALLBACK_SECONDARY_GROUPS;
 
   const megamenuCollections = sortByDisplayOrder(
     collections.filter((collection) => collection.status === 'active' && collection.show_in_megamenu)
@@ -142,7 +102,7 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
           })),
         },
       ]
-    : FALLBACK_COLLECTION_GROUPS;
+    : MEGA_FALLBACK_COLLECTION_GROUPS;
 
   return (
     <AnimatePresence>
@@ -154,10 +114,10 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
           exit="exit"
           role="navigation"
           aria-label="Main navigation"
-          className="absolute top-full left-0 right-0 bg-white border-b-[1.5px] border-[#1a1714] z-[100] shadow-sm"
+          className="absolute top-full left-0 right-0 bg-white border-b-[1.5px] border-[var(--ds-border-dark)] z-[100] shadow-sm"
         >
           <div className="grid" style={{ gridTemplateColumns: '1.1fr 1fr 1fr 180px' }}>
-            <div className="px-8 py-6 border-r border-[#ede8e0]">
+            <div className="px-8 py-6 border-r border-[var(--ds-surface-parchment-2)]">
               <MegaColumn
                 groups={categoryGroups}
                 viewAllLabel="Shop all products"
@@ -166,11 +126,11 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
               />
             </div>
 
-            <div className="px-8 py-6 border-r border-[#ede8e0]">
+            <div className="px-8 py-6 border-r border-[var(--ds-surface-parchment-2)]">
               <MegaColumn groups={secondaryGroups} onClose={onClose} />
             </div>
 
-            <div className="px-8 py-6 border-r border-[#ede8e0]">
+            <div className="px-8 py-6 border-r border-[var(--ds-surface-parchment-2)]">
               <MegaColumn
                 groups={collectionGroups}
                 viewAllLabel="All collections"
@@ -186,7 +146,7 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
                 onClick={onClose}
               />
             ) : (
-              <div className="h-full min-h-[240px] bg-[#1a1714]" />
+              <div className="h-full min-h-[240px] bg-[var(--ds-text-primary)]" />
             )}
           </div>
         </motion.div>

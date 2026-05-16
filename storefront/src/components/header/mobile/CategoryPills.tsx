@@ -2,32 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { CATEGORY_QUICK_LINKS, type StorefrontNavLink } from '@/config/storefront-navigation';
 import styles from '../header.module.css';
 
-interface Pill {
-  label: string;
-  href: string;
-}
-
-const DEFAULT_PILLS: Pill[] = [
-  { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Jackets', href: '/categories/jackets' },
-  { label: 'Sarees', href: '/categories/sarees' },
-  { label: 'Tote Bags', href: '/categories/tote-bags' },
-  { label: 'Suits & Kurtas', href: '/categories/suits-kurtas' },
-  { label: 'Gifts ₹2K', href: '/collections/gifts-under-2000' },
-];
-
 interface CategoryPillsProps {
-  pills?: Pill[];
+  pills?: StorefrontNavLink[];
 }
 
-export function CategoryPills({ pills = DEFAULT_PILLS }: CategoryPillsProps) {
+export function CategoryPills({ pills = CATEGORY_QUICK_LINKS }: CategoryPillsProps) {
   const pathname = usePathname();
 
   return (
     <div
-      className={`flex md:hidden gap-5 overflow-x-auto px-4 py-2 bg-[#f7f4ef] border-b border-[#d8d2c8] h-[44px] items-center ${styles.scrollbarNone}`}
+      className={`flex md:hidden gap-5 overflow-x-auto px-4 py-2 bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)] h-[44px] items-center ${styles.scrollbarNone}`}
       role="tablist"
       aria-label="Category quick links"
     >
@@ -42,8 +29,8 @@ export function CategoryPills({ pills = DEFAULT_PILLS }: CategoryPillsProps) {
             className={[
               'flex-shrink-0 font-[family-name:var(--font-ui)] text-[11px] tracking-[0.04em] transition-colors whitespace-nowrap underline-offset-4',
               isActive
-                ? 'text-[#1a1714] underline'
-                : 'text-[#7a7570] hover:text-[#1a1714] hover:underline',
+                ? 'text-[var(--ds-text-primary)] underline'
+                : 'text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] hover:underline',
             ].join(' ')}
           >
             {pill.label}

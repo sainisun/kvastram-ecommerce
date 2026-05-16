@@ -129,6 +129,7 @@ export function SiteHeader() {
         isOpen={drawerOpen}
         onClose={closeDrawer}
         categories={categories}
+        collections={collections}
       />
 
       {/* Mobile search overlay */}

@@ -1,0 +1,23 @@
+/* ═══════════════════════════════════════════════════
+   PROTOTYPE PARITY — FOOTER
+   ═══════════════════════════════════════════════════ */
+
+.footer {
+  background: var(--ink);
+  color: rgba(255,255,255,.7);
+  padding: 42px 0 28px;
+}
+.footer-grid {
+  display: grid;
+  gap: 24px;
+}
+.footer h3,
+.footer h4 {
+  color: white;
+  margin-top: 0;
+}
+.footer a {
+  display: block;
+  margin: 8px 0;
+  font-size: var(--text-body-sm);
+}

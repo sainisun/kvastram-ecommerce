@@ -1,6 +1,8 @@
 # Kvastram Typography System — v2 (Complete)
 ## Claude Code Implementation Guide
 
+> **Status:** Superseded. Use `docs/design-system/storefront-design-system-v1.md` for the active storefront typography system. The active direction is Mulmul-inspired restrained sans commerce, with TERRACOTTA as the final accent token.
+
 > Paste this file as context to Claude Code and say:
 > "Implement the Kvastram Typography System v2 across the entire codebase."
 
