@@ -7,7 +7,7 @@ const checkedExtensions = new Set(['.css', '.ts', '.tsx']);
 const tsxExtensions = new Set(['.ts', '.tsx']);
 
 const defaultPalettePattern =
-  /\b(?:text|bg|border|ring|fill|stroke|placeholder)-(?:white|black|stone|neutral|zinc|gray|slate|amber|rose|emerald|blue|green|red|yellow|pink|purple)(?:-[0-9]{2,3})?\b/g;
+  /\b(?:text|bg|border|ring|fill|stroke|placeholder|from|via|to|decoration|divide|accent)-(?:white|black|stone|neutral|zinc|gray|slate|amber|rose|emerald|blue|green|red|yellow|pink|purple)(?:-[0-9]{2,3})?(?:\/[0-9]{1,3})?\b/g;
 const legacyButtonPattern = /\b(?:kv-btn|btn-primary|btn-outline|btn-[a-z0-9-]+)\b/g;
 
 const approvedNativeButtonFiles = new Set([

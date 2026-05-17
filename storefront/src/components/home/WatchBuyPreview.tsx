@@ -51,7 +51,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                       className="object-cover"
                     />
                   ) : null}
-                  <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.70)] via-[rgba(var(--ds-black-rgb),0.20)] to-transparent" />
                 </div>
                 <div className="reel-info">
                   <h3 className="reel-title line-clamp-2 leading-token-snug color-ink">

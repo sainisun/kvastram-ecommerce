@@ -53,7 +53,7 @@ export default function CategoryBannerCarousel({ banners }: Props) {
                 className="object-cover object-top"
               />
               {(banner.headline || banner.button_label) && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent">
+                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.60)] via-[rgba(var(--ds-black-rgb),0.10)] to-transparent">
                   <div className="absolute inset-x-0 bottom-0 flex justify-center px-5 pb-8 pt-20 text-center">
                     <div className="max-w-[18rem] text-[var(--ds-text-inverse)]">
                       {banner.headline ? (

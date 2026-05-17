@@ -20,6 +20,7 @@ import CountrySelect from '@/components/ui/CountrySelect';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 const PAYMENT_TERMS = [
   {
@@ -135,7 +136,7 @@ export default function WholesaleCheckoutPage() {
     return (
       <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-20">
         <div className="max-w-2xl mx-auto px-4">
-          <div className="bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8 text-center">
+          <Card className="p-8 text-center shadow-lg">
             <div className="w-20 h-20 bg-[var(--ds-success-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-[var(--ds-success)]" />
             </div>
@@ -179,7 +180,7 @@ export default function WholesaleCheckoutPage() {
                 Continue Shopping
               </Link>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     );
@@ -248,7 +249,7 @@ export default function WholesaleCheckoutPage() {
               )}
 
               {/* PO Number */}
-              <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm">
+              <Card className="p-6 shadow-sm">
                 <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4 flex items-center">
                   <FileText className="w-5 h-5 mr-2" />
                   Purchase Order
@@ -264,10 +265,10 @@ export default function WholesaleCheckoutPage() {
                     placeholder="Enter your PO number"
                   />
                 </div>
-              </div>
+              </Card>
 
               {/* Payment Terms */}
-              <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm">
+              <Card className="p-6 shadow-sm">
                 <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4 flex items-center">
                   <Calendar className="w-5 h-5 mr-2" />
                   Payment Terms
@@ -306,10 +307,10 @@ export default function WholesaleCheckoutPage() {
                     </label>
                   ))}
                 </div>
-              </div>
+              </Card>
 
               {/* Shipping Address */}
-              <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm">
+              <Card className="p-6 shadow-sm">
                 <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
                   Shipping Address
                 </h2>
@@ -469,10 +470,10 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                 </div>
-              </div>
+              </Card>
 
               {/* Order Notes */}
-              <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm">
+              <Card className="p-6 shadow-sm">
                 <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
                   Order Notes
                 </h2>
@@ -485,7 +486,7 @@ export default function WholesaleCheckoutPage() {
                   rows={4}
                   placeholder="Any special instructions for your order..."
                 />
-              </div>
+              </Card>
 
               {error && (
                 <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] px-4 py-3 rounded-lg">
@@ -507,7 +508,7 @@ export default function WholesaleCheckoutPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm sticky top-6">
+            <Card className="sticky top-6 p-6 shadow-sm">
               <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
                 Order Summary
               </h2>
@@ -531,7 +532,7 @@ export default function WholesaleCheckoutPage() {
                       </p>
                       <p className="text-body-xs text-[var(--ds-text-muted)]">SKU: {item.sku}</p>
                       <p className="text-body-xs text-[var(--ds-text-secondary)] mt-1">
-                        Qty: {item.quantity} × $
+                        Qty: {item.quantity} x $
                         {((item.finalPrice || item.price) / 100).toFixed(2)}
                       </p>
                       {item.moq && item.moq > 1 && (
@@ -605,7 +606,7 @@ export default function WholesaleCheckoutPage() {
                   </strong>
                 </p>
               </div>
-            </div>
+            </Card>
           </div>
         </div>
       </div>

@@ -67,10 +67,6 @@
   border-color: var(--ds-footer-border);
 }
 
-.kvastram-footer [class*='bg-black'] span {
-  color: var(--ds-footer-hover);
-}
-
 .kvastram-mobile-footer {
   background: var(--ds-surface-parchment);
 }

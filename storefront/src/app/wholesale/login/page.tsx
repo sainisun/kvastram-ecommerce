@@ -7,6 +7,7 @@ import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
 import Input from '@/components/ui/Input';
 import { Button, IconButton } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 export default function WholesaleLoginPage() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function WholesaleLoginPage() {
 
   return (
     <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-      <div className="max-w-md w-full bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8">
+      <Card className="w-full max-w-md p-8 shadow-lg">
         <div className="text-center mb-8">
           <h1 className="text-display-md type-bold text-[var(--ds-text-primary)]">Wholesale Login</h1>
           <p className="text-[var(--ds-text-secondary)] mt-2">
@@ -122,10 +123,10 @@ export default function WholesaleLoginPage() {
             href="/wholesale"
             className="text-body-sm text-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]"
           >
-            ← Back to Wholesale
+            Back to Wholesale
           </Link>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

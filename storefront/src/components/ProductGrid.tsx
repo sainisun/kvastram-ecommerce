@@ -218,7 +218,7 @@ function ProductGrid({
                   className="object-cover"
                 />
               ) : null}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.60)] via-[rgba(var(--ds-black-rgb),0.10)] to-transparent" />
               {spotlight.badge_text ? (
                 <Badge className="spotlight-badge absolute left-4 top-4 z-10 rounded-[var(--radius-xs)] bg-[var(--ds-surface-paper)]/90 px-3 py-1">
                   {spotlight.badge_text}

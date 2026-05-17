@@ -217,7 +217,6 @@ a:active,
 }
 
 .ring-2:active,
-.ring-black:active,
 .focus\:ring-2:active,
 [class*='ring-']:active {
   --tw-ring-offset-shadow: 0 0 transparent;

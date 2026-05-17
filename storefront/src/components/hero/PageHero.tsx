@@ -31,7 +31,7 @@ export default function PageHero({
       {image ? (
         <OptimizedImage src={image} alt={title} fill className="object-cover" priority />
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-stone-800 via-stone-700 to-stone-900" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--ds-text-secondary)] via-[var(--ds-text-secondary)] to-[var(--ds-text-primary)]" />
       )}
 
       {/* Overlay */}

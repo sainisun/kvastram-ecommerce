@@ -78,8 +78,8 @@ export function MainLayout({
         {children}
       </main>
       {!isReelsPage && (isWholesalePage ? <WholesaleFooter /> : <Footer />)}
-      {/* Mobile Bottom Navigation - Hide on checkout */}
-      {!isCheckoutPage && <BottomNav />}
+      {/* Mobile Bottom Navigation - Hide on immersive/checkout surfaces */}
+      {!hideSiteChrome && <BottomNav />}
       {/* Scroll to top */}
       {!hideSiteChrome && <ScrollToTop />}
       {/* Cart Abandonment Recovery Modal */}

@@ -15,6 +15,7 @@ import { api } from '@/lib/api';
 import { storefrontTrust } from '@/config/storefront-trust';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 interface OrderStatus {
   id: string;
@@ -136,7 +137,7 @@ export default function TrackOrderPage() {
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
       <section className="kv-page-gutter bg-[var(--ds-surface-soft)] px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="mx-auto max-w-[860px]">
-          <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.05)] md:p-10">
+          <Card className="p-6 shadow-[0_20px_60px_rgba(0,0,0,0.05)] md:p-10">
             <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
               Order tracking
             </div>
@@ -234,7 +235,7 @@ export default function TrackOrderPage() {
         {order ? (
           <div className="mt-8 space-y-6">
             {/* Order Info */}
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-6">
+            <Card className="bg-[var(--ds-surface-parchment)] p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
@@ -289,7 +290,7 @@ export default function TrackOrderPage() {
                             : pkg.tracking_number || 'Tracking pending'}
                         </p>
                         <p className="mt-1 text-[var(--ds-text-muted)]">
-                          {[pkg.carrier, pkg.service].filter(Boolean).join(' • ') ||
+                          {[pkg.carrier, pkg.service].filter(Boolean).join(' / ') ||
                             'Carrier details pending'}
                         </p>
                         {pkg.no_tracking_reason ? (
@@ -334,10 +335,10 @@ export default function TrackOrderPage() {
                   Need Help With This Order?
                 </Link>
               </div>
-            </div>
+            </Card>
 
             {/* Shipping Address */}
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-5">
+            <Card className="p-5">
               <h3 className="mb-4 font-display text-display-sm text-[var(--ds-text-primary)]">
                 Shipping Address
               </h3>
@@ -356,10 +357,10 @@ export default function TrackOrderPage() {
                   <p>{order.shipping_address?.country}</p>
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Order Items */}
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-5">
+            <Card className="p-5">
               <h3 className="mb-4 font-display text-display-sm text-[var(--ds-text-primary)]">
                 Order Items
               </h3>
@@ -381,9 +382,9 @@ export default function TrackOrderPage() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
 
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-5">
+            <Card className="bg-[var(--ds-surface-parchment)] p-5">
               <h3 className="mb-4 font-display text-display-sm text-[var(--ds-text-primary)]">
                 More help for this order
               </h3>
@@ -407,25 +408,25 @@ export default function TrackOrderPage() {
                   Contact Support
                 </Link>
               </div>
-            </div>
+            </Card>
           </div>
         ) : (
           <div className="mt-6 grid gap-3">
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-5">
+            <Card className="bg-[var(--ds-surface-parchment)] p-5">
               <strong className="text-[var(--ds-text-primary)]">Out for Delivery</strong>
               <p className="mt-1 text-body-sm leading-6 text-[var(--ds-text-secondary)]">
                 Your live package status will appear here after a successful lookup.
               </p>
-            </div>
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-5">
+            </Card>
+            <Card className="bg-[var(--ds-surface-parchment)] p-5">
               <strong className="text-[var(--ds-text-primary)]">Arrived at Jaipur Hub</strong>
               <p className="mt-1 text-body-sm leading-6 text-[var(--ds-text-secondary)]">
                 Prototype-style milestone cards stay visible as a helpful empty state.
               </p>
-            </div>
+            </Card>
           </div>
         )}
-          </div>
+          </Card>
         </div>
       </section>
       </div>

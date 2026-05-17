@@ -7,6 +7,7 @@ import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react';
 import { api } from '@/lib/api';
 import Input from '@/components/ui/Input';
 import { Button, IconButton } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 function SetPasswordContent() {
   const router = useRouter();
@@ -85,7 +86,7 @@ function SetPasswordContent() {
   if (!token) {
     return (
       <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="max-w-md w-full bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8">
+        <Card className="w-full max-w-md p-8 shadow-lg">
           <div className="text-center">
             <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-4">
               Invalid Link
@@ -97,7 +98,7 @@ function SetPasswordContent() {
               Return to Wholesale
             </Link>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -105,7 +106,7 @@ function SetPasswordContent() {
   if (success) {
     return (
       <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="max-w-md w-full bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8">
+        <Card className="w-full max-w-md p-8 shadow-lg">
           <div className="text-center">
             <div className="w-16 h-16 bg-[var(--ds-success-bg)] rounded-full flex items-center justify-center mx-auto mb-4">
               <Check className="w-8 h-8 text-[var(--ds-success)]" />
@@ -121,14 +122,14 @@ function SetPasswordContent() {
               Go to Wholesale Now
             </Link>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-      <div className="max-w-md w-full bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8">
+      <Card className="w-full max-w-md p-8 shadow-lg">
         <div className="text-center mb-8">
           <h1 className="text-display-md type-bold text-[var(--ds-text-primary)]">
             Set Up Your Password
@@ -216,10 +217,10 @@ function SetPasswordContent() {
             href="/wholesale"
             className="text-body-sm text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
           >
-            ← Back to Wholesale
+            Back to Wholesale
           </Link>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import '../styles/storefront.css';
 import { Analytics } from '@/components/Analytics';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { RootErrorBoundary } from '@/components/RootErrorBoundary';
-import { CookieConsent } from '@/components/ui/CookieConsent';
 import { AuthProvider } from '@/context/auth-context';
 import { CartProvider } from '@/context/cart-context';
 import { CurrencyProvider } from '@/context/currency-context';
@@ -117,7 +116,6 @@ export default async function RootLayout({
           </NotificationProvider>
         </RootErrorBoundary>
         <Analytics />
-        <CookieConsent />
       </body>
     </html>
   );

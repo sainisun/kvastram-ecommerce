@@ -23,6 +23,22 @@ const allowedLegacyFontFiles = new Set([
   path.normalize('src/app/globals.css'),
 ]);
 const checkedExtensions = new Set(['.css', '.ts', '.tsx']);
+const defaultPalettePattern =
+  /\b(?:text|bg|border|ring|fill|stroke|placeholder|from|via|to|decoration|divide|accent)-(?:white|black|stone|neutral|zinc|gray|slate|amber|rose|emerald|blue|green|red|yellow|pink|purple)(?:-[0-9]{2,3})?(?:\/[0-9]{1,3})?\b/g;
+const allowedInlineStylePatterns = [
+  /style=\{\{\s*animationDelay:/,
+  /style=\{\{\s*width:\s*`/,
+  /style=\{\{\s*width:\s*workflowIndex/,
+  /style=\{\{\s*background:\s*getColorHex/,
+  /style=\{\{\s*backgroundColor:\s*category\.iconBg/,
+  /style=\{\{\s*animationDuration:\s*speed/,
+  /<PayPalButtons/,
+  /layout:\s*'vertical'/,
+  /color:\s*'black'/,
+  /shape:\s*'rect'/,
+  /label:\s*'pay'/,
+  /height:\s*48/,
+];
 
 const findings = [];
 
@@ -64,6 +80,20 @@ function auditFile(fullPath) {
 
     if (/\b(sienna|coral)\b/i.test(line) && !sourceOfTruthFiles.has(rel)) {
       findings.push(`${location} legacy sienna/coral naming is superseded by TERRACOTTA`);
+    }
+
+    if (defaultPalettePattern.test(line)) {
+      findings.push(`${location} default Tailwind palette utility should use --ds-* tokens`);
+      defaultPalettePattern.lastIndex = 0;
+    }
+
+    if (/style=\{\{/.test(line)) {
+      const allowed =
+        rel === path.normalize('src/components/checkout/PayPalButton.tsx') ||
+        allowedInlineStylePatterns.some((pattern) => pattern.test(line));
+      if (!allowed) {
+        findings.push(`${location} inline style needs an audit allowlist entry or a class/token replacement`);
+      }
     }
 
     const selfReference = line.match(/(--ds-[a-z0-9-]+):\s*var\(\1\)/i);

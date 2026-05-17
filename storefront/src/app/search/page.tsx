@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Loader2, Filter, ArrowLeft } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import { Button, UnstyledButton } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import ProductGrid from '@/components/ProductGrid';
 import type { Product } from '@/types';
@@ -262,7 +263,7 @@ function SearchContent() {
         </div>
 
         <div className="mb-10 grid gap-4 lg:grid-cols-[1.15fr,0.85fr]">
-          <div className="rounded-2xl border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-6">
+          <Card className="bg-[var(--ds-surface-parchment)] p-6">
             <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
               Guided Discovery
             </p>
@@ -284,9 +285,9 @@ function SearchContent() {
                 </Link>
               ))}
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-2xl border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-6">
+          <Card className="p-6">
             <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
               Purchase Help
             </p>
@@ -317,7 +318,7 @@ function SearchContent() {
                 Payment Help
               </Link>
             </div>
-          </div>
+          </Card>
         </div>
 
         {hasActiveFilters ? (
@@ -368,7 +369,7 @@ function SearchContent() {
           <>
             <ProductGrid initialProducts={products} />
 
-            <div className="mt-12 rounded-2xl border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-6">
+            <Card className="mt-12 bg-[var(--ds-surface-parchment)] p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
@@ -397,7 +398,7 @@ function SearchContent() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </Card>
           </>
         ) : (
           <EmptyState

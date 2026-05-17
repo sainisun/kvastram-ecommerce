@@ -91,7 +91,7 @@ export default async function ArticlePage({ params }: Props) {
               className="object-cover brightness-[0.85]"
               sizes="100vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.50)] to-transparent" />
           </div>
         ) : (
           <div className="absolute inset-0 bg-[var(--ds-text-primary)]" />

@@ -6,12 +6,10 @@
 @import './components/newsletter.css';
 @import './components/pdp-premium.css';
 @import './components/catalog.css';
-@import './components/header-enhancements.css';
 @import './animations.css';
 @import './mobile-overrides.css';
 @import './theme-overrides.css';
 @import './utilities.css';
-@import './components/header.css';
 @import './components/product-card.css';
 @import './components/collections.css';
 @import './components/reels.css';

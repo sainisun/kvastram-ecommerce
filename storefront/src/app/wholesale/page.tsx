@@ -127,7 +127,7 @@ export default function WholesalePage() {
     <>
       <div className="min-h-screen bg-[var(--ds-surface-paper)]">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-stone-900 via-stone-800 to-amber-900 py-16 pt-32 text-[var(--ds-text-inverse)] md:py-20 lg:py-32">
+        <section className="relative bg-gradient-to-br from-[var(--ds-text-primary)] via-[var(--ds-text-secondary)] to-[var(--ds-warning-text)] py-16 pt-32 text-[var(--ds-text-inverse)] md:py-20 lg:py-32">
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
           <div className="kv-page-container relative z-10 mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="max-w-3xl">

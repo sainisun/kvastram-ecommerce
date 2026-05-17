@@ -305,7 +305,7 @@ export function CollectionCardSkeleton() {
   return (
     <div className="relative aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)]">
       <Skeleton className="absolute inset-0" />
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
+      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.60)] to-transparent">
         <Skeleton className="h-6 w-3/4 bg-[rgba(var(--ds-cream-rgb),0.5)]" />
         <Skeleton className="mt-2 h-4 w-1/2 bg-[rgba(var(--ds-cream-rgb),0.3)]" />
       </div>

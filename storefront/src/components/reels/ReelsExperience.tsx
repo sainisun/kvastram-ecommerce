@@ -239,7 +239,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                       <div className="absolute inset-0 bg-[var(--soft)]" />
                     )}
                     {/* Gradient keeps autoplaying thumbnails legible against the card edge. */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.75)] via-[rgba(var(--ds-black-rgb),0.10)] to-transparent" />
                   </div>
                   {gridCols === 2 && (
                     <div className="reel-info">
@@ -488,8 +488,8 @@ function ReelPlayerModal({
         />
 
         {/* Gradients */}
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/80 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[rgba(var(--ds-black-rgb),0.80)] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.95)] via-[rgba(var(--ds-black-rgb),0.50)] to-transparent" />
 
         {/* Progress dots */}
         {localReels.length > 1 && (

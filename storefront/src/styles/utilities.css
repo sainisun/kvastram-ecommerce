@@ -116,7 +116,6 @@
 }
 
 .filter-chips button[aria-current='true'],
-.filter-chips button.bg-stone-950,
 .kv-chip-active {
   border-color: var(--ink);
   background: var(--ink);

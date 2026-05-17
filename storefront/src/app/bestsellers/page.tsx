@@ -166,7 +166,7 @@ export default async function BestsellersPage({
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
       />
 
-      <section className="relative h-[480px] overflow-hidden bg-gradient-to-br from-stone-950 via-stone-800 to-stone-700">
+      <section className="relative h-[480px] overflow-hidden bg-gradient-to-br from-[var(--ds-text-primary)] via-[var(--ds-text-secondary)] to-[var(--ds-text-secondary)]">
         {heroImage ? (
           <OptimizedImage
             src={heroImage}

@@ -790,7 +790,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
           className="object-cover"
           sizes="400px"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.55)] to-transparent" />
         <p className="absolute bottom-3 left-4 text-sm font-medium text-[var(--ds-text-inverse)]">
           {category.tagline}
         </p>
