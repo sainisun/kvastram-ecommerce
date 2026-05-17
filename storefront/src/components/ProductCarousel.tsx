@@ -7,6 +7,7 @@ import { useCurrency } from '@/context/currency-context';
 import { useNotification } from '@/context/notification-context';
 import { useShop } from '@/context/shop-context';
 import { ProductCard } from '@/components/products/ProductCard';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { getProductDisplayTitle } from '@/lib/product-title';
 
 interface ProductCarouselProps {
@@ -102,7 +103,7 @@ function ProductCarousel({
   }
 
   if (products.length === 0) {
-    return <div className="product-empty-state">No products found.</div>;
+    return <EmptyState title="No products found." className="product-empty-state" />;
   }
 
   return (

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { DrawerNavItem } from './DrawerNavItem';
 import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
+import { IconButton } from '@/components/ui/Button';
 
 interface HeaderCategory {
   id: string;
@@ -192,20 +193,22 @@ export function MobileDrawer({
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="fixed inset-0 z-50 w-full bg-white flex flex-col md:hidden"
+            className="fixed inset-0 z-50 w-full bg-[var(--ds-surface-paper)] flex flex-col md:hidden"
             aria-modal="true"
             role="dialog"
             aria-label="Navigation"
           >
-            <div className="h-[54px] shrink-0 border-b border-[#d8d2c8] flex items-center justify-end px-4">
-              <button
+            <div className="h-[54px] shrink-0 border-b border-[var(--ds-border-strong)] flex items-center justify-end px-4">
+              <IconButton
                 type="button"
                 onClick={onClose}
-                className="w-10 h-10 flex items-center justify-center text-[#c94e2a] focus-visible:outline-2 focus-visible:outline-[#c94e2a]"
+                variant="ghost"
+                size="md"
+                className="h-10 w-10 text-[var(--ds-accent-primary)]"
                 aria-label="Close navigation"
               >
                 <X size={20} strokeWidth={1.8} />
-              </button>
+              </IconButton>
             </div>
 
             <div className="flex-1 overflow-y-auto">
@@ -225,10 +228,10 @@ export function MobileDrawer({
               ))}
             </div>
 
-            <div className="shrink-0 border-t border-[#d8d2c8] p-3 flex gap-2 bg-white">
+            <div className="shrink-0 border-t border-[var(--ds-border-strong)] p-3 flex gap-2 bg-[var(--ds-surface-paper)]">
               <a
                 href="/track"
-                className="flex-1 py-2.5 rounded-md font-[family-name:var(--font-ui)] text-[11px] font-medium uppercase tracking-[0.06em] border border-[#d8d2c8] text-[#3d3a36] text-center"
+                className="flex-1 py-2.5 rounded-md font-body text-[11px] font-medium uppercase tracking-[0.06em] border border-[var(--ds-border-strong)] text-[var(--ds-text-secondary)] text-center"
               >
                 Track order
               </a>
@@ -236,7 +239,7 @@ export function MobileDrawer({
                 href={buildWhatsAppHref('Hi, I need help')}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-2.5 rounded-md font-[family-name:var(--font-ui)] text-[11px] font-medium uppercase tracking-[0.06em] bg-[#c94e2a] text-white text-center"
+                className="flex-1 py-2.5 rounded-md font-body text-[11px] font-medium uppercase tracking-[0.06em] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] text-center"
               >
                 WhatsApp us
               </a>

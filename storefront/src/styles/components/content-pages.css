@@ -56,7 +56,7 @@
 
 .content-eyebrow {
   margin: 0;
-  color: var(--sienna);
+  color: var(--ds-accent-primary);
   font-size: var(--text-body-xs);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-wider);
@@ -210,7 +210,7 @@
 
 .content-rich a,
 .editorial-text a {
-  color: var(--sienna-dark);
+  color: var(--ds-accent-hover);
   text-decoration: underline;
   text-decoration-color: rgba(168, 93, 58, 0.35);
   text-underline-offset: 4px;
@@ -231,7 +231,7 @@
 }
 
 .content-rich table th {
-  background: #f8f1eb;
+  background: var(--ds-surface-soft);
   color: var(--ink);
   font-size: var(--text-body-xs);
   font-weight: var(--weight-semibold);
@@ -347,13 +347,13 @@
 
 .info-card--link:hover {
   border-color: rgba(168, 93, 58, 0.42);
-  background: #fffaf6;
+  background: var(--ds-surface-page);
   transform: translateY(-2px);
 }
 
 .info-card__eyebrow {
   margin: 0 0 8px;
-  color: var(--sienna);
+  color: var(--ds-accent-primary);
   font-size: var(--text-body-xs);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-wider);
@@ -383,8 +383,8 @@
 
 .highlight-box {
   margin: 34px 0;
-  border-left: 3px solid var(--sienna);
-  background: #fff8f2;
+  border-left: 3px solid var(--ds-accent-primary);
+  background: var(--ds-surface-parchment);
   padding: 22px 24px;
   color: var(--color-text-secondary);
   font-size: var(--text-body-sm);
@@ -400,7 +400,7 @@
   gap: 24px;
   margin-top: clamp(44px, 6vw, 78px);
   border: 1px solid rgba(168, 93, 58, 0.22);
-  background: linear-gradient(135deg, #fff8f2, #ffffff);
+  background: linear-gradient(135deg, var(--ds-surface-parchment), var(--ds-surface-paper));
   padding: clamp(24px, 4vw, 42px);
 }
 
@@ -443,7 +443,7 @@
 }
 
 .content-button:hover {
-  border-color: var(--sienna);
+  border-color: var(--ds-accent-primary);
 }
 
 .content-button--primary {
@@ -453,8 +453,8 @@
 }
 
 .content-button--primary:hover {
-  background: var(--sienna-dark);
-  border-color: var(--sienna-dark);
+  background: var(--ds-accent-hover);
+  border-color: var(--ds-accent-hover);
 }
 
 .faq-accordion {
@@ -488,7 +488,7 @@
 .quote-block {
   margin: clamp(42px, 6vw, 72px) 0;
   padding: 0 0 0 clamp(22px, 4vw, 36px);
-  border-left: 1px solid var(--sienna);
+  border-left: 1px solid var(--ds-accent-primary);
 }
 
 .quote-block blockquote {
@@ -527,7 +527,7 @@
   overflow: hidden;
   background:
     linear-gradient(135deg, rgba(168, 93, 58, 0.14), rgba(62, 138, 95, 0.12)),
-    #f4eee6;
+    var(--ds-surface-soft);
   color: rgba(44, 44, 44, 0.42);
   font-family: var(--font-display);
   font-size: var(--text-body-sm);

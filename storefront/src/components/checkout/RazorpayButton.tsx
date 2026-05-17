@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CreditCard } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 interface RazorpayButtonProps {
   orderId: string;        // Our DB order ID (UUID)
@@ -79,7 +80,7 @@ function loadRazorpayScript(): Promise<boolean> {
 
 export default function RazorpayButton({
   orderId,
-  amount,
+  amount: _amount,
   currency = 'INR',
   customerName,
   customerEmail,
@@ -135,7 +136,7 @@ export default function RazorpayButton({
           contact: customerPhone || '',
         },
         theme: {
-          color: '#1c1917', // stone-900 — matches site palette
+          color: 'var(--ds-text-primary)', // stone-900 — matches site palette
         },
         handler: async (response) => {
           try {
@@ -197,15 +198,16 @@ export default function RazorpayButton({
   };
 
   return (
-    <button
+    <Button
       type="button"
       onClick={handlePay}
       disabled={isProcessing || !scriptLoaded}
-      className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+      variant="secondary"
+      size="lg"
+      fullWidth
+      leadingIcon={<CreditCard size={16} />}
     >
-      <CreditCard size={16} />
       {isProcessing ? 'Processing Payment...' : 'Pay with Razorpay'}
-    </button>
+    </Button>
   );
 }
-

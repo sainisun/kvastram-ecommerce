@@ -17,12 +17,9 @@ import type {
   ApiCollectionResponse,
   ApiCustomerResponse,
   ApiOrderResponse,
-  ApiLineItemResponse,
   ApiCartResponse,
-  ApiLoginResponse,
   ApiVariantResponse,
   ApiAddressResponse,
-  ApiPagination,
 } from '@/types/api-contracts';
 
 function asRecord(value: unknown): Record<string, unknown> | null {

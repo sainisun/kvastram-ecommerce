@@ -55,7 +55,7 @@ export async function CircularCategories() {
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-[var(--line)] bg-white px-6 py-10 text-center">
+          <div className="rounded-lg border border-dashed border-[var(--line)] bg-[var(--ds-surface-paper)] px-6 py-10 text-center">
             <p className="text-body-sm color-muted">
               Add active category circles in admin to show this discovery row.
             </p>

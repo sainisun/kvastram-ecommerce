@@ -132,7 +132,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
   }, [parsedStats]);
 
   return (
-    <section ref={sectionRef} className="px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <section ref={sectionRef} className="kv-page-gutter px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="stats-row-prem">
         {statsData.map((stat, index) => (
           <article key={stat.label} className="stat-entry-prem">
@@ -187,7 +187,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           margin-bottom: var(--space-4);
           font-size: var(--text-body-lg);
           line-height: var(--leading-tight);
-          color: #a7773d;
+          color: var(--ds-accent-gold);
           text-shadow: 0 0 18px rgba(167, 119, 61, 0.14);
           animation: symbolFloat 4.2s ease-in-out infinite;
         }
@@ -198,7 +198,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           font-weight: var(--weight-medium);
           line-height: var(--leading-tight);
           letter-spacing: var(--tracking-tight);
-          color: #18120e;
+          color: var(--ds-text-primary);
           white-space: nowrap;
         }
 

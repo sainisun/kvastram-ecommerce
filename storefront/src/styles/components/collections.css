@@ -120,7 +120,7 @@
   scroll-snap-align: start;
   overflow: hidden;
   border-radius: 0;
-  background: linear-gradient(135deg, #7d3f25, #a85d3a 48%, #d8b295);
+  background: linear-gradient(135deg, var(--ds-accent-hover), var(--ds-accent-primary) 48%, var(--ds-accent-soft));
   color: white;
 }
 

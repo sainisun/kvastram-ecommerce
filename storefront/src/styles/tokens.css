@@ -79,6 +79,7 @@
 
   /* Status */
   --ds-danger: #c0392b;
+  --ds-danger-bg: #fcebeb;
   --ds-success: #3e8a5f;
   --ds-success-bg: #f0fdf4;
   --ds-success-text: #166534;
@@ -93,6 +94,23 @@
   --ds-whatsapp-bg: #e1f5ee;
   --ds-online: #16a34a;
   --ds-danger-dot: #ef4444;
+  --ds-social-facebook: #1877f2;
+  --ds-social-twitter: #1da1f2;
+
+  /* Product swatches */
+  --ds-swatch-navy: #1e3a8a;
+  --ds-swatch-blue: #2563eb;
+  --ds-swatch-off-white: #faf8f5;
+  --ds-swatch-cream: #fdfbf7;
+  --ds-swatch-olive: #556b2f;
+  --ds-swatch-green: #15803d;
+  --ds-swatch-yellow: #ca8a04;
+  --ds-swatch-beige: #d9c3a4;
+  --ds-swatch-brown: #78350f;
+  --ds-swatch-pink: #f4a6b7;
+  --ds-swatch-purple: #6d4a8a;
+  --ds-swatch-grey: #6b7280;
+  --ds-swatch-fallback: #b9afa4;
 
   /* Layout */
   --ds-prose-width: 65ch;

@@ -5,6 +5,7 @@ import { Menu, X, Search, ShoppingBag, Heart } from 'lucide-react';
 import { Logo } from '../Logo';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
+import { IconButton } from '@/components/ui/Button';
 
 interface MobileTopBarProps {
   isDrawerOpen: boolean;
@@ -23,55 +24,62 @@ export function MobileTopBar({
   const { totalItems: wishlistCount } = useWishlist();
 
   return (
-    <div className="flex md:hidden items-center justify-between h-[54px] px-4 bg-white border-b border-[#d8d2c8]">
-      <button
+    <div className="flex md:hidden items-center justify-between h-[54px] px-4 bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-strong)]">
+      <IconButton
+        type="button"
         onClick={onToggleDrawer}
-        className="w-10 h-10 flex items-center justify-center focus-visible:outline-2 focus-visible:outline-[#c94e2a]"
+        variant="ghost"
+        size="md"
+        className="h-10 w-10"
         aria-label={isDrawerOpen ? 'Close navigation' : 'Open navigation'}
       >
         {isDrawerOpen ? (
-          <X size={20} strokeWidth={1.8} className="text-[#c94e2a]" />
+          <X size={20} strokeWidth={1.8} className="text-[var(--ds-accent-primary)]" />
         ) : (
-          <Menu size={20} strokeWidth={1.8} className="text-[#3d3a36]" />
+          <Menu size={20} strokeWidth={1.8} className="text-[var(--ds-text-secondary)]" />
         )}
-      </button>
+      </IconButton>
 
       <Logo size="mobile" />
 
       <div className="flex items-center gap-3">
-        <button
+        <IconButton
           type="button"
           onClick={onSearchOpen}
-          className="text-[#3d3a36] hover:text-[#1a1714] transition-colors"
+          variant="ghost"
+          size="sm"
+          className="text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
           aria-label="Search"
         >
           <Search size={20} strokeWidth={1.4} />
-        </button>
+        </IconButton>
         <Link
           href="/wishlist"
-          className="relative text-[#3d3a36] hover:text-[#1a1714] transition-colors"
+          className="relative text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] transition-colors"
           aria-label={`Wishlist, ${wishlistCount} items`}
         >
           <Heart size={20} strokeWidth={1.4} />
           {wishlistCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#c94e2a] text-white text-[8px] font-medium rounded-full flex items-center justify-center ring-[1.5px] ring-white">
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] text-[8px] font-medium rounded-full flex items-center justify-center ring-[1.5px] ring-[var(--ds-surface-paper)]">
               {wishlistCount > 9 ? '9+' : wishlistCount}
             </span>
           )}
         </Link>
-        <button
+        <IconButton
           type="button"
           onClick={onCartOpen}
-          className="relative text-[#3d3a36] hover:text-[#1a1714] transition-colors"
+          variant="ghost"
+          size="sm"
+          className="relative text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
           aria-label={`Cart, ${totalItems} items`}
         >
           <ShoppingBag size={20} strokeWidth={1.4} />
           {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#c94e2a] text-white text-[8px] font-medium rounded-full flex items-center justify-center ring-[1.5px] ring-white">
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] text-[8px] font-medium rounded-full flex items-center justify-center ring-[1.5px] ring-[var(--ds-surface-paper)]">
               {totalItems > 9 ? '9+' : totalItems}
             </span>
           )}
-        </button>
+        </IconButton>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { X, Cookie } from 'lucide-react';
 import { ConsentManager } from '@/lib/consent-manager';
+import { Button, IconButton } from '@/components/ui/Button';
 
 export function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
@@ -39,52 +40,61 @@ export function CookieConsent() {
       aria-label="Cookie consent"
       aria-live="polite"
     >
-      <div className="bg-white border border-stone-200 shadow-2xl rounded-lg p-5 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-5 shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <Cookie size={20} className="text-amber-500 shrink-0 mt-0.5" />
+            <Cookie
+              size={20}
+              className="mt-0.5 shrink-0 text-[var(--ds-accent-gold)]"
+            />
             <div>
-              <p className="type-semibold text-stone-900 text-body-sm">
+              <p className="text-body-sm text-[var(--ds-text-primary)] type-semibold">
                 We value your privacy
               </p>
-              <p className="text-body-xs text-stone-500 type-light mt-0.5 leading-token-relaxed">
+              <p className="mt-0.5 text-body-xs leading-token-relaxed text-[var(--ds-text-muted)] type-light">
                 Choose which categories of cookies & tracking you allow.{' '}
                 <Link
                   href="/pages/privacy-policy"
-                  className="text-stone-900 underline underline-offset-2 hover:text-amber-600 transition-colors"
+                  className="text-[var(--ds-text-primary)] underline underline-offset-2 transition-colors hover:text-[var(--ds-accent-primary)]"
                 >
                   Learn more
                 </Link>
               </p>
             </div>
           </div>
-          <button
+          <IconButton
             onClick={handleRejectAll}
             aria-label="Dismiss"
-            className="text-stone-400 hover:text-stone-700 transition-colors p-1 -mt-1 -mr-1 shrink-0"
+            size="sm"
+            variant="ghost"
+            className="-mr-1 -mt-1 shrink-0 text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)]"
           >
             <X size={16} />
-          </button>
+          </IconButton>
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <button
+          <Button
             onClick={handleAcceptAll}
-            className="flex-1 bg-stone-900 text-white text-body-xs type-bold uppercase tracking-token-wider py-2.5 rounded-sm hover:bg-stone-700 transition-colors"
+            variant="secondary"
+            size="sm"
+            className="flex-1"
           >
             Accept All
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleRejectAll}
-            className="flex-1 border border-stone-200 text-stone-600 text-body-xs type-bold uppercase tracking-token-wider py-2.5 rounded-sm hover:bg-stone-50 hover:border-stone-400 transition-colors"
+            variant="outline"
+            size="sm"
+            className="flex-1"
           >
             Reject All
-          </button>
+          </Button>
           <Link
             href="/cookie-settings"
-            className="flex-1 text-center text-stone-900 underline text-body-xs type-bold uppercase tracking-token-wider py-2.5 rounded-sm hover:text-amber-600 transition-colors"
+            className="flex-1 py-2.5 text-center text-body-xs uppercase tracking-token-wider text-[var(--ds-text-primary)] underline transition-colors type-bold hover:text-[var(--ds-accent-primary)]"
           >
             Customize
           </Link>

@@ -44,7 +44,7 @@ export function ArtisanStrip() {
             <div className="kv-tag">The hands behind every piece</div>
             <h2 className="kv-title">Meet our <em className="italic">artisans</em></h2>
           </div>
-          <Link href="/about#artisans" className="kv-btn kv-btn-outline">
+          <Link href="/about#artisans" className="home-link-button home-link-button--outline">
             All artisans
           </Link>
         </div>
@@ -53,7 +53,7 @@ export function ArtisanStrip() {
           {ARTISANS.map((artisan) => (
             <div
               key={artisan.name}
-              className="group relative overflow-hidden rounded-[var(--radius-lg)] bg-white p-6 transition-shadow hover:shadow-md"
+              className="group relative overflow-hidden rounded-[var(--radius-lg)] bg-[var(--ds-surface-paper)] p-6 transition-shadow hover:shadow-md"
             >
               <div
                 className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-body-sm type-semibold color-ink`}
@@ -72,7 +72,7 @@ export function ArtisanStrip() {
               </p>
 
               <div className="mt-4 border-t border-[var(--line)] pt-4">
-                <span className="text-body-xs type-medium uppercase tracking-token-wider color-sienna">
+                <span className="text-body-xs type-medium uppercase tracking-token-wider color-accent">
                   {artisan.years} of craft
                 </span>
               </div>
@@ -81,9 +81,9 @@ export function ArtisanStrip() {
         </div>
 
         <p className="mt-8 text-body-sm leading-7 color-muted">
-          Every Kvastram piece is signed by the artisan who made it — their name is on the care label inside.{' '}
-          <Link href="/about" className="color-ink underline underline-offset-4 hover:color-sienna">
-            Learn about our makers →
+          Every Kvastram piece is signed by the artisan who made it - their name is on the care label inside.{' '}
+          <Link href="/about" className="color-ink underline underline-offset-4 hover:color-accent">
+            Learn about our makers {'->'}
           </Link>
         </p>
       </div>

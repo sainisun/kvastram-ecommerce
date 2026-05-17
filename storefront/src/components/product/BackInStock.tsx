@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Mail, Bell, CheckCircle, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import Input from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 
 interface BackInStockProps {
   readonly productId: string;
@@ -46,8 +48,8 @@ export function BackInStock({
 
   if (subscribed) {
     return (
-      <div className="bg-green-50 border border-green-200 p-4 rounded-sm">
-        <div className="flex items-center gap-3 text-green-800">
+      <div className="bg-[var(--ds-success-bg)] border border-[var(--ds-success)] p-4 rounded-sm">
+        <div className="flex items-center gap-3 text-[var(--ds-success-text)]">
           <CheckCircle size={20} />
           <div>
             <p className="back-in-stock-title">You&apos;re on the list!</p>
@@ -62,38 +64,37 @@ export function BackInStock({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 text-stone-600">
+      <div className="flex items-center gap-2 text-[var(--ds-text-secondary)]">
         <Bell size={18} />
         <span className="back-in-stock-title">Notify me when available</span>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-2">
         <div className="flex flex-col gap-2 sm:flex-row">
-          <div className="relative flex-1">
-            <Mail
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
-            />
-            <input
+          <div className="flex-1">
+            <Input
               type="email"
+              aria-label="Back in stock email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="input-field w-full border border-stone-200 py-3 pl-10 pr-4 focus:border-stone-900 focus:outline-none"
+              suffix={<Mail size={16} className="text-[var(--ds-text-muted)]" />}
             />
           </div>
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="btn-primary-typography w-full bg-stone-900 px-4 py-3 transition-colors hover:bg-stone-800 disabled:opacity-50 sm:w-auto"
+            variant="secondary"
+            size="md"
+            className="w-full sm:w-auto"
           >
             {loading ? (
               <Loader2 size={16} className="animate-spin mx-auto" />
             ) : (
               'Notify Me'
             )}
-          </button>
+          </Button>
         </div>
         {error && <p className="input-error-message">{error}</p>}
         <p className="input-helper-text">

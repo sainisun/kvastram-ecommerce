@@ -10,6 +10,12 @@ let csrfToken: string | null = null;
 
 export async function getCsrfToken(): Promise<string> {
   if (csrfToken) return csrfToken;
+  if (
+    typeof window === 'undefined' &&
+    process.env.NEXT_PHASE === 'phase-production-build'
+  ) {
+    return '';
+  }
 
   try {
     const res = await fetch(`${API_URL}/auth/csrf`, {
@@ -21,8 +27,10 @@ export async function getCsrfToken(): Promise<string> {
       csrfToken = data.csrf_token;
       return csrfToken || '';
     }
-  } catch (_error) {
-    console.warn('[CSRF] Failed to fetch CSRF token, continuing without it');
+  } catch {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[CSRF] Failed to fetch CSRF token, continuing without it');
+    }
   }
 
   return '';

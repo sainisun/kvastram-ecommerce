@@ -6,6 +6,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { IconButton } from '@/components/ui/Button';
 
 /**
  * HeroCarousel Component
@@ -54,7 +55,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
   }
 
   return (
-    <div className="relative group overflow-hidden bg-stone-900 border-b border-stone-800">
+    <div className="relative group overflow-hidden bg-[var(--ds-footer-bg)] border-b border-[var(--ds-border-strong)]">
       {/* Carousel Viewport */}
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex touch-pan-y">
@@ -64,13 +65,13 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
               key={slide.id}
             >
               {/* Left Content Half (Dark Editorial) */}
-              <div className="w-full md:w-1/2 h-1/2 md:h-full bg-[#1a1614] flex items-center justify-center p-8 md:p-16 lg:p-24 z-10">
+              <div className="w-full md:w-1/2 h-1/2 md:h-full bg-[var(--ds-footer-bg)] flex items-center justify-center p-8 md:p-16 lg:p-24 z-10">
                 <div className="max-w-xl w-full animate-fade-in-up">
-                  <span className="text-amber-500 text-body-xs md:text-body-sm type-bold tracking-token-wider uppercase mb-4 md:mb-6 block">
+                  <span className="text-[var(--ds-accent-gold)] text-body-xs md:text-body-sm type-bold tracking-token-wider uppercase mb-4 md:mb-6 block">
                     Kvastram Collection
                   </span>
 
-                  <h1 className="text-display-xl md:text-display-xl lg:text-display-xl font-serif text-white mb-6 leading-token-tight whitespace-pre-line">
+                  <h1 className="text-display-xl md:text-display-xl lg:text-display-xl font-display text-[var(--ds-text-inverse)] mb-6 leading-token-tight whitespace-pre-line">
                     {slide.title}
                   </h1>
 
@@ -78,7 +79,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
                     {slide.ctaText ? (
                       <Link
                         href={slide.ctaLink}
-                        className="bg-white text-stone-900 px-8 py-4 text-body-xs type-bold uppercase tracking-token-wider hover:bg-stone-200 transition-colors shadow-xl"
+                        className="bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-8 py-4 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--ds-surface-soft)] transition-colors shadow-xl"
                       >
                         {slide.ctaText}
                       </Link>
@@ -88,7 +89,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
               </div>
 
               {/* Right Image Half */}
-              <div className="w-full md:w-1/2 h-1/2 md:h-full relative bg-stone-100 overflow-hidden">
+              <div className="w-full md:w-1/2 h-1/2 md:h-full relative bg-[var(--ds-surface-soft)] overflow-hidden">
                 <OptimizedImage
                   src={slide.image}
                   alt={slide.title.replace('\n', ' ')}
@@ -97,7 +98,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
                   priority={index === 0}
                 />
                 {/* Subtle gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1a1614]/40 via-transparent to-transparent hidden md:block" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--ds-footer-bg)]/40 via-transparent to-transparent hidden md:block" />
               </div>
             </div>
           ))}
@@ -105,24 +106,30 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
       </div>
 
       {/* Navigation Buttons */}
-      <button
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm flex items-center justify-center hover:bg-white hover:text-black transition-all opacity-0 group-hover:opacity-100 duration-300 hidden md:flex"
+      <IconButton
+        type="button"
+        className="absolute left-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] text-[var(--ds-text-inverse)] opacity-0 backdrop-blur-sm duration-300 hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] group-hover:opacity-100 md:flex"
         onClick={scrollPrev}
+        variant="ghost"
+        size="lg"
         aria-label="Previous slide"
       >
         <ChevronLeft size={24} />
-      </button>
-      <button
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/30 bg-black/20 text-white backdrop-blur-sm flex items-center justify-center hover:bg-white hover:text-black transition-all opacity-0 group-hover:opacity-100 duration-300 hidden md:flex"
+      </IconButton>
+      <IconButton
+        type="button"
+        className="absolute right-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] text-[var(--ds-text-inverse)] opacity-0 backdrop-blur-sm duration-300 hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] group-hover:opacity-100 md:flex"
         onClick={scrollNext}
+        variant="ghost"
+        size="lg"
         aria-label="Next slide"
       >
         <ChevronRight size={24} />
-      </button>
+      </IconButton>
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden md:block z-10">
-        <div className="w-[1px] h-16 bg-gradient-to-b from-transparent via-white to-transparent opacity-50"></div>
+        <div className="w-[1px] h-16 bg-gradient-to-b from-transparent via-[var(--ds-text-inverse)] to-transparent opacity-50"></div>
       </div>
     </div>
   );

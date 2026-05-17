@@ -7,6 +7,8 @@ import { MessageCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { useStudioChatSocket } from '@/hooks/useStudioChatSocket';
 import { api } from '@/lib/api';
+import Textarea from '@/components/ui/Textarea';
+import { Button, UnstyledButton } from '@/components/ui/Button';
 
 interface StudioMessage {
   id: string;
@@ -102,19 +104,19 @@ export default function AccountMessageDetailPage() {
   }, []);
 
   if (loading || !customer) {
-    return <div className="min-h-screen bg-stone-50 px-6 py-12 md:px-12 lg:px-20" />;
+    return <div className="kv-page-gutter min-h-screen bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 lg:px-20" />;
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
       <div className="mx-auto max-w-4xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <Link href="/account/messages" className="account-muted hover:text-stone-900">
+            <Link href="/account/messages" className="account-muted hover:text-[var(--ds-text-primary)]">
               Messages
             </Link>
             <h1 className="account-page-title mt-2">{inquiry?.product_title || 'Studio Chat'}</h1>
-            <p className={`account-caption mt-2 ${liveConnected ? 'text-green-700' : 'text-stone-400'}`}>
+            <p className={`account-caption mt-2 ${liveConnected ? 'text-[var(--ds-success-text)]' : 'text-[var(--ds-text-muted)]'}`}>
               {liveConnected ? 'Live chat connected' : 'Connecting live chat...'}
             </p>
             {inquiry?.product_url && (
@@ -123,14 +125,14 @@ export default function AccountMessageDetailPage() {
               </a>
             )}
           </div>
-          <button type="button" onClick={() => void loadConversation()} className="text-stone-500 hover:text-stone-900" aria-label="Refresh messages">
+          <UnstyledButton type="button" onClick={() => void loadConversation()} className="text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)]" aria-label="Refresh messages">
             <RefreshCw size={20} />
-          </button>
+          </UnstyledButton>
         </div>
 
-        <div className="border border-stone-200 bg-white">
+        <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
           {isLoading ? (
-            <div className="flex h-64 items-center justify-center text-stone-400">
+            <div className="flex h-64 items-center justify-center text-[var(--ds-text-muted)]">
               <RefreshCw className="mr-2 animate-spin" size={20} />
               Loading conversation...
             </div>
@@ -140,8 +142,8 @@ export default function AccountMessageDetailPage() {
                 const isAdmin = message.sender_type === 'admin';
                 return (
                   <div key={message.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-stone-100 text-stone-800' : 'bg-stone-900 text-white'}`}>
-                      <p className={`account-message-meta mb-1 ${isAdmin ? 'text-stone-500' : 'text-stone-300'}`}>
+                    <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)]' : 'bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'}`}>
+                      <p className={`account-message-meta mb-1 ${isAdmin ? 'text-[var(--ds-text-muted)]' : 'text-[var(--ds-text-disabled)]'}`}>
                         {isAdmin ? message.sender_name || 'Kvastram Studio' : 'You'}
                       </p>
                       <p className="account-message-body whitespace-pre-wrap">{message.message}</p>
@@ -151,7 +153,7 @@ export default function AccountMessageDetailPage() {
               })}
               {studioTyping && (
                 <div className="flex justify-start">
-                  <div className="account-muted rounded-lg bg-stone-100 px-4 py-3">
+                  <div className="account-muted rounded-lg bg-[var(--ds-surface-soft)] px-4 py-3">
                     Studio is typing...
                   </div>
                 </div>
@@ -159,23 +161,26 @@ export default function AccountMessageDetailPage() {
             </div>
           )}
 
-          <form onSubmit={sendReply} className="border-t border-stone-200 p-5">
-            <textarea
+          <form onSubmit={sendReply} className="border-t border-[var(--ds-border-subtle)] p-5">
+            <Textarea
               required
               rows={4}
               value={reply}
               onChange={(event) => handleReplyChange(event.target.value)}
-              className="account-input w-full resize-none border border-stone-200 px-4 py-3 outline-none focus:border-stone-900"
+              className="resize-none"
               placeholder="Write a message..."
+              aria-label="Reply message"
             />
-            <button
+            <Button
               type="submit"
               disabled={sending || !reply.trim()}
-              className="account-primary-action mt-4 inline-flex items-center gap-2 bg-stone-900 px-6 py-3 disabled:bg-stone-300"
+              variant="secondary"
+              size="md"
+              className="mt-4"
+              leadingIcon={<MessageCircle size={15} />}
             >
-              <MessageCircle size={15} />
               {sending ? 'Sending' : 'Send Message'}
-            </button>
+            </Button>
           </form>
         </div>
       </div>

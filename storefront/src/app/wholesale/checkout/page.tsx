@@ -17,6 +17,9 @@ import {
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import CountrySelect from '@/components/ui/CountrySelect';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/Button';
 
 const PAYMENT_TERMS = [
   {
@@ -130,24 +133,24 @@ export default function WholesaleCheckoutPage() {
 
   if (orderPlaced) {
     return (
-      <div className="min-h-screen bg-stone-50 py-20">
+      <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-20">
         <div className="max-w-2xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-green-600" />
+          <div className="bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8 text-center">
+            <div className="w-20 h-20 bg-[var(--ds-success-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-[var(--ds-success)]" />
             </div>
-            <h1 className="text-display-md type-bold text-stone-900 mb-4">
+            <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-4">
               Order Submitted Successfully!
             </h1>
-            <p className="text-stone-600 mb-2">
+            <p className="text-[var(--ds-text-secondary)] mb-2">
               Your wholesale order has been received.
             </p>
-            <p className="text-stone-500 mb-6">
+            <p className="text-[var(--ds-text-muted)] mb-6">
               Order ID: <span className="font-mono">{orderId}</span>
             </p>
 
-            <div className="bg-stone-50 p-4 rounded-lg mb-6">
-              <p className="text-body-sm text-stone-600">
+            <div className="bg-[var(--ds-surface-parchment)] p-4 rounded-lg mb-6">
+              <p className="text-body-sm text-[var(--ds-text-secondary)]">
                 Payment terms:{' '}
                 <strong>
                   {
@@ -157,7 +160,7 @@ export default function WholesaleCheckoutPage() {
                   }
                 </strong>
               </p>
-              <p className="text-body-sm text-stone-500 mt-1">
+              <p className="text-body-sm text-[var(--ds-text-muted)] mt-1">
                 An invoice will be sent to your email shortly.
               </p>
             </div>
@@ -165,13 +168,13 @@ export default function WholesaleCheckoutPage() {
             <div className="flex gap-4 justify-center">
               <Link
                 href="/account/orders"
-                className="bg-stone-900 text-white px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors"
+                className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
               >
                 View Orders
               </Link>
               <Link
                 href="/products"
-                className="border border-stone-900 text-stone-900 px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-50 transition-colors"
+                className="border border-[var(--ds-text-primary)] text-[var(--ds-text-primary)] px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-surface-parchment)] transition-colors"
               >
                 Continue Shopping
               </Link>
@@ -184,14 +187,14 @@ export default function WholesaleCheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-stone-50 py-20">
+      <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-20">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <h1 className="text-display-md type-bold text-stone-900 mb-4">
+          <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-4">
             Your cart is empty
           </h1>
           <Link
             href="/products"
-            className="text-stone-600 hover:text-stone-900 underline"
+            className="text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] underline"
           >
             Continue Shopping
           </Link>
@@ -201,24 +204,24 @@ export default function WholesaleCheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/cart"
-            className="flex items-center text-stone-600 hover:text-stone-900 mb-4"
+            className="flex items-center text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Cart
           </Link>
           <div className="flex items-center gap-3">
-            <Building2 className="w-8 h-8 text-stone-700" />
+            <Building2 className="w-8 h-8 text-[var(--ds-text-secondary)]" />
             <div>
-              <h1 className="text-display-md type-bold text-stone-900">
+              <h1 className="text-display-md type-bold text-[var(--ds-text-primary)]">
                 Wholesale Checkout
               </h1>
-              <p className="text-stone-600 text-body-sm">
+              <p className="text-[var(--ds-text-secondary)] text-body-sm">
                 {wholesaleInfo.companyName} - {wholesaleInfo.tier} tier
               </p>
             </div>
@@ -231,12 +234,12 @@ export default function WholesaleCheckoutPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Validation Errors */}
               {validation.errors.length > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-red-700 mb-2">
+                <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] rounded-lg p-4">
+                  <div className="flex items-center gap-2 text-[var(--ds-danger)] mb-2">
                     <AlertCircle className="w-5 h-5" />
                     <h3 className="type-bold">Cart Validation Errors</h3>
                   </div>
-                  <ul className="text-body-sm text-red-600 space-y-1">
+                  <ul className="text-body-sm text-[var(--ds-danger)] space-y-1">
                     {validation.errors.map((error, idx) => (
                       <li key={idx}>{error.message}</li>
                     ))}
@@ -245,33 +248,27 @@ export default function WholesaleCheckoutPage() {
               )}
 
               {/* PO Number */}
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-body-xl type-bold text-stone-900 mb-4 flex items-center">
+              <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm">
+                <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4 flex items-center">
                   <FileText className="w-5 h-5 mr-2" />
                   Purchase Order
                 </h2>
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
-                      PO Number{' '}
-                      <span className="text-stone-400">(Optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.po_number}
-                      onChange={(e) =>
-                        setFormData({ ...formData, po_number: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500 focus:border-stone-500"
-                      placeholder="Enter your PO number"
-                    />
-                  </div>
+                  <Input
+                    type="text"
+                    label="PO Number"
+                    value={formData.po_number}
+                    onChange={(e) =>
+                      setFormData({ ...formData, po_number: e.target.value })
+                    }
+                    placeholder="Enter your PO number"
+                  />
                 </div>
               </div>
 
               {/* Payment Terms */}
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-body-xl type-bold text-stone-900 mb-4 flex items-center">
+              <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm">
+                <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4 flex items-center">
                   <Calendar className="w-5 h-5 mr-2" />
                   Payment Terms
                 </h2>
@@ -281,8 +278,8 @@ export default function WholesaleCheckoutPage() {
                       key={term.value}
                       className={`flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${
                         formData.payment_terms === term.value
-                          ? 'border-stone-900 bg-stone-50'
-                          : 'border-stone-200 hover:border-stone-400'
+                          ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-parchment)]'
+                          : 'border-[var(--ds-border-subtle)] hover:border-[var(--ds-border-strong)]'
                       }`}
                     >
                       <input
@@ -296,13 +293,13 @@ export default function WholesaleCheckoutPage() {
                             payment_terms: e.target.value,
                           })
                         }
-                        className="w-4 h-4 text-stone-900 focus:ring-stone-500"
+                        className="w-4 h-4 text-[var(--ds-text-primary)] focus:ring-[var(--ds-text-muted)]"
                       />
                       <div className="ml-3">
-                        <p className="type-medium text-stone-900">
+                        <p className="type-medium text-[var(--ds-text-primary)]">
                           {term.label}
                         </p>
-                        <p className="text-body-sm text-stone-500">
+                        <p className="text-body-sm text-[var(--ds-text-muted)]">
                           {term.description}
                         </p>
                       </div>
@@ -312,17 +309,15 @@ export default function WholesaleCheckoutPage() {
               </div>
 
               {/* Shipping Address */}
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-body-xl type-bold text-stone-900 mb-4">
+              <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm">
+                <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
                   Shipping Address
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
-                      First Name
-                    </label>
-                    <input
+                    <Input
                       type="text"
+                      label="First Name"
                       required
                       value={formData.shipping_address.first_name}
                       onChange={(e) =>
@@ -334,15 +329,12 @@ export default function WholesaleCheckoutPage() {
                           },
                         })
                       }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
-                      Last Name
-                    </label>
-                    <input
+                    <Input
                       type="text"
+                      label="Last Name"
                       required
                       value={formData.shipping_address.last_name}
                       onChange={(e) =>
@@ -354,15 +346,12 @@ export default function WholesaleCheckoutPage() {
                           },
                         })
                       }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
-                      Company
-                    </label>
-                    <input
+                    <Input
                       type="text"
+                      label="Company"
                       value={formData.shipping_address.company}
                       onChange={(e) =>
                         setFormData({
@@ -373,16 +362,13 @@ export default function WholesaleCheckoutPage() {
                           },
                         })
                       }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                       placeholder="Company name (optional)"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
-                      Address
-                    </label>
-                    <input
+                    <Input
                       type="text"
+                      label="Address"
                       required
                       value={formData.shipping_address.address_1}
                       onChange={(e) =>
@@ -394,13 +380,13 @@ export default function WholesaleCheckoutPage() {
                           },
                         })
                       }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                       placeholder="Street address"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <input
+                    <Input
                       type="text"
+                      label="Address line 2"
                       value={formData.shipping_address.address_2}
                       onChange={(e) =>
                         setFormData({
@@ -411,16 +397,13 @@ export default function WholesaleCheckoutPage() {
                           },
                         })
                       }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                       placeholder="Apartment, suite, etc. (optional)"
                     />
                   </div>
                   <div>
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
-                      City
-                    </label>
-                    <input
+                    <Input
                       type="text"
+                      label="City"
                       required
                       value={formData.shipping_address.city}
                       onChange={(e) =>
@@ -432,15 +415,12 @@ export default function WholesaleCheckoutPage() {
                           },
                         })
                       }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
-                      Postal Code
-                    </label>
-                    <input
+                    <Input
                       type="text"
+                      label="Postal Code"
                       required
                       value={formData.shipping_address.postal_code}
                       onChange={(e) =>
@@ -452,13 +432,12 @@ export default function WholesaleCheckoutPage() {
                           },
                         })
                       }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
+                    <p className="form-label-typography mb-1.5 uppercase text-[var(--ds-text-muted)]">
                       Country
-                    </label>
+                    </p>
                     <CountrySelect
                       name="shipping_country"
                       value={formData.shipping_address.country_code}
@@ -474,11 +453,9 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-body-sm type-medium text-stone-700 mb-1">
-                      Phone
-                    </label>
-                    <input
+                    <Input
                       type="tel"
+                      label="Phone"
                       value={formData.shipping_address.phone}
                       onChange={(e) =>
                         setFormData({
@@ -489,48 +466,49 @@ export default function WholesaleCheckoutPage() {
                           },
                         })
                       }
-                      className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Order Notes */}
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-body-xl type-bold text-stone-900 mb-4">
+              <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm">
+                <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
                   Order Notes
                 </h2>
-                <textarea
+                <Textarea
+                  label="Order Notes"
                   value={formData.notes}
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-4 py-3 border border-stone-200 rounded-sm focus:ring-2 focus:ring-stone-500"
                   placeholder="Any special instructions for your order..."
                 />
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
 
-              <button
+              <Button
                 type="submit"
                 disabled={loading || validation.errors.length > 0}
-                className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                variant="secondary"
+                size="lg"
+                fullWidth
               >
                 {loading ? 'Processing...' : 'Submit Wholesale Order'}
-              </button>
+              </Button>
             </form>
           </div>
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white p-6 rounded-lg shadow-sm sticky top-6">
-              <h2 className="text-body-xl type-bold text-stone-900 mb-4">
+            <div className="bg-[var(--ds-surface-paper)] p-6 rounded-lg shadow-sm sticky top-6">
+              <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
                 Order Summary
               </h2>
 
@@ -548,22 +526,22 @@ export default function WholesaleCheckoutPage() {
                       </div>
                     )}
                     <div className="flex-1">
-                      <p className="type-medium text-stone-900 text-body-sm">
+                      <p className="type-medium text-[var(--ds-text-primary)] text-body-sm">
                         {item.title}
                       </p>
-                      <p className="text-body-xs text-stone-500">SKU: {item.sku}</p>
-                      <p className="text-body-xs text-stone-600 mt-1">
+                      <p className="text-body-xs text-[var(--ds-text-muted)]">SKU: {item.sku}</p>
+                      <p className="text-body-xs text-[var(--ds-text-secondary)] mt-1">
                         Qty: {item.quantity} × $
                         {((item.finalPrice || item.price) / 100).toFixed(2)}
                       </p>
                       {item.moq && item.moq > 1 && (
-                        <p className="text-body-xs text-amber-600">
+                        <p className="text-body-xs text-[var(--ds-warning)]">
                           MOQ: {item.moq}
                         </p>
                       )}
                     </div>
                     <div className="text-right">
-                      <p className="type-medium text-stone-900">
+                      <p className="type-medium text-[var(--ds-text-primary)]">
                         $
                         {(
                           ((item.finalPrice || item.price) * item.quantity) /
@@ -571,12 +549,12 @@ export default function WholesaleCheckoutPage() {
                         ).toFixed(2)}
                       </p>
                       {(item.tierDiscount ?? 0) > 0 && (
-                        <p className="text-body-xs text-green-600">
+                        <p className="text-body-xs text-[var(--ds-success)]">
                           -{item.tierDiscount}% tier
                         </p>
                       )}
                       {(item.bulkDiscount ?? 0) > 0 && (
-                        <p className="text-body-xs text-blue-600">
+                        <p className="text-body-xs text-[var(--ds-info)]">
                           -{item.bulkDiscount}% bulk
                         </p>
                       )}
@@ -585,38 +563,38 @@ export default function WholesaleCheckoutPage() {
                 ))}
               </div>
 
-              <div className="border-t border-stone-200 pt-4 space-y-2">
+              <div className="border-t border-[var(--ds-border-subtle)] pt-4 space-y-2">
                 <div className="flex justify-between text-body-sm">
-                  <span className="text-stone-600">Subtotal</span>
+                  <span className="text-[var(--ds-text-secondary)]">Subtotal</span>
                   <span className="type-medium">
                     ${(cartSummary.subtotal / 100).toFixed(2)}
                   </span>
                 </div>
                 {cartSummary.tierDiscount > 0 && (
-                  <div className="flex justify-between text-body-sm text-green-600">
+                  <div className="flex justify-between text-body-sm text-[var(--ds-success)]">
                     <span>Tier Discount</span>
                     <span>-${(cartSummary.tierDiscount / 100).toFixed(2)}</span>
                   </div>
                 )}
                 {cartSummary.bulkDiscount > 0 && (
-                  <div className="flex justify-between text-body-sm text-blue-600">
+                  <div className="flex justify-between text-body-sm text-[var(--ds-info)]">
                     <span>Bulk Discount</span>
                     <span>-${(cartSummary.bulkDiscount / 100).toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-body-xl type-bold pt-2 border-t border-stone-200">
+                <div className="flex justify-between text-body-xl type-bold pt-2 border-t border-[var(--ds-border-subtle)]">
                   <span>Total</span>
                   <span>${(cartSummary.total / 100).toFixed(2)}</span>
                 </div>
                 {cartSummary.savings > 0 && (
-                  <p className="text-body-sm text-green-600 text-center">
+                  <p className="text-body-sm text-[var(--ds-success)] text-center">
                     You saved ${(cartSummary.savings / 100).toFixed(2)}!
                   </p>
                 )}
               </div>
 
-              <div className="mt-6 p-4 bg-stone-50 rounded-lg">
-                <p className="text-body-xs text-stone-600 text-center">
+              <div className="mt-6 p-4 bg-[var(--ds-surface-parchment)] rounded-lg">
+                <p className="text-body-xs text-[var(--ds-text-secondary)] text-center">
                   Payment terms:{' '}
                   <strong>
                     {
@@ -634,4 +612,3 @@ export default function WholesaleCheckoutPage() {
     </div>
   );
 }
-

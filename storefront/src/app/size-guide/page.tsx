@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
-
+import {
+  ContentContainer,
+  PageHero,
+  SectionBlock,
+} from '@/components/content/ContentPageSystem';
 import { buildBasicPageMetadata, buildSizeChartJsonLd, serializeJsonLd } from '@/lib/seo';
 
 export const metadata: Metadata = buildBasicPageMetadata({
   title: 'Size Guide | Kvastram',
-  description: 'Kvastram size guide for handcrafted clothing, jackets, and accessories with US, UK, EU, and India measurement references.',
+  description:
+    'Kvastram size guide for handcrafted clothing, jackets, and accessories with US, UK, EU, and India measurement references.',
   path: '/size-guide',
 });
 
@@ -18,37 +23,48 @@ const rows = [
 
 export default function SizeGuidePage() {
   return (
-    <main className="kv-container py-12 md:py-16 lg:py-20">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildSizeChartJsonLd()) }}
       />
-      <h1 className="collection-detail-title">Size Guide</h1>
-      <p className="collection-detail-copy mt-4 max-w-3xl">
-        Use these measurements as a starting point for Kvastram clothing and jacket sizing. Handmade pieces can vary slightly by fabric, cut, and quilting.
-      </p>
-      <div className="mt-8 overflow-x-auto border border-stone-200">
-        <table className="size-guide-table">
-          <thead className="size-guide-table-head">
-            <tr>
-              <th className="size-guide-table-heading py-3">Size</th>
-              <th className="size-guide-table-heading py-3">US</th>
-              <th className="size-guide-table-heading py-3">UK</th>
-              <th className="size-guide-table-heading py-3">Bust (in)</th>
-              <th className="size-guide-table-heading py-3">Waist (in)</th>
-            </tr>
-          </thead>
-          <tbody className="size-guide-table-body">
-            {rows.map((row) => (
-              <tr key={row[0]}>
-                {row.map((cell) => (
-                  <td key={cell} className="size-guide-table-size py-3">{cell}</td>
+      <PageHero
+        eyebrow="Fit Reference"
+        title="Size Guide"
+        intro="Use these measurements as a starting point for Kvastram clothing and jacket sizing. Handmade pieces can vary slightly by fabric, cut, and quilting."
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Size Guide' },
+        ]}
+      />
+      <ContentContainer>
+        <SectionBlock title="Measurement Chart">
+          <div className="overflow-x-auto border border-[var(--ds-border-subtle)]">
+            <table className="size-guide-table">
+              <thead className="size-guide-table-head">
+                <tr>
+                  <th className="size-guide-table-heading py-3">Size</th>
+                  <th className="size-guide-table-heading py-3">US</th>
+                  <th className="size-guide-table-heading py-3">UK</th>
+                  <th className="size-guide-table-heading py-3">Bust (in)</th>
+                  <th className="size-guide-table-heading py-3">Waist (in)</th>
+                </tr>
+              </thead>
+              <tbody className="size-guide-table-body">
+                {rows.map((row) => (
+                  <tr key={row[0]}>
+                    {row.map((cell) => (
+                      <td key={cell} className="size-guide-table-size py-3">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </main>
+              </tbody>
+            </table>
+          </div>
+        </SectionBlock>
+      </ContentContainer>
+    </>
   );
 }

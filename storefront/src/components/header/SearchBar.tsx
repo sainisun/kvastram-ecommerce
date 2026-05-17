@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
+import Input from '@/components/ui/Input';
+import { IconButton } from '@/components/ui/Button';
 
 interface SearchBarProps {
   isOpen: boolean;
@@ -45,24 +47,26 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
           animate={{ opacity: 1, height: 44 }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.18 }}
-          className="overflow-hidden border-t border-[#d8d2c8] bg-[#f7f4ef]"
+          className="overflow-hidden border-t border-[var(--ds-border-strong)] bg-[var(--ds-surface-parchment)]"
         >
           <form onSubmit={handleSubmit} className="h-[44px] flex items-center px-8 gap-3 max-w-screen-xl mx-auto">
-            <Search size={16} className="text-[#b5b0a8] shrink-0" />
-            <input
+            <Search size={16} className="text-[var(--ds-text-disabled)] shrink-0" />
+            <Input
               ref={inputRef}
               type="search"
-              placeholder="Search — sarees, kantha jackets, tote bags..."
-              className="flex-1 max-w-[400px] bg-transparent border-none outline-none font-[family-name:var(--font-ui)] text-[13px] text-[#1a1714] placeholder:text-[#b5b0a8]"
+              placeholder="Search sarees, kantha jackets, tote bags..."
+              containerClassName="flex-1 max-w-[400px]"
+              className="h-auto border-0 bg-transparent px-0 py-0 text-[13px] focus:border-transparent"
             />
-            <button
+            <IconButton
               type="button"
               onClick={onClose}
-              className="text-[#7a7570] hover:text-[#1a1714] transition-colors"
+              variant="ghost"
+              size="sm"
               aria-label="Close search"
             >
               <X size={16} />
-            </button>
+            </IconButton>
           </form>
         </motion.div>
       )}

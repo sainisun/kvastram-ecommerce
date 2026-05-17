@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════════════════
-   PROTOTYPE PARITY — STORY BLOCK
-   ═══════════════════════════════════════════════════ */
+/* Story block */
 
 .story-block {
   display: grid;
@@ -14,12 +12,55 @@
   place-items: center;
   color: white;
   font-size: var(--text-display-xl);
-  background: linear-gradient(135deg, #c4956a, #6b3520);
+  background: linear-gradient(135deg, var(--ds-accent-gold), var(--ds-accent-hover));
 }
 
-/* ═══════════════════════════════════════════════════
-   PROTOTYPE PARITY — CAMPAIGN / SEASONAL
-   ═══════════════════════════════════════════════════ */
+.home-link-button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 0 24px;
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background-color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease),
+    border-color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease),
+    color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease);
+}
+.home-link-button:focus-visible {
+  outline: 2px solid var(--ds-accent-primary);
+  outline-offset: 2px;
+}
+.home-link-button--primary {
+  border-color: var(--ds-accent-primary);
+  background: var(--ds-accent-primary);
+  color: var(--ds-text-inverse);
+}
+.home-link-button--primary:hover {
+  border-color: var(--ds-accent-hover);
+  background: var(--ds-accent-hover);
+  color: var(--ds-text-inverse);
+}
+.home-link-button--outline {
+  border-color: var(--ds-border-strong);
+  background: var(--ds-surface-paper);
+  color: var(--ds-text-primary);
+}
+.home-link-button--outline:hover {
+  border-color: var(--ds-accent-primary);
+  color: var(--ds-accent-primary);
+}
+
+/* Campaign and seasonal */
 
 .campaign-card {
   min-height: 360px;
@@ -29,7 +70,7 @@
   overflow: hidden;
   border-radius: var(--radius-lg);
   color: white;
-  background: linear-gradient(135deg, #5c2a12, #a85d3a);
+  background: linear-gradient(135deg, var(--ds-footer-bg), var(--ds-accent-primary));
 }
 .campaign-card:before {
   content: "";
@@ -42,9 +83,7 @@
   padding: 24px;
 }
 
-/* ═══════════════════════════════════════════════════
-   PROTOTYPE PARITY — NEWSLETTER
-   ═══════════════════════════════════════════════════ */
+/* Newsletter */
 
 .newsletter-form {
   display: grid;
@@ -52,9 +91,7 @@
   margin-top: 18px;
 }
 
-/* ═══════════════════════════════════════════════════
-   PROTOTYPE PARITY — SLIDER ROW
-   ═══════════════════════════════════════════════════ */
+/* Slider row */
 
 .slider-row {
   display: grid;
@@ -69,9 +106,7 @@
 .slider-row::-webkit-scrollbar { display: none; }
 .slide-card { scroll-snap-align: start; }
 
-/* ═══════════════════════════════════════════════════
-   PROTOTYPE PARITY — CIRCLE CATEGORIES
-   ═══════════════════════════════════════════════════ */
+/* Circle categories */
 
 .circle-row {
   display: grid;
@@ -146,9 +181,7 @@
   }
 }
 
-/* ═══════════════════════════════════════════════════
-   PROTOTYPE PARITY — SOFT CARD
-   ═══════════════════════════════════════════════════ */
+/* Soft card */
 
 .soft-card {
   background: white;
@@ -158,9 +191,7 @@
 }
 .soft-card h3 { margin-top: 0; }
 
-/* ═══════════════════════════════════════════════════
-   PROTOTYPE PARITY — TRUST GRID
-   ═══════════════════════════════════════════════════ */
+/* Trust grid */
 
 .trust-grid {
   display: grid;

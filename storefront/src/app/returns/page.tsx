@@ -8,6 +8,9 @@ import {
   InlineCTA,
   PageHero,
 } from '@/components/content/ContentPageSystem';
+import { Badge } from '@/components/ui/Badge';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
@@ -35,13 +38,13 @@ type CustomerOrder = {
 function getReturnStatusClasses(status: string) {
   switch (status) {
     case 'approved':
-      return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]';
     case 'refunded':
-      return 'border-stone-200 bg-stone-900 text-white';
+      return 'kv-status-subtle';
     case 'rejected':
-      return 'border-red-200 bg-red-50 text-red-700';
+      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]';
     default:
-      return 'border-amber-200 bg-amber-50 text-amber-700';
+      return 'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]';
   }
 }
 
@@ -104,11 +107,11 @@ export default function ReturnsPage() {
           </InfoCard>
         </div>
 
-        <div className="mt-12 border border-stone-200 p-8">
-          <h2 className="text-display-sm font-serif text-stone-900">
+        <div className="mt-12 border border-[var(--ds-border-subtle)] p-8">
+          <h2 className="text-display-sm font-display text-[var(--ds-text-primary)]">
             How to start a request
           </h2>
-          <ol className="mt-6 list-decimal space-y-3 pl-5 text-body-md text-stone-700">
+          <ol className="mt-6 list-decimal space-y-3 pl-5 text-body-md text-[var(--ds-text-secondary)]">
             <li>Keep your order number ready.</li>
             <li>Review the refund policy before opening a request.</li>
             <li>Contact support with your order details and product issue.</li>
@@ -116,44 +119,44 @@ export default function ReturnsPage() {
           </ol>
         </div>
 
-        <div className="mt-12 border border-stone-200 p-8">
-          <h2 className="text-display-sm font-serif text-stone-900">
+        <div className="mt-12 border border-[var(--ds-border-subtle)] p-8">
+          <h2 className="text-display-sm font-display text-[var(--ds-text-primary)]">
             Self-serve returns
           </h2>
-          <p className="mt-3 text-body-md text-stone-600">
+          <p className="mt-3 text-body-md text-[var(--ds-text-secondary)]">
             Signed-in customers can track existing return requests and open an
             eligible delivered order to request a new return.
           </p>
 
           {loading ? (
-            <p className="mt-6 text-body-sm text-stone-500">
+            <p className="mt-6 text-body-sm text-[var(--ds-text-muted)]">
               Loading your return activity...
             </p>
           ) : !customer ? (
-            <div className="mt-6 rounded-lg border border-stone-200 bg-stone-50 p-6">
-              <p className="text-body-sm text-stone-700">
+            <StatusBanner tone="info" className="mt-6">
+              <div>
                 Sign in to view your return requests and open eligible delivered
                 orders without contacting support first.
-              </p>
+              </div>
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
                   href="/login"
-                  className="bg-stone-900 px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-white transition-colors hover:bg-stone-800"
+                  className="bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/account/orders"
-                  className="border border-stone-300 px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                  className="border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
                 >
                   My Orders
                 </Link>
               </div>
-            </div>
+            </StatusBanner>
           ) : (
             <div className="mt-6 space-y-8">
               <div>
-                <h3 className="text-body-lg type-semibold text-stone-900">
+                <h3 className="text-body-lg type-semibold text-[var(--ds-text-primary)]">
                   Your return requests
                 </h3>
                 {returns.length > 0 ? (
@@ -164,42 +167,42 @@ export default function ReturnsPage() {
                       .map((item) => (
                         <div
                           key={item.id}
-                          className="rounded-lg border border-stone-200 p-5"
+                          className="rounded-lg border border-[var(--ds-border-subtle)] p-5"
                         >
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div>
-                              <p className="text-body-sm type-semibold text-stone-900">
+                              <p className="text-body-sm type-semibold text-[var(--ds-text-primary)]">
                                 Return for order #{item.order_id.slice(0, 8)}
                               </p>
-                              <p className="mt-1 text-body-xs text-stone-500">
+                              <p className="mt-1 text-body-xs text-[var(--ds-text-muted)]">
                                 Submitted{' '}
                                 {new Date(item.created_at).toLocaleDateString()}
                               </p>
                             </div>
-                            <span
+                            <Badge
                               className={`rounded-full border px-3 py-1 text-body-xs type-bold uppercase tracking-token-wider ${getReturnStatusClasses(item.status)}`}
                             >
                               {item.status}
-                            </span>
+                            </Badge>
                           </div>
-                          <p className="mt-3 text-body-sm text-stone-700">
+                          <p className="mt-3 text-body-sm text-[var(--ds-text-secondary)]">
                             {item.reason}
                           </p>
                           {item.admin_notes ? (
-                            <p className="mt-2 text-body-sm text-stone-500">
+                            <p className="mt-2 text-body-sm text-[var(--ds-text-muted)]">
                               Team note: {item.admin_notes}
                             </p>
                           ) : null}
                           <div className="mt-4 flex flex-wrap gap-3">
                             <Link
                               href={`/account/orders/${item.order_id}`}
-                              className="border border-stone-300 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                              className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
                             >
                               View Order
                             </Link>
                             <Link
                               href={`${storefrontTrust.policyRoutes.contact}?reason=returns&order=${item.order_id}`}
-                              className="border border-stone-300 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                              className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
                             >
                               Contact Support
                             </Link>
@@ -208,14 +211,15 @@ export default function ReturnsPage() {
                       ))}
                   </div>
                 ) : (
-                  <p className="mt-4 text-body-sm text-stone-500">
-                    No return requests yet.
-                  </p>
+                  <EmptyState
+                    title="No return requests yet."
+                    className="mt-4 py-8"
+                  />
                 )}
               </div>
 
               <div>
-                <h3 className="text-body-lg type-semibold text-stone-900">
+                <h3 className="text-body-lg type-semibold text-[var(--ds-text-primary)]">
                   Eligible delivered orders
                 </h3>
                 {eligibleOrders.length > 0 ? (
@@ -223,25 +227,25 @@ export default function ReturnsPage() {
                     {eligibleOrders.slice(0, 4).map((order) => (
                       <div
                         key={order.id}
-                        className="rounded-lg border border-stone-200 bg-stone-50 p-5"
+                        className="rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-5"
                       >
-                        <p className="text-body-sm type-semibold text-stone-900">
+                        <p className="text-body-sm type-semibold text-[var(--ds-text-primary)]">
                           Order #{order.display_id}
                         </p>
-                        <p className="mt-1 text-body-xs text-stone-500">
+                        <p className="mt-1 text-body-xs text-[var(--ds-text-muted)]">
                           Delivered order placed{' '}
                           {new Date(order.created_at).toLocaleDateString()}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-3">
                           <Link
                             href={`/account/orders/${order.id}`}
-                            className="bg-stone-900 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-white transition-colors hover:bg-stone-800"
+                            className="bg-[var(--ds-text-primary)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
                           >
                             Open Order
                           </Link>
                           <Link
                             href={storefrontTrust.policyRoutes.refundPolicy}
-                            className="border border-stone-300 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-white"
+                            className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-paper)]"
                           >
                             Review Policy
                           </Link>
@@ -250,10 +254,11 @@ export default function ReturnsPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="mt-4 text-body-sm text-stone-500">
-                    We could not find a delivered order that is still awaiting a
-                    return request.
-                  </p>
+                  <EmptyState
+                    title="No eligible delivered orders"
+                    description="We could not find a delivered order that is still awaiting a return request."
+                    className="mt-4 py-8"
+                  />
                 )}
               </div>
             </div>

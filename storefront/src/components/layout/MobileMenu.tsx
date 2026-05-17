@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
   ArrowRight,
@@ -26,6 +25,9 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import Input from '@/components/ui/Input';
+import { Drawer } from '@/components/ui/Drawer';
+import { Button, IconButton } from '@/components/ui/Button';
 import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
 import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
@@ -107,7 +109,7 @@ const MENU_CATEGORIES: MenuCategory[] = [
     subtitle: 'Kantha, block print, reversible',
     href: '/collections/quilts',
     icon: Bed,
-    iconBg: '#F0E0D6',
+    iconBg: 'var(--ds-accent-soft)',
     hero: IMAGE_POOL[5],
     tagline: 'New arrivals this season',
     filters: ['All', 'Kantha', 'Block print', 'Reversible'],
@@ -144,7 +146,7 @@ const MENU_CATEGORIES: MenuCategory[] = [
     subtitle: 'Kurtas, jackets, sarees, lehengas',
     href: '/collections/clothing',
     icon: Shirt,
-    iconBg: '#EAF3DE',
+    iconBg: 'var(--ds-success-bg)',
     hero: IMAGE_POOL[1],
     tagline: 'Handmade layers for every day',
     filters: ['All', 'Kurtas', 'Jackets', 'Sarees'],
@@ -181,7 +183,7 @@ const MENU_CATEGORIES: MenuCategory[] = [
     subtitle: 'Block print, kantha, jute',
     href: '/collections/bags',
     icon: BriefcaseBusiness,
-    iconBg: '#E6F1FB',
+    iconBg: 'var(--ds-info-bg)',
     hero: IMAGE_POOL[2],
     tagline: 'Carry craft everywhere',
     filters: ['All', 'Totes', 'Clutches', 'Jute'],
@@ -218,7 +220,7 @@ const MENU_CATEGORIES: MenuCategory[] = [
     subtitle: 'Cotton, silk blend, printed',
     href: '/collections/scarves',
     icon: Wind,
-    iconBg: '#FBEAF0',
+    iconBg: 'var(--ds-accent-soft)',
     hero: IMAGE_POOL[3],
     tagline: 'Soft prints, effortless drape',
     filters: ['All', 'Cotton', 'Silk blend', 'Printed'],
@@ -255,7 +257,7 @@ const MENU_CATEGORIES: MenuCategory[] = [
     subtitle: 'Curated craft bundles',
     href: '/collections/gifts',
     icon: Sparkles,
-    iconBg: '#FAEEDA',
+    iconBg: 'var(--ds-warning-bg)',
     hero: IMAGE_POOL[4],
     tagline: 'Ready-to-gift artisan picks',
     filters: ['All', 'Under 2000', 'Festive', 'Home'],
@@ -320,7 +322,6 @@ export default function MobileMenu({
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<MenuCategory | null>(null);
-  const drawerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const previousPathnameRef = useRef(pathname);
@@ -373,51 +374,13 @@ export default function MobileMenu({
     if (!isOpen) return;
 
     triggerRef.current = document.activeElement as HTMLElement;
-    document.body.style.overflow = 'hidden';
     const focusTimer = window.setTimeout(() => searchInputRef.current?.focus(), 50);
 
     return () => {
       window.clearTimeout(focusTimer);
-      document.body.style.overflow = '';
       triggerRef.current?.focus();
     };
   }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        if (activeCategory) {
-          setActiveCategory(null);
-          return;
-        }
-        handleClose();
-        return;
-      }
-
-      if (event.key !== 'Tab' || !drawerRef.current) return;
-
-      const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-
-      if (!first || !last) return;
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [activeCategory, handleClose, isOpen]);
 
   useEffect(() => {
     if (isOpen && pathname !== previousPathnameRef.current) {
@@ -468,48 +431,41 @@ export default function MobileMenu({
     setActiveCategory(category);
   };
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.button
-            type="button"
-            aria-label="Close menu"
-            className="fixed inset-0 z-[150] bg-black/40 md:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            onClick={handleClose}
-          />
+  const handleDrawerClose = useCallback(() => {
+    if (activeCategory) {
+      setActiveCategory(null);
+      return;
+    }
+    handleClose();
+  }, [activeCategory, handleClose]);
 
-          <motion.div
-            ref={drawerRef}
-            id="mobile-navigation-menu"
-            className="fixed left-0 top-0 z-[160] flex h-dvh w-full max-w-[400px] flex-col overflow-hidden bg-[#FFFDF9] text-[#1C1A17] shadow-2xl md:hidden"
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigation menu"
-          >
-            <div className="flex h-[52px] shrink-0 items-center justify-between border-b border-[#E8E3DB] bg-[#FFFDF9] px-3">
-              <button
+  return (
+    <Drawer
+      isOpen={isOpen}
+      onClose={handleDrawerClose}
+      side="left"
+      title="Navigation menu"
+      showHeader={false}
+      className="h-dvh max-w-[400px] md:hidden"
+      bodyClassName="flex flex-col overflow-hidden p-0"
+    >
+            <div className="flex h-[52px] shrink-0 items-center justify-between border-b border-[var(--ds-border-subtle)] bg-[var(--ds-surface-page)] px-3">
+              <IconButton
                 type="button"
                 onClick={handleClose}
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-md text-[#1C1A17] transition-colors hover:bg-[#F5F1EB] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#C4613A]"
+                variant="ghost"
+                size="md"
+                className="min-h-11 min-w-11 rounded-md text-[var(--ds-text-primary)] hover:bg-[var(--ds-surface-soft)]"
                 aria-label="Close menu"
                 aria-expanded={isOpen}
               >
                 <X size={22} />
-              </button>
+              </IconButton>
 
               <Link
                 href="/"
                 onClick={handleClose}
-                className="font-serif text-[21px] font-medium tracking-[0.04em]"
+                className="font-display text-[21px] font-medium tracking-[0.04em]"
               >
                 Kvastram
               </Link>
@@ -518,73 +474,77 @@ export default function MobileMenu({
                 <Link
                   href="/wishlist"
                   onClick={handleClose}
-                  className="relative flex min-h-10 min-w-10 items-center justify-center rounded-md transition-colors hover:bg-[#F5F1EB]"
+                  className="relative flex min-h-10 min-w-10 items-center justify-center rounded-md transition-colors hover:bg-[var(--ds-surface-soft)]"
                   aria-label={`Wishlist with ${wishlistCount} items`}
                 >
                   <Heart size={19} />
                   {wishlistCount > 0 && (
-                    <span className="absolute right-1 top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[#C4613A] px-1 text-[9px] font-semibold leading-none text-white">
+                    <span className="absolute right-1 top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[var(--ds-accent-primary)] px-1 text-[9px] font-semibold leading-none text-[var(--ds-text-inverse)]">
                       {wishlistCount}
                     </span>
                   )}
                 </Link>
-                <button
+                <IconButton
                   type="button"
                   onClick={handleClose}
-                  className="relative flex min-h-10 min-w-10 items-center justify-center rounded-md transition-colors hover:bg-[#F5F1EB]"
+                  variant="ghost"
+                  size="sm"
+                  className="relative min-h-10 min-w-10 rounded-md hover:bg-[var(--ds-surface-soft)]"
                   aria-label={`Cart with ${cartCount} items`}
                 >
                   <ShoppingBag size={19} />
                   {cartCount > 0 && (
-                    <span className="absolute right-1 top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[#C4613A] px-1 text-[9px] font-semibold leading-none text-white">
+                    <span className="absolute right-1 top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[var(--ds-accent-primary)] px-1 text-[9px] font-semibold leading-none text-[var(--ds-text-inverse)]">
                       {cartCount}
                     </span>
                   )}
-                </button>
+                </IconButton>
               </div>
             </div>
 
             <div className="relative min-h-0 flex-1 overflow-hidden">
               <div
-                className={`h-full overflow-y-auto bg-[#FFFDF9] transition-transform duration-300 ${
+                className={`h-full overflow-y-auto bg-[var(--ds-surface-page)] transition-transform duration-300 ${
                   activeCategory ? '-translate-x-8' : 'translate-x-0'
                 }`}
                 aria-hidden={Boolean(activeCategory)}
               >
-                <div className="border-b border-[#E8E3DB] px-4 py-3">
+                <div className="border-b border-[var(--ds-border-subtle)] px-4 py-3">
                   <form onSubmit={submitSearch} className="relative">
                     <Search
                       size={17}
-                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9C9891]"
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--ds-text-disabled)]"
                     />
-                    <input
+                    <Input
                       ref={searchInputRef}
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search quilts, jackets, bags..."
-                      className="h-11 w-full rounded-lg border border-[#E8E3DB] bg-[#F5F1EB] py-2 pl-10 pr-10 text-sm text-[#1C1A17] outline-none placeholder:text-[#9C9891] focus:border-[#C4613A]"
+                      className="bg-[var(--ds-surface-soft)] pl-10 pr-10 text-sm"
                       autoComplete="off"
                       aria-label="Search products"
                     />
                     {searchLoading ? (
                       <Loader2
                         size={16}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-[#9C9891]"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-[var(--ds-text-disabled)]"
                       />
                     ) : searchQuery ? (
-                      <button
+                      <IconButton
                         type="button"
                         onClick={() => setSearchQuery('')}
-                        className="absolute right-2 top-1/2 flex min-h-8 min-w-8 -translate-y-1/2 items-center justify-center rounded-md text-[#9C9891]"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-2 top-1/2 min-h-8 min-w-8 -translate-y-1/2 rounded-md text-[var(--ds-text-disabled)]"
                         aria-label="Clear search"
                       >
                         <X size={15} />
-                      </button>
+                      </IconButton>
                     ) : null}
                   </form>
 
                   {results.length > 0 && (
-                    <div className="mt-2 overflow-hidden rounded-lg border border-[#E8E3DB] bg-white">
+                    <div className="mt-2 overflow-hidden rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
                       {results.slice(0, 5).map((product) => {
                         const price = getSearchResultPrice(product);
 
@@ -593,9 +553,9 @@ export default function MobileMenu({
                             key={product.id}
                             href={`/products/${product.handle || product.id}`}
                             onClick={handleClose}
-                            className="flex items-center gap-3 border-b border-[#E8E3DB] p-2 last:border-b-0"
+                            className="flex items-center gap-3 border-b border-[var(--ds-border-subtle)] p-2 last:border-b-0"
                           >
-                            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[#F5F1EB]">
+                            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[var(--ds-surface-soft)]">
                               {product.thumbnail ? (
                                 <OptimizedImage
                                   src={product.thumbnail}
@@ -607,11 +567,11 @@ export default function MobileMenu({
                               ) : null}
                             </div>
                             <span className="min-w-0 flex-1">
-                              <span className="block truncate text-[13px] font-medium text-[#1C1A17]">
+                              <span className="block truncate text-[13px] font-medium text-[var(--ds-text-primary)]">
                                 {product.title}
                               </span>
                               {price !== undefined && (
-                                <span className="block text-xs text-[#5C5750]">
+                                <span className="block text-xs text-[var(--ds-text-secondary)]">
                                   from {formatPrice(price)}
                                 </span>
                               )}
@@ -623,7 +583,7 @@ export default function MobileMenu({
                   )}
                 </div>
 
-                <div className="h-8 overflow-hidden border-b border-[#C0DD97] bg-[#EAF3DE] text-xs font-medium text-[#27500A]">
+                <div className="h-8 overflow-hidden border-b border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-xs font-medium text-[var(--ds-success-text)]">
                   <div className="flex h-full w-max animate-marquee items-center whitespace-nowrap">
                     {[
                       'Free shipping on orders above Rs. 2,000',
@@ -643,11 +603,13 @@ export default function MobileMenu({
                     const Icon = category.icon;
 
                     return (
-                      <button
+                      <Button
                         key={category.key}
                         type="button"
                         onClick={() => openSubmenu(category)}
-                        className="flex min-h-14 w-full items-center gap-3 border-b border-[#E8E3DB] px-4 text-left transition-colors hover:bg-[#FAF7F2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#C4613A]"
+                        variant="ghost"
+                        size="md"
+                        className="flex min-h-14 w-full justify-start gap-3 border-b border-[var(--ds-border-subtle)] px-4 text-left normal-case hover:bg-[var(--ds-surface-page)]"
                       >
                         <span
                           className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
@@ -656,42 +618,42 @@ export default function MobileMenu({
                           <Icon size={18} strokeWidth={1.8} />
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block text-[15px] font-medium leading-tight text-[#1C1A17]">
+                          <span className="block text-[15px] font-medium leading-tight text-[var(--ds-text-primary)]">
                             {category.title}
                           </span>
-                          <span className="mt-0.5 block truncate text-xs text-[#9C9891]">
+                          <span className="mt-0.5 block truncate text-xs text-[var(--ds-text-disabled)]">
                             {category.subtitle}
                           </span>
                         </span>
-                        <ChevronRight size={17} className="text-[#9C9891]" />
-                      </button>
+                        <ChevronRight size={17} className="text-[var(--ds-text-disabled)]" />
+                      </Button>
                     );
                   })}
 
                   <Link
                     href="/collections/sale"
                     onClick={handleClose}
-                    className="flex min-h-14 items-center gap-3 border-b border-[#E8E3DB] px-4 transition-colors hover:bg-[#FAF7F2]"
+                    className="flex min-h-14 items-center gap-3 border-b border-[var(--ds-border-subtle)] px-4 transition-colors hover:bg-[var(--ds-surface-page)]"
                   >
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#FCEBEB]">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[var(--ds-danger-bg)]">
                       <Tag size={18} strokeWidth={1.8} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[15px] font-medium leading-tight text-[#1C1A17]">
+                      <span className="block text-[15px] font-medium leading-tight text-[var(--ds-text-primary)]">
                         Sale
                       </span>
-                      <span className="mt-0.5 block truncate text-xs text-[#9C9891]">
+                      <span className="mt-0.5 block truncate text-xs text-[var(--ds-text-disabled)]">
                         Up to 40% off selected items
                       </span>
                     </span>
-                    <span className="rounded-full bg-[#C0392B] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-white">
+                    <span className="rounded-full bg-[var(--ds-danger)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-[var(--ds-text-inverse)]">
                       40% off
                     </span>
                   </Link>
                 </nav>
 
-                <section className="border-b border-[#E8E3DB] px-4 py-4">
-                  <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#5C5750]">
+                <section className="border-b border-[var(--ds-border-subtle)] px-4 py-4">
+                  <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ds-text-secondary)]">
                     {featuredCollections.length > 0
                       ? 'Featured collections'
                       : 'Shop by mood'}
@@ -707,7 +669,7 @@ export default function MobileMenu({
                         onClick={handleClose}
                         className="w-[60px] shrink-0 text-center"
                       >
-                        <span className="relative mb-1 block h-12 w-12 overflow-hidden rounded-lg bg-[#F5F1EB]">
+                        <span className="relative mb-1 block h-12 w-12 overflow-hidden rounded-lg bg-[var(--ds-surface-soft)]">
                           <OptimizedImage
                             src={item.image}
                             alt={item.label}
@@ -716,7 +678,7 @@ export default function MobileMenu({
                             sizes="48px"
                           />
                         </span>
-                        <span className="block text-[11px] leading-tight text-[#5C5750]">
+                        <span className="block text-[11px] leading-tight text-[var(--ds-text-secondary)]">
                           {item.label}
                         </span>
                       </Link>
@@ -724,7 +686,7 @@ export default function MobileMenu({
                   </div>
                 </section>
 
-                <section className="bg-[#F5F1EB]">
+                <section className="bg-[var(--ds-surface-soft)]">
                   <UtilityLink href="/track" icon={Package} label="Track my order" onClick={handleClose} />
                   <UtilityLink
                     href={buildWhatsAppHref('Hi, I need help with my Kvastram order')}
@@ -744,7 +706,7 @@ export default function MobileMenu({
               </div>
 
               <div
-                className={`absolute inset-0 h-full overflow-y-auto bg-[#FFFDF9] transition-transform duration-300 ${
+                className={`absolute inset-0 h-full overflow-y-auto bg-[var(--ds-surface-page)] transition-transform duration-300 ${
                   activeCategory ? 'translate-x-0' : 'translate-x-full'
                 }`}
                 aria-hidden={!activeCategory}
@@ -758,10 +720,7 @@ export default function MobileMenu({
                 )}
               </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    </Drawer>
   );
 }
 
@@ -775,12 +734,12 @@ interface UtilityLinkProps {
 
 function UtilityLink({ href, icon: Icon, label, onClick, external = false }: UtilityLinkProps) {
   const className =
-    'flex h-11 items-center gap-3 border-b border-[#E8E3DB] px-4 text-sm text-[#5C5750] last:border-b-0';
+    'flex h-11 items-center gap-3 border-b border-[var(--ds-border-subtle)] px-4 text-sm text-[var(--ds-text-secondary)] last:border-b-0';
 
   if (external) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" onClick={onClick} className={className}>
-        <Icon size={16} className="text-[#9C9891]" />
+        <Icon size={16} className="text-[var(--ds-text-disabled)]" />
         {label}
       </a>
     );
@@ -788,7 +747,7 @@ function UtilityLink({ href, icon: Icon, label, onClick, external = false }: Uti
 
   return (
     <Link href={href} onClick={onClick} className={className}>
-      <Icon size={16} className="text-[#9C9891]" />
+      <Icon size={16} className="text-[var(--ds-text-disabled)]" />
       {label}
     </Link>
   );
@@ -804,24 +763,26 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
   const [activeFilter, setActiveFilter] = useState(category.filters[0]);
 
   return (
-    <div className="min-h-full bg-[#FFFDF9]">
-      <div className="grid h-[52px] grid-cols-[88px_1fr_88px] items-center border-b border-[#E8E3DB] px-3">
-        <button
+    <div className="min-h-full bg-[var(--ds-surface-page)]">
+      <div className="grid h-[52px] grid-cols-[88px_1fr_88px] items-center border-b border-[var(--ds-border-subtle)] px-3">
+        <Button
           type="button"
           onClick={onBack}
-          className="flex min-h-10 items-center gap-1 rounded-md text-[13px] font-medium text-[#5C5750]"
+          variant="ghost"
+          size="sm"
+          className="flex min-h-10 justify-start gap-1 rounded-md px-0 text-[13px] font-medium normal-case text-[var(--ds-text-secondary)]"
           aria-label="Back to menu"
         >
           <ArrowLeft size={16} />
           Menu
-        </button>
-        <h2 className="truncate text-center text-base font-medium text-[#1C1A17]">
+        </Button>
+        <h2 className="truncate text-center text-base font-medium text-[var(--ds-text-primary)]">
           {category.title}
         </h2>
         <span aria-hidden="true" />
       </div>
 
-      <div className="relative h-[100px] overflow-hidden bg-[#F5F1EB]">
+      <div className="relative h-[100px] overflow-hidden bg-[var(--ds-surface-soft)]">
         <OptimizedImage
           src={category.hero}
           alt={category.title}
@@ -830,7 +791,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
           sizes="400px"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
-        <p className="absolute bottom-3 left-4 text-sm font-medium text-white">
+        <p className="absolute bottom-3 left-4 text-sm font-medium text-[var(--ds-text-inverse)]">
           {category.tagline}
         </p>
       </div>
@@ -838,26 +799,28 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
       <Link
         href={category.href}
         onClick={onClose}
-        className="flex min-h-11 items-center justify-between border-b border-[#E8E3DB] px-4 text-[13px] font-semibold text-[#185FA5]"
+        className="flex min-h-11 items-center justify-between border-b border-[var(--ds-border-subtle)] px-4 text-[13px] font-semibold text-[var(--ds-info)]"
       >
         View all {category.title.toLowerCase()}
         <ArrowRight size={16} />
       </Link>
 
-      <div className="no-scrollbar flex gap-2 overflow-x-auto border-b border-[#E8E3DB] px-4 py-3">
+      <div className="no-scrollbar flex gap-2 overflow-x-auto border-b border-[var(--ds-border-subtle)] px-4 py-3">
         {category.filters.map((filter) => (
-          <button
+          <Button
             key={filter}
             type="button"
             onClick={() => setActiveFilter(filter)}
-            className={`h-8 shrink-0 rounded-full px-3 text-xs font-medium ${
+            variant="ghost"
+            size="sm"
+            className={`h-8 min-h-8 shrink-0 rounded-full px-3 text-xs font-medium normal-case ${
               activeFilter === filter
-                ? 'bg-[#1C1A17] text-[#FFFDF9]'
-                : 'border border-[#E8E3DB] text-[#5C5750]'
+                ? 'bg-[var(--ds-text-primary)] text-[var(--ds-surface-page)]'
+                : 'border border-[var(--ds-border-subtle)] text-[var(--ds-text-secondary)]'
             }`}
           >
             {filter}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -867,9 +830,9 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
             key={item.name}
             href={item.href}
             onClick={onClose}
-            className="overflow-hidden rounded-lg border border-[#E8E3DB] bg-white"
+            className="overflow-hidden rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]"
           >
-            <span className="relative block aspect-square bg-[#F5F1EB]">
+            <span className="relative block aspect-square bg-[var(--ds-surface-soft)]">
               <OptimizedImage
                 src={item.image}
                 alt={item.name}
@@ -879,10 +842,10 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
               />
             </span>
             <span className="block p-2">
-              <span className="block text-xs font-semibold leading-snug text-[#1C1A17]">
+              <span className="block text-xs font-semibold leading-snug text-[var(--ds-text-primary)]">
                 {item.name}
               </span>
-              <span className="mt-1 block text-[10px] leading-snug text-[#9C9891]">
+              <span className="mt-1 block text-[10px] leading-snug text-[var(--ds-text-disabled)]">
                 {item.meta}
               </span>
             </span>
@@ -890,8 +853,8 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
         ))}
       </div>
 
-      <div className="border-t border-[#E8E3DB] bg-[#F5F1EB] px-3 py-3">
-        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#5C5750]">
+      <div className="border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-soft)] px-3 py-3">
+        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ds-text-secondary)]">
           Quick picks
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -904,7 +867,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
               key={pick.label}
               href={pick.href}
               onClick={onClose}
-              className="rounded-md border border-[#E8E3DB] bg-[#FFFDF9] px-3 py-1.5 text-xs font-medium text-[#5C5750]"
+              className="rounded-md border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-page)] px-3 py-1.5 text-xs font-medium text-[var(--ds-text-secondary)]"
             >
               {pick.label}
             </Link>

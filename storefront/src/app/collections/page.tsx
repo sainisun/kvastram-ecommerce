@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
+import { EmptyState } from '@/components/ui/EmptyState';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
 import {
@@ -25,10 +26,10 @@ type CollectionSummary = {
 };
 
 const COLLECTION_GRADIENTS = [
-  'from-[#7d3f25] via-[#a85d3a] to-[#d8b295]',
-  'from-[#3f5945] via-[#7a9b7f] to-[#d7dfd1]',
-  'from-[#2c2c2c] via-[#6b6258] to-[#d8b295]',
-  'from-[#8b4d42] via-[#bd7a5a] to-[#f1ede7]',
+  'from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-accent-soft)]',
+  'from-[var(--ds-success-text)] via-[var(--ds-success)] to-[var(--ds-success-bg)]',
+  'from-[var(--ds-text-primary)] via-[var(--ds-text-muted)] to-[var(--ds-accent-soft)]',
+  'from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-surface-soft)]',
 ];
 
 export const metadata: Metadata = buildBasicPageMetadata({
@@ -73,7 +74,7 @@ function CollectionCard({
           </div>
         )}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.02),rgba(0,0,0,0.36))]" />
-        <div className="collection-count-badge absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1">
+        <div className="collection-count-badge absolute bottom-4 left-4 rounded-full bg-[var(--ds-surface-paper)]/90 px-3 py-1">
           {count} products
         </div>
       </div>
@@ -133,8 +134,8 @@ export default async function CollectionsPage({
 
   if (collections.length === 0) {
     return (
-      <div className="min-h-screen bg-white">
-        <section className="relative h-[360px] overflow-hidden bg-stone-100 sm:h-[420px]">
+      <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+        <section className="relative h-[360px] overflow-hidden bg-[var(--ds-surface-soft)] sm:h-[420px]">
           <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.2),rgba(0,0,0,0.3))]" />
           <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
             <div className="max-w-3xl">
@@ -147,15 +148,18 @@ export default async function CollectionsPage({
             </div>
           </div>
         </section>
-        <div className="mx-auto max-w-[1440px] px-6 py-12 text-center md:px-12 md:py-16 lg:px-20 lg:py-24">
-          <p className="collection-empty-copy">No collections found. Check back soon!</p>
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+          <EmptyState
+            title="No collections found."
+            description="Check back soon for new curated series."
+          />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -163,7 +167,7 @@ export default async function CollectionsPage({
         }}
       />
 
-      <section className="relative h-[360px] overflow-hidden bg-stone-100 sm:h-[420px]">
+      <section className="relative h-[360px] overflow-hidden bg-[var(--ds-surface-soft)] sm:h-[420px]">
         {heroImage ? (
           <OptimizedImage
             src={heroImage}
@@ -191,16 +195,16 @@ export default async function CollectionsPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
           className="listing-breadcrumb mb-10 flex items-center gap-2"
         >
-          <Link href="/" className="transition-colors hover:text-stone-900">
+          <Link href="/" className="transition-colors hover:text-[var(--ds-text-primary)]">
             Home
           </Link>
           <span>/</span>
-          <span className="text-stone-700">Collections</span>
+          <span className="text-[var(--ds-text-secondary)]">Collections</span>
         </nav>
 
         <section className="grid gap-x-4 gap-y-8 sm:grid-cols-3 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
@@ -208,7 +212,7 @@ export default async function CollectionsPage({
             <Link
               key={collection.id}
               href={`/collections/${collection.handle}`}
-              className="group relative overflow-hidden bg-stone-100"
+              className="group relative overflow-hidden bg-[var(--ds-surface-soft)]"
             >
               <div className="relative aspect-[3/4]">
                 {collection.image ? (
@@ -220,14 +224,14 @@ export default async function CollectionsPage({
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-stone-200">
+                  <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-surface-warm)]">
                     <span className="collection-feature-placeholder">
                       {collection.title}
                     </span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.08),rgba(0,0,0,0.45))]" />
-                <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                <div className="absolute inset-x-0 bottom-0 p-5 text-[var(--ds-text-inverse)]">
                   <h2 className="collection-feature-title">
                     {collection.title}
                   </h2>
@@ -261,7 +265,7 @@ export default async function CollectionsPage({
           <div className="mt-14 text-center">
             <Link
               href="/collections?show=all"
-              className="inline-flex items-center gap-2 border-b border-stone-900 pb-1 text-stone-900 transition-colors hover:border-stone-600 hover:text-stone-600"
+              className="inline-flex items-center gap-2 border-b border-[var(--ds-text-primary)] pb-1 text-[var(--ds-text-primary)] transition-colors hover:border-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]"
             >
               Load More Collections
               <ArrowRight size={16} />
@@ -271,7 +275,7 @@ export default async function CollectionsPage({
           <div className="mt-14 text-center">
             <Link
               href="/collections"
-              className="inline-flex items-center gap-2 border-b border-stone-900 pb-1 text-stone-900 transition-colors hover:border-stone-600 hover:text-stone-600"
+              className="inline-flex items-center gap-2 border-b border-[var(--ds-text-primary)] pb-1 text-[var(--ds-text-primary)] transition-colors hover:border-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]"
             >
               View Fewer Collections
               <ArrowRight size={16} />

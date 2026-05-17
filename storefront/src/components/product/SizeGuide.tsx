@@ -1,9 +1,9 @@
 'use client';
 
-import { X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { SizeGuide as SizeGuideType, SizeMeasurement } from '@/types';
+import { Modal } from '@/components/ui/Modal';
 
 interface SizeGuideProps {
   isOpen: boolean;
@@ -12,8 +12,6 @@ interface SizeGuideProps {
 }
 
 export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
-  if (!isOpen) return null;
-
   const renderCustomSizeChart = (guide: SizeGuideType) => {
     return (
       <div>
@@ -26,7 +24,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
           Size Chart
         </h3>
         <table className="size-guide-table">
-          <thead className="size-guide-table-head bg-stone-50 border-b border-stone-100">
+          <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
             <tr>
               <th className="size-guide-table-heading py-3">Size</th>
               {guide.measurements[0]?.chest && (
@@ -43,7 +41,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               )}
             </tr>
           </thead>
-          <tbody className="size-guide-table-body divide-y divide-stone-100">
+          <tbody className="size-guide-table-body divide-y divide-[var(--ds-border-subtle)]">
             {guide.measurements.map((m: SizeMeasurement, i: number) => (
               <tr key={i}>
                 <td className="size-guide-table-heading py-3">{m.size}</td>
@@ -60,32 +58,13 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="size-guide-title"
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Size Guide"
+      className="max-w-2xl"
+      bodyClassName="p-8"
     >
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div className="relative bg-white w-full max-w-2xl p-8 max-h-[80vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="size-guide-close absolute right-4 top-4 transition-colors"
-          aria-label="Close size guide"
-        >
-          <X size={24} aria-hidden="true" />
-        </button>
-
-        <h2
-          id="size-guide-title"
-          className="size-guide-title mb-2 text-center"
-        >
-          Size Guide
-        </h2>
         <p className="size-guide-subtitle mb-8 text-center">
           Measurements in inches
         </p>
@@ -93,7 +72,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
         <div className="space-y-8">
           {/* Product-specific size chart — string or structured */}
           {sizeGuide && typeof sizeGuide === 'string' ? (
-            <div className="prose prose-stone prose-sm max-w-none mb-6 border-b border-stone-100 pb-6">
+            <div className="prose prose-stone prose-sm max-w-none mb-6 border-b border-[var(--ds-border-subtle)] pb-6">
               <h3 className="size-guide-heading mb-4">
                 Product Size Guide
               </h3>
@@ -111,7 +90,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               Womenswear
             </h3>
             <table className="size-guide-table">
-              <thead className="size-guide-table-head bg-stone-50 border-b border-stone-100">
+              <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
                 <tr>
                   <th className="size-guide-table-heading py-3">Size</th>
                   <th className="size-guide-table-heading py-3">US</th>
@@ -121,7 +100,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <th className="size-guide-table-heading py-3">Waist (in)</th>
                 </tr>
               </thead>
-              <tbody className="size-guide-table-body divide-y divide-stone-100">
+              <tbody className="size-guide-table-body divide-y divide-[var(--ds-border-subtle)]">
                 <tr>
                   <td className="size-guide-table-heading py-3">XS</td>
                   <td>0-2</td>
@@ -172,7 +151,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               Menswear
             </h3>
             <table className="size-guide-table">
-              <thead className="size-guide-table-head bg-stone-50 border-b border-stone-100">
+              <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
                 <tr>
                   <th className="size-guide-table-heading py-3">Size</th>
                   <th className="size-guide-table-heading py-3">US</th>
@@ -182,7 +161,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <th className="size-guide-table-heading py-3">Waist (in)</th>
                 </tr>
               </thead>
-              <tbody className="size-guide-table-body divide-y divide-stone-100">
+              <tbody className="size-guide-table-body divide-y divide-[var(--ds-border-subtle)]">
                 <tr>
                   <td className="size-guide-table-heading py-3">S</td>
                   <td>34-36</td>
@@ -220,7 +199,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
           </div>
 
           {/* How to Measure */}
-          <div className="bg-stone-50 p-6">
+          <div className="bg-[var(--ds-surface-parchment)] p-6">
             <h3 className="size-guide-info-title mb-4">How to Measure</h3>
             <div className="size-guide-copy grid gap-4 md:grid-cols-3">
               <div>
@@ -248,7 +227,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
           </div>
 
           {/* Fit Advice */}
-          <div className="bg-stone-50 p-6">
+          <div className="bg-[var(--ds-surface-parchment)] p-6">
             <h3 className="size-guide-info-title mb-2">Fit Advice</h3>
             <p className="size-guide-copy">
               Our garments are cut for a relaxed, contemporary fit. If you are
@@ -259,8 +238,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
             </p>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 

@@ -71,7 +71,7 @@ export default function HelpPage() {
           <div className="grid gap-5 md:grid-cols-2">
           {helpCards.map(({ title, description, href, cta, icon: Icon }) => (
             <Link key={title} href={href} className="info-card info-card--link">
-              <Icon className="text-stone-900" size={26} />
+              <Icon className="text-[var(--ds-text-primary)]" size={26} />
               <h3>{title}</h3>
               <div className="info-card__body">{description}</div>
               <span className="info-card__cta">{cta}</span>

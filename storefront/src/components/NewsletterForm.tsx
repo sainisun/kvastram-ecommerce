@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from 'react';
 import { Loader2, CheckCircle } from 'lucide-react';
+import Input from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 
 interface NewsletterFormProps {
   minimal?: boolean;
@@ -50,7 +52,7 @@ export default function NewsletterForm({
   if (status === 'success') {
     return (
       <output
-        className={`flex items-center gap-2 ${minimal ? 'text-green-600' : 'text-green-400'}`}
+        className={`flex items-center gap-2 ${minimal ? 'text-[var(--ds-success)]' : 'text-[var(--ds-success)]'}`}
       >
         <CheckCircle size={minimal ? 16 : 20} aria-hidden="true" />
         <span className={minimal ? 'text-body-sm' : ''}>{message}</span>
@@ -65,29 +67,23 @@ export default function NewsletterForm({
         className={`flex ${minimal ? 'flex-col gap-2' : 'gap-0'}`}
         aria-label="Newsletter subscription"
       >
-        <input
+        <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Your email address"
           required
           disabled={status === 'loading'}
-          className={`flex-1 focus:outline-none transition-colors disabled:opacity-50 ${
-            minimal
-              ? 'bg-stone-800 border border-stone-700 px-4 py-2 text-white placeholder-stone-500 text-body-sm rounded focus:border-stone-500'
-              : 'bg-white/5 border border-white/10 border-r-0 px-6 py-4 text-white placeholder-stone-500 focus:bg-white/10'
-          }`}
+          containerClassName="flex-1"
+          className={minimal ? 'bg-[var(--ds-footer-surface)] text-[var(--ds-text-inverse)]' : 'bg-[rgba(255,255,255,0.05)] text-[var(--ds-text-inverse)]'}
           aria-label="Email address"
           aria-required="true"
         />
-        <button
+        <Button
           type="submit"
           disabled={status === 'loading'}
-          className={`type-bold text-body-xs uppercase tracking-token-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${
-            minimal
-              ? 'bg-white text-stone-900 px-4 py-2 rounded hover:bg-stone-200'
-              : 'bg-white text-stone-900 px-8 py-4 hover:bg-stone-200'
-          }`}
+          variant="outline"
+          size={minimal ? 'sm' : 'lg'}
           aria-label={
             status === 'loading'
               ? 'Subscribing to newsletter'
@@ -102,10 +98,10 @@ export default function NewsletterForm({
           ) : (
             'Subscribe'
           )}
-        </button>
+        </Button>
       </form>
       {status === 'error' && (
-        <p className={`text-body-sm mt-2 text-red-400`} role="alert">
+        <p className={`text-body-sm mt-2 text-[var(--ds-danger)]`} role="alert">
           {message}
         </p>
       )}

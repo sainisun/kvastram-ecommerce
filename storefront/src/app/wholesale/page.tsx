@@ -13,6 +13,10 @@ import {
   FileText,
   ArrowRight,
 } from 'lucide-react';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
+import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/Button';
 
 interface TierData {
   id: string;
@@ -121,20 +125,20 @@ export default function WholesalePage() {
 
   return (
     <>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[var(--ds-surface-paper)]">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-stone-900 via-stone-800 to-amber-900 py-16 pt-32 text-white md:py-20 lg:py-32">
+        <section className="relative bg-gradient-to-br from-stone-900 via-stone-800 to-amber-900 py-16 pt-32 text-[var(--ds-text-inverse)] md:py-20 lg:py-32">
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
-          <div className="relative z-10 mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+          <div className="kv-page-container relative z-10 mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="max-w-3xl">
-              <span className="text-amber-400 text-body-xs type-bold uppercase tracking-token-wider block mb-4">
+              <span className="text-[var(--ds-accent-gold)] text-body-xs type-bold uppercase tracking-token-wider block mb-4">
                 B2B Partnership
               </span>
-              <h1 className="text-display-xl md:text-display-xl font-serif mb-6 leading-token-tight">
+              <h1 className="text-display-xl md:text-display-xl font-display mb-6 leading-token-tight">
                 Wholesale & <br />
                 Bulk Orders
               </h1>
-              <p className="text-display-sm text-stone-300 type-light leading-token-relaxed mb-8">
+              <p className="text-display-sm text-[var(--ds-text-disabled)] type-light leading-token-relaxed mb-8">
                 Partner with Kvastram to bring authentic artisanal luxury to
                 your customers. Exclusive pricing, dedicated support, and global
                 logistics for retailers and distributors worldwide.
@@ -142,13 +146,13 @@ export default function WholesalePage() {
               <div className="flex flex-wrap gap-4">
                 <a
                   href="#inquiry"
-                  className="bg-amber-500 text-stone-900 px-8 py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-amber-400 transition-colors"
+                  className="bg-[var(--ds-warning)] text-[var(--ds-text-primary)] px-8 py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-accent-gold)] transition-colors"
                 >
                   Request Pricing
                 </a>
                 <a
                   href="#benefits"
-                  className="border-2 border-white text-white px-8 py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-white hover:text-stone-900 transition-colors"
+                  className="border-2 border-[var(--ds-surface-paper)] text-[var(--ds-text-inverse)] px-8 py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] transition-colors"
                 >
                   Learn More
                 </a>
@@ -158,66 +162,66 @@ export default function WholesalePage() {
         </section>
 
         {/* Benefits Section */}
-        <section id="benefits" className="bg-stone-50 py-12 md:py-16 lg:py-24">
-          <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <section id="benefits" className="bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
+          <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="text-center mb-16">
-              <h2 className="text-display-lg font-serif text-stone-900 mb-4">
+              <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
                 Why Partner With Kvastram?
               </h2>
-              <p className="text-stone-600 type-light max-w-2xl mx-auto">
+              <p className="text-[var(--ds-text-secondary)] type-light max-w-2xl mx-auto">
                 We provide everything you need to offer premium artisanal
                 products to your market.
               </p>
             </div>
 
             <div className="grid gap-x-4 gap-y-8 md:grid-cols-2 md:gap-x-6 md:gap-y-12 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
-              <div className="bg-white p-8 text-center">
-                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <DollarSign className="text-amber-600" size={28} />
+              <div className="bg-[var(--ds-surface-paper)] p-8 text-center">
+                <div className="w-16 h-16 bg-[var(--ds-warning-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <DollarSign className="text-[var(--ds-warning)]" size={28} />
                 </div>
-                <h3 className="text-body-xl type-bold text-stone-900 mb-3">
+                <h3 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-3">
                   Competitive Pricing
                 </h3>
-                <p className="text-body-sm text-stone-600 type-light leading-token-relaxed">
+                <p className="text-body-sm text-[var(--ds-text-secondary)] type-light leading-token-relaxed">
                   Volume-based discounts starting at 20% off retail. Tiered
                   pricing for larger orders.
                 </p>
               </div>
 
-              <div className="bg-white p-8 text-center">
-                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Package className="text-amber-600" size={28} />
+              <div className="bg-[var(--ds-surface-paper)] p-8 text-center">
+                <div className="w-16 h-16 bg-[var(--ds-warning-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Package className="text-[var(--ds-warning)]" size={28} />
                 </div>
-                <h3 className="text-body-xl type-bold text-stone-900 mb-3">
+                <h3 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-3">
                   Flexible MOQ
                 </h3>
-                <p className="text-body-sm text-stone-600 type-light leading-token-relaxed">
+                <p className="text-body-sm text-[var(--ds-text-secondary)] type-light leading-token-relaxed">
                   Minimum order quantities starting from just 50 units. Mix and
                   match across collections.
                 </p>
               </div>
 
-              <div className="bg-white p-8 text-center">
-                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Globe className="text-amber-600" size={28} />
+              <div className="bg-[var(--ds-surface-paper)] p-8 text-center">
+                <div className="w-16 h-16 bg-[var(--ds-warning-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Globe className="text-[var(--ds-warning)]" size={28} />
                 </div>
-                <h3 className="text-body-xl type-bold text-stone-900 mb-3">
+                <h3 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-3">
                   Global Shipping
                 </h3>
-                <p className="text-body-sm text-stone-600 type-light leading-token-relaxed">
+                <p className="text-body-sm text-[var(--ds-text-secondary)] type-light leading-token-relaxed">
                   DDP shipping to 150+ countries. Consolidated shipments and
                   customs support included.
                 </p>
               </div>
 
-              <div className="bg-white p-8 text-center">
-                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <TrendingUp className="text-amber-600" size={28} />
+              <div className="bg-[var(--ds-surface-paper)] p-8 text-center">
+                <div className="w-16 h-16 bg-[var(--ds-warning-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <TrendingUp className="text-[var(--ds-warning)]" size={28} />
                 </div>
-                <h3 className="text-body-xl type-bold text-stone-900 mb-3">
+                <h3 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-3">
                   Marketing Support
                 </h3>
-                <p className="text-body-sm text-stone-600 type-light leading-token-relaxed">
+                <p className="text-body-sm text-[var(--ds-text-secondary)] type-light leading-token-relaxed">
                   High-res product images, brand assets, and storytelling
                   content for your channels.
                 </p>
@@ -227,57 +231,57 @@ export default function WholesalePage() {
         </section>
 
         {/* Pricing Tiers */}
-        <section className="bg-white py-12 md:py-16 lg:py-24">
-          <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <section className="bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+          <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="text-center mb-16">
-              <h2 className="text-display-lg font-serif text-stone-900 mb-4">
+              <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
                 Wholesale Pricing Tiers
               </h2>
-              <p className="text-stone-600 type-light">
+              <p className="text-[var(--ds-text-secondary)] type-light">
                 Volume-based discounts to maximize your margins
               </p>
             </div>
 
             {tiersLoading ? (
               <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--ds-warning)]"></div>
               </div>
             ) : (
               <div className={`grid gap-8 ${tiers.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-' + tiers.length}`}>
                 {tiers.map((tier, index) => (
                   <div
                     key={tier.id}
-                    className={`border p-8 ${index === 1 ? 'border-2 border-amber-500 p-8 relative bg-amber-50' : 'border-stone-200'}`}
+                    className={`border p-8 ${index === 1 ? 'border-2 border-[var(--ds-warning)] p-8 relative bg-[var(--ds-warning-bg)]' : 'border-[var(--ds-border-subtle)]'}`}
                   >
                     {index === 1 && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-body-xs type-bold px-4 py-1 uppercase tracking-token-wider">
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--ds-warning)] text-[var(--ds-text-inverse)] text-body-xs type-bold px-4 py-1 uppercase tracking-token-wider">
                         Most Popular
                       </div>
                     )}
                     <div className="mb-6">
-                      <h3 className="text-display-sm type-bold text-stone-900 mb-2">
+                      <h3 className="text-display-sm type-bold text-[var(--ds-text-primary)] mb-2">
                         {tier.name}
                       </h3>
-                      <p className="text-body-sm text-stone-500 mb-4">
+                      <p className="text-body-sm text-[var(--ds-text-muted)] mb-4">
                         {tier.description || 'Wholesale pricing tier'}
                       </p>
-                      <div className="text-display-lg type-bold text-stone-900">
+                      <div className="text-display-lg type-bold text-[var(--ds-text-primary)]">
                         {tier.discount_percent}% OFF
                       </div>
-                      <p className="text-body-xs text-stone-500 mt-1">Retail pricing</p>
+                      <p className="text-body-xs text-[var(--ds-text-muted)] mt-1">Retail pricing</p>
                     </div>
                     <ul className="space-y-3 mb-8">
                       <li className="flex items-start gap-2 text-body-sm">
                         <CheckCircle
                           size={16}
-                          className="text-green-600 mt-0.5 flex-shrink-0"
+                          className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
                         />
                         <span>MOQ: {tier.default_moq} units</span>
                       </li>
                       <li className="flex items-start gap-2 text-body-sm">
                         <CheckCircle
                           size={16}
-                          className="text-green-600 mt-0.5 flex-shrink-0"
+                          className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
                         />
                         <span className="capitalize">{tier.payment_terms.replace('_', ' ')} payment terms</span>
                       </li>
@@ -285,7 +289,7 @@ export default function WholesalePage() {
                         <li className="flex items-start gap-2 text-body-sm">
                           <CheckCircle
                             size={16}
-                            className="text-green-600 mt-0.5 flex-shrink-0"
+                            className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
                           />
                           <span>Dedicated account manager</span>
                         </li>
@@ -295,14 +299,14 @@ export default function WholesalePage() {
                           <li className="flex items-start gap-2 text-body-sm">
                             <CheckCircle
                               size={16}
-                              className="text-green-600 mt-0.5 flex-shrink-0"
+                              className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
                             />
                             <span>White-glove logistics</span>
                           </li>
                           <li className="flex items-start gap-2 text-body-sm">
                             <CheckCircle
                               size={16}
-                              className="text-green-600 mt-0.5 flex-shrink-0"
+                              className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
                             />
                             <span>Custom product development</span>
                           </li>
@@ -317,13 +321,13 @@ export default function WholesalePage() {
         </section>
 
         {/* Process Section */}
-        <section className="bg-stone-50 py-12 md:py-16 lg:py-24">
-          <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <section className="bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
+          <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="text-center mb-16">
-              <h2 className="text-display-lg font-serif text-stone-900 mb-4">
+              <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
                 How It Works
               </h2>
-              <p className="text-stone-600 type-light">
+              <p className="text-[var(--ds-text-secondary)] type-light">
                 Simple 4-step process to start ordering
               </p>
             </div>
@@ -352,13 +356,13 @@ export default function WholesalePage() {
                 },
               ].map((item, i) => (
                 <div key={i} className="text-center">
-                  <div className="text-display-xl type-bold text-amber-200 mb-4">
+                  <div className="text-display-xl type-bold text-[var(--ds-warning-bg)] mb-4">
                     {item.step}
                   </div>
-                  <h3 className="text-body-xl type-bold text-stone-900 mb-2">
+                  <h3 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-body-sm text-stone-600 type-light">
+                  <p className="text-body-sm text-[var(--ds-text-secondary)] type-light">
                     {item.desc}
                   </p>
                 </div>
@@ -368,27 +372,27 @@ export default function WholesalePage() {
         </section>
 
         {/* Inquiry Form */}
-        <section id="inquiry" className="bg-white py-12 md:py-16 lg:py-24">
+        <section id="inquiry" className="bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
           <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
             <div className="text-center mb-12">
-              <h2 className="text-display-lg font-serif text-stone-900 mb-4">
+              <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
                 Request Wholesale Pricing
               </h2>
-              <p className="text-stone-600 type-light">
+              <p className="text-[var(--ds-text-secondary)] type-light">
                 Fill out the form and our team will contact you within 24 hours
               </p>
             </div>
 
             {submitted ? (
-              <div className="bg-green-50 border border-green-200 p-12 text-center">
+              <div className="bg-[var(--ds-success-bg)] border border-[var(--ds-success)] p-12 text-center">
                 <CheckCircle
                   size={48}
-                  className="text-green-600 mx-auto mb-4"
+                  className="text-[var(--ds-success)] mx-auto mb-4"
                 />
-                <h3 className="text-display-md type-bold text-stone-900 mb-2">
+                <h3 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-2">
                   Thank You!
                 </h3>
-                <p className="text-stone-600">
+                <p className="text-[var(--ds-text-secondary)]">
                   We&apos;ve received your inquiry and will respond within 24
                   hours.
                 </p>
@@ -396,20 +400,17 @@ export default function WholesalePage() {
             ) : (
               <>
                 {error && (
-                  <div className="bg-red-50 border border-red-200 p-4 mb-6 text-center rounded">
-                    <p className="text-red-600 type-medium">{error}</p>
+                  <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] p-4 mb-6 text-center rounded">
+                    <p className="text-[var(--ds-danger)] type-medium">{error}</p>
                   </div>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-body-xs type-bold uppercase text-stone-500 mb-2">
-                        Company Name *
-                      </label>
-                      <input
+                      <Input
                         type="text"
+                        label="Company Name"
                         required
-                        className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 transition-colors"
                         value={formData.company_name}
                         onChange={(e) =>
                           setFormData({
@@ -420,13 +421,10 @@ export default function WholesalePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-body-xs type-bold uppercase text-stone-500 mb-2">
-                        Contact Name *
-                      </label>
-                      <input
+                      <Input
                         type="text"
+                        label="Contact Name"
                         required
-                        className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 transition-colors"
                         value={formData.contact_name}
                         onChange={(e) =>
                           setFormData({
@@ -440,13 +438,10 @@ export default function WholesalePage() {
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-body-xs type-bold uppercase text-stone-500 mb-2">
-                        Email *
-                      </label>
-                      <input
+                      <Input
                         type="email"
+                        label="Email"
                         required
-                        className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 transition-colors"
                         value={formData.email}
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
@@ -454,13 +449,10 @@ export default function WholesalePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-body-xs type-bold uppercase text-stone-500 mb-2">
-                        Phone *
-                      </label>
-                      <input
+                      <Input
                         type="tel"
+                        label="Phone"
                         required
-                        className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 transition-colors"
                         value={formData.phone}
                         onChange={(e) =>
                           setFormData({ ...formData, phone: e.target.value })
@@ -471,13 +463,10 @@ export default function WholesalePage() {
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-body-xs type-bold uppercase text-stone-500 mb-2">
-                        Country *
-                      </label>
-                      <input
+                      <Input
                         type="text"
+                        label="Country"
                         required
-                        className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 transition-colors"
                         value={formData.country}
                         onChange={(e) =>
                           setFormData({ ...formData, country: e.target.value })
@@ -485,12 +474,9 @@ export default function WholesalePage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-body-xs type-bold uppercase text-stone-500 mb-2">
-                        Business Type *
-                      </label>
-                      <select
+                      <Select
+                        label="Business Type"
                         required
-                        className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 transition-colors bg-transparent"
                         value={formData.business_type}
                         onChange={(e) =>
                           setFormData({
@@ -507,16 +493,13 @@ export default function WholesalePage() {
                         <option value="distributor">Distributor</option>
                         <option value="chain">Retail Chain</option>
                         <option value="other">Other</option>
-                      </select>
+                      </Select>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-body-xs type-bold uppercase text-stone-500 mb-2">
-                      Estimated Monthly Order Volume
-                    </label>
-                    <select
-                      className="w-full border-b border-stone-200 py-3 focus:outline-none focus:border-stone-900 transition-colors bg-transparent"
+                    <Select
+                      label="Estimated Monthly Order Volume"
                       value={formData.estimated_order_volume}
                       onChange={(e) =>
                         setFormData({
@@ -530,16 +513,13 @@ export default function WholesalePage() {
                       <option value="100-200">100-200 units</option>
                       <option value="200-500">200-500 units</option>
                       <option value="500+">500+ units</option>
-                    </select>
+                    </Select>
                   </div>
 
                   <div>
-                    <label className="block text-body-xs type-bold uppercase text-stone-500 mb-2">
-                      Message
-                    </label>
-                    <textarea
+                    <Textarea
+                      label="Message"
                       rows={4}
-                      className="w-full border border-stone-200 p-4 focus:outline-none focus:border-stone-900 transition-colors"
                       placeholder="Tell us about your business and what products you're interested in..."
                       value={formData.message}
                       onChange={(e) =>
@@ -548,14 +528,16 @@ export default function WholesalePage() {
                     />
                   </div>
 
-                  <button
+                  <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    variant="secondary"
+                    size="lg"
+                    fullWidth
+                    trailingIcon={!loading ? <ArrowRight size={16} /> : null}
                   >
-                    {loading ? 'Submitting...' : 'Submit Inquiry'}{' '}
-                    {!loading && <ArrowRight size={16} />}
-                  </button>
+                    {loading ? 'Submitting...' : 'Submit Inquiry'}
+                  </Button>
                 </form>
               </>
             )}
@@ -563,33 +545,33 @@ export default function WholesalePage() {
         </section>
 
         {/* Contact CTA */}
-        <section className="py-16 bg-stone-900 text-white">
-          <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <section className="py-16 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]">
+          <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
-                <Mail size={32} className="mx-auto mb-4 text-amber-400" />
+                <Mail size={32} className="mx-auto mb-4 text-[var(--ds-accent-gold)]" />
                 <h3 className="type-bold mb-2">Email Us</h3>
                 <a
                   href="mailto:wholesale@kvastram.com"
-                  className="text-stone-400 hover:text-white text-body-sm"
+                  className="text-[var(--ds-text-muted)] hover:text-[var(--ds-text-inverse)] text-body-sm"
                 >
                   wholesale@kvastram.com
                 </a>
               </div>
               <div>
-                <Phone size={32} className="mx-auto mb-4 text-amber-400" />
+                <Phone size={32} className="mx-auto mb-4 text-[var(--ds-accent-gold)]" />
                 <h3 className="type-bold mb-2">Call Us</h3>
                 <a
                   href="tel:+1234567890"
-                  className="text-stone-400 hover:text-white text-body-sm"
+                  className="text-[var(--ds-text-muted)] hover:text-[var(--ds-text-inverse)] text-body-sm"
                 >
                   +1 (234) 567-890
                 </a>
               </div>
               <div>
-                <FileText size={32} className="mx-auto mb-4 text-amber-400" />
+                <FileText size={32} className="mx-auto mb-4 text-[var(--ds-accent-gold)]" />
                 <h3 className="type-bold mb-2">Download Catalog</h3>
-                <a href="#" className="text-stone-400 hover:text-white text-body-sm">
+                <a href="#" className="text-[var(--ds-text-muted)] hover:text-[var(--ds-text-inverse)] text-body-sm">
                   2024 Wholesale Catalog (PDF)
                 </a>
               </div>
@@ -600,4 +582,3 @@ export default function WholesalePage() {
     </>
   );
 }
-

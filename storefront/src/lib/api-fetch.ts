@@ -13,13 +13,6 @@
  *   const product = await apiFetch<Product>('/products/handle', { method: 'GET' });
  */
 
-import type { ApiResponse } from '@/types/api-contracts';
-import {
-  isValidProductResponse, 
-  isValidProductArray,
-  isValidOrderResponse,
-  isValidCustomerResponse,
-} from './api-guards';
 import { getApiBaseUrl } from './api-base-url';
 
 const API_URL = getApiBaseUrl();

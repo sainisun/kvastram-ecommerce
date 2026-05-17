@@ -16,5 +16,5 @@
   margin-bottom: 14px;
   color: white;
   font-size: var(--text-display-lg);
-  background: linear-gradient(135deg, #c4956a, #6b3520);
+  background: linear-gradient(135deg, var(--ds-accent-gold), var(--ds-accent-hover));
 }

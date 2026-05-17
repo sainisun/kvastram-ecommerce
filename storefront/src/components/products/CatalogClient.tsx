@@ -14,8 +14,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import FilterSidebar from '@/components/products/FilterSidebar';
 import ProductGrid from '@/components/ProductGrid';
+import { Select } from '@/components/ui/Select';
+import { Drawer } from '@/components/ui/Drawer';
 import { api } from '@/lib/api';
 import { Product } from '@/types';
+import { UnstyledButton } from '@/components/ui/Button';
 
 interface Category {
   id: string;
@@ -93,7 +96,6 @@ export default function CatalogClient({
   const searchParams = useSearchParams();
   const router = useRouter();
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
-  const filterDrawerRef = useRef<HTMLDivElement | null>(null);
   const filterButtonRef = useRef<HTMLButtonElement | null>(null);
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [total, setTotal] = useState(totalProducts || initialProducts.length);
@@ -139,19 +141,9 @@ export default function CatalogClient({
   useEffect(() => {
     if (!filterDrawerOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
     const triggerButton = filterButtonRef.current;
-    document.body.style.overflow = 'hidden';
-    filterDrawerRef.current?.focus();
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setFilterDrawerOpen(false);
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
       triggerButton?.focus();
     };
   }, [filterDrawerOpen]);
@@ -240,30 +232,30 @@ export default function CatalogClient({
   const endItem = Math.min(page * limit, total);
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="bg-white">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+      <div className="bg-[var(--ds-surface-paper)]">
         <div className="kv-container pb-12 pt-6 md:pb-16 md:pt-8 lg:pb-24">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] pb-4">
             <div className="min-w-0">
               <h1 className="catalog-page-heading">Products</h1>
             </div>
 
             <div className="flex flex-wrap items-center justify-end gap-3">
-              <button
+              <UnstyledButton
                 ref={filterButtonRef}
                 type="button"
                 onClick={() => setFilterDrawerOpen(true)}
-                className="group inline-flex h-10 items-center gap-2 border border-stone-900 bg-white px-4 text-body-xs type-bold uppercase tracking-token-wider text-stone-950 transition-colors hover:bg-stone-950 hover:text-white"
+                className="group inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                 aria-label="Open filters"
               >
                 <SlidersHorizontal size={14} />
                 Filter
                 {activeFilterCount > 0 ? (
-                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-stone-950 px-1.5 text-[10px] leading-none text-white group-hover:bg-white group-hover:text-stone-950">
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--ds-text-primary)] px-1.5 text-[10px] leading-none text-[var(--ds-text-inverse)] group-hover:bg-[var(--ds-surface-paper)] group-hover:text-[var(--ds-text-primary)]">
                     {activeFilterCount}
                   </span>
                 ) : null}
-              </button>
+              </UnstyledButton>
 
               <div className="catalog-count">
                 {total > 0
@@ -272,50 +264,51 @@ export default function CatalogClient({
               </div>
 
               <div
-                className="hidden items-center overflow-hidden border border-stone-200 bg-white sm:flex"
+                className="hidden items-center overflow-hidden border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] sm:flex"
                 aria-label="Product grid density"
               >
-                <button
+                <UnstyledButton
                   type="button"
                   onClick={() => setGridDensity('grid')}
                   className={`flex h-10 w-10 items-center justify-center border transition-colors ${
                     gridDensity === 'grid'
-                      ? 'border-stone-950 bg-white text-stone-950'
-                      : 'border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-900'
+                      ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
+                      : 'border-transparent text-[var(--ds-text-muted)] hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]'
                   }`}
                   aria-label="Grid view"
                   title="Grid view"
                 >
                   <Grid2X2 size={15} />
-                </button>
-                <button
+                </UnstyledButton>
+                <UnstyledButton
                   type="button"
                   onClick={() => setGridDensity('compact')}
                   className={`flex h-10 w-10 items-center justify-center border transition-colors ${
                     gridDensity === 'compact'
-                      ? 'border-stone-950 bg-white text-stone-950'
-                      : 'border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-900'
+                      ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
+                      : 'border-transparent text-[var(--ds-text-muted)] hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]'
                   }`}
                   aria-label="Compact view"
                   title="Compact view"
                 >
                   <Rows3 size={15} />
-                </button>
+                </UnstyledButton>
               </div>
 
-              <div className="flex h-10 items-center gap-2 border border-stone-200 px-3">
-                <ArrowUpDown size={14} className="text-stone-400" />
-                <select
+              <div className="flex h-10 items-center gap-2 border border-[var(--ds-border-subtle)] px-3">
+                <ArrowUpDown size={14} className="text-[var(--ds-text-muted)]" />
+                <Select
+                  aria-label="Sort products"
                   value={currentSort}
                   onChange={(e) => handleSortChange(e.target.value)}
-                  className="catalog-sort-select cursor-pointer border-none bg-transparent focus:outline-none hover:text-black"
+                  className="h-auto cursor-pointer border-0 bg-transparent px-0 py-0 focus:border-transparent"
                 >
                   {SORT_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
             </div>
           </div>
@@ -323,48 +316,48 @@ export default function CatalogClient({
           {activeFilterCount > 0 ? (
             <div className="mt-4 flex flex-wrap items-center gap-2">
               {activeCategory ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
                   {activeCategory.name}
-                  <button
+                  <UnstyledButton
                     onClick={() => clearFilter('category_id')}
                     aria-label="Remove category filter"
-                    className="text-stone-400 transition-colors hover:text-stone-900"
+                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
                   >
                     <X size={12} />
-                  </button>
+                  </UnstyledButton>
                 </span>
               ) : null}
 
               {activeTag ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
                   {activeTag.name}
-                  <button
+                  <UnstyledButton
                     onClick={() => clearFilter('tag_id')}
                     aria-label="Remove tag filter"
-                    className="text-stone-400 transition-colors hover:text-stone-900"
+                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
                   >
                     <X size={12} />
-                  </button>
+                  </UnstyledButton>
                 </span>
               ) : null}
 
               {activeCollection ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
                   {activeCollection.title}
-                  <button
+                  <UnstyledButton
                     onClick={() => clearFilter('collection_id')}
                     aria-label="Remove collection filter"
-                    className="text-stone-400 transition-colors hover:text-stone-900"
+                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
                   >
                     <X size={12} />
-                  </button>
+                  </UnstyledButton>
                 </span>
               ) : null}
 
               {currentAttributeCode && currentAttributeValue ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
                   Attribute filter
-                  <button
+                  <UnstyledButton
                     onClick={() =>
                       updateQuery((params) => {
                         params.delete('attribute_code');
@@ -372,15 +365,15 @@ export default function CatalogClient({
                       })
                     }
                     aria-label="Remove attribute filter"
-                    className="text-stone-400 transition-colors hover:text-stone-900"
+                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
                   >
                     <X size={12} />
-                  </button>
+                  </UnstyledButton>
                 </span>
               ) : null}
 
               {(currentMinPrice || currentMaxPrice) ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
                   Price:{' '}
                   {[
                     currentMinPrice
@@ -392,7 +385,7 @@ export default function CatalogClient({
                   ]
                     .filter(Boolean)
                     .join(' ')}
-                  <button
+                  <UnstyledButton
                     onClick={() =>
                       updateQuery((params) => {
                         params.delete('min_price');
@@ -400,10 +393,10 @@ export default function CatalogClient({
                       })
                     }
                     aria-label="Remove price filter"
-                    className="text-stone-400 transition-colors hover:text-stone-900"
+                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
                   >
                     <X size={12} />
-                  </button>
+                  </UnstyledButton>
                 </span>
               ) : null}
             </div>
@@ -419,14 +412,14 @@ export default function CatalogClient({
 
             {totalPages > 1 ? (
               <div className="mt-16 flex items-center justify-center gap-2">
-                <button
+                <UnstyledButton
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page === 1 || loading}
-                  className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-[var(--ds-border-subtle)] p-2 text-[var(--ds-text-secondary)] transition-colors hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Previous page"
                 >
                   <ChevronLeft size={20} />
-                </button>
+                </UnstyledButton>
 
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   let pageNum: number;
@@ -441,79 +434,53 @@ export default function CatalogClient({
                   }
 
                   return (
-                    <button
+                    <UnstyledButton
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
                       disabled={loading}
                       className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
                         page === pageNum
-                          ? 'border border-stone-950 bg-white text-stone-950'
-                          : 'text-stone-600 hover:bg-stone-50 hover:text-black'
+                          ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
+                          : 'text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]'
                       }`}
                       aria-label={`Page ${pageNum}`}
                       aria-current={page === pageNum ? 'page' : undefined}
                     >
                       {pageNum}
-                    </button>
+                    </UnstyledButton>
                   );
                 })}
 
-                <button
+                <UnstyledButton
                   onClick={() => handlePageChange(page + 1)}
                   disabled={page === totalPages || loading}
-                  className="rounded-md border border-stone-200 p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-[var(--ds-border-subtle)] p-2 text-[var(--ds-text-secondary)] transition-colors hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Next page"
                 >
                   <ChevronRight size={20} />
-                </button>
+                </UnstyledButton>
               </div>
             ) : null}
           </main>
         </div>
       </div>
 
-      {filterDrawerOpen ? (
-        <>
-          <div
-            className="fixed inset-0 z-[90] bg-black/40"
-            onClick={() => setFilterDrawerOpen(false)}
-            aria-hidden="true"
-          />
-          <div
-            ref={filterDrawerRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="catalog-filter-title"
-            tabIndex={-1}
-            className="fixed inset-x-0 bottom-0 z-[100] max-h-[90vh] w-full bg-white shadow-xl transition-transform duration-300 sm:inset-y-0 sm:left-0 sm:right-auto sm:max-h-none sm:w-[360px] sm:max-w-[92vw]"
-          >
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-stone-100 p-4 sm:border-stone-200 sm:px-5 sm:py-4">
-                <h2 id="catalog-filter-title" className="catalog-filter-title">
-                  <span className="sm:hidden">Filter</span>
-                  <span className="hidden sm:inline">Filters</span>
-                </h2>
-                <button
-                  onClick={() => setFilterDrawerOpen(false)}
-                  className="p-2 text-stone-500 hover:text-black sm:flex sm:h-9 sm:w-9 sm:items-center sm:justify-center sm:border sm:border-stone-200 sm:bg-white sm:p-0 sm:transition-colors sm:hover:border-stone-950 sm:hover:text-stone-950"
-                  aria-label="Close filters"
-                >
-                  <X className="h-6 w-6 sm:h-[18px] sm:w-[18px]" />
-                </button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4 sm:px-5 sm:py-0">
-                <FilterSidebar
-                  categories={categories}
-                  tags={tags}
-                  collections={collections}
-                  onApply={() => setFilterDrawerOpen(false)}
-                  onClose={() => setFilterDrawerOpen(false)}
-                />
-              </div>
-            </div>
-          </div>
-        </>
-      ) : null}
+      <Drawer
+        isOpen={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        title="Filters"
+        side="bottom"
+        className="max-h-[90vh] sm:inset-y-0 sm:left-0 sm:right-auto sm:h-full sm:max-h-none sm:w-[360px] sm:max-w-[92vw]"
+        bodyClassName="p-4 sm:px-5 sm:py-0"
+      >
+        <FilterSidebar
+          categories={categories}
+          tags={tags}
+          collections={collections}
+          onApply={() => setFilterDrawerOpen(false)}
+          onClose={() => setFilterDrawerOpen(false)}
+        />
+      </Drawer>
     </div>
   );
 }

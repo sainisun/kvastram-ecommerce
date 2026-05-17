@@ -12,9 +12,21 @@ interface ModalProps {
   title?: ReactNode;
   children: ReactNode;
   className?: string;
+  rootClassName?: string;
+  bodyClassName?: string;
+  showHeader?: boolean;
 }
 
-export function Modal({ isOpen, onClose, title, children, className }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  className,
+  rootClassName,
+  bodyClassName,
+  showHeader = true,
+}: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
@@ -35,7 +47,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className={cn('fixed inset-0 z-[100] flex items-center justify-center p-4', rootClassName)}>
       <button
         type="button"
         className="absolute inset-0 bg-[rgba(26,23,20,0.48)]"
@@ -51,17 +63,19 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
           className
         )}
       >
-        <div className="flex items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] p-5">
-          {title ? (
-            <h2 className="font-display text-display-sm type-semibold leading-token-tight">
-              {title}
-            </h2>
-          ) : <span />}
-          <IconButton aria-label="Close modal" onClick={onClose}>
-            <X size={18} />
-          </IconButton>
-        </div>
-        <div className="p-5">{children}</div>
+        {showHeader ? (
+          <div className="flex items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] p-5">
+            {title ? (
+              <h2 className="font-display text-display-sm type-semibold leading-token-tight">
+                {title}
+              </h2>
+            ) : <span />}
+            <IconButton aria-label="Close modal" onClick={onClose}>
+              <X size={18} />
+            </IconButton>
+          </div>
+        ) : null}
+        <div className={cn('p-5', bodyClassName)}>{children}</div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import type { HomepageSpotlightProduct } from '@/types/homepage';
 import { cloudinaryUrlOrNull } from '@/lib/media';
 
@@ -34,7 +35,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
   if (items.length === 0) return null;
 
   return (
-    <section className="kv-section bg-white">
+    <section className="kv-section bg-[var(--ds-surface-paper)]">
       <div className="kv-container">
         <div className="kv-section-head">
           <div className="kv-tag">Style Story</div>
@@ -62,8 +63,8 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_30%,rgba(0,0,0,0.72)_100%)]" />
-                <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-4 md:p-6">
-                  <div className="mb-3 flex items-center justify-between gap-4 text-body-xs font-black uppercase tracking-token-wider text-white/80">
+                <div className="absolute inset-x-0 bottom-0 p-5 text-[var(--ds-text-inverse)] sm:p-4 md:p-6">
+                  <div className="mb-3 flex items-center justify-between gap-4 text-body-xs font-black uppercase tracking-token-wider text-[var(--ds-text-inverse)]/80">
                     <span>Look {String(index + 1).padStart(2, '0')}</span>
                     <ArrowUpRight
                       aria-hidden="true"
@@ -71,13 +72,17 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                       strokeWidth={1.8}
                     />
                   </div>
-                  <h3 className="line-clamp-2 font-heading text-display-sm leading-token-tight text-white">
+                  <h3 className="line-clamp-2 font-display text-display-sm leading-token-tight text-[var(--ds-text-inverse)]">
                     {item.product.title}
                   </h3>
                   {price ? (
-                    <p className="mt-2 text-body-xs font-bold uppercase tracking-token-wider text-white/78">
-                      {formatCurrency(price.amount, price.currency_code)}
-                    </p>
+                    <PriceDisplay
+                      as="p"
+                      price={formatCurrency(price.amount, price.currency_code)}
+                      variant="compact"
+                      className="mt-2"
+                      priceClassName="text-body-xs font-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)]/78"
+                    />
                   ) : null}
                 </div>
               </Link>
@@ -90,7 +95,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
             Curated pieces styled as complete festive edits, so every print,
             layer, and accessory feels intentional.
           </p>
-          <Link href="/products" className="kv-btn kv-btn-primary w-fit">
+          <Link href="/products" className="home-link-button home-link-button--primary w-fit">
             Shop The Edit
           </Link>
         </div>

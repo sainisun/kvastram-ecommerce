@@ -25,6 +25,8 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { Modal } from '@/components/ui/Modal';
+import { Button, IconButton } from '@/components/ui/Button';
 
 interface TrendingReelItem {
   id: string;
@@ -97,7 +99,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     try { localStorage.setItem('kvastram_reels_grid', String(cols)); } catch {}
   }
 
-  // Load reels — never auto-open, user must tap
+  // Load reels only after user action.
   useEffect(() => {
     let cancelled = false;
     api.getTrendingReels().then((res) => {
@@ -151,26 +153,30 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   return (
     <div className="min-h-screen bg-[var(--cream)] pb-24">
       {/* Sticky header */}
-      <div className="sticky top-0 z-40 border-b border-[var(--line)] bg-white/95 backdrop-blur-md">
+      <div className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--ds-surface-paper)]/95 backdrop-blur-md">
         <div className="kv-container flex items-center justify-between gap-3 py-3">
           <span className="text-body-sm type-semibold color-ink">Watch &amp; Buy Reels</span>
           <div className="flex items-center gap-1 rounded-lg border border-[var(--line)] p-1">
-            <button
+            <IconButton
               type="button"
               onClick={() => setGrid(2)}
               aria-label="2-column grid"
-              className={`rounded-md p-1.5 transition-colors ${gridCols === 2 ? 'bg-[var(--ink)] text-white' : 'color-muted hover:color-ink'}`}
+              variant="ghost"
+              size="sm"
+              className={`rounded-md border ${gridCols === 2 ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] color-ink' : 'border-transparent color-muted hover:color-ink hover:bg-[var(--ds-surface-soft)]'}`}
             >
               <Grid2X2 size={16} />
-            </button>
-            <button
+            </IconButton>
+            <IconButton
               type="button"
               onClick={() => setGrid(3)}
               aria-label="3-column grid"
-              className={`rounded-md p-1.5 transition-colors ${gridCols === 3 ? 'bg-[var(--ink)] text-white' : 'color-muted hover:color-ink'}`}
+              variant="ghost"
+              size="sm"
+              className={`rounded-md border ${gridCols === 3 ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] color-ink' : 'border-transparent color-muted hover:color-ink hover:bg-[var(--ds-surface-soft)]'}`}
             >
               <Grid3X3 size={16} />
-            </button>
+            </IconButton>
           </div>
         </div>
       </div>
@@ -186,24 +192,27 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
         {loading ? (
           <div className={gridCols === 3 ? 'grid grid-cols-3 gap-1.5' : 'grid grid-cols-2 gap-3'}>
             {[1, 2, 3, 4, 6].map((i) => (
-              <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-stone-200" />
+              <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-[var(--ds-surface-soft)]" />
             ))}
           </div>
         ) : visibleReels.length === 0 ? (
-          <div className="rounded-lg border border-[var(--line)] bg-white px-6 py-14 text-center">
+          <div className="rounded-lg border border-[var(--line)] bg-[var(--ds-surface-paper)] px-6 py-14 text-center">
             <p className="kv-tag">No Reels</p>
             <h2 className="mt-2 kv-title text-display-md">Nothing here yet</h2>
-            <Link href="/products" className="kv-btn mt-5 inline-flex">Browse Products</Link>
+            <Link href="/products" className="reels-action-link mt-5">
+              Browse Products
+            </Link>
           </div>
         ) : (
           <>
             <div className={gridClass}>
               {visibleReels.map((reel, idx) => (
-                <button
+                <Button
                   key={reel.id}
                   type="button"
                   onClick={() => openReel(idx)}
-                  className="reel-card group"
+                  variant="ghost"
+                  className="reel-card group gap-0 p-0 normal-case"
                 >
                   <div className="reel-media">
                     {reel.video_url ? (
@@ -238,7 +247,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                         {reel.product_name}
                       </div>
                       <div className="mt-1 flex items-center justify-between gap-1">
-                        <span className="text-body-xs type-semibold color-sienna">{formatPrice(reel.price)}</span>
+                        <span className="text-body-xs type-semibold color-accent">{formatPrice(reel.price)}</span>
                         <span className="inline-flex items-center gap-0.5 text-body-xs color-muted">
                           <Eye size={10} />
                           {reel.view_count || 0}
@@ -246,15 +255,15 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                       </div>
                     </div>
                   )}
-                </button>
+                </Button>
               ))}
             </div>
 
             {reels.length > 12 && !showAll && (
               <div className="mt-10 text-center">
-                <button type="button" onClick={() => setShowAll(true)} className="kv-btn">
+                <Button type="button" variant="outline" onClick={() => setShowAll(true)}>
                   Load More
-                </button>
+                </Button>
               </div>
             )}
           </>
@@ -280,11 +289,11 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 function ReelsGridSkeleton() {
   return (
     <div className="min-h-screen bg-[var(--cream)]">
-      <div className="sticky top-0 z-40 h-12 border-b border-[var(--line)] bg-white/95" />
+      <div className="sticky top-0 z-40 h-12 border-b border-[var(--line)] bg-[var(--ds-surface-paper)]/95" />
       <div className="kv-container pt-6 pb-8">
         <div className="grid grid-cols-2 gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-stone-200" />
+            <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-[var(--ds-surface-soft)]" />
           ))}
         </div>
       </div>
@@ -330,14 +339,15 @@ function ReelPlayerModal({
   useEffect(() => { setLocalReels(reels); }, [reels]);
 
   const current = localReels[currentIndex];
+  const currentId = current?.id;
 
   // Reset like/save state when reel changes
   useEffect(() => {
-    if (!current) return;
-    setSaved(getSavedReels().has(current.id));
+    if (!currentId) return;
+    setSaved(getSavedReels().has(currentId));
     setLiked(false);
     setLikeCount(0);
-  }, [current?.id]);
+  }, [currentId]);
 
   const goNext = useCallback(() => {
     if (currentIndex >= localReels.length - 1) return;
@@ -373,10 +383,8 @@ function ReelPlayerModal({
     });
   }, [currentIndex, current]);
 
-  // Lock body scroll + keyboard nav
+  // Modal owns scroll lock; this effect keeps reel-specific shell state and keyboard nav.
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     document.body.classList.add('reel-player-open');
     window.dispatchEvent(new Event('reel-player-state-change'));
     function onKey(e: KeyboardEvent) {
@@ -386,7 +394,6 @@ function ReelPlayerModal({
     }
     window.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = prev;
       document.body.classList.remove('reel-player-open');
       window.dispatchEvent(new Event('reel-player-state-change'));
       window.removeEventListener('keydown', onKey);
@@ -423,63 +430,51 @@ function ReelPlayerModal({
   if (!current) return null;
 
   return (
-    /*
-     * Outer: fixed inset-0 bg-black — covers entire screen on all devices.
-     * On desktop: flex centering so the 400px player sits in the middle.
-     * On mobile: no flex — the inner player fills inset-0 directly.
-     */
-    <div
-      className="reel-player-modal fixed inset-0 z-[100] bg-black lg:flex lg:items-center lg:justify-center"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1000,
-        height: '100dvh',
-        overflow: 'hidden',
-        backgroundColor: '#000',
-      }}
+    <Modal
+      isOpen
+      onClose={onClose}
+      showHeader={false}
+      rootClassName="z-[1000] p-0"
+      className="reel-player-modal h-dvh max-h-none max-w-none border-0 bg-[var(--ds-text-primary)] shadow-none lg:flex lg:items-center lg:justify-center"
+      bodyClassName="h-full overflow-hidden p-0"
     >
 
-      {/* Desktop side arrows — only visible lg+ */}
-      <button
+      {/* Desktop side arrows */}
+      <IconButton
         type="button"
         onClick={goPrev}
         disabled={currentIndex === 0}
-        className="absolute left-6 top-1/2 z-50 hidden -translate-y-1/2 rounded-full bg-white/15 p-3 text-white backdrop-blur-md transition hover:bg-white/30 disabled:opacity-20 lg:flex"
+        variant="ghost"
+        size="lg"
+        className="absolute left-6 top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-[var(--ds-text-inverse)] backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
+        aria-label="Previous reel"
       >
         <ChevronLeft size={24} />
-      </button>
-      <button
+      </IconButton>
+      <IconButton
         type="button"
         onClick={goNext}
         disabled={currentIndex === localReels.length - 1}
-        className="absolute right-6 top-1/2 z-50 hidden -translate-y-1/2 rounded-full bg-white/15 p-3 text-white backdrop-blur-md transition hover:bg-white/30 disabled:opacity-20 lg:flex"
+        variant="ghost"
+        size="lg"
+        className="absolute right-6 top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-[var(--ds-text-inverse)] backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
+        aria-label="Next reel"
       >
         <ChevronRight size={24} />
-      </button>
+      </IconButton>
 
       {/*
        * Player shell:
-       * Mobile  → h-full w-full (fills the fixed inset-0 parent exactly, no cut)
-       * Desktop → h-[90dvh] max-w-[390px] with rounded corners
+       * Mobile: h-full w-full fills the fixed inset-0 parent exactly.
+       * Desktop: h-[90dvh] max-w-[390px] with rounded corners.
        */}
       <div
-        className="relative flex h-full w-full flex-col overflow-hidden bg-black lg:h-[90dvh] lg:max-w-[390px] lg:rounded-lg"
-        style={{
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          height: '100dvh',
-          maxHeight: '100dvh',
-          overflow: 'hidden',
-          backgroundColor: '#000',
-        }}
+        className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-[var(--ds-text-primary)] lg:h-[90dvh] lg:max-w-[390px] lg:rounded-lg"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {/* VIDEO — fills container, no cut */}
+        {/* Video fills the container. */}
         <video
           key={current.id}
           ref={videoRef}
@@ -490,13 +485,6 @@ function ReelPlayerModal({
           playsInline
           autoPlay
           className="absolute inset-0 h-full w-full object-cover"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          }}
         />
 
         {/* Gradients */}
@@ -509,76 +497,38 @@ function ReelPlayerModal({
             {localReels.map((_, i) => (
               <div
                 key={i}
-                className={`h-[3px] flex-1 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-white' : 'bg-white/30'}`}
+                className={`h-[3px] flex-1 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-[var(--ds-surface-paper)]' : 'bg-[var(--ds-surface-paper)]/30'}`}
               />
             ))}
           </div>
         )}
 
         {/* Top bar */}
-        <div
-          className="reel-player-topbar relative z-10 flex items-center gap-3 px-4 pt-10"
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            paddingInline: '1rem',
-            paddingTop: '2.5rem',
-            color: '#fff',
-          }}
-        >
-          <button
+        <div className="reel-player-topbar relative z-10 flex items-center gap-3 px-4 pt-10 text-[var(--ds-text-inverse)]">
+          <IconButton
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60"
-            style={{
-              display: 'flex',
-              width: '2.25rem',
-              height: '2.25rem',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '9999px',
-              backgroundColor: 'rgba(0,0,0,0.4)',
-              color: '#fff',
-            }}
+            variant="ghost"
+            size="sm"
+            className="h-9 w-9 rounded-full border-transparent bg-[var(--ds-text-primary)]/40 text-[var(--ds-text-inverse)] backdrop-blur-sm hover:bg-[var(--ds-text-primary)]/60"
+            aria-label="Close reel player"
           >
             <ArrowLeft size={18} />
-          </button>
+          </IconButton>
           <div className="min-w-0 flex-1">
-            <p
-              className="text-body-xs type-bold uppercase tracking-token-wider text-white/50"
-              style={{ color: 'rgba(255,255,255,0.65)' }}
-            >
+            <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)]/65">
               {currentIndex + 1} / {localReels.length}
             </p>
-            <p
-              className="mt-0.5 line-clamp-1 text-body-sm type-semibold text-white"
-              style={{ color: '#fff' }}
-            >
+            <p className="mt-0.5 line-clamp-1 text-body-sm type-semibold text-[var(--ds-text-inverse)]">
               {current.product_name}
             </p>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div
-          className="reel-player-actions absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5"
-          style={{
-            position: 'absolute',
-            right: '1rem',
-            bottom: '8rem',
-            zIndex: 20,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '1.25rem',
-            color: '#fff',
-          }}
-        >
+        <div className="reel-player-actions absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5 text-[var(--ds-text-inverse)]">
           {/* Like */}
-          <button
+          <Button
             type="button"
             onClick={() => {
               setLiked((prev) => {
@@ -586,9 +536,10 @@ function ReelPlayerModal({
                 return !prev;
               });
             }}
-            className="flex flex-col items-center gap-0.5 text-white"
+            variant="ghost"
+            size="sm"
+            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-[var(--ds-text-inverse)] hover:bg-transparent"
             aria-label={liked ? 'Unlike reel' : 'Like reel'}
-            style={{ color: '#fff' }}
           >
             <Heart
               size={28}
@@ -596,84 +547,63 @@ function ReelPlayerModal({
               color="white"
               className="drop-shadow transition-transform active:scale-125"
             />
-            <span className="text-body-xs type-semibold text-white drop-shadow" style={{ color: '#fff' }}>
+            <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">
               {likeCount > 0 ? likeCount : ''}
             </span>
-          </button>
+          </Button>
 
           {/* Share */}
-          <button
+          <Button
             type="button"
             onClick={handleShare}
-            className="flex flex-col items-center gap-0.5 text-white"
+            variant="ghost"
+            size="sm"
+            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-[var(--ds-text-inverse)] hover:bg-transparent"
             aria-label="Share reel"
-            style={{ color: '#fff' }}
           >
-            <Share2 size={26} className="text-white drop-shadow" />
-            <span className="text-body-xs type-semibold text-white drop-shadow" style={{ color: '#fff' }}>Share</span>
-          </button>
+            <Share2 size={26} className="text-[var(--ds-text-inverse)] drop-shadow" />
+            <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">Share</span>
+          </Button>
 
           {/* Save */}
-          <button
+          <Button
             type="button"
             onClick={() => setSaved(toggleSavedReel(current.id))}
-            className="flex flex-col items-center gap-0.5 text-white"
+            variant="ghost"
+            size="sm"
+            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-[var(--ds-text-inverse)] hover:bg-transparent"
             aria-label={saved ? 'Remove saved reel' : 'Save reel'}
-            style={{ color: '#fff' }}
           >
             <Bookmark
               size={26}
               fill={saved ? 'white' : 'transparent'}
-              className="text-white drop-shadow transition-transform active:scale-125"
+              className="text-[var(--ds-text-inverse)] drop-shadow transition-transform active:scale-125"
             />
-            <span className="text-body-xs type-semibold text-white drop-shadow" style={{ color: '#fff' }}>
+            <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">
               {saved ? 'Saved' : 'Save'}
             </span>
-          </button>
+          </Button>
 
           {/* Views */}
           <div
-            className="flex flex-col items-center gap-0.5 text-white"
+            className="flex flex-col items-center gap-0.5 text-[var(--ds-text-inverse)]"
             aria-label={`${current.view_count || 0} views`}
-            style={{ color: '#fff' }}
           >
-            <Eye size={24} className="text-white drop-shadow" />
-            <span className="text-body-xs type-semibold text-white drop-shadow" style={{ color: '#fff' }}>
+            <Eye size={24} className="text-[var(--ds-text-inverse)] drop-shadow" />
+            <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">
               {current.view_count || 0}
             </span>
           </div>
         </div>
 
         {/* Bottom product overlay */}
-        <div
-          className="relative z-10 mt-auto px-3"
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            marginTop: 'auto',
-            paddingInline: '0.75rem',
-            paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
-          }}
-        >
+        <div className="relative z-10 mt-auto px-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}
-            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-white/70 bg-white/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-xl transition active:scale-[0.98]"
-            style={{
-              display: 'flex',
-              minWidth: 0,
-              alignItems: 'center',
-              gap: '0.75rem',
-              borderRadius: '0.5rem',
-              border: '1px solid rgba(255,255,255,0.7)',
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              padding: '0.625rem',
-              color: 'var(--ink)',
-              boxShadow: '0 18px 50px rgba(0,0,0,0.24)',
-              backdropFilter: 'blur(16px)',
-            }}
+            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-[var(--ds-surface-paper)]/70 bg-[var(--ds-surface-paper)]/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-xl transition active:scale-[0.98]"
           >
-            <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border border-black/10 bg-white">
+            <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border border-[var(--ds-text-primary)]/10 bg-[var(--ds-surface-paper)]">
               <OptimizedImage
                 src={current.thumbnail_url}
                 alt={current.product_name}
@@ -682,30 +612,15 @@ function ReelPlayerModal({
                 className="object-cover"
               />
             </div>
-            <div className="min-w-0 flex-1" style={{ minWidth: 0, flex: 1 }}>
-              <p
-                className="line-clamp-2 text-body-sm type-semibold leading-token-snug color-ink"
-                style={{ color: 'var(--ink)' }}
-              >
+            <div className="min-w-0 flex-1">
+              <p className="line-clamp-2 text-body-sm type-semibold leading-token-snug color-ink">
                 {current.product_name}
               </p>
-              <p className="mt-1 text-body-sm type-bold color-sienna" style={{ color: 'var(--sienna)' }}>
+              <p className="mt-1 text-body-sm type-bold color-accent">
                 {formatPrice(current.price)}
               </p>
             </div>
-            <span
-              className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--sienna)] px-3.5 py-2 text-body-xs type-bold uppercase tracking-token-wider text-white shadow-lg"
-              style={{
-                display: 'flex',
-                flexShrink: 0,
-                alignItems: 'center',
-                gap: '0.375rem',
-                borderRadius: '9999px',
-                backgroundColor: 'var(--sienna)',
-                padding: '0.5rem 0.875rem',
-                color: '#fff',
-              }}
-            >
+            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--ds-accent-primary)] px-3.5 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] shadow-lg">
               <ShoppingBag size={14} aria-hidden="true" />
               Shop
             </span>
@@ -715,12 +630,12 @@ function ReelPlayerModal({
         {/* Swipe hint on first reel */}
         {localReels.length > 1 && currentIndex === 0 && (
           <div className="pointer-events-none absolute inset-x-0 bottom-44 z-10 flex justify-center lg:hidden">
-            <span className="rounded-full bg-black/40 px-4 py-1.5 text-body-xs text-white/70 backdrop-blur-sm">
-              Swipe up for next ↑
+            <span className="rounded-full bg-[var(--ds-text-primary)]/40 px-4 py-1.5 text-body-xs text-[var(--ds-text-inverse)]/70 backdrop-blur-sm">
+              Swipe up for next
             </span>
           </div>
         )}
       </div>
-    </div>
+    </Modal>
   );
 }

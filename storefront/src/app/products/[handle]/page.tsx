@@ -85,7 +85,7 @@ export default async function ProductPage({ params }: Props) {
           {primaryCategoryPath && primaryCategory && (
             <a
               href={primaryCategoryPath}
-              className="kv-btn"
+              className="related-products-link"
             >
               Shop More {primaryCategory.name}
             </a>

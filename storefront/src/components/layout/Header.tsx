@@ -20,6 +20,7 @@ import { usePathname } from 'next/navigation';
 import SearchOverlay from '@/components/search/SearchOverlay';
 import MobileMenu from '@/components/layout/MobileMenu';
 import CartDrawer from '@/components/layout/CartDrawer';
+import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
 
 interface NavLink {
   label: string;
@@ -207,11 +208,11 @@ export function Header() {
   return (
     <>
       <header
-        className="sticky top-0 z-50 border-b border-[var(--line)] bg-white/95 backdrop-blur-md"
+        className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--ds-surface-paper)]/95 backdrop-blur-md"
       >
-        {/* Announcement Strip — Mobile-First Prototype Design */}
+        {/* Announcement strip */}
         {announcementEnabled && announcementText && !announcementDismissed && (
-          <div className="announcement-bar announce relative flex h-[34px] items-center justify-center overflow-hidden bg-[var(--sienna)] px-9">
+          <div className="announcement-bar announce relative flex h-[34px] items-center justify-center overflow-hidden bg-[var(--ds-accent-primary)] px-9">
             <div className="animate-marquee whitespace-nowrap">
               {Array.from({ length: 4 }).map((_, i) => (
                 <span key={`ticker-${i}`} className="px-8 whitespace-nowrap">
@@ -219,13 +220,15 @@ export function Header() {
                 </span>
               ))}
             </div>
-            <button
+            <IconButton
               onClick={handleDismissAnnouncement}
-              className="announcement-dismiss absolute right-3 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center border-0 bg-transparent p-1"
+              size="sm"
+              variant="ghost"
+              className="announcement-dismiss"
               aria-label="Dismiss announcement"
             >
               <X size={16} strokeWidth={2.5} />
-            </button>
+            </IconButton>
           </div>
         )}
 
@@ -233,13 +236,14 @@ export function Header() {
           {/* Mobile Header Layout */}
           <div className="relative flex w-full items-center justify-between md:hidden">
             {/* Left: Hamburger Menu */}
-            <button
+            <IconButton
               onClick={() => setMobileMenuOpen(true)}
-              className="icon-btn"
+              variant="ghost"
+              className="header-icon-button"
               aria-label="Open menu"
             >
               <Menu size={22} />
-            </button>
+            </IconButton>
 
             {/* Center: Logo */}
             <Link
@@ -251,27 +255,27 @@ export function Header() {
 
             {/* Right: Search & Cart */}
             <div className="header-actions">
-              <button
-                type="button"
+              <IconButton
                 onClick={() => setShowSearch(true)}
-                className="icon-btn"
+                variant="ghost"
+                className="header-icon-button"
                 aria-label="Search"
               >
                 <Search size={20} />
-              </button>
-              <button
-                type="button"
+              </IconButton>
+              <IconButton
                 onClick={() => setShowCartDrawer(true)}
-                className="icon-btn"
+                variant="ghost"
+                className="header-icon-button"
                 aria-label="Open cart"
               >
                 <ShoppingBag size={20} />
                 {totalItems > 0 && (
-                  <span className="badge bg-[var(--sienna)]">
+                  <span className="badge bg-[var(--ds-accent-primary)]">
                     {totalItems}
                   </span>
                 )}
-              </button>
+              </IconButton>
             </div>
           </div>
 
@@ -301,8 +305,11 @@ export function Header() {
                       onFocus={() => setShowShopMenu(true)}
                       onBlur={closeShopMenu}
                     >
-                      <button
-                        className={`nav-link flex items-center gap-1 rounded py-2 transition-colors focus:outline-none ${isActive ? 'nav-link-active' : ''}`}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className={`nav-link flex min-h-0 items-center gap-1 rounded px-0 py-2 normal-case transition-colors focus:outline-none ${isActive ? 'nav-link-active' : ''}`}
                         style={{ animationDelay: `${index * 60}ms` }}
                         aria-label="Shop menu"
                         aria-expanded={showShopMenu}
@@ -318,7 +325,7 @@ export function Header() {
                           size={14}
                           className={`transition-transform duration-200 ${showShopMenu ? 'rotate-180' : ''}`}
                         />
-                      </button>
+                      </Button>
 
                       {showShopMenu && (
                         <div className="absolute top-full left-1/2 -translate-x-1/2 w-full max-w-[900px] bg-[var(--paper)] shadow-2xl border border-[var(--soft)] rounded-[var(--radius-sm)] overflow-hidden mega-menu-enter">
@@ -337,7 +344,7 @@ export function Header() {
                                   >
                                     <Link
                                       href={`/collections/${cat.slug}`}
-                                      className="nav-link -ml-2 block border-l-2 border-transparent py-1.5 pl-2 transition-colors hover:border-[var(--sienna)]"
+                                      className="nav-link -ml-2 block border-l-2 border-transparent py-1.5 pl-2 transition-colors hover:border-[var(--ds-accent-primary)]"
                                       onClick={closeShopMenu}
                                       onMouseEnter={() =>
                                         setHoveredCategory(cat.id)
@@ -378,7 +385,7 @@ export function Header() {
                                 className="nav-icon-label hover-text-accent flex items-center gap-1.5 transition-colors"
                                 onClick={closeShopMenu}
                               >
-                                Shop All Products →
+                                Shop All Products {'->'}
                               </Link>
                             </div>
 
@@ -461,7 +468,7 @@ export function Header() {
                                 className="nav-dropdown-item nav-dropdown-item-active hover-text-accent mt-2.5 block transition-colors"
                                 onClick={closeShopMenu}
                               >
-                                New Arrivals ✦
+                                New Arrivals
                               </Link>
                             </div>
                           </div>
@@ -486,19 +493,19 @@ export function Header() {
 
             {/* Actions */}
             <div className="header-actions">
-              <button
-                type="button"
+              <IconButton
                 onClick={() => setShowSearch(true)}
-                className="icon-btn"
+                variant="ghost"
+                className="header-icon-button"
                 aria-label="Search products"
                 data-tooltip="Search"
               >
                 <Search size={20} />
-              </button>
+              </IconButton>
 
               <Link
                 href="/account"
-                className="icon-btn"
+                className="header-icon-link"
                 aria-label="My Account"
                 data-tooltip="Account"
               >
@@ -508,13 +515,13 @@ export function Header() {
               {/* Wishlist Icon */}
               <Link
                 href="/wishlist"
-                className="icon-btn"
+                className="header-icon-link"
                 aria-label={`Wishlist with ${wishlistCount} items`}
                 data-tooltip="Wishlist"
               >
                 <Heart size={20} />
                 {wishlistCount > 0 && (
-                  <span className="badge bg-[var(--sienna)]">
+                  <span className="badge bg-[var(--ds-accent-primary)]">
                     {wishlistCount}
                   </span>
                 )}
@@ -522,7 +529,7 @@ export function Header() {
 
               {/* Region Selector */}
               <div className="relative" ref={menuRef}>
-                <button
+                <UnstyledButton
                   onClick={() => setShowRegionMenu(!showRegionMenu)}
                   className="nav-icon-label hover-text-primary flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors hover:bg-[var(--soft)] focus:outline-none"
                   aria-label="Select region and currency"
@@ -535,7 +542,7 @@ export function Header() {
                     {currentRegion?.currency_code || 'USD'}
                   </span>
                   <ChevronDown size={14} />
-                </button>
+                </UnstyledButton>
 
                 {showRegionMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-[var(--paper)] rounded-[var(--radius-md)] shadow-xl border border-[var(--soft)] py-1 overflow-hidden">
@@ -543,7 +550,7 @@ export function Header() {
                       Select Region
                     </div>
                     {regions.map((region) => (
-                      <button
+                      <UnstyledButton
                         key={region.id}
                         onClick={() => {
                           setRegion(region);
@@ -559,29 +566,29 @@ export function Header() {
                         <span className="nav-icon-label hover-text-primary">
                           {region.currency_code}
                         </span>
-                      </button>
+                      </UnstyledButton>
                     ))}
                   </div>
                 )}
               </div>
 
-              <button
-                type="button"
+              <IconButton
                 onClick={() => setShowCartDrawer(true)}
-                className="icon-btn"
+                variant="ghost"
+                className="header-icon-button"
                 aria-label={`Shopping cart with ${totalItems} items`}
                 data-tooltip="Cart"
               >
                 <ShoppingBag size={20} />
                 {totalItems > 0 && (
                   <span
-                    className="badge bg-[var(--sienna)]"
+                    className="badge bg-[var(--ds-accent-primary)]"
                     aria-label={`${totalItems} items in cart`}
                   >
                     {totalItems}
                   </span>
                 )}
-              </button>
+              </IconButton>
             </div>
           </div>
         </div>

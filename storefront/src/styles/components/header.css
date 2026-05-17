@@ -1,9 +1,7 @@
-/* ═══════════════════════════════════════════════════
-   PROTOTYPE PARITY — HEADER & NAVIGATION
-   ═══════════════════════════════════════════════════ */
+/* Header and navigation */
 
 .announce {
-  background: var(--sienna);
+  background: var(--ds-accent-primary);
   color: white;
   text-align: center;
   font-size: var(--text-body-xs);
@@ -12,15 +10,18 @@
   padding: 9px 36px;
   position: relative;
 }
-.announce button {
+.announcement-dismiss {
   position: absolute;
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  border: 0;
-  background: transparent;
-  color: white;
-  font-size: var(--text-display-sm);
+  border-color: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--ds-text-inverse);
+}
+.announcement-dismiss:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--ds-text-inverse);
 }
 .header-inner {
   min-height: 62px;
@@ -36,29 +37,39 @@
   font-weight: 700;
   text-decoration: none;
 }
-.logo span { color: var(--sienna); }
+.logo span { color: var(--ds-accent-primary); }
 .header-actions {
   display: flex;
   align-items: center;
   gap: 2px;
 }
-.icon-btn {
+.header-icon-button,
+.header-icon-link {
   position: relative;
   width: 40px;
   height: 40px;
-  display: inline-grid;
-  place-items: center;
-  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--ink);
-  font-size: var(--text-display-sm);
+  color: var(--ds-text-primary);
   cursor: pointer;
   text-decoration: none;
+  transition:
+    background-color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease),
+    color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease);
 }
-.icon-btn:hover {
-  background: var(--soft);
-  color: var(--sienna);
+.header-icon-button:hover,
+.header-icon-link:hover {
+  background: var(--ds-surface-soft);
+  color: var(--ds-accent-primary);
+}
+.header-icon-button:focus-visible,
+.header-icon-link:focus-visible {
+  outline: 2px solid var(--ds-accent-primary);
+  outline-offset: 2px;
 }
 .badge {
   position: absolute;

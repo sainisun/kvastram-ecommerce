@@ -13,15 +13,15 @@ export function AsSeenOn({ items }: AsSeenOnProps) {
   if (items.length === 0) return null;
 
   return (
-    <section className="border-y border-stone-200 bg-white py-6">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <section className="border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] py-6">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-12 lg:gap-x-16">
           {items.map((item) => (
             <div key={item.id} className="flex flex-col items-center text-center">
-              <span className="text-body-xs type-semibold uppercase tracking-token-wider text-stone-900">
+              <span className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-primary)]">
                 {item.label}
               </span>
-              <span className="mt-0.5 text-body-xs tracking-token-wider text-stone-400">
+              <span className="mt-0.5 text-body-xs tracking-token-wider text-[var(--ds-text-muted)]">
                 {item.sub}
               </span>
             </div>

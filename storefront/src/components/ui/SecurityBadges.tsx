@@ -12,20 +12,20 @@ export default function SecurityBadges({
   return (
     <div className={`flex items-center justify-center gap-6 py-4 ${className}`}>
       {/* SSL Secure */}
-      <div className="flex items-center gap-2 text-stone-500">
-        <Lock size={16} className="text-green-600" />
+      <div className="flex items-center gap-2 text-[var(--ds-text-muted)]">
+        <Lock size={16} className="text-[var(--ds-success)]" />
         <span className="text-body-xs type-medium">SSL Secure</span>
       </div>
 
       {/* PCI Compliant */}
-      <div className="flex items-center gap-2 text-stone-500">
-        <CreditCard size={16} className="text-green-600" />
+      <div className="flex items-center gap-2 text-[var(--ds-text-muted)]">
+        <CreditCard size={16} className="text-[var(--ds-success)]" />
         <span className="text-body-xs type-medium">PCI Compliant</span>
       </div>
 
       {/* Authenticity */}
-      <div className="flex items-center gap-2 text-stone-500">
-        <ShieldCheck size={16} className="text-green-600" />
+      <div className="flex items-center gap-2 text-[var(--ds-text-muted)]">
+        <ShieldCheck size={16} className="text-[var(--ds-success)]" />
         <span className="text-body-xs type-medium">Authenticity Guaranteed</span>
       </div>
     </div>
@@ -37,31 +37,37 @@ export function PaymentIcons({ className = '' }: { className?: string }) {
   return (
     <div className={`flex items-center justify-center gap-3 ${className}`}>
       {/* Visa */}
-      <div className="h-8 w-12 bg-white rounded border border-stone-200 flex items-center justify-center">
-        <span className="text-body-xs type-bold text-blue-900 italic">VISA</span>
+      <div className="flex h-8 w-12 items-center justify-center rounded border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
+        <span className="text-body-xs text-[var(--ds-info-text)] type-bold italic">
+          VISA
+        </span>
       </div>
 
       {/* Mastercard */}
-      <div className="h-8 w-12 bg-white rounded border border-stone-200 flex items-center justify-center">
+      <div className="flex h-8 w-12 items-center justify-center rounded border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
         <div className="flex items-center gap-0.5">
-          <div className="w-4 h-4 rounded-full bg-red-600"></div>
-          <div className="w-4 h-4 rounded-full bg-yellow-500 -ml-2"></div>
+          <div className="h-4 w-4 rounded-full bg-[var(--ds-danger)]"></div>
+          <div className="-ml-2 h-4 w-4 rounded-full bg-[var(--ds-footer-highlight)]"></div>
         </div>
       </div>
 
       {/* Amex */}
-      <div className="h-8 w-12 bg-white rounded border border-stone-200 flex items-center justify-center">
-        <span className="text-body-xs type-bold text-blue-800">AMEX</span>
+      <div className="flex h-8 w-12 items-center justify-center rounded border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
+        <span className="text-body-xs text-[var(--ds-info-text)] type-bold">
+          AMEX
+        </span>
       </div>
 
       {/* PayPal */}
-      <div className="h-8 w-14 bg-white rounded border border-stone-200 flex items-center justify-center">
-        <span className="text-body-xs type-bold text-blue-700">PayPal</span>
+      <div className="flex h-8 w-14 items-center justify-center rounded border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
+        <span className="text-body-xs text-[var(--ds-info-text)] type-bold">
+          PayPal
+        </span>
       </div>
 
       {/* Apple Pay */}
-      <div className="h-8 w-10 bg-black rounded flex items-center justify-center">
-        <span className="text-white text-body-xs type-medium">Pay</span>
+      <div className="flex h-8 w-10 items-center justify-center rounded bg-[var(--ds-text-primary)]">
+        <span className="text-body-xs text-[var(--ds-text-inverse)] type-medium">Pay</span>
       </div>
     </div>
   );

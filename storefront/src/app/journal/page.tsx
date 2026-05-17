@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { api } from '@/lib/api';
 
 export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
@@ -21,15 +22,15 @@ export default async function JournalPage() {
   const posts: Post[] = data.posts || [];
 
   return (
-    <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="mb-12 space-y-4 text-center md:mb-16">
-        <span className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
+        <span className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
           The Journal
         </span>
-        <h1 className="text-display-xl font-serif text-stone-900 italic">
+        <h1 className="text-display-xl font-display text-[var(--ds-text-primary)] italic">
           Stories from the Atelier
         </h1>
-        <p className="text-stone-600 type-light max-w-2xl mx-auto">
+        <p className="text-[var(--ds-text-secondary)] type-light max-w-2xl mx-auto">
           Exploring the intersection of heritage craftsmanship, sustainable
           luxury, and modern design.
         </p>
@@ -42,7 +43,7 @@ export default async function JournalPage() {
             href={`/journal/${post.slug}`}
             className="group block space-y-4"
           >
-            <div className="aspect-[4/5] bg-stone-200 overflow-hidden relative">
+            <div className="aspect-[4/5] bg-[var(--ds-surface-warm)] overflow-hidden relative">
               {post.cover_image ? (
                 <OptimizedImage
                   src={post.cover_image}
@@ -53,22 +54,22 @@ export default async function JournalPage() {
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full bg-stone-100 flex items-center justify-center text-stone-300 italic font-serif">
+                <div className="w-full h-full bg-[var(--ds-surface-soft)] flex items-center justify-center text-[var(--ds-text-disabled)] italic font-display">
                   Kvastram Journal
                 </div>
               )}
             </div>
             <div className="space-y-2">
-              <div className="text-body-xs text-stone-500 type-bold uppercase tracking-token-wider">
+              <div className="text-body-xs text-[var(--ds-text-muted)] type-bold uppercase tracking-token-wider">
                 {new Date(post.published_at || new Date()).toLocaleDateString()}
               </div>
-              <h2 className="text-display-md font-serif text-stone-900 group-hover:text-stone-600 transition-colors">
+              <h2 className="text-display-md font-display text-[var(--ds-text-primary)] group-hover:text-[var(--ds-text-secondary)] transition-colors">
                 {post.title}
               </h2>
-              <p className="text-stone-600 type-light line-clamp-3">
+              <p className="text-[var(--ds-text-secondary)] type-light line-clamp-3">
                 {post.excerpt || post.content.substring(0, 150) + '...'}
               </p>
-              <span className="inline-block text-body-xs type-bold border-b border-stone-900 pb-1 mt-2">
+              <span className="inline-block text-body-xs type-bold border-b border-[var(--ds-text-primary)] pb-1 mt-2">
                 Read Story
               </span>
             </div>
@@ -77,11 +78,12 @@ export default async function JournalPage() {
       </div>
 
       {posts.length === 0 && (
-        <div className="text-center py-20 text-stone-400 type-light italic">
-          No stories published yet.
-        </div>
+        <EmptyState
+          title="No stories published yet."
+          description="New craft, styling, and atelier stories will appear here when they are published."
+          className="mt-12"
+        />
       )}
     </div>
   );
 }
-

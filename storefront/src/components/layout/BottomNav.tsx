@@ -91,7 +91,7 @@ export function BottomNav() {
 
       {/* Bottom Navigation Bar */}
       <nav
-        className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-100 z-[45] pointer-events-auto transition-transform duration-300 md:hidden ${
+        className={`fixed bottom-0 left-0 right-0 bg-[var(--ds-surface-paper)]/95 backdrop-blur-md border-t border-[var(--ds-border-subtle)] z-[45] pointer-events-auto transition-transform duration-300 md:hidden ${
           isVisible ? 'translate-y-0' : 'translate-y-full'
         }`}
         aria-label="Bottom navigation"
@@ -107,8 +107,8 @@ export function BottomNav() {
                 href={item.href}
                 className={`flex flex-col items-center justify-center py-2 px-2 min-w-[52px] transition-colors relative ${
                   isActive
-                    ? 'text-stone-900'
-                    : 'text-stone-400 hover:text-stone-700'
+                    ? 'text-[var(--ds-text-primary)]'
+                    : 'text-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
@@ -116,21 +116,21 @@ export function BottomNav() {
                   <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
                   {/* Badge */}
                   {item.badge > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-stone-900 text-white text-body-xs type-bold rounded-full flex items-center justify-center leading-token-tight">
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] text-body-xs type-bold rounded-full flex items-center justify-center leading-token-tight">
                       {item.badge > 9 ? '9+' : item.badge}
                     </span>
                   )}
                 </div>
                 <span
                   className={`text-body-xs mt-1 type-medium tracking-token-wide ${
-                    isActive ? 'text-stone-900' : 'text-stone-400'
+                    isActive ? 'text-[var(--ds-text-primary)]' : 'text-[var(--ds-text-muted)]'
                   }`}
                 >
                   {item.label}
                 </span>
                 {/* Active indicator dot */}
                 {isActive && (
-                  <span className="absolute bottom-1 w-1 h-1 bg-stone-900 rounded-full" />
+                  <span className="absolute bottom-1 w-1 h-1 bg-[var(--ds-text-primary)] rounded-full" />
                 )}
               </a>
             );

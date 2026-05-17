@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { RatingDisplay } from '@/components/ui/RatingDisplay';
 import { api } from '@/lib/api';
 import { formatPriceFromINR } from '@/lib/currency';
 import {
@@ -60,22 +63,6 @@ function formatPrice(product: Product) {
   if (!inrPrice) return 'Contact for price';
   // Server component — always show INR; client components handle per-user currency
   return formatPriceFromINR(inrPrice.amount, 'INR', { INR: 1 });
-}
-
-function renderStars(rating?: number | null) {
-  const filled = Math.max(0, Math.min(5, Math.round(rating || 0)));
-  return Array.from({ length: 5 }, (_, index) => (
-    <svg
-      key={index}
-      width="10"
-      height="10"
-      viewBox="0 0 24 24"
-      fill={index < filled ? '#080808' : '#ddd'}
-      aria-hidden="true"
-    >
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  ));
 }
 
 export default async function BestsellersPage({
@@ -173,7 +160,7 @@ export default async function BestsellersPage({
   ];
 
   return (
-    <div className="bestsellers-shell min-h-screen bg-white">
+    <div className="bestsellers-shell min-h-screen bg-[var(--ds-surface-paper)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
@@ -191,39 +178,39 @@ export default async function BestsellersPage({
           />
         ) : null}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.3),rgba(0,0,0,0.5))]" />
-        <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center px-6 text-center text-white md:px-12 lg:px-20">
-          <h1 className="font-heading text-display-xl type-regular leading-token-tight tracking-token-tight text-white">
+        <div className="kv-page-container relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center px-6 text-center text-[var(--ds-text-inverse)] md:px-12 lg:px-20">
+          <h1 className="font-display text-display-xl type-regular leading-token-tight tracking-token-tight text-[var(--ds-text-inverse)]">
             Most <em className="italic">Loved</em>
           </h1>
-          <p className="mt-4 max-w-[600px] font-heading text-display-sm type-regular italic leading-8 text-white/90">
+          <p className="mt-4 max-w-[600px] font-display text-display-sm type-regular italic leading-8 text-[var(--ds-text-inverse)]/90">
             These are the pieces the Kavastram community can&apos;t stop talking about. Curated from thousands of orders and five-star reviews.
           </p>
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
-          className="mb-10 flex items-center gap-2 text-body-xs type-medium uppercase tracking-token-wide text-stone-400"
+          className="mb-10 flex items-center gap-2 text-body-xs type-medium uppercase tracking-token-wide text-[var(--ds-text-muted)]"
         >
-          <Link href="/" className="transition-colors hover:text-stone-900">
+          <Link href="/" className="transition-colors hover:text-[var(--ds-text-primary)]">
             Home
           </Link>
           <span>/</span>
-          <span className="text-stone-700">Bestsellers</span>
+          <span className="text-[var(--ds-text-secondary)]">Bestsellers</span>
         </nav>
 
         {stats.length > 0 ? (
-          <section className="grid gap-0 border-b border-stone-100 py-10 sm:grid-cols-2 xl:grid-cols-4">
+          <section className="grid gap-0 border-b border-[var(--ds-border-subtle)] py-10 sm:grid-cols-2 xl:grid-cols-4">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="border-r border-stone-100 px-4 py-4 text-center last:border-r-0 sm:border-b sm:border-r xl:border-b-0"
+                className="border-r border-[var(--ds-border-subtle)] px-4 py-4 text-center last:border-r-0 sm:border-b sm:border-r xl:border-b-0"
               >
-                <div className="font-heading text-display-xl leading-token-tight text-stone-950">
+                <div className="font-display text-display-xl leading-token-tight text-[var(--ds-text-primary)]">
                   {stat.value}
                 </div>
-                <div className="mt-2 text-body-xs uppercase tracking-token-wider text-stone-500">
+                <div className="mt-2 text-body-xs uppercase tracking-token-wider text-[var(--ds-text-muted)]">
                   {stat.label}
                 </div>
               </div>
@@ -235,26 +222,22 @@ export default async function BestsellersPage({
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
               href="/bestsellers"
-              className={`inline-flex items-center rounded-full border px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider transition-colors ${
-                selectedSize === 'all'
-                  ? 'border-stone-950 bg-stone-950 text-white'
-                  : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
+              className={`kv-text-chip px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider ${
+                selectedSize === 'all' ? 'kv-text-chip--selected' : ''
               }`}
             >
               All Sizes
             </Link>
             {sizes.map((size) => (
               <Link
-                key={size}
-                href={`/bestsellers?size=${encodeURIComponent(size)}`}
-                className={`inline-flex items-center rounded-full border px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider transition-colors ${
-                  selectedSize === size
-                    ? 'border-stone-950 bg-stone-950 text-white'
-                    : 'border-stone-200 bg-white text-stone-700 hover:border-stone-900 hover:text-stone-900'
-                }`}
-              >
-                {size}
-              </Link>
+              key={size}
+              href={`/bestsellers?size=${encodeURIComponent(size)}`}
+              className={`kv-text-chip px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider ${
+                selectedSize === size ? 'kv-text-chip--selected' : ''
+              }`}
+            >
+              {size}
+            </Link>
             ))}
           </div>
         ) : null}
@@ -273,7 +256,7 @@ export default async function BestsellersPage({
                     className="group block"
                   >
                     <div className="relative">
-                      <div className="relative aspect-[3/4] overflow-hidden bg-stone-100">
+                      <div className="relative aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]">
                         {product.thumbnail ? (
                           <OptimizedImage
                             src={product.thumbnail}
@@ -283,36 +266,36 @@ export default async function BestsellersPage({
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                           />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-stone-200">
-                            <span className="font-heading text-display-lg type-semibold uppercase tracking-token-wide text-stone-400">
+                          <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-surface-warm)]">
+                            <span className="font-display text-display-lg type-semibold uppercase tracking-token-wide text-[var(--ds-text-muted)]">
                               {product.title}
                             </span>
                           </div>
                         )}
 
-                        <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-stone-950 font-heading text-display-sm type-medium text-white">
+                        <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-text-primary)] font-display text-display-sm type-medium text-[var(--ds-text-inverse)]">
                           {index + 1}
                         </span>
                       </div>
 
-                      <h2 className="mt-3 font-heading text-display-sm type-medium leading-token-tight text-stone-950">
+                      <h2 className="mt-3 font-display text-display-sm type-medium leading-token-tight text-[var(--ds-text-primary)]">
                         {product.title}
                       </h2>
-                      <p className="mt-1 text-body-xs uppercase tracking-token-wider text-stone-500">
-                        {formatPrice(product)}
-                      </p>
+                      <PriceDisplay
+                        as="p"
+                        price={formatPrice(product)}
+                        variant="compact"
+                        className="mt-1"
+                        priceClassName="uppercase tracking-token-wider"
+                      />
 
                       {rating && rating > 0 ? (
-                        <div className="mt-1 flex items-center gap-1 text-body-xs uppercase tracking-token-wide text-stone-500">
-                          <span className="flex items-center gap-0.5 text-stone-900">
-                            {renderStars(rating)}
-                          </span>
-                          {reviewCount && reviewCount > 0 ? (
-                            <span>{rating.toFixed(1)} ({reviewCount} reviews)</span>
-                          ) : (
-                            <span>{rating.toFixed(1)}</span>
-                          )}
-                        </div>
+                        <RatingDisplay
+                          rating={rating}
+                          count={reviewCount}
+                          className="mt-1 uppercase tracking-token-wide"
+                          starSize={10}
+                        />
                       ) : null}
                     </div>
                   </Link>
@@ -320,11 +303,11 @@ export default async function BestsellersPage({
               })}
             </div>
           ) : (
-            <div className="py-12 text-center md:py-16 lg:py-24">
-              <p className="text-body-xl text-stone-500">
-                No bestselling products found right now.
-              </p>
-            </div>
+            <EmptyState
+              title="No bestselling products found right now."
+              description="Check back soon for the pieces customers are loving most."
+              className="my-12 md:my-16 lg:my-24"
+            />
           )}
         </section>
       </div>
@@ -332,4 +315,3 @@ export default async function BestsellersPage({
     </div>
   );
 }
-

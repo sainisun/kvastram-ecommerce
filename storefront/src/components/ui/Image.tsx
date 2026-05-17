@@ -20,10 +20,10 @@ export default function ImageWithFallback({
   if (error) {
     return (
       <div
-        className={`bg-stone-200 flex items-center justify-center ${props.className || ''}`}
+        className={`flex items-center justify-center bg-[var(--ds-surface-warm)] ${props.className || ''}`}
         style={props.style}
       >
-        <div className="text-center text-stone-400 p-4">
+        <div className="p-4 text-center text-[var(--ds-text-muted)]">
           <svg
             className="w-12 h-12 mx-auto mb-2"
             fill="none"
@@ -44,10 +44,10 @@ export default function ImageWithFallback({
   }
 
   return (
-    <div className="relative bg-stone-100">
+    <div className="relative bg-[var(--ds-surface-soft)]">
       {isLoading && (
         <div
-          className={`absolute inset-0 bg-stone-200 animate-pulse ${props.className || ''}`}
+          className={`absolute inset-0 animate-pulse bg-[var(--ds-surface-warm)] ${props.className || ''}`}
           style={props.style}
         />
       )}

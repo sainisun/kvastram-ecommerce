@@ -27,7 +27,7 @@ export function CategoryPills({ pills = CATEGORY_QUICK_LINKS }: CategoryPillsPro
             role="tab"
             aria-selected={isActive}
             className={[
-              'flex-shrink-0 font-[family-name:var(--font-ui)] text-[11px] tracking-[0.04em] transition-colors whitespace-nowrap underline-offset-4',
+              'flex-shrink-0 font-body text-[11px] tracking-[0.04em] transition-colors whitespace-nowrap underline-offset-4',
               isActive
                 ? 'text-[var(--ds-text-primary)] underline'
                 : 'text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] hover:underline',

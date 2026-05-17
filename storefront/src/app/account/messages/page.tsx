@@ -7,6 +7,9 @@ import { MessageCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { useStudioChatSocket } from '@/hooks/useStudioChatSocket';
 import { api } from '@/lib/api';
+import { Badge } from '@/components/ui/Badge';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 
 interface StudioInquirySummary {
   id: string;
@@ -62,54 +65,59 @@ export default function AccountMessagesPage() {
   });
 
   if (loading || !customer) {
-    return <div className="min-h-screen bg-stone-50 px-6 py-12 md:px-12 lg:px-20" />;
+    return <div className="kv-page-gutter min-h-screen bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 lg:px-20" />;
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <Link href="/account" className="account-muted hover:text-stone-900">
+            <Link href="/account" className="account-muted hover:text-[var(--ds-text-primary)]">
               Account
             </Link>
             <h1 className="account-page-title mt-2">Messages</h1>
             <p className="account-muted mt-2">Your product conversations with Kvastram Studio.</p>
-            <p className={`account-caption mt-2 ${live.isConnected ? 'text-green-700' : 'text-stone-400'}`}>
+            <StatusBanner
+              tone={live.isConnected ? 'success' : 'info'}
+              className="mt-4 max-w-sm px-3 py-2 text-body-xs"
+            >
               {live.isConnected ? 'Live inbox connected' : 'Live inbox connecting...'}
-            </p>
+            </StatusBanner>
           </div>
-          <MessageCircle className="text-stone-300" size={34} />
+          <MessageCircle className="text-[var(--ds-text-disabled)]" size={34} />
         </div>
 
         {loadingMessages ? (
-          <div className="flex h-48 items-center justify-center text-stone-400">
+          <div className="flex h-48 items-center justify-center text-[var(--ds-text-muted)]">
             <RefreshCw className="mr-2 animate-spin" size={20} />
             Loading messages...
           </div>
         ) : messages.length === 0 ? (
-          <div className="border border-stone-200 bg-white px-6 py-16 text-center">
-            <MessageCircle className="mx-auto mb-4 text-stone-300" size={44} />
-            <p className="account-name">No messages yet</p>
-            <p className="account-muted mt-2">Ask a question from any product page to start a studio chat.</p>
-            <Link href="/products" className="account-primary-action mt-6 inline-block bg-stone-900 px-6 py-3">
+          <EmptyState
+            icon={<MessageCircle size={44} />}
+            title="No messages yet"
+            description="Ask a question from any product page to start a studio chat."
+            actions={
+            <Link href="/products" className="account-primary-action mt-6 inline-block bg-[var(--ds-text-primary)] px-6 py-3">
               Browse Products
             </Link>
-          </div>
+            }
+          />
         ) : (
           <div className="space-y-3">
             {messages.map((message) => (
               <Link
                 key={message.id}
                 href={`/account/messages/${message.id}`}
-                className="block border border-stone-200 bg-white p-5 transition hover:border-stone-400"
+                className="block border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-5 transition hover:border-[var(--ds-border-strong)]"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="account-name">{message.product_title}</h2>
                       {message.unread_by_customer && (
-                        <span className="account-status-badge rounded-full bg-amber-100 px-2 py-0.5 text-amber-800">New reply</span>
+                        <Badge variant="accent">New reply</Badge>
                       )}
                     </div>
                     <p className="account-muted mt-1 capitalize">{message.inquiry_type.replace('_', ' ')}</p>

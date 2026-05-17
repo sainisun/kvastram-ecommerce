@@ -1,90 +1,17 @@
-/* Monochrome storefront theme override */
-:where(body, main, section, article, aside, header, footer, nav) {
-  background-color: #ffffff;
+/* Token bridge for legacy surfaces. Avoid broad monochrome overrides here. */
+:where(body) {
+  background-color: var(--ds-surface-page);
+  color: var(--ds-text-primary);
 }
 
-:where(
-    .bg-\[\#f8f1eb\],
-    .bg-\[\#f6f1ea\],
-    .bg-\[\#f5f0eb\],
-    .bg-\[\#fafafa\],
-    .bg-stone-50,
-    .bg-stone-100,
-    .bg-stone-200,
-    .bg-zinc-50,
-    .bg-zinc-100,
-    .bg-zinc-200,
-    .bg-neutral-50,
-    .bg-neutral-100,
-    .bg-amber-50,
-    .bg-amber-100,
-    .bg-rose-50,
-    .bg-rose-100,
-    .bg-emerald-50,
-    .bg-emerald-100
-  ) {
-  background-color: #ffffff !important;
+:where(main) {
+  color: var(--ds-text-primary);
 }
 
-:where(
-    [class*='text-white'],
-    .text-stone-400,
-    .text-stone-500,
-    .text-stone-600,
-    .text-stone-700,
-    .text-stone-800,
-    .text-stone-900,
-    .text-stone-950,
-    .text-zinc-400,
-    .text-zinc-500,
-    .text-zinc-600,
-    .text-zinc-700,
-    .text-zinc-800,
-    .text-zinc-900,
-    .text-neutral-500,
-    .text-neutral-600,
-    .text-neutral-700,
-    .text-neutral-800,
-    .text-neutral-900
-  ):not(.kvastram-footer *) {
-  color: #000000 !important;
+:where(.kvastram-surface-paper) {
+  background-color: var(--ds-surface-paper);
 }
 
-:where(
-    button,
-    a[role='button'],
-    a[class*='px-'][class*='py-'],
-    input[type='submit'],
-    input[type='button']
-  ):not([data-hero-dot]):not(.kvastram-footer *) {
-  border-color: #000000 !important;
-}
-
-:where(
-    button[class*='bg-'],
-    a[class*='bg-'][class*='px-'][class*='py-'],
-    input[type='submit'],
-    input[type='button']
-  ):not([data-hero-dot]):not(.kvastram-footer *) {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-}
-
-:where(
-    button[class*='bg-'],
-    a[class*='bg-'][class*='px-'][class*='py-'],
-    input[type='submit'],
-    input[type='button']
-  ):not([data-hero-dot]):not(.kvastram-footer *):hover {
-  background-color: #222222 !important;
-  color: #ffffff !important;
-}
-
-:where(
-    button[class*='bg-'],
-    a[class*='bg-'][class*='px-'][class*='py-'],
-    input[type='submit'],
-    input[type='button']
-  ):not([data-hero-dot]):not(.kvastram-footer *) * {
-  color: #ffffff !important;
+:where(.kvastram-surface-soft) {
+  background-color: var(--ds-surface-soft);
 }

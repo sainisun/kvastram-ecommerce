@@ -3,15 +3,13 @@
    Source of truth: docs/storefront-redesign-prototype.html
    ========================================================================== */
 
-.serif,
-.font-heading,
-.font-serif {
-  font-family: var(--font-display) !important;
+.font-display {
+  font-family: var(--font-display);
 }
 
 .font-body,
 .font-sans {
-  font-family: var(--font-body) !important;
+  font-family: var(--font-body);
 }
 
 .page-transition {
@@ -23,7 +21,7 @@
 .cursor-dot,
 .cursor-ring,
 #page-loader {
-  display: none !important;
+  display: none;
 }
 
 .kv-container {
@@ -54,7 +52,7 @@
 
 .kv-tag,
 .tag {
-  color: var(--sienna);
+  color: var(--ds-accent-primary);
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
   font-weight: 900;
@@ -82,30 +80,6 @@
   line-height: var(--leading-relaxed);
 }
 
-.kv-btn {
-  min-height: 42px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 18px;
-  background: white;
-  color: var(--ink);
-  font-size: var(--text-body-xs);
-  font-weight: 900;
-  letter-spacing: var(--tracking-wider);
-  line-height: var(--leading-snug);
-  text-transform: uppercase;
-  transition: 0.2s ease;
-}
-
-.kv-btn:hover {
-  border-color: var(--sienna);
-  color: var(--sienna);
-}
-
 .kv-section-link {
   align-self: end;
   color: var(--ink);
@@ -122,47 +96,36 @@
 }
 
 .kv-section-link:hover {
-  color: var(--sienna);
+  color: var(--ds-accent-primary);
   text-decoration: underline;
-}
-
-.kv-btn-primary {
-  border-color: var(--sienna);
-  background: var(--sienna);
-  color: white;
-}
-
-.kv-btn-primary:hover {
-  background: var(--sienna-dark);
-  color: white;
 }
 
 .kv-chip,
 .filter-chips button {
-  border: 1px solid var(--line) !important;
-  border-radius: 999px !important;
-  background: white !important;
-  color: var(--ink) !important;
-  font-family: var(--font-body) !important;
-  font-size: var(--text-body-xs) !important;
-  font-weight: 700 !important;
-  letter-spacing: 0 !important;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--ds-surface-paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 700;
+  letter-spacing: 0;
   min-height: 42px;
-  padding: 9px 16px !important;
-  text-transform: none !important;
+  padding: 9px 16px;
+  text-transform: none;
 }
 
 .filter-chips button[aria-current='true'],
 .filter-chips button.bg-stone-950,
 .kv-chip-active {
-  border-color: var(--ink) !important;
-  background: var(--ink) !important;
-  color: white !important;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--ds-text-inverse);
 }
 
 .announcement-bar {
-  background: var(--sienna) !important;
-  color: white !important;
+  background: var(--ds-accent-primary);
+  color: var(--ds-text-inverse);
   min-height: 34px;
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
@@ -171,7 +134,7 @@
 }
 
 .announcement-bar .animate-marquee {
-  animation: none !important;
+  animation: none;
   display: flex;
   justify-content: center;
   width: 100%;
@@ -179,24 +142,24 @@
 
 .ticker-shimmer,
 .ticker-gem {
-  color: inherit !important;
-  background: none !important;
-  -webkit-text-fill-color: currentColor !important;
+  color: inherit;
+  background: none;
+  -webkit-text-fill-color: currentColor;
 }
 
 .announcement-dismiss {
-  color: white !important;
-  background: transparent !important;
+  color: var(--ds-text-inverse);
+  background: transparent;
 }
 
 .legacy-nav-logo,
 .logo {
-  color: var(--ink) !important;
-  font-family: var(--font-display) !important;
-  font-size: var(--text-display-md) !important;
-  font-weight: 700 !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--text-display-md);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .legacy-nav-logo .logo-motif {
@@ -204,22 +167,22 @@
 }
 
 .nav-link-premium {
-  color: var(--ink) !important;
-  font-family: var(--font-body) !important;
-  font-size: var(--text-body-sm) !important;
-  font-weight: 700 !important;
-  letter-spacing: var(--tracking-wide) !important;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
 .header-icon-wrap {
-  border-radius: var(--radius-sm) !important;
-  color: var(--ink) !important;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
 }
 
 .header-icon-wrap:hover {
-  background: var(--soft) !important;
-  color: var(--sienna) !important;
+  background: var(--soft);
+  color: var(--ds-accent-primary);
 }
 
 .legacy-product-grid {
@@ -237,7 +200,7 @@
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  background: white;
+  background: var(--ds-surface-paper);
   box-shadow: 0 5px 18px rgba(var(--ink-rgb), 0.06);
   transition: 0.2s ease;
 }
@@ -252,99 +215,99 @@
   display: block;
   aspect-ratio: 1 / 1.15;
   overflow: hidden;
-  background: linear-gradient(135deg, #f4d4b8, #e8a87c);
-  border-radius: 0 !important;
+  background: linear-gradient(135deg, var(--ds-accent-soft), var(--ds-surface-warm));
+  border-radius: 0;
 }
 
 .legacy-product-image-wrap img {
-  border-radius: 0 !important;
+  border-radius: 0;
   object-fit: cover;
 }
 
 .legacy-product-info {
-  padding: 14px 14px 16px !important;
-  background: white;
+  padding: 14px 14px 16px;
+  background: var(--ds-surface-paper);
 }
 
 .legacy-product-collection {
-  margin: 0 0 4px !important;
-  color: var(--muted) !important;
-  font-family: var(--font-body) !important;
-  font-size: var(--text-body-xs) !important;
-  font-weight: 900 !important;
-  letter-spacing: var(--tracking-wider) !important;
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 900;
+  letter-spacing: var(--tracking-wider);
   line-height: var(--leading-snug);
-  text-transform: uppercase !important;
+  text-transform: uppercase;
 }
 
 .legacy-product-name {
-  color: var(--ink) !important;
-  font-family: var(--font-display) !important;
-  font-size: var(--text-display-sm) !important;
-  font-weight: 700 !important;
-  line-height: var(--leading-snug) !important;
-  letter-spacing: 0 !important;
-  white-space: normal !important;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--text-display-sm);
+  font-weight: 700;
+  line-height: var(--leading-snug);
+  letter-spacing: 0;
+  white-space: normal;
 }
 
 .legacy-product-price {
-  margin: 0 !important;
-  color: var(--sienna) !important;
-  font-family: var(--font-body) !important;
-  font-size: var(--text-body-md) !important;
-  font-weight: 900 !important;
-  letter-spacing: 0 !important;
+  margin: 0;
+  color: var(--ds-accent-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body-md);
+  font-weight: 900;
+  letter-spacing: 0;
 }
 
 .legacy-product-tag {
-  border: 0 !important;
-  border-radius: 999px !important;
-  background: var(--ink) !important;
-  color: white !important;
-  font-family: var(--font-body) !important;
-  font-size: var(--text-body-xs) !important;
-  font-weight: 900 !important;
-  letter-spacing: var(--tracking-wide) !important;
-  padding: 5px 9px !important;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--ds-text-inverse);
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 900;
+  letter-spacing: var(--tracking-wide);
+  padding: 5px 9px;
   text-transform: uppercase;
 }
 
 .legacy-product-tag.sale {
-  background: var(--danger) !important;
+  background: var(--danger);
 }
 
 .legacy-product-tag.low-stock {
-  background: var(--sienna-dark) !important;
+  background: var(--ds-accent-hover);
 }
 
 .legacy-product-wishlist {
-  top: 10px !important;
-  right: 10px !important;
+  top: 10px;
+  right: 10px;
 }
 
 .legacy-product-wishlist button,
 .legacy-product-wishlist a {
-  width: 42px !important;
-  height: 42px !important;
-  border-radius: 999px !important;
-  background: white !important;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: var(--ds-surface-paper);
   box-shadow: 0 8px 22px rgba(var(--ink-rgb), 0.14);
 }
 
 .legacy-product-quick-add {
-  right: 14px !important;
-  bottom: 16px !important;
-  width: 40px !important;
-  height: 40px !important;
-  display: grid !important;
-  place-items: center !important;
-  border: 0 !important;
-  border-radius: var(--radius-sm) !important;
-  background: var(--soft) !important;
-  color: var(--ink) !important;
-  font-size: 0 !important;
-  opacity: 1 !important;
-  transform: none !important;
+  right: 14px;
+  bottom: 16px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 0;
+  opacity: 1;
+  transform: none;
 }
 
 .legacy-product-quick-add::before {
@@ -354,29 +317,29 @@
 }
 
 .legacy-product-quick-add:hover {
-  background: var(--sienna) !important;
-  color: white !important;
+  background: var(--ds-accent-primary);
+  color: var(--ds-text-inverse);
 }
 
 .legacy-product-card > button[aria-label^='Quick view'] {
-  bottom: 12px !important;
-  left: 12px !important;
-  right: 58px !important;
-  border: 1px solid var(--line) !important;
-  border-radius: var(--radius-sm) !important;
-  background: white !important;
-  color: var(--ink) !important;
-  font-family: var(--font-body) !important;
-  font-size: var(--text-body-xs) !important;
-  font-weight: 900 !important;
-  letter-spacing: var(--tracking-wide) !important;
-  padding: 12px !important;
+  bottom: 12px;
+  left: 12px;
+  right: 58px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--ds-surface-paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 900;
+  letter-spacing: var(--tracking-wide);
+  padding: 12px;
   text-transform: uppercase;
 }
 
 .legacy-product-card > button[aria-label^='Quick view']:hover {
-  border-color: var(--sienna) !important;
-  color: var(--sienna) !important;
+  border-color: var(--ds-accent-primary);
+  color: var(--ds-accent-primary);
 }
 
 .legacy-product-grid--compact .legacy-product-card {
@@ -390,10 +353,10 @@
 }
 
 .product-spotlight {
-  border: 1px solid var(--line) !important;
-  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background: white !important;
+  background: var(--ds-surface-paper);
 }
 
 @media (min-width: 768px) {
@@ -444,7 +407,7 @@
 }
 
 .kv-tag {
-  color: var(--sienna);
+  color: var(--ds-accent-primary);
   font-size: var(--text-body-xs);
   font-weight: 900;
   letter-spacing: var(--tracking-wider);
@@ -464,23 +427,6 @@
   max-width: 620px;
 }
 
-.kv-btn {
-  min-height: 42px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  padding: 0 17px;
-  font-size: var(--text-body-sm);
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
 .kv-section-link {
   align-self: end;
   color: var(--ink);
@@ -497,42 +443,12 @@
 }
 
 .kv-section-link:hover {
-  color: var(--sienna);
+  color: var(--ds-accent-primary);
   text-decoration: underline;
 }
 
-.kv-btn-primary {
-  background: var(--sienna);
-  color: white;
-  border-color: var(--sienna);
-}
-
-.kv-btn-primary:hover {
-  background: var(--sienna-dark);
-}
-
-.kv-btn-outline {
-  background: white;
-  color: var(--ink);
-  border-color: var(--line);
-}
-
-.kv-btn-outline:hover {
-  border-color: var(--sienna);
-  color: var(--sienna);
-}
-
-.kv-btn-white {
-  background: white;
-  color: var(--ink);
-}
-
-.kv-btn-full {
-  width: 100%;
-}
-
 .kv-card {
-  background: white;
+  background: var(--ds-surface-paper);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -541,7 +457,7 @@
 .kv-chip {
   flex: 0 0 auto;
   border: 1px solid var(--line);
-  background: white;
+  background: var(--ds-surface-paper);
   border-radius: 999px;
   padding: 9px 14px;
   font-weight: 700;
@@ -550,7 +466,7 @@
 }
 
 .kv-chip.active {
-  background: var(--sienna);
-  color: white;
-  border-color: var(--sienna);
+  background: var(--ds-accent-primary);
+  color: var(--ds-text-inverse);
+  border-color: var(--ds-accent-primary);
 }

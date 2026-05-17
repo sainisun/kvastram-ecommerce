@@ -14,26 +14,26 @@ export function UserCard({ firstName, lastName, email }: UserCardProps) {
     `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
 
   return (
-    <div className="bg-white p-6 border-b border-stone-100">
+    <div className="bg-[var(--ds-surface-paper)] p-6 border-b border-[var(--ds-border-subtle)]">
       <div className="flex items-center gap-4">
-        <div className="w-14 h-14 bg-stone-100 rounded-full flex items-center justify-center shrink-0">
+        <div className="w-14 h-14 bg-[var(--ds-surface-soft)] rounded-full flex items-center justify-center shrink-0">
           {initials ? (
-            <span className="text-body-xl type-medium text-stone-600">
+            <span className="text-body-xl type-medium text-[var(--ds-text-secondary)]">
               {initials}
             </span>
           ) : (
-            <User size={24} className="text-stone-400" />
+            <User size={24} className="text-[var(--ds-text-muted)]" />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="type-medium text-stone-900 truncate">
+          <p className="type-medium text-[var(--ds-text-primary)] truncate">
             {firstName} {lastName}
           </p>
-          <p className="text-body-sm text-stone-500 truncate">{email}</p>
+          <p className="text-body-sm text-[var(--ds-text-muted)] truncate">{email}</p>
         </div>
         <Link
           href="/account/profile"
-          className="p-2 text-stone-400 hover:text-stone-900 transition-colors"
+          className="p-2 text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] transition-colors"
           aria-label="Edit profile"
         >
           <svg

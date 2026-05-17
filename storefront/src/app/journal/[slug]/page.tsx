@@ -72,7 +72,7 @@ export default async function ArticlePage({ params }: Props) {
   ];
 
   return (
-    <article className="min-h-screen bg-white pb-24">
+    <article className="min-h-screen bg-[var(--ds-surface-paper)] pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -80,7 +80,7 @@ export default async function ArticlePage({ params }: Props) {
         }}
       />
 
-      <div className="relative h-[60vh] text-white">
+      <div className="relative h-[60vh] text-[var(--ds-text-inverse)]">
         {post.cover_image ? (
           <div className="absolute inset-0">
             <OptimizedImage
@@ -94,13 +94,13 @@ export default async function ArticlePage({ params }: Props) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           </div>
         ) : (
-          <div className="absolute inset-0 bg-stone-900" />
+          <div className="absolute inset-0 bg-[var(--ds-text-primary)]" />
         )}
 
-        <div className="absolute inset-0 mx-auto flex w-full max-w-[1440px] flex-col justify-between p-6 md:p-12 lg:px-20">
+        <div className="kv-page-container absolute inset-0 mx-auto flex w-full max-w-[1440px] flex-col justify-between p-6 md:p-12 lg:px-20">
           <Link
             href="/journal"
-            className="flex w-fit items-center gap-2 text-body-sm type-bold uppercase tracking-token-wider hover:text-stone-300"
+            className="flex w-fit items-center gap-2 text-body-sm type-bold uppercase tracking-token-wider hover:text-[var(--ds-text-disabled)]"
           >
             <ArrowLeft size={16} />
             Back to Journal
@@ -112,7 +112,7 @@ export default async function ArticlePage({ params }: Props) {
               <span>&bull;</span>
               <span>Kvastram Editorial</span>
             </div>
-            <h1 className="font-heading text-display-xl type-semibold uppercase tracking-token-wide md:text-display-xl">
+            <h1 className="font-display text-display-xl type-semibold uppercase tracking-token-wide md:text-display-xl">
               {post.title}
             </h1>
           </div>
@@ -121,12 +121,12 @@ export default async function ArticlePage({ params }: Props) {
 
       <div className="mx-auto max-w-3xl px-6 py-12 md:py-16 lg:py-24">
         {post.excerpt && (
-          <p className="mb-12 border-l-4 border-stone-900 pl-6 font-heading text-display-md type-medium leading-token-relaxed text-stone-600">
+          <p className="mb-12 border-l-4 border-[var(--ds-text-primary)] pl-6 font-display text-display-md type-medium leading-token-relaxed text-[var(--ds-text-secondary)]">
             {post.excerpt}
           </p>
         )}
 
-        <div className="prose prose-stone prose-lg max-w-none whitespace-pre-wrap type-light text-stone-800">
+        <div className="prose prose-stone prose-lg max-w-none whitespace-pre-wrap type-light text-[var(--ds-text-primary)]">
           {post.content}
         </div>
       </div>

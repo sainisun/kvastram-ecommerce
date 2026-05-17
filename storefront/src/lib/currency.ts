@@ -171,7 +171,7 @@ export function formatCurrency(
       style: 'currency',
       currency: normalizedCurrency,
     }).format(amount / 100);
-  } catch (error) {
+  } catch {
     // Fallback for unsupported currencies - use known-good locale
     return new Intl.NumberFormat(DEFAULT_LOCALE, {
       style: 'currency',
@@ -191,7 +191,7 @@ export function formatCurrencyRaw(
       style: 'currency',
       currency: normalizedCurrency,
     }).format(amount);
-  } catch (error) {
+  } catch {
     // Fallback for unsupported currencies - use known-good locale
     return new Intl.NumberFormat(DEFAULT_LOCALE, {
       style: 'currency',

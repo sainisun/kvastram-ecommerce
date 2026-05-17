@@ -34,8 +34,8 @@
   cursor: pointer;
   transition: border-color .15s ease;
 }
-.pd-thumb.active { border-color: var(--sienna); }
-.pd-thumb:hover { border-color: var(--sienna); }
+.pd-thumb.active { border-color: var(--ds-accent-primary); }
+.pd-thumb:hover { border-color: var(--ds-accent-primary); }
 .pd-price {
   font-size: 1.5rem;
   color: var(--color-text-price);
@@ -65,7 +65,7 @@
   white-space: nowrap;
 }
 .pd-tab:hover { color: var(--ink); }
-.pd-tab.active { color: var(--sienna); border-bottom-color: var(--sienna); }
+.pd-tab.active { color: var(--ds-accent-primary); border-bottom-color: var(--ds-accent-primary); }
 .pd-tab-panel { display: none; padding: 22px 0; }
 .pd-tab-panel.active { display: block; }
 

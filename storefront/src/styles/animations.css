@@ -195,7 +195,7 @@
 }
 
 *:focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--ds-accent-primary);
   outline-offset: 2px;
 }
 
@@ -203,26 +203,23 @@
 *:focus:not(:focus-visible)::before,
 *:focus:not(:focus-visible)::after,
 *:active {
-  outline: none !important;
-  outline-offset: 0 !important;
-  box-shadow: none !important;
-  --tw-ring-color: transparent !important;
-  --tw-ring-offset-shadow: 0 0 #000 !important;
-  --tw-ring-shadow: 0 0 #000 !important;
+  outline: none;
+  outline-offset: 0;
+  --tw-ring-color: transparent;
+  --tw-ring-offset-shadow: 0 0 transparent;
+  --tw-ring-shadow: 0 0 transparent;
 }
 
 button:active,
 a:active,
 [role='button']:active {
-  outline: none !important;
-  box-shadow: none !important;
+  outline: none;
 }
 
 .ring-2:active,
 .ring-black:active,
 .focus\:ring-2:active,
 [class*='ring-']:active {
-  --tw-ring-offset-shadow: 0 0 #000 !important;
-  --tw-ring-shadow: 0 0 #000 !important;
-  box-shadow: none !important;
+  --tw-ring-offset-shadow: 0 0 transparent;
+  --tw-ring-shadow: 0 0 transparent;
 }

@@ -28,6 +28,35 @@
   font-family: var(--font-display);
 }
 
+.related-products-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--ds-surface-paper);
+  color: var(--ds-text-primary);
+  padding: 0 20px;
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wider);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease),
+    color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease);
+}
+.related-products-link:hover {
+  border-color: var(--ds-accent-primary);
+  color: var(--ds-accent-primary);
+}
+.related-products-link:focus-visible {
+  outline: 2px solid var(--ds-accent-primary);
+  outline-offset: 2px;
+}
+
 .pdp-mobile-nav {
   position: sticky;
   top: 0;
@@ -135,7 +164,7 @@
 
 .pdp-gallery-frame {
   aspect-ratio: 1 / 0.9;
-  background: #f7f1e8;
+  background: var(--ds-surface-parchment);
 }
 
 .pdp-gallery-frame-desktop {
@@ -173,7 +202,7 @@
   height: 5px;
   border: 0;
   border-radius: 999px;
-  background: #c9c0b4;
+  background: var(--ds-border-strong);
   transition: width 160ms ease, background 160ms ease;
 }
 
@@ -201,18 +230,6 @@
 
 .pdp-rating-row {
   gap: 8px;
-}
-
-.pdp-rating-stars {
-  color: var(--gold);
-  letter-spacing: 0;
-}
-
-.pdp-rating-link {
-  color: var(--ink-muted);
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
 }
 
 .pdp-price-row {
@@ -302,7 +319,26 @@
   text-decoration: line-through;
 }
 
-.pdp-page .option-btn:disabled {
+.pdp-option-button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ds-border-subtle);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-surface-paper);
+  color: var(--ds-text-primary);
+  font-size: var(--ds-text-body-sm);
+  font-weight: var(--ds-weight-semibold);
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.pdp-option-button:hover {
+  border-color: var(--ds-accent-primary);
+  color: var(--ds-accent-primary);
+}
+
+.pdp-option-button:disabled,
+.pdp-quantity-button:disabled {
   cursor: not-allowed;
   opacity: 0.42;
 }
@@ -314,9 +350,27 @@
 }
 
 .pdp-size-pill.active {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: white;
+  border-color: var(--ds-text-primary);
+  background: var(--ds-text-primary);
+  color: var(--ds-text-inverse);
+}
+
+.pdp-quantity-button {
+  border-radius: var(--ds-radius-pill);
+}
+
+.pdp-quantity-value {
+  display: inline-flex;
+  min-height: 40px;
+  min-width: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--ds-border-subtle);
+  border-radius: var(--ds-radius-pill);
+  background: var(--ds-surface-paper);
+  color: var(--ds-text-primary);
+  font-size: var(--ds-text-body-sm);
+  font-weight: var(--ds-weight-semibold);
 }
 
 .pdp-primary-cta,
@@ -327,16 +381,11 @@
   border-radius: 6px;
 }
 
-.pdp-page .pdp-primary-cta.btn-primary {
-  background: var(--ink);
-  border-color: var(--ink);
-}
-
 .pdp-primary-cta.is-added,
 .pdp-sticky-cta.is-added {
   border-color: var(--ds-success);
   background: var(--ds-success);
-  color: white;
+  color: var(--ds-text-inverse);
 }
 
 .pdp-primary-cta.is-disabled,
@@ -353,9 +402,47 @@
 }
 
 .pdp-mobile-whatsapp {
-  background: var(--teal);
-  border-color: var(--teal);
-  color: white;
+  background: var(--ds-whatsapp);
+  border-color: var(--ds-whatsapp);
+  color: var(--ds-text-inverse);
+}
+
+.pdp-link-button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: 6px;
+  background: var(--ds-surface-paper);
+  padding: 0 28px;
+  color: var(--ds-text-primary);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body-sm);
+  font-weight: var(--ds-weight-semibold);
+  letter-spacing: var(--ds-tracking-wider);
+  text-transform: uppercase;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.pdp-link-button:hover {
+  border-color: var(--ds-accent-primary);
+  color: var(--ds-accent-primary);
+}
+
+.pdp-link-button--whatsapp {
+  width: 100%;
+  border-color: var(--ds-whatsapp);
+  background: var(--ds-whatsapp);
+  color: var(--ds-text-inverse);
+}
+
+.pdp-link-button--whatsapp:hover {
+  border-color: var(--ds-whatsapp);
+  background: var(--ds-whatsapp);
+  color: var(--ds-text-inverse);
+  filter: brightness(0.96);
 }
 
 .pdp-trust-card {

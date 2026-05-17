@@ -1,0 +1,51 @@
+import type { HTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+
+type StatusBannerTone = 'info' | 'success' | 'warning' | 'danger';
+
+interface StatusBannerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+  tone?: StatusBannerTone;
+  icon?: ReactNode;
+  title?: ReactNode;
+  children: ReactNode;
+}
+
+const toneClasses: Record<StatusBannerTone, string> = {
+  info:
+    'border-[var(--ds-info)] bg-[var(--ds-info-bg)] text-[var(--ds-info-text)]',
+  success:
+    'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]',
+  warning:
+    'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]',
+  danger:
+    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]',
+};
+
+export function StatusBanner({
+  tone = 'info',
+  icon,
+  title,
+  children,
+  className,
+  ...props
+}: StatusBannerProps) {
+  return (
+    <div
+      className={cn(
+        'flex gap-3 border px-4 py-3 font-body text-body-sm leading-token-relaxed',
+        toneClasses[tone],
+        className
+      )}
+      role={tone === 'danger' ? 'alert' : 'status'}
+      {...props}
+    >
+      {icon ? <span className="mt-0.5 shrink-0">{icon}</span> : null}
+      <div className="min-w-0">
+        {title ? (
+          <p className="mb-1 type-semibold text-[var(--ds-text-primary)]">{title}</p>
+        ) : null}
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+}

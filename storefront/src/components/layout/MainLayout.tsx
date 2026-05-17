@@ -12,6 +12,7 @@ import { CookieConsent } from '@/components/ui/CookieConsent';
 import { ArrowUp } from 'lucide-react';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { NewsletterModal } from '@/components/ui/NewsletterModal';
+import { UnstyledButton } from '@/components/ui/Button';
 
 function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -48,13 +49,13 @@ function ScrollToTop() {
   if (isMobile || !visible) return null;
 
   return (
-    <button
+    <UnstyledButton
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       aria-label="Scroll to top"
-      className="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-50 w-10 h-10 bg-stone-900 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-stone-700 transition-all duration-300 hover:-translate-y-1 animate-scale-in"
+      className="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-50 w-10 h-10 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center shadow-lg hover:bg-[var(--ds-text-secondary)] transition-all duration-300 hover:-translate-y-1 animate-scale-in"
     >
       <ArrowUp size={18} />
-    </button>
+    </UnstyledButton>
   );
 }
 

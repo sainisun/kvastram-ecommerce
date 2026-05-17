@@ -14,7 +14,7 @@ export default function WholesaleLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-white text-stone-900">
+      <body className="antialiased bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]">
         {children}
       </body>
     </html>

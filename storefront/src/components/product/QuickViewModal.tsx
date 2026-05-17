@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { X, ShoppingBag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { ShoppingBag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { useCurrency } from '@/context/currency-context';
 import { api } from '@/lib/api';
 import { getProductDisplayTitle } from '@/lib/product-title';
+import { Modal } from '@/components/ui/Modal';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { RatingDisplay } from '@/components/ui/RatingDisplay';
+import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
 
 interface QuickViewProduct {
   id: string;
@@ -69,12 +72,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     return () => { cancelled = true; };
   }, [isOpen, product.id]);
 
-  useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
-    return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
-
   const images: string[] = [];
   if (product.images?.length) {
     for (const img of product.images) {
@@ -128,39 +125,22 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
 
   if (!isOpen) return null;
 
-  // Renders into document.body via portal — escapes any ancestor stacking
-  // context (e.g. Header's backdrop-blur-md) so fixed positioning works correctly.
-  return createPortal(
-    <div
-      className="modal-overlay open"
-      onClick={onClose}
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={<span className="quickview-title line-clamp-1">{displayTitle}</span>}
+      className="max-w-4xl"
     >
-      <div
-        className="modal-box"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="modal-head">
-          <h3 className="quickview-title line-clamp-1">{displayTitle}</h3>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="icon-btn"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Scrollable body — prototype: .modal-body */}
-        <div className="modal-body">
-          {/* Two-col on md+, single col on mobile — prototype: .quickview-layout */}
+        <div>
+          {/* Two-col on md+, single col on mobile. */}
           <div className="quickview-layout">
 
-            {/* Image — aspect-ratio box so height is always defined */}
-            <div className="quickview-img" style={{ padding: 0 }}>
+            {/* Aspect-ratio box so height is always defined. */}
+            <div className="quickview-img p-0">
               {images.length > 0 ? (
                 <>
-                  <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5' }}>
+                  <div className="relative aspect-[4/5] w-full">
                     <OptimizedImage
                       src={images[imgIndex] || images[0]}
                       alt={displayTitle}
@@ -171,29 +151,33 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                   </div>
                   {images.length > 1 && (
                     <>
-                      <button
+                      <IconButton
                         type="button"
                         onClick={() => setImgIndex((current) => Math.max(0, current - 1))}
                         disabled={imgIndex === 0}
                         aria-label="Show previous product image"
-                        className="absolute left-3 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
+                        variant="outline"
+                        size="sm"
+                        className="quickview-image-button absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full"
                       >
                         <ChevronLeft size={16} />
-                      </button>
-                      <button
+                      </IconButton>
+                      <IconButton
                         type="button"
                         onClick={() =>
                           setImgIndex((current) => Math.min(images.length - 1, current + 1))
                         }
                         disabled={imgIndex === images.length - 1}
                         aria-label="Show next product image"
-                        className="absolute right-3 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow transition hover:bg-white disabled:opacity-30"
+                        variant="outline"
+                        size="sm"
+                        className="quickview-image-button absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full"
                       >
                         <ChevronRight size={16} />
-                      </button>
+                      </IconButton>
                       <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
                         {images.map((image, index) => (
-                          <button
+                          <UnstyledButton
                             key={`${image}-${index}`}
                             type="button"
                             onClick={() => setImgIndex(index)}
@@ -213,24 +197,21 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             </div>
 
             {/* Details */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="flex flex-col gap-3">
 
-              {/* Stars */}
               {reviewAvg !== null && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span className="pdp-rating-stars">
-                    {'★'.repeat(Math.round(reviewAvg))}{'☆'.repeat(5 - Math.round(reviewAvg))}
-                  </span>
-                  <span className="quickview-rating-count">
-                    {reviewAvg.toFixed(1)} / 5 · {reviewCount} reviews
-                  </span>
-                </div>
+                <RatingDisplay
+                  rating={reviewAvg}
+                  count={reviewCount}
+                  className="quickview-rating-count"
+                />
               )}
 
-              {/* Price */}
-              <div className="pd-price">
-                {price ? formatPrice(price) : '—'}
-              </div>
+              <PriceDisplay
+                price={price ? formatPrice(price) : 'Contact for price'}
+                variant="pdp"
+                priceClassName="pd-price"
+              />
 
               {/* Description */}
               {product.description ? (
@@ -245,13 +226,13 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                   <strong className="quickview-variant-label">Variant</strong>
                   <div className="option-row">
                     {product.variants.map((v) => (
-                      <button
+                      <UnstyledButton
                         key={v.id}
                         onClick={() => setSelectedVariant(v)}
-                        className={`option-btn${selectedVariant?.id === v.id ? ' active' : ''}`}
+                        className={`quickview-option-button${selectedVariant?.id === v.id ? ' active' : ''}`}
                       >
                         {v.title}
-                      </button>
+                      </UnstyledButton>
                     ))}
                   </div>
                 </div>
@@ -261,26 +242,25 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 <p className="input-error-message">{error}</p>
               )}
 
-              {/* CTAs — prototype style */}
-              <div style={{ display: 'grid', gap: 10, marginTop: 'auto' }}>
-                <button
+              {/* CTAs */}
+              <div className="mt-auto grid gap-2.5">
+                <Button
                   onClick={handleAddToCart}
                   disabled={adding}
-                  className={`kv-btn w-full justify-center ${added ? 'border-green-600 bg-green-600 text-white' : 'kv-btn-primary'}`}
-                  style={{ opacity: adding ? 0.6 : 1 }}
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
+                  className={added ? 'quickview-add-button is-added' : 'quickview-add-button'}
+                  leadingIcon={
+                    added ? <Check size={15} /> : adding ? undefined : <ShoppingBag size={15} />
+                  }
                 >
-                  {adding ? (
-                    <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>↻</span>
-                  ) : added ? (
-                    <><Check size={15} />Added to Cart</>
-                  ) : (
-                    <><ShoppingBag size={15} />Add to Cart</>
-                  )}
-                </button>
+                  {adding ? 'Adding...' : added ? 'Added to Cart' : 'Add to Cart'}
+                </Button>
                 <Link
                   href={`/products/${product.handle || product.id}`}
                   onClick={onClose}
-                  className="kv-btn kv-btn-outline w-full justify-center"
+                  className="quickview-link-button"
                 >
                   Full Details
                 </Link>
@@ -288,8 +268,6 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
             </div>
           </div>
         </div>
-      </div>
-    </div>,
-    document.body
+    </Modal>
   );
 }

@@ -30,7 +30,7 @@ export default function WishlistButton({
   size = 'md',
   showLabel = false,
 }: WishlistButtonProps) {
-  const { isInWishlist, toggleItem, addItem, removeItem } = useWishlist();
+  const { isInWishlist, toggleItem } = useWishlist();
   const { currentRegion } = useShop();
 
   const isWishlisted = isInWishlist(productId);
@@ -70,8 +70,8 @@ export default function WishlistButton({
       className={cn(
         'flex items-center justify-center rounded-full transition-all duration-200',
         isWishlisted
-          ? 'bg-red-50 text-red-500 hover:bg-red-100'
-          : 'bg-white/90 text-stone-400 hover:text-red-500 hover:bg-white',
+          ? 'bg-[var(--ds-danger-bg)] text-[var(--ds-danger)] hover:brightness-95'
+          : 'bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-muted)] hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-danger)]',
         sizeClasses[size],
         className
       )}
@@ -90,7 +90,9 @@ export default function WishlistButton({
         <span
           className={cn(
             'ml-2 type-medium',
-            isWishlisted ? 'text-red-500' : 'text-stone-600'
+            isWishlisted
+              ? 'text-[var(--ds-danger)]'
+              : 'text-[var(--ds-text-secondary)]'
           )}
         >
           {isWishlisted ? 'Saved' : 'Save'}
@@ -99,4 +101,3 @@ export default function WishlistButton({
     </button>
   );
 }
-

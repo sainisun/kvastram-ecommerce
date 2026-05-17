@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, X, ArrowRight, Loader2, Sparkles } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useDebounce } from 'use-debounce';
 import { CompactProductCard } from '@/components/products/ProductCard';
+import Input from '@/components/ui/Input';
+import { Modal } from '@/components/ui/Modal';
+import { Button, IconButton } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import { useCurrency } from '@/context/currency-context';
 import type { Product } from '@/types';
@@ -43,37 +45,11 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   // Store the element that triggered the search for focus restoration
   const triggerRef = useRef<HTMLElement | null>(null);
 
-  // Focus trap implementation
+  // Search-specific Escape handling; Modal owns scroll lock and dialog shell.
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
-        return;
-      }
-
-      if (e.key !== 'Tab' || !modalRef.current) return;
-
-      const focusableElements = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-
-      const firstElement = focusableElements[0] as HTMLElement;
-      const lastElement = focusableElements[
-        focusableElements.length - 1
-      ] as HTMLElement;
-
-      if (e.shiftKey) {
-        // Shift + Tab
-        if (document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement?.focus();
-        }
-      } else {
-        // Tab
-        if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement?.focus();
-        }
       }
     },
     [onClose]
@@ -92,16 +68,13 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
       }
       triggerRef.current = document.activeElement as HTMLElement;
       setTimeout(() => inputRef.current?.focus(), 100);
-      document.body.style.overflow = 'hidden';
       document.addEventListener('keydown', handleKeyDown);
     } else {
-      document.body.style.overflow = '';
       document.removeEventListener('keydown', handleKeyDown);
       if (triggerRef.current)
         setTimeout(() => triggerRef.current?.focus(), 100);
     }
     return () => {
-      document.body.style.overflow = '';
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, handleKeyDown]);
@@ -171,39 +144,24 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] md:z-[60]"
-          />
-
-          {/* Search Panel */}
-          <motion.div
-            ref={modalRef}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Search products"
-            initial={{ y: '-100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 left-0 right-0 bg-white z-[70] md:z-[70] shadow-xl rounded-b-3xl overflow-hidden max-h-[80vh] flex flex-col"
-          >
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      showHeader={false}
+      rootClassName="items-start p-0"
+      className="max-h-[80vh] max-w-none overflow-hidden border-0 rounded-b-3xl shadow-xl"
+      bodyClassName="flex max-h-[80vh] flex-col p-0"
+    >
+          <div ref={modalRef}>
             {/* Search Input Header */}
-            <div className="p-6 border-b border-stone-100 flex items-center gap-4">
-              <Search className="text-stone-400" size={24} aria-hidden="true" />
+            <div className="p-6 border-b border-[var(--ds-border-subtle)] flex items-center gap-4">
+              <Search className="text-[var(--ds-text-muted)]" size={24} aria-hidden="true" />
               <form onSubmit={handleSearch} className="flex-1">
-                <input
+                <Input
                   ref={inputRef}
                   type="text"
                   placeholder="Search products, collections, and more..."
-                  className="w-full text-display-sm type-medium outline-none placeholder:text-stone-300"
+                  className="h-auto border-0 px-0 py-0 text-display-sm type-medium focus:border-transparent"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   aria-label="Search query"
@@ -213,19 +171,20 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               </form>
               {loading && (
                 <Loader2
-                  className="animate-spin text-stone-400"
+                  className="animate-spin text-[var(--ds-text-muted)]"
                   size={20}
                   aria-label="Loading results"
                 />
               )}
-              <button
+              <IconButton
                 onClick={onClose}
-                className="p-2 min-h-[44px] min-w-[44px] hover:bg-stone-100 rounded-full transition-colors flex items-center justify-center"
+                variant="ghost"
+                size="lg"
                 aria-label="Close search"
                 type="button"
               >
-                <X size={24} className="text-stone-500" aria-hidden="true" />
-              </button>
+                <X size={24} aria-hidden="true" />
+              </IconButton>
             </div>
 
             {/* Content Area */}
@@ -241,26 +200,32 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {recentSearches.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider">
+                        <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider">
                           Recent Searches
                         </h3>
-                        <button
+                        <Button
+                          type="button"
                           onClick={clearRecentSearches}
-                          className="text-body-xs text-stone-400 hover:text-red-500 transition-colors uppercase tracking-token-wider"
+                          variant="ghost"
+                          size="sm"
+                          className="min-h-8 px-0 text-[var(--ds-text-muted)] hover:text-[var(--ds-danger)]"
                         >
                           Clear All
-                        </button>
+                        </Button>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {recentSearches.map((term) => (
-                          <button
+                          <Button
                             key={term}
+                            type="button"
                             onClick={() => handleSearch(undefined, term)}
-                            className="kv-text-chip px-4 py-2 text-body-sm"
+                            variant="outline"
+                            size="sm"
+                            className="kv-text-chip min-h-9 px-4 py-2 text-body-sm normal-case"
                           >
                             <Search size={12} className="opacity-50" />
                             {term}
-                          </button>
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -268,58 +233,56 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
                   {/* Trending Now */}
                   <div>
-                    <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider mb-4 flex items-center gap-2">
+                    <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-4 flex items-center gap-2">
                       <Sparkles size={12} /> Trending Now
                     </h3>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                       {[
                         {
                           label: 'Shawls',
-                          emoji: '🧣',
                           href: '/collections/shawls',
                         },
                         {
                           label: 'Kurtis',
-                          emoji: '👘',
                           href: '/collections/kurtis',
                         },
                         {
                           label: 'Sarees',
-                          emoji: '🥻',
                           href: '/collections/sarees',
                         },
                         {
                           label: 'Accessories',
-                          emoji: '💍',
                           href: '/search?q=accessories',
                         },
                         {
                           label: 'Wedding',
-                          emoji: '💛',
                           href: '/search?q=wedding',
                         },
-                        { label: 'Sale', emoji: '🔖', href: '/sale' },
-                      ].map(({ label, emoji, href }) => (
-                        <button
+                        { label: 'Sale', href: '/sale' },
+                      ].map(({ label, href }) => (
+                        <Button
                           key={label}
+                          type="button"
                           onClick={() => {
                             onClose();
                             router.push(href);
                           }}
-                          className="group flex flex-col items-center gap-2 border border-stone-100 bg-white p-4 text-stone-700 transition-all duration-200 hover:border-stone-300 hover:bg-stone-50 hover:text-stone-950"
+                          variant="outline"
+                          size="sm"
+                          className="group flex min-h-24 flex-col items-center gap-2 border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4 text-[var(--ds-text-secondary)] hover:border-[var(--ds-border-strong)] hover:bg-[var(--ds-surface-soft)] hover:text-[var(--ds-text-primary)]"
                         >
                           <span className="text-display-md group-hover:scale-110 transition-transform">
-                            {emoji}
+                            {label.charAt(0)}
                           </span>
                           <span className="text-body-xs type-medium">{label}</span>
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
 
                   {/* Popular Searches */}
                   <div>
-                    <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider mb-3">
+                    <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-3">
                       Popular Searches
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -331,13 +294,16 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                         'Gift Cards',
                         'Wedding Collection',
                       ].map((term) => (
-                        <button
+                        <Button
                           key={term}
+                          type="button"
                           onClick={() => setQuery(term)}
-                          className="kv-text-chip px-4 py-2 text-body-sm"
+                          variant="outline"
+                          size="sm"
+                          className="kv-text-chip min-h-9 px-4 py-2 text-body-sm normal-case"
                         >
                           {term}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
@@ -347,7 +313,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               {query && (
                 <div className="max-w-5xl mx-auto">
                   {results.length === 0 && !loading && (
-                    <div className="text-center py-12 text-stone-500">
+                    <div className="text-center py-12 text-[var(--ds-text-secondary)]">
                       No results found for &quot;{query}&quot;
                     </div>
                   )}
@@ -355,25 +321,28 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {/* Suggestions List */}
                   {suggestions.length > 0 && (
                     <div className="mb-8">
-                      <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider mb-3">
+                      <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-3">
                         Suggestions
                       </h3>
                       <ul className="space-y-2">
                         {suggestions.map((s) => (
                           <li key={s.id}>
-                            <button
+                            <Button
+                              type="button"
                               onClick={() => {
                                 onClose();
                                 router.push(`/products/${s.handle}`);
                               }}
-                              className="flex items-center gap-3 text-stone-600 hover:text-black w-full text-left group"
+                              variant="ghost"
+                              size="sm"
+                              className="group flex w-full justify-start gap-3 px-0 text-left normal-case text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
                             >
                               <Search
                                 size={14}
-                                className="text-stone-300 group-hover:text-black"
+                                className="text-[var(--ds-text-muted)] group-hover:text-[var(--ds-text-primary)]"
                               />
                               {s.title}
-                            </button>
+                            </Button>
                           </li>
                         ))}
                       </ul>
@@ -383,7 +352,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {/* Product Grid Preview */}
                   {results.length > 0 && (
                     <div>
-                      <h3 className="text-body-xs type-bold text-stone-400 uppercase tracking-token-wider mb-6">
+                      <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-6">
                         Products
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -398,21 +367,25 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                               thumbnail={product.thumbnail}
                               priceLabel={price !== undefined ? `from ${formatPrice(price)}` : undefined}
                               imageClassName="rounded-lg"
-                              titleClassName="text-body-sm type-medium text-stone-900 group-hover:underline decoration-1 underline-offset-4"
-                              priceClassName="text-body-sm text-stone-500"
+                              titleClassName="text-body-sm type-medium text-[var(--ds-text-primary)] group-hover:underline decoration-1 underline-offset-4"
+                              priceClassName="text-body-sm text-[var(--ds-text-secondary)]"
                               onClick={onClose}
                             />
                           );
                         })}
                       </div>
 
-                      <div className="mt-8 text-center border-t border-stone-100 pt-6">
-                        <button
-                          onClick={handleSearch}
-                          className="inline-flex items-center gap-2 text-body-sm type-bold uppercase tracking-token-wider hover:underline"
+                      <div className="mt-8 text-center border-t border-[var(--ds-border-subtle)] pt-6">
+                        <Button
+                          type="button"
+                          onClick={() => handleSearch()}
+                          variant="ghost"
+                          size="md"
+                          trailingIcon={<ArrowRight size={16} />}
+                          className="hover:underline"
                         >
-                          View All Results <ArrowRight size={16} />
-                        </button>
+                          View All Results
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -421,25 +394,22 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             </div>
 
             {/* Footer */}
-            <div className="bg-stone-50 px-8 py-3.5 text-body-xs text-stone-400 flex justify-between items-center border-t border-stone-100">
+            <div className="bg-[var(--ds-surface-soft)] px-8 py-3.5 text-body-xs text-[var(--ds-text-muted)] flex justify-between items-center border-t border-[var(--ds-border-subtle)]">
               <span>
                 Press{' '}
-                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-body-xs font-mono">
+                <kbd className="px-1.5 py-0.5 bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] rounded text-body-xs font-mono">
                   Enter
                 </kbd>{' '}
                 to search
               </span>
               <span className="hidden md:flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-white border border-stone-200 rounded text-body-xs font-mono">
+                <kbd className="px-1.5 py-0.5 bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] rounded text-body-xs font-mono">
                   Esc
                 </kbd>{' '}
                 to close
               </span>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </div>
+    </Modal>
   );
 }
-

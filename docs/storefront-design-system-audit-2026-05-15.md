@@ -707,3 +707,49 @@ Expected result after cleanup:
 - mobile menu less disconnected lagega
 - code maintain karna easier hoga
 - future redesign work one-off patches ke bajay system-level improvements banega
+
+## 2026-05-16 Consistency Hardening Update
+
+Status: storefront design-system consistency gate is now passing locally.
+
+Completed hardening:
+
+- TERRACOTTA remains the final accent token via `--ds-accent-*`.
+- Runtime `sienna` and `coral` styling has been removed from `src`; the old names remain only as compatibility aliases in `globals.css`.
+- Raw UI hex usage has been moved to `tokens.css`.
+- Product color swatches now use `--ds-swatch-*` tokens instead of page-local hex values.
+- The broad monochrome override layer was replaced by a small token bridge, so buttons and surfaces are no longer globally forced into black/white.
+- Avoidable `!important` usage was removed from the style layers; the only remaining instances are the reduced-motion accessibility reset in `animations.css`.
+- `storefront/scripts/design-system-audit.mjs` now enforces raw hex, deprecated accent naming, token self-reference, and non-exception `!important` rules.
+
+Verification passed:
+
+- `npm run audit:design-system`
+- `npm run build`
+- `npm run lint`
+- `npm run test:unit -- --run`
+
+## 2026-05-16 Deep Rules Audit And Fixes
+
+Second-pass audit checked for issues that basic token scanning does not catch:
+
+- legacy typography utility names such as `font-serif` and `font-heading`
+- Tailwind default palettes leaking through `stone`, `gray`, `zinc`, `neutral`, `red`, `green`, `blue`, `amber`, `yellow`, `rose`, `emerald`, `pink`, and `purple`
+- mojibake/encoding artifacts in UI source
+- notification/toast status colors bypassing semantic tokens
+- compatibility utilities duplicating old prototype selectors
+
+Fixes performed:
+
+- Runtime `font-serif`, `font-heading`, and inline `font-[family-name:...]` usage was migrated to `font-display` or `font-body`.
+- Tailwind color palettes are now bridged in `tailwind.config.ts` so legacy utility classes resolve to `--ds-*` semantic tokens instead of Tailwind defaults.
+- Notification toasts now use `--ds-success`, `--ds-danger`, `--ds-info`, `--ds-warning`, and `--ds-text-inverse`.
+- Broken notification close glyph was replaced with an accessible ASCII `x` control.
+- `storefront/scripts/design-system-audit.mjs` now also fails on legacy font utility names and mojibake artifacts.
+
+Verification passed after fixes:
+
+- `npm run audit:design-system`
+- `npm run build`
+- `npm run lint`
+- `npm run test:unit -- --run`

@@ -26,7 +26,7 @@ export default function ContactPage() {
         ]}
       />
       <Suspense
-        fallback={<div className="min-h-screen bg-white py-12 md:py-16 lg:py-24" />}
+        fallback={<div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24" />}
       >
         <ContactClient />
       </Suspense>

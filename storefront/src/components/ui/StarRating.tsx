@@ -2,6 +2,7 @@
 
 import { Star } from 'lucide-react';
 import { useState } from 'react';
+import { UnstyledButton } from '@/components/ui/Button';
 
 interface StarRatingProps {
   rating: number;
@@ -28,7 +29,7 @@ export function StarRating({
       }
     >
       {[1, 2, 3, 4, 5].map((star) => (
-        <button
+        <UnstyledButton
           key={star}
           type="button"
           onClick={() => editable && onRatingChange?.(star)}
@@ -45,11 +46,11 @@ export function StarRating({
             fill={(hoverRating || rating) >= star ? 'currentColor' : 'none'}
             className={
               (hoverRating || rating) >= star
-                ? 'text-yellow-500'
-                : 'text-stone-300'
+                ? 'text-[var(--ds-accent-gold)]'
+                : 'text-[var(--ds-border-strong)]'
             }
           />
-        </button>
+        </UnstyledButton>
       ))}
     </div>
   );

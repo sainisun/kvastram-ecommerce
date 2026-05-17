@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Input from '@/components/ui/Input';
 
 interface AddressAutocompleteProps {
   value: string;
@@ -12,6 +13,7 @@ interface AddressAutocompleteProps {
     country: string;
   }) => void;
   placeholder?: string;
+  label?: string;
   id?: string;
   name?: string;
   required?: boolean;
@@ -61,6 +63,7 @@ export function AddressAutocomplete({
   onChange,
   onAddressSelect,
   placeholder = 'Start typing your address...',
+  label,
   id = 'address_1',
   name = 'address_1',
   required = true,
@@ -170,11 +173,12 @@ export function AddressAutocomplete({
   }, [isLoaded, onChange, onAddressSelect]);
 
   return (
-    <input
+    <Input
       ref={inputRef}
       id={id}
       name={name}
       type="text"
+      label={label}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}

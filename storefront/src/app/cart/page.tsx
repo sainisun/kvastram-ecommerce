@@ -19,6 +19,9 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { Product } from '@/types';
+import Input from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Button, UnstyledButton } from '@/components/ui/Button';
 
 interface ShippingOption {
   id: string;
@@ -244,14 +247,14 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
           {/* Hero empty message */}
           <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[var(--soft)] mb-6">
               <ShoppingBag className="h-10 w-10 color-muted" />
             </div>
-            <h1 className="text-display-xl font-serif color-ink mb-3">
+            <h1 className="text-display-xl font-display color-ink mb-3">
               Your Bag Is Empty
             </h1>
             <p className="color-muted type-light text-body-xl mb-8">
@@ -260,7 +263,7 @@ export default function CartPage() {
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-[var(--ink)] text-white px-10 py-4 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--ink)] transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--ink)] text-[var(--ds-text-inverse)] px-10 py-4 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--ink)] transition-colors"
             >
               Explore Collection <ArrowRight size={16} />
             </Link>
@@ -270,7 +273,7 @@ export default function CartPage() {
           {recommendations.length > 0 && (
             <div>
               <div className="flex items-center gap-3 mb-8">
-                <Sparkles size={18} className="text-amber-500" />
+                <Sparkles size={18} className="text-[var(--ds-warning)]" />
                 <h2 className="text-body-sm type-bold uppercase tracking-token-wider color-ink">
                   You Might Love
                 </h2>
@@ -310,7 +313,7 @@ export default function CartPage() {
                         <p className="text-body-xs color-muted type-bold tracking-token-wider uppercase">
                           {product.collection?.title || 'Kvastram'}
                         </p>
-                        <h3 className="font-serif text-body-md color-ink leading-token-tight group-hover:color-muted transition-colors">
+                        <h3 className="font-display text-body-md color-ink leading-token-tight group-hover:color-muted transition-colors">
                           {product.title}
                         </h3>
                         {price && (
@@ -319,17 +322,17 @@ export default function CartPage() {
                           </p>
                         )}
                       </Link>
-                      <button
+                      <UnstyledButton
                         onClick={() => handleAddRecommendation(product)}
                         disabled={addingRec === product.id || !variant}
                         className={`w-full py-2.5 text-body-xs type-bold uppercase tracking-token-wider border transition-all ${
                           addingRec === product.id
-                            ? 'bg-green-600 text-white border-green-600'
-                            : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white'
+                            ? 'bg-[var(--ds-success)] text-[var(--ds-text-inverse)] border-[var(--ds-success)]'
+                            : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--ds-text-inverse)]'
                         }`}
                       >
                         {addingRec === product.id ? '✓ Added!' : 'Quick Add'}
-                      </button>
+                      </UnstyledButton>
                     </div>
                   );
                 })}
@@ -343,11 +346,11 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[var(--cream)]">
-      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-display-lg font-serif color-ink">Shopping Cart</h1>
-          <button
+          <h1 className="text-display-lg font-display color-ink">Shopping Cart</h1>
+          <UnstyledButton
             onClick={() => {
               if (confirm('Are you sure you want to clear your cart?')) {
                 clearCart();
@@ -357,7 +360,7 @@ export default function CartPage() {
             className="text-body-sm color-muted hover:color-ink underline"
           >
             Clear Cart
-          </button>
+          </UnstyledButton>
         </div>
 
         <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-16">
@@ -419,7 +422,7 @@ export default function CartPage() {
                       <div className="mt-4 sm:mt-0 sm:pr-9">
                         {/* Quantity Selector */}
                         <div className="flex items-center">
-                          <button
+                          <UnstyledButton
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity - 1)
                             }
@@ -427,18 +430,20 @@ export default function CartPage() {
                             aria-label="Decrease quantity"
                           >
                             <Minus size={16} />
-                          </button>
-                          <input
+                          </UnstyledButton>
+                          <Input
                             type="number"
+                            aria-label={`Quantity for ${item.title}`}
                             value={item.quantity}
                             onChange={(e) => {
                               const qty = parseInt(e.target.value) || 1;
                               updateQuantity(item.variantId, qty);
                             }}
-                            className="w-16 text-center border-0 bg-transparent py-1 color-ink focus:ring-0 sm:text-body-sm"
+                            containerClassName="w-16"
+                            className="h-auto border-0 bg-transparent px-0 py-1 text-center focus:border-transparent sm:text-body-sm"
                             min="1"
                           />
-                          <button
+                          <UnstyledButton
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity + 1)
                             }
@@ -446,18 +451,18 @@ export default function CartPage() {
                             aria-label="Increase quantity"
                           >
                             <Plus size={16} />
-                          </button>
+                          </UnstyledButton>
                         </div>
 
                         {/* Remove Button */}
                         <div className="absolute right-0 top-0">
-                          <button
+                          <UnstyledButton
                             onClick={() => removeItem(item.variantId)}
-                            className="p-2 min-h-[44px] min-w-[44px] color-muted hover:text-red-500 transition-colors flex items-center justify-center"
+                            className="p-2 min-h-[44px] min-w-[44px] color-muted hover:text-[var(--ds-danger)] transition-colors flex items-center justify-center"
                             aria-label="Remove item"
                           >
                             <Trash2 size={18} />
-                          </button>
+                          </UnstyledButton>
                         </div>
                       </div>
                     </div>
@@ -484,9 +489,9 @@ export default function CartPage() {
             </div>
 
             {recommendations.length > 0 ? (
-              <section className="mt-12 rounded-lg border border-[var(--line)] bg-white p-6">
+              <section className="mt-12 rounded-lg border border-[var(--line)] bg-[var(--ds-surface-paper)] p-6">
                 <div className="mb-6 flex items-center gap-3">
-                  <Sparkles size={18} className="text-amber-500" />
+                  <Sparkles size={18} className="text-[var(--ds-warning)]" />
                   <div>
                     <p className="text-body-xs type-bold uppercase tracking-token-wider color-muted">
                       Pair With Your Bag
@@ -532,7 +537,7 @@ export default function CartPage() {
                           <p className="text-body-xs color-muted type-bold tracking-token-wider uppercase">
                             {product.collection?.title || 'Kvastram'}
                           </p>
-                          <h3 className="font-serif text-body-md color-ink leading-token-tight transition-colors group-hover:color-muted">
+                          <h3 className="font-display text-body-md color-ink leading-token-tight transition-colors group-hover:color-muted">
                             {product.title}
                           </h3>
                           {price ? (
@@ -541,17 +546,17 @@ export default function CartPage() {
                             </p>
                           ) : null}
                         </Link>
-                        <button
+                        <UnstyledButton
                           onClick={() => handleAddRecommendation(product)}
                           disabled={addingRec === product.id || !variant}
                           className={`w-full border py-2.5 text-body-xs type-bold uppercase tracking-token-wider transition-all ${
                             addingRec === product.id
-                              ? 'border-green-600 bg-green-600 text-white'
-                              : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white'
+                              ? 'border-[var(--ds-success)] bg-[var(--ds-success)] text-[var(--ds-text-inverse)]'
+                              : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--ds-text-inverse)]'
                           }`}
                         >
                           {addingRec === product.id ? 'Added' : 'Quick Add'}
-                        </button>
+                        </UnstyledButton>
                       </div>
                     );
                   })}
@@ -562,7 +567,7 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="mt-16 lg:col-span-5 lg:mt-0">
-            <div className="bg-white rounded-lg border border-[var(--line)] p-6">
+            <div className="bg-[var(--ds-surface-paper)] rounded-lg border border-[var(--line)] p-6">
               <h2 className="text-body-xl type-medium color-ink mb-6">
                 Order Summary
               </h2>
@@ -570,51 +575,54 @@ export default function CartPage() {
               {/* Promo Code */}
               <div className="mb-6">
                 {discount ? (
-                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-md p-3">
+                  <div className="flex items-center justify-between bg-[var(--ds-success-bg)] border border-[var(--ds-success)] rounded-md p-3">
                     <div>
-                      <span className="text-body-sm type-medium text-green-800">
+                      <span className="text-body-sm type-medium text-[var(--ds-success-text)]">
                         {discount.code}
                       </span>
-                      <span className="text-body-xs text-green-600 ml-2">
+                      <span className="text-body-xs text-[var(--ds-success)] ml-2">
                         (-{formatCartPrice(discount.amount)})
                       </span>
                     </div>
-                    <button
+                    <Button
+                      type="button"
                       onClick={handleRemovePromo}
-                      className="text-body-xs text-green-700 hover:text-green-900"
+                      variant="ghost"
+                      size="sm"
+                      className="min-h-0 px-0 text-body-xs text-[var(--ds-success)] hover:text-[var(--ds-success)]"
                     >
                       Remove
-                    </button>
+                    </Button>
                   </div>
                 ) : (
                   <div className="flex gap-2">
-                    <input
+                    <Input
                       type="text"
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
                       placeholder="Promo code"
-                      className="flex-1 border border-[var(--line)] rounded-md px-3 py-2 text-body-sm focus:outline-none focus:ring-1 focus:ring-[var(--ink)]"
+                      containerClassName="flex-1"
+                      aria-label="Promo code"
                     />
-                    <button
+                    <Button
+                      type="button"
                       onClick={handleApplyPromo}
                       disabled={promoLoading || !promoCode.trim()}
-                      className="px-4 py-2 bg-[var(--ink)] text-white text-body-sm type-medium rounded-md hover:bg-[var(--ink)] disabled:opacity-50 disabled:cursor-not-allowed"
+                      variant="secondary"
+                      size="sm"
                     >
                       {promoLoading ? 'Applying...' : 'Apply'}
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
 
               {/* Country Selector for Shipping */}
               <div className="mb-6">
-                <label className="block text-body-xs type-medium color-muted mb-2">
-                  Shipping to
-                </label>
-                <select
+                <Select
+                  label="Shipping to"
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
-                  className="w-full border border-[var(--line)] rounded-md px-3 py-2 text-body-sm focus:outline-none focus:ring-1 focus:ring-[var(--ink)]"
                 >
                   <option value="">Select country</option>
                   <option value="US">United States</option>
@@ -668,13 +676,14 @@ export default function CartPage() {
                   <option value="BD">Bangladesh</option>
                   <option value="LK">Sri Lanka</option>
                   <option value="NP">Nepal</option>
-                </select>
-                <input
+                </Select>
+                <Input
                   type="text"
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
                   placeholder="Postal code for better preview"
-                  className="mt-3 w-full rounded-md border border-[var(--line)] px-3 py-2 text-body-sm focus:outline-none focus:ring-1 focus:ring-[var(--ink)]"
+                  containerClassName="mt-3"
+                  aria-label="Postal code"
                 />
                 {shippingLoading && (
                   <p className="text-body-xs color-muted mt-1">
@@ -749,7 +758,7 @@ export default function CartPage() {
                   {discountAmount > 0 && (
                     <div className="flex items-center justify-between py-4">
                       <dt className="color-muted">Discount</dt>
-                      <dd className="type-medium text-green-600">
+                      <dd className="type-medium text-[var(--ds-success)]">
                         -{formatCartPrice(discountAmount)}
                       </dd>
                     </div>
@@ -759,7 +768,7 @@ export default function CartPage() {
                       Shipping
                       {shippingCost === 0 &&
                         subtotal >= freeShippingThreshold && (
-                          <span className="ml-2 text-body-xs text-green-600">
+                          <span className="ml-2 text-body-xs text-[var(--ds-success)]">
                             (Free over {formatCartPrice(freeShippingThreshold)})
                           </span>
                         )}
@@ -810,7 +819,7 @@ export default function CartPage() {
               {/* Checkout Button */}
               <Link
                 href="/checkout"
-                className="mt-6 block w-full bg-[var(--ink)] text-white text-center py-4 text-body-sm type-bold uppercase tracking-token-wider hover:bg-[var(--ink)] transition-colors"
+                className="mt-6 block w-full bg-[var(--ink)] text-[var(--ds-text-inverse)] text-center py-4 text-body-sm type-bold uppercase tracking-token-wider hover:bg-[var(--ink)] transition-colors"
               >
                 Proceed to Checkout
               </Link>
@@ -865,4 +874,3 @@ export default function CartPage() {
     </div>
   );
 }
-

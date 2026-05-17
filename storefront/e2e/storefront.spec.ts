@@ -7,7 +7,7 @@ test.describe('Storefront E2E Tests', () => {
     await page.goto('/');
     
     // Check page title
-    await expect(page).toHaveTitle(/Kvastram/);
+    await expect(page).toHaveTitle(/Kantha|Kvastram/i);
     
     // Check for main content
     await expect(page.locator('main')).toBeVisible();
@@ -46,7 +46,7 @@ test.describe('Storefront E2E Tests', () => {
 
     await page.waitForLoadState('domcontentloaded');
 
-    await expect(page.locator('h1').first()).toContainText(/Watch & Buy/i);
+    await expect(page.locator('h1').first()).toContainText(/Reels/i);
   });
 
   test('Trending Now redirects to canonical Reels page', async ({ page }) => {

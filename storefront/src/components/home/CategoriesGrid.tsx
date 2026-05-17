@@ -12,13 +12,13 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
   const featuredCategories = categories.slice(0, 12);
 
   return (
-    <section className="bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <section className="bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="mb-8 text-center md:mb-12">
-          <div className="text-body-xs uppercase tracking-token-wider text-stone-500">
+          <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-text-muted)]">
             Shop by Category
           </div>
-          <h2 className="mt-3 font-heading text-display-xl type-medium leading-token-tight tracking-token-tight text-stone-950">
+          <h2 className="mt-3 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
             Find your <em className="italic">silhouette</em>
           </h2>
         </div>
@@ -28,7 +28,7 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
             <Link
               key={cat.id}
               href={cat.link_url}
-              className="group relative aspect-[4/5] min-w-[72%] snap-start overflow-hidden bg-stone-100 sm:min-w-[42%] lg:min-w-[24%]"
+              className="group relative aspect-[4/5] min-w-[72%] snap-start overflow-hidden bg-[var(--ds-surface-soft)] sm:min-w-[42%] lg:min-w-[24%]"
             >
               <OptimizedImage
                 src={cat.image_url}
@@ -39,7 +39,7 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
               />
               <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.44)_0%,transparent_58%)]" />
               <div className="absolute inset-x-0 bottom-6 flex justify-center px-4">
-                <span className="inline-flex px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]">
+                <span className="inline-flex px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider text-[var(--ds-text-inverse)] drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]">
                   {cat.name}
                 </span>
               </div>

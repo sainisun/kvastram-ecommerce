@@ -13,6 +13,8 @@ interface DrawerProps {
   children: ReactNode;
   side?: 'left' | 'right' | 'bottom';
   className?: string;
+  bodyClassName?: string;
+  showHeader?: boolean;
 }
 
 const sideClasses = {
@@ -21,7 +23,16 @@ const sideClasses = {
   bottom: 'inset-x-0 bottom-0 max-h-[88vh] w-full',
 };
 
-export function Drawer({ isOpen, onClose, title, children, side = 'right', className }: DrawerProps) {
+export function Drawer({
+  isOpen,
+  onClose,
+  title,
+  children,
+  side = 'right',
+  className,
+  bodyClassName,
+  showHeader = true,
+}: DrawerProps) {
   useEffect(() => {
     if (!isOpen) return;
 
@@ -60,17 +71,21 @@ export function Drawer({ isOpen, onClose, title, children, side = 'right', class
           className
         )}
       >
-        <div className="flex items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] p-5">
-          {title ? (
-            <h2 className="font-display text-display-sm type-semibold leading-token-tight">
-              {title}
-            </h2>
-          ) : <span />}
-          <IconButton aria-label="Close drawer" onClick={onClose}>
-            <X size={18} />
-          </IconButton>
+        {showHeader ? (
+          <div className="flex items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] p-5">
+            {title ? (
+              <h2 className="font-display text-display-sm type-semibold leading-token-tight">
+                {title}
+              </h2>
+            ) : <span />}
+            <IconButton aria-label="Close drawer" onClick={onClose}>
+              <X size={18} />
+            </IconButton>
+          </div>
+        ) : null}
+        <div className={cn('min-h-0 flex-1 overflow-y-auto p-5', bodyClassName)}>
+          {children}
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto p-5">{children}</div>
       </aside>
     </div>
   );

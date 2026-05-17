@@ -41,50 +41,8 @@
 }
 
 /* ─── PDP Size Buttons ─── */
-.size-btn-prem {
-  width: var(--space-12);
-  height: var(--space-12);
-  border: 1px solid var(--line);
-  background: none;
-  font-family: var(--font-body);
-  font-size: var(--text-body-xs);
-  font-weight: 500;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    border-color 0.2s,
-    color 0.2s;
-}
-.size-btn-prem:hover,
-.size-btn-prem.active {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--ink);
-}
 
 /* ─── PDP Add to Bag ─── */
-.add-btn-prem {
-  flex: 1;
-  background: var(--ink);
-  color: var(--paper);
-  border: none;
-  height: 56px;
-  font-family: var(--font-body);
-  font-size: var(--text-body-xs);
-  font-weight: 500;
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-.add-btn-prem:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(var(--ink-rgb), 0.2);
-}
 
 /* ─── Trust Strip ─── */
 .trust-strip-prem {

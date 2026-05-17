@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import Input from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 
 interface HomepageSettings {
   newsletter_title?: string | null;
@@ -51,49 +53,44 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
   }
 
   return (
-    <section className="kv-section" style={{ background: 'var(--sienna)', color: 'white' }}>
+    <section className="kv-section bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)]">
       <div className="kv-container">
-        <div className="newsletter-form" style={{ maxWidth: 640, margin: 'auto', textAlign: 'center' }}>
-          <div className="kv-tag" style={{ color: 'rgba(255,255,255,.72)' }}>Newsletter</div>
+        <div className="newsletter-form mx-auto max-w-[640px] text-center">
+          <div className="kv-tag text-[var(--ds-text-inverse)]/70">Newsletter</div>
           <h2 className="kv-title">{title}</h2>
-          <p style={{ color: 'rgba(255,255,255,.78)' }}>{subtitle}</p>
+          <p className="text-[var(--ds-text-inverse)]/80">{subtitle}</p>
 
           {status === 'success' ? (
-            <p className="mt-4 text-body-sm text-white/90" role="status">
+            <p className="mt-4 text-body-sm text-[var(--ds-text-inverse)]/90" role="status">
               {message}
             </p>
           ) : (
             <div className="newsletter-form">
               <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
-                <input
+                <Input
                   type="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   required
                   placeholder="Email address"
-                  className="form-input flex-1"
-                  style={{
-                    border: '1px solid var(--line)',
-                    borderRadius: 'var(--radius-md)',
-                    background: 'white',
-                    color: 'var(--ink)',
-                    padding: '12px 13px',
-                  }}
+                  containerClassName="flex-1"
                   disabled={status === 'loading'}
+                  aria-label="Email address"
                 />
-                <button
+                <Button
                   type="submit"
-                  className="kv-btn kv-btn-white"
+                  variant="outline"
+                  size="md"
                   disabled={status === 'loading'}
                 >
                   Subscribe
-                </button>
+                </Button>
               </form>
             </div>
           )}
 
           {status === 'error' ? (
-            <p className="mt-3 text-body-sm text-white/80" role="alert">
+            <p className="mt-3 text-body-sm text-[var(--ds-text-inverse)]/80" role="alert">
               {message}
             </p>
           ) : null}

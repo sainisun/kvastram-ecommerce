@@ -18,11 +18,6 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
     consentGranted.current = consent === 'true';
   }, []);
 
-  const requestConsent = () => {
-    localStorage.setItem('logrocket_consent', 'true');
-    consentGranted.current = true;
-  };
-
   // helper to query consent; guard against SSR
   const hasSessionConsent = () =>
     typeof window !== 'undefined' &&

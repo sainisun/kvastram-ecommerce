@@ -8,6 +8,10 @@ import { ArrowLeft, Edit2, MapPin, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { countries, getCountryName } from '@/config/countries';
 import { api } from '@/lib/api';
+import Input from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Button, IconButton } from '@/components/ui/Button';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 
 interface Address {
   id: string;
@@ -189,18 +193,18 @@ export default function AddressesPage() {
 
   if (loading || !customer) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-stone-900" />
+      <div className="flex min-h-screen items-center justify-center bg-[var(--ds-surface-parchment)]">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--ds-text-primary)]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
       <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
         <Link
           href="/account"
-          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-stone-900"
+          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
         >
           <ArrowLeft size={16} /> Back to Account
         </Link>
@@ -214,7 +218,8 @@ export default function AddressesPage() {
               payment.
             </p>
           </div>
-          <button
+          <Button
+            type="button"
             onClick={() => {
               setEditingId(null);
               setFormData(DEFAULT_FORM);
@@ -222,27 +227,28 @@ export default function AddressesPage() {
               setError('');
               setSuccessMessage('');
             }}
-            className="account-primary-action inline-flex items-center justify-center gap-2 bg-stone-900 px-4 py-3 transition-colors hover:bg-stone-800"
+            variant="secondary"
+            size="md"
+            leadingIcon={<Plus size={16} />}
           >
-            <Plus size={16} />
             {showForm && !editingId ? 'Close Form' : 'Add Address'}
-          </button>
+          </Button>
         </div>
 
         {error ? (
-          <div className="mb-6 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <StatusBanner tone="danger" className="mb-6">
             {error}
-          </div>
+          </StatusBanner>
         ) : null}
 
         {successMessage ? (
-          <div className="mb-6 border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          <StatusBanner tone="success" className="mb-6">
             {successMessage}
-          </div>
+          </StatusBanner>
         ) : null}
 
         {showForm ? (
-          <div className="mb-8 border border-stone-200 bg-white p-6 shadow-sm">
+          <div className="mb-8 border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-6 shadow-sm">
             <h2 className="account-section-title mb-2">
               {editingAddress ? 'Edit Address' : 'New Address'}
             </h2>
@@ -254,11 +260,9 @@ export default function AddressesPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="account-form-label mb-2 block">
-                    First Name
-                  </label>
-                  <input
+                  <Input
                     type="text"
+                    label="First Name"
                     value={formData.first_name}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -266,15 +270,12 @@ export default function AddressesPage() {
                         first_name: e.target.value,
                       }))
                     }
-                    className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="account-form-label mb-2 block">
-                    Last Name
-                  </label>
-                  <input
+                  <Input
                     type="text"
+                    label="Last Name"
                     value={formData.last_name}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -282,17 +283,14 @@ export default function AddressesPage() {
                         last_name: e.target.value,
                       }))
                     }
-                    className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="account-form-label mb-2 block">
-                  Address line 1
-                </label>
-                <input
+                <Input
                   type="text"
+                  label="Address line 1"
                   required
                   value={formData.address_1}
                   onChange={(e) =>
@@ -302,16 +300,13 @@ export default function AddressesPage() {
                     }))
                   }
                   placeholder="Street address"
-                  className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="account-form-label mb-2 block">
-                  Address line 2
-                </label>
-                <input
+                <Input
                   type="text"
+                  label="Address line 2"
                   value={formData.address_2}
                   onChange={(e) =>
                     setFormData((prev) => ({
@@ -320,29 +315,25 @@ export default function AddressesPage() {
                     }))
                   }
                   placeholder="Apartment, suite, landmark"
-                  className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                 />
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="account-form-label mb-2 block">City</label>
-                  <input
+                  <Input
                     type="text"
+                    label="City"
                     required
                     value={formData.city}
                     onChange={(e) =>
                       setFormData((prev) => ({ ...prev, city: e.target.value }))
                     }
-                    className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="account-form-label mb-2 block">
-                    State / Province
-                  </label>
-                  <input
+                  <Input
                     type="text"
+                    label="State / Province"
                     value={formData.province}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -350,18 +341,15 @@ export default function AddressesPage() {
                         province: e.target.value,
                       }))
                     }
-                    className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="account-form-label mb-2 block">
-                    Postal Code
-                  </label>
-                  <input
+                  <Input
                     type="text"
+                    label="Postal Code"
                     required
                     value={formData.postal_code}
                     onChange={(e) =>
@@ -370,15 +358,12 @@ export default function AddressesPage() {
                         postal_code: e.target.value,
                       }))
                     }
-                    className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="account-form-label mb-2 block">
-                    Phone
-                  </label>
-                  <input
+                  <Input
                     type="tel"
+                    label="Phone"
                     value={formData.phone}
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -386,14 +371,13 @@ export default function AddressesPage() {
                         phone: e.target.value,
                       }))
                     }
-                    className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="account-form-label mb-2 block">Country</label>
-                <select
+                <Select
+                  label="Country"
                   required
                   value={formData.country_code}
                   onChange={(e) =>
@@ -402,21 +386,21 @@ export default function AddressesPage() {
                       country_code: e.target.value,
                     }))
                   }
-                  className="account-input w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                 >
                   {countries.map((country) => (
                     <option key={country.code} value={country.code}>
                       {country.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <div className="flex flex-wrap gap-4 pt-2">
-                <button
+                <Button
                   type="submit"
                   disabled={submitting}
-                  className="account-primary-action bg-stone-900 px-6 py-3 transition-colors hover:bg-stone-800 disabled:opacity-60"
+                  variant="secondary"
+                  size="md"
                 >
                   {submitting
                     ? editingAddress
@@ -425,44 +409,48 @@ export default function AddressesPage() {
                     : editingAddress
                       ? 'Save Changes'
                       : 'Save Address'}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   onClick={resetForm}
-                  className="account-secondary-action border border-stone-300 px-6 py-3 transition-colors hover:bg-stone-50"
+                  variant="outline"
+                  size="md"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </form>
           </div>
         ) : null}
 
         {loadingAddresses ? (
-          <div className="border border-stone-200 bg-white p-12 text-center shadow-sm">
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-stone-900" />
+          <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-12 text-center shadow-sm">
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--ds-text-primary)]" />
             <p className="account-muted mt-4">Loading saved addresses...</p>
           </div>
         ) : addresses.length === 0 ? (
-          <div className="border border-stone-200 bg-white p-12 text-center shadow-sm">
-            <MapPin size={48} className="mx-auto mb-4 text-stone-300" />
+          <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-12 text-center shadow-sm">
+            <MapPin size={48} className="mx-auto mb-4 text-[var(--ds-text-disabled)]" />
             <h3 className="account-section-title mb-2">No saved addresses</h3>
             <p className="account-muted mb-6">
               Add an address now to speed up future checkouts and order support.
             </p>
-            <button
+            <Button
+              type="button"
               onClick={() => setShowForm(true)}
-              className="account-primary-action inline-flex items-center gap-2 bg-stone-900 px-6 py-3 transition-colors hover:bg-stone-800"
+              variant="secondary"
+              size="md"
+              leadingIcon={<Plus size={16} />}
             >
-              <Plus size={16} /> Add Your First Address
-            </button>
+              Add Your First Address
+            </Button>
           </div>
         ) : (
           <div className="grid gap-4">
             {addresses.map((address) => (
               <div
                 key={address.id}
-                className="flex flex-col justify-between gap-5 border border-stone-200 bg-white p-6 shadow-sm md:flex-row md:items-start"
+                className="flex flex-col justify-between gap-5 border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-6 shadow-sm md:flex-row md:items-start"
               >
                 <div>
                   <p className="account-name">
@@ -488,7 +476,8 @@ export default function AddressesPage() {
                 </div>
 
                 <div className="flex gap-2 self-end md:self-start">
-                  <button
+                  <IconButton
+                    type="button"
                     onClick={() => {
                       setEditingId(address.id);
                       setFormData(toFormData(address));
@@ -496,19 +485,23 @@ export default function AddressesPage() {
                       setError('');
                       setSuccessMessage('');
                     }}
-                    className="rounded border border-stone-200 p-2 text-stone-500 transition-colors hover:border-stone-400 hover:text-stone-900"
+                    variant="outline"
+                    size="sm"
                     aria-label={`Edit address ${address.id}`}
                   >
                     <Edit2 size={16} />
-                  </button>
-                  <button
+                  </IconButton>
+                  <IconButton
+                    type="button"
                     onClick={() => handleDelete(address.id)}
                     disabled={deletingId === address.id}
-                    className="rounded border border-stone-200 p-2 text-stone-500 transition-colors hover:border-red-300 hover:text-red-600 disabled:opacity-60"
+                    variant="outline"
+                    size="sm"
+                    className="hover:border-[var(--ds-danger)] hover:text-[var(--ds-danger)]"
                     aria-label={`Delete address ${address.id}`}
                   >
                     <Trash2 size={16} />
-                  </button>
+                  </IconButton>
                 </div>
               </div>
             ))}

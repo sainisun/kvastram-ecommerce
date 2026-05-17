@@ -6,6 +6,8 @@ import { api } from '@/lib/api';
 import Link from 'next/link';
 import { Loader2, Filter, ArrowLeft } from 'lucide-react';
 import Input from '@/components/ui/Input';
+import { Button, UnstyledButton } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
 import ProductGrid from '@/components/ProductGrid';
 import type { Product } from '@/types';
 import {
@@ -112,20 +114,20 @@ function SearchContent() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         {/* Header */}
         <div className="mb-12">
           <Link
             href="/"
-            className="search-back-link mb-6 inline-flex items-center gap-2 pl-1 hover:text-black"
+            className="search-back-link mb-6 inline-flex items-center gap-2 pl-1 hover:text-[var(--ds-text-primary)]"
           >
             <ArrowLeft size={14} /> Back to Home
           </Link>
           <h1 className="search-title mb-4">
             Search Results
           </h1>
-          <p className="text-stone-500">
+          <p className="text-[var(--ds-text-muted)]">
             {loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="animate-spin" size={16} /> Searching for
@@ -141,17 +143,17 @@ function SearchContent() {
         </div>
 
         {/* Filters Toolbar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-y border-stone-100 py-4 mb-12 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-y border-[var(--ds-border-subtle)] py-4 mb-12 gap-4">
           <div className="relative">
-            <button
+            <UnstyledButton
               onClick={() => setShowFilters(!showFilters)}
-              className="search-toolbar-button flex items-center gap-2 hover:text-stone-600"
+              className="search-toolbar-button flex items-center gap-2 hover:text-[var(--ds-text-secondary)]"
             >
               <Filter size={16} /> Filters
-            </button>
+            </UnstyledButton>
 
             {showFilters && (
-              <div className="absolute top-full left-0 mt-4 w-64 bg-white shadow-xl z-20 border border-stone-100 p-6">
+              <div className="absolute top-full left-0 mt-4 w-64 bg-[var(--ds-surface-paper)] shadow-xl z-20 border border-[var(--ds-border-subtle)] p-6">
                 <h4 className="search-filter-title mb-4">Price Range</h4>
                 <div className="flex items-center gap-2 mb-4">
                   <Input
@@ -168,20 +170,20 @@ function SearchContent() {
                     onChange={(e) => setMaxPrice(e.target.value)}
                   />
                 </div>
-                <button
+                <UnstyledButton
                   onClick={() => handleFilterApply()}
-                  className="search-apply-button w-full bg-stone-900 py-2"
+                  className="search-apply-button w-full bg-[var(--ds-text-primary)] py-2"
                 >
                   Apply
-                </button>
+                </UnstyledButton>
               </div>
             )}
           </div>
 
           <div className="relative">
-            <button
+            <UnstyledButton
               onClick={() => setShowSortMenu(!showSortMenu)}
-              className="search-toolbar-button flex items-center gap-2 hover:text-stone-600"
+              className="search-toolbar-button flex items-center gap-2 hover:text-[var(--ds-text-secondary)]"
             >
               Sort by:{' '}
               {sort === 'relevance'
@@ -191,46 +193,46 @@ function SearchContent() {
                   : sort === 'price_desc'
                     ? 'Price: High to Low'
                     : 'Newest'}
-            </button>
+            </UnstyledButton>
 
             {showSortMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white shadow-xl z-20 border border-stone-100 rounded-sm overflow-hidden py-1">
-                <button
+              <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--ds-surface-paper)] shadow-xl z-20 border border-[var(--ds-border-subtle)] rounded-sm overflow-hidden py-1">
+                <UnstyledButton
                   onClick={() => {
                     setSort('relevance');
                     setShowSortMenu(false);
                   }}
-                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-stone-50"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-[var(--ds-surface-parchment)]"
                 >
                   Featured
-                </button>
-                <button
+                </UnstyledButton>
+                <UnstyledButton
                   onClick={() => {
                     setSort('newest');
                     setShowSortMenu(false);
                   }}
-                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-stone-50"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-[var(--ds-surface-parchment)]"
                 >
                   Newest Arrivals
-                </button>
-                <button
+                </UnstyledButton>
+                <UnstyledButton
                   onClick={() => {
                     setSort('price_asc');
                     setShowSortMenu(false);
                   }}
-                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-stone-50"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-[var(--ds-surface-parchment)]"
                 >
                   Price: Low to High
-                </button>
-                <button
+                </UnstyledButton>
+                <UnstyledButton
                   onClick={() => {
                     setSort('price_desc');
                     setShowSortMenu(false);
                   }}
-                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-stone-50"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-[var(--ds-surface-parchment)]"
                 >
                   Price: High to Low
-                </button>
+                </UnstyledButton>
               </div>
             )}
           </div>
@@ -244,7 +246,7 @@ function SearchContent() {
                 appliedFilters.attributeValue === item.value;
 
               return (
-                <button
+                <UnstyledButton
                   key={`${group.code}-${item.value}`}
                   type="button"
                   onClick={() => setAttributeFilter(group.code, item.value)}
@@ -253,21 +255,21 @@ function SearchContent() {
                   }`}
                 >
                   {group.label}: {item.label}
-                </button>
+                </UnstyledButton>
               );
             })
           )}
         </div>
 
         <div className="mb-10 grid gap-4 lg:grid-cols-[1.15fr,0.85fr]">
-          <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6">
-            <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
+          <div className="rounded-2xl border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-6">
+            <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
               Guided Discovery
             </p>
-            <h2 className="mt-3 text-body-xl font-serif text-stone-900">
+            <h2 className="mt-3 text-body-xl font-display text-[var(--ds-text-primary)]">
               Browse beyond one keyword
             </h2>
-            <p className="mt-3 max-w-2xl text-body-sm text-stone-600">
+            <p className="mt-3 max-w-2xl text-body-sm text-[var(--ds-text-secondary)]">
               If your query is broad, jump into occasion, material, and color
               routes to keep momentum instead of bouncing.
             </p>
@@ -276,7 +278,7 @@ function SearchContent() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-full border border-stone-200 bg-white px-4 py-2 text-body-sm text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+                  className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
                 >
                   {item.label}
                 </Link>
@@ -284,33 +286,33 @@ function SearchContent() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-stone-200 bg-white p-6">
-            <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
+          <div className="rounded-2xl border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-6">
+            <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
               Purchase Help
             </p>
-            <h2 className="mt-3 text-body-xl font-serif text-stone-900">
+            <h2 className="mt-3 text-body-xl font-display text-[var(--ds-text-primary)]">
               Need confidence before checkout?
             </h2>
-            <p className="mt-3 text-body-sm text-stone-600">
+            <p className="mt-3 text-body-sm text-[var(--ds-text-secondary)]">
               Shipping, returns, and payment guidance are available before you
               place the order.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
                 href={storefrontTrust.policyRoutes.shipping}
-                className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
               >
                 Shipping
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.returns}
-                className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
               >
                 Returns
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.paymentHelp}
-                className="rounded-full border border-stone-200 px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
               >
                 Payment Help
               </Link>
@@ -319,10 +321,10 @@ function SearchContent() {
         </div>
 
         {hasActiveFilters ? (
-          <div className="mb-8 flex flex-wrap items-center gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4">
-            <span className="text-body-sm text-stone-600">Active filters:</span>
+          <div className="mb-8 flex flex-wrap items-center gap-3 rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-4">
+            <span className="text-body-sm text-[var(--ds-text-secondary)]">Active filters:</span>
             {appliedFilters.attributeCode && appliedFilters.attributeValue ? (
-              <span className="rounded-full border border-stone-200 bg-white px-3 py-1 text-body-xs text-stone-700">
+              <span className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-3 py-1 text-body-xs text-[var(--ds-text-secondary)]">
                 {storefrontAttributeFilters.find(
                   (group) => group.code === appliedFilters.attributeCode
                 )?.label || 'Filter'}
@@ -335,7 +337,7 @@ function SearchContent() {
               </span>
             ) : null}
             {appliedFilters.min || appliedFilters.max ? (
-              <span className="rounded-full border border-stone-200 bg-white px-3 py-1 text-body-xs text-stone-700">
+              <span className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-3 py-1 text-body-xs text-[var(--ds-text-secondary)]">
                 Price:{' '}
                 {[
                   appliedFilters.min ? `${appliedFilters.min}+` : null,
@@ -345,35 +347,37 @@ function SearchContent() {
                   .join(' ')}
               </span>
             ) : null}
-            <button
+            <Button
               type="button"
               onClick={clearFilters}
-              className="text-body-xs uppercase tracking-token-wider text-stone-900 underline underline-offset-4"
+              variant="ghost"
+              size="sm"
+              className="min-h-0 px-0 text-body-xs underline underline-offset-4"
             >
               Clear filters
-            </button>
+            </Button>
           </div>
         ) : null}
 
         {/* Results Grid */}
         {loading ? (
           <div className="h-64 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-stone-300" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--ds-text-disabled)]" />
           </div>
         ) : products.length > 0 ? (
           <>
             <ProductGrid initialProducts={products} />
 
-            <div className="mt-12 rounded-2xl border border-stone-200 bg-stone-50 p-6">
+            <div className="mt-12 rounded-2xl border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <p className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
+                  <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
                     Still Deciding?
                   </p>
-                  <h2 className="mt-2 text-body-xl font-serif text-stone-900">
+                  <h2 className="mt-2 text-body-xl font-display text-[var(--ds-text-primary)]">
                     Keep browsing with curated storefront routes
                   </h2>
-                  <p className="mt-3 max-w-2xl text-body-sm text-stone-600">
+                  <p className="mt-3 max-w-2xl text-body-sm text-[var(--ds-text-secondary)]">
                     Switch from search into broader discovery if you want faster
                     comparison and lower checkout hesitation.
                   </p>
@@ -381,13 +385,13 @@ function SearchContent() {
                 <div className="flex flex-wrap gap-3">
                   <Link
                     href="/products"
-                    className="rounded-full bg-stone-900 px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-white transition-colors hover:bg-stone-800"
+                    className="rounded-full bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
                   >
                     Shop All
                   </Link>
                   <Link
                     href="/collections"
-                    className="rounded-full border border-stone-300 px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-white"
+                    className="rounded-full border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-paper)]"
                   >
                     Explore Collections
                   </Link>
@@ -396,43 +400,35 @@ function SearchContent() {
             </div>
           </>
         ) : (
-          <div className="text-center py-20 bg-stone-50 rounded-lg">
-            <p className="search-empty-copy mb-4">
-              No products found matching your search.
-            </p>
-            <p className="mx-auto mb-6 max-w-xl text-body-sm text-stone-500">
-              Try removing filters, using a broader keyword, or jump into one of
-              our curated discovery routes below.
-            </p>
-            <div className="mb-6 flex flex-wrap justify-center gap-3">
+          <EmptyState
+            title="No products found matching your search."
+            description="Try removing filters, using a broader keyword, or jump into one of our curated discovery routes below."
+            className="rounded-lg bg-[var(--ds-surface-soft)]"
+            actions={
+              <>
               {storefrontDiscoveryQuickLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-full border border-stone-200 bg-white px-4 py-2 text-body-sm text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+                  className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
                 >
                   {item.label}
                 </Link>
               ))}
-            </div>
-            {hasActiveFilters ? (
-              <button
-                type="button"
-                onClick={clearFilters}
-                className="search-empty-action mb-4 inline-block border border-stone-900 px-8 py-3 text-stone-900 hover:bg-stone-100"
-              >
-                Remove Filters
-              </button>
-            ) : null}
-            <div>
-            <Link
-              href="/products"
-              className="search-empty-action inline-block bg-stone-900 px-8 py-3 hover:bg-stone-800"
-            >
-              Browse All Products
-            </Link>
-            </div>
-          </div>
+                {hasActiveFilters ? (
+                  <Button type="button" variant="outline" onClick={clearFilters}>
+                    Remove Filters
+                  </Button>
+                ) : null}
+                <Link
+                  href="/products"
+                  className="search-empty-action inline-flex min-h-11 items-center justify-center bg-[var(--ds-text-primary)] px-8 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+                >
+                  Browse All Products
+                </Link>
+              </>
+            }
+          />
         )}
       </div>
     </div>

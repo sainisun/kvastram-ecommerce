@@ -407,7 +407,6 @@ export function buildProductMetaDescription(product: Product): string {
   }
 
   const price = getProductPrice(product);
-  const material = getProductMaterial(product);
   const category = getProductCategoryLabel(product);
   const sourceDescription = stripMarkdown(product.description);
   const highlight =

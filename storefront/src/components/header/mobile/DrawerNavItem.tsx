@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DrawerSubSection } from './DrawerSubSection';
+import { Button } from '@/components/ui/Button';
 
 interface SubItem {
   label: string;
@@ -41,30 +42,33 @@ export function DrawerNavItem({
   const hasChildren = subSections && subSections.length > 0;
 
   return (
-    <div className="border-b border-[#e8e2d9]">
+    <div className="border-b border-[var(--ds-surface-warm)]">
       {hasChildren ? (
-        <button
+        <Button
+          type="button"
           onClick={onToggle}
+          variant="ghost"
+          size="md"
           className={[
-            'w-full flex items-center justify-between px-4 py-[13px] font-[family-name:var(--font-ui)] text-[14px] transition-colors',
-            isActive ? 'text-[#c94e2a]' : 'text-[#1a1714]',
-            'hover:bg-[#f7f4ef]',
+            'w-full justify-between px-4 py-[13px] font-body text-[14px] normal-case',
+            isActive ? 'text-[var(--ds-accent-primary)]' : 'text-[var(--ds-text-primary)]',
+            'hover:bg-[var(--ds-surface-parchment)]',
           ].join(' ')}
         >
           {label}
           <ChevronDown
             size={16}
-            className={`transition-transform duration-200 text-[#7a7570] ${isExpanded ? 'rotate-180' : ''}`}
+            className={`transition-transform duration-200 text-[var(--ds-text-muted)] ${isExpanded ? 'rotate-180' : ''}`}
           />
-        </button>
+        </Button>
       ) : (
         <Link
           href={href}
           onClick={onClose}
           className={[
-            'flex items-center px-4 py-[13px] font-[family-name:var(--font-ui)] text-[14px] transition-colors',
-            isActive ? 'text-[#c94e2a]' : 'text-[#1a1714]',
-            'hover:bg-[#f7f4ef]',
+            'flex items-center px-4 py-[13px] font-body text-[14px] transition-colors',
+            isActive ? 'text-[var(--ds-accent-primary)]' : 'text-[var(--ds-text-primary)]',
+            'hover:bg-[var(--ds-surface-parchment)]',
           ].join(' ')}
         >
           {label}

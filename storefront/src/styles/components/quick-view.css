@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════════════════
-   QUICK VIEW MODAL — PROTOTYPE PARITY
-   ═══════════════════════════════════════════════════ */
+/* Quick view modal */
 
 .modal-overlay {
   position: fixed;
@@ -9,7 +7,7 @@
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(0,0,0,.55);
+  background: rgba(var(--ds-ink-rgb), 0.55);
   opacity: 0;
   visibility: hidden;
   transition: .22s ease;
@@ -23,8 +21,8 @@
   max-height: 90dvh;
   overflow: auto;
   border-radius: var(--radius-lg);
-  background: white;
-  box-shadow: 0 8px 48px rgba(0,0,0,.18);
+  background: var(--ds-surface-paper);
+  box-shadow: 0 8px 48px rgba(var(--ds-ink-rgb), 0.18);
 }
 .modal-head {
   display: flex;
@@ -58,26 +56,61 @@
   gap: 8px;
   margin: 8px 0 18px;
 }
-.option-btn {
+.quickview-option-button {
   min-height: 36px;
   padding: 0 14px;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--ds-border-subtle);
   border-radius: var(--radius-sm);
-  background: white;
-  color: var(--ink);
+  background: var(--ds-surface-paper);
+  color: var(--ds-text-primary);
   font-size: var(--text-body-sm);
   font-weight: 600;
   cursor: pointer;
   transition: .15s ease;
 }
-.option-btn:hover {
-  border-color: var(--sienna);
-  color: var(--sienna);
+.quickview-option-button:hover {
+  border-color: var(--ds-accent-primary);
+  color: var(--ds-accent-primary);
 }
-.option-btn.active {
-  border-color: var(--sienna);
-  background: rgba(168,93,58,.08);
-  color: var(--sienna);
+.quickview-option-button.active {
+  border-color: var(--ds-accent-primary);
+  background: var(--ds-accent-soft);
+  color: var(--ds-accent-primary);
+}
+
+.quickview-image-button {
+  background: color-mix(in srgb, var(--ds-surface-paper) 86%, transparent);
+  box-shadow: var(--ds-shadow);
+}
+
+.quickview-add-button.is-added {
+  border-color: var(--ds-success);
+  background: var(--ds-success);
+  color: var(--ds-text-inverse);
+}
+
+.quickview-link-button {
+  display: inline-flex;
+  min-height: 48px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--ds-border-strong);
+  background: var(--ds-surface-paper);
+  padding: 0 28px;
+  color: var(--ds-text-primary);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body-sm);
+  font-weight: var(--ds-weight-semibold);
+  letter-spacing: var(--ds-tracking-wider);
+  text-transform: uppercase;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.quickview-link-button:hover {
+  border-color: var(--ds-accent-primary);
+  color: var(--ds-accent-primary);
 }
 @media (min-width: 640px) {
   .quickview-layout {

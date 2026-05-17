@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
+import Input from '@/components/ui/Input';
+import { Button, IconButton } from '@/components/ui/Button';
 
 interface Category {
   id: string;
@@ -173,19 +175,21 @@ export default function FilterSidebar({
   );
 
   return (
-    <div className={`flex min-h-full flex-col bg-white ${className}`}>
+    <div className={`flex min-h-full flex-col bg-[var(--ds-surface-paper)] ${className}`}>
       <div className="flex-1 sm:hidden">
         <div className="space-y-7">
           <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
             <h3 className="filter-sidebar-title">Filters</h3>
             {hasActiveFilters ? (
-              <button
+              <Button
                 type="button"
                 onClick={clearAllFilters}
-                className="filter-clear-button underline underline-offset-4 transition"
+                variant="ghost"
+                size="sm"
+                className="filter-clear-button min-h-8 px-0 underline underline-offset-4"
               >
                 Clear All
-              </button>
+              </Button>
             ) : null}
           </div>
 
@@ -210,10 +214,12 @@ export default function FilterSidebar({
                         {cat.name}
                       </MobileFilterButton>
                       {cat.children?.length ? (
-                        <button
+                        <IconButton
                           type="button"
                           onClick={() => toggleCategory(cat.id)}
-                          className="filter-expand-button flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-[var(--soft)]"
+                          variant="ghost"
+                          size="sm"
+                          className="filter-expand-button h-8 w-8 rounded-full"
                           aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
                         >
                           {isExpanded ? (
@@ -221,7 +227,7 @@ export default function FilterSidebar({
                           ) : (
                             <ChevronRight size={14} />
                           )}
-                        </button>
+                        </IconButton>
                       ) : null}
                     </div>
 
@@ -274,23 +280,23 @@ export default function FilterSidebar({
           <MobileFilterGroup label="Price">
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-2">
-                <input
+                <Input
                   type="number"
+                  aria-label="Minimum price"
                   inputMode="numeric"
                   min="0"
                   placeholder="Min"
                   value={minPrice}
                   onChange={(e) => setMinPrice(e.target.value)}
-                  className="w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-body-sm"
                 />
-                <input
+                <Input
                   type="number"
+                  aria-label="Maximum price"
                   inputMode="numeric"
                   min="0"
                   placeholder="Max"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
-                  className="w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-body-sm"
                 />
               </div>
             </div>
@@ -302,20 +308,22 @@ export default function FilterSidebar({
                 {tags.map((tag) => {
                   const isActive = draftFilters.tag_id === tag.id;
                   return (
-                    <button
+                    <Button
                       key={tag.id}
                       type="button"
                       onClick={() =>
                         updateDraftFilter('tag_id', isActive ? null : tag.id)
                       }
-                      className={`filter-tag-button rounded-full border px-3 py-2 transition ${
+                      variant="ghost"
+                      size="sm"
+                      className={`filter-tag-button min-h-9 rounded-full border px-3 py-2 ${
                         isActive
-                          ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
-                          : 'filter-tag-button-inactive border-[var(--line)] bg-white hover:border-[var(--ink)]'
+                          ? 'border-[var(--ds-text-primary)] bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'
+                          : 'filter-tag-button-inactive border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] hover:border-[var(--ds-text-primary)]'
                       }`}
                     >
                       {tag.name}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -351,10 +359,12 @@ export default function FilterSidebar({
                       {cat.name}
                     </FilterButton>
                     {cat.children?.length ? (
-                      <button
+                      <IconButton
                         type="button"
                         onClick={() => toggleCategory(cat.id)}
-                        className="filter-expand-button flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:bg-stone-50"
+                        variant="ghost"
+                        size="sm"
+                        className="filter-expand-button h-8 w-8 shrink-0 rounded-full"
                         aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
                       >
                         {isExpanded ? (
@@ -362,12 +372,12 @@ export default function FilterSidebar({
                         ) : (
                           <ChevronRight size={14} />
                         )}
-                      </button>
+                      </IconButton>
                     ) : null}
                   </div>
 
                   {cat.children?.length && isExpanded ? (
-                    <div className="ml-4 mt-1 space-y-1 border-l border-stone-200 pl-3">
+                    <div className="ml-4 mt-1 space-y-1 border-l border-[var(--ds-border-subtle)] pl-3">
                       {cat.children.map((sub) => (
                         <FilterButton
                           key={sub.id}
@@ -425,30 +435,28 @@ export default function FilterSidebar({
         >
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <label className="space-y-1.5">
-                <span className="filter-group-label">Min</span>
-                <input
+              <div>
+                <Input
                   type="number"
+                  label="Min"
                   inputMode="numeric"
                   min="0"
                   placeholder="0"
                   value={minPrice}
                   onChange={(e) => setMinPrice(e.target.value)}
-                  className="h-11 w-full border border-stone-200 bg-white px-3 text-body-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-stone-950"
                 />
-              </label>
-              <label className="space-y-1.5">
-                <span className="filter-group-label">Max</span>
-                <input
+              </div>
+              <div>
+                <Input
                   type="number"
+                  label="Max"
                   inputMode="numeric"
                   min="0"
                   placeholder="Any"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
-                  className="h-11 w-full border border-stone-200 bg-white px-3 text-body-sm text-stone-950 outline-none transition-colors placeholder:text-stone-400 focus:border-stone-950"
                 />
-              </label>
+              </div>
             </div>
           </div>
         </FilterGroup>
@@ -480,39 +488,47 @@ export default function FilterSidebar({
         ) : null}
       </div>
 
-      <div className="sticky bottom-0 -mx-4 mt-8 grid gap-3 border-t border-stone-200 bg-white px-4 py-4 sm:hidden sm:-mx-0 sm:grid-cols-2">
-        <button
+      <div className="sticky bottom-0 -mx-4 mt-8 grid gap-3 border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-4 sm:hidden sm:-mx-0 sm:grid-cols-2">
+        <Button
           type="button"
           onClick={applyFilters}
-          className="h-11 bg-stone-950 px-5 text-body-xs type-bold uppercase tracking-token-wider text-white transition-opacity hover:opacity-90"
+          variant="secondary"
+          size="md"
+          className="h-11 px-5"
         >
           Apply
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={onClose}
-          className="h-11 border border-stone-300 bg-white px-5 text-body-xs type-bold uppercase tracking-token-wider text-stone-950 transition-colors hover:border-stone-950"
+          variant="outline"
+          size="md"
+          className="h-11 px-5"
         >
           Close
-        </button>
+        </Button>
       </div>
 
-      <div className="sticky bottom-0 -mx-4 mt-8 hidden grid-cols-2 gap-3 border-t border-stone-200 bg-white px-4 py-4 shadow-[0_-10px_24px_rgba(0,0,0,0.04)] sm:-mx-5 sm:grid sm:px-5">
-        <button
+      <div className="sticky bottom-0 -mx-4 mt-8 hidden grid-cols-2 gap-3 border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-4 shadow-[0_-10px_24px_rgba(0,0,0,0.04)] sm:-mx-5 sm:grid sm:px-5">
+        <Button
           type="button"
           onClick={clearAllFilters}
           disabled={!hasActiveFilters}
-          className="h-11 border border-stone-300 bg-white px-4 text-body-xs type-bold uppercase tracking-token-wider text-stone-950 transition-colors hover:border-stone-950 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-300"
+          variant="outline"
+          size="md"
+          className="h-11 px-4"
         >
           Clear All
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={applyFilters}
-          className="h-11 bg-stone-950 px-4 text-body-xs type-bold uppercase tracking-token-wider text-white transition-opacity hover:opacity-90"
+          variant="secondary"
+          size="md"
+          className="h-11 px-4"
         >
           Apply
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -549,23 +565,25 @@ function FilterGroup({
   const panelId = `filter-panel-${id}`;
 
   return (
-    <section className="border-b border-stone-200">
-      <button
+    <section className="border-b border-[var(--ds-border-subtle)]">
+      <Button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between gap-4 py-5 text-left"
+        variant="ghost"
+        size="md"
+        className="flex w-full justify-between gap-4 px-0 py-5 text-left"
         aria-expanded={isOpen}
         aria-controls={panelId}
       >
         <span className="filter-group-label">{label}</span>
         <ChevronDown
           size={16}
-          className={`text-stone-500 transition-transform ${
+          className={`text-[var(--ds-text-secondary)] transition-transform ${
             isOpen ? 'rotate-180' : ''
           }`}
           aria-hidden="true"
         />
-      </button>
+      </Button>
       {isOpen ? (
         <div id={panelId} className="space-y-1 pb-5">
           {children}
@@ -587,19 +605,21 @@ function MobileFilterButton({
   children: ReactNode;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
-      className={`filter-option flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition ${
+      variant="ghost"
+      size="sm"
+      className={`filter-option flex w-full justify-between rounded-md px-3 py-2 text-left ${
         small ? 'filter-option-small' : 'filter-option-regular'
       } ${
         active
-          ? 'filter-option-active bg-[var(--ink)] text-white'
-          : 'filter-option-inactive hover:bg-[var(--soft)]'
+          ? 'filter-option-active bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'
+          : 'filter-option-inactive hover:bg-[var(--ds-surface-soft)]'
       }`}
     >
       <span className="line-clamp-1">{children}</span>
-    </button>
+    </Button>
   );
 }
 
@@ -615,30 +635,32 @@ function FilterButton({
   children: ReactNode;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       role="checkbox"
       aria-checked={active}
-      className={`filter-option flex w-full items-center gap-3 border px-3 py-2.5 text-left transition ${
+      variant="ghost"
+      size="sm"
+      className={`filter-option flex w-full justify-start gap-3 border px-3 py-2.5 text-left ${
         small ? 'filter-option-small' : 'filter-option-regular'
       } ${
         active
-          ? 'filter-option-active border-stone-300 bg-stone-50 text-stone-950'
-          : 'filter-option-inactive border-transparent bg-white text-stone-700 hover:border-stone-200 hover:bg-stone-50 hover:text-stone-950'
+          ? 'filter-option-active border-[var(--ds-border-subtle)] bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)]'
+          : 'filter-option-inactive border-transparent bg-[var(--ds-surface-paper)] text-[var(--ds-text-secondary)] hover:border-[var(--ds-border-subtle)] hover:bg-[var(--ds-surface-soft)] hover:text-[var(--ds-text-primary)]'
       }`}
     >
       <span
         className={`flex h-4 w-4 shrink-0 items-center justify-center border transition-colors ${
           active
-            ? 'border-stone-950 bg-white text-stone-950'
-            : 'border-stone-300 bg-white'
+            ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
+            : 'border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)]'
         }`}
         aria-hidden="true"
       >
         {active ? <Check size={12} strokeWidth={2.5} /> : null}
       </span>
       <span className="min-w-0 flex-1 truncate">{children}</span>
-    </button>
+    </Button>
   );
 }

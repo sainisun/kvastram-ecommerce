@@ -3,7 +3,11 @@
 import { useState, Suspense, useEffect, useMemo, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, ArrowLeft, Eye, EyeOff, Check, X } from 'lucide-react';
+import { Loader2, ArrowLeft, Eye, EyeOff, Check, X, CheckCircle } from 'lucide-react';
+import Input from '@/components/ui/Input';
+import { Button, IconButton } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 
 function usePasswordValidation(password: string) {
   return useMemo(
@@ -20,37 +24,21 @@ function usePasswordValidation(password: string) {
 
 function SuccessView() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-      <div className="max-w-md w-full space-y-8 text-center">
-        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-          <svg
-            className="w-8 h-8 text-green-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        </div>
-        <h1 className="text-display-md font-serif text-stone-900">
-          Password Reset Successfully
-        </h1>
-        <p className="text-stone-500">
-          Your password has been reset. You can now log in with your new
-          password.
-        </p>
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <EmptyState
+        icon={<CheckCircle size={48} />}
+        title="Password Reset Successfully"
+        description="Your password has been reset. You can now log in with your new password."
+        actions={
         <Link
           href="/login"
-          className="inline-block bg-stone-900 text-white px-8 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors"
+          className="inline-block bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-8 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
         >
           Go to Login
         </Link>
-      </div>
+        }
+        className="max-w-md"
+      />
     </div>
   );
 }
@@ -64,7 +52,7 @@ function PasswordRequirement({
 }) {
   return (
     <div
-      className={`flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-stone-400'}`}
+      className={`flex items-center gap-1 ${isValid ? 'text-[var(--ds-success-text)]' : 'text-[var(--ds-text-muted)]'}`}
     >
       {isValid ? <Check size={12} /> : <X size={12} />}
       {label}
@@ -140,59 +128,54 @@ function ResetPasswordContent() {
   if (success) return <SuccessView />;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Link
             href="/forgot-password"
-            className="inline-flex items-center text-stone-500 hover:text-stone-800 mb-4"
+            className="inline-flex items-center text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] mb-4"
           >
             <ArrowLeft size={16} className="mr-1" />
             Back
           </Link>
-          <h1 className="text-display-lg font-serif text-stone-900">Reset Password</h1>
-          <p className="mt-2 text-stone-500 type-light">
+          <h1 className="text-display-lg font-display text-[var(--ds-text-primary)]">Reset Password</h1>
+          <p className="mt-2 text-[var(--ds-text-muted)] type-light">
             Enter your new password below.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              <p className="text-body-sm">{error}</p>
-            </div>
+            <StatusBanner tone="danger">{error}</StatusBanner>
           )}
 
           <div className="space-y-2">
-            <label
-              htmlFor="reset-password"
-              className="text-body-xs uppercase type-bold text-stone-500"
-            >
-              New Password
-            </label>
-            <div className="relative">
-              <input
-                id="reset-password"
-                type={showPassword ? 'text' : 'password'}
-                required
-                className="w-full border-b border-stone-200 py-2 pr-10 focus:outline-none focus:border-stone-900 transition-colors"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter new password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors"
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+            <Input
+              id="reset-password"
+              type={showPassword ? 'text' : 'password'}
+              required
+              label="New Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter new password"
+              suffix={
+                <IconButton
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="h-8 w-8 border-0"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </IconButton>
+              }
+            />
 
             {/* Password requirements */}
             <div className="space-y-1 mt-2">
-              <p className="text-body-xs text-stone-500 mb-2">
+              <p className="text-body-xs text-[var(--ds-text-muted)] mb-2">
                 Password must contain:
               </p>
               <div className="grid grid-cols-2 gap-1 text-body-xs">
@@ -221,44 +204,41 @@ function ResetPasswordContent() {
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="reset-confirm-password"
-              className="text-body-xs uppercase type-bold text-stone-500"
-            >
-              Confirm Password
-            </label>
-            <div className="relative">
-              <input
-                id="reset-confirm-password"
-                type={showConfirmPassword ? 'text' : 'password'}
-                required
-                className="w-full border-b border-stone-200 py-2 pr-10 focus:outline-none focus:border-stone-900 transition-colors"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors"
-                tabIndex={-1}
-              >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {confirmPassword && !passwordsMatch && (
-              <p className="text-body-xs text-red-500">Passwords do not match</p>
-            )}
+            <Input
+              id="reset-confirm-password"
+              type={showConfirmPassword ? 'text' : 'password'}
+              required
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+              error={confirmPassword && !passwordsMatch ? 'Passwords do not match' : undefined}
+              suffix={
+                <IconButton
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="h-8 w-8 border-0"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </IconButton>
+              }
+            />
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={loading || !isPasswordValid || !passwordsMatch}
-            className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            variant="secondary"
+            size="lg"
+            fullWidth
+            leadingIcon={loading ? <Loader2 className="animate-spin" size={16} /> : null}
           >
-            {loading && <Loader2 className="animate-spin" size={16} />}
             {loading ? 'Resetting...' : 'Reset Password'}
-          </button>
+          </Button>
         </form>
       </div>
     </div>
@@ -278,4 +258,3 @@ export default function ResetPasswordPage() {
     </Suspense>
   );
 }
-

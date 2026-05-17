@@ -21,7 +21,6 @@ interface FooterSettings {
 
 export function WholesaleFooter() {
   const [footerSettings, setFooterSettings] = useState<FooterSettings>({});
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFooterSettings = async () => {
@@ -32,8 +31,6 @@ export function WholesaleFooter() {
         }
       } catch (error) {
         console.error('Error fetching footer settings:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -41,10 +38,10 @@ export function WholesaleFooter() {
   }, []);
 
   return (
-    <footer className="bg-stone-900 text-white">
+    <footer className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]">
       {/* Main Footer */}
-      <div className="border-t border-stone-800 py-12 md:py-16 lg:py-24">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="border-t border-[var(--ds-text-secondary)] py-12 md:py-16 lg:py-24">
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {/* Company Info */}
             <div className="space-y-4">
@@ -52,17 +49,17 @@ export function WholesaleFooter() {
                 <div className="text-display-md type-bold tracking-token-tight">
                   KVASTRAM
                 </div>
-                <div className="h-6 w-px bg-stone-700"></div>
-                <div className="text-body-xs uppercase tracking-token-wider text-amber-400 type-bold">
+                <div className="h-6 w-px bg-[var(--ds-text-secondary)]"></div>
+                <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
                   Wholesale
                 </div>
               </div>
-              <p className="text-body-sm text-stone-400 leading-token-relaxed">
+              <p className="text-body-sm text-[var(--ds-text-muted)] leading-token-relaxed">
                 Your trusted partner for authentic artisanal luxury products.
                 Serving retailers and distributors worldwide since 2020.
               </p>
               <div className="pt-4">
-                <div className="inline-flex items-center gap-2 text-body-xs text-amber-400 type-bold uppercase tracking-token-wider">
+                <div className="inline-flex items-center gap-2 text-body-xs text-[var(--ds-accent-gold)] type-bold uppercase tracking-token-wider">
                   <Building2 size={16} />
                   B2B Division
                 </div>
@@ -71,14 +68,14 @@ export function WholesaleFooter() {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-amber-400">
+              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Quick Links
               </h4>
-              <ul className="space-y-3 text-body-sm text-stone-400">
+              <ul className="space-y-3 text-body-sm text-[var(--ds-text-muted)]">
                 <li>
                   <Link
                     href="/wholesale#benefits"
-                    className="hover:text-white transition-colors flex items-center gap-2"
+                    className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                   >
                     <ArrowRight size={14} />
                     Why Partner With Us
@@ -87,7 +84,7 @@ export function WholesaleFooter() {
                 <li>
                   <Link
                     href="/wholesale#pricing"
-                    className="hover:text-white transition-colors flex items-center gap-2"
+                    className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                   >
                     <ArrowRight size={14} />
                     Pricing Tiers
@@ -96,7 +93,7 @@ export function WholesaleFooter() {
                 <li>
                   <Link
                     href="/wholesale#process"
-                    className="hover:text-white transition-colors flex items-center gap-2"
+                    className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                   >
                     <ArrowRight size={14} />
                     Ordering Process
@@ -105,16 +102,16 @@ export function WholesaleFooter() {
                 <li>
                   <Link
                     href="/wholesale#inquiry"
-                    className="hover:text-white transition-colors flex items-center gap-2"
+                    className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                   >
                     <ArrowRight size={14} />
                     Request Quote
                   </Link>
                 </li>
-                <li className="pt-2 border-t border-stone-800">
+                <li className="pt-2 border-t border-[var(--ds-text-secondary)]">
                   <Link
                     href="/"
-                    className="hover:text-amber-400 transition-colors text-body-xs"
+                    className="hover:text-[var(--ds-accent-gold)] transition-colors text-body-xs"
                   >
                     Visit Retail Store →
                   </Link>
@@ -124,17 +121,17 @@ export function WholesaleFooter() {
 
             {/* Resources */}
             <div>
-              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-amber-400">
+              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Resources
               </h4>
-              <ul className="space-y-3 text-body-sm text-stone-400">
+              <ul className="space-y-3 text-body-sm text-[var(--ds-text-muted)]">
                 <li>
                   {footerSettings.wholesale_footer_catalog_link ? (
                     <a
                       href={footerSettings.wholesale_footer_catalog_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-white transition-colors flex items-center gap-2"
+                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                     >
                       <Download size={14} />
                       Product Catalog (PDF)
@@ -152,7 +149,7 @@ export function WholesaleFooter() {
                       href={footerSettings.wholesale_footer_price_list_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-white transition-colors flex items-center gap-2"
+                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                     >
                       <Download size={14} />
                       Price List
@@ -168,7 +165,7 @@ export function WholesaleFooter() {
                   {footerSettings.wholesale_footer_terms_link ? (
                     <a
                       href={footerSettings.wholesale_footer_terms_link}
-                      className="hover:text-white transition-colors flex items-center gap-2"
+                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                     >
                       <FileText size={14} />
                       Terms & Conditions
@@ -184,7 +181,7 @@ export function WholesaleFooter() {
                   {footerSettings.wholesale_footer_shipping_link ? (
                     <a
                       href={footerSettings.wholesale_footer_shipping_link}
-                      className="hover:text-white transition-colors flex items-center gap-2"
+                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                     >
                       <FileText size={14} />
                       Shipping Policy
@@ -200,7 +197,7 @@ export function WholesaleFooter() {
                   {footerSettings.wholesale_footer_return_link ? (
                     <a
                       href={footerSettings.wholesale_footer_return_link}
-                      className="hover:text-white transition-colors flex items-center gap-2"
+                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-2"
                     >
                       <FileText size={14} />
                       Return Policy
@@ -217,20 +214,20 @@ export function WholesaleFooter() {
 
             {/* Contact */}
             <div>
-              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-amber-400">
+              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Contact B2B Team
               </h4>
-              <ul className="space-y-4 text-body-sm text-stone-400">
+              <ul className="space-y-4 text-body-sm text-[var(--ds-text-muted)]">
                 <li className="flex items-start gap-3">
                   <Mail
                     size={16}
-                    className="text-amber-400 mt-0.5 flex-shrink-0"
+                    className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-white type-medium mb-1">Email</div>
+                    <div className="text-[var(--ds-text-inverse)] type-medium mb-1">Email</div>
                     <a
                       href="mailto:wholesale@kvastram.com"
-                      className="hover:text-white transition-colors"
+                      className="hover:text-[var(--ds-text-inverse)] transition-colors"
                     >
                       wholesale@kvastram.com
                     </a>
@@ -239,17 +236,17 @@ export function WholesaleFooter() {
                 <li className="flex items-start gap-3">
                   <Phone
                     size={16}
-                    className="text-amber-400 mt-0.5 flex-shrink-0"
+                    className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-white type-medium mb-1">Phone</div>
+                    <div className="text-[var(--ds-text-inverse)] type-medium mb-1">Phone</div>
                     <a
                       href="tel:+1234567890"
-                      className="hover:text-white transition-colors"
+                      className="hover:text-[var(--ds-text-inverse)] transition-colors"
                     >
                       +1 (234) 567-890
                     </a>
-                    <div className="text-body-xs text-stone-500 mt-1">
+                    <div className="text-body-xs text-[var(--ds-text-muted)] mt-1">
                       Mon-Fri, 9AM-6PM EST
                     </div>
                   </div>
@@ -257,11 +254,11 @@ export function WholesaleFooter() {
                 <li className="flex items-start gap-3">
                   <MapPin
                     size={16}
-                    className="text-amber-400 mt-0.5 flex-shrink-0"
+                    className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-white type-medium mb-1">Office</div>
-                    <div className="text-stone-400">
+                    <div className="text-[var(--ds-text-inverse)] type-medium mb-1">Office</div>
+                    <div className="text-[var(--ds-text-muted)]">
                       123 Business District
                       <br />
                       New York, NY 10001
@@ -277,9 +274,9 @@ export function WholesaleFooter() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-black py-6">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-body-xs text-stone-500">
+      <div className="bg-[var(--ds-text-primary)] py-6">
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-body-xs text-[var(--ds-text-muted)]">
             <div className="flex items-center gap-6">
               <span>
                 &copy; {new Date().getFullYear()} Kvastram Wholesale. All rights
@@ -291,13 +288,13 @@ export function WholesaleFooter() {
               </span>
             </div>
             <div className="flex items-center gap-6">
-              <Link href="#" className="hover:text-stone-300 transition-colors">
+              <Link href="#" className="hover:text-[var(--ds-text-disabled)] transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="#" className="hover:text-stone-300 transition-colors">
+              <Link href="#" className="hover:text-[var(--ds-text-disabled)] transition-colors">
                 Terms of Service
               </Link>
-              <Link href="#" className="hover:text-stone-300 transition-colors">
+              <Link href="#" className="hover:text-[var(--ds-text-disabled)] transition-colors">
                 Trade Agreement
               </Link>
             </div>
@@ -306,33 +303,33 @@ export function WholesaleFooter() {
       </div>
 
       {/* Trust Badges */}
-      <div className="bg-stone-950 py-8 border-t border-stone-900">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-stone-600 text-body-xs">
+      <div className="bg-[var(--ds-text-primary)] py-8 border-t border-[var(--ds-text-primary)]">
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-[var(--ds-text-secondary)] text-body-xs">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-stone-800 rounded-full flex items-center justify-center">
-                <Building2 size={14} className="text-amber-600" />
+              <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
+                <Building2 size={14} className="text-[var(--ds-warning)]" />
               </div>
               <span>Verified Business</span>
             </div>
-            <div className="w-px h-6 bg-stone-800"></div>
+            <div className="w-px h-6 bg-[var(--ds-text-secondary)]"></div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-stone-800 rounded-full flex items-center justify-center">
-                <FileText size={14} className="text-amber-600" />
+              <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
+                <FileText size={14} className="text-[var(--ds-warning)]" />
               </div>
               <span>ISO Certified</span>
             </div>
-            <div className="w-px h-6 bg-stone-800"></div>
+            <div className="w-px h-6 bg-[var(--ds-text-secondary)]"></div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-stone-800 rounded-full flex items-center justify-center">
-                <MapPin size={14} className="text-amber-600" />
+              <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
+                <MapPin size={14} className="text-[var(--ds-warning)]" />
               </div>
               <span>Global Shipping</span>
             </div>
-            <div className="w-px h-6 bg-stone-800"></div>
+            <div className="w-px h-6 bg-[var(--ds-text-secondary)]"></div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-stone-800 rounded-full flex items-center justify-center">
-                <Phone size={14} className="text-amber-600" />
+              <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
+                <Phone size={14} className="text-[var(--ds-warning)]" />
               </div>
               <span>24/7 Support</span>
             </div>

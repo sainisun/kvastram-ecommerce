@@ -22,7 +22,7 @@ function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps
   if (filtered.length === 0) return null;
 
   return (
-    <section className="border-t border-stone-100 bg-stone-50 py-12 md:py-16 lg:py-24">
+    <section className="border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex items-end justify-between mb-8">
           <div>

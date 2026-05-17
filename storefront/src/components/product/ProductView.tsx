@@ -30,7 +30,11 @@ import { Reviews } from '@/components/product/Reviews';
 import { BackInStock } from '@/components/product/BackInStock';
 import { SizeGuide } from '@/components/product/SizeGuide';
 import ShareButtons from '@/components/ui/ShareButtons';
+import { Badge } from '@/components/ui/Badge';
 import { TrustBadge } from '@/components/ui/TrustBadge';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { RatingDisplay } from '@/components/ui/RatingDisplay';
+import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
 import { WhatsAppCTA } from '@/components/WhatsAppCTA';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { useCart } from '@/context/cart-context';
@@ -45,29 +49,29 @@ import { storefrontTrust } from '@/config/storefront-trust';
 
 function getColorHex(colorName: string) {
   const map: Record<string, string> = {
-    black: '#1C1A17',
-    navy: '#1e3a8a',
-    indigo: '#185FA5',
-    blue: '#2563eb',
-    white: '#ffffff',
-    'off white': '#faf8f5',
-    cream: '#fdfbf7',
-    terracotta: '#c4613a',
-    olive: '#556b2f',
-    green: '#15803d',
-    yellow: '#ca8a04',
-    beige: '#d9c3a4',
-    brown: '#78350f',
-    pink: '#f4a6b7',
-    purple: '#6d4a8a',
-    grey: '#6b7280',
-    gray: '#6b7280',
+    black: 'var(--ds-text-primary)',
+    navy: 'var(--ds-swatch-navy)',
+    indigo: 'var(--ds-info)',
+    blue: 'var(--ds-swatch-blue)',
+    white: 'var(--ds-surface-paper)',
+    'off white': 'var(--ds-swatch-off-white)',
+    cream: 'var(--ds-swatch-cream)',
+    terracotta: 'var(--ds-accent-primary)',
+    olive: 'var(--ds-swatch-olive)',
+    green: 'var(--ds-swatch-green)',
+    yellow: 'var(--ds-swatch-yellow)',
+    beige: 'var(--ds-swatch-beige)',
+    brown: 'var(--ds-swatch-brown)',
+    pink: 'var(--ds-swatch-pink)',
+    purple: 'var(--ds-swatch-purple)',
+    grey: 'var(--ds-swatch-grey)',
+    gray: 'var(--ds-swatch-grey)',
   };
 
   const normalized = colorName.toLowerCase();
   return (
     Object.entries(map).find(([name]) => normalized.includes(name))?.[1] ||
-    '#b9afa4'
+    'var(--ds-swatch-fallback)'
   );
 }
 
@@ -368,14 +372,11 @@ export default function ProductView({ product }: { product: Product }) {
 
             {hasReviews && reviewRating && reviewCount ? (
               <div className="pdp-rating-row">
-                <span className="pdp-rating-stars">5 stars</span>
-                <a href="#reviews" className="pdp-rating-link">
-                  {reviewRating.toFixed(1)} - {reviewCount.toLocaleString()} reviews
-                </a>
+                <RatingDisplay rating={reviewRating} count={reviewCount} href="#reviews" />
               </div>
             ) : (
               <div className="pdp-rating-row">
-                <a href="#reviews" className="pdp-rating-link">Be the first to review</a>
+                <RatingDisplay emptyLabel="Be the first to review" href="#reviews" />
               </div>
             )}
 
@@ -386,9 +387,17 @@ export default function ProductView({ product }: { product: Product }) {
                 <span className="pdp-enquire-label">Enquire for price</span>
               ) : (
                 <>
-                  <span className="pd-price">{formattedPrice}</span>
-                  {formattedComparePrice && <span className="orig">{formattedComparePrice}</span>}
-                  {formattedSavings && <span className="pdp-save-badge">Save {formattedSavings}</span>}
+                  <PriceDisplay
+                    price={formattedPrice}
+                    compareAtPrice={formattedComparePrice}
+                    variant="pdp"
+                    priceClassName="pd-price"
+                  />
+                  {formattedSavings ? (
+                    <Badge variant="success" className="pdp-save-badge normal-case">
+                      Save {formattedSavings}
+                    </Badge>
+                  ) : null}
                 </>
               )}
             </div>
@@ -407,11 +416,18 @@ export default function ProductView({ product }: { product: Product }) {
                 <div key={option.title} className="pdp-option-block pdp-variant-block">
                   <div className="pdp-option-head">
                     <strong className="pdp-option-label">{option.title}</strong>
-                    <span className="pdp-option-selected">— {selectedOptions[option.title]}</span>
+                    <span className="pdp-option-selected">- {selectedOptions[option.title]}</span>
                     {!isColor && option.title.toLowerCase().includes('size') && (
-                      <button type="button" className="btn btn-outline pdp-size-guide" onClick={() => setShowSizeGuide(true)}>
-                        <Ruler size={13} /> Size guide
-                      </button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="pdp-size-guide normal-case"
+                        leadingIcon={<Ruler size={13} />}
+                        onClick={() => setShowSizeGuide(true)}
+                      >
+                        Size guide
+                      </Button>
                     )}
                   </div>
                   <div className="option-row">
@@ -420,7 +436,7 @@ export default function ProductView({ product }: { product: Product }) {
                       const unavailable = isOptionValueUnavailable(optionIndex, value.value);
 
                       return isColor ? (
-                        <button
+                        <UnstyledButton
                           key={value.value}
                           type="button"
                           onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))}
@@ -431,15 +447,15 @@ export default function ProductView({ product }: { product: Product }) {
                           disabled={unavailable}
                         />
                       ) : (
-                        <button
+                        <UnstyledButton
                           key={value.value}
                           type="button"
                           onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))}
-                          className={`option-btn pdp-size-pill${isSelected ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
+                          className={`pdp-option-button pdp-size-pill${isSelected ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
                           disabled={unavailable}
                         >
                           {value.value}
-                        </button>
+                        </UnstyledButton>
                       );
                     })}
                   </div>
@@ -454,15 +470,15 @@ export default function ProductView({ product }: { product: Product }) {
                   {product.variants.map((variant: ProductVariant) => {
                     const unavailable = (realTimeInventory[variant.id] ?? variant.inventory_quantity) <= 0;
                     return (
-                      <button
+                      <UnstyledButton
                         key={variant.id}
                         type="button"
                         onClick={() => setSelectedVariantId(variant.id)}
-                        className={`option-btn pdp-size-pill${selectedVariant?.id === variant.id ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
+                        className={`pdp-option-button pdp-size-pill${selectedVariant?.id === variant.id ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
                         disabled={unavailable}
                       >
                         {variant.title}
-                      </button>
+                      </UnstyledButton>
                     );
                   })}
                 </div>
@@ -473,50 +489,73 @@ export default function ProductView({ product }: { product: Product }) {
               <div className="pdp-option-block">
                 <strong className="pdp-option-label">Quantity</strong>
                 <div className="option-row">
-                  <button type="button" className="option-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity">
-                    <Minus size={14} />
-                  </button>
-                  <span className="option-btn pdp-quantity-value">{quantity}</span>
-                  <button
+                  <IconButton
                     type="button"
-                    className="option-btn"
+                    variant="outline"
+                    size="md"
+                    className="pdp-quantity-button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus size={14} />
+                  </IconButton>
+                  <span className="pdp-quantity-value">{quantity}</span>
+                  <IconButton
+                    type="button"
+                    variant="outline"
+                    size="md"
+                    className="pdp-quantity-button"
                     onClick={() => quantity < currentInventory && setQuantity(quantity + 1)}
                     disabled={currentInventory <= quantity}
                     aria-label="Increase quantity"
                   >
                     <Plus size={14} />
-                  </button>
+                  </IconButton>
                 </div>
               </div>
             )}
 
             <div className="pdp-cta-grid">
               {isOnRequest ? (
-                <WhatsAppCTA id="pdp-atc-btn" message={whatsappMessage} className="btn btn-primary btn-full pdp-whatsapp">
+                <WhatsAppCTA
+                  id="pdp-atc-btn"
+                  message={whatsappMessage}
+                  className="pdp-link-button pdp-link-button--whatsapp pdp-whatsapp"
+                >
                   <MessageCircle size={16} />
                   Enquire on WhatsApp
                 </WhatsAppCTA>
               ) : (
                 <>
-                  <button
+                  <Button
                     id="pdp-atc-btn"
                     type="button"
                     onClick={handleAddToCart}
                     disabled={!selectedVariant || addedToCart || outOfStock}
-                    className={`btn btn-full pdp-primary-cta${addedToCart ? ' is-added' : outOfStock ? ' is-disabled' : ' btn-primary'}`}
+                    variant="secondary"
+                    size="lg"
+                    fullWidth
+                    className={`pdp-primary-cta${addedToCart ? ' is-added' : outOfStock ? ' is-disabled' : ''}`}
+                    leadingIcon={<ShoppingBag size={17} />}
                   >
-                    <ShoppingBag size={17} />
                     {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to cart' : 'Add to cart'}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     onClick={handleBuyNow}
                     disabled={!selectedVariant || outOfStock}
-                    className="btn btn-outline btn-full pdp-buy-now"
+                    variant="outline"
+                    size="lg"
+                    fullWidth
+                    className="pdp-buy-now"
+                    leadingIcon={<Zap size={16} />}
                   >
-                    <Zap size={16} /> Buy now — UPI / Card / EMI
-                  </button>
-                  <WhatsAppCTA message={whatsappMessage} className="btn btn-full pdp-whatsapp pdp-mobile-whatsapp">
+                    Buy now - UPI / Card / EMI
+                  </Button>
+                  <WhatsAppCTA
+                    message={whatsappMessage}
+                    className="pdp-link-button pdp-link-button--whatsapp pdp-whatsapp pdp-mobile-whatsapp"
+                  >
                     <MessageCircle size={16} />
                     Ask on WhatsApp
                   </WhatsAppCTA>
@@ -551,8 +590,10 @@ export default function ProductView({ product }: { product: Product }) {
               const isOpen = activeAccordion === item.key;
               return (
                 <div key={item.key} className="pdp-accordion-item">
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="md"
                     className="pdp-accordion-trigger"
                     onClick={() => setActiveAccordion(item.key)}
                     aria-expanded={isOpen}
@@ -563,7 +604,7 @@ export default function ProductView({ product }: { product: Product }) {
                       <small>{item.hint}</small>
                     </span>
                     <ChevronDown className={isOpen ? 'is-open' : ''} size={18} />
-                  </button>
+                  </Button>
                   {isOpen ? <div className="pdp-accordion-content">{item.content}</div> : null}
                 </div>
               );
@@ -592,8 +633,7 @@ export default function ProductView({ product }: { product: Product }) {
               <div className="pdp-review-summary">
                 <div>
                   <strong>{reviewRating.toFixed(1)}</strong>
-                  <span className="pdp-rating-stars">5 stars</span>
-                  <p>{reviewCount.toLocaleString()} reviews</p>
+                  <RatingDisplay rating={reviewRating} count={reviewCount} />
                 </div>
               </div>
             ) : null}
@@ -618,22 +658,32 @@ export default function ProductView({ product }: { product: Product }) {
           {isOnRequest ? (
             <p className="pdp-sticky-price pdp-enquire-label">Enquire for price</p>
           ) : (
-            <p className="pdp-sticky-price">{formattedPrice}</p>
+            <PriceDisplay
+              as="p"
+              price={formattedPrice}
+              variant="inline"
+              className="pdp-sticky-price"
+            />
           )}
         </div>
         {isOnRequest ? (
-          <WhatsAppCTA message={whatsappMessage} className="btn btn-primary pdp-whatsapp">
+          <WhatsAppCTA
+            message={whatsappMessage}
+            className="pdp-link-button pdp-link-button--whatsapp pdp-whatsapp"
+          >
             Enquire
           </WhatsAppCTA>
         ) : (
-          <button
+          <Button
             type="button"
             onClick={handleAddToCart}
             disabled={!selectedVariant || addedToCart || outOfStock}
-            className={`btn btn-primary pdp-sticky-cta${outOfStock ? ' is-disabled' : addedToCart ? ' is-added' : ''}`}
+            variant="secondary"
+            size="md"
+            className={`pdp-sticky-cta${outOfStock ? ' is-disabled' : addedToCart ? ' is-added' : ''}`}
           >
             {outOfStock ? 'Sold Out' : addedToCart ? 'Added' : 'Add to cart'}
-          </button>
+          </Button>
         )}
       </div>
     </div>

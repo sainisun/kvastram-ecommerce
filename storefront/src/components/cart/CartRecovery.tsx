@@ -1,15 +1,16 @@
 'use client';
 
 import { useCart } from '@/context/cart-context';
-import { ShoppingCart, X, ArrowRight } from 'lucide-react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { ShoppingCart, ArrowRight } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
 
 export function CartRecovery() {
   const { savedCartCount, recoverSavedCart, dismissSavedCart } = useCart();
   const [isVisible, setIsVisible] = useState(false);
   const [isRecovering, setIsRecovering] = useState(false);
   const [recoverError, setRecoverError] = useState<string | null>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (savedCartCount > 0) {
@@ -21,53 +22,10 @@ export function CartRecovery() {
     }
   }, [savedCartCount]);
 
-  // Keyboard handler for Escape
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
     dismissSavedCart();
   }, [dismissSavedCart]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isVisible) {
-        handleDismiss();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isVisible, handleDismiss]);
-
-  // Focus trap
-  useEffect(() => {
-    if (isVisible && modalRef.current) {
-      const focusableElements = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]):not([disabled])'
-      );
-      const firstElement = focusableElements[0] as HTMLElement;
-      const lastElement = focusableElements[
-        focusableElements.length - 1
-      ] as HTMLElement;
-
-      const handleTab = (e: KeyboardEvent) => {
-        if (e.key === 'Tab') {
-          if (e.shiftKey && document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-          } else if (!e.shiftKey && document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
-          }
-        }
-      };
-
-      if (focusableElements.length > 0) {
-        document.addEventListener('keydown', handleTab);
-        firstElement?.focus();
-
-        return () => document.removeEventListener('keydown', handleTab);
-      }
-    }
-  }, [isVisible, isRecovering]);
 
   const handleRecover = async () => {
     setRecoverError(null);
@@ -84,87 +42,70 @@ export function CartRecovery() {
     }
   };
 
-  if (!isVisible || savedCartCount === 0) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="recovery-title"
-        className="bg-white max-w-md w-full p-8 rounded-lg shadow-xl animate-in fade-in zoom-in duration-300"
-      >
-        <div className="flex items-start justify-between mb-6">
+    <Modal
+      isOpen={isVisible && savedCartCount > 0}
+      onClose={handleDismiss}
+      title="Welcome Back!"
+      className="max-w-md"
+      bodyClassName="p-8"
+    >
+        <div className="mb-6 flex items-start gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center">
-              <ShoppingCart className="w-6 h-6 text-stone-600" />
+            <div className="w-12 h-12 bg-[var(--ds-surface-soft)] rounded-full flex items-center justify-center">
+              <ShoppingCart className="w-6 h-6 text-[var(--ds-text-secondary)]" />
             </div>
             <div>
-              <h3
-                id="recovery-title"
-                className="text-body-xl font-serif text-stone-900"
-              >
-                Welcome Back!
-              </h3>
-              <p className="text-body-sm text-stone-500">
+              <p className="text-body-sm text-[var(--ds-text-muted)]">
                 You have items in your saved cart
               </p>
             </div>
           </div>
-          <button
-            onClick={handleDismiss}
-            className="text-stone-400 hover:text-stone-600 transition-colors"
-            aria-label="Close"
-          >
-            <X size={20} />
-          </button>
         </div>
 
-        <div className="bg-stone-50 p-4 rounded-lg mb-6">
-          <p className="text-stone-600 text-body-sm">
+        <div className="bg-[var(--ds-surface-parchment)] p-4 rounded-lg mb-6">
+          <p className="text-[var(--ds-text-secondary)] text-body-sm">
             You have{' '}
-            <span className="type-semibold text-stone-900">
+            <span className="type-semibold text-[var(--ds-text-primary)]">
               {savedCartCount} item{savedCartCount > 1 ? 's' : ''}
             </span>{' '}
             in your cart from your last visit.
           </p>
-          <p className="text-stone-400 text-body-xs mt-2">
+          <p className="text-[var(--ds-text-muted)] text-body-xs mt-2">
             Would you like to restore them?
           </p>
         </div>
 
         {recoverError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-body-sm mb-4">
+          <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] px-4 py-2 rounded text-body-sm mb-4">
             {recoverError}
           </div>
         )}
 
         <div className="flex gap-3">
-          <button
+          <Button
+            type="button"
             onClick={handleDismiss}
-            className="flex-1 py-3 border border-stone-200 text-stone-600 type-medium text-body-sm hover:bg-stone-50 transition-colors"
+            variant="outline"
+            size="md"
+            className="flex-1"
             disabled={isRecovering}
           >
             No, start fresh
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
             onClick={handleRecover}
             disabled={isRecovering}
-            className="flex-1 py-3 bg-stone-900 text-white type-medium text-body-sm flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors disabled:opacity-50"
+            variant="secondary"
+            size="md"
+            className="flex-1"
+            trailingIcon={!isRecovering ? <ArrowRight size={16} /> : null}
           >
-            {isRecovering ? (
-              <>Restoring...</>
-            ) : (
-              <>
-                Restore Cart
-                <ArrowRight size={16} />
-              </>
-            )}
-          </button>
+            {isRecovering ? 'Restoring...' : 'Restore Cart'}
+          </Button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 

@@ -376,8 +376,7 @@ export function ImageTextSplit({
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 42vw"
-            className="object-cover"
-            style={{ objectPosition: 'center 58%' }}
+            className="object-cover object-[center_58%]"
           />
         ) : (
           <span>{imageLabel || 'Kvastram atelier image'}</span>

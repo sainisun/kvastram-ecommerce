@@ -2,6 +2,8 @@
 
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { Modal } from '@/components/ui/Modal';
+import { Badge } from '@/components/ui/Badge';
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import type { ProductImage, ProductVideo } from '@/types';
+import { UnstyledButton } from '@/components/ui/Button';
 
 interface ProductGalleryProps {
   media: ProductImage[];
@@ -160,7 +163,7 @@ export default function ProductGallery({
 
   if (items.length === 0) {
     return (
-      <div className="flex aspect-[4/5] items-center justify-center rounded-[var(--radius-lg)] bg-stone-100 text-stone-400">
+      <div className="flex aspect-[4/5] items-center justify-center rounded-[var(--radius-lg)] bg-[var(--ds-surface-soft)] text-[var(--ds-text-muted)]">
         No media
       </div>
     );
@@ -197,7 +200,7 @@ export default function ProductGallery({
                 slideRefs.current[index] = node;
               }}
               data-index={index}
-              className="relative w-full shrink-0 snap-center bg-[#fafafa]"
+              className="relative w-full shrink-0 snap-center bg-[var(--ds-surface-soft)]"
             >
               <div className="pdp-gallery-frame relative overflow-hidden">
                 {item.type === 'video' ? (
@@ -214,17 +217,17 @@ export default function ProductGallery({
                       preload="metadata"
                       className="h-full w-full object-cover"
                     />
-                    <button
+                    <UnstyledButton
                       type="button"
                       onClick={() => setIsMuted((current) => !current)}
-                      className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm"
+                      className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/40 text-[var(--ds-text-inverse)] backdrop-blur-sm"
                       aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                     >
                       {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-                    </button>
+                    </UnstyledButton>
                   </>
                 ) : (
-                  <button
+                  <UnstyledButton
                     type="button"
                     onClick={() => {
                       setActiveIndex(index);
@@ -241,17 +244,19 @@ export default function ProductGallery({
                       className="object-cover"
                       sizes="100vw"
                     />
-                  </button>
+                  </UnstyledButton>
                 )}
 
                 {item.type === 'video' && (
-                  <div className="media-badge absolute left-4 top-4 flex items-center gap-2 rounded-[var(--radius-sm)] bg-black/45 px-3 py-1.5">
+                  <div className="media-badge absolute left-4 top-4 flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--ds-text-primary)]/45 px-3 py-1.5">
                     <Play size={12} fill="currentColor" />
                     Reel
                   </div>
                 )}
                 {scarcityLabel && item.type !== 'video' ? (
-                  <span className="pdp-gallery-badge">{scarcityLabel}</span>
+                  <Badge variant="accent" className="pdp-gallery-badge">
+                    {scarcityLabel}
+                  </Badge>
                 ) : null}
                 {wishlistButton ? (
                   <div className="pdp-gallery-wishlist">{wishlistButton}</div>
@@ -265,7 +270,7 @@ export default function ProductGallery({
           <div className="mt-4 space-y-4">
             <div className="flex justify-center gap-2">
               {items.map((item, index) => (
-                <button
+                <UnstyledButton
                   key={`${item.id}-dot`}
                   type="button"
                   onClick={() => scrollToIndex(index)}
@@ -279,13 +284,13 @@ export default function ProductGallery({
 
             <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {items.map((item, index) => (
-                <button
+                <UnstyledButton
                   key={`${item.id}-thumb`}
                   type="button"
                   onClick={() => scrollToIndex(index)}
-                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-[var(--radius-md)] border bg-stone-100 ${
+                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-[var(--radius-md)] border bg-[var(--ds-surface-soft)] ${
                     activeIndex === index
-                      ? 'border-stone-900'
+                      ? 'border-[var(--ds-text-primary)]'
                       : 'border-transparent opacity-70'
                   }`}
                   aria-label={`Select media ${index + 1}`}
@@ -301,12 +306,12 @@ export default function ProductGallery({
                           sizes="64px"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-stone-200 text-stone-500">
+                        <div className="flex h-full w-full items-center justify-center bg-[var(--ds-surface-warm)] text-[var(--ds-text-muted)]">
                           <Play size={14} />
                         </div>
                       )}
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white">
+                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-text-primary)]/10">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/60 text-[var(--ds-text-inverse)]">
                           <Play size={12} fill="currentColor" />
                         </div>
                       </div>
@@ -320,7 +325,7 @@ export default function ProductGallery({
                       sizes="64px"
                     />
                   )}
-                </button>
+                </UnstyledButton>
               ))}
             </div>
           </div>
@@ -329,7 +334,7 @@ export default function ProductGallery({
 
       <div className="hidden lg:block">
         <div className="space-y-4">
-          <div className="pdp-gallery-frame pdp-gallery-frame-desktop relative overflow-hidden bg-[#fafafa]">
+          <div className="pdp-gallery-frame pdp-gallery-frame-desktop relative overflow-hidden bg-[var(--ds-surface-soft)]">
             {activeItem.type === 'video' ? (
               <>
                 <video
@@ -344,21 +349,21 @@ export default function ProductGallery({
                   preload="metadata"
                   className="h-full w-full object-cover"
                 />
-                <button
+                <UnstyledButton
                   type="button"
                   onClick={() => setIsMuted((current) => !current)}
-                  className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm"
+                  className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/40 text-[var(--ds-text-inverse)] backdrop-blur-sm"
                   aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                 >
                   {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-                </button>
-                <div className="media-badge absolute left-5 top-5 flex items-center gap-2 rounded-[var(--radius-sm)] bg-black/45 px-3 py-1.5">
+                </UnstyledButton>
+                <div className="media-badge absolute left-5 top-5 flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--ds-text-primary)]/45 px-3 py-1.5">
                   <Play size={12} fill="currentColor" />
                   Reel
                 </div>
               </>
             ) : (
-              <button
+              <UnstyledButton
                 type="button"
                 onClick={() => setLightboxOpen(true)}
                 className="relative block h-full w-full"
@@ -372,31 +377,33 @@ export default function ProductGallery({
                   className="object-cover"
                   sizes="(max-width: 1280px) 50vw, 700px"
                 />
-              </button>
+              </UnstyledButton>
             )}
 
             {items.length > 1 && (
               <>
-                <button
+                <UnstyledButton
                   type="button"
                   onClick={() => showPrev()}
-                  className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-900 shadow-sm"
+                  className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-primary)] shadow-sm"
                   aria-label="Previous media"
                 >
                   <ChevronLeft size={20} />
-                </button>
-                <button
+                </UnstyledButton>
+                <UnstyledButton
                   type="button"
                   onClick={() => showNext()}
-                  className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-900 shadow-sm"
+                  className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-primary)] shadow-sm"
                   aria-label="Next media"
                 >
                   <ChevronRight size={20} />
-                </button>
+                </UnstyledButton>
               </>
             )}
             {scarcityLabel && activeItem.type !== 'video' ? (
-              <span className="pdp-gallery-badge">{scarcityLabel}</span>
+              <Badge variant="accent" className="pdp-gallery-badge">
+                {scarcityLabel}
+              </Badge>
             ) : null}
             {wishlistButton ? (
               <div className="pdp-gallery-wishlist">{wishlistButton}</div>
@@ -407,12 +414,12 @@ export default function ProductGallery({
             <div className="space-y-3">
               <div className="flex items-center justify-center gap-2">
                 {items.map((item, index) => (
-                  <button
+                  <UnstyledButton
                     key={`${item.id}-desktop-dot`}
                     type="button"
                     onClick={() => goToIndex(index)}
                     className={`h-2 rounded-full transition-all ${
-                      activeIndex === index ? 'w-8 bg-stone-900' : 'w-2 bg-stone-300'
+                      activeIndex === index ? 'w-8 bg-[var(--ds-text-primary)]' : 'w-2 bg-[var(--ds-border-strong)]'
                     }`}
                     aria-label={`Go to media ${index + 1}`}
                   />
@@ -421,7 +428,7 @@ export default function ProductGallery({
 
               <div className="grid grid-cols-4 gap-3">
                 {items.map((item, index) => (
-                  <button
+                  <UnstyledButton
                     key={`${item.id}-desktop-thumb`}
                     type="button"
                     onMouseEnter={() => goToIndex(index)}
@@ -429,7 +436,7 @@ export default function ProductGallery({
                     onClick={() => goToIndex(index)}
                     className={`relative aspect-[4/5] overflow-hidden rounded-[var(--radius-md)] border ${
                       activeIndex === index
-                        ? 'border-stone-900'
+                        ? 'border-[var(--ds-text-primary)]'
                         : 'border-transparent opacity-75'
                     }`}
                     aria-label={`Select media ${index + 1}`}
@@ -445,12 +452,12 @@ export default function ProductGallery({
                             sizes="120px"
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-stone-200 text-stone-500">
+                          <div className="flex h-full w-full items-center justify-center bg-[var(--ds-surface-warm)] text-[var(--ds-text-muted)]">
                             <Play size={16} />
                           </div>
                         )}
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white">
+                        <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-text-primary)]/10">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/60 text-[var(--ds-text-inverse)]">
                             <Play size={12} fill="currentColor" />
                           </div>
                         </div>
@@ -464,7 +471,7 @@ export default function ProductGallery({
                         sizes="120px"
                       />
                     )}
-                  </button>
+                  </UnstyledButton>
                 ))}
               </div>
             </div>
@@ -472,44 +479,47 @@ export default function ProductGallery({
         </div>
       </div>
 
-      {lightboxOpen && activeItem.type === 'image' && (
-        <div
-          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/95 p-4"
-          onClick={() => setLightboxOpen(false)}
-        >
-          <button
+      <Modal
+        isOpen={lightboxOpen && activeItem.type === 'image'}
+        onClose={() => setLightboxOpen(false)}
+        showHeader={false}
+        rootClassName="z-[120] p-4"
+        className="h-full max-h-none max-w-5xl border-0 bg-transparent shadow-none"
+        bodyClassName="relative h-full p-0"
+      >
+          <UnstyledButton
             type="button"
             onClick={() => setLightboxOpen(false)}
-            className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white"
+            className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-[var(--ds-text-inverse)]"
             aria-label="Close fullscreen image"
           >
             <X size={22} />
-          </button>
+          </UnstyledButton>
 
           {items.length > 1 && (
             <>
-              <button
+              <UnstyledButton
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
                   showPrev();
                 }}
-                className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white"
+                className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-[var(--ds-text-inverse)]"
                 aria-label="Previous image"
               >
                 <ChevronLeft size={22} />
-              </button>
-              <button
+              </UnstyledButton>
+              <UnstyledButton
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
                   showNext();
                 }}
-                className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white"
+                className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-[var(--ds-text-inverse)]"
                 aria-label="Next image"
               >
                 <ChevronRight size={22} />
-              </button>
+              </UnstyledButton>
             </>
           )}
 
@@ -526,8 +536,7 @@ export default function ProductGallery({
               sizes="100vw"
             />
           </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

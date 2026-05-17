@@ -7,15 +7,16 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   suffix?: React.ReactNode;
+  containerClassName?: string;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, suffix, className = '', id, ...rest }, ref) => {
+  ({ label, error, suffix, className = '', containerClassName = '', id, ...rest }, ref) => {
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
     const errorId = inputId ? `${inputId}-error` : undefined;
 
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className={cn('flex flex-col gap-1.5', containerClassName)}>
         {label && (
           <label
             htmlFor={inputId}

@@ -18,7 +18,6 @@ const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
 
 function PayPalButtonInner({
   orderId,
-  currency = 'USD',
   onSuccess,
   onError,
 }: PayPalButtonProps) {
@@ -72,7 +71,7 @@ function PayPalButtonInner({
 
   if (isPending || isProcessing) {
     return (
-      <div className="w-full py-4 bg-stone-50 border border-stone-200 text-center text-body-sm text-stone-500">
+      <div className="w-full py-4 bg-[var(--ds-surface-parchment)] border border-[var(--ds-border-subtle)] text-center text-body-sm text-[var(--ds-text-muted)]">
         {isProcessing ? 'Processing payment...' : 'Loading PayPal...'}
       </div>
     );
@@ -80,7 +79,7 @@ function PayPalButtonInner({
 
   return (
     <div className="space-y-2">
-      <p className="text-body-xs text-stone-500 text-center uppercase tracking-token-wider type-bold">
+      <p className="text-body-xs text-[var(--ds-text-muted)] text-center uppercase tracking-token-wider type-bold">
         Pay with PayPal
       </p>
       <PayPalButtons
@@ -107,7 +106,7 @@ function PayPalButtonInner({
 export default function PayPalButton(props: PayPalButtonProps) {
   if (!clientId) {
     return (
-      <div className="w-full py-4 bg-stone-50 border border-stone-200 text-center text-body-sm text-stone-400">
+      <div className="w-full py-4 bg-[var(--ds-surface-parchment)] border border-[var(--ds-border-subtle)] text-center text-body-sm text-[var(--ds-text-muted)]">
         PayPal not configured
       </div>
     );

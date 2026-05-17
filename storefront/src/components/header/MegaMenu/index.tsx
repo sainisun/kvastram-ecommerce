@@ -114,9 +114,9 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
           exit="exit"
           role="navigation"
           aria-label="Main navigation"
-          className="absolute top-full left-0 right-0 bg-white border-b-[1.5px] border-[var(--ds-border-dark)] z-[100] shadow-sm"
+          className="absolute top-full left-0 right-0 bg-[var(--ds-surface-paper)] border-b-[1.5px] border-[var(--ds-border-dark)] z-[100] shadow-sm"
         >
-          <div className="grid" style={{ gridTemplateColumns: '1.1fr 1fr 1fr 180px' }}>
+          <div className="grid grid-cols-[1.1fr_1fr_1fr_180px]">
             <div className="px-8 py-6 border-r border-[var(--ds-surface-parchment-2)]">
               <MegaColumn
                 groups={categoryGroups}

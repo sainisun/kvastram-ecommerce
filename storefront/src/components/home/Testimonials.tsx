@@ -8,7 +8,7 @@ interface TestimonialsProps {
 function renderStars(rating?: number) {
   const filled = Math.max(0, Math.min(5, Math.round(rating || 5)));
   return Array.from({ length: 5 }, (_, index) => (
-    <span key={index} className={index < filled ? 'color-sienna' : 'color-muted'}>
+    <span key={index} className={index < filled ? 'color-accent' : 'color-muted'}>
       ★
     </span>
   ));
@@ -45,7 +45,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
         ];
 
   return (
-    <section className="kv-section bg-white">
+    <section className="kv-section bg-[var(--ds-surface-paper)]">
       <div className="kv-container">
         <div className="kv-section-head mb-8 md:mb-12">
           <div className="kv-tag">Love shared by customers</div>

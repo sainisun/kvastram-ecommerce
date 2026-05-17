@@ -1,11 +1,14 @@
 'use client';
 
-import { ThumbsUp, Loader2, X, Upload, ImageIcon } from 'lucide-react';
+import { ThumbsUp, Loader2, X, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { StarRating } from '@/components/ui/StarRating';
 import { useAuth } from '@/context/auth-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
+import { Button, IconButton } from '@/components/ui/Button';
 
 interface ReviewsProps {
   productId: string;
@@ -170,7 +173,7 @@ export function Reviews({ productId }: ReviewsProps) {
 
       setSubmitted(true);
       setShowForm(false);
-    } catch (err) {
+    } catch {
       alert('Failed to submit review');
     } finally {
       setSubmitting(false);
@@ -178,8 +181,8 @@ export function Reviews({ productId }: ReviewsProps) {
   };
 
   return (
-    <div className="border-t border-stone-100 py-12 md:py-16 lg:py-24" id="reviews">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <div className="border-t border-[var(--ds-border-subtle)] py-12 md:py-16 lg:py-24" id="reviews">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
           <div>
             <h2 className="review-heading mb-2">
@@ -194,12 +197,14 @@ export function Reviews({ productId }: ReviewsProps) {
           </div>
 
           {!submitted && (
-            <button
+            <Button
+              type="button"
               onClick={() => setShowForm(!showForm)}
-              className="review-button border border-stone-700 px-6 py-3 transition-colors hover:bg-stone-900 hover:text-white"
+              variant="outline"
+              size="md"
             >
               {showForm ? 'Cancel' : 'Write a Review'}
-            </button>
+            </Button>
           )}
         </div>
 
@@ -207,7 +212,7 @@ export function Reviews({ productId }: ReviewsProps) {
         {showForm && !submitted && (
           <form
             onSubmit={handleSubmit}
-            className="max-w-xl bg-stone-50 p-8 mb-12 rounded-lg space-y-4"
+            className="max-w-xl bg-[var(--ds-surface-soft)] p-8 mb-12 rounded-lg space-y-4"
           >
             <h3 className="review-form-heading mb-4">Share Your Experience</h3>
 
@@ -225,13 +230,10 @@ export function Reviews({ productId }: ReviewsProps) {
 
             {!customer && (
               <div>
-                <label className="review-label mb-2 block">
-                  Name
-                </label>
-                <input
+                <Input
                   type="text"
+                  label="Name"
                   required
-                  className="input-field w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="Your Name"
@@ -240,13 +242,10 @@ export function Reviews({ productId }: ReviewsProps) {
             )}
 
             <div>
-              <label className="review-label mb-2 block">
-                Title
-              </label>
-              <input
+              <Input
                 type="text"
+                label="Title"
                 required
-                className="input-field w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Summary of your experience"
@@ -254,12 +253,10 @@ export function Reviews({ productId }: ReviewsProps) {
             </div>
 
             <div>
-              <label className="review-label mb-2 block">
-                Review
-              </label>
-              <textarea
+              <Textarea
+                label="Review"
                 required
-                className="input-field min-h-[100px] w-full border border-stone-200 p-3 focus:border-stone-900 focus:outline-none"
+                className="min-h-[100px]"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="How was the quality, fit, and delivery?"
@@ -277,7 +274,7 @@ export function Reviews({ productId }: ReviewsProps) {
                 <div className="flex flex-wrap gap-2 mb-3">
                   {imagePreviewUrls.map((url, index) => (
                     <div key={index} className="relative">
-                      <div className="w-20 h-20 relative rounded overflow-hidden border border-stone-200">
+                      <div className="w-20 h-20 relative rounded overflow-hidden border border-[var(--ds-border-subtle)]">
                         <OptimizedImage
                           src={url}
                           alt={`Preview ${index + 1}`}
@@ -285,13 +282,16 @@ export function Reviews({ productId }: ReviewsProps) {
                           className="object-cover"
                         />
                       </div>
-                      <button
+                      <IconButton
                         type="button"
                         onClick={() => removeImage(index)}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                        variant="primary"
+                        size="sm"
+                        className="absolute -right-1 -top-1 h-6 w-6 border-[var(--ds-danger)] bg-[var(--ds-danger)] text-[var(--ds-text-inverse)] hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger)]"
+                        aria-label={`Remove image ${index + 1}`}
                       >
                         <X size={12} />
-                      </button>
+                      </IconButton>
                     </div>
                   ))}
                 </div>
@@ -307,7 +307,7 @@ export function Reviews({ productId }: ReviewsProps) {
                     onChange={handleImageSelect}
                     className="hidden"
                   />
-                  <div className="review-upload-button flex items-center gap-2 rounded border border-stone-300 px-4 py-2 transition-colors hover:bg-stone-50">
+                  <div className="review-upload-action flex items-center gap-2 rounded border border-[var(--ds-border-subtle)] px-4 py-2 transition-colors hover:bg-[var(--ds-surface-soft)]">
                     <Upload size={16} />
                     <span>Upload Images</span>
                   </div>
@@ -315,29 +315,29 @@ export function Reviews({ productId }: ReviewsProps) {
               )}
 
               <p className="review-helper mt-1">
-                {selectedImages.length}/5 images • Max 5MB each • JPG, PNG, WebP
+                {selectedImages.length}/5 images / Max 5MB each / JPG, PNG, WebP
               </p>
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={submitting || uploadingImages}
-              className="review-button flex w-full items-center justify-center gap-2 bg-stone-900 py-3 text-text-inverse hover:bg-stone-800 disabled:opacity-50"
+              variant="secondary"
+              size="md"
+              fullWidth
+              leadingIcon={(submitting || uploadingImages) ? <Loader2 className="animate-spin" size={16} /> : null}
             >
-              {(submitting || uploadingImages) && (
-                <Loader2 className="animate-spin" size={16} />
-              )}
               {uploadingImages
                 ? 'Uploading Images...'
                 : submitting
                   ? 'Submitting...'
                   : 'Submit Review'}
-            </button>
+            </Button>
           </form>
         )}
 
         {submitted && (
-          <div className="bg-green-50 text-green-800 p-6 mb-12 rounded-lg text-center">
+          <div className="bg-[var(--ds-success-bg)] text-[var(--ds-success)] p-6 mb-12 rounded-lg text-center">
             <h3 className="review-success-title mb-2">Thank you!</h3>
             <p className="review-success-copy">
               Your review has been submitted and is pending approval.
@@ -347,27 +347,27 @@ export function Reviews({ productId }: ReviewsProps) {
 
         {/* Reviews List */}
         {loading ? (
-          <div className="text-center py-12 text-stone-400">
+          <div className="text-center py-12 text-[var(--ds-text-muted)]">
             Loading reviews...
           </div>
         ) : loadError ? (
-          <div className="text-center py-12 bg-red-50 text-red-700">
+          <div className="text-center py-12 bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]">
             {loadError}
           </div>
         ) : reviews.length === 0 ? (
-          <div className="text-center py-12 bg-stone-50 text-stone-500 italic">
+          <div className="text-center py-12 bg-[var(--ds-surface-soft)] text-[var(--ds-text-secondary)] italic">
             No reviews yet. Be the first to review this product.
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-8">
             {reviews.map((review) => (
-              <div key={review.id} className="bg-stone-50 p-8 relative group">
+              <div key={review.id} className="bg-[var(--ds-surface-soft)] p-8 relative group">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <div className="mb-2">
                       <StarRating rating={review.rating} size={14} />
                     </div>
-                    <h3 className="review-title inline-block border-b border-transparent pb-1 transition-colors group-hover:border-stone-200">
+                    <h3 className="review-title inline-block border-b border-transparent pb-1 transition-colors group-hover:border-[var(--ds-border-subtle)]">
                       {review.title}
                     </h3>
                   </div>
@@ -385,7 +385,7 @@ export function Reviews({ productId }: ReviewsProps) {
                     {review.images.map((imageUrl, imgIndex) => (
                       <div
                         key={imgIndex}
-                        className="w-20 h-20 relative rounded overflow-hidden border border-stone-200"
+                        className="w-20 h-20 relative rounded overflow-hidden border border-[var(--ds-border-subtle)]"
                       >
                         <OptimizedImage
                           src={imageUrl}
@@ -398,18 +398,24 @@ export function Reviews({ productId }: ReviewsProps) {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between border-t border-stone-200 pt-4">
+                <div className="flex items-center justify-between border-t border-[var(--ds-border-subtle)] pt-4">
                   <div className="review-rating-count">
                     <span className="review-author">
                       {review.author_name}
                     </span>
                     <span className="review-verified ml-2">
-                      • Verified Buyer
+                      - Verified Buyer
                     </span>
                   </div>
-                  <button className="review-action-subtle flex items-center gap-1">
-                    <ThumbsUp size={12} /> Helpful
-                  </button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="review-helpful-action"
+                    leadingIcon={<ThumbsUp size={12} />}
+                  >
+                    Helpful
+                  </Button>
                 </div>
               </div>
             ))}
@@ -419,4 +425,3 @@ export function Reviews({ productId }: ReviewsProps) {
     </div>
   );
 }
-

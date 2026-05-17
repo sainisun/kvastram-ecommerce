@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
+import Input from '@/components/ui/Input';
+import { Button, IconButton } from '@/components/ui/Button';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -70,148 +73,133 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-display-lg font-serif text-stone-900">Join Kvastram</h1>
-          <p className="mt-2 text-stone-500 type-light">
+          <h1 className="text-display-lg font-display text-[var(--ds-text-primary)]">Join Kvastram</h1>
+          <p className="mt-2 text-[var(--ds-text-muted)] type-light">
             Create an account to track orders and more
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {success && (
-            <div className="bg-green-50 text-green-600 p-3 text-body-sm text-center">
+            <StatusBanner tone="success">
               Registration successful! Please check your email to verify your account.
-            </div>
+            </StatusBanner>
           )}
           {error && (
-            <div className="bg-red-50 text-red-500 p-4 text-body-sm text-center space-y-3">
+            <StatusBanner tone="danger">
               <p>{error}</p>
               {error.includes('not verified') && (
-                <button
+                <Button
                   type="button"
                   onClick={handleResendVerification}
                   disabled={resendLoading}
-                  className="text-stone-900 underline type-medium hover:text-stone-600 disabled:opacity-50"
+                  variant="ghost"
+                  size="sm"
+                  className="mt-3 px-0 underline"
                 >
                   {resendLoading ? 'Sending...' : 'Click here to resend verification link'}
-                </button>
+                </Button>
               )}
-            </div>
+            </StatusBanner>
           )}
           {resendSuccess && (
-            <div className="bg-green-50 text-green-600 p-3 text-body-sm text-center">
+            <StatusBanner tone="success">
               Verification link sent! Please check your inbox.
-            </div>
+            </StatusBanner>
           )}
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="first_name" className="text-body-xs uppercase type-bold text-stone-500">
-                First Name
-              </label>
-              <input
-                id="first_name"
-                type="text"
-                required
-                className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
-                value={formData.first_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, first_name: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="last_name" className="text-body-xs uppercase type-bold text-stone-500">
-                Last Name
-              </label>
-              <input
-                id="last_name"
-                type="text"
-                required
-                className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
-                value={formData.last_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, last_name: e.target.value })
-                }
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-body-xs uppercase type-bold text-stone-500">
-              Email Address
-            </label>
-            <input
-              id="email"
-              type="email"
+            <Input
+              id="first_name"
+              type="text"
               required
-              className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
-              value={formData.email}
+              label="First Name"
+              value={formData.first_name}
               onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
+                setFormData({ ...formData, first_name: e.target.value })
+              }
+            />
+            <Input
+              id="last_name"
+              type="text"
+              required
+              label="Last Name"
+              value={formData.last_name}
+              onChange={(e) =>
+                setFormData({ ...formData, last_name: e.target.value })
               }
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="phone" className="text-body-xs uppercase type-bold text-stone-500">
-              Phone (Optional)
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              className="w-full border-b border-stone-200 py-2 focus:outline-none focus:border-stone-900 transition-colors"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
-            />
-          </div>
+          <Input
+            id="email"
+            type="email"
+            required
+            label="Email Address"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+          />
+
+          <Input
+            id="phone"
+            type="tel"
+            label="Phone (Optional)"
+            value={formData.phone}
+            onChange={(e) =>
+              setFormData({ ...formData, phone: e.target.value })
+            }
+          />
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-body-xs uppercase type-bold text-stone-500">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                required
-                minLength={12}
-                className="w-full border-b border-stone-200 py-2 pr-10 focus:outline-none focus:border-stone-900 transition-colors"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors"
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            <p className="text-body-xs text-stone-400">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              required
+              minLength={12}
+              label="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              suffix={
+                <IconButton
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="h-8 w-8 border-0"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </IconButton>
+              }
+            />
+            <p className="text-body-xs text-[var(--ds-text-muted)]">
               Must be at least 12 characters with uppercase, lowercase, number,
               and special character.
             </p>
           </div>
 
-          <button
+          <Button
+            type="submit"
             disabled={loading}
-            className="w-full bg-stone-900 text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            variant="secondary"
+            size="lg"
+            fullWidth
+            leadingIcon={loading ? <Loader2 className="animate-spin" size={16} /> : null}
           >
-            {loading && <Loader2 className="animate-spin" size={16} />}
             {loading ? 'Creating Account...' : 'Create Account'}
-          </button>
+          </Button>
 
-          <div className="text-center text-body-sm text-stone-500">
+          <div className="text-center text-body-sm text-[var(--ds-text-muted)]">
             Already have an account?{' '}
-            <Link href="/login" className="text-stone-900 type-medium underline">
+            <Link href="/login" className="text-[var(--ds-text-primary)] type-medium underline">
               Sign In
             </Link>
           </div>
@@ -220,4 +208,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

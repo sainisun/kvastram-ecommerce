@@ -8,6 +8,9 @@ import { getProductDisplayTitle } from '@/lib/product-title';
 import { cn } from '@/lib/utils';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import WishlistButton from '@/components/ui/WishlistButton';
+import { Badge } from '@/components/ui/Badge';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { Button, IconButton } from '@/components/ui/Button';
 
 export interface ProductCardPrice {
   label: string;
@@ -79,24 +82,38 @@ export function ProductCard({
             />
           ) : null}
 
-          {isNew && !isOnSale ? <span className="product-badge">New</span> : null}
-          {isOnSale ? <span className="product-badge sale">Sale</span> : null}
-          {isLowStock ? <span className="product-badge low-stock">Almost Gone</span> : null}
+          <div className="absolute left-[9px] top-[9px] z-10 flex max-w-[calc(100%-58px)] flex-col items-start gap-1.5">
+            {isNew && !isOnSale ? (
+              <Badge className="rounded-full px-2 py-1 text-[10px]">New</Badge>
+            ) : null}
+            {isOnSale ? (
+              <Badge variant="danger" className="rounded-full px-2 py-1 text-[10px]">
+                Sale
+              </Badge>
+            ) : null}
+            {isLowStock ? (
+              <Badge variant="accent" className="rounded-full px-2 py-1 text-[10px]">
+                Almost Gone
+              </Badge>
+            ) : null}
+          </div>
         </Link>
 
         {showQuickView && onQuickView ? (
-          <button
+          <Button
             type="button"
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
               onQuickView(product);
             }}
-            className="quick-view-btn"
+            variant="secondary"
+            size="sm"
+            className="product-card-quick-view"
             aria-label={`Quick view ${displayTitle}`}
           >
             Quick View
-          </button>
+          </Button>
         ) : null}
       </div>
 
@@ -122,24 +139,23 @@ export function ProductCard({
         </Link>
 
         <div className="product-row">
-          <div className="flex items-center gap-1">
-            {price.isWholesale ? (
-              <span className="wholesale-price">Wholesale - {price.label}</span>
-            ) : (
-              <>
-                <span className="price">{price.label}</span>
-                {price.compareAtLabel ? <span className="orig">{price.compareAtLabel}</span> : null}
-              </>
-            )}
-          </div>
-          <button
+          <PriceDisplay
+            price={price.label}
+            compareAtPrice={price.compareAtLabel}
+            prefix={price.isWholesale ? 'Wholesale -' : undefined}
+            variant="product-card"
+            priceClassName={price.isWholesale ? 'wholesale-price' : undefined}
+          />
+          <IconButton
             type="button"
             onClick={(event) => onAddToCart(event, product)}
-            className="mini-cart"
+            variant={added ? 'primary' : 'ghost'}
+            size="sm"
+            className="product-card-cart-button"
             aria-label={added ? 'Added to cart' : 'Add to cart'}
           >
             {added ? 'OK' : '+'}
-          </button>
+          </IconButton>
         </div>
       </div>
     </article>
@@ -202,7 +218,13 @@ export function CompactProductCard({
         {title}
       </h3>
       {priceLabel ? (
-        <p className={cn('recently-price mt-1', priceClassName)}>{priceLabel}</p>
+        <PriceDisplay
+          as="p"
+          price={priceLabel}
+          variant="compact"
+          className="mt-1"
+          priceClassName={cn('recently-price', priceClassName)}
+        />
       ) : null}
     </Link>
   );

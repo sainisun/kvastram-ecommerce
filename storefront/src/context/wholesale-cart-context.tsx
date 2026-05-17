@@ -78,8 +78,6 @@ export function WholesaleCartProvider({ children }: { children: ReactNode }) {
     errors: [],
     warnings: [],
   });
-  const [isLoading, setIsLoading] = useState(false);
-
   const isWholesaleCart = wholesaleInfo?.hasWholesaleAccess ?? false;
 
   // Convert regular items to wholesale items with pricing
@@ -90,7 +88,6 @@ export function WholesaleCartProvider({ children }: { children: ReactNode }) {
     }
 
     const updateWholesaleItems = async () => {
-      setIsLoading(true);
       const updatedItems: WholesaleCartItem[] = [];
 
       for (const item of regularItems) {
@@ -154,7 +151,6 @@ export function WholesaleCartProvider({ children }: { children: ReactNode }) {
       }
 
       setItems(updatedItems);
-      setIsLoading(false);
     };
 
     updateWholesaleItems();

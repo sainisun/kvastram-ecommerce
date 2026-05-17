@@ -18,6 +18,9 @@ import {
 } from '@/components/content/ContentPageSystem';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 import { storefrontTrust } from '@/config/storefront-trust';
 
 const reasonLabels: Record<string, string> = {
@@ -198,9 +201,9 @@ export function ContactClient() {
             </HighlightBox>
           </div>
 
-          <div className="border border-[var(--line)] bg-white p-6 shadow-[0_24px_80px_rgba(44,44,44,0.06)] md:p-10">
+          <div className="border border-[var(--line)] bg-[var(--ds-surface-paper)] p-6 shadow-[0_24px_80px_rgba(44,44,44,0.06)] md:p-10">
             {orderReference || reason ? (
-              <div className="mb-6 border border-[var(--line)] bg-[#fff8f2] px-4 py-3 text-body-sm text-stone-700">
+              <div className="mb-6 border border-[var(--line)] bg-[var(--ds-surface-parchment)] px-4 py-3 text-body-sm text-[var(--ds-text-secondary)]">
                 {reason ? (
                   <span>{reasonLabels[reason] || 'Support Request'}</span>
                 ) : null}
@@ -214,23 +217,25 @@ export function ContactClient() {
             ) : null}
 
             {status === 'success' ? (
-              <div className="py-12 text-center">
-                <CheckCircle className="mx-auto mb-4 h-16 w-16 text-green-600" />
-                <h2 className="font-heading text-display-md text-stone-900">
-                  Message Sent
-                </h2>
-                <p className="mx-auto mt-3 max-w-md text-stone-600">
-                  {orderReference
+              <EmptyState
+                icon={<CheckCircle size={56} />}
+                title="Message Sent"
+                description={
+                  orderReference
                     ? `Your support request for order #${orderReference} is with our concierge team.`
-                    : `Thank you for reaching out. We'll get back to you soon.`}
-                </p>
-                <button
+                    : `Thank you for reaching out. We'll get back to you soon.`
+                }
+                className="border-0 py-12"
+                actions={
+                <Button
                   onClick={() => setStatus('idle')}
-                  className="content-button content-button--primary mt-6"
+                  variant="secondary"
+                  size="md"
                 >
                   Send Another Message
-                </button>
-              </div>
+                </Button>
+                }
+              />
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid gap-6 sm:grid-cols-2">
@@ -279,7 +284,7 @@ export function ContactClient() {
                   error={touched.message ? errors.message : undefined}
                 />
 
-                <div className="border border-[var(--line)] bg-[#fff8f2] px-4 py-4 text-body-sm leading-7 text-stone-600">
+                <div className="border border-[var(--line)] bg-[var(--ds-surface-parchment)] px-4 py-4 text-body-sm leading-7 text-[var(--ds-text-secondary)]">
                   For payment or return questions, the guided help pages may
                   answer faster than a general message.
                   <div className="mt-3 flex flex-wrap gap-3">
@@ -299,26 +304,25 @@ export function ContactClient() {
                 </div>
 
                 {status === 'error' && (
-                  <div className="flex items-center gap-2 text-body-sm text-red-600">
-                    <AlertCircle size={16} aria-hidden="true" />
-                    <span>{errorMessage}</span>
-                  </div>
+                  <StatusBanner tone="danger" icon={<AlertCircle size={16} aria-hidden="true" />}>
+                    {errorMessage}
+                  </StatusBanner>
                 )}
 
-                <button
+                <Button
                   type="submit"
                   disabled={status === 'loading' || !isFormValid}
-                  className="content-button content-button--primary w-full disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {status === 'loading' ? (
-                    <>
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
+                  leadingIcon={
+                    status === 'loading' ? (
                       <Loader2 className="animate-spin" size={16} aria-hidden="true" />
-                      Sending...
-                    </>
-                  ) : (
-                    'Send Message'
-                  )}
-                </button>
+                    ) : null
+                  }
+                >
+                  {status === 'loading' ? 'Sending...' : 'Send Message'}
+                </Button>
               </form>
             )}
           </div>

@@ -16,7 +16,7 @@
     90deg,
     var(--gold) 0%,
     var(--gold) 40%,
-    #f5e6c8 50%,
+    var(--ds-accent-soft) 50%,
     var(--gold) 60%,
     var(--gold) 100%
   );

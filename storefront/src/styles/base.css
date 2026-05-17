@@ -10,9 +10,9 @@ html {
 }
 
 body {
-  background: var(--cream) !important;
-  color: var(--color-text-primary) !important;
-  font-family: var(--font-body) !important;
+  background: var(--cream);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
   font-size: var(--text-body-md);
   font-weight: var(--weight-regular);
   line-height: var(--leading-relaxed);

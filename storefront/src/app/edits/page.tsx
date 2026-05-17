@@ -25,7 +25,7 @@ const editCards = [
       'Start with gift-friendly picks and easy browsing paths for thoughtful premium gifting.',
     href: '/collections/gifts-under-2000',
     icon: Gift,
-    accent: 'from-[#7d3f25] via-[#a85d3a] to-[#d8b295]',
+    accent: 'from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-accent-soft)]',
   },
   {
     title: 'Block Print Edit',
@@ -33,7 +33,7 @@ const editCards = [
       'Jump into handcrafted block-print styles instead of starting from the full catalog.',
     href: '/collections/block-print-edit',
     icon: Wand2,
-    accent: 'from-[#3f5945] via-[#7a9b7f] to-[#d7dfd1]',
+    accent: 'from-[var(--ds-success-text)] via-[var(--ds-success)] to-[var(--ds-success-bg)]',
   },
   {
     title: 'Bestsellers',
@@ -41,7 +41,7 @@ const editCards = [
       'Browse the pieces that already carry the strongest shopper proof and repeat interest.',
     href: '/bestsellers',
     icon: Sparkles,
-    accent: 'from-[#2c2c2c] via-[#6b6258] to-[#d8b295]',
+    accent: 'from-[var(--ds-text-primary)] via-[var(--ds-text-muted)] to-[var(--ds-accent-soft)]',
   },
   {
     title: 'New Arrivals',
@@ -49,7 +49,7 @@ const editCards = [
       'See the freshest additions without having to build the right sort and filter combination yourself.',
     href: '/products?sort=newest',
     icon: Tags,
-    accent: 'from-[#8b4d42] via-[#bd7a5a] to-[#f1ede7]',
+    accent: 'from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-surface-soft)]',
   },
   {
     title: 'Collections',
@@ -57,7 +57,7 @@ const editCards = [
       'Explore story-led collection pages that behave more like curated rooms than a flat product listing.',
     href: '/collections',
     icon: Layers3,
-    accent: 'from-[#59432e] via-[#8b6a49] to-[#f1ede7]',
+    accent: 'from-[var(--ds-accent-hover)] via-[var(--ds-accent-gold)] to-[var(--ds-surface-soft)]',
   },
   {
     title: 'Sale Picks',
@@ -65,22 +65,22 @@ const editCards = [
       'Enter the current markdown layer quickly when you are shopping by value instead of collection.',
     href: '/sale',
     icon: ArrowRight,
-    accent: 'from-[#5a2f2f] via-[#9a4d4d] to-[#f2d7d7]',
+    accent: 'from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-danger-bg)]',
   },
 ];
 
 export default function EditsPage() {
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="mx-auto max-w-3xl text-center">
-          <span className="text-body-xs type-bold uppercase tracking-token-wider text-stone-500">
+          <span className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
             Guided Discovery
           </span>
-          <h1 className="mt-4 font-serif text-display-xl text-stone-900">
+          <h1 className="mt-4 font-display text-display-xl text-[var(--ds-text-primary)]">
             Curated Edits
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-body-lg text-stone-600">
+          <p className="mx-auto mt-4 max-w-2xl text-body-lg text-[var(--ds-text-secondary)]">
             Use curated routes when you want a faster way into the storefront
             than broad search, generic filters, or starting from every product
             at once.
@@ -92,17 +92,17 @@ export default function EditsPage() {
             <Link
               key={title}
               href={href}
-              className="group block overflow-hidden border border-stone-200 bg-white transition-colors hover:border-stone-400"
+              className="group block overflow-hidden border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] transition-colors hover:border-[var(--ds-border-strong)]"
             >
-              <div className={`bg-gradient-to-br ${accent} p-6 text-white`}>
+              <div className={`bg-gradient-to-br ${accent} p-6 text-[var(--ds-text-inverse)]`}>
                 <Icon size={28} />
-                <h2 className="mt-12 text-display-sm font-serif">{title}</h2>
+                <h2 className="mt-12 text-display-sm font-display">{title}</h2>
               </div>
               <div className="p-6">
-                <p className="text-body-sm leading-token-relaxed text-stone-600">
+                <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
                   {copy}
                 </p>
-                <span className="mt-5 inline-flex items-center gap-2 text-body-xs type-bold uppercase tracking-token-wider text-stone-900">
+                <span className="mt-5 inline-flex items-center gap-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)]">
                   Open Edit <ArrowRight size={14} />
                 </span>
               </div>
@@ -113,19 +113,19 @@ export default function EditsPage() {
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           <Link
             href="/products"
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+            className="border border-[var(--ds-border-strong)] px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
           >
             Shop All
           </Link>
           <Link
             href={storefrontTrust.policyRoutes.help}
-            className="border border-stone-300 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-stone-900 transition-colors hover:bg-stone-50"
+            className="border border-[var(--ds-border-strong)] px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
           >
             Help Center
           </Link>
           <Link
             href={storefrontTrust.policyRoutes.contact}
-            className="bg-stone-900 px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-white transition-colors hover:bg-stone-800"
+            className="bg-[var(--ds-text-primary)] px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
           >
             Contact Concierge
           </Link>

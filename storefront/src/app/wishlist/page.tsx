@@ -7,6 +7,9 @@ import { useCurrency } from '@/context/currency-context';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import Link from 'next/link';
 import { Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
+import { Button, IconButton } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 
 export default function WishlistPage() {
   const { items, removeItem, clearWishlist } = useWishlist();
@@ -36,53 +39,53 @@ export default function WishlistPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
-          <div className="text-center">
-            <Heart size={64} className="mx-auto text-stone-200 mb-6" />
-            <h1 className="text-display-lg font-serif text-stone-900 mb-4">
-              Your Wishlist is Empty
-            </h1>
-            <p className="text-stone-500 mb-8 max-w-md mx-auto">
-              Save items you love by clicking the heart icon on any product.
-            </p>
+      <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+          <EmptyState
+            icon={<Heart size={56} />}
+            title="Your Wishlist is Empty"
+            description="Save items you love by clicking the heart icon on any product."
+            actions={
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-stone-900 text-white px-8 py-3 text-body-xs type-bold uppercase tracking-token-wider hover:bg-stone-800 transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-8 py-3 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--ds-text-secondary)] transition-colors"
             >
               Start Shopping
               <ArrowRight size={16} />
             </Link>
-          </div>
+            }
+          />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="flex items-center justify-between mb-12">
           <div>
-            <h1 className="text-display-lg font-serif text-stone-900 mb-2">
+            <h1 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-2">
               My Wishlist
             </h1>
-            <p className="text-stone-500">
+            <p className="text-[var(--ds-text-muted)]">
               {items.length} saved item{items.length === 1 ? '' : 's'}
             </p>
           </div>
-          <button
+          <Button
+            type="button"
             onClick={clearWishlist}
-            className="text-stone-500 hover:text-red-500 text-body-sm transition-colors"
+            variant="ghost"
+            size="sm"
           >
             Clear All
-          </button>
+          </Button>
         </div>
 
         <div className="grid gap-x-4 gap-y-8 sm:grid-cols-2 md:gap-x-6 md:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16 xl:grid-cols-4">
           {items.map((item) => (
             <div key={item.id} className="group">
-              <div className="relative aspect-[3/4] bg-stone-100 mb-4 overflow-hidden rounded-sm">
+              <div className="relative aspect-[3/4] bg-[var(--ds-surface-soft)] mb-4 overflow-hidden rounded-sm">
                 <Link href={`/products/${item.handle}`}>
                   {item.thumbnail ? (
                     <OptimizedImage
@@ -92,38 +95,39 @@ export default function WishlistPage() {
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-stone-400 italic">
+                    <div className="w-full h-full flex items-center justify-center text-[var(--ds-text-muted)] italic">
                       No Image
                     </div>
                   )}
                 </Link>
 
                 {/* Remove Button */}
-                <button
+                <IconButton
+                  type="button"
                   onClick={() => handleRemove(item.productId)}
-                  className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center text-stone-400 hover:text-red-500 transition-colors"
+                  className="absolute right-3 top-3 h-8 w-8 rounded-full border-0 bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-muted)] hover:text-[var(--ds-danger)]"
                   aria-label="Remove from wishlist"
                 >
                   <Trash2 size={16} />
-                </button>
+                </IconButton>
               </div>
 
               <div className="space-y-2">
                 <Link href={`/products/${item.handle}`}>
-                  <h3 className="font-serif text-stone-900 group-hover:text-stone-600 transition-colors line-clamp-2">
+                  <h3 className="font-display text-[var(--ds-text-primary)] group-hover:text-[var(--ds-text-secondary)] transition-colors line-clamp-2">
                     {item.title}
                   </h3>
                 </Link>
-                <p className="text-body-sm type-medium text-stone-900">
-                  {formatPrice(item.price)}
-                </p>
-                <button
+                <PriceDisplay price={formatPrice(item.price)} variant="inline" />
+                <Button
+                  type="button"
                   onClick={() => handleAddToCart(item)}
-                  className="w-full flex items-center justify-center gap-2 bg-stone-900 text-white py-3 text-body-xs type-bold uppercase tracking-token-wider hover:bg-stone-800 transition-colors"
+                  variant="secondary"
+                  fullWidth
+                  leadingIcon={<ShoppingBag size={14} />}
                 >
-                  <ShoppingBag size={14} />
                   Add to Cart
-                </button>
+                </Button>
               </div>
             </div>
           ))}
@@ -132,4 +136,3 @@ export default function WishlistPage() {
     </div>
   );
 }
-

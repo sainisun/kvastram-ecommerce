@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react';
 import { api } from '@/lib/api';
+import Input from '@/components/ui/Input';
+import { Button, IconButton } from '@/components/ui/Button';
 
 function SetPasswordContent() {
   const router = useRouter();
@@ -82,16 +84,16 @@ function SetPasswordContent() {
 
   if (!token) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="max-w-md w-full bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8">
           <div className="text-center">
-            <h1 className="text-display-md type-bold text-gray-900 mb-4">
+            <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-4">
               Invalid Link
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[var(--ds-text-secondary)] mb-6">
               This password setup link is invalid or has expired.
             </p>
-            <Link href="/wholesale" className="text-blue-600 hover:underline">
+            <Link href="/wholesale" className="text-[var(--ds-info)] hover:underline">
               Return to Wholesale
             </Link>
           </div>
@@ -102,20 +104,20 @@ function SetPasswordContent() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="max-w-md w-full bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8">
           <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 bg-[var(--ds-success-bg)] rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-[var(--ds-success)]" />
             </div>
-            <h1 className="text-display-md type-bold text-gray-900 mb-2">
+            <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-2">
               Password Set!
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[var(--ds-text-secondary)] mb-6">
               Your wholesale account has been created successfully. Redirecting
               to wholesale...
             </p>
-            <Link href="/wholesale" className="text-blue-600 hover:underline">
+            <Link href="/wholesale" className="text-[var(--ds-info)] hover:underline">
               Go to Wholesale Now
             </Link>
           </div>
@@ -125,81 +127,64 @@ function SetPasswordContent() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="max-w-md w-full bg-[var(--ds-surface-paper)] rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-display-md type-bold text-gray-900">
+          <h1 className="text-display-md type-bold text-[var(--ds-text-primary)]">
             Set Up Your Password
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-[var(--ds-text-secondary)] mt-2">
             Create a password to access your wholesale account
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-body-sm type-medium text-gray-700 mb-2"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
-                placeholder="Enter your password"
-                required
-              />
-              <button
+          <Input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            label="Password"
+            placeholder="Enter your password"
+            required
+            suffix={
+              <IconButton
                 type="button"
+                size="sm"
+                variant="ghost"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="h-8 w-8 border-0"
               >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-          </div>
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </IconButton>
+            }
+          />
 
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-body-sm type-medium text-gray-700 mb-2"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              type={showPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Confirm your password"
-              required
-            />
-          </div>
+          <Input
+            id="confirmPassword"
+            type={showPassword ? 'text' : 'password'}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            required
+          />
 
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-body-sm type-medium text-gray-700 mb-2">
+          <div className="bg-[var(--ds-surface-page)] rounded-lg p-4">
+            <p className="text-body-sm type-medium text-[var(--ds-text-secondary)] mb-2">
               Password Requirements:
             </p>
             <ul className="space-y-1">
               {passwordRequirements.map((req, index) => (
                 <li key={index} className="flex items-center text-body-sm">
                   {req.valid ? (
-                    <Check className="w-4 h-4 text-green-500 mr-2" />
+                    <Check className="w-4 h-4 text-[var(--ds-success)] mr-2" />
                   ) : (
-                    <X className="w-4 h-4 text-gray-300 mr-2" />
+                    <X className="w-4 h-4 text-[var(--ds-text-disabled)] mr-2" />
                   )}
                   <span
-                    className={req.valid ? 'text-green-700' : 'text-gray-500'}
+                    className={req.valid ? 'text-[var(--ds-success-text)]' : 'text-[var(--ds-text-muted)]'}
                   >
                     {req.label}
                   </span>
@@ -209,31 +194,27 @@ function SetPasswordContent() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={loading || !allRequirementsMet}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg type-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            variant="secondary"
+            size="lg"
+            fullWidth
+            leadingIcon={loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Setting up...
-              </>
-            ) : (
-              'Set Password'
-            )}
-          </button>
+            {loading ? 'Setting up...' : 'Set Password'}
+          </Button>
         </form>
 
         <div className="mt-6 text-center">
           <Link
             href="/wholesale"
-            className="text-body-sm text-gray-600 hover:text-gray-900"
+            className="text-body-sm text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
           >
             ← Back to Wholesale
           </Link>
@@ -248,7 +229,7 @@ export default function SetPasswordPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-[var(--ds-info)]" />
         </div>
       }
     >
@@ -256,4 +237,3 @@ export default function SetPasswordPage() {
     </Suspense>
   );
 }
-

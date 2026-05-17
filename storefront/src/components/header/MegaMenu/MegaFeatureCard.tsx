@@ -11,19 +11,16 @@ export function MegaFeatureCard({ name, handle, onClick }: MegaFeatureCardProps)
     <Link
       href={`/collections/${handle}`}
       onClick={onClick}
-      className="h-full min-h-[240px] bg-[#1a1714] flex flex-col justify-end p-5 relative cursor-pointer group"
+      className="h-full min-h-[240px] bg-[var(--ds-text-primary)] flex flex-col justify-end p-5 relative cursor-pointer group"
     >
-      <div
-        className="absolute inset-0 opacity-[0.06]"
-        style={{ backgroundImage: 'repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 1px,transparent 8px)' }}
-      />
-      <p className="font-[family-name:var(--font-ui)] text-[9px] tracking-[0.16em] uppercase text-white/45 mb-2">
+      <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,var(--ds-text-inverse)_0,var(--ds-text-inverse)_1px,transparent_1px,transparent_8px)] opacity-[0.06]" />
+      <p className="font-body text-[9px] tracking-[0.16em] uppercase text-[var(--ds-text-inverse)]/45 mb-2">
         Featured this season
       </p>
-      <h3 className="font-[family-name:var(--font-display)] text-[20px] italic font-normal text-white leading-tight mb-3">
+      <h3 className="font-display text-[20px] italic font-normal text-[var(--ds-text-inverse)] leading-tight mb-3">
         {name}
       </h3>
-      <span className="font-[family-name:var(--font-ui)] text-[10px] tracking-[0.12em] uppercase text-white/70 border-b border-white/25 pb-0.5 inline-block group-hover:text-white transition-colors">
+      <span className="font-body text-[10px] tracking-[0.12em] uppercase text-[var(--ds-text-inverse)]/70 border-b border-[var(--ds-surface-paper)]/25 pb-0.5 inline-block group-hover:text-[var(--ds-text-inverse)] transition-colors">
         Shop the edit →
       </span>
     </Link>

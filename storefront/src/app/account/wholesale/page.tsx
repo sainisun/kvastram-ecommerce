@@ -14,6 +14,8 @@ import {
   Clock,
   Building2,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/Badge';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface WholesaleOrder {
   id: string;
@@ -59,51 +61,49 @@ export default function WholesaleDashboardPage() {
   if (loading || wholesaleLoading || !customer) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-stone-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[var(--ds-text-primary)]"></div>
       </div>
     );
   }
 
   if (!wholesaleInfo?.hasWholesaleAccess) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <div className="text-center max-w-md">
-          <Building2 size={48} className="mx-auto text-stone-400 mb-4" />
-          <h2 className="account-section-title mb-2">
-            No Wholesale Access
-          </h2>
-          <p className="account-body mb-6">
-            You don&apos;t have wholesale access yet. Apply for a wholesale
-            account to get started.
-          </p>
+      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <EmptyState
+          icon={<Building2 size={48} />}
+          title="No Wholesale Access"
+          description="You don't have wholesale access yet. Apply for a wholesale account to get started."
+          className="max-w-md"
+          actions={
           <Link
             href="/wholesale"
-            className="account-primary-action inline-block bg-stone-900 px-6 py-3 transition-colors hover:bg-stone-800"
+            className="account-primary-action inline-block bg-[var(--ds-text-primary)] px-6 py-3 transition-colors hover:bg-[var(--ds-text-secondary)]"
           >
             Apply for Wholesale
           </Link>
-        </div>
+          }
+        />
       </div>
     );
   }
 
   const tierColors: Record<string, string> = {
-    starter: 'bg-blue-50 text-blue-700 border-blue-200',
-    growth: 'bg-green-50 text-green-700 border-green-200',
-    enterprise: 'bg-purple-50 text-purple-700 border-purple-200',
+    starter: 'border-[var(--ds-info)] bg-[var(--ds-info-bg)] text-[var(--ds-info-text)]',
+    growth: 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]',
+    enterprise: 'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-soft)] text-[var(--ds-accent-hover)]',
   };
 
   const tierColor =
     tierColors[wholesaleInfo.tier || ''] ||
-    'bg-stone-50 text-stone-700 border-stone-200';
+    'bg-[var(--ds-surface-parchment)] text-[var(--ds-text-secondary)] border-[var(--ds-border-subtle)]';
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
       <div className="mx-auto max-w-4xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-6">
           <Link
             href="/account"
-            className="account-muted inline-flex items-center gap-2 transition-colors hover:text-stone-900"
+            className="account-muted inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
           >
             <ArrowLeft size={16} /> Back to Account
           </Link>
@@ -114,25 +114,25 @@ export default function WholesaleDashboardPage() {
         </h1>
 
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
-          <div className="bg-white border border-stone-200 p-6">
+          <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
             <div className="flex items-center gap-3 mb-3">
-              <Tag size={20} className="text-stone-400" />
+              <Tag size={20} className="text-[var(--ds-text-muted)]" />
               <span className="account-form-label">
                 Your Tier
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <span
+              <Badge
                 className={`account-status-badge border px-3 py-1 ${tierColor}`}
               >
                 {wholesaleInfo.tier || 'N/A'}
-              </span>
+              </Badge>
             </div>
           </div>
 
-          <div className="bg-white border border-stone-200 p-6">
+          <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
             <div className="flex items-center gap-3 mb-3">
-              <TrendingUp size={20} className="text-stone-400" />
+              <TrendingUp size={20} className="text-[var(--ds-text-muted)]" />
               <span className="account-form-label">
                 Discount
               </span>
@@ -143,9 +143,9 @@ export default function WholesaleDashboardPage() {
             <p className="account-caption mt-1">Off retail prices</p>
           </div>
 
-          <div className="bg-white border border-stone-200 p-6">
+          <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
             <div className="flex items-center gap-3 mb-3">
-              <Building2 size={20} className="text-stone-400" />
+              <Building2 size={20} className="text-[var(--ds-text-muted)]" />
               <span className="account-form-label">
                 Company
               </span>
@@ -156,15 +156,15 @@ export default function WholesaleDashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-stone-200">
-          <div className="p-6 border-b border-stone-200">
+        <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)]">
+          <div className="p-6 border-b border-[var(--ds-border-subtle)]">
             <div className="flex items-center justify-between">
               <h2 className="account-kicker flex items-center gap-2">
                 <Package size={16} /> Recent Orders
               </h2>
               <Link
                 href="/account/orders"
-                className="account-caption uppercase transition-colors hover:text-stone-900"
+                className="account-caption uppercase transition-colors hover:text-[var(--ds-text-primary)]"
               >
                 View All
               </Link>
@@ -173,25 +173,28 @@ export default function WholesaleDashboardPage() {
 
           {ordersLoading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-stone-900 mx-auto"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-[var(--ds-text-primary)] mx-auto"></div>
             </div>
           ) : orders.length === 0 ? (
-            <div className="account-muted p-8 text-center">
-              <p>No orders yet</p>
+            <EmptyState
+              title="No orders yet"
+              className="border-0"
+              actions={
               <Link
                 href="/collections"
                 className="account-name mt-2 inline-block underline"
               >
                 Browse Products
               </Link>
-            </div>
+              }
+            />
           ) : (
-            <div className="divide-y divide-stone-100">
+            <div className="divide-y divide-[var(--ds-border-subtle)]">
               {orders.slice(0, 5).map((order) => (
                 <Link
                   key={order.id}
                   href={`/account/orders/${order.id}`}
-                  className="flex items-center justify-between p-4 hover:bg-stone-50 transition-colors"
+                  className="flex items-center justify-between p-4 hover:bg-[var(--ds-surface-parchment)] transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div>
@@ -199,7 +202,7 @@ export default function WholesaleDashboardPage() {
                         Order #{order.display_id || order.id.slice(0, 8)}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Clock size={12} className="text-stone-400" />
+                        <Clock size={12} className="text-[var(--ds-text-muted)]" />
                         <span className="account-caption">
                           {new Date(order.created_at).toLocaleDateString()}
                         </span>
@@ -218,11 +221,17 @@ export default function WholesaleDashboardPage() {
                         currency: order.currency_code?.toUpperCase() || 'INR',
                       }).format(order.total / 100)}
                     </p>
-                    <span
-                      className={`account-caption uppercase ${order.status === 'completed' ? 'text-green-600' : order.status === 'canceled' ? 'text-red-600' : 'text-yellow-600'}`}
+                    <Badge
+                      className={`account-caption uppercase ${
+                        order.status === 'completed'
+                          ? 'text-[var(--ds-success-text)]'
+                          : order.status === 'canceled'
+                            ? 'text-[var(--ds-danger)]'
+                            : 'text-[var(--ds-warning-text)]'
+                      }`}
                     >
                       {order.status}
-                    </span>
+                    </Badge>
                   </div>
                 </Link>
               ))}

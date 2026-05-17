@@ -11,7 +11,7 @@ export function RecentlyViewedSection() {
   if (items.length === 0) return null;
 
   return (
-    <section className="border-t border-stone-100 py-12 md:py-16 lg:py-24">
+    <section className="border-t border-[var(--ds-border-subtle)] py-12 md:py-16 lg:py-24">
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <h2 className="recently-section-heading mb-6 lg:mb-8">
           Recently Viewed

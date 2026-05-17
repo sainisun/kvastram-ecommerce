@@ -5,6 +5,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { cloudinaryUrlOrNull } from '@/lib/media';
+import { UnstyledButton } from '@/components/ui/Button';
 
 interface HeroBannerSlide {
   id: string;
@@ -84,20 +85,13 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
   }
 
   return (
-    <section
-      className="hero relative block overflow-hidden"
-      style={{ minHeight: 'min(70svh, 620px)', background: 'var(--sienna-dark)' }}
-    >
+    <section className="hero relative block min-h-[min(70svh,620px)] overflow-hidden bg-[var(--ds-accent-hover)]">
       <div className="overflow-hidden h-full" ref={emblaRef}>
-        <div
-          className="hero-slider flex"
-          style={{ height: 'min(70svh, 620px)', minHeight: 420 }}
-        >
+        <div className="hero-slider flex h-[min(70svh,620px)] min-h-[420px]">
           {slides.map((slide) => (
             <div
               key={slide.id}
-              className="hero-slide relative min-w-0 flex-[0_0_100%]"
-              style={{ scrollSnapAlign: 'start', minHeight: '100%' }}
+              className="hero-slide relative min-h-full min-w-0 flex-[0_0_100%] [scroll-snap-align:start]"
             >
               {slide.imageUrl ? (
                 <div className="absolute inset-0">
@@ -126,10 +120,10 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* Dots — prototype style */}
+      {/* Slider dots */}
       <div className="hero-dots absolute left-0 right-0 bottom-4 flex justify-center gap-2" aria-hidden="true">
         {slides.map((slide, index) => (
-          <button
+          <UnstyledButton
             key={slide.id}
             type="button"
             onClick={() => scrollTo(index)}

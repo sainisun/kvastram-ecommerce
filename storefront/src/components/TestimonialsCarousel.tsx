@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import OptimizedImage from '@/components/ui/OptimizedImage';
+import { Button, IconButton } from '@/components/ui/Button';
 
 interface Testimonial {
   id: string;
@@ -48,20 +50,26 @@ export default function TestimonialsCarousel({
       {/* Navigation Arrows */}
       {testimonials.length > 1 && (
         <>
-          <button
+          <IconButton
+            type="button"
             onClick={handlePrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-16 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
+            variant="ghost"
+            size="md"
+            className="absolute left-0 top-1/2 z-10 h-10 w-10 -translate-x-4 -translate-y-1/2 rounded-full bg-[rgba(255,255,255,0.1)] text-[var(--ds-text-inverse)] hover:bg-[rgba(255,255,255,0.2)] md:-translate-x-16"
             aria-label="Previous testimonial"
           >
             <ChevronLeft size={20} />
-          </button>
-          <button
+          </IconButton>
+          <IconButton
+            type="button"
             onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-16 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
+            variant="ghost"
+            size="md"
+            className="absolute right-0 top-1/2 z-10 h-10 w-10 translate-x-4 -translate-y-1/2 rounded-full bg-[rgba(255,255,255,0.1)] text-[var(--ds-text-inverse)] hover:bg-[rgba(255,255,255,0.2)] md:translate-x-16"
             aria-label="Next testimonial"
           >
             <ChevronRight size={20} />
-          </button>
+          </IconButton>
         </>
       )}
 
@@ -74,27 +82,29 @@ export default function TestimonialsCarousel({
               key={i}
               size={24}
               fill={i < rating ? 'currentColor' : 'none'}
-              className={i < rating ? 'text-amber-400' : 'text-stone-600'}
+              className={i < rating ? 'text-[var(--ds-accent-gold)]' : 'text-[var(--ds-text-secondary)]'}
             />
           ))}
         </div>
 
         {/* Quote */}
-        <h2 className="text-display-md md:text-display-xl lg:text-display-xl font-serif italic leading-token-tight mb-12 max-w-4xl mx-auto">
+        <h2 className="text-display-md md:text-display-xl lg:text-display-xl font-display italic leading-token-tight mb-12 max-w-4xl mx-auto">
           &ldquo;{currentTestimonial.content}&rdquo;
         </h2>
 
         {/* Author */}
         <div className="flex flex-col items-center gap-2">
-          <div className="w-16 h-16 bg-stone-700/50 backdrop-blur-sm rounded-full mb-2 overflow-hidden relative flex items-center justify-center border border-stone-600">
+          <div className="w-16 h-16 bg-[rgba(68,64,60,0.5)] backdrop-blur-sm rounded-full mb-2 overflow-hidden relative flex items-center justify-center border border-[var(--ds-border-strong)]">
             {currentTestimonial.avatar_url ? (
-              <img
+              <OptimizedImage
                 src={currentTestimonial.avatar_url}
                 alt={currentTestimonial.name}
-                className="w-full h-full object-cover"
+                fill
+                sizes="64px"
+                className="object-cover"
               />
             ) : (
-              <span className="text-stone-300 font-serif text-display-sm italic">
+              <span className="text-[var(--ds-text-muted)] font-display text-display-sm italic">
                 {initials}
               </span>
             )}
@@ -103,7 +113,7 @@ export default function TestimonialsCarousel({
             {currentTestimonial.name}
           </p>
           {currentTestimonial.location && (
-            <p className="text-stone-400 text-body-sm font-serif italic">
+            <p className="text-[var(--ds-text-muted)] text-body-sm font-display italic">
               {currentTestimonial.location}
             </p>
           )}
@@ -114,13 +124,16 @@ export default function TestimonialsCarousel({
       {testimonials.length > 1 && (
         <div className="flex justify-center gap-2 mt-10">
           {testimonials.map((_, index) => (
-            <button
+            <Button
               key={index}
+              type="button"
               onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
+              variant="ghost"
+              size="sm"
+              className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${
                 index === currentIndex
-                  ? 'bg-white w-6'
-                  : 'bg-stone-600 hover:bg-stone-500'
+                  ? 'w-6 bg-[var(--ds-surface-paper)]'
+                  : 'w-2 bg-[var(--ds-text-secondary)] hover:bg-[var(--ds-text-muted)]'
               }`}
               aria-label={`Go to testimonial ${index + 1}`}
             />
@@ -130,4 +143,3 @@ export default function TestimonialsCarousel({
     </div>
   );
 }
-

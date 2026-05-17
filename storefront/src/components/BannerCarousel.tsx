@@ -5,6 +5,7 @@ import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Banner } from '@/types';
+import { Button, IconButton } from '@/components/ui/Button';
 
 export default function BannerCarousel({ banners }: { banners: Banner[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -26,14 +27,14 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
     // Fallback to original static content
     return (
       <section className="relative h-[90vh]">
-        <div className="absolute inset-0 bg-stone-200">
+        <div className="absolute inset-0 bg-[var(--ds-surface-soft)]">
           <div className="w-full h-full bg-[url('/hero-boutique.jpg')] bg-cover bg-center brightness-[0.85] grayscale-[20%]">
-            <div className="w-full h-full bg-gradient-to-br from-stone-400 to-stone-600 opacity-50 mix-blend-multiply"></div>
+            <div className="w-full h-full bg-gradient-to-br from-[var(--ds-text-muted)] to-[var(--ds-text-secondary)] opacity-50 mix-blend-multiply"></div>
           </div>
         </div>
         <div className="absolute inset-0 flex items-center justify-center text-center">
-          <div className="max-w-4xl px-6 space-y-8 text-white">
-            <h1 className="text-display-xl md:text-display-xl font-serif tracking-token-tight leading-token-tight drop-shadow-lg">
+          <div className="max-w-4xl px-6 space-y-8 text-[var(--ds-text-inverse)]">
+            <h1 className="text-display-xl md:text-display-xl font-display tracking-token-tight leading-token-tight drop-shadow-lg">
               KVASTRAM
             </h1>
             <p className="text-body-xl md:text-display-md type-light tracking-token-wide max-w-2xl mx-auto drop-shadow-md">
@@ -42,7 +43,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
             <div className="pt-8">
               <Link
                 href="/products"
-                className="inline-block bg-white text-black px-12 py-4 text-body-sm uppercase tracking-token-wider type-semibold hover:bg-black hover:text-white transition-all duration-300"
+                className="inline-block bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-12 py-4 text-body-sm uppercase tracking-token-wider type-semibold hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)] transition-all duration-300"
               >
                 Shop The Collection
               </Link>
@@ -67,7 +68,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
           key={banner.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
         >
-          <div className="absolute inset-0 bg-stone-200">
+          <div className="absolute inset-0 bg-[var(--ds-surface-soft)]">
             <OptimizedImage
               src={banner.image_url}
               alt={banner.title}
@@ -76,12 +77,12 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
               className="object-cover brightness-[0.85]"
               sizes="100vw"
             />
-            <div className="absolute inset-0 bg-black/20 mix-blend-multiply"></div>
+            <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)] mix-blend-multiply"></div>
           </div>
 
           <div className="absolute inset-0 flex items-center justify-center text-center">
-            <div className="max-w-4xl px-6 space-y-8 text-white animate-in fade-in zoom-in duration-1000">
-              <h1 className="text-display-xl md:text-display-xl font-serif tracking-token-tight leading-token-tight drop-shadow-lg">
+            <div className="max-w-4xl px-6 space-y-8 text-[var(--ds-text-inverse)] animate-in fade-in zoom-in duration-1000">
+              <h1 className="text-display-xl md:text-display-xl font-display tracking-token-tight leading-token-tight drop-shadow-lg">
                 {banner.title}
               </h1>
               {/* If we had subtitle in schema, we'd use it. For now, empty or hardcoded logic if needed */}
@@ -89,7 +90,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
                 <div className="pt-8">
                   <Link
                     href={banner.link}
-                    className="inline-block bg-white text-black px-12 py-4 text-body-sm uppercase tracking-token-wider type-semibold hover:bg-black hover:text-white transition-all duration-300"
+                    className="inline-block bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-12 py-4 text-body-sm uppercase tracking-token-wider type-semibold hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)] transition-all duration-300"
                   >
                     {banner.button_text || 'Shop Now'}
                   </Link>
@@ -102,26 +103,35 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
 
       {heroBanners.length > 1 && (
         <>
-          <button
+          <IconButton
+            type="button"
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 transition-colors z-20 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            variant="ghost"
+            size="lg"
+            className="absolute left-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(255,255,255,0.5)] hover:text-[var(--ds-text-inverse)]"
             aria-label="Previous slide"
           >
             <ChevronLeft size={48} />
-          </button>
-          <button
+          </IconButton>
+          <IconButton
+            type="button"
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-2 transition-colors z-20 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            variant="ghost"
+            size="lg"
+            className="absolute right-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(255,255,255,0.5)] hover:text-[var(--ds-text-inverse)]"
             aria-label="Next slide"
           >
             <ChevronRight size={48} />
-          </button>
+          </IconButton>
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {heroBanners.map((_, idx) => (
-              <button
+              <Button
                 key={idx}
+                type="button"
                 onClick={() => setCurrentIndex(idx)}
-                className={`w-2 h-2 rounded-full transition-all ${idx === currentIndex ? 'bg-white w-8' : 'bg-white/50 hover:bg-white'}`}
+                variant="ghost"
+                size="sm"
+                className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${idx === currentIndex ? 'w-8 bg-[var(--ds-surface-paper)]' : 'w-2 bg-[rgba(255,255,255,0.5)] hover:bg-[var(--ds-surface-paper)]'}`}
                 aria-label={`Go to slide ${idx + 1}`}
                 aria-current={idx === currentIndex ? 'true' : 'false'}
               />

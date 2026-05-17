@@ -35,20 +35,20 @@ export default function PageHero({
       )}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-[var(--ds-text-primary)]/40" />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-[1440px] space-y-4 px-6 text-center md:px-12 lg:px-20">
+      <div className="kv-page-container relative z-10 mx-auto max-w-[1440px] space-y-4 px-6 text-center md:px-12 lg:px-20">
         {subtitle && (
-          <span className="font-body block text-body-sm type-medium uppercase tracking-token-wide text-white/80">
+          <span className="font-body block text-body-sm type-medium uppercase tracking-token-wide text-[var(--ds-text-inverse)]/80">
             {subtitle}
           </span>
         )}
-        <h1 className="font-heading text-display-xl type-regular tracking-token-tight text-white leading-token-tight">
+        <h1 className="font-display text-display-xl type-regular tracking-token-tight text-[var(--ds-text-inverse)] leading-token-tight">
           {title}
         </h1>
         {description && (
-          <p className="font-body mx-auto max-w-xl text-body-md type-light leading-token-relaxed text-white/80 md:text-body-xl">
+          <p className="font-body mx-auto max-w-xl text-body-md type-light leading-token-relaxed text-[var(--ds-text-inverse)]/80 md:text-body-xl">
             {description}
           </p>
         )}

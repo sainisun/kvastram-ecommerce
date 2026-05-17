@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { countries, commonCountries, getCountryName } from '@/config/countries';
+import Input from '@/components/ui/Input';
+import { PopoverPanel } from '@/components/ui/Popover';
+import { UnstyledButton } from '@/components/ui/Button';
 
 interface CountrySelectProps {
   name: string;
@@ -73,34 +76,35 @@ export default function CountrySelect({
 
   return (
     <div ref={inputRef} className={`relative ${className}`}>
-      <button
+      <UnstyledButton
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-transparent border-b border-stone-200 py-3 text-left text-stone-900 focus:outline-none focus:border-stone-900 transition-colors type-light flex items-center justify-between"
+        className="form-control-typography flex h-12 w-full items-center justify-between border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-3 text-left text-[var(--ds-text-primary)] outline-none transition-colors focus:border-[var(--ds-accent-primary)] sm:h-11"
         aria-label={required ? `${name}, required` : name}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className={displayValue ? 'text-stone-900' : 'text-stone-400'}>
+        <span className={displayValue ? 'text-[var(--ds-text-primary)]' : 'text-[var(--ds-text-muted)]'}>
           {displayValue || `Select ${name}`}
         </span>
         <ChevronDown
           size={18}
-          className={`text-stone-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-[var(--ds-text-muted)] transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
-      </button>
+      </UnstyledButton>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-stone-200 shadow-xl max-h-80 overflow-hidden">
+        <PopoverPanel align="left" className="max-h-80 w-full">
           {/* Search Input */}
-          <div className="p-2 border-b border-stone-100">
-            <input
+          <div className="border-b border-[var(--ds-border-subtle)] p-2">
+            <Input
               ref={searchRef}
               type="text"
               placeholder="Search country..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-3 py-2 text-body-sm border border-stone-200 focus:outline-none focus:border-stone-400"
+              className="h-10 text-body-sm"
+              aria-label="Search country"
             />
           </div>
 
@@ -109,25 +113,25 @@ export default function CountrySelect({
             {/* Common Countries */}
             {common.length > 0 && (
               <>
-                <div className="px-3 py-1.5 text-body-xs type-bold uppercase tracking-token-wider text-stone-400 bg-stone-50">
+                <div className="bg-[var(--ds-surface-soft)] px-3 py-1.5 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
                   Popular
                 </div>
                 {common.map((country) => (
-                  <button
+                  <UnstyledButton
                     key={country.code}
                     type="button"
                     onClick={() => handleSelect(country.code)}
-                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-stone-50 ${
+                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-[var(--ds-surface-soft)] ${
                       value === country.code
-                        ? 'bg-stone-100 text-stone-900 type-medium'
-                        : 'text-stone-700'
+                        ? 'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] type-medium'
+                        : 'text-[var(--ds-text-secondary)]'
                     }`}
                   >
                     <span>{country.name}</span>
                     {value === country.code && (
-                      <Check size={16} className="text-stone-900" />
+                      <Check size={16} className="text-[var(--ds-text-primary)]" />
                     )}
-                  </button>
+                  </UnstyledButton>
                 ))}
               </>
             )}
@@ -135,36 +139,36 @@ export default function CountrySelect({
             {/* All Countries */}
             {others.length > 0 && (
               <>
-                <div className="px-3 py-1.5 text-body-xs type-bold uppercase tracking-token-wider text-stone-400 bg-stone-50">
+                <div className="bg-[var(--ds-surface-soft)] px-3 py-1.5 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
                   {common.length > 0 ? 'All Countries' : 'Countries'}
                 </div>
                 {others.map((country) => (
-                  <button
+                  <UnstyledButton
                     key={country.code}
                     type="button"
                     onClick={() => handleSelect(country.code)}
-                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-stone-50 ${
+                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-[var(--ds-surface-soft)] ${
                       value === country.code
-                        ? 'bg-stone-100 text-stone-900 type-medium'
-                        : 'text-stone-700'
+                        ? 'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] type-medium'
+                        : 'text-[var(--ds-text-secondary)]'
                     }`}
                   >
                     <span>{country.name}</span>
                     {value === country.code && (
-                      <Check size={16} className="text-stone-900" />
+                      <Check size={16} className="text-[var(--ds-text-primary)]" />
                     )}
-                  </button>
+                  </UnstyledButton>
                 ))}
               </>
             )}
 
             {filteredCountries.length === 0 && (
-              <div className="px-4 py-6 text-center text-stone-400 text-body-sm">
+              <div className="px-4 py-6 text-center text-body-sm text-[var(--ds-text-muted)]">
                 No countries found
               </div>
             )}
           </div>
-        </div>
+        </PopoverPanel>
       )}
     </div>
   );

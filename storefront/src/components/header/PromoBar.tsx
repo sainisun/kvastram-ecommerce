@@ -10,10 +10,11 @@ import {
   X,
 } from 'lucide-react';
 import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
+import { IconButton } from '@/components/ui/Button';
 
 const MESSAGES = [
   'Handmade in Jaipur, Rajasthan',
-  'Free shipping above ₹2,000',
+  'Free shipping above Rs. 2,000',
   'WhatsApp for custom orders',
 ];
 const SESSION_KEY = 'kv_promobar_dismissed';
@@ -71,7 +72,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
   if (dismissed || isSticky) return null;
 
   return (
-    <div className="kv-page-frame relative flex h-8 items-center justify-center bg-[#1a1714] px-6 md:mx-auto md:h-10 md:w-full md:max-w-[1440px] md:rounded-[999px] md:bg-[#f3b6c8] md:px-6 md:shadow-[0_10px_24px_rgba(142,73,96,0.12)]">
+    <div className="kv-page-frame relative flex h-8 items-center justify-center bg-[var(--ds-text-primary)] px-6 md:mx-auto md:h-10 md:w-full md:max-w-[1440px] md:rounded-[999px] md:bg-[var(--ds-accent-soft)] md:px-6 md:shadow-[0_10px_24px_rgba(var(--ds-accent-rgb),0.12)]">
       <div className="absolute left-5 hidden items-center gap-2 md:flex">
         {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
           <a
@@ -80,7 +81,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-[#5d2636] transition-colors hover:bg-white/35 hover:text-[#1a1714] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7e2f46]"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--ds-accent-hover)] transition-colors hover:bg-[rgba(255,255,255,0.35)] hover:text-[var(--ds-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]"
           >
             <Icon size={15} strokeWidth={1.7} />
           </a>
@@ -89,26 +90,30 @@ export function PromoBar({ isSticky }: PromoBarProps) {
 
       {MESSAGES.length > 1 && (
         <div className="absolute right-4 hidden items-center gap-1 md:flex">
-          <button
+          <IconButton
             type="button"
             onClick={goToPrevious}
             aria-label="Previous announcement"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-[#5d2636] transition-colors hover:bg-white/35 hover:text-[#1a1714] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7e2f46]"
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(255,255,255,0.35)] hover:text-[var(--ds-text-primary)]"
           >
             <ChevronLeft size={16} strokeWidth={1.8} />
-          </button>
-          <button
+          </IconButton>
+          <IconButton
             type="button"
             onClick={goToNext}
             aria-label="Next announcement"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-[#5d2636] transition-colors hover:bg-white/35 hover:text-[#1a1714] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7e2f46]"
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(255,255,255,0.35)] hover:text-[var(--ds-text-primary)]"
           >
             <ChevronRight size={16} strokeWidth={1.8} />
-          </button>
+          </IconButton>
         </div>
       )}
 
-      <p className="text-[11px] font-light uppercase tracking-[0.12em] text-[#b5b0a8] select-none md:max-w-[60%] md:text-center md:font-medium md:text-[#5d2636]">
+      <p className="text-[11px] font-light uppercase tracking-[0.12em] text-[var(--ds-text-disabled)] select-none md:max-w-[60%] md:text-center md:font-medium md:text-[var(--ds-accent-hover)]">
         {MESSAGES.map((msg, i) => (
           <span
             key={msg}
@@ -117,19 +122,22 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             }`}
           >
             {i > 0 && i === msgIdx && (
-              <span className="mx-4 text-[#3d3a36] md:hidden">.</span>
+              <span className="mx-4 text-[var(--ds-text-secondary)] md:hidden">.</span>
             )}
             {msg}
           </span>
         ))}
       </p>
-      <button
+      <IconButton
+        type="button"
         onClick={dismiss}
-        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#7a7570] hover:text-[#b5b0a8] md:hidden"
+        variant="ghost"
+        size="sm"
+        className="absolute right-3 top-1/2 h-7 w-7 -translate-y-1/2 text-[var(--ds-text-muted)] hover:text-[var(--ds-text-disabled)] md:hidden"
         aria-label="Dismiss"
       >
         <X size={13} strokeWidth={2} />
-      </button>
+      </IconButton>
     </div>
   );
 }

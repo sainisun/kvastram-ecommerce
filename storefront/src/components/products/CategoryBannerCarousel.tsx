@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { UnstyledButton } from '@/components/ui/Button';
 
 interface CategoryBanner {
   id: string;
@@ -38,7 +39,7 @@ export default function CategoryBannerCarousel({ banners }: Props) {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-stone-100 md:hidden">
+    <section className="relative w-full overflow-hidden bg-[var(--ds-surface-soft)] md:hidden">
       <div className="relative aspect-[4/5] w-full">
         {banners.map((banner, index) => {
           const content = (
@@ -54,14 +55,14 @@ export default function CategoryBannerCarousel({ banners }: Props) {
               {(banner.headline || banner.button_label) && (
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent">
                   <div className="absolute inset-x-0 bottom-0 flex justify-center px-5 pb-8 pt-20 text-center">
-                    <div className="max-w-[18rem] text-white">
+                    <div className="max-w-[18rem] text-[var(--ds-text-inverse)]">
                       {banner.headline ? (
                         <h2 className="category-banner-title">
                           {banner.headline}
                         </h2>
                       ) : null}
                       {banner.button_label ? (
-                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full border border-white/70 bg-transparent px-5 py-2.5 text-white">
+                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full border border-[var(--ds-surface-paper)]/70 bg-transparent px-5 py-2.5 text-[var(--ds-text-inverse)]">
                           {banner.button_label}
                         </span>
                       ) : null}
@@ -102,14 +103,14 @@ export default function CategoryBannerCarousel({ banners }: Props) {
       {banners.length > 1 ? (
         <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center gap-2">
           {banners.map((banner, index) => (
-            <button
+            <UnstyledButton
               key={banner.id}
               type="button"
               onClick={() => setActiveIndex(index)}
               className={`h-2.5 rounded-full transition-all ${
                 index === safeActiveIndex
-                  ? 'w-7 bg-white'
-                  : 'w-2.5 bg-white/55'
+                  ? 'w-7 bg-[var(--ds-surface-paper)]'
+                  : 'w-2.5 bg-[var(--ds-surface-paper)]/55'
               }`}
               aria-label={`Go to category banner ${index + 1}`}
             />

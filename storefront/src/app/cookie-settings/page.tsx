@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ConsentManager } from '@/lib/consent-manager';
+import { Button } from '@/components/ui/Button';
 
 export default function CookieSettingsPage() {
   const [consent, setConsent] = useState(() =>
@@ -63,20 +64,23 @@ export default function CookieSettingsPage() {
         ))}
       </div>
       <div className="mt-8 flex gap-4">
-        <button
+        <Button
+          type="button"
           onClick={handleSave}
-          className="px-6 py-2 bg-stone-900 text-white rounded"
+          variant="secondary"
+          size="md"
         >
           Save Preferences
-        </button>
-        <button
+        </Button>
+        <Button
+          type="button"
           onClick={() => window.history.back()}
-          className="px-6 py-2 border rounded"
+          variant="outline"
+          size="md"
         >
           Cancel
-        </button>
+        </Button>
       </div>
     </div>
   );
 }
-

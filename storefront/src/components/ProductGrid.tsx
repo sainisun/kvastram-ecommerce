@@ -9,6 +9,9 @@ import { useWholesale } from '@/context/wholesale-context';
 import { QuickViewModal } from '@/components/product/QuickViewModal';
 import { ProductCard } from '@/components/products/ProductCard';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { Badge } from '@/components/ui/Badge';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useCurrency } from '@/context/currency-context';
 import { buildProductImageAlt } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
@@ -160,7 +163,12 @@ function ProductGrid({
   }
 
   if (products.length === 0) {
-    return <div className="product-empty-state">{emptyMessage}</div>;
+    return (
+      <EmptyState
+        title={emptyMessage}
+        className="product-empty-state"
+      />
+    );
   }
 
   const renderedItems: React.ReactNode[] = [];
@@ -212,9 +220,9 @@ function ProductGrid({
               ) : null}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               {spotlight.badge_text ? (
-                <span className="spotlight-badge absolute left-4 top-4 z-10 rounded-[var(--radius-xs)] bg-white/90 px-3 py-1">
+                <Badge className="spotlight-badge absolute left-4 top-4 z-10 rounded-[var(--radius-xs)] bg-[var(--ds-surface-paper)]/90 px-3 py-1">
                   {spotlight.badge_text}
-                </span>
+                </Badge>
               ) : null}
             </div>
             <div className="space-y-3 bg-[var(--ds-surface-parchment)] px-4 py-5">
@@ -223,7 +231,12 @@ function ProductGrid({
                 <h3 className="spotlight-title mt-2">{spotlightProduct.title}</h3>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="spotlight-price">{spotlightPrice.price}</p>
+                <PriceDisplay
+                  as="p"
+                  price={spotlightPrice.price}
+                  variant="inline"
+                  priceClassName="spotlight-price"
+                />
                 <span className="spotlight-action inline-flex items-center rounded-[var(--radius-xs)] bg-[var(--ds-text-primary)] px-5 py-2">
                   View
                 </span>

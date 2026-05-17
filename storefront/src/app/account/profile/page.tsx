@@ -6,6 +6,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
+import Input from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 
 export default function ProfilePage() {
   const { customer, loading, setUser } = useAuth();
@@ -49,7 +52,7 @@ export default function ProfilePage() {
       });
       setUser(res.customer);
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Failed to update profile.' });
     } finally {
       setSaving(false);
@@ -64,102 +67,82 @@ export default function ProfilePage() {
     );
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
       <div className="mx-auto max-w-2xl px-6 md:px-12 lg:px-20">
         <Link
           href="/account"
-          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-stone-900"
+          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
         >
           <ArrowLeft size={16} /> Back to Account
         </Link>
 
-        <div className="bg-white p-8 border border-stone-200 shadow-sm">
+        <div className="bg-[var(--ds-surface-paper)] p-8 border border-[var(--ds-border-subtle)] shadow-sm">
           <h1 className="account-detail-title mb-6">
             Edit Profile
           </h1>
 
           {message && (
-            <div
-              className={`account-alert mb-6 rounded-sm p-4 ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}
+            <StatusBanner
+              tone={message.type === 'success' ? 'success' : 'danger'}
+              className="account-alert mb-6"
             >
               {message.text}
-            </div>
+            </StatusBanner>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-6">
-              <div>
-                <label className="account-form-label mb-2 block">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.first_name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, first_name: e.target.value })
-                  }
-                  className="account-input w-full border border-stone-200 p-3 focus:outline-none focus:border-stone-900"
-                />
-              </div>
-              <div>
-                <label className="account-form-label mb-2 block">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.last_name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, last_name: e.target.value })
-                  }
-                  className="account-input w-full border border-stone-200 p-3 focus:outline-none focus:border-stone-900"
-                />
-              </div>
+              <Input
+                type="text"
+                label="First Name"
+                value={formData.first_name}
+                onChange={(e) =>
+                  setFormData({ ...formData, first_name: e.target.value })
+                }
+              />
+              <Input
+                type="text"
+                label="Last Name"
+                value={formData.last_name}
+                onChange={(e) =>
+                  setFormData({ ...formData, last_name: e.target.value })
+                }
+              />
             </div>
 
-            <div>
-              <label className="account-form-label mb-2 block">
-                Email Address
-              </label>
-              <input
+            <div className="space-y-1">
+              <Input
                 type="email"
+                label="Email Address"
                 value={formData.email}
                 disabled
-                className="account-input w-full cursor-not-allowed border border-stone-100 bg-stone-50 p-3 text-stone-500"
               />
               <p className="account-caption mt-1">
                 Email cannot be changed directly.
               </p>
             </div>
 
-            <div>
-              <label className="account-form-label mb-2 block">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                className="account-input w-full border border-stone-200 p-3 focus:outline-none focus:border-stone-900"
-                placeholder="+1 (555) 000-0000"
-              />
-            </div>
+            <Input
+              type="tel"
+              label="Phone Number"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              placeholder="+1 (555) 000-0000"
+            />
 
             <div className="pt-4">
-              <button
+              <Button
                 type="submit"
                 disabled={saving}
-                className="account-primary-action flex w-full items-center justify-center gap-2 bg-stone-900 py-3.5 transition-colors hover:bg-stone-800 disabled:opacity-70"
+                variant="secondary"
+                size="lg"
+                fullWidth
+                leadingIcon={saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
               >
-                {saving ? (
-                  <Loader2 className="animate-spin" size={16} />
-                ) : (
-                  <>
-                    <Save size={16} /> Save Changes
-                  </>
-                )}
-              </button>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
             </div>
           </form>
         </div>

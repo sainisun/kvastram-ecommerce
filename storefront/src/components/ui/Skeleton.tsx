@@ -8,16 +8,18 @@ interface SkeletonProps {
 
 export function Skeleton({ className }: SkeletonProps) {
   return (
-    <div className={cn('animate-pulse bg-stone-200 rounded', className)} />
+    <div
+      className={cn('animate-pulse rounded bg-[var(--ds-surface-warm)]', className)}
+    />
   );
 }
 
 // Product card skeleton
 export function ProductCardSkeleton() {
   return (
-    <div className="bg-white">
+    <div className="bg-[var(--ds-surface-paper)]">
       {/* Image skeleton */}
-      <div className="aspect-[3/4] bg-stone-100 mb-4 relative overflow-hidden">
+      <div className="relative mb-4 aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]">
         <Skeleton className="absolute inset-0" />
       </div>
 
@@ -45,14 +47,14 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
 // Product detail skeleton
 export function ProductDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-white py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         {/* Breadcrumb skeleton */}
         <Skeleton className="h-4 w-64 mb-8" />
 
         <div className="grid gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
           {/* Left: Image Gallery skeleton */}
-          <div className="aspect-square bg-stone-100">
+          <div className="aspect-square bg-[var(--ds-surface-soft)]">
             <Skeleton className="w-full h-full" />
           </div>
 
@@ -105,15 +107,15 @@ export function ProductDetailSkeleton() {
 // Cart page skeleton
 export function CartSkeleton() {
   return (
-    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="grid lg:grid-cols-12 gap-8">
           {/* Cart items */}
           <div className="lg:col-span-7 space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex gap-4 bg-white p-4">
+              <div key={i} className="flex gap-4 bg-[var(--ds-surface-paper)] p-4">
                 <Skeleton className="w-24 h-24 shrink-0" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-5 w-3/4" />
@@ -126,7 +128,7 @@ export function CartSkeleton() {
 
           {/* Order summary */}
           <div className="lg:col-span-5">
-            <div className="bg-white p-6 space-y-4">
+            <div className="space-y-4 bg-[var(--ds-surface-paper)] p-6">
               <Skeleton className="h-6 w-32" />
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-full" />
@@ -142,8 +144,8 @@ export function CartSkeleton() {
 // Checkout page skeleton
 export function CheckoutSkeleton() {
   return (
-    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
@@ -164,7 +166,7 @@ export function CheckoutSkeleton() {
           </div>
 
           {/* Order summary */}
-          <div className="bg-white p-6 space-y-4">
+          <div className="space-y-4 bg-[var(--ds-surface-paper)] p-6">
             <Skeleton className="h-6 w-32" />
             {Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="flex gap-4">
@@ -189,14 +191,14 @@ export function CheckoutSkeleton() {
 // Account page skeleton
 export function AccountSkeleton() {
   return (
-    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <div className="lg:w-64 shrink-0">
-            <div className="bg-white p-6 space-y-4">
+            <div className="space-y-4 bg-[var(--ds-surface-paper)] p-6">
               <Skeleton className="w-16 h-16 rounded-full mx-auto" />
               <Skeleton className="h-4 w-3/4 mx-auto" />
               <Skeleton className="h-3 w-1/2 mx-auto" />
@@ -212,7 +214,7 @@ export function AccountSkeleton() {
             {/* Stats */}
             <div className="grid sm:grid-cols-3 gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="bg-white p-6 space-y-2">
+                <div key={i} className="space-y-2 bg-[var(--ds-surface-paper)] p-6">
                   <Skeleton className="h-4 w-24" />
                   <Skeleton className="h-8 w-16" />
                 </div>
@@ -220,7 +222,7 @@ export function AccountSkeleton() {
             </div>
 
             {/* Recent orders */}
-            <div className="bg-white p-6">
+            <div className="bg-[var(--ds-surface-paper)] p-6">
               <Skeleton className="h-6 w-32 mb-4" />
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="flex justify-between py-4 border-b">
@@ -239,11 +241,11 @@ export function AccountSkeleton() {
 // Orders list skeleton
 export function OrdersListSkeleton() {
   return (
-    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
       <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
         <Skeleton className="h-10 w-64 mb-8" />
 
-        <div className="bg-white">
+        <div className="bg-[var(--ds-surface-paper)]">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
@@ -285,8 +287,8 @@ export function TextSkeleton({
 // Hero section skeleton
 export function HeroSkeleton() {
   return (
-    <div className="relative min-h-[70vh] bg-stone-100 flex items-center">
-      <div className="mx-auto w-full max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="relative flex min-h-[70vh] items-center bg-[var(--ds-surface-soft)]">
+      <div className="kv-page-container mx-auto w-full max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="max-w-2xl space-y-6">
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="h-6 w-full" />
@@ -301,11 +303,11 @@ export function HeroSkeleton() {
 // Collection card skeleton
 export function CollectionCardSkeleton() {
   return (
-    <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+    <div className="relative aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)]">
       <Skeleton className="absolute inset-0" />
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-        <Skeleton className="h-6 w-3/4 bg-white/50" />
-        <Skeleton className="h-4 w-1/2 bg-white/30 mt-2" />
+        <Skeleton className="h-6 w-3/4 bg-[rgba(var(--ds-cream-rgb),0.5)]" />
+        <Skeleton className="mt-2 h-4 w-1/2 bg-[rgba(var(--ds-cream-rgb),0.3)]" />
       </div>
     </div>
   );

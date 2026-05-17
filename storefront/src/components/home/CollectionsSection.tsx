@@ -35,7 +35,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
                     />
                   </div>
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#a85d3a] via-[#c4956a] to-[#174f70] text-display-xl">
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[var(--ds-accent-primary)] via-[var(--ds-accent-gold)] to-[var(--ds-info)] text-display-xl">
                     {collection.title.charAt(0)}
                   </div>
                 )}
@@ -47,7 +47,7 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-[var(--line)] bg-white px-6 py-12 text-center">
+          <div className="rounded-lg border border-dashed border-[var(--line)] bg-[var(--ds-surface-paper)] px-6 py-12 text-center">
             <p className="kv-tag">No collections live</p>
             <p className="mx-auto mt-2 max-w-md text-body-sm leading-6 color-muted">
               Add active collections with storefront handles to show this section.

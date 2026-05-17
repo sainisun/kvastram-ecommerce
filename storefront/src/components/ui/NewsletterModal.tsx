@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { X } from 'lucide-react';
+import Input from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
 
 export function NewsletterModal() {
   const [open, setOpen] = useState(false);
@@ -23,70 +25,51 @@ export function NewsletterModal() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  if (!open) return null;
-
   return (
-    <div
-      className="fixed inset-0 z-[80] grid place-items-center bg-black/45 px-4 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Newsletter signup"
-      onClick={() => setOpen(false)}
+    <Modal
+      isOpen={open}
+      onClose={() => setOpen(false)}
+      title="Get 15% off your first order"
+      className="max-w-[520px]"
     >
-      <div
-        className="w-full max-w-[520px] border border-stone-200 bg-white shadow-[0_30px_90px_rgba(0,0,0,0.25)]"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between border-b border-stone-100 px-5 py-4">
-          <h3 className="font-heading text-display-md leading-token-tight text-stone-950">
-            Get 15% off your first order
-          </h3>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="grid h-9 w-9 place-items-center rounded-full bg-stone-100 text-stone-700 transition hover:bg-stone-900 hover:text-white"
-            aria-label="Close newsletter modal"
-          >
-            <X size={16} />
-          </button>
+      <div className="space-y-4">
+        <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+          Welcome gift
         </div>
-        <div className="space-y-4 p-6">
-          <div className="text-body-xs type-semibold uppercase tracking-token-wider text-stone-500">
-            Welcome gift
-          </div>
-          <p className="text-body-sm leading-7 text-stone-600">
-            Subscribe for artisan stories, launches, and a welcome discount code.
-          </p>
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="w-full border border-stone-200 px-4 py-3 outline-none transition focus:border-stone-900"
-            placeholder="Your name"
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="w-full border border-stone-200 px-4 py-3 outline-none transition focus:border-stone-900"
-            placeholder="Email address"
-          />
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="w-full bg-stone-950 px-6 py-4 text-body-xs type-semibold uppercase tracking-token-wider text-white transition hover:bg-stone-800"
-          >
-            Claim Discount
-          </button>
-          <Link
-            href="/products"
-            onClick={() => setOpen(false)}
-            className="block w-full border border-stone-200 px-6 py-4 text-center text-body-xs type-semibold uppercase tracking-token-wider text-stone-950 transition hover:border-stone-900"
-          >
-            No Thanks
-          </Link>
-        </div>
+        <p className="text-body-sm leading-7 text-[var(--ds-text-secondary)]">
+          Subscribe for artisan stories, launches, and a welcome discount code.
+        </p>
+        <Input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Your name"
+          aria-label="Your name"
+        />
+        <Input
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="Email address"
+          aria-label="Email address"
+        />
+        <Button
+          type="button"
+          onClick={() => setOpen(false)}
+          variant="secondary"
+          size="lg"
+          fullWidth
+        >
+          Claim Discount
+        </Button>
+        <Link
+          href="/products"
+          onClick={() => setOpen(false)}
+          className="block w-full border border-[var(--ds-border-subtle)] px-6 py-4 text-center text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:border-[var(--ds-text-primary)]"
+        >
+          No Thanks
+        </Link>
       </div>
-    </div>
+    </Modal>
   );
 }
 

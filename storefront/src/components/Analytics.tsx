@@ -45,7 +45,6 @@ function AnalyticsInner() {
 export function Analytics() {
   // Prevent loading if user has not consented to analytics
   if (!ConsentManager.hasConsentFor('analytics')) {
-    console.log('[Analytics] skip due to consent');
     return null;
   }
 

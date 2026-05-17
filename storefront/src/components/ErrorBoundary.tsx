@@ -2,6 +2,7 @@
 
 import { Component, ErrorInfo, ReactNode } from 'react';
 import * as Sentry from '@sentry/nextjs';
+import { UnstyledButton } from '@/components/ui/Button';
 
 interface Props {
   children: ReactNode;
@@ -50,24 +51,24 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         this.props.fallback || (
-          <div className="min-h-screen flex items-center justify-center bg-stone-50">
+          <div className="min-h-screen flex items-center justify-center bg-[var(--ds-surface-parchment)]">
             <div className="text-center max-w-md px-6">
-              <h2 className="text-display-md font-serif text-stone-900 mb-4">
+              <h2 className="text-display-md font-display text-[var(--ds-text-primary)] mb-4">
                 Something went wrong
               </h2>
-              <p className="text-stone-600 mb-6">
+              <p className="text-[var(--ds-text-secondary)] mb-6">
                 We apologize for the inconvenience. Please try refreshing the
                 page.
               </p>
-              <button
+              <UnstyledButton
                 onClick={() => {
                   this.setState({ hasError: false });
                   window.location.reload();
                 }}
-                className="bg-stone-900 text-white px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800 transition-colors"
+                className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
               >
                 Refresh Page
-              </button>
+              </UnstyledButton>
             </div>
           </div>
         )

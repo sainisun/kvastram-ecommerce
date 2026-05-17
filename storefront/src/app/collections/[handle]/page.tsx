@@ -7,6 +7,7 @@ import PageHero from '@/components/hero/PageHero';
 import ProductGrid from '@/components/ProductGrid';
 import CategoryBannerCarousel from '@/components/products/CategoryBannerCarousel';
 import CategoryCircleStrip from '@/components/products/CategoryCircleStrip';
+import { EmptyState } from '@/components/ui/EmptyState';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { storefrontDiscoveryQuickLinks } from '@/config/storefront-discovery';
 import { storefrontTrust } from '@/config/storefront-trust';
@@ -350,7 +351,7 @@ export default async function CollectionPage({
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -383,26 +384,26 @@ export default async function CollectionPage({
         <CategoryCircleStrip circles={categoryCircles} />
       ) : null}
 
-      <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
           className="listing-breadcrumb mb-8 flex items-center gap-2"
         >
-          <Link href="/" className="transition-colors hover:text-stone-900">
+          <Link href="/" className="transition-colors hover:text-[var(--ds-text-primary)]">
             Home
           </Link>
           <span>/</span>
           <Link
             href="/collections"
-            className="transition-colors hover:text-stone-900"
+            className="transition-colors hover:text-[var(--ds-text-primary)]"
           >
             Collections
           </Link>
           <span>/</span>
-          <span className="text-stone-700">{landing.title}</span>
+          <span className="text-[var(--ds-text-secondary)]">{landing.title}</span>
         </nav>
 
-        <section className="grid gap-8 border-b border-stone-100 pb-12 md:grid-cols-[1.5fr,1fr] md:gap-12 lg:gap-16">
+        <section className="grid gap-8 border-b border-[var(--ds-border-subtle)] pb-12 md:grid-cols-[1.5fr,1fr] md:gap-12 lg:gap-16">
           <div>
             <h2 className="collection-detail-title">
               {landing.kind === 'category'
@@ -425,7 +426,7 @@ export default async function CollectionPage({
               <div className="mt-4 flex flex-col gap-3">
                 <Link
                   href="/"
-                  className="collection-sidebar-link transition-colors hover:text-amber-700"
+                  className="collection-sidebar-link transition-colors hover:text-[var(--ds-warning-text)]"
                 >
                   Shop Handcrafted Ethnic Wear
                 </Link>
@@ -433,7 +434,7 @@ export default async function CollectionPage({
                   <Link
                     key={product.id}
                     href={`/products/${product.handle}`}
-                    className="collection-sidebar-subtle-link transition-colors hover:text-stone-900"
+                    className="collection-sidebar-subtle-link transition-colors hover:text-[var(--ds-text-primary)]"
                   >
                     Shop {product.title}
                   </Link>
@@ -452,7 +453,7 @@ export default async function CollectionPage({
                       <Link
                         key={child.id}
                         href={`/collections/${child.slug}`}
-                        className="collection-subcategory-link border border-stone-200 px-4 py-2 transition-colors hover:border-stone-900 hover:text-stone-900"
+                        className="collection-subcategory-link border border-[var(--ds-border-subtle)] px-4 py-2 transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
                       >
                         Shop {child.name}
                       </Link>
@@ -464,7 +465,7 @@ export default async function CollectionPage({
           </div>
         </section>
 
-        <section className="grid gap-6 border-b border-stone-100 py-10 md:grid-cols-[1.3fr,0.7fr]">
+        <section className="grid gap-6 border-b border-[var(--ds-border-subtle)] py-10 md:grid-cols-[1.3fr,0.7fr]">
           <div>
             <h2 className="collection-section-title">Shop by intent</h2>
             <p className="collection-detail-copy mt-3 max-w-2xl">
@@ -476,7 +477,7 @@ export default async function CollectionPage({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-full border border-stone-200 px-4 py-2 text-sm text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
+                  className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
                 >
                   {item.label}
                 </Link>
@@ -484,27 +485,27 @@ export default async function CollectionPage({
             </div>
           </div>
 
-          <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
+          <div className="rounded-xl border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-6">
             <p className="collection-card-kicker">Need purchase clarity?</p>
-            <h3 className="mt-2 text-lg font-medium text-stone-900">
+            <h3 className="mt-2 text-lg font-medium text-[var(--ds-text-primary)]">
               Shipping, returns, and payment help are visible before checkout.
             </h3>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link
                 href={storefrontTrust.policyRoutes.shipping}
-                className="collection-subcategory-link border border-stone-200 bg-white px-4 py-2 transition-colors hover:border-stone-900 hover:text-stone-900"
+                className="collection-subcategory-link border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
               >
                 Shipping
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.returns}
-                className="collection-subcategory-link border border-stone-200 bg-white px-4 py-2 transition-colors hover:border-stone-900 hover:text-stone-900"
+                className="collection-subcategory-link border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
               >
                 Returns
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.paymentHelp}
-                className="collection-subcategory-link border border-stone-200 bg-white px-4 py-2 transition-colors hover:border-stone-900 hover:text-stone-900"
+                className="collection-subcategory-link border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
               >
                 Payment Help
               </Link>
@@ -522,7 +523,7 @@ export default async function CollectionPage({
                 <Link
                   key={product.id}
                   href={`/products/${product.handle}`}
-                  className="border border-stone-200 p-5 transition-colors hover:border-stone-900"
+                  className="border border-[var(--ds-border-subtle)] p-5 transition-colors hover:border-[var(--ds-text-primary)]"
                 >
                   <p className="collection-card-kicker">
                     {landing.kind === 'category'
@@ -545,27 +546,25 @@ export default async function CollectionPage({
               spotlightProducts={spotlightProducts}
             />
           ) : (
-            <div className="py-12 text-center md:py-16 lg:py-24">
-              <p className="collection-empty-copy">
-                No products found in this section right now. Check back soon.
-              </p>
-              <div className="mt-6 flex flex-wrap justify-center gap-3">
-                {collectionDiscoveryLinks.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm text-stone-700 transition-colors hover:border-stone-900 hover:text-stone-900"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            <EmptyState
+              title="No products found in this section right now."
+              description="Check back soon or explore another Kvastram edit."
+              className="my-12 md:my-16 lg:my-24"
+              actions={collectionDiscoveryLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 font-body text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            />
           )}
         </section>
 
         {landing.kind === 'seo_landing' && landing.outro_content ? (
-          <section className="border-t border-stone-100 py-10">
+          <section className="border-t border-[var(--ds-border-subtle)] py-10">
             <p className="collection-detail-copy mx-auto max-w-3xl text-center">
               {landing.outro_content}
             </p>
@@ -573,7 +572,7 @@ export default async function CollectionPage({
         ) : null}
 
         {landing.faq_items && landing.faq_items.length > 0 ? (
-          <section className="border-t border-stone-100 py-10">
+          <section className="border-t border-[var(--ds-border-subtle)] py-10">
             <div className="mx-auto max-w-3xl space-y-6">
               {landing.faq_items.map((item) => (
                 <div key={item.question}>
@@ -587,7 +586,7 @@ export default async function CollectionPage({
 
         {/* Task 5.5: Related Collections */}
         {relatedCollections.length > 0 && (
-          <section className="border-t border-stone-100 py-12 md:py-16">
+          <section className="border-t border-[var(--ds-border-subtle)] py-12 md:py-16">
             <h2 className="collection-section-title mb-8">Related Collections</h2>
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
               {relatedCollections.map((col) => {
@@ -597,10 +596,10 @@ export default async function CollectionPage({
                   <Link
                     key={col.id}
                     href={`/collections/${col.handle}`}
-                    className="group relative overflow-hidden rounded-lg border border-stone-200 transition-colors hover:border-stone-900"
+                    className="group relative overflow-hidden rounded-lg border border-[var(--ds-border-subtle)] transition-colors hover:border-[var(--ds-text-primary)]"
                   >
                     {collectionImage ? (
-                      <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+                      <div className="relative aspect-[4/3] overflow-hidden bg-[var(--ds-surface-soft)]">
                         <OptimizedImage
                           src={collectionImage}
                           alt={col.title}
@@ -610,8 +609,8 @@ export default async function CollectionPage({
                       </div>
                     ) : null}
                     <div className="p-4">
-                      <p className="font-medium text-stone-900">{col.title}</p>
-                      <p className="mt-1 text-sm text-stone-500">Shop collection →</p>
+                      <p className="font-medium text-[var(--ds-text-primary)]">{col.title}</p>
+                      <p className="mt-1 text-sm text-[var(--ds-text-muted)]">Shop collection →</p>
                     </div>
                   </Link>
                 );

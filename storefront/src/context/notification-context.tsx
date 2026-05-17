@@ -7,6 +7,7 @@ import React, {
   useCallback,
   ReactNode,
 } from 'react';
+import { UnstyledButton } from '@/components/ui/Button';
 
 interface Notification {
   id: string;
@@ -55,21 +56,22 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`px-4 py-3 rounded shadow-lg text-white text-body-sm type-medium animate-fade-in
-                            ${notification.type === 'success' ? 'bg-green-600' : ''}
-                            ${notification.type === 'error' ? 'bg-red-600' : ''}
-                            ${notification.type === 'info' ? 'bg-blue-600' : ''}
-                            ${notification.type === 'warning' ? 'bg-yellow-500' : ''}
+            className={`rounded px-4 py-3 text-body-sm type-medium text-[var(--ds-text-inverse)] shadow-lg animate-fade-in
+                            ${notification.type === 'success' ? 'bg-[var(--ds-success)]' : ''}
+                            ${notification.type === 'error' ? 'bg-[var(--ds-danger)]' : ''}
+                            ${notification.type === 'info' ? 'bg-[var(--ds-info)]' : ''}
+                            ${notification.type === 'warning' ? 'bg-[var(--ds-warning)]' : ''}
                         `}
           >
             <div className="flex items-center gap-2">
               <span>{notification.message}</span>
-              <button
+              <UnstyledButton
                 onClick={() => removeNotification(notification.id)}
-                className="ml-2 text-white/80 hover:text-white"
+                className="ml-2 text-[var(--ds-text-inverse)] opacity-80 transition-opacity hover:opacity-100"
+                aria-label="Dismiss notification"
               >
-                ×
-              </button>
+                <span aria-hidden="true">x</span>
+              </UnstyledButton>
             </div>
           </div>
         ))}
@@ -87,4 +89,3 @@ export function useNotification() {
   }
   return context;
 }
-

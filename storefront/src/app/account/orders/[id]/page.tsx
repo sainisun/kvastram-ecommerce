@@ -19,6 +19,13 @@ import {
   Loader2,
 } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import Textarea from '@/components/ui/Textarea';
+import { Select } from '@/components/ui/Select';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { Modal } from '@/components/ui/Modal';
+import { StatusBanner } from '@/components/ui/StatusBanner';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
 
 // Extended order interface for frontend display
@@ -88,13 +95,13 @@ type CustomerReturn = {
 function getReturnStatusClasses(status: string) {
   switch (status) {
     case 'approved':
-      return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]';
     case 'refunded':
-      return 'border-stone-200 bg-stone-900 text-white';
+      return 'kv-status-subtle';
     case 'rejected':
-      return 'border-red-200 bg-red-50 text-red-700';
+      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]';
     default:
-      return 'border-amber-200 bg-amber-50 text-amber-700';
+      return 'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]';
   }
 }
 
@@ -299,18 +306,23 @@ export default function OrderDetailsPage() {
   if (loading || fetching) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-primary)]"></div>
       </div>
     );
   }
 
   if (error || !order) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <p className="account-error-copy mb-4">{error || 'Order not found'}</p>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <EmptyState
+          icon={<Package size={44} />}
+          title={error || 'Order not found'}
+          actions={
         <Link href="/account" className="underline">
           Back to Account
         </Link>
+          }
+        />
       </div>
     );
   }
@@ -342,17 +354,17 @@ export default function OrderDetailsPage() {
     order.status === 'delivered' || order.raw_status === 'completed';
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
       <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
         <Link
           href="/account"
-          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-stone-900"
+          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
         >
           <ArrowLeft size={16} /> Back to Orders
         </Link>
 
-        <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
-          <div className="p-6 md:p-8 border-b border-stone-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] shadow-sm overflow-hidden">
+          <div className="p-6 md:p-8 border-b border-[var(--ds-border-subtle)] flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="account-detail-title mb-1">
                 Order #{order.display_id}
@@ -361,7 +373,7 @@ export default function OrderDetailsPage() {
                 <Clock size={14} /> Placed on {date}
               </p>
             </div>
-            <div
+            <Badge
               className={`account-status-badge inline-flex items-center gap-2 rounded-full border px-4 py-1.5 ${getOrderStatusBadgeClass(order.status)}`}
             >
               {order.status === 'delivered' && <CheckCircle size={14} />}
@@ -369,29 +381,29 @@ export default function OrderDetailsPage() {
               {order.status === 'shipped' && <Truck size={14} />}
               {order.status === 'pending' && <Package size={14} />}
               {getOrderStatusConfig(order.status).label}
-            </div>
+            </Badge>
           </div>
 
-          <div className="bg-stone-50 p-6 border-b border-stone-100">
+          <div className="bg-[var(--ds-surface-parchment)] p-6 border-b border-[var(--ds-border-subtle)]">
             <div className="account-progress-labels flex items-center justify-between">
               {workflowTimeline.map((step, index) => (
                 <span
                   key={step.key}
-                  className={step.completed || step.current || index === 0 ? 'text-stone-900' : ''}
+                  className={step.completed || step.current || index === 0 ? 'text-[var(--ds-text-primary)]' : ''}
                 >
                   {step.label}
                 </span>
               ))}
             </div>
-            <div className="mt-3 h-1 bg-stone-200 rounded-full relative">
+            <div className="mt-3 h-1 bg-[var(--ds-surface-warm)] rounded-full relative">
               <div
-                className="absolute left-0 top-0 h-full bg-stone-900 rounded-full transition-all duration-500"
+                className="absolute left-0 top-0 h-full bg-[var(--ds-text-primary)] rounded-full transition-all duration-500"
                 style={{ width: workflowIndex >= 0 ? workflowProgressWidth : '25%' }}
               ></div>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-100">
+          <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--ds-border-subtle)]">
             <div className="md:col-span-2 p-6 md:p-8">
               <h3 className="account-kicker mb-6 flex items-center gap-2">
                 <Package size={16} /> Items ({(order.items || []).length})
@@ -399,7 +411,7 @@ export default function OrderDetailsPage() {
               <div className="space-y-6">
                 {(order.items || []).map((item) => (
                   <div key={item.id} className="flex gap-4">
-                    <div className="relative w-16 h-20 bg-stone-100 border border-stone-200 shrink-0">
+                    <div className="relative w-16 h-20 bg-[var(--ds-surface-soft)] border border-[var(--ds-border-subtle)] shrink-0">
                       {item.thumbnail ? (
                         <OptimizedImage
                           src={item.thumbnail}
@@ -440,7 +452,7 @@ export default function OrderDetailsPage() {
                 ))}
               </div>
 
-              <div className="mt-8 pt-6 border-t border-stone-100 space-y-2">
+              <div className="mt-8 pt-6 border-t border-[var(--ds-border-subtle)] space-y-2">
                 <div className="account-muted flex justify-between">
                   <span>Subtotal</span>
                   <span>
@@ -461,7 +473,7 @@ export default function OrderDetailsPage() {
                       : 'Free'}
                   </span>
                 </div>
-                <div className="account-total-row mt-4 flex justify-between border-t border-stone-100 pt-4">
+                <div className="account-total-row mt-4 flex justify-between border-t border-[var(--ds-border-subtle)] pt-4">
                   <span>Total</span>
                   <span>
                     {new Intl.NumberFormat(undefined, {
@@ -473,7 +485,7 @@ export default function OrderDetailsPage() {
               </div>
             </div>
 
-            <div className="p-6 md:p-8 bg-stone-50/50 space-y-8">
+            <div className="p-6 md:p-8 bg-[var(--ds-surface-parchment)]/50 space-y-8">
               <div>
                 <h3 className="account-form-label mb-3 flex items-center gap-2">
                   <Truck size={14} /> Shipping Address
@@ -538,7 +550,7 @@ export default function OrderDetailsPage() {
                     {(order.workflow?.packages || []).map((pkg) => (
                       <div
                         key={pkg.id}
-                        className="rounded border border-stone-200 px-4 py-3 text-sm text-stone-700"
+                        className="rounded border border-[var(--ds-border-subtle)] px-4 py-3 text-sm text-[var(--ds-text-secondary)]"
                       >
                         <p className="account-mono-caption">
                           Package #{pkg.sequence}
@@ -548,12 +560,12 @@ export default function OrderDetailsPage() {
                             ? 'No tracking attached'
                             : pkg.tracking_number || 'Tracking pending'}
                         </p>
-                        <p className="mt-1 text-stone-500">
+                        <p className="mt-1 text-[var(--ds-text-muted)]">
                           {[pkg.carrier, pkg.service].filter(Boolean).join(' • ') ||
                             'Carrier details pending'}
                         </p>
                         {pkg.no_tracking_reason ? (
-                          <p className="mt-1 text-stone-500">
+                          <p className="mt-1 text-[var(--ds-text-muted)]">
                             Reason: {pkg.no_tracking_reason}
                           </p>
                         ) : null}
@@ -563,67 +575,71 @@ export default function OrderDetailsPage() {
                 </div>
               )}
 
-              <div className="pt-8 border-t border-stone-200 space-y-3">
+              <div className="pt-8 border-t border-[var(--ds-border-subtle)] space-y-3">
                 {reorderError && (
-                  <div className="account-alert rounded border border-red-200 bg-red-50 px-4 py-2 text-red-700">
+                  <StatusBanner tone="danger" className="account-alert">
                     {reorderError}
-                  </div>
+                  </StatusBanner>
                 )}
                 {returnSuccess && (
-                  <div className="account-alert rounded border border-green-200 bg-green-50 px-4 py-2 text-green-700">
+                  <StatusBanner tone="success" className="account-alert">
                     {returnSuccess}
-                  </div>
+                  </StatusBanner>
                 )}
                 {existingReturn ? (
-                  <div className="rounded border border-stone-200 bg-white p-4">
+                  <div className="rounded border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <p className="account-form-label">Return request</p>
-                      <span
+                      <Badge
                         className={`rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${getReturnStatusClasses(existingReturn.status)}`}
                       >
                         {existingReturn.status}
-                      </span>
+                      </Badge>
                     </div>
-                    <p className="mt-3 text-sm text-stone-700">
+                    <p className="mt-3 text-sm text-[var(--ds-text-secondary)]">
                       {existingReturn.reason}
                     </p>
-                    <p className="mt-2 text-xs text-stone-500">
+                    <p className="mt-2 text-xs text-[var(--ds-text-muted)]">
                       Submitted{' '}
                       {new Date(existingReturn.created_at).toLocaleDateString()}
                     </p>
                     {existingReturn.admin_notes ? (
-                      <p className="mt-2 text-sm text-stone-500">
+                      <p className="mt-2 text-sm text-[var(--ds-text-muted)]">
                         Team note: {existingReturn.admin_notes}
                       </p>
                     ) : null}
                     <div className="mt-4 flex flex-wrap gap-3">
                       <Link
                         href="/help"
-                        className="account-secondary-action border border-stone-300 bg-white px-4 py-2 transition-colors hover:bg-stone-900 hover:text-white"
+                        className="account-secondary-action border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                       >
                         Help Center
                       </Link>
                       <Link
                         href="/returns"
-                        className="account-secondary-action border border-stone-300 bg-white px-4 py-2 transition-colors hover:bg-stone-900 hover:text-white"
+                        className="account-secondary-action border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                       >
                         View Returns Hub
                       </Link>
                       <Link
                         href={`/contact?reason=returns&order=${order.display_id}&email=${encodeURIComponent(order.email)}`}
-                        className="account-secondary-action border border-stone-300 bg-white px-4 py-2 transition-colors hover:bg-stone-900 hover:text-white"
+                        className="account-secondary-action border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                       >
                         Contact Support
                       </Link>
                     </div>
                   </div>
                 ) : null}
-                <button
+                <Button
+                  type="button"
                   onClick={handleReorder}
                   disabled={
                     reordering || !order.items || order.items.length === 0
                   }
-                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  variant="outline"
+                  size="md"
+                  fullWidth
+                  className="account-secondary-action py-3"
                 >
                   {reordering ? (
                     <>
@@ -635,9 +651,10 @@ export default function OrderDetailsPage() {
                       <RotateCcw size={14} /> Reorder
                     </>
                   )}
-                </button>
+                </Button>
                 {canRequestReturn && !existingReturn && (
-                  <button
+                  <Button
+                    type="button"
                     onClick={() => {
                       setShowReturnModal(true);
                       setReturnError(null);
@@ -645,10 +662,13 @@ export default function OrderDetailsPage() {
                       setReturnReason('');
                       setReturnItems({});
                     }}
-                    className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-700"
+                    variant="outline"
+                    size="md"
+                    fullWidth
+                    className="account-secondary-action py-3 hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger-bg)] hover:text-[var(--ds-danger)]"
                   >
                     <RotateCcw size={14} /> Request Return
-                  </button>
+                  </Button>
                 )}
                 {order.workflow?.primary_package?.tracking_url || order.tracking_link ? (
                   <a
@@ -659,26 +679,26 @@ export default function OrderDetailsPage() {
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"
+                    className="account-secondary-action flex w-full items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] py-3 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                   >
                     <Truck size={14} /> Track Package
                   </a>
                 ) : null}
                 <Link
                   href="/help"
-                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"
+                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] py-3 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                 >
                   Help Center
                 </Link>
                 <Link
                   href="/payment-help"
-                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"
+                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] py-3 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                 >
                   Payment Help
                 </Link>
                 <Link
                   href={`/contact?order=${order.display_id}&email=${encodeURIComponent(order.email)}`}
-                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-stone-300 bg-white py-3 transition-colors hover:bg-stone-900 hover:text-white"
+                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] py-3 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                 >
                   Need Help?
                 </Link>
@@ -688,18 +708,15 @@ export default function OrderDetailsPage() {
         </div>
       </div>
       {/* Return Request Modal */}
-      {showReturnModal && order && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-lg shadow-2xl overflow-auto max-h-[90vh]">
-            <div className="p-6 border-b border-stone-100">
-              <h2 className="account-section-title">
-                Request Return
-              </h2>
-              <p className="account-caption mt-1">
-                Order #{order.display_id}
-              </p>
-            </div>
-            <div className="p-6 space-y-5">
+      {order ? (
+        <Modal
+          isOpen={showReturnModal}
+          onClose={() => setShowReturnModal(false)}
+          title="Request Return"
+          className="max-w-lg"
+        >
+            <div className="space-y-5">
+              <p className="account-caption">Order #{order.display_id}</p>
               <div>
                 <p className="account-form-label mb-3">
                   Select Items to Return
@@ -708,7 +725,7 @@ export default function OrderDetailsPage() {
                   {(order.items || []).map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between py-2 border-b border-stone-50"
+                      className="flex items-center justify-between py-2 border-b border-[var(--ds-border-subtle)]"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="account-name truncate">
@@ -722,7 +739,8 @@ export default function OrderDetailsPage() {
                         <label className="account-caption">
                           Return qty:
                         </label>
-                        <select
+                        <Select
+                          aria-label={`Return quantity for ${item.title}`}
                           value={returnItems[item.id] || 0}
                           onChange={(e) =>
                             setReturnItems((prev) => ({
@@ -730,55 +748,58 @@ export default function OrderDetailsPage() {
                               [item.id]: Number(e.target.value),
                             }))
                           }
-                          className="account-input w-16 rounded border border-stone-200 p-1"
+                          containerClassName="w-16"
+                          className="h-9 px-2"
                         >
                           {Array.from({ length: item.quantity + 1 }, (_, i) => (
                             <option key={i} value={i}>
                               {i}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="account-form-label mb-2 block">
-                  Reason for Return
-                </label>
-                <textarea
+                <Textarea
+                  label="Reason for Return"
                   value={returnReason}
                   onChange={(e) => setReturnReason(e.target.value)}
                   rows={3}
                   placeholder="Please describe why you are returning this item(s)..."
-                  className="account-input w-full rounded border border-stone-200 p-3 focus:outline-none focus:border-stone-900"
                 />
               </div>
               {returnError && (
-                <div className="account-alert rounded border border-red-200 bg-red-50 p-3 text-red-700">
+                <StatusBanner tone="danger" className="account-alert">
                   {returnError}
-                </div>
+                </StatusBanner>
               )}
             </div>
-            <div className="p-6 border-t border-stone-100 flex gap-3">
-              <button
+            <div className="mt-6 flex gap-3 border-t border-[var(--ds-border-subtle)] pt-5">
+              <Button
+                type="button"
                 onClick={() => setShowReturnModal(false)}
-                className="account-secondary-action flex-1 border border-stone-300 py-3 transition-colors hover:bg-stone-50"
+                variant="outline"
+                size="md"
+                className="flex-1"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                type="button"
                 onClick={handleRequestReturn}
                 disabled={returnLoading}
-                className="account-primary-action flex-1 bg-stone-900 py-3 transition-colors hover:bg-stone-700 disabled:opacity-50"
+                variant="secondary"
+                size="md"
+                className="flex-1"
               >
                 {returnLoading ? 'Submitting...' : 'Submit Return'}
-              </button>
+              </Button>
             </div>
-          </div>
-        </div>
-      )}
+        </Modal>
+      ) : null}
     </div>
   );
 }

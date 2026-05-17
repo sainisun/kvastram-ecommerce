@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { MessageCircle, X, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storefrontTrust } from '@/config/storefront-trust';
+import Input from '@/components/ui/Input';
+import { IconButton, UnstyledButton } from '@/components/ui/Button';
 
 declare global {
   interface Window {
@@ -105,7 +107,7 @@ export function ChatWidget() {
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="fixed bottom-40 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-stone-900 text-white shadow-xl transition-colors hover:bg-stone-800 md:bottom-6 md:right-6"
+          className="fixed bottom-40 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] shadow-xl transition-colors hover:bg-[var(--ds-accent-hover)] md:bottom-6 md:right-6"
           onClick={handleOpenChat}
           aria-label="Open chat support"
         >
@@ -120,36 +122,40 @@ export function ChatWidget() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed bottom-40 right-4 z-50 w-[calc(100vw-1rem)] max-w-80 overflow-hidden rounded-lg bg-white shadow-2xl md:bottom-6 md:right-6 md:w-96 ${isMinimized ? 'h-14' : 'h-[500px]'}`}
+            className={`fixed bottom-40 right-4 z-50 w-[calc(100vw-1rem)] max-w-80 overflow-hidden rounded-lg bg-[var(--ds-surface-paper)] shadow-2xl md:bottom-6 md:right-6 md:w-96 ${isMinimized ? 'h-14' : 'h-[500px]'}`}
           >
             {/* Header */}
-            <div className="bg-stone-900 text-white p-4 flex items-center justify-between">
+            <div className="flex items-center justify-between bg-[var(--ds-text-primary)] p-4 text-[var(--ds-text-inverse)]">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(var(--ds-cream-rgb),0.2)]">
                   <MessageCircle size={16} />
                 </div>
                 <div>
                   <h3 className="type-medium text-body-sm">Customer Support</h3>
-                  <p className="text-body-xs text-white/70">
+                  <p className="text-body-xs text-[rgba(var(--ds-cream-rgb),0.72)]">
                     We&apos;re here to help
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button
+                <IconButton
                   onClick={() => setIsMinimized(!isMinimized)}
-                  className="p-1.5 hover:bg-white/10 rounded-full transition-colors"
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full border-transparent text-[var(--ds-text-inverse)] hover:bg-[rgba(var(--ds-cream-rgb),0.12)]"
                   aria-label="Minimize chat"
                 >
                   <Minimize2 size={16} />
-                </button>
-                <button
+                </IconButton>
+                <IconButton
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 hover:bg-white/10 rounded-full transition-colors"
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full border-transparent text-[var(--ds-text-inverse)] hover:bg-[rgba(var(--ds-cream-rgb),0.12)]"
                   aria-label="Close chat"
                 >
                   <X size={16} />
-                </button>
+                </IconButton>
               </div>
             </div>
 
@@ -157,7 +163,7 @@ export function ChatWidget() {
             {!isMinimized && (
               <div className="flex flex-col h-[calc(100%-64px)]">
                 {/* Messages Area */}
-                <div className="flex-1 p-4 overflow-y-auto bg-stone-50">
+                <div className="flex-1 overflow-y-auto bg-[var(--ds-surface-page)] p-4">
                   <div className="space-y-4">
                     {messages.map((message, index) => (
                       <div
@@ -167,8 +173,8 @@ export function ChatWidget() {
                         <div
                           className={`max-w-[85%] rounded-lg px-4 py-3 text-body-sm ${
                             message.role === 'user'
-                              ? 'rounded-tr-sm bg-stone-900 text-white'
-                              : 'rounded-tl-sm border border-stone-200 bg-white text-stone-700'
+                              ? 'rounded-tr-sm bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'
+                              : 'rounded-tl-sm border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-secondary)]'
                           }`}
                         >
                           {message.text}
@@ -178,35 +184,38 @@ export function ChatWidget() {
 
                     <div className="flex flex-wrap gap-2">
                       {quickReplies.map((reply) => (
-                        <button
+                        <UnstyledButton
                           key={reply.label}
                           type="button"
                           onClick={() => handleQuickReply(reply.action)}
-                          className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-body-xs text-stone-600 transition-colors hover:border-stone-400"
+                          className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-3 py-1.5 text-body-xs text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]"
                         >
                           {reply.label}
-                        </button>
+                        </UnstyledButton>
                       ))}
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 bg-white border-t border-stone-100">
+                <div className="border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
                   <div className="flex gap-2">
-                    <input
+                    <Input
                       type="text"
                       placeholder="Type your message..."
                       value={inputText}
                       onChange={(event) => setInputText(event.target.value)}
                       onKeyDown={(event) => {
-                        if (event.key === 'Enter') handleSendMessage();
-                      }}
-                      className="flex-1 px-4 py-2 border border-stone-200 rounded-full text-body-sm focus:outline-none focus:border-stone-900"
+                          if (event.key === 'Enter') handleSendMessage();
+                        }}
+                      containerClassName="flex-1"
+                      className="h-10 rounded-full"
                     />
-                    <button
+                    <IconButton
                       type="button"
                       onClick={handleSendMessage}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-stone-900 text-white transition-colors hover:bg-stone-800"
+                      variant="secondary"
+                      size="md"
+                      className="rounded-full"
                       aria-label="Send message"
                     >
                       <svg
@@ -222,9 +231,9 @@ export function ChatWidget() {
                           d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                         />
                       </svg>
-                    </button>
+                    </IconButton>
                   </div>
-                  <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-body-xs text-stone-500">
+                  <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-body-xs text-[var(--ds-text-muted)]">
                     <Link href={storefrontTrust.policyRoutes.paymentHelp} className="underline underline-offset-4">
                       Payment Help
                     </Link>
@@ -235,7 +244,7 @@ export function ChatWidget() {
                       Contact
                     </Link>
                   </div>
-                  <p className="mt-2 text-center text-body-xs text-stone-400">
+                  <p className="mt-2 text-center text-body-xs text-[var(--ds-text-muted)]">
                     {storefrontTrust.supportHours}
                   </p>
                 </div>

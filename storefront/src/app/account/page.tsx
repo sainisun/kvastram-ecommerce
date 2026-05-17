@@ -10,6 +10,9 @@ import { Package, User, LogOut, MapPin } from 'lucide-react';
 import { UserCard } from '@/components/account/UserCard';
 import { QuickGrid } from '@/components/account/QuickGrid';
 import { SettingsList } from '@/components/account/SettingsList';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { AccountSkeleton } from '@/components/ui/Skeleton';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
 
@@ -43,11 +46,11 @@ export default function AccountPage() {
   if (loading || !customer) return <AccountSkeleton />;
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
       {/* Mobile Layout */}
       <div className="md:hidden">
         {/* Header */}
-        <div className="bg-white border-b border-stone-200 sticky top-0 z-10">
+        <div className="bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-subtle)] sticky top-0 z-10">
           <div className="px-4 h-14 flex items-center justify-center">
             <h1 className="account-mobile-title">Profile</h1>
           </div>
@@ -74,14 +77,14 @@ export default function AccountPage() {
 
       {/* Desktop Layout */}
       <div className="hidden pb-16 pt-16 md:block lg:pb-24 lg:pt-24">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
           <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
             {/* Sidebar */}
             <div className="lg:w-64 shrink-0">
-              <div className="bg-white border border-stone-200 shadow-sm overflow-hidden sticky top-24">
-                <div className="p-6 border-b border-stone-100">
-                  <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mb-4">
-                    <User size={24} className="text-stone-400" />
+              <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] shadow-sm overflow-hidden sticky top-24">
+                <div className="p-6 border-b border-[var(--ds-border-subtle)]">
+                  <div className="w-16 h-16 bg-[var(--ds-surface-soft)] rounded-full flex items-center justify-center mb-4">
+                    <User size={24} className="text-[var(--ds-text-muted)]" />
                   </div>
                   <p className="account-name">
                     {customer.first_name} {customer.last_name}
@@ -91,34 +94,38 @@ export default function AccountPage() {
                 <nav className="p-4">
                   <Link
                     href="/account"
-                    className="account-nav-link block bg-stone-50 px-4 py-2 mb-1"
+                    className="account-nav-link block bg-[var(--ds-surface-parchment)] px-4 py-2 mb-1"
                   >
                     Overview
                   </Link>
                   <Link
                     href="/account/orders"
-                    className="account-nav-link block px-4 py-2 hover:bg-stone-50 hover:text-stone-900 mb-1"
+                    className="account-nav-link block px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] mb-1"
                   >
                     Orders
                   </Link>
                   <Link
                     href="/account/profile"
-                    className="account-nav-link block px-4 py-2 hover:bg-stone-50 hover:text-stone-900 mb-1"
+                    className="account-nav-link block px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] mb-1"
                   >
                     Profile
                   </Link>
                   <Link
                     href="/account/addresses"
-                    className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-stone-50 hover:text-stone-900"
+                    className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]"
                   >
                     <MapPin size={14} /> Addresses
                   </Link>
-                  <button
+                  <Button
+                    type="button"
                     onClick={logout}
-                    className="account-nav-danger mt-4 flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-red-50"
+                    variant="ghost"
+                    size="sm"
+                    fullWidth
+                    className="account-nav-danger mt-4 justify-start gap-2 px-4 py-2 text-left normal-case hover:bg-[var(--ds-danger-bg)]"
                   >
                     <LogOut size={14} /> Sign Out
-                  </button>
+                  </Button>
                 </nav>
               </div>
             </div>
@@ -131,9 +138,9 @@ export default function AccountPage() {
 
               {/* Quick Stats */}
               <div className="grid sm:grid-cols-3 gap-4 mb-8">
-                <div className="bg-white border border-stone-200 p-6">
+                <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
                   <div className="flex items-center gap-3 mb-2">
-                    <Package size={20} className="text-stone-400" />
+                    <Package size={20} className="text-[var(--ds-text-muted)]" />
                     <h3 className="account-kicker">
                       Total Orders
                     </h3>
@@ -142,9 +149,9 @@ export default function AccountPage() {
                     {orders.length}
                   </p>
                 </div>
-                <div className="bg-white border border-stone-200 p-6">
+                <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
                   <div className="flex items-center gap-3 mb-2">
-                    <User size={20} className="text-stone-400" />
+                    <User size={20} className="text-[var(--ds-text-muted)]" />
                     <h3 className="account-kicker">
                       Member Since
                     </h3>
@@ -161,14 +168,14 @@ export default function AccountPage() {
               </div>
 
               {/* Recent Orders */}
-              <div className="bg-white border border-stone-200 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-stone-100 flex items-center justify-between">
+              <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-[var(--ds-border-subtle)] flex items-center justify-between">
                   <h2 className="account-section-title">
                     Recent Orders
                   </h2>
                   <Link
                     href="/account/orders"
-                    className="account-muted hover:text-stone-900"
+                    className="account-muted hover:text-[var(--ds-text-primary)]"
                   >
                     View All →
                   </Link>
@@ -176,33 +183,33 @@ export default function AccountPage() {
 
                 {ordersLoading ? (
                   <div className="p-12 text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-900 mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-primary)] mx-auto"></div>
                   </div>
                 ) : orders.length === 0 ? (
-                  <div className="p-12 text-center">
-                    <Package
-                      size={48}
-                      className="mx-auto text-stone-300 mb-4"
-                    />
-                    <p className="account-empty-copy mb-4">No orders yet</p>
+                  <EmptyState
+                    icon={<Package size={48} />}
+                    title="No orders yet"
+                    className="border-0"
+                    actions={
                     <Link
                       href="/"
-                      className="account-primary-action inline-block bg-stone-900 px-6 py-3 transition-colors hover:bg-stone-800"
+                      className="account-primary-action inline-block bg-[var(--ds-text-primary)] px-6 py-3 transition-colors hover:bg-[var(--ds-text-secondary)]"
                     >
                       Start Shopping
                     </Link>
-                  </div>
+                    }
+                  />
                 ) : (
-                  <div className="divide-y divide-stone-100">
+                  <div className="divide-y divide-[var(--ds-border-subtle)]">
                     {orders.slice(0, 5).map((order) => (
                       <div
                         key={order.id}
-                        className="p-6 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                        className="p-6 flex items-center justify-between hover:bg-[var(--ds-surface-parchment)] transition-colors"
                       >
                         <div>
                           <Link
                             href={`/account/orders/${order.id}`}
-                            className="account-name hover:text-stone-600"
+                            className="account-name hover:text-[var(--ds-text-secondary)]"
                           >
                             Order #{order.display_id}
                           </Link>
@@ -221,11 +228,11 @@ export default function AccountPage() {
                                 order.currency_code?.toUpperCase() || 'INR',
                             }).format(order.total / 100)}
                           </span>
-                          <span
+                          <Badge
                             className={`account-status-badge px-3 py-1 ${getOrderStatusBadgeClass(order.status)}`}
                           >
                             {getOrderStatusConfig(order.status).label}
-                          </span>
+                          </Badge>
                         </div>
                       </div>
                     ))}

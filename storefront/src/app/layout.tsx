@@ -1,34 +1,7 @@
 import type { Metadata } from 'next';
 
 import './globals.css';
-import '../styles/base.css';
-import '../styles/effects.css';
-import '../styles/components/premium-sections.css';
-import '../styles/components/category-sections.css';
-import '../styles/components/product-grid-premium.css';
-import '../styles/components/newsletter.css';
-import '../styles/components/pdp-premium.css';
-import '../styles/components/catalog.css';
-import '../styles/components/header-enhancements.css';
-import '../styles/animations.css';
-import '../styles/mobile-overrides.css';
-import '../styles/theme-overrides.css';
-import '../styles/utilities.css';
-import '../styles/components/header.css';
-import '../styles/components/product-card.css';
-import '../styles/components/collections.css';
-import '../styles/components/reels.css';
-import '../styles/components/content-pages.css';
-import '../styles/components/home-sections.css';
-import '../styles/components/button.css';
-import '../styles/components/pdp-legacy.css';
-import '../styles/components/footer-base.css';
-import '../styles/components/ugc.css';
-import '../styles/responsive.css';
-import '../styles/components/quick-view.css';
-import '../styles/typography.css';
-import '../styles/components/footer.css';
-import '../styles/components/pdp.css';
+import '../styles/storefront.css';
 import { Analytics } from '@/components/Analytics';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { RootErrorBoundary } from '@/components/RootErrorBoundary';
@@ -115,7 +88,7 @@ export default async function RootLayout({
         />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-body-sm focus:type-medium focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-[var(--ds-text-primary)] focus:px-4 focus:py-2 focus:text-body-sm focus:type-medium focus:text-[var(--ds-text-inverse)]"
         >
           Skip to main content
         </a>

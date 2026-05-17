@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import CountrySelect from '@/components/ui/CountrySelect';
+import Input from '@/components/ui/Input';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 import { useShop } from '@/context/shop-context';
@@ -96,20 +97,19 @@ export default function ProductDeliveryPlanner() {
   }, [countryCode, shippingLoading, shippingOptions.length]);
 
   return (
-    <div className="soft-card" style={{ marginTop: 16 }}>
+    <div className="soft-card mt-4">
       <strong className="pdp-trust-label">Delivery planning</strong>
-      <p className="pdp-trust-sublabel" style={{ marginTop: 8 }}>
+      <p className="pdp-trust-sublabel mt-2">
         Preview country-level shipping methods before checkout. Final courier
         availability, delivery timing, and charges are confirmed after full
         address entry.
       </p>
 
       <div
-        className="grid gap-4"
-        style={{ marginTop: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}
+        className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"
       >
         <div>
-          <p className="pdp-trust-sublabel" style={{ marginBottom: 8 }}>
+          <p className="pdp-trust-sublabel mb-2">
             Delivery country
           </p>
           <CountrySelect
@@ -119,50 +119,42 @@ export default function ProductDeliveryPlanner() {
           />
         </div>
         <div>
-          <label
-            htmlFor="pdp-postal-code"
-            className="pdp-trust-sublabel"
-            style={{ display: 'block', marginBottom: 8 }}
-          >
-            Postal code
-          </label>
-          <input
+          <Input
             id="pdp-postal-code"
             type="text"
+            label="Postal code"
             value={postalCode}
             onChange={(event) => setPostalCode(event.target.value)}
             placeholder="Add for checkout readiness"
-            className="w-full rounded-md border border-stone-200 bg-white px-3 py-3 text-body-sm text-stone-900 focus:border-stone-900 focus:outline-none"
           />
         </div>
       </div>
 
-      <p className="pdp-trust-sublabel" style={{ marginTop: 12 }}>
+      <p className="pdp-trust-sublabel mt-3">
         {serviceabilityMessage || plannerSummary}
       </p>
 
       {shippingOptions.length > 0 ? (
         <div
-          className="grid gap-3"
-          style={{ marginTop: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}
+          className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3"
         >
           {shippingOptions.slice(0, 3).map((option) => (
             <div
               key={option.id}
-              className="rounded-lg border border-stone-200 bg-white p-4"
+              className="rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-body-sm font-medium text-stone-900">
+                  <p className="text-body-sm font-medium text-[var(--ds-text-primary)]">
                     {option.name}
                   </p>
                   {option.description ? (
-                    <p className="mt-1 text-body-xs text-stone-500">
+                    <p className="mt-1 text-body-xs text-[var(--ds-text-muted)]">
                       {option.description}
                     </p>
                   ) : null}
                 </div>
-                <p className="text-body-sm font-medium text-stone-900">
+                <p className="text-body-sm font-medium text-[var(--ds-text-primary)]">
                   {option.price === 0
                     ? 'Free'
                     : formatShippingPrice(option.price, option.currency_code)}
@@ -173,11 +165,11 @@ export default function ProductDeliveryPlanner() {
         </div>
       ) : null}
 
-      <div className="option-row" style={{ marginTop: 12 }}>
-        <Link href={storefrontTrust.policyRoutes.shipping} className="btn btn-outline">
+      <div className="option-row mt-3">
+        <Link href={storefrontTrust.policyRoutes.shipping} className="pdp-link-button">
           Shipping Policy
         </Link>
-        <Link href="/checkout" className="btn btn-outline">
+        <Link href="/checkout" className="pdp-link-button">
           Continue to Checkout
         </Link>
       </div>

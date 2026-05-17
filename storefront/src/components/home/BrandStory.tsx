@@ -21,14 +21,14 @@ export function BrandStory({ settings }: BrandStoryProps) {
   const imageUrl = cloudinaryUrlOrNull(settings.brand_story_image);
 
   return (
-    <section className="kv-section bg-white">
+    <section className="kv-section bg-[var(--ds-surface-paper)]">
       <div className="kv-container story-block">
         <div>
           <div className="kv-tag">Our story</div>
           <h2 className="kv-title">{title}</h2>
           <p className="kv-sub mt-4">{content}</p>
           <br />
-          <Link href="/about" className="kv-btn kv-btn-primary">
+          <Link href="/about" className="home-link-button home-link-button--primary">
             Our Full Story
           </Link>
         </div>

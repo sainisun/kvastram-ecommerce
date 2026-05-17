@@ -27,17 +27,17 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
 
   return (
     <div
-      className="absolute left-0 top-full bg-white border-t border-gray-200 shadow-lg z-40 w-full"
+      className="absolute left-0 top-full bg-[var(--ds-surface-paper)] border-t border-[var(--ds-border-subtle)] shadow-lg z-40 w-full"
       onMouseLeave={() => {
         /* Parent handles this */
       }}
     >
-      <div className="mx-auto max-w-[1440px] px-6 py-8 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-8 md:px-12 lg:px-20">
         <div className="grid grid-cols-3 gap-8">
           {/* Subcategories Column */}
           {hasChildren && (
             <div className="col-span-1">
-              <h3 className="text-body-sm type-bold uppercase tracking-token-wider text-gray-900 mb-4">
+              <h3 className="text-body-sm type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] mb-4">
                 {category.emoji && (
                   <span className="mr-2">{category.emoji}</span>
                 )}
@@ -48,7 +48,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                   <Link
                     key={child.id}
                     href={`/collections/${child.slug}`}
-                    className="block text-body-sm text-gray-700 hover:text-black transition-colors py-1"
+                    className="block text-body-sm text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] transition-colors py-1"
                   >
                     {child.emoji && (
                       <span className="mr-2 text-body-md">
@@ -67,7 +67,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
             <div
               className={`relative ${
                 hasChildren ? 'col-span-2' : 'col-span-3'
-              } h-64 rounded-lg overflow-hidden bg-gray-100`}
+              } h-64 rounded-lg overflow-hidden bg-[var(--ds-surface-soft)]`}
             >
               <OptimizedImage
                 src={
@@ -79,10 +79,10 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                 fill
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-black/30 flex items-end p-6">
+              <div className="absolute inset-0 bg-[var(--ds-text-primary)]/30 flex items-end p-6">
                 <Link
                   href={`/collections/${category.slug}`}
-                  className="text-white text-body-xl type-semibold hover:opacity-80 transition-opacity"
+                  className="text-[var(--ds-text-inverse)] text-body-xl type-semibold hover:opacity-80 transition-opacity"
                 >
                   Explore {category.name}
                 </Link>
@@ -97,14 +97,14 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                 <Link
                   key={child.id}
                   href={`/collections/${child.slug}`}
-                  className="p-4 border border-gray-200 rounded-lg hover:border-black transition-colors"
+                  className="p-4 border border-[var(--ds-border-subtle)] rounded-lg hover:border-[var(--ds-text-primary)] transition-colors"
                 >
                   {child.emoji && (
                     <div className="text-display-md mb-2">
                       {child.emoji}
                     </div>
                   )}
-                  <h4 className="type-medium text-gray-900">
+                  <h4 className="type-medium text-[var(--ds-text-primary)]">
                     {child.name}
                   </h4>
                 </Link>

@@ -1,45 +1,41 @@
 import Link from 'next/link';
 import { Home, Search, ArrowLeft } from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-stone-50 px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-      <div className="text-center max-w-lg">
-        <h1 className="text-display-xl font-serif text-stone-900 mb-4">404</h1>
-        <h2 className="text-display-md font-serif text-stone-700 mb-4">
-          Page Not Found
-        </h2>
-        <p className="text-stone-600 mb-8 leading-token-relaxed">
-          Sorry, the page you are looking for does not exist. It might have been
-          moved or deleted.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <EmptyState
+        eyebrow="404"
+        title="Page Not Found"
+        description="Sorry, the page you are looking for does not exist. It might have been moved or deleted."
+        className="max-w-2xl"
+        actions={
+          <>
           <Link
             href="/"
-            className="bg-stone-900 text-white px-8 py-3 text-body-sm type-bold uppercase tracking-token-wider hover:bg-stone-800 transition-colors inline-flex items-center justify-center gap-2"
+              className="inline-flex min-h-12 items-center justify-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-text-primary)] px-7 font-body text-body-sm uppercase tracking-token-wider text-[var(--ds-text-inverse)] type-semibold transition-colors hover:border-[var(--ds-accent-hover)] hover:bg-[var(--ds-accent-hover)]"
           >
             <Home size={16} />
             Go Home
           </Link>
           <Link
             href="/search"
-            className="border border-stone-900 text-stone-900 px-8 py-3 text-body-sm type-bold uppercase tracking-token-wider hover:bg-stone-100 transition-colors inline-flex items-center justify-center gap-2"
+              className="inline-flex min-h-12 items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-7 font-body text-body-sm uppercase tracking-token-wider text-[var(--ds-text-primary)] type-semibold transition-colors hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]"
           >
             <Search size={16} />
             Search
           </Link>
-        </div>
-        <div className="mt-8">
           <Link
             href="/"
-            className="text-stone-500 hover:text-stone-700 inline-flex items-center gap-2 text-body-sm"
+              className="inline-flex min-h-12 items-center justify-center gap-2 border border-transparent px-4 font-body text-body-sm text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
           >
             <ArrowLeft size={16} />
-            Or go back to homepage
+              Back to homepage
           </Link>
-        </div>
-      </div>
+          </>
+        }
+      />
     </div>
   );
 }
-

@@ -25,6 +25,9 @@ import {
 } from '@stripe/react-stripe-js';
 import CountrySelect from '@/components/ui/CountrySelect';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/Button';
 import { CheckoutSkeleton } from '@/components/ui/Skeleton';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import RazorpayButton from '@/components/checkout/RazorpayButton';
@@ -94,14 +97,16 @@ function PaymentForm({
         <PaymentElement />
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full bg-[var(--ink)] text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ink)] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+        variant="secondary"
+        size="lg"
+        fullWidth
+        leadingIcon={<CreditCard size={16} />}
       >
-        <CreditCard size={16} />
         {isProcessing ? 'Processing Payment...' : 'Pay Now'}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -350,20 +355,15 @@ export default function CheckoutPage() {
     return <CheckoutSkeleton />;
   }
 
-  const inputClasses =
-    'w-full bg-transparent border-b border-[var(--line)] py-3 color-ink placeholder-[var(--muted)] focus:outline-none focus:border-[var(--ink)] transition-colors type-light';
-  const labelClasses =
-    'block text-body-xs type-bold uppercase tracking-token-wider color-muted mb-1';
-
   if (items.length === 0 && step !== 'success') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-white">
-        <h1 className="text-display-lg font-serif mb-4 color-ink">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[var(--ds-surface-paper)]">
+        <h1 className="text-display-lg font-display mb-4 color-ink">
           Your cart is empty
         </h1>
         <Link
           href="/"
-          className="color-muted hover:text-black border-b border-[var(--line)] pb-1 transition-colors"
+          className="color-muted hover:text-[var(--ds-text-primary)] border-b border-[var(--line)] pb-1 transition-colors"
         >
           Return to Shop
         </Link>
@@ -373,21 +373,21 @@ export default function CheckoutPage() {
 
   if (step === 'success') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-white">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[var(--ds-surface-paper)]">
         {/* Animated check */}
         <div className="relative w-24 h-24 mb-8">
-          <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center animate-scale-in">
+          <div className="w-24 h-24 rounded-full bg-[var(--ds-success-bg)] flex items-center justify-center animate-scale-in">
             <CheckCircle
               size={48}
               strokeWidth={1.5}
-              className="text-green-600"
+              className="text-[var(--ds-success)]"
             />
           </div>
         </div>
         <span className="text-body-xs color-muted type-bold uppercase tracking-token-wider mb-3 block">
           Order Placed Successfully
         </span>
-        <h1 className="text-display-xl font-serif mb-3 color-ink">Thank You!</h1>
+        <h1 className="text-display-xl font-display mb-3 color-ink">Thank You!</h1>
         <p className="color-muted mb-2 max-w-md type-light text-body-xl">
           Your order{' '}
           <span className="type-semibold color-ink">#{orderId}</span> has
@@ -400,7 +400,7 @@ export default function CheckoutPage() {
         <div className="flex flex-col sm:flex-row gap-3 mb-10">
           <Link
             href="/"
-            className="bg-[var(--ink)] text-white px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold hover:bg-[var(--ink)] transition-colors"
+            className="bg-[var(--ink)] text-[var(--ds-text-inverse)] px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold hover:bg-[var(--ink)] transition-colors"
           >
             Continue Shopping
           </Link>
@@ -420,7 +420,7 @@ export default function CheckoutPage() {
             href={buildWhatsAppHref('Hi, I need help with checkout on Kvastram')}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-body-xs text-green-700 type-bold hover:text-green-800 transition-colors"
+            className="inline-flex items-center gap-2 text-body-xs text-[var(--ds-success-text)] type-bold hover:text-[var(--ds-success-text)] transition-colors"
           >
             <span className="text-body-md">💬</span> Chat with us on WhatsApp
           </a>
@@ -564,7 +564,7 @@ export default function CheckoutPage() {
     currentRegion?.currency_code || items[0]?.currency?.toUpperCase() || 'USD';
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
       {/* PHASE 3.2: Mobile-first responsive layout */}
       <div className="grid lg:grid-cols-2 min-h-screen">
         {/* Left: Form */}
@@ -572,7 +572,7 @@ export default function CheckoutPage() {
           <div className="max-w-lg mx-auto">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 color-muted hover:text-black mb-6 md:mb-12 text-body-sm transition-colors"
+              className="inline-flex items-center gap-2 color-muted hover:text-[var(--ds-text-primary)] mb-6 md:mb-12 text-body-sm transition-colors"
             >
               <ArrowLeft size={16} />
               <span className="hidden sm:inline">Back to Shop</span>
@@ -580,7 +580,7 @@ export default function CheckoutPage() {
             </Link>
 
             <div className="mb-12">
-              <h2 className="text-display-lg font-serif color-ink mb-2">
+              <h2 className="text-display-lg font-display color-ink mb-2">
                 Checkout
               </h2>
               <p className="color-muted type-light text-body-sm flex items-center gap-2">
@@ -596,8 +596,8 @@ export default function CheckoutPage() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-body-xs type-bold border-2 transition-all ${
                       step === 'shipping'
-                        ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
-                        : 'border-[var(--ink)] bg-[var(--ink)] text-white'
+                        ? 'border-[var(--ink)] bg-[var(--ds-surface-paper)] color-ink'
+                        : 'border-[var(--ink)] bg-[var(--ds-surface-paper)] color-ink'
                     }`}
                   >
                     {step === 'payment' ? '✓' : '1'}
@@ -621,8 +621,8 @@ export default function CheckoutPage() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-body-xs type-bold border-2 transition-all ${
                       step === 'payment'
-                        ? 'border-[var(--ink)] bg-[var(--ink)] text-white'
-                        : 'border-[var(--line)] bg-white color-muted'
+                        ? 'border-[var(--ink)] bg-[var(--ds-surface-paper)] color-ink'
+                        : 'border-[var(--line)] bg-[var(--ds-surface-paper)] color-muted'
                     }`}
                   >
                     {'2'}
@@ -638,7 +638,7 @@ export default function CheckoutPage() {
                 <div className={`flex-1 h-0.5 mx-2 bg-[var(--line)]`} />
                 {/* Step 3: Confirmation */}
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-body-xs type-bold border-2 border-[var(--line)] bg-white color-muted">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-body-xs type-bold border-2 border-[var(--line)] bg-[var(--ds-surface-paper)] color-muted">
                     3
                   </div>
                   <span className="text-body-xs type-bold uppercase tracking-token-wider mt-1 color-muted">
@@ -650,7 +650,7 @@ export default function CheckoutPage() {
 
             {error && (
               <div className="mb-6 space-y-3">
-                <div className="bg-red-50 border border-red-200 text-red-600 p-4 text-body-sm">
+                <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] p-4 text-body-sm">
                   {error}
                 </div>
                 <div className="border border-[var(--line)] bg-[var(--cream)] p-4 text-body-xs color-muted">
@@ -687,21 +687,18 @@ export default function CheckoutPage() {
             {step === 'shipping' ? (
               <form onSubmit={handleShippingSubmit} className="space-y-8">
                 <div>
-                  <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
                     Contact
                   </h3>
                   <div className="space-y-4">
-                    <label htmlFor="email" className={labelClasses}>
-                      Email Address
-                    </label>
-                    <input
+                    <Input
                       id="email"
                       type="email"
                       name="email"
+                      label="Email Address"
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className={inputClasses}
                       autoComplete="email"
                       aria-required="true"
                       aria-describedby="email-help"
@@ -713,110 +710,94 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
                     Shipping Address
                   </h3>
                   {/* PHASE 3.2: Mobile-first responsive grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
                     <div>
-                      <label htmlFor="first_name" className={labelClasses}>
-                        First Name
-                      </label>
-                      <input
+                      <Input
                         id="first_name"
                         type="text"
                         name="first_name"
+                        label="First Name"
                         required
                         value={formData.first_name}
                         onChange={handleChange}
-                        className={inputClasses}
                         autoComplete="given-name"
                         aria-required="true"
                       />
                     </div>
                     <div>
-                      <label htmlFor="last_name" className={labelClasses}>
-                        Last Name
-                      </label>
-                      <input
+                      <Input
                         id="last_name"
                         type="text"
                         name="last_name"
+                        label="Last Name"
                         required
                         value={formData.last_name}
                         onChange={handleChange}
-                        className={inputClasses}
                         autoComplete="family-name"
                         aria-required="true"
                       />
                     </div>
                   </div>
                   <div className="mb-4">
-                    <label htmlFor="address_1" className={labelClasses}>
-                      Address (Line 1)
-                    </label>
                     <AddressAutocomplete
+                      label="Address (Line 1)"
                       value={formData.address_1}
                       onChange={(value) =>
                         setFormData((prev) => ({ ...prev, address_1: value }))
                       }
                       onAddressSelect={handleAddressSelect}
-                      className={inputClasses}
                       required
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
                     <div>
-                      <label htmlFor="city" className={labelClasses}>
-                        City
-                      </label>
-                      <input
+                      <Input
                         id="city"
                         type="text"
                         name="city"
+                        label="City"
                         required
                         value={formData.city}
                         onChange={handleChange}
-                        className={inputClasses}
                         autoComplete="address-level2"
                         aria-required="true"
                       />
                     </div>
                     <div>
-                      <label htmlFor="province" className={labelClasses}>
-                        State/Province
-                      </label>
-                      <input
+                      <Input
                         id="province"
                         type="text"
                         name="province"
+                        label="State/Province"
                         value={formData.province}
                         onChange={handleChange}
-                        className={inputClasses}
                         autoComplete="address-level1"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
                     <div>
-                      <label htmlFor="postal_code" className={labelClasses}>
-                        Postal Code
-                      </label>
-                      <input
+                      <Input
                         id="postal_code"
                         type="text"
                         name="postal_code"
+                        label="Postal Code"
                         required
                         value={formData.postal_code}
                         onChange={handleChange}
-                        className={inputClasses}
                         autoComplete="postal-code"
                         aria-required="true"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className={labelClasses}>Country</label>
+                    <p className="form-label-typography mb-1.5 uppercase text-[var(--ds-text-muted)]">
+                      Country <span className="ml-1 text-[var(--ds-danger)]">*</span>
+                    </p>
                     <CountrySelect
                       name="country"
                       value={formData.country_code}
@@ -830,7 +811,7 @@ export default function CheckoutPage() {
 
                 {/* PHASE 1.3: Shipping Method Selection */}
                 <div className="mt-8">
-                  <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
                     Shipping Method
                   </h3>
 
@@ -874,7 +855,7 @@ export default function CheckoutPage() {
                               </div>
                             </div>
                             <span
-                              className={`type-medium ${isFree ? 'text-green-600' : 'color-ink'}`}
+                              className={`type-medium ${isFree ? 'text-[var(--ds-success)]' : 'color-ink'}`}
                             >
                               {isFree
                                 ? 'FREE'
@@ -886,7 +867,7 @@ export default function CheckoutPage() {
 
                       {cartTotal >= freeShippingThreshold &&
                         selectedShipping && (
-                          <p className="text-body-sm text-green-600 bg-green-50 p-3 border border-green-200">
+                          <p className="text-body-sm text-[var(--ds-success)] bg-[var(--ds-success-bg)] p-3 border border-[var(--ds-success)]">
                             🎉 You&apos;ve unlocked FREE shipping!
                           </p>
                         )}
@@ -909,7 +890,7 @@ export default function CheckoutPage() {
 
                 {/* D3: Gift Wrapping */}
                 <div className="mt-8">
-                  <h3 className="text-body-xl font-serif color-ink mb-4 border-b border-[var(--soft)] pb-2">
+                  <h3 className="text-body-xl font-display color-ink mb-4 border-b border-[var(--soft)] pb-2">
                     Gift Options
                   </h3>
                   <label
@@ -947,7 +928,7 @@ export default function CheckoutPage() {
                           id="gift-wrapping-toggle"
                         />
                         <span
-                          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-[var(--ds-surface-paper)] shadow transition-transform ${
                             giftWrapping ? 'translate-x-5' : 'translate-x-0'
                           }`}
                         />
@@ -956,16 +937,14 @@ export default function CheckoutPage() {
                   </label>
                   {giftWrapping && (
                     <div className="mt-3 animate-fade-in">
-                      <label className="block text-body-xs type-bold uppercase tracking-token-wider color-muted mb-2">
-                        Gift Message (Optional)
-                      </label>
-                      <textarea
+                      <Textarea
+                        label="Gift Message (Optional)"
                         value={giftMessage}
                         onChange={(e) => setGiftMessage(e.target.value)}
                         placeholder="Write a personal message for the recipient..."
                         maxLength={200}
                         rows={3}
-                        className="w-full border border-[var(--line)] rounded-md px-4 py-3 text-body-sm color-ink placeholder-[var(--muted)] focus:outline-none focus:border-[var(--ink)] resize-none transition-colors type-light"
+                        className="min-h-[96px] resize-none"
                       />
                       <p className="text-body-xs color-muted text-right mt-1">
                         {giftMessage.length}/200
@@ -1024,19 +1003,21 @@ export default function CheckoutPage() {
                   </label>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={loading || !acceptTerms}
-                  className="w-full bg-[var(--ink)] text-white py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ink)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
                   aria-live="polite"
                   aria-busy={loading}
                 >
                   {loading ? 'Processing...' : 'Continue to Payment'}
-                </button>
+                </Button>
               </form>
             ) : (
               <div>
-                <h3 className="text-body-xl font-serif color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
                   Payment
                 </h3>
                 <p className="mb-4 text-body-sm color-muted">
@@ -1049,7 +1030,7 @@ export default function CheckoutPage() {
                 {currency.toLowerCase() === 'inr' &&
                   process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && (
                     <ErrorBoundary fallback={
-                      <p className="text-body-sm text-red-600 py-2">Payment failed to load. Please refresh.</p>
+                      <p className="text-body-sm text-[var(--ds-danger)] py-2">Payment failed to load. Please refresh.</p>
                     }>
                       <RazorpayButton
                         orderId={orderUUID}
@@ -1068,7 +1049,7 @@ export default function CheckoutPage() {
                 {currency.toLowerCase() !== 'inr' &&
                   process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID && (
                     <ErrorBoundary fallback={
-                      <p className="text-body-sm text-red-600 py-2">PayPal failed to load. Please use card below.</p>
+                      <p className="text-body-sm text-[var(--ds-danger)] py-2">PayPal failed to load. Please use card below.</p>
                     }>
                       <PayPalButton
                         orderId={orderUUID}
@@ -1087,7 +1068,7 @@ export default function CheckoutPage() {
                         <div className="w-full border-t border-[var(--line)]"></div>
                       </div>
                       <div className="relative flex justify-center text-body-sm">
-                        <span className="px-2 bg-white color-muted">or express checkout</span>
+                        <span className="px-2 bg-[var(--ds-surface-paper)] color-muted">or express checkout</span>
                       </div>
                     </div>
                     <ErrorBoundary fallback={
@@ -1107,11 +1088,11 @@ export default function CheckoutPage() {
                         <div className="w-full border-t border-[var(--line)]"></div>
                       </div>
                       <div className="relative flex justify-center text-body-sm">
-                        <span className="px-2 bg-white color-muted">or pay with card</span>
+                        <span className="px-2 bg-[var(--ds-surface-paper)] color-muted">or pay with card</span>
                       </div>
                     </div>
                     <ErrorBoundary fallback={
-                      <div className="p-4 border border-red-200 bg-red-50 rounded text-body-sm text-red-700">
+                      <div className="p-4 border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] rounded text-body-sm text-[var(--ds-danger)]">
                         Payment form failed to load. Please refresh the page.
                       </div>
                     }>
@@ -1126,12 +1107,16 @@ export default function CheckoutPage() {
                   </>
                 )}
 
-                <button
+                <Button
+                  type="button"
                   onClick={() => setStep('shipping')}
-                  className="w-full mt-4 border border-[var(--line)] color-muted py-3 type-medium text-body-sm hover:bg-[var(--cream)] transition-colors"
+                  variant="outline"
+                  size="md"
+                  fullWidth
+                  className="mt-4"
                 >
                   Back to Shipping
-                </button>
+                </Button>
 
                 <div className="mt-6 border border-[var(--line)] bg-[var(--cream)] p-4 text-body-xs color-muted">
                   <p className="type-medium color-ink">Payment and policy help</p>
@@ -1172,14 +1157,14 @@ export default function CheckoutPage() {
         {/* Right: Summary - Mobile on top, Desktop on right */}
         <div className="bg-[var(--cream)] p-4 md:p-8 lg:p-20 order-1 lg:order-2">
           <div className="max-w-lg mx-auto sticky top-24">
-            <h2 className="text-display-sm font-serif color-ink mb-8">
+            <h2 className="text-display-sm font-display color-ink mb-8">
               Order Summary
             </h2>
 
             <div className="space-y-6 mb-8">
               {items.map((item) => (
                 <div key={item.variantId} className="flex gap-4">
-                  <div className="relative w-20 h-24 bg-white border border-[var(--line)]">
+                  <div className="relative w-20 h-24 bg-[var(--ds-surface-paper)] border border-[var(--line)]">
                     {item.thumbnail ? (
                       <OptimizedImage
                         src={item.thumbnail}
@@ -1194,12 +1179,12 @@ export default function CheckoutPage() {
                         No Image
                       </div>
                     )}
-                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-[var(--ink)] text-white text-body-xs flex items-center justify-center rounded-full">
+                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-[var(--ink)] text-[var(--ds-text-inverse)] text-body-xs flex items-center justify-center rounded-full">
                       {item.quantity}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-serif color-ink">{item.title}</p>
+                    <p className="font-display color-ink">{item.title}</p>
                     <p className="text-body-xs color-muted mt-1 uppercase tracking-token-wider">
                       Qty: {item.quantity}
                     </p>
@@ -1232,25 +1217,29 @@ export default function CheckoutPage() {
                   Promo Code
                 </label>
                 <div className="flex gap-0 border-b border-[var(--line)] focus-within:border-[var(--ink)] transition-colors">
-                  <input
+                  <Input
                     type="text"
+                    aria-label="Promo code"
                     placeholder="ENTER CODE"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
-                    className="flex-1 bg-transparent py-2 text-body-sm font-serif color-ink placeholder-[var(--muted)] focus:outline-none uppercase"
+                    containerClassName="flex-1"
+                    className="h-auto border-0 bg-transparent px-0 py-2 font-display uppercase focus:border-transparent"
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={handleApplyPromo}
                     disabled={promoLoading || !promoCode}
-                    className="color-ink text-body-xs type-bold uppercase tracking-token-wider hover:color-muted disabled:opacity-30 transition-colors px-2"
+                    variant="ghost"
+                    size="sm"
+                    className="px-2"
                   >
                     {promoLoading ? 'Adjusting...' : 'Apply'}
-                  </button>
+                  </Button>
                 </div>
                 {promoMessage && (
                   <p
-                    className={`text-body-xs mt-2 ${promoMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}
+                    className={`text-body-xs mt-2 ${promoMessage.type === 'success' ? 'text-[var(--ds-success)]' : 'text-[var(--ds-danger)]'}`}
                   >
                     {promoMessage.text}
                   </p>
@@ -1269,7 +1258,7 @@ export default function CheckoutPage() {
                 </span>
               </div>
               {discount && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-[var(--ds-success)]">
                   <div className="flex items-center gap-2">
                     <span>Discount</span>
                     <span className="text-body-xs bg-[var(--soft)] px-1 py-0.5 rounded color-muted">
@@ -1292,7 +1281,7 @@ export default function CheckoutPage() {
                     Shipping
                     {selectedShipping ? ` (${selectedShipping.name})` : ''}
                   </span>
-                  <span className={shippingCost === 0 ? 'text-green-600' : ''}>
+                  <span className={shippingCost === 0 ? 'text-[var(--ds-success)]' : ''}>
                     {shippingCost === 0
                       ? 'FREE'
                       : new Intl.NumberFormat(undefined, {
@@ -1337,7 +1326,7 @@ export default function CheckoutPage() {
                   </span>
                 </div>
               )}
-              <div className="flex justify-between text-body-xl font-serif color-ink pt-4 border-t border-[var(--line)]">
+              <div className="flex justify-between text-body-xl font-display color-ink pt-4 border-t border-[var(--line)]">
                 <span>Total</span>
                 <span>
                   {new Intl.NumberFormat(undefined, {
@@ -1348,7 +1337,7 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="mt-8 bg-white p-4 border border-[var(--soft)] flex gap-3 color-muted text-body-xs">
+            <div className="mt-8 bg-[var(--ds-surface-paper)] p-4 border border-[var(--soft)] flex gap-3 color-muted text-body-xs">
               <ShieldCheck size={32} className="color-muted shrink-0" />
               <p>
                 Every purchase is backed by our Authenticity Guarantee. We
@@ -1374,4 +1363,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-

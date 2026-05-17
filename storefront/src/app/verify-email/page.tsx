@@ -2,7 +2,9 @@
 
 import { useState, Suspense, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 function VerifyContent() {
   const searchParams = useSearchParams();
@@ -52,75 +54,51 @@ function VerifyContent() {
   }, [token]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8 text-center">
         {status === 'loading' && (
           <>
             <Loader2 className="animate-spin mx-auto" size={48} />
-            <h1 className="text-display-md font-serif text-stone-900">
+            <h1 className="text-display-md font-display text-[var(--ds-text-primary)]">
               Verifying your email...
             </h1>
           </>
         )}
 
         {status === 'success' && (
-          <>
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-            <h1 className="text-display-md font-serif text-stone-900">
-              Email Verified!
-            </h1>
-            <p className="text-stone-500">{message}</p>
-            <button
+          <EmptyState
+            icon={<CheckCircle size={48} />}
+            title="Email Verified!"
+            description={message}
+            className="border-0"
+            actions={
+            <Button
               onClick={() => router.push('/login')}
-              className="bg-stone-900 text-white px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800"
+              variant="secondary"
+              size="md"
             >
               Go to Login
-            </button>
-          </>
+            </Button>
+            }
+          />
         )}
 
         {status === 'error' && (
-          <>
-            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-              <svg
-                className="w-8 h-8 text-red-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </div>
-            <h1 className="text-display-md font-serif text-stone-900">
-              Verification Failed
-            </h1>
-            <p className="text-stone-500">{message}</p>
-            <button
+          <EmptyState
+            icon={<XCircle size={48} />}
+            title="Verification Failed"
+            description={message}
+            className="border-0"
+            actions={
+            <Button
               onClick={() => router.push('/login')}
-              className="bg-stone-900 text-white px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-stone-800"
+              variant="secondary"
+              size="md"
             >
               Back to Login
-            </button>
-          </>
+            </Button>
+            }
+          />
         )}
       </div>
     </div>
@@ -140,4 +118,3 @@ export default function VerifyEmailPage() {
     </Suspense>
   );
 }
-

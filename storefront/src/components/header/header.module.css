@@ -18,6 +18,6 @@
   gap: 10px;
 }
 .mmLink:hover {
-  color: var(--kv-coral);
+  color: var(--ds-accent-primary);
   padding-left: 4px;
 }

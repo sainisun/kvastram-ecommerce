@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { CompactProductCard } from '@/components/products/ProductCard';
 import type { MoneyAmount, Product } from '@/types';
 import type {
   HomepageCollection,
@@ -60,7 +61,7 @@ function SectionHead({
 
 function EmptyMerchState({ label }: { label: string }) {
   return (
-    <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-white px-6 py-10 text-center">
+    <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--ds-surface-paper)] px-6 py-10 text-center">
       <p className="kv-tag">{label}</p>
     </div>
   );
@@ -87,7 +88,7 @@ function MerchSlotCard({
   const isCategoryOverlay = variant === 'categoryOverlay';
   const cardClassName = isCategoryOverlay
     ? 'homepage-category-merch-card group'
-    : 'relative min-h-[320px] min-w-[78%] snap-start overflow-hidden rounded-lg bg-gradient-to-br from-[#7d3f25] via-[#a85d3a] to-[#d8b295] p-8 text-white sm:min-w-[42%] lg:min-w-[31%]';
+    : 'relative min-h-[320px] min-w-[78%] snap-start overflow-hidden rounded-lg bg-gradient-to-br from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-accent-soft)] p-8 text-[var(--ds-text-inverse)] sm:min-w-[42%] lg:min-w-[31%]';
   const imageSizes = isCategoryOverlay
     ? '(max-width: 740px) 80vw, (max-width: 999px) 60vw, 23vw'
     : '(max-width: 768px) 78vw, 31vw';
@@ -115,14 +116,14 @@ function MerchSlotCard({
         <>
           <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.06),rgba(0,0,0,0.54))]" />
           <div className="relative z-10 flex h-full flex-col justify-end">
-            <div className="text-body-xs uppercase tracking-token-wider text-white/75">
+            <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-text-inverse)]/75">
               {slot.eyebrow || 'Kvastram Edit'}
             </div>
-            <h3 className="mt-3 font-heading text-display-md leading-token-tight">
+            <h3 className="mt-3 font-display text-display-md leading-token-tight">
               {slot.title}
             </h3>
             {slot.copy ? (
-              <p className="mt-3 max-w-[18rem] text-body-sm leading-7 text-white/82">
+              <p className="mt-3 max-w-[18rem] text-body-sm leading-7 text-[var(--ds-text-inverse)]/82">
                 {slot.copy}
               </p>
             ) : null}
@@ -138,35 +139,17 @@ function ProductTile({ product }: { product: Product }) {
   const price = getPrice(product);
 
   return (
-    <article className="group">
-      <Link
-        href={`/products/${product.handle || product.id}`}
-        className="relative block aspect-[4/5] overflow-hidden rounded-lg bg-stone-100"
-      >
-        {product.thumbnail ? (
-          <OptimizedImage
-            src={product.thumbnail}
-            alt={product.title}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-[var(--soft)] color-muted">
-            No Image
-          </div>
-        )}
-      </Link>
-      <Link
-        href={`/products/${product.handle || product.id}`}
-        className="mt-4 line-clamp-2 block text-body-md leading-6 color-ink"
-      >
-        {product.title}
-      </Link>
-      <p className="mt-1 text-body-xs uppercase tracking-token-wider color-muted">
-        {price ? formatPrice(price) : 'Contact for price'}
-      </p>
-    </article>
+    <CompactProductCard
+      href={`/products/${product.handle || product.id}`}
+      title={product.title}
+      thumbnail={product.thumbnail}
+      priceLabel={price ? formatPrice(price) : 'Contact for price'}
+      imageAlt={product.title}
+      imageSizes="(max-width: 768px) 50vw, 25vw"
+      imageClassName="aspect-[4/5] rounded-lg"
+      titleClassName="mt-4 line-clamp-2 text-body-md leading-6 color-ink"
+      priceClassName="text-body-xs uppercase tracking-token-wider color-muted"
+    />
   );
 }
 
@@ -243,7 +226,7 @@ export function PrototypeHomeExtras({
         </div>
       </section>
 
-      <section className="kv-section bg-white">
+      <section className="kv-section bg-[var(--ds-surface-paper)]">
         <div className="kv-container">
           <SectionHead
             eyebrow="Curated for you"
