@@ -7,7 +7,9 @@ import { MessageCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { useStudioChatSocket } from '@/hooks/useStudioChatSocket';
 import { api } from '@/lib/api';
+import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
+import { cardClasses } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBanner } from '@/components/ui/StatusBanner';
 
@@ -110,7 +112,10 @@ export default function AccountMessagesPage() {
               <Link
                 key={message.id}
                 href={`/account/messages/${message.id}`}
-                className="block border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-5 transition hover:border-[var(--ds-border-strong)]"
+                className={cn(
+                  cardClasses,
+                  'block p-5 transition hover:border-[var(--ds-border-strong)]'
+                )}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>

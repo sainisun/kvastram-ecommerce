@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { X, Cookie } from 'lucide-react';
 import { ConsentManager } from '@/lib/consent-manager';
 import { Button, IconButton } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 export function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
@@ -40,7 +41,7 @@ export function CookieConsent() {
       aria-label="Cookie consent"
       aria-live="polite"
     >
-      <div className="flex flex-col gap-4 rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-5 shadow-2xl">
+      <Card className="flex flex-col gap-4 p-5 shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -99,7 +100,7 @@ export function CookieConsent() {
             Customize
           </Link>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

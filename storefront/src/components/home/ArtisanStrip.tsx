@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Card } from '@/components/ui/Card';
 
 const ARTISANS = [
   {
@@ -51,9 +52,9 @@ export function ArtisanStrip() {
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:gap-6 lg:gap-8">
           {ARTISANS.map((artisan) => (
-            <div
+            <Card
               key={artisan.name}
-              className="group relative overflow-hidden rounded-[var(--radius-lg)] bg-[var(--ds-surface-paper)] p-6 transition-shadow hover:shadow-md"
+              className="group relative overflow-hidden p-6 transition-shadow hover:shadow-md"
             >
               <div
                 className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-body-sm type-semibold color-ink`}
@@ -76,7 +77,7 @@ export function ArtisanStrip() {
                   {artisan.years} of craft
                 </span>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
 

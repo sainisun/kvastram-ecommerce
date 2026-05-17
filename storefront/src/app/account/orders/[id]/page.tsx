@@ -23,6 +23,7 @@ import Textarea from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
 import { StatusBanner } from '@/components/ui/StatusBanner';
@@ -363,7 +364,7 @@ export default function OrderDetailsPage() {
           <ArrowLeft size={16} /> Back to Orders
         </Link>
 
-        <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] shadow-sm overflow-hidden">
+        <Card className="overflow-hidden shadow-sm">
           <div className="p-6 md:p-8 border-b border-[var(--ds-border-subtle)] flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="account-detail-title mb-1">
@@ -430,7 +431,7 @@ export default function OrderDetailsPage() {
                         {item.title}
                       </p>
                       <p className="account-caption mt-1">
-                        Qty: {item.quantity} ×{' '}
+                        Qty: {item.quantity} x{' '}
                         {new Intl.NumberFormat(undefined, {
                           style: 'currency',
                           currency: order.currency_code?.toUpperCase() || 'INR',
@@ -561,7 +562,7 @@ export default function OrderDetailsPage() {
                             : pkg.tracking_number || 'Tracking pending'}
                         </p>
                         <p className="mt-1 text-[var(--ds-text-muted)]">
-                          {[pkg.carrier, pkg.service].filter(Boolean).join(' • ') ||
+                          {[pkg.carrier, pkg.service].filter(Boolean).join(' / ') ||
                             'Carrier details pending'}
                         </p>
                         {pkg.no_tracking_reason ? (
@@ -587,7 +588,7 @@ export default function OrderDetailsPage() {
                   </StatusBanner>
                 )}
                 {existingReturn ? (
-                  <div className="rounded border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
+                  <Card className="p-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <p className="account-form-label">Return request</p>
                       <Badge
@@ -628,7 +629,7 @@ export default function OrderDetailsPage() {
                         Contact Support
                       </Link>
                     </div>
-                  </div>
+                  </Card>
                 ) : null}
                 <Button
                   type="button"
@@ -705,7 +706,7 @@ export default function OrderDetailsPage() {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
       {/* Return Request Modal */}
       {order ? (

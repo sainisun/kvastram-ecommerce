@@ -11,6 +11,7 @@ import { api } from '@/lib/api';
 import Input from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button, IconButton } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { StatusBanner } from '@/components/ui/StatusBanner';
 
 interface Address {
@@ -248,7 +249,7 @@ export default function AddressesPage() {
         ) : null}
 
         {showForm ? (
-          <div className="mb-8 border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-6 shadow-sm">
+          <Card className="mb-8 p-6 shadow-sm">
             <h2 className="account-section-title mb-2">
               {editingAddress ? 'Edit Address' : 'New Address'}
             </h2>
@@ -420,16 +421,16 @@ export default function AddressesPage() {
                 </Button>
               </div>
             </form>
-          </div>
+          </Card>
         ) : null}
 
         {loadingAddresses ? (
-          <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-12 text-center shadow-sm">
+          <Card className="p-12 text-center shadow-sm">
             <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--ds-text-primary)]" />
             <p className="account-muted mt-4">Loading saved addresses...</p>
-          </div>
+          </Card>
         ) : addresses.length === 0 ? (
-          <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-12 text-center shadow-sm">
+          <Card className="p-12 text-center shadow-sm">
             <MapPin size={48} className="mx-auto mb-4 text-[var(--ds-text-disabled)]" />
             <h3 className="account-section-title mb-2">No saved addresses</h3>
             <p className="account-muted mb-6">
@@ -444,13 +445,13 @@ export default function AddressesPage() {
             >
               Add Your First Address
             </Button>
-          </div>
+          </Card>
         ) : (
           <div className="grid gap-4">
             {addresses.map((address) => (
-              <div
+              <Card
                 key={address.id}
-                className="flex flex-col justify-between gap-5 border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-6 shadow-sm md:flex-row md:items-start"
+                className="flex flex-col justify-between gap-5 p-6 shadow-sm md:flex-row md:items-start"
               >
                 <div>
                   <p className="account-name">
@@ -503,7 +504,7 @@ export default function AddressesPage() {
                     <Trash2 size={16} />
                   </IconButton>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         )}

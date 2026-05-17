@@ -8,6 +8,7 @@ import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { StatusBanner } from '@/components/ui/StatusBanner';
 
 export default function ProfilePage() {
@@ -76,7 +77,7 @@ export default function ProfilePage() {
           <ArrowLeft size={16} /> Back to Account
         </Link>
 
-        <div className="bg-[var(--ds-surface-paper)] p-8 border border-[var(--ds-border-subtle)] shadow-sm">
+        <Card className="p-8 shadow-sm">
           <h1 className="account-detail-title mb-6">
             Edit Profile
           </h1>
@@ -145,7 +146,7 @@ export default function ProfilePage() {
               </Button>
             </div>
           </form>
-        </div>
+        </Card>
       </div>
     </div>
   );

@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { MessageCircle, X, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storefrontTrust } from '@/config/storefront-trust';
+import { cn } from '@/lib/utils';
 import Input from '@/components/ui/Input';
 import { IconButton, UnstyledButton } from '@/components/ui/Button';
+import { cardClasses } from '@/components/ui/Card';
 
 declare global {
   interface Window {
@@ -122,7 +124,11 @@ export function ChatWidget() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed bottom-40 right-4 z-50 w-[calc(100vw-1rem)] max-w-80 overflow-hidden rounded-lg bg-[var(--ds-surface-paper)] shadow-2xl md:bottom-6 md:right-6 md:w-96 ${isMinimized ? 'h-14' : 'h-[500px]'}`}
+            className={cn(
+              cardClasses,
+              'fixed bottom-40 right-4 z-50 w-[calc(100vw-1rem)] max-w-80 overflow-hidden shadow-2xl md:bottom-6 md:right-6 md:w-96',
+              isMinimized ? 'h-14' : 'h-[500px]'
+            )}
           >
             {/* Header */}
             <div className="flex items-center justify-between bg-[var(--ds-text-primary)] p-4 text-[var(--ds-text-inverse)]">

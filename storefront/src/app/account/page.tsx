@@ -12,6 +12,7 @@ import { QuickGrid } from '@/components/account/QuickGrid';
 import { SettingsList } from '@/components/account/SettingsList';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { AccountSkeleton } from '@/components/ui/Skeleton';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
@@ -28,7 +29,7 @@ export default function AccountPage() {
     }
   }, [loading, customer, router]);
 
-  // UX-001: Guard against race condition — only fetch orders after auth is confirmed
+  // UX-001: Guard against race condition; only fetch orders after auth is confirmed.
   useEffect(() => {
     if (loading || !customer) return;
     api
@@ -81,7 +82,7 @@ export default function AccountPage() {
           <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
             {/* Sidebar */}
             <div className="lg:w-64 shrink-0">
-              <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] shadow-sm overflow-hidden sticky top-24">
+              <Card className="sticky top-24 overflow-hidden shadow-sm">
                 <div className="p-6 border-b border-[var(--ds-border-subtle)]">
                   <div className="w-16 h-16 bg-[var(--ds-surface-soft)] rounded-full flex items-center justify-center mb-4">
                     <User size={24} className="text-[var(--ds-text-muted)]" />
@@ -127,7 +128,7 @@ export default function AccountPage() {
                     <LogOut size={14} /> Sign Out
                   </Button>
                 </nav>
-              </div>
+              </Card>
             </div>
 
             {/* Main Content */}
@@ -138,7 +139,7 @@ export default function AccountPage() {
 
               {/* Quick Stats */}
               <div className="grid sm:grid-cols-3 gap-4 mb-8">
-                <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
+                <Card className="p-6">
                   <div className="flex items-center gap-3 mb-2">
                     <Package size={20} className="text-[var(--ds-text-muted)]" />
                     <h3 className="account-kicker">
@@ -148,8 +149,8 @@ export default function AccountPage() {
                   <p className="account-stat-value">
                     {orders.length}
                   </p>
-                </div>
-                <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
+                </Card>
+                <Card className="p-6">
                   <div className="flex items-center gap-3 mb-2">
                     <User size={20} className="text-[var(--ds-text-muted)]" />
                     <h3 className="account-kicker">
@@ -164,11 +165,11 @@ export default function AccountPage() {
                         )
                       : 'N/A'}
                   </p>
-                </div>
+                </Card>
               </div>
 
               {/* Recent Orders */}
-              <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] shadow-sm overflow-hidden">
+              <Card className="overflow-hidden shadow-sm">
                 <div className="p-6 border-b border-[var(--ds-border-subtle)] flex items-center justify-between">
                   <h2 className="account-section-title">
                     Recent Orders
@@ -177,7 +178,7 @@ export default function AccountPage() {
                     href="/account/orders"
                     className="account-muted hover:text-[var(--ds-text-primary)]"
                   >
-                    View All →
+                    View All
                   </Link>
                 </div>
 
@@ -238,7 +239,7 @@ export default function AccountPage() {
                     ))}
                   </div>
                 )}
-              </div>
+              </Card>
             </div>
           </div>
         </div>

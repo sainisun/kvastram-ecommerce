@@ -4,6 +4,8 @@ import { ArrowRight, Gift, Layers3, Sparkles, Tags, Wand2 } from 'lucide-react';
 
 import { storefrontTrust } from '@/config/storefront-trust';
 import { buildBasicPageMetadata } from '@/lib/seo';
+import { cn } from '@/lib/utils';
+import { cardClasses } from '@/components/ui/Card';
 
 export const metadata: Metadata = buildBasicPageMetadata({
   title: 'Curated Edits | Kvastram',
@@ -92,7 +94,10 @@ export default function EditsPage() {
             <Link
               key={title}
               href={href}
-              className="group block overflow-hidden border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] transition-colors hover:border-[var(--ds-border-strong)]"
+              className={cn(
+                cardClasses,
+                'group block overflow-hidden transition-colors hover:border-[var(--ds-border-strong)]'
+              )}
             >
               <div className={`bg-gradient-to-br ${accent} p-6 text-[var(--ds-text-inverse)]`}>
                 <Icon size={28} />

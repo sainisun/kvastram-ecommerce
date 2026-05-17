@@ -309,3 +309,43 @@ Final verification:
 - `npm.cmd run audit:design-system`: passed.
 - `npm.cmd run verify:design-system -- --pool=threads`: passed; audit, lint, and 3 unit tests passed.
 - `npm.cmd run build`: passed; 57/57 routes generated.
+
+## Remaining Fixes Batch - 2026-05-17
+
+Status: the remaining actionable pattern-level mismatches found after the pushed cleanup were fixed in one consolidated pass.
+
+Additional fixes completed:
+
+- Exposed `cardClasses` from the shared `Card` primitive so link-cards and animated panels can share the same surface, border, radius, and text contract without duplicating local card CSS.
+- Account overview, profile, addresses, orders list, order detail, wholesale account dashboard, and messages list now use `Card` or `cardClasses` for page panels and link cards.
+- Cart order summary, contact form shell, artisan cards, cookie banner shell, chat window shell, and curated edit cards now share the card contract.
+- Removed remaining mojibake/non-ASCII separators from the edited account/order display copy.
+- Re-ran targeted scans for local paper-panel recreation, default palette utilities, native buttons, inline styles, and non-ASCII drift.
+
+Metrics after remaining-fix batch:
+
+| Metric | After consolidation | After remaining-fix batch |
+| --- | ---: | ---: |
+| CSS owner files | 29 | 29 |
+| Component TSX files | 107 | 107 |
+| Native styled buttons | 3 | 3 |
+| Shared Button usages | 88 | 88 |
+| Legacy button class refs | 0 | 0 |
+| Default palette refs | 0 | 0 |
+| UI default palette refs | 0 | 0 |
+| Inline style blocks | 7 | 7 |
+| Dynamic class compositions | 146 | 148 |
+| Card usages | 20 | 40 |
+
+Remaining scan classification:
+
+- Remaining `bg-[var(--ds-surface-paper)]` hits are form controls, overlays/popovers/drawers/modals, nav chrome, pills, icon buttons, product-gallery controls, and intentionally specialized component states.
+- No remaining actionable page-level paper panel/card recreation was found in the audited account, contact, cart, wholesale, track, search, and edits surfaces.
+
+Verification after this batch:
+
+- `npm.cmd run audit:design-system`: passed.
+- `npm.cmd run audit:design-system:metrics`: passed with the metrics above.
+- `npm.cmd run lint`: passed.
+- `npm.cmd run verify:design-system -- --pool=threads`: passed; audit, lint, and 3 unit tests passed.
+- `npm.cmd run build`: passed; 57/57 routes generated.

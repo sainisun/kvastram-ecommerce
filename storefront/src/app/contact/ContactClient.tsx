@@ -19,6 +19,7 @@ import {
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBanner } from '@/components/ui/StatusBanner';
 import { storefrontTrust } from '@/config/storefront-trust';
@@ -201,7 +202,7 @@ export function ContactClient() {
             </HighlightBox>
           </div>
 
-          <div className="border border-[var(--line)] bg-[var(--ds-surface-paper)] p-6 shadow-[0_24px_80px_rgba(44,44,44,0.06)] md:p-10">
+          <Card className="p-6 shadow-[0_24px_80px_rgba(44,44,44,0.06)] md:p-10">
             {orderReference || reason ? (
               <div className="mb-6 border border-[var(--line)] bg-[var(--ds-surface-parchment)] px-4 py-3 text-body-sm text-[var(--ds-text-secondary)]">
                 {reason ? (
@@ -325,7 +326,7 @@ export function ContactClient() {
                 </Button>
               </form>
             )}
-          </div>
+          </Card>
         </div>
     </section>
   );

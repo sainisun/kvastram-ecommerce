@@ -15,6 +15,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface WholesaleOrder {
@@ -114,7 +115,7 @@ export default function WholesaleDashboardPage() {
         </h1>
 
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
-          <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-3">
               <Tag size={20} className="text-[var(--ds-text-muted)]" />
               <span className="account-form-label">
@@ -128,9 +129,9 @@ export default function WholesaleDashboardPage() {
                 {wholesaleInfo.tier || 'N/A'}
               </Badge>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-3">
               <TrendingUp size={20} className="text-[var(--ds-text-muted)]" />
               <span className="account-form-label">
@@ -141,9 +142,9 @@ export default function WholesaleDashboardPage() {
               {wholesaleInfo.discountPercent}%
             </p>
             <p className="account-caption mt-1">Off retail prices</p>
-          </div>
+          </Card>
 
-          <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] p-6">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-3">
               <Building2 size={20} className="text-[var(--ds-text-muted)]" />
               <span className="account-form-label">
@@ -153,10 +154,10 @@ export default function WholesaleDashboardPage() {
             <p className="account-section-title">
               {wholesaleInfo.companyName || 'N/A'}
             </p>
-          </div>
+          </Card>
         </div>
 
-        <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)]">
+        <Card className="overflow-hidden">
           <div className="p-6 border-b border-[var(--ds-border-subtle)]">
             <div className="flex items-center justify-between">
               <h2 className="account-kicker flex items-center gap-2">
@@ -237,7 +238,7 @@ export default function WholesaleDashboardPage() {
               ))}
             </div>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

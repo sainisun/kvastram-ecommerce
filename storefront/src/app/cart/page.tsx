@@ -22,6 +22,7 @@ import type { Product } from '@/types';
 import Input from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button, UnstyledButton } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 interface ShippingOption {
   id: string;
@@ -567,7 +568,7 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="mt-16 lg:col-span-5 lg:mt-0">
-            <div className="bg-[var(--ds-surface-paper)] rounded-lg border border-[var(--line)] p-6">
+            <Card className="p-6">
               <h2 className="text-body-xl type-medium color-ink mb-6">
                 Order Summary
               </h2>
@@ -867,7 +868,7 @@ export default function CartPage() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         </div>
       </div>

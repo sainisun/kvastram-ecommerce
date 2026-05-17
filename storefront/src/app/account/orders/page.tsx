@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { OrdersListSkeleton } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
 import { UnstyledButton } from '@/components/ui/Button';
@@ -134,7 +135,7 @@ export default function OrdersListPage() {
         </div>
 
         {/* Orders List */}
-        <div className="bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] shadow-sm overflow-hidden">
+        <Card className="overflow-hidden shadow-sm">
           {ordersLoading ? (
             <div className="divide-y divide-[var(--ds-border-subtle)]">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -263,7 +264,7 @@ export default function OrdersListPage() {
               )}
             </>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );
