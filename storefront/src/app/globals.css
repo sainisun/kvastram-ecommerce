@@ -83,13 +83,10 @@
   );
 
   /* Kvastram Header Design Tokens (kv-*) */
-  /* Coral naming is superseded; kv aliases now map to TERRACOTTA. */
   --kv-ink:          var(--ds-text-primary);
   --kv-ink-2:        var(--ds-text-secondary);
   --kv-ink-3:        var(--ds-text-muted);
   --kv-ink-4:        var(--ds-text-disabled);
-  --kv-coral:        var(--ds-accent-primary);
-  --kv-coral-dark:   var(--ds-accent-hover);
   --kv-parchment:    var(--ds-surface-parchment);
   --kv-parchment-2:  var(--ds-surface-parchment-2);
   --kv-warm:         var(--ds-surface-warm);
@@ -102,12 +99,9 @@
   --font-ui:         var(--font-body);
 
   /* Tailwind compat aliases */
-  /* Sienna naming is superseded; legacy aliases now map to TERRACOTTA. */
   --terracotta: var(--ds-accent-primary);
   --terracotta-dark: var(--ds-accent-hover);
   --terracotta-light: var(--ds-accent-soft);
-  --sienna: var(--ds-accent-primary);
-  --sienna-dark: var(--ds-accent-hover);
   --sage: var(--ds-success);
   --cream: var(--ds-surface-page);
   --paper: var(--ds-surface-paper);
@@ -117,7 +111,6 @@
   --soft: var(--ds-surface-soft);
   --danger: var(--ds-danger);
   --success: var(--ds-success);
-  --sienna-light: var(--ds-accent-soft);
   --gold: var(--ds-accent-gold);
   --rating-star: var(--ds-accent-gold);
   --success-bg: var(--ds-success-bg);
@@ -137,7 +130,6 @@
   /* RGB channels for rgba() usage */
   --ink-rgb: var(--ds-ink-rgb);
   --cream-rgb: var(--ds-cream-rgb);
-  --sienna-rgb: var(--ds-accent-rgb);
   --terracotta-rgb: var(--ds-accent-rgb);
 }
 

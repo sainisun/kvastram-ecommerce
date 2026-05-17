@@ -59,6 +59,9 @@ The goal of this pass was to move the storefront from "clean and consistent" to 
 ### Zero-Known-Issues Cleanup
 
 - Removed stale page-local CTA CSS selectors after TSX was migrated to shared primitives.
+- Removed dead `legacy-*` product/filter CSS selectors and unused legacy stylesheet imports.
+- Removed superseded accent aliases from runtime globals and Tailwind config; TERRACOTTA is now the only accent naming path in active config.
+- Extended `audit:design-system` beyond `src` to include `tailwind.config.ts`, and added a guardrail for `.legacy-*` CSS selectors.
 - Promoted remaining raw overlay/color math to design-system RGB channels:
   - `--ds-accent-rgb`
   - `--ds-warning-rgb`
@@ -74,7 +77,7 @@ The goal of this pass was to move the storefront from "clean and consistent" to 
 
 | Metric | Final |
 | --- | ---: |
-| CSS owner files | 29 |
+| CSS owner files | 27 |
 | Component TSX files | 107 |
 | Native styled buttons | 3 |
 | Shared Button usages | 88 |

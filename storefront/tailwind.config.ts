@@ -232,21 +232,19 @@ const config: Config = {
           sale: 'var(--color-text-sale)',
         },
         brand: {
-          terracotta: 'var(--terracotta)',
-          accent: 'var(--terracotta)',
-          // Deprecated aliases retained for compatibility; new work should use terracotta/accent.
-          sienna:  'var(--sienna)',        // #A85D3A — primary action
-          dark:    'var(--sienna-dark)',   // #7D3F25 — hover
-          light:   'var(--sienna-light)', // #F2E8E1 — tinted bg
-          cream:   'var(--cream)',         // #F9F7F4 — page bg
-          paper:   'var(--paper)',         // #FFFFFF — card bg
-          ink:     'var(--ink)',           // #2C2C2C — primary text
-          muted:   'var(--muted)',         // #6B6B6B — secondary text
-          line:    'var(--line)',          // #E8E6E1 — borders
-          soft:    'var(--soft)',          // #F1EDE7 — soft surfaces
-          gold:    'var(--gold)',          // #C9943A — accent
-          danger:  'var(--danger)',        // #D84235 — error/sale
-          success: 'var(--success)',       // #3E8A5F — success
+          terracotta: 'var(--ds-accent-primary)',
+          accent: 'var(--ds-accent-primary)',
+          hover: 'var(--ds-accent-hover)',
+          accentSoft: 'var(--ds-accent-soft)',
+          cream:   'var(--cream)',
+          paper:   'var(--paper)',
+          ink:     'var(--ink)',
+          muted:   'var(--muted)',
+          line:    'var(--line)',
+          soft:    'var(--soft)',
+          gold:    'var(--gold)',
+          danger:  'var(--danger)',
+          success: 'var(--success)',
         },
       },
       fontFamily: {

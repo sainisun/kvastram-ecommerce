@@ -2,14 +2,11 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { collectDesignSystemMetrics } from './design-system-metrics.mjs';
 
-const root = path.resolve('src');
+const roots = [path.resolve('src')];
+const extraFiles = [path.resolve('tailwind.config.ts')];
 const baseline = JSON.parse(
   readFileSync(path.resolve('scripts/design-system-baseline.json'), 'utf8')
 );
-const sourceOfTruthFiles = new Set([
-  path.normalize('src/styles/tokens.css'),
-  path.normalize('src/app/globals.css'),
-]);
 const allowedRawHexFiles = new Set([
   path.normalize('src/styles/tokens.css'),
 ]);
@@ -30,6 +27,7 @@ const localCtaClassPattern =
 const rawNumericRgbPattern = /rgba?\(\s*(?:\d{1,3}\s*,\s*){2}\d{1,3}/i;
 const namedColorDeclarationPattern =
   /\b(?:color|background(?:-color)?|border(?:-(?:top|right|bottom|left))?(?:-color)?|outline-color|text-decoration-color|fill|stroke)\s*:[^;]*(?<![a-z-])(?:white|black)\b/i;
+const legacyAccentNamePattern = new RegExp(`\\b(?:${'sien'}${'na'}|${'co'}${'ral'})\\b`, 'i');
 const allowedInlineStylePatterns = [
   /style=\{\{\s*animationDelay:/,
   /style=\{\{\s*width:\s*`/,
@@ -84,8 +82,8 @@ function auditFile(fullPath) {
       findings.push(`${location} likely mojibake/encoding artifact in UI source`);
     }
 
-    if (/\b(sienna|coral)\b/i.test(line) && !sourceOfTruthFiles.has(rel)) {
-      findings.push(`${location} legacy sienna/coral naming is superseded by TERRACOTTA`);
+    if (legacyAccentNamePattern.test(line)) {
+      findings.push(`${location} legacy accent naming is superseded by TERRACOTTA`);
     }
 
     if (defaultPalettePattern.test(line)) {
@@ -103,6 +101,10 @@ function auditFile(fullPath) {
 
     if (ext === '.css' && namedColorDeclarationPattern.test(line)) {
       findings.push(`${location} named white/black color should use a --ds-* token`);
+    }
+
+    if (ext === '.css' && /\.legacy-[a-z0-9-]+/i.test(line)) {
+      findings.push(`${location} legacy CSS selector should be removed or renamed to the active primitive contract`);
     }
 
     if (/\b(?:warm-white|kv-white)\b/.test(line)) {
@@ -125,7 +127,8 @@ function auditFile(fullPath) {
   });
 }
 
-walk(root);
+for (const root of roots) walk(root);
+for (const file of extraFiles) auditFile(file);
 
 const metrics = collectDesignSystemMetrics();
 

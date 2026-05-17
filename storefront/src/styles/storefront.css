@@ -2,10 +2,8 @@
 @import './effects.css';
 @import './components/premium-sections.css';
 @import './components/category-sections.css';
-@import './components/product-grid-premium.css';
 @import './components/newsletter.css';
 @import './components/pdp-premium.css';
-@import './components/catalog.css';
 @import './animations.css';
 @import './mobile-overrides.css';
 @import './theme-overrides.css';

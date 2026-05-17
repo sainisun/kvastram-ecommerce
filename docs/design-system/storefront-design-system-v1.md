@@ -40,8 +40,7 @@ Canonical token:
 Naming rule:
 
 - Use `terracotta` or `--ds-accent-*` in new work.
-- `sienna` is a deprecated compatibility alias.
-- `coral` is a deprecated compatibility alias.
+- Superseded accent names have been removed from runtime tokens and Tailwind config.
 
 ## Phase 1 Token Layer
 
@@ -57,27 +56,22 @@ Compatibility bridge:
 storefront/src/app/globals.css
 ```
 
-`globals.css` keeps old public aliases alive so existing UI does not break:
+`globals.css` keeps the active public terracotta aliases aligned with `--ds-*`:
 
 ```css
 --terracotta: var(--ds-accent-primary);
 --terracotta-dark: var(--ds-accent-hover);
 --terracotta-light: var(--ds-accent-soft);
-
---sienna: var(--ds-accent-primary);
---sienna-dark: var(--ds-accent-hover);
---sienna-light: var(--ds-accent-soft);
-
---kv-coral: var(--ds-accent-primary);
---kv-coral-dark: var(--ds-accent-hover);
 ```
 
 Tailwind canonical aliases:
 
 ```ts
 brand: {
-  terracotta: 'var(--terracotta)',
-  accent: 'var(--terracotta)',
+  terracotta: 'var(--ds-accent-primary)',
+  accent: 'var(--ds-accent-primary)',
+  hover: 'var(--ds-accent-hover)',
+  soft: 'var(--ds-accent-soft)',
 }
 ```
 
@@ -85,7 +79,7 @@ brand: {
 
 The following older specs are superseded by this file:
 
-- `storefront/KVASTRAM_HEADER_DESIGN_SYSTEM.md` for coral/header typography and accent rules.
+- `storefront/KVASTRAM_HEADER_DESIGN_SYSTEM.md` for older header typography and accent rules.
 - `storefront/kvastram-typography-system-v2.md` for Cormorant Garamond + DM Sans storefront typography.
 - Any instruction that names SIENNA or CORAL as the final accent source of truth.
 
@@ -93,7 +87,7 @@ The following older specs are superseded by this file:
 
 1. Use `--ds-*` tokens for new CSS.
 2. Use `terracotta` / `--ds-accent-*` for accent work.
-3. Do not introduce new `sienna` or `coral` tokens.
+3. Do not introduce superseded accent token names.
 4. Do not add raw accent hex values in TSX.
 5. Do not add serif storefront typography unless a future design decision reopens typography.
 6. Keep product, catalog, header, PDP, account, and support typography within the sans-led system.
@@ -306,7 +300,7 @@ Phase 7 completed work:
 - `storefront/src/styles/components/content-pages.css` now has 0 `!important` declarations.
 - Small isolated `!important` rules were removed from `category-sections.css`, `product-grid-premium.css`, `reels.css`, and `header-enhancements.css`.
 - `storefront/src/styles/utilities.css`, `mobile-overrides.css`, and `theme-overrides.css` now avoid forced theme patching.
-- Runtime `sienna`/`coral` usage has been removed; those names remain only as compatibility aliases in `globals.css`.
+- Runtime superseded accent usage has been removed; old accent aliases were removed from `globals.css`.
 - Raw UI hex values now live in `tokens.css`; ProductView swatches resolve through `--ds-swatch-*` tokens.
 - Total `!important` declarations in `storefront/src/styles` are down to 4, all inside the reduced-motion accessibility block in `animations.css`.
 - The broad mobile button override in `mobile-overrides.css` was removed so shared `Button`, `IconButton`, and tokenized action styles are not force-restyled on mobile.
@@ -345,7 +339,7 @@ Phase 7 completed work:
 Phase 7 rule:
 
 - Raw UI hex should be added to `tokens.css` first, then consumed as `--ds-*`.
-- `sienna` and `coral` are compatibility names only; new runtime styling must use TERRACOTTA via `--ds-accent-*`.
+- Runtime styling must use TERRACOTTA via `--ds-accent-*`.
 - `!important` is allowed only for documented accessibility resets.
 - Run `npm run audit:design-system` with build/lint/unit tests before marking storefront design-system work complete.
 
@@ -366,12 +360,4 @@ Phase 8 rule:
 
 ## Migration Notes
 
-Phase 1 is a compatibility phase. Existing UI can keep using old names temporarily because they now resolve to TERRACOTTA. Future cleanup should replace old names gradually:
-
-| Deprecated | Replace With |
-| --- | --- |
-| `--sienna` | `--terracotta` or `--ds-accent-primary` |
-| `--sienna-dark` | `--terracotta-dark` or `--ds-accent-hover` |
-| `--sienna-light` | `--terracotta-light` or `--ds-accent-soft` |
-| `--kv-coral` | `--terracotta` or `--ds-accent-primary` |
-| `--kv-coral-dark` | `--terracotta-dark` or `--ds-accent-hover` |
+The storefront no longer carries compatibility aliases for superseded accent names. Use `--ds-accent-primary`, `--ds-accent-hover`, `--ds-accent-soft`, or the public `--terracotta*` bridge only when a non-`--ds-*` compatibility name is unavoidable.

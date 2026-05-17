@@ -1,7 +1,7 @@
 # Kvastram — Header & Navigation Design System
 ### Claude Code Binding Guide v1.0
 
-> **Status:** Superseded for storefront typography and accent decisions. Use `docs/design-system/storefront-design-system-v1.md` instead. CORAL is no longer the final accent token; TERRACOTTA is canonical. The Cormorant/DM Sans header typography direction is superseded by the Mulmul-inspired restrained sans commerce direction.
+> **Status:** Superseded for storefront typography and accent decisions. Use `docs/design-system/storefront-design-system-v1.md` instead. TERRACOTTA is the canonical accent token. The Cormorant/DM Sans header typography direction is superseded by the Mulmul-inspired restrained sans commerce direction.
 
 > **Scope:** Desktop header · Mega menu · Mobile nav drawer · Responsive behavior  
 > **Stack:** Next.js / React · Tailwind CSS · Framer Motion  
@@ -18,7 +18,7 @@ Header "luxury artisan" aesthetic follow karta hai:
 - **Logo center** desktop pe — classic fashion house layout (Hermès, Fabindia style)
 - **Serif display font** logo aur mega menu links mein — handcrafted feel
 - **Warm parchment palette** — off-white surfaces, not cold white
-- **Coral accent** (`#c94e2a`) — only for active states, CTAs, brand moments
+- **Terracotta accent** (`--ds-accent-primary`) — only for active states, CTAs, brand moments
 - **No drop shadows, no gradients** — flat surfaces only
 - **Letter-spacing heavy** on nav — uppercase tracking creates luxury feel
 
@@ -35,8 +35,8 @@ Header "luxury artisan" aesthetic follow karta hai:
   --kv-ink-2:        #3d3a36;   /* Body text, nav links */
   --kv-ink-3:        #7a7570;   /* Muted text, labels */
   --kv-ink-4:        #b5b0a8;   /* Placeholder, disabled */
-  --kv-coral:        #c94e2a;   /* Accent — active states, CTAs */
-  --kv-coral-dark:   #a03d20;   /* Coral hover */
+  --ds-accent-primary: #c4613a; /* Accent - active states, CTAs */
+  --ds-accent-hover:   #9f4528; /* Accent hover */
 
   /* Surfaces */
   --kv-parchment:    #f7f4ef;   /* Page background */
@@ -155,7 +155,7 @@ export function PromoBar() {
 
 - **RULE L-1:** Font: Cormorant Garamond, 26px, weight 500, uppercase, `letter-spacing: 0.18em`
 - **RULE L-2:** Color: `var(--kv-ink)`
-- **RULE L-3:** "s" in "Kvastram" — color `var(--kv-coral)`. No other letter gets accent.
+- **RULE L-3:** "s" in "Kvastram" — color `var(--ds-accent-primary)`. No other letter gets accent.
 - **RULE L-4:** Logo links to `/`
 - **RULE L-5:** On mobile: 19px, same tracking
 
@@ -163,7 +163,7 @@ export function PromoBar() {
 export function Logo() {
   return (
     <Link href="/" className="font-display text-[26px] font-medium tracking-[0.18em] uppercase text-[#1a1714]">
-      Kva<span className="text-[#c94e2a]">s</span>tram
+      Kva<span className="text-[var(--ds-accent-primary)]">s</span>tram
     </Link>
   );
 }
@@ -173,7 +173,7 @@ export function Logo() {
 
 - **RULE DN-1:** Font: DM Sans, 12px, uppercase, `letter-spacing: 0.08em`, weight 400
 - **RULE DN-2:** Color: `var(--kv-ink-2)`. Hover: `var(--kv-ink)` + `border-bottom: 1px solid var(--kv-ink-4)`
-- **RULE DN-3:** Active/current: `color: var(--kv-coral)` + `border-bottom: 1px solid var(--kv-coral)`
+- **RULE DN-3:** Active/current: `color: var(--ds-accent-primary)` + `border-bottom: 1px solid var(--ds-accent-primary)`
 - **RULE DN-4:** Border offset from text: `padding-bottom: 4px`
 - **RULE DN-5:** Exactly 4 nav items: `Shop`, `Collections`, `New Arrivals`, `About`
 - **RULE DN-6:** `Shop` aur `Collections` ke saath mega menu trigger hota hai (hover)
@@ -194,7 +194,7 @@ Order (left to right): Search · Account · Cart · Divider · Locale toggle
 
 - **RULE AI-1:** Icon size: `20x20px`, stroke `1.4`, no fill
 - **RULE AI-2:** Color: `var(--kv-ink-2)`. Hover: `var(--kv-ink)`
-- **RULE AI-3:** Cart badge — coral dot, top-right, `14x14px`, white `1.5px` border, `8px` DM Sans text
+- **RULE AI-3:** Cart badge — terracotta dot, top-right, `14x14px`, white `1.5px` border, `8px` DM Sans text
 - **RULE AI-4:** Cart count comes from cart context/store — never hardcode
 - **RULE AI-5:** Locale toggle: `EN / ₹` — DM Sans 11px, `var(--kv-ink-3)`, hover `var(--kv-ink-2)`
 - **RULE AI-6:** Search icon click → SearchBar toggle (not a new page)
@@ -275,7 +275,7 @@ View all clothing →       Scarves & Wraps           All collections →
   gap: 10px;
 }
 .mm-link:hover {
-  color: var(--kv-coral);
+  color: var(--ds-accent-primary);
   padding-left: 4px;  /* subtle nudge right */
 }
 ```
@@ -283,7 +283,7 @@ View all clothing →       Scarves & Wraps           All collections →
 ### "New" badge on links
 ```tsx
 {item.isNew && (
-  <span className="text-[9px] font-ui font-medium tracking-[0.08em] uppercase text-white bg-[#c94e2a] px-1.5 py-px rounded-sm">
+  <span className="text-[9px] font-ui font-medium tracking-[0.08em] uppercase text-[var(--ds-text-inverse)] bg-[var(--ds-accent-primary)] px-1.5 py-px rounded-sm">
     New
   </span>
 )}
@@ -338,7 +338,7 @@ const megaVariants = {
 - **RULE MB-2:** 3-item flex row: `[Hamburger] [Logo] [Icons]`
 - **RULE MB-3:** Logo: Cormorant 19px, same tracking as desktop (`0.18em`)
 - **RULE MB-4:** Hamburger icon — 3 lines (uneven: long, short, long). Color `var(--kv-ink-2)`.
-- **RULE MB-5:** When drawer open — hamburger becomes **X** (close icon), color `var(--kv-coral)`
+- **RULE MB-5:** When drawer open — hamburger becomes **X** (close icon), color `var(--ds-accent-primary)`
 - **RULE MB-6:** Right icons: Search + Cart only (Account hidden on mobile by default)
 - **RULE MB-7:** Cart badge same spec as desktop (Rule AI-3)
 
@@ -347,7 +347,7 @@ export function MobileTopBar({ isOpen, onToggle }) {
   return (
     <div className="flex items-center justify-between h-[54px] px-4 bg-white border-b border-[#d8d2c8]">
       <button onClick={onToggle} className="w-10 h-10 flex items-center justify-center">
-        {isOpen ? <XIcon className="text-[#c94e2a]" /> : <MenuIcon className="text-[#3d3a36]" />}
+        {isOpen ? <XIcon className="text-[var(--ds-accent-primary)]" /> : <MenuIcon className="text-[var(--ds-text-secondary)]" />}
       </button>
       <Logo />
       <div className="flex gap-4 items-center">
@@ -422,15 +422,15 @@ export function CategoryPills({ activePill, onSelect }) {
   cursor: pointer;
 }
 .mob-nav-item:hover { background: var(--kv-parchment); }
-.mob-nav-item.active { color: var(--kv-coral); }
+.mob-nav-item.active { color: var(--ds-accent-primary); }
 ```
 
 ### Accordion expand (subcategories)
 - **RULE DR-7:** Tap parent item → expands inline, chevron rotates 180°
 - **RULE DR-8:** Expanded sub-section bg: `var(--kv-parchment)` — visually nested
 - **RULE DR-9:** Sub-item style: Cormorant Garamond 14px (serif for product categories = brand consistency)
-- **RULE DR-10:** Sub-item has coral dot (`3x3px`) before text
-- **RULE DR-11:** "View all →" link at bottom of sub-section: DM Sans 12px caps, coral color
+- **RULE DR-10:** Sub-item has terracotta dot (`3x3px`) before text
+- **RULE DR-11:** "View all →" link at bottom of sub-section: DM Sans 12px caps, terracotta color
 - **RULE DR-12:** Only one section open at a time (accordion, not multi-expand)
 
 ### Section labels inside drawer
@@ -469,7 +469,7 @@ ABOUT
 
 ### Bottom CTA bar (always visible in drawer)
 - **RULE DR-13:** Fixed to bottom of drawer. Height `56px`. Bg white. Border-top `1px var(--kv-border)`.
-- **RULE DR-14:** Two buttons: "Track order" (outline) + "WhatsApp us" (coral fill)
+- **RULE DR-14:** Two buttons: "Track order" (outline) + "WhatsApp us" (terracotta fill)
 - **RULE DR-15:** Button style: DM Sans 11px, uppercase, `letter-spacing: 0.06em`, `font-weight: 500`
 - **RULE DR-16:** "WhatsApp us" links to `https://wa.me/{WHATSAPP_NUMBER}?text=Hi, I need help`
 
@@ -478,7 +478,7 @@ ABOUT
   <button className="flex-1 py-2.5 rounded-md text-[11px] font-medium uppercase tracking-[0.06em] border border-[#d8d2c8] text-[#3d3a36]">
     Track order
   </button>
-  <button className="flex-1 py-2.5 rounded-md text-[11px] font-medium uppercase tracking-[0.06em] bg-[#c94e2a] text-white border-none">
+  <button className="flex-1 py-2.5 rounded-md text-[11px] font-medium uppercase tracking-[0.06em] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] border-none">
     WhatsApp us
   </button>
 </div>
@@ -544,7 +544,7 @@ ABOUT
 
 ## 12. Accessibility Rules
 
-- **RULE A-1:** All interactive elements — `focus-visible` ring: `2px solid var(--kv-coral)`, `offset: 2px`
+- **RULE A-1:** All interactive elements — `focus-visible` ring: `2px solid var(--ds-accent-primary)`, `offset: 2px`
 - **RULE A-2:** Hamburger button — `aria-label="Open navigation"` / `aria-label="Close navigation"`
 - **RULE A-3:** Mega menu — `role="navigation"`, `aria-label="Main navigation"`
 - **RULE A-4:** Logo — `aria-label="Kvastram — Home"`
@@ -627,16 +627,16 @@ src/
 |---|------|-------------------|
 | PB-1 | PromoBar | Height = 32px always |
 | DH-1 | Desktop header | `grid: 1fr auto 1fr` |
-| L-3 | Logo | "s" = coral, nothing else |
+| L-3 | Logo | "s" = terracotta, nothing else |
 | DN-1 | Nav links | 12px / uppercase / 0.08em |
 | DN-5 | Nav items | Exactly 4 items |
-| AI-3 | Cart badge | Coral dot, 14px, white border |
+| AI-3 | Cart badge | Terracotta dot, 14px, white border |
 | SB-7 | Search | Auto-focus on open |
 | MM-1 | Mega | 120ms hover delay |
 | MM-5 | Mega | Max 6 links per column |
 | MM-6 | Mega | Col 4 = featured card ALWAYS |
 | MB-1 | Mobile bar | Height = 54px |
-| MB-5 | Mobile | Hamburger → X = coral |
+| MB-5 | Mobile | Hamburger → X = terracotta |
 | CP-1 | Pills | Height = 44px, parchment bg |
 | CP-8 | Pills | "New Arrivals" always first |
 | DR-1 | Drawer | Slides from left, full width |
