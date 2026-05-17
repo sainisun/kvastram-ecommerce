@@ -201,7 +201,7 @@ export function ContactClient() {
             </HighlightBox>
           </div>
 
-          <Card className="p-6 shadow-[0_24px_80px_rgba(44,44,44,0.06)] md:p-10">
+          <Card className="p-6 shadow-[0_24px_80px_rgba(var(--ds-text-primary-rgb),0.06)] md:p-10">
             {orderReference || reason ? (
               <div className="mb-6 border border-[var(--line)] bg-[var(--ds-surface-parchment)] px-4 py-3 text-body-sm text-[var(--ds-text-secondary)]">
                 {reason ? (

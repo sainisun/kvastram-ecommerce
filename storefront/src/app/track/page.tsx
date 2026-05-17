@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import {
   Search,
   Package,
@@ -14,7 +13,7 @@ import {
 import { api } from '@/lib/api';
 import { storefrontTrust } from '@/config/storefront-trust';
 import Input from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Button, ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
 interface OrderStatus {
@@ -137,7 +136,7 @@ export default function TrackOrderPage() {
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
       <section className="kv-page-gutter bg-[var(--ds-surface-soft)] px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="mx-auto max-w-[860px]">
-          <Card className="p-6 shadow-[0_20px_60px_rgba(0,0,0,0.05)] md:p-10">
+          <Card className="p-6 shadow-[0_20px_60px_rgba(var(--ds-black-rgb),0.05)] md:p-10">
             <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
               Order tracking
             </div>
@@ -189,24 +188,27 @@ export default function TrackOrderPage() {
               {error}
             </div>
             <div className="grid gap-3 md:grid-cols-3">
-              <Link
+              <ButtonLink
                 href={storefrontTrust.policyRoutes.paymentHelp}
-                className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                variant="outline"
+                size="sm"
               >
                 Payment Help
-              </Link>
-              <Link
+              </ButtonLink>
+              <ButtonLink
                 href={`${storefrontTrust.policyRoutes.contact}?reason=tracking`}
-                className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                variant="outline"
+                size="sm"
               >
                 Contact Support
-              </Link>
-              <Link
+              </ButtonLink>
+              <ButtonLink
                 href={storefrontTrust.policyRoutes.returns}
-                className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                variant="outline"
+                size="sm"
               >
                 Returns Help
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         )}
@@ -220,7 +222,7 @@ export default function TrackOrderPage() {
                     step.completed
                       ? 'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)]'
                       : step.current
-                        ? 'border-[var(--ds-accent-primary)] bg-[var(--ds-surface-paper)] color-accent shadow-[0_0_0_4px_rgba(168,93,58,0.12)]'
+                        ? 'border-[var(--ds-accent-primary)] bg-[var(--ds-surface-paper)] color-accent shadow-[0_0_0_4px_rgba(var(--ds-accent-rgb),0.12)]'
                         : 'border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-muted)]'
                   }`}
                 >
@@ -328,12 +330,13 @@ export default function TrackOrderPage() {
               )}
 
               <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                <Link
+                <ButtonLink
                   href={`/contact?order=${order.display_id || order.id}&email=${encodeURIComponent(email)}`}
-                  className="inline-flex items-center justify-center border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                  variant="outline"
+                  size="md"
                 >
                   Need Help With This Order?
-                </Link>
+                </ButtonLink>
               </div>
             </Card>
 
@@ -389,24 +392,27 @@ export default function TrackOrderPage() {
                 More help for this order
               </h3>
               <div className="grid gap-3 md:grid-cols-3">
-                <Link
+                <ButtonLink
                   href={storefrontTrust.policyRoutes.paymentHelp}
-                  className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                  variant="outline"
+                  size="sm"
                 >
                   Payment Help
-                </Link>
-                <Link
+                </ButtonLink>
+                <ButtonLink
                   href={storefrontTrust.policyRoutes.returns}
-                  className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                  variant="outline"
+                  size="sm"
                 >
                   Returns Help
-                </Link>
-                <Link
+                </ButtonLink>
+                <ButtonLink
                   href={`${storefrontTrust.policyRoutes.contact}?reason=order-support&order=${order.display_id || order.id}&email=${encodeURIComponent(email)}`}
-                  className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-3 text-center text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                  variant="outline"
+                  size="sm"
                 >
                   Contact Support
-                </Link>
+                </ButtonLink>
               </div>
             </Card>
           </div>

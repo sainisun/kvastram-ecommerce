@@ -509,7 +509,7 @@ export default function FilterSidebar({
         </Button>
       </div>
 
-      <div className="sticky bottom-0 -mx-4 mt-8 hidden grid-cols-2 gap-3 border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-4 shadow-[0_-10px_24px_rgba(0,0,0,0.04)] sm:-mx-5 sm:grid sm:px-5">
+      <div className="sticky bottom-0 -mx-4 mt-8 hidden grid-cols-2 gap-3 border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-4 shadow-[0_-10px_24px_rgba(var(--ds-black-rgb),0.04)] sm:-mx-5 sm:grid sm:px-5">
         <Button
           type="button"
           onClick={clearAllFilters}

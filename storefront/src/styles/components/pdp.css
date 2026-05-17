@@ -1,6 +1,6 @@
 /* Product page CVR redesign */
 .pdp-page {
-  --warm-white: var(--ds-surface-paper);
+  --pdp-paper: var(--ds-surface-paper);
   --ink: var(--ds-text-primary);
   --ink-muted: var(--ds-text-secondary);
   --ink-faint: var(--ds-text-muted);
@@ -67,7 +67,7 @@
   min-height: 48px;
   padding: 0 12px;
   border-bottom: 1px solid var(--border);
-  background: rgba(255, 253, 249, 0.96);
+  background: rgba(var(--ds-cream-rgb), 0.96);
   backdrop-filter: blur(12px);
 }
 
@@ -119,7 +119,7 @@
   place-items: center;
   border-radius: 999px;
   background: var(--terracotta);
-  color: white;
+  color: var(--ds-text-inverse);
   font-size: 9px;
   font-weight: 800;
 }
@@ -176,7 +176,7 @@
   left: 14px;
   top: 14px;
   z-index: 3;
-  border: 1px solid rgba(186, 117, 23, 0.18);
+  border: 1px solid rgba(var(--ds-warning-rgb), 0.18);
   border-radius: 999px;
   background: var(--amber-lt);
   color: var(--ds-warning-text);
@@ -194,7 +194,7 @@
 
 .pdp-gallery-heart {
   border: 0.5px solid var(--border);
-  box-shadow: 0 10px 24px rgba(28, 26, 23, 0.10);
+  box-shadow: 0 10px 24px rgba(var(--ds-ink-rgb), 0.1);
 }
 
 .pdp-gallery-dot {
@@ -254,7 +254,7 @@
   gap: 8px;
   width: 100%;
   margin: 0 0 18px;
-  border: 1px solid rgba(186, 117, 23, 0.18);
+  border: 1px solid rgba(var(--ds-warning-rgb), 0.18);
   border-radius: 8px;
   background: var(--amber-lt);
   color: var(--ds-warning-text);
@@ -268,7 +268,7 @@
   height: 9px;
   border-radius: 999px;
   background: var(--terracotta);
-  box-shadow: 0 0 0 4px rgba(196, 97, 58, 0.14);
+  box-shadow: 0 0 0 4px rgba(var(--ds-accent-rgb), 0.14);
 }
 
 .pdp-variant-block {
@@ -309,7 +309,7 @@
 }
 
 .pdp-color-swatch.active {
-  box-shadow: 0 0 0 2px var(--warm-white), 0 0 0 4px var(--ink);
+  box-shadow: 0 0 0 2px var(--pdp-paper), 0 0 0 4px var(--ink);
 }
 
 .pdp-color-swatch.unavailable,
@@ -448,7 +448,7 @@
 .pdp-trust-card {
   min-height: 84px;
   border-radius: 8px;
-  background: var(--warm-white);
+  background: var(--pdp-paper);
   color: var(--ink);
 }
 
@@ -482,7 +482,7 @@
 
 .pdp-accordion-item {
   border-bottom: 1px solid var(--border);
-  background: var(--warm-white);
+  background: var(--pdp-paper);
 }
 
 .pdp-accordion-item:first-of-type {
@@ -549,7 +549,7 @@
   margin-top: 18px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--warm-white);
+  background: var(--pdp-paper);
   padding: 16px;
 }
 
@@ -640,7 +640,7 @@
   bottom: 0;
   z-index: 90;
   border-color: var(--border);
-  background: rgba(255, 253, 249, 0.97);
+  background: rgba(var(--ds-cream-rgb), 0.97);
   padding-bottom: max(10px, env(safe-area-inset-bottom));
   transform: translateY(100%);
 }

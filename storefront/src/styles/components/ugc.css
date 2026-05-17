@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════ */
 
 .ugc-card {
-  background: white;
+  background: var(--ds-surface-paper);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   padding: 18px;
@@ -14,7 +14,7 @@
   display: grid;
   place-items: center;
   margin-bottom: 14px;
-  color: white;
+  color: var(--ds-text-inverse);
   font-size: var(--text-display-lg);
   background: linear-gradient(135deg, var(--ds-accent-gold), var(--ds-accent-hover));
 }

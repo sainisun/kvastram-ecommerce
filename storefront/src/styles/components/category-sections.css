@@ -71,7 +71,7 @@
   transition:
     opacity 0.35s,
     transform 0.35s var(--transition);
-  color: white;
+  color: var(--ds-text-inverse);
   font-size: var(--text-body-sm);
 }
 .cat-card-prem:hover .cat-arrow-prem {

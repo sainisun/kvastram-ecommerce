@@ -169,7 +169,7 @@
 }
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px -10px rgba(var(--ds-black-rgb), 0.1);
 }
 
 .image-zoom-container {

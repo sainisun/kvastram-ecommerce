@@ -77,7 +77,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
               className="object-cover brightness-[0.85]"
               sizes="100vw"
             />
-            <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)] mix-blend-multiply"></div>
+            <div className="absolute inset-0 bg-[rgba(var(--ds-black-rgb),0.2)] mix-blend-multiply"></div>
           </div>
 
           <div className="absolute inset-0 flex items-center justify-center text-center">
@@ -108,7 +108,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
             onClick={prevSlide}
             variant="ghost"
             size="lg"
-            className="absolute left-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(255,255,255,0.5)] hover:text-[var(--ds-text-inverse)]"
+            className="absolute left-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:text-[var(--ds-text-inverse)]"
             aria-label="Previous slide"
           >
             <ChevronLeft size={48} />
@@ -118,7 +118,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
             onClick={nextSlide}
             variant="ghost"
             size="lg"
-            className="absolute right-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(255,255,255,0.5)] hover:text-[var(--ds-text-inverse)]"
+            className="absolute right-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:text-[var(--ds-text-inverse)]"
             aria-label="Next slide"
           >
             <ChevronRight size={48} />
@@ -131,7 +131,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
                 onClick={() => setCurrentIndex(idx)}
                 variant="ghost"
                 size="sm"
-                className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${idx === currentIndex ? 'w-8 bg-[var(--ds-surface-paper)]' : 'w-2 bg-[rgba(255,255,255,0.5)] hover:bg-[var(--ds-surface-paper)]'}`}
+                className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${idx === currentIndex ? 'w-8 bg-[var(--ds-surface-paper)]' : 'w-2 bg-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:bg-[var(--ds-surface-paper)]'}`}
                 aria-label={`Go to slide ${idx + 1}`}
                 aria-current={idx === currentIndex ? 'true' : 'false'}
               />

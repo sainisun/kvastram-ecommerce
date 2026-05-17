@@ -108,7 +108,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
       {/* Navigation Buttons */}
       <IconButton
         type="button"
-        className="absolute left-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] text-[var(--ds-text-inverse)] opacity-0 backdrop-blur-sm duration-300 hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] group-hover:opacity-100 md:flex"
+        className="absolute left-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(var(--ds-surface-paper-rgb),0.3)] bg-[rgba(var(--ds-black-rgb),0.2)] text-[var(--ds-text-inverse)] opacity-0 backdrop-blur-sm duration-300 hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] group-hover:opacity-100 md:flex"
         onClick={scrollPrev}
         variant="ghost"
         size="lg"
@@ -118,7 +118,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
       </IconButton>
       <IconButton
         type="button"
-        className="absolute right-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(255,255,255,0.3)] bg-[rgba(0,0,0,0.2)] text-[var(--ds-text-inverse)] opacity-0 backdrop-blur-sm duration-300 hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] group-hover:opacity-100 md:flex"
+        className="absolute right-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(var(--ds-surface-paper-rgb),0.3)] bg-[rgba(var(--ds-black-rgb),0.2)] text-[var(--ds-text-inverse)] opacity-0 backdrop-blur-sm duration-300 hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] group-hover:opacity-100 md:flex"
         onClick={scrollNext}
         variant="ghost"
         size="lg"

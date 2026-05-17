@@ -56,7 +56,7 @@ export function Drawer({
     <div className="fixed inset-0 z-[100]">
       <button
         type="button"
-        className="absolute inset-0 bg-[rgba(26,23,20,0.42)]"
+        className="absolute inset-0 bg-[rgba(var(--ds-ink-rgb),0.42)]"
         aria-label="Close drawer"
         onClick={onClose}
       />

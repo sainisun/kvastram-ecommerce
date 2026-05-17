@@ -37,9 +37,9 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
                 sizes="(max-width: 768px) 50vw, 25vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.44)_0%,transparent_58%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(var(--ds-black-rgb),0.44)_0%,transparent_58%)]" />
               <div className="absolute inset-x-0 bottom-6 flex justify-center px-4">
-                <span className="inline-flex px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider text-[var(--ds-text-inverse)] drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]">
+                <span className="inline-flex px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider text-[var(--ds-text-inverse)] drop-shadow-[0_2px_8px_rgba(var(--ds-black-rgb),0.45)]">
                   {cat.name}
                 </span>
               </div>

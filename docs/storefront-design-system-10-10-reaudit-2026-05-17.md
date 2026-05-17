@@ -29,6 +29,8 @@ The goal of this pass was to move the storefront from "clean and consistent" to 
   - payment-help page CTA link
   - contact guided help links
   - collection empty-state discovery links
+  - track/order-help support links
+  - wholesale checkout success links
 
 ### Card and Content Surface Alignment
 
@@ -46,6 +48,27 @@ The goal of this pass was to move the storefront from "clean and consistent" to 
   - `account-secondary-action`
   - `content-button`
   - `search-empty-action`
+  - `error-primary-action`
+  - `error-secondary-action`
+- Tightened the ratchet baseline to the current strict state:
+  - native styled buttons: `3`
+  - default palette refs: `0`
+  - UI default palette refs: `0`
+- Added zero-drift guardrails for raw numeric `rgb()/rgba()` colors, named `white`/`black` CSS declarations, and legacy `warm-white`/`kv-white` aliases.
+
+### Zero-Known-Issues Cleanup
+
+- Removed stale page-local CTA CSS selectors after TSX was migrated to shared primitives.
+- Promoted remaining raw overlay/color math to design-system RGB channels:
+  - `--ds-accent-rgb`
+  - `--ds-warning-rgb`
+  - `--ds-success-rgb`
+  - `--ds-accent-gold-rgb`
+  - `--ds-text-primary-rgb`
+  - `--ds-text-secondary-rgb`
+  - `--ds-surface-page-rgb`
+- Removed remaining default prose/default palette utility drift from product, journal, and checkout surfaces.
+- Replaced old PDP `warm-white` naming with component-scoped `--pdp-paper`.
 
 ## Final Metrics
 
@@ -55,7 +78,7 @@ The goal of this pass was to move the storefront from "clean and consistent" to 
 | Component TSX files | 107 |
 | Native styled buttons | 3 |
 | Shared Button usages | 88 |
-| Shared ButtonLink usages | 24 |
+| Shared ButtonLink usages | 33 |
 | Shared ButtonAnchor usages | 1 |
 | Legacy button class refs | 0 |
 | Default palette refs | 0 |
@@ -83,7 +106,10 @@ The goal of this pass was to move the storefront from "clean and consistent" to 
 - Default Tailwind palette refs remain at `0`.
 - UI default palette refs remain at `0`.
 - Legacy button class refs remain at `0`.
+- Raw numeric `rgb()/rgba()` UI colors remain at `0` outside token channel definitions.
+- Named `white`/`black` CSS declarations remain at `0`.
 - Page-local CTA class usage was removed from TSX.
+- Stale page-local CTA CSS selectors were removed.
 - Page-level card/panel shells on account, cart, contact, edits, track, search, and wholesale surfaces now use shared card primitives or `cardClasses`.
 - Remaining inline styles are still limited to documented runtime/third-party cases.
 
@@ -116,5 +142,3 @@ Completed before final handoff:
 - `npm.cmd run lint`
 - `npm.cmd run verify:design-system -- --pool=threads`
 - `npm.cmd run build`: passed; 57/57 routes generated.
-
-Note: local dev-server visual smoke testing was attempted, but the Windows background process did not persist cleanly in this sandboxed session. The final production build remains the authoritative route-generation check.

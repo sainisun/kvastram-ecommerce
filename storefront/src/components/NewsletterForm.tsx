@@ -75,7 +75,7 @@ export default function NewsletterForm({
           required
           disabled={status === 'loading'}
           containerClassName="flex-1"
-          className={minimal ? 'bg-[var(--ds-footer-surface)] text-[var(--ds-text-inverse)]' : 'bg-[rgba(255,255,255,0.05)] text-[var(--ds-text-inverse)]'}
+          className={minimal ? 'bg-[var(--ds-footer-surface)] text-[var(--ds-text-inverse)]' : 'bg-[rgba(var(--ds-surface-paper-rgb),0.05)] text-[var(--ds-text-inverse)]'}
           aria-label="Email address"
           aria-required="true"
         />

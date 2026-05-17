@@ -543,8 +543,8 @@ function ReelPlayerModal({
           >
             <Heart
               size={28}
-              fill={liked ? 'white' : 'transparent'}
-              color="white"
+              fill={liked ? 'var(--ds-text-inverse)' : 'transparent'}
+              color="var(--ds-text-inverse)"
               className="drop-shadow transition-transform active:scale-125"
             />
             <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">
@@ -576,7 +576,7 @@ function ReelPlayerModal({
           >
             <Bookmark
               size={26}
-              fill={saved ? 'white' : 'transparent'}
+              fill={saved ? 'var(--ds-text-inverse)' : 'transparent'}
               className="text-[var(--ds-text-inverse)] drop-shadow transition-transform active:scale-125"
             />
             <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">
@@ -601,7 +601,7 @@ function ReelPlayerModal({
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}
-            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-[var(--ds-surface-paper)]/70 bg-[var(--ds-surface-paper)]/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-xl transition active:scale-[0.98]"
+            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-[var(--ds-surface-paper)]/70 bg-[var(--ds-surface-paper)]/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(var(--ds-black-rgb),0.24)] backdrop-blur-xl transition active:scale-[0.98]"
           >
             <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border border-[var(--ds-text-primary)]/10 bg-[var(--ds-surface-paper)]">
               <OptimizedImage

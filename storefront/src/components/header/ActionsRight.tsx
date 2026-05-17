@@ -16,7 +16,7 @@ export function ActionsRight({ onSearchOpen, onCartOpen }: ActionsRightProps) {
   const { totalItems: wishlistCount } = useWishlist();
 
   const iconCls =
-    'relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--ds-text-secondary)] transition-colors hover:bg-[rgba(255,255,255,0.6)] hover:text-[var(--ds-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]';
+    'relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--ds-text-secondary)] transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.6)] hover:text-[var(--ds-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]';
 
   return (
     <div className="flex items-center justify-end gap-1.5">

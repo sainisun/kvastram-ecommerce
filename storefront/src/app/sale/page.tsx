@@ -91,7 +91,7 @@ export default function SalePage() {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
       <section className="kv-page-gutter relative overflow-hidden bg-gradient-to-br from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--soft)] px-6 py-16 text-[var(--ds-text-inverse)] md:px-12 md:py-20 lg:px-20 lg:py-28">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.22),transparent_28%),linear-gradient(to_bottom,rgba(0,0,0,0.08),rgba(0,0,0,0.24))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(var(--ds-surface-paper-rgb),0.22),transparent_28%),linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.08),rgba(var(--ds-black-rgb),0.24))]" />
         <div className="kv-page-frame relative mx-auto max-w-[1440px] space-y-6 text-center">
           <span className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)]/75">
             {activeCampaign ? 'Limited Time' : 'Current Markdowns'}
@@ -144,4 +144,3 @@ export default function SalePage() {
     </div>
   );
 }
-

@@ -10,7 +10,7 @@
   border-radius: var(--radius-lg);
   display: grid;
   place-items: center;
-  color: white;
+  color: var(--ds-text-inverse);
   font-size: var(--text-display-xl);
   background: linear-gradient(135deg, var(--ds-accent-gold), var(--ds-accent-hover));
 }
@@ -69,14 +69,14 @@
   align-items: end;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  color: white;
+  color: var(--ds-text-inverse);
   background: linear-gradient(135deg, var(--ds-footer-bg), var(--ds-accent-primary));
 }
 .campaign-card:before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 28%, rgba(0,0,0,.72));
+  background: linear-gradient(180deg, transparent 28%, rgba(var(--ds-black-rgb),.72));
 }
 .campaign-content {
   position: relative;
@@ -131,10 +131,10 @@
   margin: 0 auto 8px;
   display: grid;
   place-items: center;
-  border: 2px solid white;
+  border: 2px solid var(--ds-surface-paper);
   border-radius: 50%;
-  box-shadow: 0 4px 16px rgba(0,0,0,.1);
-  color: white;
+  box-shadow: 0 4px 16px rgba(var(--ds-black-rgb),.1);
+  color: var(--ds-text-inverse);
   font-family: var(--font-display);
   font-size: var(--text-display-md);
   font-weight: 700;
@@ -184,7 +184,7 @@
 /* Soft card */
 
 .soft-card {
-  background: white;
+  background: var(--ds-surface-paper);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   padding: 20px;

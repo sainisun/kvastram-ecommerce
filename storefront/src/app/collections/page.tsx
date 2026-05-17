@@ -73,7 +73,7 @@ function CollectionCard({
             </span>
           </div>
         )}
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.02),rgba(0,0,0,0.36))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.02),rgba(var(--ds-black-rgb),0.36))]" />
         <div className="collection-count-badge absolute bottom-4 left-4 rounded-full bg-[var(--ds-surface-paper)]/90 px-3 py-1">
           {count} products
         </div>
@@ -136,7 +136,7 @@ export default async function CollectionsPage({
     return (
       <div className="min-h-screen bg-[var(--ds-surface-paper)]">
         <section className="relative h-[360px] overflow-hidden bg-[var(--ds-surface-soft)] sm:h-[420px]">
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.2),rgba(0,0,0,0.3))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-surface-paper-rgb),0.2),rgba(var(--ds-black-rgb),0.3))]" />
           <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
             <div className="max-w-3xl">
               <div className="collection-hero-eyebrow">
@@ -178,7 +178,7 @@ export default async function CollectionsPage({
             className="object-cover object-center"
           />
         ) : null}
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.2),rgba(0,0,0,0.3))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-surface-paper-rgb),0.2),rgba(var(--ds-black-rgb),0.3))]" />
         <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
           <div className="max-w-3xl">
             <div className="collection-hero-eyebrow">
@@ -230,7 +230,7 @@ export default async function CollectionsPage({
                     </span>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.08),rgba(0,0,0,0.45))]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.08),rgba(var(--ds-black-rgb),0.45))]" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-[var(--ds-text-inverse)]">
                   <h2 className="collection-feature-title">
                     {collection.title}

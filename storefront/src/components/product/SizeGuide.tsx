@@ -72,7 +72,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
         <div className="space-y-8">
           {/* Product-specific size chart — string or structured */}
           {sizeGuide && typeof sizeGuide === 'string' ? (
-            <div className="prose prose-stone prose-sm max-w-none mb-6 border-b border-[var(--ds-border-subtle)] pb-6">
+            <div className="prose prose-sm max-w-none mb-6 border-b border-[var(--ds-border-subtle)] pb-6">
               <h3 className="size-guide-heading mb-4">
                 Product Size Guide
               </h3>

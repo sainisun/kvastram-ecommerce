@@ -19,8 +19,8 @@
   padding: 0;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: white;
-  box-shadow: 0 2px 14px rgba(0,0,0,.08);
+  background: var(--ds-surface-paper);
+  box-shadow: 0 2px 14px rgba(var(--ds-black-rgb),.08);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -31,9 +31,9 @@
   display: flex;
   align-items: end;
   padding: 8px;
-  color: white;
+  color: var(--ds-text-inverse);
   background:
-    linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, .78)),
+    linear-gradient(180deg, transparent 30%, rgba(var(--ds-black-rgb), .78)),
     linear-gradient(135deg, var(--ds-accent-hover), var(--ds-accent-gold));
   overflow: hidden;
   flex-shrink: 0;

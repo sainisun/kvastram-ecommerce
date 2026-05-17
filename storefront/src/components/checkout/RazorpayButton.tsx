@@ -136,7 +136,7 @@ export default function RazorpayButton({
           contact: customerPhone || '',
         },
         theme: {
-          color: 'var(--ds-text-primary)', // stone-900 — matches site palette
+          color: 'var(--ds-text-primary)',
         },
         handler: async (response) => {
           try {

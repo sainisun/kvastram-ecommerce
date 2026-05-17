@@ -114,7 +114,7 @@ function MerchSlotCard({
         </div>
       ) : (
         <>
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.06),rgba(0,0,0,0.54))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.06),rgba(var(--ds-black-rgb),0.54))]" />
           <div className="relative z-10 flex h-full flex-col justify-end">
             <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-text-inverse)]/75">
               {slot.eyebrow || 'Kvastram Edit'}

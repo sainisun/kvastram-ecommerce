@@ -81,7 +81,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--ds-accent-hover)] transition-colors hover:bg-[rgba(255,255,255,0.35)] hover:text-[var(--ds-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--ds-accent-hover)] transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-[var(--ds-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]"
           >
             <Icon size={15} strokeWidth={1.7} />
           </a>
@@ -96,7 +96,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             aria-label="Previous announcement"
             variant="ghost"
             size="sm"
-            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(255,255,255,0.35)] hover:text-[var(--ds-text-primary)]"
+            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-[var(--ds-text-primary)]"
           >
             <ChevronLeft size={16} strokeWidth={1.8} />
           </IconButton>
@@ -106,7 +106,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             aria-label="Next announcement"
             variant="ghost"
             size="sm"
-            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(255,255,255,0.35)] hover:text-[var(--ds-text-primary)]"
+            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-[var(--ds-text-primary)]"
           >
             <ChevronRight size={16} strokeWidth={1.8} />
           </IconButton>

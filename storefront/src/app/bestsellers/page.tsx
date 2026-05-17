@@ -177,7 +177,7 @@ export default async function BestsellersPage({
             className="object-cover opacity-70"
           />
         ) : null}
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.3),rgba(0,0,0,0.5))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.3),rgba(var(--ds-black-rgb),0.5))]" />
         <div className="kv-page-container relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center px-6 text-center text-[var(--ds-text-inverse)] md:px-12 lg:px-20">
           <h1 className="font-display text-display-xl type-regular leading-token-tight tracking-token-tight text-[var(--ds-text-inverse)]">
             Most <em className="italic">Loved</em>

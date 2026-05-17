@@ -19,7 +19,7 @@ import OptimizedImage from '@/components/ui/OptimizedImage';
 import CountrySelect from '@/components/ui/CountrySelect';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import { Button } from '@/components/ui/Button';
+import { Button, ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
 const PAYMENT_TERMS = [
@@ -167,18 +167,20 @@ export default function WholesaleCheckoutPage() {
             </div>
 
             <div className="flex gap-4 justify-center">
-              <Link
+              <ButtonLink
                 href="/account/orders"
-                className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
+                variant="secondary"
+                size="md"
               >
                 View Orders
-              </Link>
-              <Link
+              </ButtonLink>
+              <ButtonLink
                 href="/products"
-                className="border border-[var(--ds-text-primary)] text-[var(--ds-text-primary)] px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-surface-parchment)] transition-colors"
+                variant="outline"
+                size="md"
               >
                 Continue Shopping
-              </Link>
+              </ButtonLink>
             </div>
           </Card>
         </div>

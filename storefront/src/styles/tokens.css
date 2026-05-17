@@ -76,6 +76,7 @@
   --ds-accent-soft: #f0e0d6;
   --ds-accent-rgb: 196, 97, 58;
   --ds-accent-gold: #b8924a;
+  --ds-accent-gold-rgb: 184, 146, 74;
 
   /* Status */
   --ds-danger: #c0392b;
@@ -84,9 +85,11 @@
   --ds-success-bg: #f0fdf4;
   --ds-success-text: #166534;
   --ds-success-dark: #15803d;
+  --ds-success-rgb: 62, 138, 95;
   --ds-warning: #ba7517;
   --ds-warning-bg: #faeeda;
   --ds-warning-text: #633806;
+  --ds-warning-rgb: 186, 117, 23;
   --ds-info: #185fa5;
   --ds-info-bg: #e6f1fb;
   --ds-info-text: #124779;
@@ -128,8 +131,13 @@
 
   /* Channels and effects */
   --ds-ink-rgb: 26, 23, 20;
+  --ds-text-primary-rgb: 26, 23, 20;
+  --ds-text-secondary-rgb: 61, 58, 54;
   --ds-cream-rgb: 249, 247, 244;
+  --ds-surface-page-rgb: 249, 247, 244;
   --ds-surface-paper-rgb: 255, 255, 255;
+  --ds-surface-soft-rgb: 241, 237, 231;
+  --ds-surface-parchment-rgb: 247, 244, 239;
   --ds-black-rgb: 0, 0, 0;
   --ds-shadow: 0 10px 34px rgba(var(--ds-ink-rgb), 0.12);
   --ds-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);

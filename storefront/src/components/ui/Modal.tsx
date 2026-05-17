@@ -50,7 +50,7 @@ export function Modal({
     <div className={cn('fixed inset-0 z-[100] flex items-center justify-center p-4', rootClassName)}>
       <button
         type="button"
-        className="absolute inset-0 bg-[rgba(26,23,20,0.48)]"
+        className="absolute inset-0 bg-[rgba(var(--ds-ink-rgb),0.48)]"
         aria-label="Close modal"
         onClick={onClose}
       />

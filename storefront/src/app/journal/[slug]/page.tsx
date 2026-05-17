@@ -126,7 +126,7 @@ export default async function ArticlePage({ params }: Props) {
           </p>
         )}
 
-        <div className="prose prose-stone prose-lg max-w-none whitespace-pre-wrap type-light text-[var(--ds-text-primary)]">
+        <div className="prose prose-lg max-w-none whitespace-pre-wrap type-light text-[var(--ds-text-primary)]">
           {post.content}
         </div>
       </div>

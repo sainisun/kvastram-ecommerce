@@ -25,6 +25,11 @@ const allowedLegacyFontFiles = new Set([
 const checkedExtensions = new Set(['.css', '.ts', '.tsx']);
 const defaultPalettePattern =
   /\b(?:text|bg|border|ring|fill|stroke|placeholder|from|via|to|decoration|divide|accent)-(?:white|black|stone|neutral|zinc|gray|slate|amber|rose|emerald|blue|green|red|yellow|pink|purple)(?:-[0-9]{2,3})?(?:\/[0-9]{1,3})?\b/g;
+const localCtaClassPattern =
+  /\b(account-primary-action|account-secondary-action|content-button|search-empty-action|error-primary-action|error-secondary-action)\b/;
+const rawNumericRgbPattern = /rgba?\(\s*(?:\d{1,3}\s*,\s*){2}\d{1,3}/i;
+const namedColorDeclarationPattern =
+  /\b(?:color|background(?:-color)?|border(?:-(?:top|right|bottom|left))?(?:-color)?|outline-color|text-decoration-color|fill|stroke)\s*:[^;]*(?<![a-z-])(?:white|black)\b/i;
 const allowedInlineStylePatterns = [
   /style=\{\{\s*animationDelay:/,
   /style=\{\{\s*width:\s*`/,
@@ -88,11 +93,20 @@ function auditFile(fullPath) {
       defaultPalettePattern.lastIndex = 0;
     }
 
-    if (
-      ext === '.tsx' &&
-      /\b(account-primary-action|account-secondary-action|content-button|search-empty-action)\b/.test(line)
-    ) {
+    if (ext === '.tsx' && localCtaClassPattern.test(line)) {
       findings.push(`${location} local CTA class should use Button, ButtonLink, or ButtonAnchor`);
+    }
+
+    if (rawNumericRgbPattern.test(line)) {
+      findings.push(`${location} raw rgb/rgba values should use --ds-*-rgb channels`);
+    }
+
+    if (ext === '.css' && namedColorDeclarationPattern.test(line)) {
+      findings.push(`${location} named white/black color should use a --ds-* token`);
+    }
+
+    if (/\b(?:warm-white|kv-white)\b/.test(line)) {
+      findings.push(`${location} legacy white alias should use --ds-surface-* or component-scoped paper tokens`);
     }
 
     if (/style=\{\{/.test(line)) {

@@ -232,7 +232,7 @@
 }
 
 .category-banner-cta {
-  color: white;
+  color: var(--ds-text-inverse);
 }
 
 .category-circle-label {
@@ -250,10 +250,7 @@
 .search-back-link,
 .search-toolbar-button,
 .search-apply-button,
-.search-quick-add,
-.search-empty-action,
-.error-primary-action,
-.error-secondary-action {
+.search-quick-add {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
   font-weight: var(--weight-medium);
@@ -281,7 +278,7 @@
   font-size: var(--text-display-md);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-normal);
-  color: rgba(255,255,255,.7);
+  color: rgba(var(--ds-surface-paper-rgb), 0.7);
   text-transform: uppercase;
 }
 
@@ -302,7 +299,7 @@
 
 .collection-hero-eyebrow {
   letter-spacing: var(--tracking-wider);
-  color: rgba(255,255,255,.8);
+  color: rgba(var(--ds-surface-paper-rgb), 0.8);
 }
 
 .collection-hero-title {
@@ -317,7 +314,7 @@
   font-size: var(--text-display-sm);
   font-weight: var(--weight-regular);
   line-height: var(--leading-relaxed);
-  color: rgba(255,255,255,.9);
+  color: rgba(var(--ds-surface-paper-rgb), 0.9);
 }
 
 .collection-empty-copy,
@@ -354,7 +351,7 @@
   font-size: var(--text-body-sm);
   font-weight: var(--weight-regular);
   line-height: var(--leading-relaxed);
-  color: rgba(255,255,255,.85);
+  color: rgba(var(--ds-surface-paper-rgb), 0.85);
 }
 
 .collection-feature-link {
@@ -433,17 +430,12 @@
 
 .search-toolbar-button,
 .search-apply-button,
-.search-quick-add,
-.search-empty-action,
-.error-primary-action,
-.error-secondary-action {
+.search-quick-add {
   font-weight: var(--weight-bold);
 }
 
 .search-apply-button,
-.search-quick-add,
-.search-empty-action,
-.error-primary-action {
+.search-quick-add {
   color: var(--color-text-inverse);
 }
 
@@ -483,10 +475,6 @@
 
 .error-back-link {
   color: var(--color-text-muted);
-}
-
-.error-secondary-action {
-  color: var(--color-text-primary);
 }
 
 .account-mobile-title,
@@ -578,8 +566,6 @@
 .account-kicker,
 .account-form-label,
 .account-status-badge,
-.account-primary-action,
-.account-secondary-action,
 .account-nav-link,
 .account-nav-danger,
 .account-progress-labels,
@@ -599,21 +585,12 @@
 }
 
 .account-nav-link,
-.account-secondary-action,
 .account-page-button {
   color: var(--color-text-secondary);
 }
 
 .account-nav-danger {
   color: var(--color-text-error);
-}
-
-.account-primary-action {
-  color: var(--color-text-inverse);
-}
-
-.account-secondary-action {
-  color: var(--color-text-primary);
 }
 
 .account-status-badge {

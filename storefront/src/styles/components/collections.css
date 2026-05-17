@@ -25,7 +25,7 @@
   scroll-snap-align: start;
 }
 .collections-as-seen-section {
-  background: white;
+  background: var(--ds-surface-paper);
 }
 .collections-as-seen-head {
   margin-bottom: 34px;
@@ -64,13 +64,13 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.72));
+  background: linear-gradient(180deg, rgba(var(--ds-black-rgb),.05), rgba(var(--ds-black-rgb),.72));
   z-index: 1;
 }
 .collection-info {
   position: relative;
   padding: 22px;
-  color: white;
+  color: var(--ds-text-inverse);
   z-index: 2;
 }
 .collections-as-seen-info {
@@ -80,7 +80,7 @@
 }
 .collections-as-seen-info span,
 .collections-as-seen-info h3 {
-  color: white;
+  color: var(--ds-text-inverse);
 }
 .collections-as-seen-info span {
   display: block;
@@ -95,7 +95,7 @@
 .collection-info h3 {
   margin: 0 0 4px;
   font-size: var(--text-display-md);
-  color: white;
+  color: var(--ds-text-inverse);
 }
 .collections-as-seen-info h3 {
   display: inline-block;
@@ -103,7 +103,7 @@
   margin: 0;
   padding-inline: 8px;
   padding-bottom: 8px;
-  border-bottom: 2px solid rgba(255,255,255,.85);
+  border-bottom: 2px solid rgba(var(--ds-surface-paper-rgb), 0.85);
   font-family: var(--font-display);
   font-size: var(--text-display-sm);
   font-weight: var(--weight-regular);
@@ -121,14 +121,14 @@
   overflow: hidden;
   border-radius: 0;
   background: linear-gradient(135deg, var(--ds-accent-hover), var(--ds-accent-primary) 48%, var(--ds-accent-soft));
-  color: white;
+  color: var(--ds-text-inverse);
 }
 
 .homepage-category-merch-card:before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.72));
+  background: linear-gradient(180deg, rgba(var(--ds-black-rgb),.05), rgba(var(--ds-black-rgb),.72));
   z-index: 1;
   pointer-events: none;
 }
@@ -149,8 +149,8 @@
   margin: 0;
   padding-inline: 8px;
   padding-bottom: 8px;
-  border-bottom: 2px solid rgba(255,255,255,.85);
-  color: white;
+  border-bottom: 2px solid rgba(var(--ds-surface-paper-rgb), 0.85);
+  color: var(--ds-text-inverse);
   font-family: var(--font-display);
   font-size: var(--text-display-sm);
   font-weight: var(--weight-regular);

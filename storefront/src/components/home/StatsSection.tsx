@@ -173,9 +173,9 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           height: 56%;
           background: linear-gradient(
             180deg,
-            rgba(175, 137, 92, 0),
-            rgba(175, 137, 92, 0.55),
-            rgba(175, 137, 92, 0)
+            rgba(var(--ds-accent-gold-rgb), 0),
+            rgba(var(--ds-accent-gold-rgb), 0.55),
+            rgba(var(--ds-accent-gold-rgb), 0)
           );
         }
 
@@ -188,7 +188,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           font-size: var(--text-body-lg);
           line-height: var(--leading-tight);
           color: var(--ds-accent-gold);
-          text-shadow: 0 0 18px rgba(167, 119, 61, 0.14);
+          text-shadow: 0 0 18px rgba(var(--ds-accent-gold-rgb), 0.14);
           animation: symbolFloat 4.2s ease-in-out infinite;
         }
 
@@ -209,7 +209,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           line-height: var(--leading-relaxed);
           letter-spacing: var(--tracking-wider);
           text-transform: uppercase;
-          color: rgba(63, 49, 34, 0.72);
+          color: rgba(var(--ds-text-secondary-rgb), 0.72);
         }
 
         @media (min-width: 768px) {

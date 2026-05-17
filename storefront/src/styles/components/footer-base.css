@@ -4,7 +4,7 @@
 
 .footer {
   background: var(--ink);
-  color: rgba(255,255,255,.7);
+  color: rgba(var(--ds-surface-paper-rgb), 0.7);
   padding: 42px 0 28px;
 }
 .footer-grid {
@@ -13,7 +13,7 @@
 }
 .footer h3,
 .footer h4 {
-  color: white;
+  color: var(--ds-text-inverse);
   margin-top: 0;
 }
 .footer a {
