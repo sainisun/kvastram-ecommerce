@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
   AlertCircle,
@@ -18,7 +17,7 @@ import {
 } from '@/components/content/ContentPageSystem';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import { Button } from '@/components/ui/Button';
+import { Button, ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBanner } from '@/components/ui/StatusBanner';
@@ -289,18 +288,20 @@ export function ContactClient() {
                   For payment or return questions, the guided help pages may
                   answer faster than a general message.
                   <div className="mt-3 flex flex-wrap gap-3">
-                    <Link
+                    <ButtonLink
                       href={storefrontTrust.policyRoutes.paymentHelp}
-                      className="content-button"
+                      variant="outline"
+                      size="sm"
                     >
                       Payment Help
-                    </Link>
-                    <Link
+                    </ButtonLink>
+                    <ButtonLink
                       href={storefrontTrust.policyRoutes.returns}
-                      className="content-button"
+                      variant="outline"
+                      size="sm"
                     >
                       Returns Help
-                    </Link>
+                    </ButtonLink>
                   </div>
                 </div>
 

@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
-import { UnstyledButton } from '@/components/ui/Button';
+import { ButtonLink, UnstyledButton } from '@/components/ui/Button';
 
 const ORDERS_PER_PAGE = 10;
 
@@ -154,12 +154,9 @@ export default function OrdersListPage() {
               title="No orders yet"
               className="border-0"
               actions={
-              <Link
-                href="/"
-                className="account-primary-action inline-block bg-[var(--ds-text-primary)] px-6 py-3 transition-colors hover:bg-[var(--ds-text-secondary)]"
-              >
+              <ButtonLink href="/" variant="secondary" size="md">
                 Start Shopping
-              </Link>
+              </ButtonLink>
               }
             />
           ) : (

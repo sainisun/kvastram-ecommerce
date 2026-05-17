@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Globe, Clock } from 'lucide-react';
 
 import {
@@ -8,6 +7,7 @@ import {
   PageHero,
   SectionBlock,
 } from '@/components/content/ContentPageSystem';
+import { ButtonLink } from '@/components/ui/Button';
 import { storefrontTrust } from '@/config/storefront-trust';
 
 export default function ShippingPage() {
@@ -91,15 +91,16 @@ export default function ShippingPage() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <Link
+          <ButtonLink
             href={storefrontTrust.policyRoutes.refundPolicy}
-            className="content-button"
+            variant="outline"
+            size="md"
           >
             Refund Policy
-          </Link>
-            <Link href={storefrontTrust.policyRoutes.track} className="content-button">
+          </ButtonLink>
+            <ButtonLink href={storefrontTrust.policyRoutes.track} variant="outline" size="md">
               Track Order
-            </Link>
+            </ButtonLink>
           </div>
         </SectionBlock>
       </ContentContainer>

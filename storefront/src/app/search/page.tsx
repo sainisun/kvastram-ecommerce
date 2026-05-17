@@ -6,7 +6,7 @@ import { api } from '@/lib/api';
 import Link from 'next/link';
 import { Loader2, Filter, ArrowLeft } from 'lucide-react';
 import Input from '@/components/ui/Input';
-import { Button, UnstyledButton } from '@/components/ui/Button';
+import { Button, ButtonLink, UnstyledButton } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import ProductGrid from '@/components/ProductGrid';
@@ -421,12 +421,9 @@ function SearchContent() {
                     Remove Filters
                   </Button>
                 ) : null}
-                <Link
-                  href="/products"
-                  className="search-empty-action inline-flex min-h-11 items-center justify-center bg-[var(--ds-text-primary)] px-8 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
-                >
+                <ButtonLink href="/products" variant="secondary" size="md">
                   Browse All Products
-                </Link>
+                </ButtonLink>
               </>
             }
           />

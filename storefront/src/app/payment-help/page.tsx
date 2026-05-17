@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import {
   ContentContainer,
@@ -9,6 +8,7 @@ import {
   PageHero,
   SectionBlock,
 } from '@/components/content/ContentPageSystem';
+import { ButtonLink } from '@/components/ui/Button';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
@@ -77,9 +77,9 @@ export default function PaymentHelpPage() {
           <HighlightBox title="International checkout note">
             PayPal is available for international buyers only.
           </HighlightBox>
-          <Link href={storefrontTrust.policyRoutes.terms} className="content-button">
+          <ButtonLink href={storefrontTrust.policyRoutes.terms} variant="outline" size="md">
             Review Terms
-          </Link>
+          </ButtonLink>
         </SectionBlock>
       </ContentContainer>
     </>

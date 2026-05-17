@@ -56,6 +56,7 @@ function walk(dir) {
 
 function auditFile(fullPath) {
   const rel = path.normalize(path.relative(process.cwd(), fullPath));
+  const ext = path.extname(rel);
   const text = readFileSync(fullPath, 'utf8');
   const lines = text.split(/\r?\n/);
 
@@ -85,6 +86,13 @@ function auditFile(fullPath) {
     if (defaultPalettePattern.test(line)) {
       findings.push(`${location} default Tailwind palette utility should use --ds-* tokens`);
       defaultPalettePattern.lastIndex = 0;
+    }
+
+    if (
+      ext === '.tsx' &&
+      /\b(account-primary-action|account-secondary-action|content-button|search-empty-action)\b/.test(line)
+    ) {
+      findings.push(`${location} local CTA class should use Button, ButtonLink, or ButtonAnchor`);
     }
 
     if (/style=\{\{/.test(line)) {

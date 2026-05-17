@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { Home, Search, ArrowLeft } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ButtonLink } from '@/components/ui/Button';
 
 export default function NotFound() {
   return (
@@ -12,27 +12,25 @@ export default function NotFound() {
         className="max-w-2xl"
         actions={
           <>
-          <Link
-            href="/"
-              className="inline-flex min-h-12 items-center justify-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-text-primary)] px-7 font-body text-body-sm uppercase tracking-token-wider text-[var(--ds-text-inverse)] type-semibold transition-colors hover:border-[var(--ds-accent-hover)] hover:bg-[var(--ds-accent-hover)]"
-          >
-            <Home size={16} />
+          <ButtonLink href="/" variant="secondary" size="lg" leadingIcon={<Home size={16} />}>
             Go Home
-          </Link>
-          <Link
+          </ButtonLink>
+          <ButtonLink
             href="/search"
-              className="inline-flex min-h-12 items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-7 font-body text-body-sm uppercase tracking-token-wider text-[var(--ds-text-primary)] type-semibold transition-colors hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]"
+            variant="outline"
+            size="lg"
+            leadingIcon={<Search size={16} />}
           >
-            <Search size={16} />
             Search
-          </Link>
-          <Link
+          </ButtonLink>
+          <ButtonLink
             href="/"
-              className="inline-flex min-h-12 items-center justify-center gap-2 border border-transparent px-4 font-body text-body-sm text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+            variant="ghost"
+            size="lg"
+            leadingIcon={<ArrowLeft size={16} />}
           >
-            <ArrowLeft size={16} />
-              Back to homepage
-          </Link>
+            Back to homepage
+          </ButtonLink>
           </>
         }
       />

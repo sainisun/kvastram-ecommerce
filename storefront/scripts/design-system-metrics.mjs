@@ -16,6 +16,8 @@ const approvedNativeButtonFiles = new Set([
 
 const componentUsagePatterns = {
   Button: /<Button\b/g,
+  ButtonLink: /<ButtonLink\b/g,
+  ButtonAnchor: /<ButtonAnchor\b/g,
   Input: /<Input\b/g,
   Textarea: /<Textarea\b/g,
   Select: /<Select\b/g,
@@ -110,6 +112,8 @@ function printMetrics(metrics) {
     ['Component TSX files', metrics.componentTsxFiles],
     ['Native styled buttons', metrics.nativeStyledButtons],
     ['Shared Button usages', metrics.components.Button],
+    ['Shared ButtonLink usages', metrics.components.ButtonLink],
+    ['Shared ButtonAnchor usages', metrics.components.ButtonAnchor],
     ['Legacy button class refs', metrics.legacyButtonClassRefs],
     ['Default palette refs', metrics.defaultPaletteRefs],
     ['UI default palette refs', metrics.uiDefaultPaletteRefs],

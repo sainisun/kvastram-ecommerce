@@ -4,6 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { ButtonLink } from '@/components/ui/Button';
+import { cardClasses } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 
 export type TocItem = {
@@ -278,13 +280,13 @@ export function InfoCard({ eyebrow, title, children, href, cta }: InfoCardProps)
 
   if (href) {
     return (
-      <Link href={href} className="info-card info-card--link">
+      <Link href={href} className={cn(cardClasses, 'info-card info-card--link')}>
         {body}
       </Link>
     );
   }
 
-  return <div className="info-card">{body}</div>;
+  return <div className={cn(cardClasses, 'info-card')}>{body}</div>;
 }
 
 export function PolicyTable({ children }: { children: React.ReactNode }) {
@@ -316,13 +318,14 @@ export function InlineCTA({ title, body, links }: InlineCTAProps) {
       </div>
       <div className="inline-cta__links">
         {links.map((link) => (
-          <Link
+          <ButtonLink
             key={link.href}
             href={link.href}
-            className={cn('content-button', link.variant === 'primary' && 'content-button--primary')}
+            variant={link.variant === 'primary' ? 'secondary' : 'outline'}
+            size="md"
           >
             {link.label}
-          </Link>
+          </ButtonLink>
         ))}
       </div>
     </aside>

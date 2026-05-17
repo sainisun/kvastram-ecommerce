@@ -22,7 +22,7 @@ import OptimizedImage from '@/components/ui/OptimizedImage';
 import Textarea from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Button, ButtonAnchor, ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
@@ -610,24 +610,27 @@ export default function OrderDetailsPage() {
                       </p>
                     ) : null}
                     <div className="mt-4 flex flex-wrap gap-3">
-                      <Link
+                      <ButtonLink
                         href="/help"
-                        className="account-secondary-action border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                        variant="outline"
+                        size="sm"
                       >
                         Help Center
-                      </Link>
-                      <Link
+                      </ButtonLink>
+                      <ButtonLink
                         href="/returns"
-                        className="account-secondary-action border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                        variant="outline"
+                        size="sm"
                       >
                         View Returns Hub
-                      </Link>
-                      <Link
+                      </ButtonLink>
+                      <ButtonLink
                         href={`/contact?reason=returns&order=${order.display_id}&email=${encodeURIComponent(order.email)}`}
-                        className="account-secondary-action border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                        variant="outline"
+                        size="sm"
                       >
                         Contact Support
-                      </Link>
+                      </ButtonLink>
                     </div>
                   </Card>
                 ) : null}
@@ -640,7 +643,6 @@ export default function OrderDetailsPage() {
                   variant="outline"
                   size="md"
                   fullWidth
-                  className="account-secondary-action py-3"
                 >
                   {reordering ? (
                     <>
@@ -666,13 +668,13 @@ export default function OrderDetailsPage() {
                     variant="outline"
                     size="md"
                     fullWidth
-                    className="account-secondary-action py-3 hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger-bg)] hover:text-[var(--ds-danger)]"
+                    className="hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger-bg)] hover:text-[var(--ds-danger)]"
                   >
                     <RotateCcw size={14} /> Request Return
                   </Button>
                 )}
                 {order.workflow?.primary_package?.tracking_url || order.tracking_link ? (
-                  <a
+                  <ButtonAnchor
                     href={
                       order.workflow?.primary_package?.tracking_url ||
                       order.tracking_link ||
@@ -680,29 +682,38 @@ export default function OrderDetailsPage() {
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="account-secondary-action flex w-full items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] py-3 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                    variant="outline"
+                    size="md"
+                    fullWidth
+                    leadingIcon={<Truck size={14} />}
                   >
-                    <Truck size={14} /> Track Package
-                  </a>
+                    Track Package
+                  </ButtonAnchor>
                 ) : null}
-                <Link
+                <ButtonLink
                   href="/help"
-                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] py-3 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                  variant="outline"
+                  size="md"
+                  fullWidth
                 >
                   Help Center
-                </Link>
-                <Link
+                </ButtonLink>
+                <ButtonLink
                   href="/payment-help"
-                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] py-3 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                  variant="outline"
+                  size="md"
+                  fullWidth
                 >
                   Payment Help
-                </Link>
-                <Link
+                </ButtonLink>
+                <ButtonLink
                   href={`/contact?order=${order.display_id}&email=${encodeURIComponent(order.email)}`}
-                  className="account-secondary-action flex w-full items-center justify-center gap-2 border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] py-3 transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                  variant="outline"
+                  size="md"
+                  fullWidth
                 >
                   Need Help?
-                </Link>
+                </ButtonLink>
               </div>
             </div>
           </div>

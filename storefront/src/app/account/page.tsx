@@ -11,7 +11,7 @@ import { UserCard } from '@/components/account/UserCard';
 import { QuickGrid } from '@/components/account/QuickGrid';
 import { SettingsList } from '@/components/account/SettingsList';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import { Button, ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { AccountSkeleton } from '@/components/ui/Skeleton';
@@ -192,12 +192,9 @@ export default function AccountPage() {
                     title="No orders yet"
                     className="border-0"
                     actions={
-                    <Link
-                      href="/"
-                      className="account-primary-action inline-block bg-[var(--ds-text-primary)] px-6 py-3 transition-colors hover:bg-[var(--ds-text-secondary)]"
-                    >
+                    <ButtonLink href="/" variant="secondary" size="md">
                       Start Shopping
-                    </Link>
+                    </ButtonLink>
                     }
                   />
                 ) : (

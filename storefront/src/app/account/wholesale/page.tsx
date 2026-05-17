@@ -15,6 +15,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
+import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 
@@ -76,12 +77,9 @@ export default function WholesaleDashboardPage() {
           description="You don't have wholesale access yet. Apply for a wholesale account to get started."
           className="max-w-md"
           actions={
-          <Link
-            href="/wholesale"
-            className="account-primary-action inline-block bg-[var(--ds-text-primary)] px-6 py-3 transition-colors hover:bg-[var(--ds-text-secondary)]"
-          >
+          <ButtonLink href="/wholesale" variant="secondary" size="md">
             Apply for Wholesale
-          </Link>
+          </ButtonLink>
           }
         />
       </div>

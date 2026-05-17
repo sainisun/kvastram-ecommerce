@@ -7,6 +7,7 @@ import PageHero from '@/components/hero/PageHero';
 import ProductGrid from '@/components/ProductGrid';
 import CategoryBannerCarousel from '@/components/products/CategoryBannerCarousel';
 import CategoryCircleStrip from '@/components/products/CategoryCircleStrip';
+import { ButtonLink } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { storefrontDiscoveryQuickLinks } from '@/config/storefront-discovery';
@@ -551,13 +552,15 @@ export default async function CollectionPage({
               description="Check back soon or explore another Kvastram edit."
               className="my-12 md:my-16 lg:my-24"
               actions={collectionDiscoveryLinks.map((item) => (
-                <Link
+                <ButtonLink
                   key={item.href}
                   href={item.href}
-                  className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 font-body text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]"
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full normal-case tracking-normal"
                 >
                   {item.label}
-                </Link>
+                </ButtonLink>
               ))}
             />
           )}

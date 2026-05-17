@@ -1,11 +1,31 @@
 import { forwardRef } from 'react';
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
+import Link from 'next/link';
+import type { LinkProps } from 'next/link';
 import { cn } from '@/lib/utils';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  leadingIcon?: ReactNode;
+  trailingIcon?: ReactNode;
+}
+
+interface ButtonLinkProps
+  extends LinkProps,
+    Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  leadingIcon?: ReactNode;
+  trailingIcon?: ReactNode;
+}
+
+interface ButtonAnchorProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   fullWidth?: boolean;
@@ -67,6 +87,62 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
+
+export function ButtonLink({
+  className,
+  variant = 'primary',
+  size = 'md',
+  fullWidth = false,
+  leadingIcon,
+  trailingIcon,
+  children,
+  ...props
+}: ButtonLinkProps) {
+  return (
+    <Link
+      className={cn(
+        'inline-flex items-center justify-center gap-2 border font-body type-semibold uppercase tracking-token-wider transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
+        variantClasses[variant],
+        sizeClasses[size],
+        fullWidth && 'w-full',
+        className
+      )}
+      {...props}
+    >
+      {leadingIcon}
+      {children}
+      {trailingIcon}
+    </Link>
+  );
+}
+
+export function ButtonAnchor({
+  className,
+  variant = 'primary',
+  size = 'md',
+  fullWidth = false,
+  leadingIcon,
+  trailingIcon,
+  children,
+  ...props
+}: ButtonAnchorProps) {
+  return (
+    <a
+      className={cn(
+        'inline-flex items-center justify-center gap-2 border font-body type-semibold uppercase tracking-token-wider transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
+        variantClasses[variant],
+        sizeClasses[size],
+        fullWidth && 'w-full',
+        className
+      )}
+      {...props}
+    >
+      {leadingIcon}
+      {children}
+      {trailingIcon}
+    </a>
+  );
+}
 
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg';

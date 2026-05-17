@@ -10,6 +10,7 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
 import { cardClasses } from '@/components/ui/Card';
+import { ButtonLink } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBanner } from '@/components/ui/StatusBanner';
 
@@ -101,9 +102,9 @@ export default function AccountMessagesPage() {
             title="No messages yet"
             description="Ask a question from any product page to start a studio chat."
             actions={
-            <Link href="/products" className="account-primary-action mt-6 inline-block bg-[var(--ds-text-primary)] px-6 py-3">
+            <ButtonLink href="/products" variant="secondary" size="md">
               Browse Products
-            </Link>
+            </ButtonLink>
             }
           />
         ) : (

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, RefreshCw, ShoppingBag } from 'lucide-react';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Button } from '@/components/ui/Button';
+import { Button, ButtonLink } from '@/components/ui/Button';
 import { StatusBanner } from '@/components/ui/StatusBanner';
 
 export default function CheckoutError({
@@ -40,12 +40,13 @@ export default function CheckoutError({
                 >
                   Try Again
                 </Button>
-                <Link
+                <ButtonLink
                   href="/cart"
-                  className="inline-flex min-h-12 items-center justify-center border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-7 font-body text-body-sm uppercase tracking-token-wider text-[var(--ds-text-primary)] type-semibold transition-colors hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]"
+                  variant="outline"
+                  size="lg"
                 >
                   Return to Cart
-                </Link>
+                </ButtonLink>
               </>
             }
           />
