@@ -79,7 +79,7 @@ export default function ProductView({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [activeAccordion, setActiveAccordion] = useState<AccordionKey>('description');
+  const [openAccordions, setOpenAccordions] = useState<AccordionKey[]>(['description']);
   const [showStickyATC, setShowStickyATC] = useState(false);
   const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
 
@@ -292,6 +292,12 @@ export default function ProductView({ product }: { product: Product }) {
       content: <p className="kv-sub">{storefrontTrust.shippingSummary} Estimated delivery for your region is {deliveryWindow}.</p>,
     },
   ];
+
+  const toggleAccordion = (key: AccordionKey) => {
+    setOpenAccordions((current) =>
+      current.includes(key) ? current.filter((item) => item !== key) : [...current, key]
+    );
+  };
 
   return (
     <div className="pdp-page">
@@ -566,7 +572,7 @@ export default function ProductView({ product }: { product: Product }) {
           <section className="pdp-accordion-shell" aria-labelledby="product-details-heading">
             <p className="kv-tag" id="product-details-heading">Product details</p>
             {accordionItems.map((item) => {
-              const isOpen = activeAccordion === item.key;
+              const isOpen = openAccordions.includes(item.key);
               return (
                 <div key={item.key} className="pdp-accordion-item">
                   <Button
@@ -574,8 +580,9 @@ export default function ProductView({ product }: { product: Product }) {
                     variant="ghost"
                     size="md"
                     className="pdp-accordion-trigger"
-                    onClick={() => setActiveAccordion(item.key)}
+                    onClick={() => toggleAccordion(item.key)}
                     aria-expanded={isOpen}
+                    aria-controls={`pdp-section-${item.key}`}
                   >
                     <span className="pdp-accordion-icon">{item.icon}</span>
                     <span className="pdp-accordion-text">
@@ -584,7 +591,11 @@ export default function ProductView({ product }: { product: Product }) {
                     </span>
                     <ChevronDown className={isOpen ? 'is-open' : ''} size={18} />
                   </Button>
-                  {isOpen ? <div className="pdp-accordion-content">{item.content}</div> : null}
+                  {isOpen ? (
+                    <div id={`pdp-section-${item.key}`} className="pdp-accordion-content">
+                      {item.content}
+                    </div>
+                  ) : null}
                 </div>
               );
             })}
