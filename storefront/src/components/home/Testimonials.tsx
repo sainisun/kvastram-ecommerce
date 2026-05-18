@@ -15,34 +15,9 @@ function renderStars(rating?: number) {
 }
 
 export function Testimonials({ testimonials }: TestimonialsProps) {
-  const displayed =
-    testimonials.length > 0
-      ? testimonials.slice(0, 3)
-      : [
-          {
-            id: 'placeholder-ananya',
-            name: 'Ananya',
-            location: 'Jaipur',
-            rating: 5,
-            content:
-              'The drape felt festive but still light enough for a full family function.',
-          },
-          {
-            id: 'placeholder-priya',
-            name: 'Priya',
-            location: 'Delhi',
-            rating: 5,
-            content:
-              'The embroidery looks handmade in the best way. It photographed beautifully.',
-          },
-          {
-            id: 'placeholder-meera',
-            name: 'Meera',
-            location: 'Mumbai',
-            rating: 5,
-            content: 'Comfortable, special, and easy to style again.',
-          },
-        ];
+  const displayed = testimonials.slice(0, 3);
+
+  if (displayed.length === 0) return null;
 
   return (
     <section className="kv-section bg-[var(--ds-surface-paper)]">

@@ -34,7 +34,7 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
     e.preventDefault();
     const q = inputRef.current?.value.trim();
     if (q) {
-      router.push(`/products?search=${encodeURIComponent(q)}`);
+      router.push(`/search?q=${encodeURIComponent(q)}`);
       onClose();
     }
   };

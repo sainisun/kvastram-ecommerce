@@ -134,6 +134,7 @@
   bottom: 10px;
   min-height: 34px;
   border-radius: 999px;
+  color: var(--ds-text-inverse);
   opacity: 1;
   transform: translateY(0);
   z-index: 3;

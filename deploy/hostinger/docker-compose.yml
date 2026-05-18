@@ -50,8 +50,8 @@ services:
       dockerfile: Dockerfile
       args:
         # Baked into client bundle at build time (WebSocket, direct API refs).
-        # Should be your public API URL, e.g. https://api.vintaaj.com
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.vintaaj.com}
+        # Should be your public API URL, e.g. https://api.kvastram.com
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.kvastram.com}
     restart: unless-stopped
     env_file:
       - ../../storefront/.env.production
@@ -82,7 +82,7 @@ services:
       dockerfile: Dockerfile
       args:
         # Baked into client bundle at build time.
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.vintaaj.com}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.kvastram.com}
     restart: unless-stopped
     env_file:
       - ../../admin/.env.production

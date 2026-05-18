@@ -41,11 +41,6 @@ type HomepageSettings = {
   featured_product_ids?: string | null;
 };
 
-type HomepageTag = {
-  id: string;
-  name: string;
-};
-
 export const revalidate = 60;
 
 export const metadata: Metadata = buildHomepageMetadata();
@@ -61,7 +56,6 @@ export default async function Home() {
     newArrivalsResult,
     bestsellersResult,
     heroBannersResult,
-    tagsResult,
     merchandisingResult,
   ] = await Promise.allSettled([
     api.getHomepageSettings(),
@@ -73,7 +67,6 @@ export default async function Home() {
     api.getSpotlightProducts('new_arrivals'),
     api.getSpotlightProducts('bestsellers'),
     api.getHeroBanners(),
-    api.getTags(),
     api.getHomepageMerchandising(),
   ]);
 
@@ -308,18 +301,6 @@ export default async function Home() {
           )
       : [];
 
-  const tags: HomepageTag[] =
-    tagsResult.status === 'fulfilled'
-      ? (tagsResult.value.tags || [])
-          .filter((tag: { id?: string; name?: string }) =>
-            Boolean(tag?.id && tag?.name)
-          )
-          .map((tag: { id: string; name: string }) => ({
-            id: tag.id,
-            name: tag.name,
-          }))
-      : [];
-
   const merchandisingSlots: HomepageMerchandisingSlot[] =
     merchandisingResult.status === 'fulfilled'
       ? (merchandisingResult.value.slots || [])
@@ -358,8 +339,6 @@ export default async function Home() {
       <PrototypeHomeExtras
         products={products}
         bestsellerProducts={bestsellerProducts}
-        collections={collections}
-        tags={tags}
         merchandisingSlots={merchandisingSlots}
       >
         <ShopTheLook spotlightProducts={spotlightProducts} />

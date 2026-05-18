@@ -164,6 +164,11 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   className="h-auto border-0 px-0 py-0 text-display-sm type-medium focus:border-transparent"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch(e);
+                    }
+                  }}
                   aria-label="Search query"
                   aria-controls="search-results"
                   autoComplete="off"
@@ -240,15 +245,15 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                       {[
                         {
                           label: 'Shawls',
-                          href: '/collections/shawls',
+                          href: '/search?q=shawls',
                         },
                         {
                           label: 'Kurtis',
-                          href: '/collections/kurtis',
+                          href: '/search?q=kurtis',
                         },
                         {
                           label: 'Sarees',
-                          href: '/collections/sarees',
+                          href: '/search?q=sarees',
                         },
                         {
                           label: 'Accessories',

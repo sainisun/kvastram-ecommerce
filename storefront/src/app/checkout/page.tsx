@@ -551,7 +551,8 @@ export default function CheckoutPage() {
     : 0;
 
   // Gift wrapping is stored in INR paise to match cart totals.
-  const giftWrappingCost = giftWrapping ? 29900 : 0;
+  const giftWrappingFee = 29900;
+  const giftWrappingCost = giftWrapping ? giftWrappingFee : 0;
 
   // PHASE 1.4: Final total includes subtotal - discount + shipping + tax + gift
   const finalTotal =
@@ -917,7 +918,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-body-sm type-medium color-muted">
-                        +{displayMoney(giftWrappingCost)}
+                        +{displayMoney(giftWrappingFee)}
                       </span>
                       <div
                         className={`relative w-11 h-6 rounded-full transition-colors ${

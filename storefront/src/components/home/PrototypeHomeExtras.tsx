@@ -5,22 +5,12 @@ import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { CompactProductCard } from '@/components/products/ProductCard';
 import type { MoneyAmount, Product } from '@/types';
-import type {
-  HomepageCollection,
-  HomepageMerchandisingSlot,
-} from '@/types/homepage';
+import type { HomepageMerchandisingSlot } from '@/types/homepage';
 import { useCurrency } from '@/context/currency-context';
-
-interface Tag {
-  id: string;
-  name: string;
-}
 
 interface PrototypeHomeExtrasProps {
   products: Product[];
   bestsellerProducts: Product[];
-  collections: HomepageCollection[];
-  tags: Tag[];
   merchandisingSlots: HomepageMerchandisingSlot[];
   children?: ReactNode;
 }
@@ -55,14 +45,6 @@ function SectionHead({
           {action.label}
         </Link>
       ) : null}
-    </div>
-  );
-}
-
-function EmptyMerchState({ label }: { label: string }) {
-  return (
-    <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--line)] bg-[var(--ds-surface-paper)] px-6 py-10 text-center">
-      <p className="kv-tag">{label}</p>
     </div>
   );
 }
@@ -162,8 +144,6 @@ function groupSlots(slots: HomepageMerchandisingSlot[], key: string) {
 export function PrototypeHomeExtras({
   products,
   bestsellerProducts,
-  collections,
-  tags,
   merchandisingSlots,
   children,
 }: PrototypeHomeExtrasProps) {
@@ -177,84 +157,51 @@ export function PrototypeHomeExtras({
     ...saleProducts.slice(0, 1),
   ].slice(0, 4);
 
-  const fabricCards =
-    fabricSlots.length > 0
-      ? fabricSlots
-      : tags.slice(0, 6).map((tag, index) => ({
-          id: tag.id,
-          slot_key: 'fabric_edits',
-          title: tag.name,
-          eyebrow: 'Fabric',
-          copy: 'Browse live products tagged with this fabric or craft.',
-          link_url: `/products?tag_id=${encodeURIComponent(tag.id)}`,
-          is_active: true,
-          sort_order: index,
-        }));
-
-  const occasionCards =
-    occasionSlots.length > 0
-      ? occasionSlots
-      : collections.slice(0, 3).map((collection, index) => ({
-          id: collection.id,
-          slot_key: 'occasion_edits',
-          title: collection.title,
-          eyebrow: 'Occasion',
-          copy: 'Explore this live collection edit.',
-          link_url: `/collections/${collection.handle}`,
-          image_url: collection.image,
-          is_active: true,
-          sort_order: index,
-        }));
-
   return (
     <>
-      <section className="kv-section bg-[var(--cream)]">
-        <div className="kv-container">
-          <SectionHead
-            eyebrow="Limited editions"
-            action={{ label: 'View All', href: '/products' }}
-          />
-          {seasonalSlots.length > 0 ? (
+      {seasonalSlots.length > 0 ? (
+        <section className="kv-section bg-[var(--cream)]">
+          <div className="kv-container">
+            <SectionHead
+              eyebrow="Limited editions"
+              action={{ label: 'View All', href: '/products' }}
+            />
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {seasonalSlots.map((slot) => (
                 <MerchSlotCard key={slot.id} slot={slot} />
               ))}
             </div>
-          ) : (
-            <EmptyMerchState label="No seasonal edits live" />
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
 
-      <section className="kv-section bg-[var(--ds-surface-paper)]">
-        <div className="kv-container">
-          <SectionHead
-            eyebrow="Curated for you"
-            action={{ label: 'View All', href: '/products' }}
-          />
-          {tabProducts.length > 0 ? (
+      {tabProducts.length > 0 ? (
+        <section className="kv-section bg-[var(--ds-surface-paper)]">
+          <div className="kv-container">
+            <SectionHead
+              eyebrow="Curated for you"
+              action={{ label: 'View All', href: '/products' }}
+            />
             <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:gap-x-8">
               {tabProducts.map((product) => (
                 <ProductTile key={product.id} product={product} />
               ))}
             </div>
-          ) : (
-            <EmptyMerchState label="No live products available" />
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
 
       {children}
 
-      <section className="kv-section bg-[var(--cream)]">
-        <div className="kv-container">
-          <SectionHead
-            eyebrow="Craft &amp; material"
-            action={{ label: 'View All', href: '/products' }}
-          />
-          {fabricCards.length > 0 ? (
+      {fabricSlots.length > 0 ? (
+        <section className="kv-section bg-[var(--cream)]">
+          <div className="kv-container">
+            <SectionHead
+              eyebrow="Craft &amp; material"
+              action={{ label: 'View All', href: '/products' }}
+            />
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {fabricCards.map((slot) => (
+              {fabricSlots.map((slot) => (
                 <MerchSlotCard
                   key={slot.id}
                   slot={slot}
@@ -262,21 +209,19 @@ export function PrototypeHomeExtras({
                 />
               ))}
             </div>
-          ) : (
-            <EmptyMerchState label="No fabric edits live" />
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
 
-      <section className="kv-section bg-[var(--cream)]">
-        <div className="kv-container">
-          <SectionHead
-            eyebrow="Dress for the moment"
-            action={{ label: 'View All', href: '/collections' }}
-          />
-          {occasionCards.length > 0 ? (
+      {occasionSlots.length > 0 ? (
+        <section className="kv-section bg-[var(--cream)]">
+          <div className="kv-container">
+            <SectionHead
+              eyebrow="Dress for the moment"
+              action={{ label: 'View All', href: '/collections' }}
+            />
             <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {occasionCards.map((slot) => (
+              {occasionSlots.map((slot) => (
                 <MerchSlotCard
                   key={slot.id}
                   slot={slot}
@@ -284,11 +229,9 @@ export function PrototypeHomeExtras({
                 />
               ))}
             </div>
-          ) : (
-            <EmptyMerchState label="No occasion edits live" />
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
     </>
   );
 }
