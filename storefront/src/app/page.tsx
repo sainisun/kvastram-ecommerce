@@ -12,7 +12,6 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { BrandStory } from '@/components/home/BrandStory';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
 import { BestSellers } from '@/components/home/BestSellers';
-import { ShopTheLook } from '@/components/home/ShopTheLook';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
@@ -24,7 +23,6 @@ import type {
   HomepageCollection,
   HomepageTestimonial,
   HomepageTrendingReel,
-  HomepageSpotlightProduct,
   HomepageMerchandisingSlot,
 } from '@/types/homepage';
 
@@ -53,7 +51,6 @@ export default async function Home() {
     testimonialsResult,
     collectionsResult,
     reelsResult,
-    spotlightsResult,
     newArrivalsResult,
     bestsellersResult,
     heroBannersResult,
@@ -64,7 +61,6 @@ export default async function Home() {
     api.getTestimonials(),
     api.getCollections(),
     api.getTrendingReels(),
-    api.getSpotlightProducts('spotlight'),
     api.getSpotlightProducts('new_arrivals'),
     api.getSpotlightProducts('bestsellers'),
     api.getHeroBanners(),
@@ -203,42 +199,6 @@ export default async function Home() {
           )
       : [];
 
-  const spotlightProducts: HomepageSpotlightProduct[] =
-    spotlightsResult.status === 'fulfilled'
-      ? (spotlightsResult.value.featuredProducts || [])
-          .filter(
-            (item: {
-              id?: string;
-              product?: { id?: string; title?: string; handle?: string };
-            }) => Boolean(item?.id && item?.product?.id && item?.product?.title)
-          )
-          .slice(0, 3)
-          .map(
-            (item: {
-              id: string;
-              badge_text?: string | null;
-              custom_image_url?: string | null;
-              product: {
-                id: string;
-                title: string;
-                handle?: string;
-                thumbnail?: string | null;
-                variants?: Array<{
-                  prices?: Array<{ amount: number; currency_code: string }>;
-                }>;
-              };
-            }) => ({
-              id: item.id,
-              badge_text: item.badge_text || null,
-              custom_image_url: cloudinaryUrlOrNull(item.custom_image_url),
-              product: {
-                ...item.product,
-                thumbnail: cloudinaryUrlOrNull(item.product.thumbnail),
-              },
-            })
-          )
-      : [];
-
   const newArrivalProducts: Product[] =
     newArrivalsResult.status === 'fulfilled'
       ? (newArrivalsResult.value.featuredProducts || [])
@@ -339,12 +299,8 @@ export default async function Home() {
       <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
       <HomeMerchandisingSections
-        products={products}
-        bestsellerProducts={bestsellerProducts}
         merchandisingSlots={merchandisingSlots}
-      >
-        <ShopTheLook spotlightProducts={spotlightProducts} />
-      </HomeMerchandisingSections>
+      />
       <Testimonials testimonials={testimonials} />
       <NewsletterSection settings={homepageSettings} />
     </>
