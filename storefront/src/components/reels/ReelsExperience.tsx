@@ -137,6 +137,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     () => reels.reduce((sum, reel) => sum + (reel.view_count || 0), 0),
     [reels]
   );
+  const heroReels = visibleReels.slice(0, 3);
 
   function openReel(index: number) {
     setActiveIndex(index);
@@ -163,60 +164,49 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 
   return (
     <div className="reels-page">
-      <header className="reels-topbar">
-        <div className="reels-shell reels-topbar-inner">
-          <Link href="/" className="reels-brand" aria-label="Kvastram home">
-            Kvastram
-          </Link>
-          <div className="reels-grid-toggle" aria-label="Grid layout">
-            <IconButton
-              type="button"
-              onClick={() => setGrid(2)}
-              aria-label="2-column grid"
-              variant="ghost"
-              size="sm"
-              className={gridCols === 2 ? 'reels-toggle-button active' : 'reels-toggle-button'}
-            >
-              <Grid2X2 size={16} />
-            </IconButton>
-            <IconButton
-              type="button"
-              onClick={() => setGrid(3)}
-              aria-label="3-column grid"
-              variant="ghost"
-              size="sm"
-              className={gridCols === 3 ? 'reels-toggle-button active' : 'reels-toggle-button'}
-            >
-              <Grid3X3 size={16} />
-            </IconButton>
+      <section className="reels-shell reels-hero" aria-labelledby="reels-hero-title">
+        <div className="reels-hero-copy">
+          <p className="reels-hero-kicker">Watch &amp; Buy</p>
+          <h1 id="reels-hero-title">Shop the look in motion</h1>
+          <p>See fabric, drape, scale, and styling before you choose your next handmade piece.</p>
+          <div className="reels-hero-actions">
+            <Link href="/products" className="reels-action-link">
+              Shop collection
+            </Link>
+            <span>{reels.length || '-'} reels</span>
+            <span>{totalViews ? formatCompactNumber(totalViews) : '-'} views</span>
           </div>
         </div>
-      </header>
-
-      <section className="reels-shell reels-profile" aria-labelledby="reels-profile-title">
-        <div className="reels-avatar" aria-hidden="true">Kv</div>
-        <div className="reels-profile-copy">
-          <p className="reels-profile-kicker">Watch &amp; Buy</p>
-          <h1 id="reels-profile-title">kvastram</h1>
-          <p>Handmade Jaipur drops, block prints, quilted layers, and styling ideas in motion.</p>
-          <Link href="/products" className="reels-action-link">
-            Shop collection
-          </Link>
+        <div className="reels-hero-preview" aria-hidden="true">
+          {[0, 1, 2].map((slot) => {
+            const reel = heroReels[slot];
+            return (
+              <div key={reel?.id || slot} className="reels-hero-frame">
+                {reel?.video_url ? (
+                  <video
+                    src={reel.video_url}
+                    poster={reel.thumbnail_url || undefined}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    preload="metadata"
+                  />
+                ) : reel?.thumbnail_url ? (
+                  <OptimizedImage
+                    src={reel.thumbnail_url}
+                    alt=""
+                    fill
+                    sizes="112px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span />
+                )}
+              </div>
+            );
+          })}
         </div>
-        <dl className="reels-stats" aria-label="Reels stats">
-          <div>
-            <dt>{reels.length || '-'}</dt>
-            <dd>reels</dd>
-          </div>
-          <div>
-            <dt>{totalViews ? formatCompactNumber(totalViews) : '-'}</dt>
-            <dd>views</dd>
-          </div>
-          <div>
-            <dt>Jaipur</dt>
-            <dd>craft</dd>
-          </div>
-        </dl>
       </section>
 
       <div className="reels-shell reels-tabs" role="tablist" aria-label="Reels content">
@@ -224,6 +214,28 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           <Grid3X3 size={16} />
           Reels
         </UnstyledButton>
+        <div className="reels-grid-toggle" aria-label="Grid layout">
+          <IconButton
+            type="button"
+            onClick={() => setGrid(2)}
+            aria-label="2-column grid"
+            variant="ghost"
+            size="sm"
+            className={gridCols === 2 ? 'reels-toggle-button active' : 'reels-toggle-button'}
+          >
+            <Grid2X2 size={16} />
+          </IconButton>
+          <IconButton
+            type="button"
+            onClick={() => setGrid(3)}
+            aria-label="3-column grid"
+            variant="ghost"
+            size="sm"
+            className={gridCols === 3 ? 'reels-toggle-button active' : 'reels-toggle-button'}
+          >
+            <Grid3X3 size={16} />
+          </IconButton>
+        </div>
       </div>
 
       <div className="reels-shell reels-grid-shell">

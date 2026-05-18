@@ -67,17 +67,16 @@ export function MainLayout({
   const pathname = usePathname();
   const isWholesalePage = pathname?.startsWith('/wholesale');
   const isCheckoutPage = pathname?.startsWith('/checkout');
-  const isReelsPage = pathname?.startsWith('/reels');
-  const hideSiteChrome = isCheckoutPage || isReelsPage;
+  const hideSiteChrome = isCheckoutPage;
 
   return (
     <>
       <ScrollProgress />
-      {!isReelsPage && (isWholesalePage ? <WholesaleHeader /> : <SiteHeader />)}
+      {isWholesalePage ? <WholesaleHeader /> : <SiteHeader />}
       <main id="main-content" tabIndex={-1} className="page-transition">
         {children}
       </main>
-      {!isReelsPage && (isWholesalePage ? <WholesaleFooter /> : <Footer />)}
+      {isWholesalePage ? <WholesaleFooter /> : <Footer />}
       {/* Mobile Bottom Navigation - Hide on immersive/checkout surfaces */}
       {!hideSiteChrome && <BottomNav />}
       {/* Scroll to top */}
