@@ -58,6 +58,16 @@ export default function ListingHero({
               light={false}
             />
           </>
+        ) : isCollection ? (
+          <div className="kv-page-container py-10 md:py-14">
+            <HeroCopy
+              eyebrow={eyebrow}
+              title={title}
+              description={description}
+              count={count}
+              light={false}
+            />
+          </div>
         ) : (
           <div className="relative min-h-[240px] md:min-h-[340px]">
             {image ? (
