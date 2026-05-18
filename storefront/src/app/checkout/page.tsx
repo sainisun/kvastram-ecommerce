@@ -34,6 +34,7 @@ import RazorpayButton from '@/components/checkout/RazorpayButton';
 import PayPalButton from '@/components/checkout/PayPalButton';
 import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
 import { storefrontTrust } from '@/config/storefront-trust';
+import { useCurrency } from '@/context/currency-context';
 
 // Initialize Stripe
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -181,6 +182,7 @@ export default function CheckoutPage() {
   const { customer, loading: authLoading } = useAuth();
   const { items, cartTotal, clearCart } = useCart();
   const { currentRegion, settings } = useShop();
+  const { formatPrice } = useCurrency();
 
   // Initialize all hooks FIRST - before any conditionals
   const [loading, setLoading] = useState(false);
@@ -337,7 +339,7 @@ export default function CheckoutPage() {
       setDiscount({ code: res.code, amount: res.discount_amount });
       setPromoMessage({
         type: 'success',
-        text: `Coupon ${res.code} applied! -$${(res.discount_amount / 100).toFixed(2)}`,
+        text: `Coupon ${res.code} applied! -${formatPrice(res.discount_amount)}`,
       });
     } catch {
       setDiscount(null);
@@ -548,8 +550,8 @@ export default function CheckoutPage() {
       : selectedShipping.price || 0
     : 0;
 
-  // D3: Gift wrapping cost = $2.99 = 299 cents
-  const giftWrappingCost = giftWrapping ? 299 : 0;
+  // Gift wrapping is stored in INR paise to match cart totals.
+  const giftWrappingCost = giftWrapping ? 29900 : 0;
 
   // PHASE 1.4: Final total includes subtotal - discount + shipping + tax + gift
   const finalTotal =
@@ -559,9 +561,11 @@ export default function CheckoutPage() {
     taxAmount +
     giftWrappingCost;
 
-  // Currency for display
+  // Payment currency can differ by selected region, but all local cart amounts
+  // are stored in INR paise and displayed through the currency provider.
   const currency =
     currentRegion?.currency_code || items[0]?.currency?.toUpperCase() || 'USD';
+  const displayMoney = (amount: number) => formatPrice(amount);
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
@@ -859,7 +863,7 @@ export default function CheckoutPage() {
                             >
                               {isFree
                                 ? 'FREE'
-                                : `$${(displayPrice / 100).toFixed(2)}`}
+                                : displayMoney(displayPrice)}
                             </span>
                           </label>
                         );
@@ -913,7 +917,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-body-sm type-medium color-muted">
-                        +$2.99
+                        +{displayMoney(giftWrappingCost)}
                       </span>
                       <div
                         className={`relative w-11 h-6 rounded-full transition-colors ${
@@ -1201,10 +1205,7 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   <p className="type-medium color-ink">
-                    {new Intl.NumberFormat(undefined, {
-                      style: 'currency',
-                      currency: item.currency?.toUpperCase() || 'USD',
-                    }).format((item.price * item.quantity) / 100)}
+                    {displayMoney(item.price * item.quantity)}
                   </p>
                 </div>
               ))}
@@ -1251,10 +1252,7 @@ export default function CheckoutPage() {
               <div className="flex justify-between color-muted">
                 <span>Subtotal</span>
                 <span>
-                  {new Intl.NumberFormat(undefined, {
-                    style: 'currency',
-                    currency,
-                  }).format(cartTotal / 100)}
+                  {displayMoney(cartTotal)}
                 </span>
               </div>
               {discount && (
@@ -1267,10 +1265,7 @@ export default function CheckoutPage() {
                   </div>
                   <span>
                     -
-                    {new Intl.NumberFormat(undefined, {
-                      style: 'currency',
-                      currency,
-                    }).format(discount.amount / 100)}
+                    {displayMoney(discount.amount)}
                   </span>
                 </div>
               )}
@@ -1284,10 +1279,7 @@ export default function CheckoutPage() {
                   <span className={shippingCost === 0 ? 'text-[var(--ds-success)]' : ''}>
                     {shippingCost === 0
                       ? 'FREE'
-                      : new Intl.NumberFormat(undefined, {
-                          style: 'currency',
-                          currency: currency,
-                        }).format(shippingCost / 100)}
+                       : displayMoney(shippingCost)}
                   </span>
                 </div>
               ) : (
@@ -1304,35 +1296,26 @@ export default function CheckoutPage() {
                     {taxLoading ? (
                       <span className="color-muted">Calculating...</span>
                     ) : (
-                      new Intl.NumberFormat(undefined, {
-                        style: 'currency',
-                        currency: currency,
-                      }).format(taxAmount / 100)
+                      displayMoney(taxAmount)
                     )}
                   </span>
                 </div>
               )}
-              \n\n {/* D3: Gift Wrapping line */}
+              {/* Gift Wrapping line */}
               {giftWrapping && (
                 <div className="flex justify-between color-muted">
                   <span className="flex items-center gap-1.5">
                     <span>🎁</span> Gift Wrapping
                   </span>
                   <span>
-                    {new Intl.NumberFormat(undefined, {
-                      style: 'currency',
-                      currency,
-                    }).format(giftWrappingCost / 100)}
+                    {displayMoney(giftWrappingCost)}
                   </span>
                 </div>
               )}
               <div className="flex justify-between text-body-xl font-display color-ink pt-4 border-t border-[var(--line)]">
                 <span>Total</span>
                 <span>
-                  {new Intl.NumberFormat(undefined, {
-                    style: 'currency',
-                    currency,
-                  }).format(finalTotal / 100)}
+                  {displayMoney(finalTotal)}
                 </span>
               </div>
             </div>

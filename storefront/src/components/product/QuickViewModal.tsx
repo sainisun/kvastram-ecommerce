@@ -112,6 +112,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
         price,
         currency: 'INR',
         thumbnail: product.thumbnail || undefined,
+        handle: product.handle || product.id,
       });
       setAdded(true);
       if (addedTimer.current) clearTimeout(addedTimer.current);

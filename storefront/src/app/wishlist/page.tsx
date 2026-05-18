@@ -26,6 +26,7 @@ export default function WishlistPage() {
       price: item.price,
       currency: item.currency,
       thumbnail: item.thumbnail,
+      handle: item.handle,
     });
     showNotification('success', 'Added to cart');
     removeItem(item.productId);

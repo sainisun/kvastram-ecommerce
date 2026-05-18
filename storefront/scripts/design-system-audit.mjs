@@ -3,7 +3,11 @@ import path from 'node:path';
 import { collectDesignSystemMetrics } from './design-system-metrics.mjs';
 
 const roots = [path.resolve('src')];
-const extraFiles = [path.resolve('tailwind.config.ts')];
+const extraFiles = [
+  path.resolve('tailwind.config.ts'),
+  path.resolve('../docs/design-system/storefront-design-system-v1.md'),
+  path.resolve('KVASTRAM_HEADER_DESIGN_SYSTEM.md'),
+];
 const baseline = JSON.parse(
   readFileSync(path.resolve('scripts/design-system-baseline.json'), 'utf8')
 );

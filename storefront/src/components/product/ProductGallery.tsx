@@ -52,7 +52,7 @@ function buildGalleryItems(
         )
     )
     .map((video, index) => ({
-      id: video.id || `legacy-video-${index}`,
+      id: video.id || `gallery-video-${index}`,
       type: 'video',
       src: video.url,
       thumbnail: video.thumbnail,

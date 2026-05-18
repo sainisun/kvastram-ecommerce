@@ -54,14 +54,16 @@ The goal of this pass was to move the storefront from "clean and consistent" to 
   - native styled buttons: `3`
   - default palette refs: `0`
   - UI default palette refs: `0`
-- Added zero-drift guardrails for raw numeric `rgb()/rgba()` colors, named `white`/`black` CSS declarations, and legacy `warm-white`/`kv-white` aliases.
+- Added zero-drift guardrails for raw numeric `rgb()/rgba()` colors, named surface/text color declarations, and old paper aliases.
 
 ### Zero-Known-Issues Cleanup
 
 - Removed stale page-local CTA CSS selectors after TSX was migrated to shared primitives.
-- Removed dead `legacy-*` product/filter CSS selectors and unused legacy stylesheet imports.
+- Removed dead old product/filter CSS selectors and unused stylesheet imports.
 - Removed superseded accent aliases from runtime globals and Tailwind config; TERRACOTTA is now the only accent naming path in active config.
-- Extended `audit:design-system` beyond `src` to include `tailwind.config.ts`, and added a guardrail for `.legacy-*` CSS selectors.
+- Extended `audit:design-system` beyond `src` to include `tailwind.config.ts`, and added a guardrail for old-prefixed CSS selectors.
+- Converted active design-system docs to current-source-only guidance and replaced the superseded header spec with a pointer stub.
+- Renamed the PDP support stylesheet from old naming to `pdp-gallery.css`.
 - Promoted remaining raw overlay/color math to design-system RGB channels:
   - `--ds-accent-rgb`
   - `--ds-warning-rgb`
@@ -71,7 +73,7 @@ The goal of this pass was to move the storefront from "clean and consistent" to 
   - `--ds-text-secondary-rgb`
   - `--ds-surface-page-rgb`
 - Removed remaining default prose/default palette utility drift from product, journal, and checkout surfaces.
-- Replaced old PDP `warm-white` naming with component-scoped `--pdp-paper`.
+- Replaced old PDP paper naming with component-scoped `--pdp-paper`.
 
 ## Final Metrics
 

@@ -652,7 +652,7 @@ export const api = {
         return adaptProduct(json.data);
       }
 
-      // Fallback: Direct product response (legacy)
+      // Fallback: direct product response shape
       if (json.success && json.data) {
         return adaptProduct(json.data);
       }

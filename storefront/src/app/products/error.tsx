@@ -25,7 +25,7 @@ export default function ProductsError({
         <EmptyState
           eyebrow={error.digest ? `Error ID: ${error.digest}` : undefined}
           title="Unable to Load Products"
-          description="We're having trouble loading the products right now. This might be a temporary issue. Please try again."
+          description="We're having trouble loading the products right now. Please try again in a moment."
           className="mx-auto max-w-2xl"
           actions={
             <>

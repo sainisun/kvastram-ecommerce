@@ -174,7 +174,7 @@ export function adaptCollections(apiCollections: ApiCollectionResponse[]) {
 
 // ==========================================
 // LEGACY NORMALIZATION FUNCTIONS
-// (Keep for backwards compatibility, but prefer new adapt* functions)
+// Keep for existing callers, but prefer new adapt* functions.
 // ==========================================
 
 export interface PaginatedResponse<T> {

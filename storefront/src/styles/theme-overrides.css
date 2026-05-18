@@ -1,4 +1,4 @@
-/* Token bridge for legacy surfaces. Avoid broad monochrome overrides here. */
+/* Token bridge for global surfaces. Avoid broad monochrome overrides here. */
 :where(body) {
   background-color: var(--ds-surface-page);
   color: var(--ds-text-primary);

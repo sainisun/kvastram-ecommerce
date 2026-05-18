@@ -186,6 +186,7 @@ export default function OrderDetailsPage() {
                 thumbnail:
                   product.thumbnail || orderItem.thumbnail || undefined,
                 sku: variant.sku,
+                handle: product.handle || product.id,
               });
               addedCount++;
             } else {

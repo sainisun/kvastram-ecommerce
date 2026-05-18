@@ -35,6 +35,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   );
   const amountToFreeShipping = Math.max(0, freeShippingThreshold - cartTotal);
   const hasFreeShipping = cartTotal >= freeShippingThreshold;
+  const getItemHref = (item: { handle?: string; title: string }) =>
+    item.handle
+      ? `/products/${item.handle}`
+      : `/search?q=${encodeURIComponent(item.title)}`;
 
   return (
     <Drawer
@@ -119,7 +123,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 >
                   {/* Product Image */}
                   <Link
-                    href={`/products/${item.handle || item.id}`}
+                    href={getItemHref(item)}
                     onClick={onClose}
                     className="relative w-[72px] h-[90px] flex-shrink-0 bg-[var(--soft)] overflow-hidden rounded-[var(--radius-sm)]"
                   >
@@ -142,7 +146,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
                       <Link
-                        href={`/products/${item.handle || item.id}`}
+                        href={getItemHref(item)}
                         onClick={onClose}
                         className="text-body-sm type-medium color-ink hover:color-muted transition-colors line-clamp-2 block leading-token-tight"
                       >

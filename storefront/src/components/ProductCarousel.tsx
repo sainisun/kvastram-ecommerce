@@ -59,6 +59,7 @@ function ProductCarousel({
       origin: product.origin_country || undefined,
       sku: variant.sku || undefined,
       description: product.description || undefined,
+      handle: product.handle || product.id,
     });
 
     setAddedId(product.id);
