@@ -682,7 +682,6 @@ h4,
 h5,
 h6,
 .font-display,
-.font-heading,
 .kv-title,
 .section-title,
 .catalog-page-heading,
@@ -778,6 +777,7 @@ b,
 .kv-label,
 .kv-tag,
 .tag,
+.font-label,
 .kv-section-link,
 .catalog-active-chip,
 .catalog-filter-link,
@@ -833,6 +833,11 @@ b,
   letter-spacing: var(--type-label-tracking);
   line-height: var(--leading-normal);
   text-transform: var(--type-label-transform);
+}
+
+.product-media .font-label {
+  font-size: var(--text-body-xs);
+  line-height: var(--leading-tight);
 }
 
 .btn,

@@ -59,7 +59,7 @@
   --ds-type-label-tracking: var(--ds-tracking-wide);
   --ds-type-button-tracking: var(--ds-tracking-wide);
   --ds-type-product-title-font: var(--ds-font-body);
-  --ds-type-product-title-size: var(--ds-text-body-md);
+  --ds-type-product-title-size: var(--ds-text-body-sm);
   --ds-type-product-title-weight: var(--ds-weight-regular);
   --ds-type-product-meta-transform: none;
   --ds-type-product-meta-tracking: var(--ds-tracking-normal);

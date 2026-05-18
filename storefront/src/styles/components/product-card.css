@@ -35,7 +35,9 @@
   aspect-ratio: 4 / 5;
   display: grid;
   place-items: center;
-  font-size: var(--text-display-xl);
+  font-family: var(--type-body-font);
+  font-size: var(--text-body-md);
+  line-height: var(--leading-normal);
   background: var(--soft);
   overflow: hidden;
 }
