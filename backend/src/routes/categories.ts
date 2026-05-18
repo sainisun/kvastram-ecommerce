@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { verifyAdminOrMcpService } from '../middleware/auth';
 import { db } from '../db/client';
 import { categories, product_categories, products } from '../db/schema';
-import { eq, desc, count } from 'drizzle-orm';
+import { eq, desc, count, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 
@@ -46,7 +46,33 @@ categoriesRouter.get('/', async (c) => {
 // GET /categories/tree
 categoriesRouter.get('/tree', async (c) => {
   try {
-    const allCategories = await db.select().from(categories);
+    const allCategories = await db
+      .select({
+        id: categories.id,
+        name: categories.name,
+        slug: categories.slug,
+        description: categories.description,
+        parent_id: categories.parent_id,
+        image: categories.image,
+        is_active: categories.is_active,
+        display_order: categories.display_order,
+        show_in_header: categories.show_in_header,
+        header_image_url: categories.header_image_url,
+        emoji: categories.emoji,
+        seo_title: categories.seo_title,
+        seo_desc: categories.seo_desc,
+        og_image_url: categories.og_image_url,
+        created_at: categories.created_at,
+        updated_at: categories.updated_at,
+        product_count: sql<number>`(
+          SELECT COUNT(*)
+          FROM product_categories pc
+          JOIN products p ON p.id = pc.product_id
+          WHERE pc.category_id = ${categories.id}
+            AND p.status = 'published'
+        )`.mapWith(Number),
+      })
+      .from(categories);
 
     const buildTree = (parentId: string | null = null): any[] => {
       return allCategories
@@ -115,8 +141,17 @@ categoriesRouter.put(
         }
       });
 
+      const category = await db.query.categories.findFirst({
+        where: eq(categories.id, id),
+      });
+
       await triggerStorefrontRevalidation({
-        paths: ['/', '/products', '/collections'],
+        paths: [
+          '/',
+          '/products',
+          '/collections',
+          category?.slug ? `/categories/${category.slug}` : '/categories',
+        ],
         tags: ['products', 'categories'],
       });
 
@@ -183,7 +218,7 @@ categoriesRouter.post(
         .returning();
 
       await triggerStorefrontRevalidation({
-        paths: ['/', '/products', '/collections', `/collections/${newCategory.slug}`],
+        paths: ['/', '/products', '/collections', `/categories/${newCategory.slug}`],
         tags: ['categories'],
       });
 
@@ -280,7 +315,7 @@ categoriesRouter.put(
         .returning();
 
       await triggerStorefrontRevalidation({
-        paths: ['/', '/products', '/collections', `/collections/${updatedCategory.slug}`],
+        paths: ['/', '/products', '/collections', `/categories/${updatedCategory.slug}`],
         tags: ['categories'],
       });
 

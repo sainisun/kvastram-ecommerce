@@ -1,27 +1,44 @@
 import Link from 'next/link';
 
+import OptimizedImage from '@/components/ui/OptimizedImage';
+
 interface MegaFeatureCardProps {
   name: string;
   handle: string;
+  image?: string | null;
   onClick?: () => void;
 }
 
-export function MegaFeatureCard({ name, handle, onClick }: MegaFeatureCardProps) {
+export function MegaFeatureCard({
+  name,
+  handle,
+  image,
+  onClick,
+}: MegaFeatureCardProps) {
   return (
     <Link
       href={`/collections/${handle}`}
       onClick={onClick}
-      className="h-full min-h-[240px] bg-[var(--ds-text-primary)] flex flex-col justify-end p-5 relative cursor-pointer group"
+      className="group relative flex h-full min-h-[240px] cursor-pointer flex-col justify-end overflow-hidden bg-[var(--ds-text-primary)] p-5"
     >
-      <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,var(--ds-text-inverse)_0,var(--ds-text-inverse)_1px,transparent_1px,transparent_8px)] opacity-[0.06]" />
-      <p className="font-label text-body-xs tracking-token-wide text-[var(--ds-text-inverse)]/45 mb-2">
+      {image ? (
+        <OptimizedImage
+          src={image}
+          alt={name}
+          fill
+          sizes="180px"
+          className="object-cover opacity-75 transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : null}
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.10),rgba(var(--ds-black-rgb),0.64))]" />
+      <p className="relative z-10 mb-2 font-label text-body-xs tracking-token-wide text-[var(--ds-text-inverse)]/70">
         Featured this season
       </p>
-      <h3 className="font-display text-display-sm italic type-regular text-[var(--ds-text-inverse)] leading-token-tight mb-3">
+      <h3 className="relative z-10 mb-3 font-display text-display-sm italic type-regular leading-token-tight text-[var(--ds-text-inverse)]">
         {name}
       </h3>
-      <span className="font-ui text-body-xs tracking-token-wide text-[var(--ds-text-inverse)]/70 border-b border-[var(--ds-surface-paper)]/25 pb-0.5 inline-block group-hover:text-[var(--ds-text-inverse)] transition-colors">
-        Shop the edit →
+      <span className="relative z-10 inline-block border-b border-[var(--ds-surface-paper)]/25 pb-0.5 font-ui text-body-xs tracking-token-wide text-[var(--ds-text-inverse)]/80 transition-colors group-hover:text-[var(--ds-text-inverse)]">
+        Shop the edit
       </span>
     </Link>
   );

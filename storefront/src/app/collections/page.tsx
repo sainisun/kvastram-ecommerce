@@ -21,16 +21,12 @@ type CollectionSummary = {
   title: string;
   handle: string;
   image?: string | null;
+  cover_image_url?: string | null;
   description?: string | null;
   product_count?: number | string | null;
+  status?: string | null;
+  type?: string | null;
 };
-
-const COLLECTION_GRADIENTS = [
-  'from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-accent-soft)]',
-  'from-[var(--ds-success-text)] via-[var(--ds-success)] to-[var(--ds-success-bg)]',
-  'from-[var(--ds-text-primary)] via-[var(--ds-text-muted)] to-[var(--ds-accent-soft)]',
-  'from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-surface-soft)]',
-];
 
 export const metadata: Metadata = buildBasicPageMetadata({
   title: 'Collections | Handcrafted Ethnic Wear for Women',
@@ -48,37 +44,31 @@ export const metadata: Metadata = buildBasicPageMetadata({
 function CollectionCard({
   collection,
   count,
-  index,
 }: {
   collection: CollectionSummary;
   count: number;
-  index: number;
 }) {
-  const gradient = COLLECTION_GRADIENTS[index % COLLECTION_GRADIENTS.length];
+  const image = collection.cover_image_url || collection.image;
 
   return (
-    <Link href={`/collections/${collection.handle}`} className="group block">
-      <div className={`relative aspect-[3/4] overflow-hidden rounded-lg bg-gradient-to-br ${gradient}`}>
-        {collection.image ? (
+    <Link
+      href={`/collections/${collection.handle}`}
+      className="group block border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] transition-colors hover:border-[var(--ds-text-primary)]"
+    >
+      {image ? (
+        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]">
           <OptimizedImage
-            src={collection.image}
+            src={image}
             alt={`${collection.title} collection - Kvastram`}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center px-5 text-center">
-            <span className="collection-card-placeholder">
-              {collection.title}
-            </span>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.02),rgba(var(--ds-black-rgb),0.36))]" />
-        <div className="collection-count-badge absolute bottom-4 left-4 rounded-full bg-[var(--ds-surface-paper)]/90 px-3 py-1">
-          {count} products
         </div>
-      </div>
-      <div className="px-1 pt-4">
+      ) : null}
+      <div className="p-4">
+        <p className="collection-card-kicker">
+          {collection.type || 'Curated edit'} · {count} {count === 1 ? 'product' : 'products'}
+        </p>
         <h2 className="collection-card-title">
           {collection.title}
         </h2>
@@ -109,10 +99,19 @@ export default async function CollectionsPage({
   const showAll = params.show === 'all';
 
   const data = await api.getCollections();
-  const collections: CollectionSummary[] = data.collections || [];
-  const featuredCollections = collections.slice(0, 3);
-  const visibleCollections = showAll ? collections : collections.slice(0, 12);
-  const heroImage = collections.find((collection) => collection.image)?.image;
+  const collections: CollectionSummary[] = (data.collections || []).filter(
+    (collection: CollectionSummary) =>
+      collection.status === 'active' &&
+      collection.handle &&
+      getProductCount(collection) > 0
+  );
+  const featuredCollections = collections
+    .filter((collection) => collection.cover_image_url || collection.image)
+    .slice(0, 3);
+  const featuredIds = new Set(featuredCollections.map((collection) => collection.id));
+  const remainingCollections = collections.filter((collection) => !featuredIds.has(collection.id));
+  const visibleCollections = showAll ? remainingCollections : remainingCollections.slice(0, 12);
+  const heroImage = collections.find((collection) => collection.cover_image_url || collection.image);
 
   const schema = [
     buildCollectionPageJsonLd({
@@ -120,7 +119,7 @@ export default async function CollectionsPage({
       path: '/collections',
       description:
         'Explore handcrafted ethnic wear collections, from festive kurtis to artisanal shawls and occasion-ready silhouettes.',
-      image: heroImage || '',
+      image: heroImage?.cover_image_url || heroImage?.image || '',
       items: collections.map((collection: CollectionSummary) => ({
         name: collection.title,
         path: `/collections/${collection.handle}`,
@@ -135,20 +134,27 @@ export default async function CollectionsPage({
   if (collections.length === 0) {
     return (
       <div className="min-h-screen bg-[var(--ds-surface-paper)]">
-        <section className="relative h-[360px] overflow-hidden bg-[var(--ds-surface-soft)] sm:h-[420px]">
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-surface-paper-rgb),0.2),rgba(var(--ds-black-rgb),0.3))]" />
-          <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
-            <div className="max-w-3xl">
-              <div className="collection-hero-eyebrow">
-                Curated Series
-              </div>
-              <h1 className="collection-hero-title mt-4">
-                Collections
-              </h1>
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-10 md:px-12 md:py-14 lg:px-20">
+          <nav
+            aria-label="Breadcrumb"
+            className="listing-breadcrumb mb-8 flex items-center gap-2"
+          >
+            <Link href="/" className="transition-colors hover:text-[var(--ds-text-primary)]">
+              Home
+            </Link>
+            <span>/</span>
+            <span className="text-[var(--ds-text-secondary)]">Collections</span>
+          </nav>
+          <section className="border-y border-[var(--ds-border-subtle)] py-10 md:py-14">
+            <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-secondary)]">
+              Curated Series
             </div>
-          </div>
-        </section>
-        <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+            <h1 className="mt-4 font-display text-display-lg type-regular leading-token-tight text-[var(--ds-text-primary)] md:text-display-xl">
+              Collections
+            </h1>
+          </section>
+        </div>
+        <div className="kv-page-container mx-auto max-w-[1440px] px-6 pb-12 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
           <EmptyState
             title="No collections found."
             description="Check back soon for new curated series."
@@ -167,17 +173,16 @@ export default async function CollectionsPage({
         }}
       />
 
-      <section className="relative h-[360px] overflow-hidden bg-[var(--ds-surface-soft)] sm:h-[420px]">
-        {heroImage ? (
+      {heroImage?.cover_image_url || heroImage?.image ? (
+        <section className="relative h-[360px] overflow-hidden bg-[var(--ds-surface-soft)] sm:h-[420px]">
           <OptimizedImage
-            src={heroImage}
+            src={heroImage.cover_image_url || heroImage.image || ''}
             alt="Collections"
             fill
             priority
             sizes="100vw"
             className="object-cover object-center"
           />
-        ) : null}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-surface-paper-rgb),0.2),rgba(var(--ds-black-rgb),0.3))]" />
         <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
           <div className="max-w-3xl">
@@ -193,7 +198,23 @@ export default async function CollectionsPage({
             </p>
           </div>
         </div>
-      </section>
+        </section>
+      ) : (
+        <section className="kv-page-container mx-auto max-w-[1440px] px-6 pt-10 md:px-12 md:pt-14 lg:px-20">
+          <div className="border-y border-[var(--ds-border-subtle)] py-10 md:py-14">
+            <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-secondary)]">
+              Curated Series
+            </div>
+            <h1 className="mt-4 font-display text-display-lg type-regular leading-token-tight text-[var(--ds-text-primary)] md:text-display-xl">
+              Our <em className="italic">Collections</em>
+            </h1>
+            <p className="mt-4 max-w-2xl font-display text-display-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+              From everyday kurta sets to handcrafted bridal lehengas, every
+              edit tells a story.
+            </p>
+          </div>
+        </section>
+      )}
 
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
@@ -215,21 +236,15 @@ export default async function CollectionsPage({
               className="group relative overflow-hidden bg-[var(--ds-surface-soft)]"
             >
               <div className="relative aspect-[3/4]">
-                {collection.image ? (
+                {collection.cover_image_url || collection.image ? (
                   <OptimizedImage
-                    src={collection.image}
+                    src={collection.cover_image_url || collection.image || ''}
                     alt={collection.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-surface-warm)]">
-                    <span className="collection-feature-placeholder">
-                      {collection.title}
-                    </span>
-                  </div>
-                )}
+                ) : null}
                 <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.08),rgba(var(--ds-black-rgb),0.45))]" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-[var(--ds-text-inverse)]">
                   <h2 className="collection-feature-title">
@@ -251,17 +266,16 @@ export default async function CollectionsPage({
         </section>
 
         <section className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {visibleCollections.map((collection, index) => (
+          {visibleCollections.map((collection) => (
             <CollectionCard
               key={collection.id}
               collection={collection}
               count={getProductCount(collection)}
-              index={index}
             />
           ))}
         </section>
 
-        {collections.length > visibleCollections.length ? (
+        {remainingCollections.length > visibleCollections.length ? (
           <div className="mt-14 text-center">
             <Link
               href="/collections?show=all"

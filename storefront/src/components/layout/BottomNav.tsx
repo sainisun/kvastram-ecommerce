@@ -47,10 +47,11 @@ export function BottomNav() {
       badge: 0,
     },
     {
-      href: '/collections',
+      href: '/products',
       icon: LayoutGrid,
       label: 'Shop',
       active:
+        pathname?.startsWith('/categories') ||
         pathname?.startsWith('/collections') ||
         pathname?.startsWith('/products'),
       badge: 0,

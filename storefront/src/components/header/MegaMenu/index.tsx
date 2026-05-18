@@ -17,6 +17,8 @@ interface Collection {
   status?: string;
   show_in_megamenu?: boolean;
   display_order?: number;
+  cover_image_url?: string | null;
+  image?: string | null;
 }
 
 interface HeaderCategory {
@@ -143,6 +145,7 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
               <MegaFeatureCard
                 name={collectionTitle(featuredCollection)}
                 handle={featuredCollection.handle}
+                image={featuredCollection.cover_image_url || featuredCollection.image}
                 onClick={onClose}
               />
             ) : (
