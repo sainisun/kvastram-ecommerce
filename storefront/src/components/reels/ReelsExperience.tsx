@@ -149,7 +149,27 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     return () => window.clearTimeout(openRequestedReel);
   }, [activeIndex, loading, reels, requestedReelId]);
 
-  const activeCollectionHandle = requestedCollection && collections.some(
+  const fallbackCollections = useMemo<ReelCollectionItem[]>(
+    () =>
+      reels.slice(0, 3).map((reel, index) => ({
+        id: `fallback-${reel.id}`,
+        title: index === 0 ? 'Shop the look in motion' : reel.category || reel.product_name,
+        handle: `look-${index + 1}`,
+        subtitle:
+          index === 0
+            ? 'See fabric, drape, scale, and styling before you choose your next handmade piece.'
+            : 'A closer look at fabric, styling, and product scale.',
+        hero_image_url: reel.thumbnail_url,
+        hero_video_url: reel.video_url || null,
+        cta_label: index === 0 ? 'Shop Collection' : 'Shop Look',
+        cta_url: reel.link_url || '/products',
+        reel_ids: index === 0 ? reels.map((item) => item.id) : [reel.id],
+        reels: index === 0 ? reels : [reel],
+      })),
+    [reels]
+  );
+  const displayCollections = collections.length > 0 ? collections : fallbackCollections;
+  const activeCollectionHandle = requestedCollection && displayCollections.some(
     (collection) => collection.handle === requestedCollection
   )
     ? requestedCollection
@@ -157,9 +177,9 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const activeCollection = useMemo(
     () =>
       activeCollectionHandle
-        ? collections.find((collection) => collection.handle === activeCollectionHandle) || null
+        ? displayCollections.find((collection) => collection.handle === activeCollectionHandle) || null
         : null,
-    [activeCollectionHandle, collections]
+    [activeCollectionHandle, displayCollections]
   );
   const filteredReels = useMemo(() => {
     if (!activeCollection) return reels;
@@ -176,27 +196,27 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   );
   const heroReels = visibleReels.slice(0, 3);
   const carouselHeroCollection =
-    collections.length > 0
-      ? collections[activeHeroIndex % collections.length] || collections[0]
+    displayCollections.length > 0
+      ? displayCollections[activeHeroIndex % displayCollections.length] || displayCollections[0]
       : null;
   const activeHeroCollection = activeCollection || carouselHeroCollection;
   const heroCollectionReels = activeHeroCollection?.reels || [];
   const heroFallbackReel = heroCollectionReels[0] || reels[0] || null;
 
   useEffect(() => {
-    if (collections.length <= 1) return;
+    if (displayCollections.length <= 1) return;
 
     const timer = window.setInterval(() => {
-      setActiveHeroIndex((current) => (current + 1) % collections.length);
+      setActiveHeroIndex((current) => (current + 1) % displayCollections.length);
     }, 5200);
 
     return () => window.clearInterval(timer);
-  }, [collections.length]);
+  }, [displayCollections.length]);
 
   function selectCollection(handle: string | null) {
     setShowAll(false);
     if (handle) {
-      const heroIndex = collections.findIndex((collection) => collection.handle === handle);
+      const heroIndex = displayCollections.findIndex((collection) => collection.handle === handle);
       if (heroIndex >= 0) setActiveHeroIndex(heroIndex);
       router.replace(`${basePath}?collection=${handle}`, { scroll: false });
     } else {
@@ -280,9 +300,9 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                 <span>{totalViews ? formatCompactNumber(totalViews) : '-'} views</span>
               </div>
             </div>
-            {collections.length > 1 ? (
+            {displayCollections.length > 1 ? (
               <div className="reels-hero-dots" aria-label="Reel collections carousel">
-                {collections.map((collection, index) => (
+                {displayCollections.map((collection, index) => (
                   <UnstyledButton
                     key={collection.id}
                     type="button"
@@ -342,7 +362,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
         )}
       </section>
 
-      {collections.length > 0 ? (
+      {displayCollections.length > 0 ? (
         <div className="reels-shell reels-collections" aria-label="Reel collections">
           <UnstyledButton
             type="button"
@@ -351,7 +371,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           >
             All
           </UnstyledButton>
-          {collections.map((collection) => (
+          {displayCollections.map((collection) => (
             <UnstyledButton
               key={collection.id}
               type="button"
