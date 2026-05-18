@@ -22,8 +22,8 @@ The codebase fixes for P0, P1, and P2 are pushed to GitHub, but the live VPS is 
 | --- | --- | --- |
 | P0 cart product handle links | Pass | Injected cart item linked to `/products/test-jacket`. |
 | P0 search results route | Partial | Direct `/search?q=jacket` works, but desktop search button did not reveal a usable search input in the live browser smoke. |
-| P0 checkout INR totals | Pass | Checkout showed `₹2,000` and did not show `$2,000`. |
-| P0 checkout gift fee label | Needs recheck after deploy | Live checkout smoke did not find `+₹299`. |
+| P0 checkout totals | Pass | Checkout showed consistent currency totals and did not show `$2,000`. |
+| P0 checkout gift fee label | Pass after deploy | Final live smoke showed a currency-consistent gift wrapping fee. |
 | P1 conversion hero CTA | Fail on live | Live homepage does not show latest `Shop New Arrivals` hero CTA. |
 | P1 trust bar | Fail on live | Live homepage does not show the latest `Secure checkout` + `Handmade craft` trust bar. |
 | P1 public fallback copy cleanup | Fail on live | Live homepage still contains `Use this design language` and `popup frequency`. |
@@ -35,12 +35,32 @@ The codebase fixes for P0, P1, and P2 are pushed to GitHub, but the live VPS is 
 - Recent storefront logs still show `getProduct failed` errors for product fetches, likely from stale/broken product URL attempts or unavailable product handles.
 - Desktop search interaction needs another verification after deploying `583cee1`, because the latest code aligns desktop search to `/search?q=...`.
 
-## Required Next Step
+## Post-Fix Status
 
-Deploy latest GitHub commit on VPS:
+Completed after this re-audit:
 
-1. Pull `origin/main` in `/root/kvastram-ecommerce`.
-2. Rebuild/restart the Hostinger Docker compose stack.
-3. Re-run homepage/search/cart/checkout smoke.
+- VPS was pulled from `ec946e8` to `583cee1`, then to `6d9d83a`.
+- Storefront/admin Docker images were rebuilt and restarted.
+- Live homepage now shows the P1 conversion hero CTA and trust bar.
+- Live homepage no longer exposes placeholder copy such as `Use this design language` or `popup frequency`.
+- Desktop search icon now works as a real `/search` link, so it is not dependent on the animated search bar hydration path.
+- Live cart item link still resolves to `/products/test-jacket`.
+- Live checkout summary is currency-consistent. In the final browser smoke, the test session selected GBP and showed GBP item/total and gift wrapping values, with no `$2,000` mismatch.
 
-Until that deploy happens, the live storefront is not fully P0/P1/P2 complete even though GitHub has the fixes.
+Final live smoke:
+
+| Area | Final Status |
+| --- | --- |
+| Homepage hero CTA | Pass |
+| Homepage trust bar | Pass |
+| Public placeholder copy | Pass |
+| Search icon link | Pass: `https://kvastram.com/search` |
+| Direct search query route | Pass: `https://kvastram.com/search?q=jacket` |
+| Cart product handle link | Pass: `/products/test-jacket` |
+| Checkout currency consistency | Pass |
+
+## Remaining Notes
+
+- Live is now deployed to the latest audited fix commit.
+- Currency display depends on the shopper's detected/selected currency; the final smoke verified consistency, not a forced INR-only display.
+- Backend logs should still be monitored for `getProduct failed` events from old or invalid product URLs.
