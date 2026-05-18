@@ -2,9 +2,9 @@
 .link-all-prem {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: 500;
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   text-decoration: none;
   color: var(--ink);
   opacity: 0.5;
@@ -43,18 +43,18 @@
 }
 .section-eyebrow-prem {
   font-size: var(--text-body-xs);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--muted);
   margin-bottom: var(--space-3);
 }
 .section-title-prem {
   font-family: var(--font-display);
   font-size: var(--text-display-md);
-  font-weight: 600;
+  font-weight: var(--type-strong-weight);
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-normal);
-  text-transform: uppercase;
+  text-transform: var(--type-label-transform);
 }
 .section-title-prem em {
   font-style: italic;
@@ -93,13 +93,13 @@
 .stat-num-prem {
   font-family: var(--font-display);
   font-size: var(--text-display-lg);
-  font-weight: 300;
+  font-weight: var(--type-light-weight);
   display: block;
   margin-bottom: var(--space-1);
 }
 .stat-label-prem {
   font-size: var(--text-body-xs);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--muted);
 }

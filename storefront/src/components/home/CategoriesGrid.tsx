@@ -15,7 +15,7 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
     <section className="bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="mb-8 text-center md:mb-12">
-          <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+          <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
             Shop by Category
           </div>
           <h2 className="mt-3 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
@@ -39,7 +39,7 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
               />
               <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(var(--ds-black-rgb),0.44)_0%,transparent_58%)]" />
               <div className="absolute inset-x-0 bottom-6 flex justify-center px-4">
-                <span className="inline-flex px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider text-[var(--ds-text-inverse)] drop-shadow-[0_2px_8px_rgba(var(--ds-black-rgb),0.45)]">
+                <span className="inline-flex px-4 py-2 text-body-xs type-medium  tracking-token-wider text-[var(--ds-text-inverse)] drop-shadow-[0_2px_8px_rgba(var(--ds-black-rgb),0.45)]">
                   {cat.name}
                 </span>
               </div>

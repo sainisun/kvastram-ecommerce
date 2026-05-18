@@ -32,7 +32,7 @@ function SuccessView() {
         actions={
         <Link
           href="/login"
-          className="inline-block bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-8 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
+          className="inline-block bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-8 py-3 type-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
         >
           Go to Login
         </Link>

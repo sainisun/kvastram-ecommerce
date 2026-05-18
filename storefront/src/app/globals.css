@@ -8,6 +8,8 @@
 :root {
   --font-display: var(--ds-font-display);
   --font-body: var(--ds-font-body);
+  --font-ui: var(--ds-font-ui);
+  --font-label: var(--ds-font-label);
   --transition: var(--ds-transition);
 
   --text-display-xl: var(--ds-text-display-xl);
@@ -19,6 +21,7 @@
   --text-body-md: var(--ds-text-body-md);
   --text-body-sm: var(--ds-text-body-sm);
   --text-body-xs: var(--ds-text-body-xs);
+  --text-count-xs: var(--ds-text-count-xs);
 
   --weight-light: var(--ds-weight-light);
   --weight-regular: var(--ds-weight-regular);
@@ -35,6 +38,24 @@
   --tracking-normal: var(--ds-tracking-normal);
   --tracking-wide: var(--ds-tracking-wide);
   --tracking-wider: var(--ds-tracking-wider);
+  --type-body-font: var(--ds-type-body-font);
+  --type-heading-font: var(--ds-type-heading-font);
+  --type-ui-font: var(--ds-type-ui-font);
+  --type-label-font: var(--ds-type-label-font);
+  --type-body-weight: var(--ds-type-body-weight);
+  --type-light-weight: var(--ds-type-light-weight);
+  --type-heading-weight: var(--ds-type-heading-weight);
+  --type-subheading-weight: var(--ds-type-subheading-weight);
+  --type-ui-weight: var(--ds-type-ui-weight);
+  --type-label-weight: var(--ds-type-label-weight);
+  --type-strong-weight: var(--ds-type-strong-weight);
+  --type-heading-transform: var(--ds-type-heading-transform);
+  --type-label-transform: var(--ds-type-label-transform);
+  --type-button-transform: var(--ds-type-button-transform);
+  --type-heading-tracking: var(--ds-type-heading-tracking);
+  --type-body-tracking: var(--ds-type-body-tracking);
+  --type-label-tracking: var(--ds-type-label-tracking);
+  --type-button-tracking: var(--ds-type-button-tracking);
 
   --color-text-primary: var(--ds-text-primary);
   --color-text-secondary: var(--ds-text-secondary);
@@ -96,7 +117,7 @@
   --kv-radius-md:    var(--ds-radius-md);
   --kv-radius-lg:    var(--ds-radius-lg);
   --kv-radius-pill:  var(--ds-radius-pill);
-  --font-ui:         var(--font-body);
+  --font-ui:         var(--ds-font-ui);
 
   /* Tailwind compat aliases */
   --terracotta: var(--ds-accent-primary);

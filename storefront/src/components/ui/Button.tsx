@@ -71,7 +71,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       type={type}
       className={cn(
-        'inline-flex items-center justify-center gap-2 border font-body type-semibold uppercase tracking-token-wider transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50',
+        'inline-flex items-center justify-center gap-2 border font-ui type-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',
@@ -101,7 +101,7 @@ export function ButtonLink({
   return (
     <Link
       className={cn(
-        'inline-flex items-center justify-center gap-2 border font-body type-semibold uppercase tracking-token-wider transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
+        'inline-flex items-center justify-center gap-2 border font-ui type-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',
@@ -129,7 +129,7 @@ export function ButtonAnchor({
   return (
     <a
       className={cn(
-        'inline-flex items-center justify-center gap-2 border font-body type-semibold uppercase tracking-token-wider transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
+        'inline-flex items-center justify-center gap-2 border font-ui type-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',

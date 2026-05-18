@@ -95,7 +95,7 @@ export function CookieConsent() {
           </Button>
           <Link
             href="/cookie-settings"
-            className="flex-1 py-2.5 text-center text-body-xs uppercase tracking-token-wider text-[var(--ds-text-primary)] underline transition-colors type-bold hover:text-[var(--ds-accent-primary)]"
+            className="flex-1 py-2.5 text-center text-body-xs  tracking-token-wider text-[var(--ds-text-primary)] underline transition-colors type-bold hover:text-[var(--ds-accent-primary)]"
           >
             Customize
           </Link>

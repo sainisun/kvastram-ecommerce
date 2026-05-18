@@ -64,7 +64,7 @@
   background: var(--ds-surface-paper);
   color: var(--ds-text-primary);
   font-size: var(--text-body-sm);
-  font-weight: 600;
+  font-weight: var(--type-strong-weight);
   cursor: pointer;
   transition: .15s ease;
 }
@@ -102,9 +102,9 @@
   color: var(--ds-text-primary);
   font-family: var(--ds-font-body);
   font-size: var(--ds-text-body-sm);
-  font-weight: var(--ds-weight-semibold);
-  letter-spacing: var(--ds-tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-button-tracking);
+  text-transform: var(--type-label-transform);
   transition: border-color 160ms ease, color 160ms ease;
 }
 

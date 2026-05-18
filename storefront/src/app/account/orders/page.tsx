@@ -116,19 +116,19 @@ export default function OrdersListPage() {
         <div className="mb-6 flex flex-wrap gap-3">
           <Link
             href="/help"
-            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
           >
             Help Center
           </Link>
           <Link
             href="/payment-help"
-            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
           >
             Payment Help
           </Link>
           <Link
             href="/returns"
-            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
           >
             View Returns Hub
           </Link>
@@ -189,7 +189,7 @@ export default function OrdersListPage() {
                       </p>
                       {returnsByOrderId[order.id] ? (
                         <Badge
-                          className={`mt-3 inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${getReturnStatusClasses(
+                          className={`mt-3 inline-flex rounded-full border px-3 py-1 text-body-xs type-semibold tracking-token-wide ${getReturnStatusClasses(
                             returnsByOrderId[order.id].status
                           )}`}
                         >

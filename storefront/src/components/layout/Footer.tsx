@@ -159,7 +159,7 @@ function MobileFooter() {
     <div className="kvastram-mobile-footer md:hidden">
       <div className="grid grid-cols-2 gap-8 px-6 py-16">
         <div>
-          <h4 className="kf-mobile-heading mb-6 text-body-xs type-semibold uppercase tracking-token-wide">
+          <h4 className="kf-mobile-heading mb-6 text-body-xs type-semibold  tracking-token-wide">
             Shop
           </h4>
           <div className="space-y-3">
@@ -176,7 +176,7 @@ function MobileFooter() {
         </div>
 
         <div>
-          <h4 className="kf-mobile-heading mb-6 text-body-xs type-semibold uppercase tracking-token-wide">
+          <h4 className="kf-mobile-heading mb-6 text-body-xs type-semibold  tracking-token-wide">
             Help
           </h4>
           <div className="space-y-3">
@@ -230,7 +230,7 @@ function DesktopFooter() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-12">
           <div className="space-y-5 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
-              <span className="kf-logo font-body text-display-sm type-semibold uppercase tracking-token-wider">
+              <span className="kf-logo font-body text-display-sm type-semibold  tracking-token-wider">
                 KVASTRAM
               </span>
             </Link>
@@ -261,7 +261,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium  tracking-token-wide">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -279,7 +279,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium  tracking-token-wide">
               Support
             </h4>
             <ul className="space-y-3">
@@ -297,7 +297,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium  tracking-token-wide">
               Company
             </h4>
             <ul className="space-y-3">
@@ -319,7 +319,7 @@ function DesktopFooter() {
           </div>
 
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium uppercase tracking-token-wide">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium  tracking-token-wide">
               Stay Updated
             </h4>
             <p className="kf-muted font-body mb-4 text-body-md type-light leading-token-relaxed">

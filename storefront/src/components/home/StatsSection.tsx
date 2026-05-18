@@ -194,10 +194,10 @@ export function StatsSection({ statsData }: StatsSectionProps) {
 
         .stat-num-prem {
           font-family: var(--font-display);
-          font-size: 3.6rem;
-          font-weight: var(--weight-medium);
+          font-size: var(--text-display-lg);
+          font-weight: var(--type-heading-weight);
           line-height: var(--leading-tight);
-          letter-spacing: var(--tracking-tight);
+          letter-spacing: var(--type-heading-tracking);
           color: var(--ds-text-primary);
           white-space: nowrap;
         }
@@ -205,10 +205,10 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         .stat-label-prem {
           margin-top: var(--space-4);
           font-size: var(--text-body-xs);
-          font-weight: var(--weight-medium);
+          font-weight: var(--type-label-weight);
           line-height: var(--leading-relaxed);
-          letter-spacing: var(--tracking-wider);
-          text-transform: uppercase;
+          letter-spacing: var(--type-label-tracking);
+          text-transform: var(--type-label-transform);
           color: rgba(var(--ds-text-secondary-rgb), 0.72);
         }
 
@@ -234,7 +234,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
 
         @media (max-width: 767px) {
           .stat-num-prem {
-            font-size: 2.3rem;
+            font-size: var(--text-display-md);
             white-space: normal;
           }
         }

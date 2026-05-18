@@ -64,7 +64,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(var(--ds-black-rgb),0.02)_30%,rgba(var(--ds-black-rgb),0.72)_100%)]" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-[var(--ds-text-inverse)] sm:p-4 md:p-6">
-                  <div className="mb-3 flex items-center justify-between gap-4 text-body-xs font-black uppercase tracking-token-wider text-[var(--ds-text-inverse)]/80">
+                  <div className="mb-3 flex items-center justify-between gap-4 text-body-xs type-bold tracking-token-wider text-[var(--ds-text-inverse)]/80">
                     <span>Look {String(index + 1).padStart(2, '0')}</span>
                     <ArrowUpRight
                       aria-hidden="true"
@@ -81,7 +81,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                       price={formatCurrency(price.amount, price.currency_code)}
                       variant="compact"
                       className="mt-2"
-                      priceClassName="text-body-xs font-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)]/78"
+                      priceClassName="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)]/78"
                     />
                   ) : null}
                 </div>

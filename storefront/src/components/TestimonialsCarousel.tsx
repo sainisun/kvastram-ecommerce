@@ -109,7 +109,7 @@ export default function TestimonialsCarousel({
               </span>
             )}
           </div>
-          <p className="type-bold text-body-sm tracking-token-wider uppercase">
+          <p className="type-bold text-body-sm tracking-token-wider ">
             {currentTestimonial.name}
           </p>
           {currentTestimonial.location && (

@@ -20,7 +20,7 @@ export default function GiftCardsPage() {
           <div className="w-full space-y-3">
             <Link
               href="/products"
-              className="inline-flex w-full items-center justify-center bg-[var(--ink)] py-4 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-opacity hover:opacity-90"
+              className="inline-flex w-full items-center justify-center bg-[var(--ink)] py-4 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-opacity hover:opacity-90"
             >
               Shop Collection
             </Link>

@@ -478,7 +478,7 @@ export default async function CollectionPage({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
+                  className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
                 >
                   {item.label}
                 </Link>
@@ -488,7 +488,7 @@ export default async function CollectionPage({
 
           <div className="rounded-xl border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-6">
             <p className="collection-card-kicker">Need purchase clarity?</p>
-            <h3 className="mt-2 text-lg font-medium text-[var(--ds-text-primary)]">
+            <h3 className="mt-2 text-body-lg type-medium text-[var(--ds-text-primary)]">
               Shipping, returns, and payment help are visible before checkout.
             </h3>
             <div className="mt-4 flex flex-wrap gap-3">
@@ -612,8 +612,8 @@ export default async function CollectionPage({
                       </div>
                     ) : null}
                     <div className="p-4">
-                      <p className="font-medium text-[var(--ds-text-primary)]">{col.title}</p>
-                      <p className="mt-1 text-sm text-[var(--ds-text-muted)]">Shop collection →</p>
+                      <p className="type-medium text-[var(--ds-text-primary)]">{col.title}</p>
+                      <p className="mt-1 text-body-sm text-[var(--ds-text-muted)]">Shop collection →</p>
                     </div>
                   </Link>
                 );

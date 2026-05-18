@@ -245,13 +245,13 @@ export default function CatalogClient({
                 ref={filterButtonRef}
                 type="button"
                 onClick={() => setFilterDrawerOpen(true)}
-                className="group inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                className="group inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
                 aria-label="Open filters"
               >
                 <SlidersHorizontal size={14} />
                 Filter
                 {activeFilterCount > 0 ? (
-                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--ds-text-primary)] px-1.5 text-[10px] leading-none text-[var(--ds-text-inverse)] group-hover:bg-[var(--ds-surface-paper)] group-hover:text-[var(--ds-text-primary)]">
+                  <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-[var(--ds-text-primary)] px-1.5 text-[var(--ds-text-inverse)] group-hover:bg-[var(--ds-surface-paper)] group-hover:text-[var(--ds-text-primary)]">
                     {activeFilterCount}
                   </span>
                 ) : null}

@@ -77,17 +77,17 @@
 }
 .product-cat {
   color: var(--color-text-muted);
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-regular);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--ds-type-product-meta-tracking);
+  text-transform: var(--ds-type-product-meta-transform);
 }
 .product-name {
   margin: 3px 0 7px;
-  font-family: var(--font-body);
-  font-size: var(--text-body-md);
-  font-weight: var(--weight-medium);
+  font-family: var(--ds-type-product-title-font);
+  font-size: var(--ds-type-product-title-size);
+  font-weight: var(--ds-type-product-title-weight);
   line-height: var(--leading-snug);
   letter-spacing: var(--tracking-normal);
   color: var(--color-text-primary);
@@ -108,11 +108,11 @@
 .product-discount,
 .wholesale-price {
   color: var(--color-text-success);
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--ds-type-product-meta-tracking);
+  text-transform: var(--ds-type-product-meta-transform);
 }
 .product-card-cart-button {
   flex: 0 0 auto;
@@ -120,7 +120,7 @@
   height: 34px;
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   color: var(--ds-text-primary);
 }
 .product-card-cart-button:hover {
@@ -147,7 +147,7 @@
   font-family: var(--font-display);
   font-size: var(--text-display-sm);
   font-style: italic;
-  font-weight: var(--weight-light);
+  font-weight: var(--type-light-weight);
 }
 
 .product-no-image {
@@ -182,43 +182,43 @@
 .spotlight-badge {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-primary);
 }
 
 .spotlight-eyebrow {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-muted);
 }
 
 .spotlight-title {
   font-family: var(--font-display);
   font-size: var(--text-display-md);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--type-strong-weight);
   line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--type-heading-tracking);
   color: var(--color-text-primary);
 }
 
 .spotlight-price {
   font-family: var(--font-body);
   font-size: var(--text-body-md);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   color: var(--color-text-price);
 }
 
 .spotlight-action {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-inverse);
 }
 
@@ -229,10 +229,10 @@
   margin-bottom: var(--space-6);
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-regular);
-  letter-spacing: var(--tracking-wide);
+  font-weight: var(--type-body-weight);
+  letter-spacing: var(--type-label-tracking);
   line-height: var(--leading-normal);
-  text-transform: uppercase;
+  text-transform: var(--type-label-transform);
   color: var(--color-text-muted);
 }
 
@@ -252,7 +252,7 @@
 
 .breadcrumb-current {
   color: var(--color-text-secondary);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
 }
 
 .pdp-page {
@@ -269,9 +269,9 @@
   margin-bottom: var(--space-3);
   font-family: var(--font-display);
   font-size: var(--text-display-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   line-height: var(--leading-snug);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--type-heading-tracking);
   color: var(--color-text-primary);
   max-width: var(--narrow-width);
 }
@@ -308,9 +308,9 @@
   color: var(--color-text-success);
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   padding: 3px 10px;
   border-radius: 999px;
 }
@@ -328,14 +328,14 @@
 .pdp-spec-label {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--type-strong-weight);
   color: var(--color-text-primary);
   letter-spacing: var(--tracking-normal);
 }
 
 .pdp-option-label {
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
+  text-transform: var(--type-label-transform);
+  letter-spacing: var(--type-label-tracking);
 }
 
 .pdp-size-guide {
@@ -356,9 +356,9 @@
   margin-bottom: var(--space-3);
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--type-strong-weight);
   color: var(--color-text-error);
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: var(--type-label-tracking);
 }
 
 .pdp-cta-grid {
@@ -385,7 +385,7 @@
 .pdp-trust-label {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--type-strong-weight);
   color: var(--color-text-primary);
 }
 
@@ -393,7 +393,7 @@
   margin: var(--space-1) 0 0;
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   color: var(--color-text-muted);
 }
 
@@ -413,14 +413,14 @@
   margin-top: var(--space-2);
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   color: var(--color-text-muted);
 }
 
 .pdp-description {
   font-family: var(--font-body);
   font-size: var(--text-body-xl);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
   max-width: var(--prose-width);
@@ -446,9 +446,9 @@
   color: var(--color-text-muted);
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
 }
 
 .pdp-back-in-stock {
@@ -478,9 +478,9 @@
 .pdp-sticky-title {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -490,14 +490,14 @@
 .pdp-sticky-price {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--type-strong-weight);
   color: var(--color-text-price);
 }
 
 .input-field {
   font-family: var(--font-body);
   font-size: var(--text-body-lg);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   color: var(--color-text-primary);
   letter-spacing: var(--tracking-normal);
   line-height: var(--leading-normal);
@@ -510,7 +510,7 @@
 .input-error-message {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   color: var(--color-text-error);
   letter-spacing: var(--tracking-normal);
 }
@@ -518,14 +518,14 @@
 .input-helper-text {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   color: var(--color-text-muted);
 }
 
 .back-in-stock-title {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   color: var(--color-text-primary);
 }
 
@@ -538,17 +538,17 @@
 .media-badge {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wider);
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-label-tracking);
   line-height: var(--leading-tight);
-  text-transform: uppercase;
+  text-transform: var(--type-label-transform);
   color: var(--color-text-inverse);
 }
 
 .quickview-title {
   font-family: var(--font-display);
   font-size: var(--text-display-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   color: var(--color-text-primary);
 }
 
@@ -556,7 +556,7 @@
 .quickview-variant-label {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   color: var(--color-text-muted);
 }
 
@@ -574,9 +574,9 @@
 .recently-section-heading {
   font-family: var(--font-display);
   font-size: var(--text-display-md);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--type-heading-tracking);
   color: var(--color-text-primary);
   max-width: var(--heading-width);
 }
@@ -584,18 +584,18 @@
 .recently-eyebrow {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-muted);
 }
 
 .recently-link {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-muted);
 }
 
@@ -606,7 +606,7 @@
 .recently-name {
   font-family: var(--font-body);
   font-size: var(--text-body-md);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   line-height: var(--leading-snug);
   letter-spacing: var(--tracking-normal);
   color: var(--color-text-primary);
@@ -615,7 +615,7 @@
 .recently-price {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   color: var(--color-text-muted);
 }
 
@@ -629,7 +629,7 @@
 .size-guide-title {
   font-family: var(--font-display);
   font-size: var(--text-display-md);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   color: var(--color-text-primary);
 }
 
@@ -637,7 +637,7 @@
 .size-guide-copy {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
 }
@@ -645,9 +645,9 @@
 .size-guide-heading {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-primary);
 }
 
@@ -679,30 +679,30 @@
 .size-guide-table-size {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   color: var(--color-text-primary);
 }
 
 .size-guide-info-title {
   font-family: var(--font-display);
   font-size: var(--text-display-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   color: var(--color-text-primary);
 }
 
 .size-guide-measure-title {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--type-strong-weight);
   color: var(--color-text-primary);
 }
 
 .review-heading {
   font-family: var(--font-display);
   font-size: var(--text-display-md);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--type-heading-tracking);
   color: var(--color-text-primary);
 }
 
@@ -712,7 +712,7 @@
 .review-action-subtle {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   color: var(--color-text-muted);
 }
 
@@ -721,9 +721,9 @@
 .review-verified {
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-muted);
 }
 
@@ -732,7 +732,7 @@
 .review-success-title {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--type-strong-weight);
   color: var(--color-text-primary);
 }
 
@@ -740,7 +740,7 @@
 .review-success-copy {
   font-family: var(--font-body);
   font-size: var(--text-body-lg);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
   max-width: var(--caption-width);

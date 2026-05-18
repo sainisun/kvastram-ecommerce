@@ -40,7 +40,7 @@ export default async function ArtisanPage({ params }: Props) {
       <p className="collection-detail-copy mt-4 max-w-3xl">
         {artisan.bio || artisan.craft_specialty || 'Textile artisan connected to Kvastram handmade craft.'}
       </p>
-      <div className="mt-6 grid gap-3 text-sm text-[var(--ds-text-secondary)] md:grid-cols-2">
+      <div className="mt-6 grid gap-3 text-body-sm text-[var(--ds-text-secondary)] md:grid-cols-2">
         <p><strong>Craft:</strong> {artisan.craft_specialty || 'Textile craft'}</p>
         <p><strong>Location:</strong> {artisan.location || 'India'}</p>
       </div>

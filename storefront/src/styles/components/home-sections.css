@@ -24,13 +24,13 @@
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   padding: 0 24px;
-  font-family: var(--font-body);
+  font-family: var(--type-ui-font);
   font-size: var(--text-body-xs);
-  font-weight: 700;
-  letter-spacing: var(--tracking-wider);
-  line-height: 1;
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-button-tracking);
+  line-height: var(--leading-tight);
   text-decoration: none;
-  text-transform: uppercase;
+  text-transform: var(--type-button-transform);
   transition:
     background-color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease),
     border-color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease),
@@ -89,21 +89,21 @@
 }
 .hero-eyebrow {
   margin: 0 0 12px;
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-xs);
-  font-weight: 800;
-  letter-spacing: var(--tracking-wider);
-  line-height: 1;
-  text-transform: uppercase;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+  line-height: var(--leading-tight);
+  text-transform: var(--type-label-transform);
   color: rgba(var(--ds-surface-paper-rgb), 0.82);
 }
 .hero-copy h1 {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 5.25rem;
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0;
-  line-height: 0.92;
+  font-family: var(--type-heading-font);
+  font-size: var(--text-display-xl);
+  font-weight: var(--type-heading-weight);
+  letter-spacing: var(--type-heading-tracking);
+  line-height: var(--leading-tight);
   color: var(--ds-text-inverse);
 }
 .hero-copy p:not(.hero-eyebrow) {
@@ -154,12 +154,12 @@
 }
 .home-trust-item strong {
   display: block;
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-sm);
-  font-weight: 800;
-  letter-spacing: var(--tracking-wide);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
   line-height: var(--leading-snug);
-  text-transform: uppercase;
+  text-transform: var(--type-label-transform);
   color: var(--ds-text-primary);
 }
 .home-trust-item p {
@@ -247,14 +247,14 @@
   color: var(--ds-text-inverse);
   font-family: var(--font-display);
   font-size: var(--text-display-md);
-  font-weight: 700;
+  font-weight: var(--type-strong-weight);
   overflow: hidden;
 }
 .circle-cat-name {
   display: block;
   color: var(--ink);
   font-size: var(--text-body-xs);
-  font-weight: 900;
+  font-weight: var(--type-label-weight);
   line-height: var(--leading-snug);
 }
 
@@ -299,7 +299,7 @@
   }
 
   .hero-copy h1 {
-    font-size: 3.2rem;
+    font-size: var(--text-display-lg);
   }
 
   .hero-copy p:not(.hero-eyebrow) {

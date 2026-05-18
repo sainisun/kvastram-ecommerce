@@ -137,13 +137,13 @@ export default function TrackOrderPage() {
       <section className="kv-page-gutter bg-[var(--ds-surface-soft)] px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="mx-auto max-w-[860px]">
           <Card className="p-6 shadow-[0_20px_60px_rgba(var(--ds-black-rgb),0.05)] md:p-10">
-            <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+            <div className="text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
               Order tracking
             </div>
             <h1 className="mt-3 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
               Track your order
             </h1>
-            <p className="mt-4 max-w-2xl text-body-md leading-7 text-[var(--ds-text-secondary)]">
+            <p className="mt-4 max-w-2xl text-body-md leading-token-relaxed text-[var(--ds-text-secondary)]">
               Enter your order ID to load real shipment details and see the visual delivery timeline.
             </p>
 
@@ -240,7 +240,7 @@ export default function TrackOrderPage() {
             <Card className="bg-[var(--ds-surface-parchment)] p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+                  <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
                     Order ID
                   </p>
                   <p className="text-body-xl type-medium text-[var(--ds-text-primary)]">
@@ -249,7 +249,7 @@ export default function TrackOrderPage() {
                 </div>
                 <div className="text-right">
                   <div className="mb-2 flex justify-end">{getStatusIcon(order.status)}</div>
-                  <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+                  <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
                     Status
                   </p>
                   <p className="text-body-xl type-medium text-[var(--ds-text-primary)] capitalize">
@@ -260,7 +260,7 @@ export default function TrackOrderPage() {
 
               {(order.workflow?.primary_package?.tracking_number || order.tracking_number) && (
                 <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                  <p className="text-body-xs type-bold uppercase text-[var(--ds-text-muted)] mb-1">
+                  <p className="text-body-xs type-bold  text-[var(--ds-text-muted)] mb-1">
                     Tracking
                   </p>
                   {(order.workflow?.primary_package?.tracking_url || order.tracking_link) ? (
@@ -277,13 +277,13 @@ export default function TrackOrderPage() {
 
               {(order.workflow?.packages || []).length > 0 && (
                 <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                  <p className="text-body-xs type-bold uppercase text-[var(--ds-text-muted)] mb-3">
+                  <p className="text-body-xs type-bold  text-[var(--ds-text-muted)] mb-3">
                     Shipment packages
                   </p>
                   <div className="space-y-3">
                     {(order.workflow?.packages || []).map((pkg) => (
-                      <div key={pkg.id} className="rounded border border-[var(--ds-border-subtle)] px-4 py-3 text-sm text-[var(--ds-text-secondary)]">
-                        <p className="text-body-xs type-bold uppercase text-[var(--ds-text-muted)]">
+                      <div key={pkg.id} className="rounded border border-[var(--ds-border-subtle)] px-4 py-3 text-body-sm text-[var(--ds-text-secondary)]">
+                        <p className="text-body-xs type-bold  text-[var(--ds-text-muted)]">
                           Package #{pkg.sequence}
                         </p>
                         <p className="mt-1">
@@ -308,7 +308,7 @@ export default function TrackOrderPage() {
 
               {(order.workflow?.estimated_delivery_start || order.workflow?.estimated_delivery_end) && (
                 <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                  <p className="text-body-xs type-bold uppercase text-[var(--ds-text-muted)] mb-1">
+                  <p className="text-body-xs type-bold  text-[var(--ds-text-muted)] mb-1">
                     Estimated delivery
                   </p>
                   <p className="text-[var(--ds-text-secondary)]">
@@ -322,7 +322,7 @@ export default function TrackOrderPage() {
 
               {order.workflow?.customer_note && (
                 <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                  <p className="text-body-xs type-bold uppercase text-[var(--ds-text-muted)] mb-1">
+                  <p className="text-body-xs type-bold  text-[var(--ds-text-muted)] mb-1">
                     Update from Kvastram
                   </p>
                   <p className="text-[var(--ds-text-secondary)]">{order.workflow.customer_note}</p>
@@ -420,13 +420,13 @@ export default function TrackOrderPage() {
           <div className="mt-6 grid gap-3">
             <Card className="bg-[var(--ds-surface-parchment)] p-5">
               <strong className="text-[var(--ds-text-primary)]">Out for Delivery</strong>
-              <p className="mt-1 text-body-sm leading-6 text-[var(--ds-text-secondary)]">
+              <p className="mt-1 text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
                 Your live package status will appear here after a successful lookup.
               </p>
             </Card>
             <Card className="bg-[var(--ds-surface-parchment)] p-5">
               <strong className="text-[var(--ds-text-primary)]">Arrived at Jaipur Hub</strong>
-              <p className="mt-1 text-body-sm leading-6 text-[var(--ds-text-secondary)]">
+              <p className="mt-1 text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
                 Prototype-style milestone cards stay visible as a helpful empty state.
               </p>
             </Card>

@@ -55,14 +55,14 @@ export default function AboutPage() {
     <div className="bg-[var(--ds-surface-paper)]">
       {/* Hero */}
       <div className="kv-page-gutter bg-[var(--ds-surface-soft)] px-6 py-16 text-center md:px-12 md:py-20 lg:px-20 lg:py-32">
-        <span className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+        <span className="text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
           Made in Jaipur, India
         </span>
         <h1 className="mx-auto mt-4 max-w-3xl font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
           Not a factory.{' '}
           <em className="italic">A family of hands.</em>
         </h1>
-        <p className="mx-auto mt-6 max-w-xl text-body-lg leading-8 text-[var(--ds-text-secondary)]">
+        <p className="mx-auto mt-6 max-w-xl text-body-lg leading-token-relaxed text-[var(--ds-text-secondary)]">
           Kvastram is a small workshop run by artisan women in Jaipur who practice
           Kantha — a 300-year-old Indian embroidery tradition. Every piece is
           handmade, fairly paid, and carries the signature of the woman who made it.
@@ -73,13 +73,13 @@ export default function AboutPage() {
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="grid items-start gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
-            <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+            <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
               How it started
             </div>
             <h2 className="mt-4 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
               A craft that almost disappeared
             </h2>
-            <div className="mt-6 space-y-5 text-body-lg leading-8 text-[var(--ds-text-secondary)]">
+            <div className="mt-6 space-y-5 text-body-lg leading-token-relaxed text-[var(--ds-text-secondary)]">
               <p>
                 Kantha is not decorative embroidery. It is survival art. For centuries,
                 women in Rajasthan and West Bengal would take the worn saris of their
@@ -111,7 +111,7 @@ export default function AboutPage() {
                 <span className="text-body-sm italic text-[var(--ds-text-muted)]">Workshop photo — Jaipur</span>
               </div>
             </div>
-            <p className="text-body-sm italic leading-6 text-[var(--ds-text-muted)]">
+            <p className="text-body-sm italic leading-token-relaxed text-[var(--ds-text-muted)]">
               Our workshop in the old city of Jaipur, where every piece begins.
             </p>
           </div>
@@ -121,7 +121,7 @@ export default function AboutPage() {
       {/* How we work */}
       <div className="kv-page-gutter border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="kv-page-frame mx-auto max-w-[1440px]">
-          <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-warning-text)]">
+          <div className="text-body-xs  tracking-token-wider text-[var(--ds-warning-text)]">
             How Kvastram works
           </div>
           <h2 className="mt-4 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
@@ -151,7 +151,7 @@ export default function AboutPage() {
                   {item.step}
                 </div>
                 <h3 className="mt-3 text-body-lg type-semibold text-[var(--ds-text-primary)]">{item.title}</h3>
-                <p className="mt-3 text-body-md leading-7 text-[var(--ds-text-secondary)]">{item.body}</p>
+                <p className="mt-3 text-body-md leading-token-relaxed text-[var(--ds-text-secondary)]">{item.body}</p>
               </div>
             ))}
           </div>
@@ -161,13 +161,13 @@ export default function AboutPage() {
       {/* Artisans */}
       <div id="artisans" className="kv-page-gutter px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="kv-page-frame mx-auto max-w-[1440px]">
-          <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+          <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
             The people behind every piece
           </div>
           <h2 className="mt-4 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
             Meet our artisans
           </h2>
-          <p className="mt-4 max-w-xl text-body-lg leading-8 text-[var(--ds-text-muted)]">
+          <p className="mt-4 max-w-xl text-body-lg leading-token-relaxed text-[var(--ds-text-muted)]">
             These are not stock photos. These are real women, real names, real craft.
             When you buy a Kvastram piece, one of them made it.
           </p>
@@ -183,11 +183,11 @@ export default function AboutPage() {
                 </div>
                 <p className="text-body-md type-semibold text-[var(--ds-text-primary)]">{artisan.name}</p>
                 <p className="mt-1 text-body-sm type-medium text-[var(--ds-warning-text)]">{artisan.craft}</p>
-                <p className="mt-0.5 text-body-xs uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+                <p className="mt-0.5 text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
                   {artisan.region}
                 </p>
-                <p className="mt-4 text-body-sm leading-6 text-[var(--ds-text-muted)]">{artisan.story}</p>
-                <p className="mt-4 text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-disabled)]">
+                <p className="mt-4 text-body-sm leading-token-relaxed text-[var(--ds-text-muted)]">{artisan.story}</p>
+                <p className="mt-4 text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-disabled)]">
                   {artisan.years}
                 </p>
               </div>
@@ -201,13 +201,13 @@ export default function AboutPage() {
         <div className="kv-page-frame mx-auto max-w-[1440px]">
           <div className="grid items-center gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
             <div>
-              <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+              <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
                 Slow fashion
               </div>
               <h2 className="mt-4 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
                 The opposite of fast fashion
               </h2>
-              <div className="mt-6 space-y-5 text-body-lg leading-8 text-[var(--ds-text-secondary)]">
+              <div className="mt-6 space-y-5 text-body-lg leading-token-relaxed text-[var(--ds-text-secondary)]">
                 <p>
                   A single Kantha jacket takes one artisan between 4 and 7 days to
                   complete. A large quilt, up to two weeks. We don&apos;t rush it.
@@ -237,7 +237,7 @@ export default function AboutPage() {
                   <p className="font-display text-display-sm type-semibold text-[var(--ds-text-primary)]">
                     {item.num}
                   </p>
-                  <p className="mt-2 text-body-sm leading-5 text-[var(--ds-text-muted)]">{item.label}</p>
+                  <p className="mt-2 text-body-sm leading-token-normal text-[var(--ds-text-muted)]">{item.label}</p>
                 </div>
               ))}
             </div>
@@ -250,20 +250,20 @@ export default function AboutPage() {
         <h2 className="font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
           Ready to own something real?
         </h2>
-        <p className="mx-auto mt-4 max-w-md text-body-lg leading-7 text-[var(--ds-text-muted)]">
+        <p className="mx-auto mt-4 max-w-md text-body-lg leading-token-relaxed text-[var(--ds-text-muted)]">
           Every Kvastram piece ships with a handwritten note from the artisan who
           made it — and their name on the care label inside.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link
             href="/products"
-            className="inline-flex items-center bg-[var(--ds-text-primary)] px-8 py-4 text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+            className="inline-flex items-center bg-[var(--ds-text-primary)] px-8 py-4 text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
           >
             Shop the collection
           </Link>
           <Link
             href="/journal/what-is-kantha"
-            className="inline-flex items-center border border-[var(--ds-border-strong)] px-8 py-4 text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)]"
+            className="inline-flex items-center border border-[var(--ds-border-strong)] px-8 py-4 text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)]"
           >
             What is Kantha?
           </Link>

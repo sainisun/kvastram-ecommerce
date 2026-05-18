@@ -20,7 +20,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="form-label-typography uppercase text-[var(--ds-text-muted)]"
+            className="form-label-typography  text-[var(--ds-text-muted)]"
           >
             {label}
             {rest.required && <span className="ml-1 text-[var(--ds-danger)]">*</span>}

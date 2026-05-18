@@ -516,7 +516,7 @@ function ReelPlayerModal({
             <ArrowLeft size={18} />
           </IconButton>
           <div className="min-w-0 flex-1">
-            <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)]/65">
+            <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)]/65">
               {currentIndex + 1} / {localReels.length}
             </p>
             <p className="mt-0.5 line-clamp-1 text-body-sm type-semibold text-[var(--ds-text-inverse)]">
@@ -620,7 +620,7 @@ function ReelPlayerModal({
                 {formatPrice(current.price)}
               </p>
             </div>
-            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--ds-accent-primary)] px-3.5 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] shadow-lg">
+            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--ds-accent-primary)] px-3.5 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] shadow-lg">
               <ShoppingBag size={14} aria-hidden="true" />
               Shop
             </span>

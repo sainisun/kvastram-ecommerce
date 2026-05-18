@@ -65,7 +65,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   this.setState({ hasError: false });
                   window.location.reload();
                 }}
-                className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-6 py-3 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
+                className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-6 py-3 type-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
               >
                 Refresh Page
               </UnstyledButton>

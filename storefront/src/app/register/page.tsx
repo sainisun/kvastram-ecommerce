@@ -181,7 +181,7 @@ export default function RegisterPage() {
               }
             />
             <p className="text-body-xs text-[var(--ds-text-muted)]">
-              Must be at least 12 characters with uppercase, lowercase, number,
+              Must be at least 12 characters with , lowercase, number,
               and special character.
             </p>
           </div>

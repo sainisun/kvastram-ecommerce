@@ -67,7 +67,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
               {/* Left Content Half (Dark Editorial) */}
               <div className="w-full md:w-1/2 h-1/2 md:h-full bg-[var(--ds-footer-bg)] flex items-center justify-center p-8 md:p-16 lg:p-24 z-10">
                 <div className="max-w-xl w-full animate-fade-in-up">
-                  <span className="text-[var(--ds-accent-gold)] text-body-xs md:text-body-sm type-bold tracking-token-wider uppercase mb-4 md:mb-6 block">
+                  <span className="text-[var(--ds-accent-gold)] text-body-xs md:text-body-sm type-bold tracking-token-wider  mb-4 md:mb-6 block">
                     Kvastram Collection
                   </span>
 
@@ -79,7 +79,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
                     {slide.ctaText ? (
                       <Link
                         href={slide.ctaLink}
-                        className="bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-8 py-4 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--ds-surface-soft)] transition-colors shadow-xl"
+                        className="bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-8 py-4 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--ds-surface-soft)] transition-colors shadow-xl"
                       >
                         {slide.ctaText}
                       </Link>

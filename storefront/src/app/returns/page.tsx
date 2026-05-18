@@ -141,13 +141,13 @@ export default function ReturnsPage() {
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
                   href="/login"
-                  className="bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+                  className="bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/account/orders"
-                  className="border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                  className="border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
                 >
                   My Orders
                 </Link>
@@ -180,7 +180,7 @@ export default function ReturnsPage() {
                               </p>
                             </div>
                             <Badge
-                              className={`rounded-full border px-3 py-1 text-body-xs type-bold uppercase tracking-token-wider ${getReturnStatusClasses(item.status)}`}
+                              className={`rounded-full border px-3 py-1 text-body-xs type-bold  tracking-token-wider ${getReturnStatusClasses(item.status)}`}
                             >
                               {item.status}
                             </Badge>
@@ -196,13 +196,13 @@ export default function ReturnsPage() {
                           <div className="mt-4 flex flex-wrap gap-3">
                             <Link
                               href={`/account/orders/${item.order_id}`}
-                              className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                              className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
                             >
                               View Order
                             </Link>
                             <Link
                               href={`${storefrontTrust.policyRoutes.contact}?reason=returns&order=${item.order_id}`}
-                              className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                              className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
                             >
                               Contact Support
                             </Link>
@@ -239,13 +239,13 @@ export default function ReturnsPage() {
                         <div className="mt-4 flex flex-wrap gap-3">
                           <Link
                             href={`/account/orders/${order.id}`}
-                            className="bg-[var(--ds-text-primary)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+                            className="bg-[var(--ds-text-primary)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
                           >
                             Open Order
                           </Link>
                           <Link
                             href={storefrontTrust.policyRoutes.refundPolicy}
-                            className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-paper)]"
+                            className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-paper)]"
                           >
                             Review Policy
                           </Link>

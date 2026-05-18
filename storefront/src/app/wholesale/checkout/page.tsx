@@ -438,7 +438,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div>
-                    <p className="form-label-typography mb-1.5 uppercase text-[var(--ds-text-muted)]">
+                    <p className="form-label-typography mb-1.5  text-[var(--ds-text-muted)]">
                       Country
                     </p>
                     <CountrySelect

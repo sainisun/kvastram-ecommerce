@@ -6,19 +6,21 @@
 
 :root {
   /* Typography */
-  --ds-font-display: 'Montserrat', 'Avenir Next', Arial, sans-serif;
-  --ds-font-body: 'Montserrat', 'Avenir Next', Arial, sans-serif;
+  --ds-font-display: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+  --ds-font-body: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
   --ds-font-ui: var(--ds-font-body);
+  --ds-font-label: var(--ds-font-ui);
 
-  --ds-text-display-xl: clamp(2.25rem, 2.25rem, 3.25rem);
-  --ds-text-display-lg: clamp(1.875rem, 1.875rem, 2.5rem);
-  --ds-text-display-md: clamp(1.5rem, 1.5rem, 2rem);
-  --ds-text-display-sm: clamp(1.25rem, 1.25rem, 1.5rem);
-  --ds-text-body-xl: clamp(1rem, 1rem, 1.125rem);
-  --ds-text-body-lg: clamp(0.9375rem, 0.9375rem, 1rem);
-  --ds-text-body-md: clamp(0.875rem, 0.875rem, 0.9375rem);
-  --ds-text-body-sm: clamp(0.8125rem, 0.8125rem, 0.875rem);
-  --ds-text-body-xs: clamp(0.6875rem, 0.6875rem, 0.75rem);
+  --ds-text-display-xl: clamp(2.25rem, 4vw, 4.25rem);
+  --ds-text-display-lg: clamp(1.875rem, 3.1vw, 3.125rem);
+  --ds-text-display-md: clamp(1.5rem, 2.2vw, 2.25rem);
+  --ds-text-display-sm: clamp(1.2rem, 1.45vw, 1.5rem);
+  --ds-text-body-xl: clamp(1rem, 1vw, 1.125rem);
+  --ds-text-body-lg: 1rem;
+  --ds-text-body-md: 0.9375rem;
+  --ds-text-body-sm: 0.875rem;
+  --ds-text-body-xs: 0.75rem;
+  --ds-text-count-xs: 0.625rem;
 
   --ds-weight-light: 300;
   --ds-weight-regular: 400;
@@ -26,15 +28,41 @@
   --ds-weight-semibold: 600;
   --ds-weight-bold: 700;
 
-  --ds-leading-tight: 1.1;
+  --ds-leading-tight: 1.15;
   --ds-leading-snug: 1.3;
   --ds-leading-normal: 1.5;
   --ds-leading-relaxed: 1.7;
 
   --ds-tracking-tight: 0em;
   --ds-tracking-normal: 0em;
-  --ds-tracking-wide: 0.06em;
-  --ds-tracking-wider: 0.12em;
+  --ds-tracking-wide: 0.015em;
+  --ds-tracking-wider: 0.025em;
+
+  /* Typography role contract. Components should consume these roles instead of
+     inventing local font, weight, transform, or tracking values. */
+  --ds-type-body-font: var(--ds-font-body);
+  --ds-type-heading-font: var(--ds-font-display);
+  --ds-type-ui-font: var(--ds-font-ui);
+  --ds-type-label-font: var(--ds-font-label);
+  --ds-type-body-weight: var(--ds-weight-regular);
+  --ds-type-light-weight: var(--ds-weight-light);
+  --ds-type-heading-weight: var(--ds-weight-regular);
+  --ds-type-subheading-weight: var(--ds-weight-regular);
+  --ds-type-ui-weight: var(--ds-weight-medium);
+  --ds-type-label-weight: var(--ds-weight-medium);
+  --ds-type-strong-weight: var(--ds-weight-semibold);
+  --ds-type-heading-transform: none;
+  --ds-type-label-transform: none;
+  --ds-type-button-transform: none;
+  --ds-type-heading-tracking: var(--ds-tracking-normal);
+  --ds-type-body-tracking: var(--ds-tracking-normal);
+  --ds-type-label-tracking: var(--ds-tracking-wide);
+  --ds-type-button-tracking: var(--ds-tracking-wide);
+  --ds-type-product-title-font: var(--ds-font-body);
+  --ds-type-product-title-size: var(--ds-text-body-md);
+  --ds-type-product-title-weight: var(--ds-weight-regular);
+  --ds-type-product-meta-transform: none;
+  --ds-type-product-meta-tracking: var(--ds-tracking-normal);
 
   /* Surfaces */
   --ds-surface-page: #f9f7f4;

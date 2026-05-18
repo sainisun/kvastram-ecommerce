@@ -46,7 +46,7 @@ export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave }: DesktopNavP
             <Link
               href={item.href}
               className={[
-                'font-body text-[12px] uppercase tracking-[0.08em] pb-1 transition-colors',
+                'font-ui text-body-sm type-medium tracking-token-wide pb-1 transition-colors',
                 isActive || isMegaOpen
                   ? 'text-[var(--ds-accent-primary)] border-b border-[var(--ds-accent-primary)]'
                   : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] hover:border-b hover:border-[var(--ds-text-disabled)]',

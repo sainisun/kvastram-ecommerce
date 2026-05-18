@@ -182,7 +182,7 @@ export default async function BestsellersPage({
           <h1 className="font-display text-display-xl type-regular leading-token-tight tracking-token-tight text-[var(--ds-text-inverse)]">
             Most <em className="italic">Loved</em>
           </h1>
-          <p className="mt-4 max-w-[600px] font-display text-display-sm type-regular italic leading-8 text-[var(--ds-text-inverse)]/90">
+          <p className="mt-4 max-w-[600px] font-display text-display-sm type-regular italic leading-token-relaxed text-[var(--ds-text-inverse)]/90">
             These are the pieces the Kavastram community can&apos;t stop talking about. Curated from thousands of orders and five-star reviews.
           </p>
         </div>
@@ -191,7 +191,7 @@ export default async function BestsellersPage({
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <nav
           aria-label="Breadcrumb"
-          className="mb-10 flex items-center gap-2 text-body-xs type-medium uppercase tracking-token-wide text-[var(--ds-text-muted)]"
+          className="mb-10 flex items-center gap-2 text-body-xs type-medium  tracking-token-wide text-[var(--ds-text-muted)]"
         >
           <Link href="/" className="transition-colors hover:text-[var(--ds-text-primary)]">
             Home
@@ -210,7 +210,7 @@ export default async function BestsellersPage({
                 <div className="font-display text-display-xl leading-token-tight text-[var(--ds-text-primary)]">
                   {stat.value}
                 </div>
-                <div className="mt-2 text-body-xs uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+                <div className="mt-2 text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
                   {stat.label}
                 </div>
               </div>
@@ -222,7 +222,7 @@ export default async function BestsellersPage({
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
               href="/bestsellers"
-              className={`kv-text-chip px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider ${
+              className={`kv-text-chip px-4 py-2 text-body-xs type-medium  tracking-token-wider ${
                 selectedSize === 'all' ? 'kv-text-chip--selected' : ''
               }`}
             >
@@ -232,7 +232,7 @@ export default async function BestsellersPage({
               <Link
               key={size}
               href={`/bestsellers?size=${encodeURIComponent(size)}`}
-              className={`kv-text-chip px-4 py-2 text-body-xs type-medium uppercase tracking-token-wider ${
+              className={`kv-text-chip px-4 py-2 text-body-xs type-medium  tracking-token-wider ${
                 selectedSize === size ? 'kv-text-chip--selected' : ''
               }`}
             >
@@ -267,7 +267,7 @@ export default async function BestsellersPage({
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-surface-warm)]">
-                            <span className="font-display text-display-lg type-semibold uppercase tracking-token-wide text-[var(--ds-text-muted)]">
+                            <span className="font-display text-display-lg type-semibold  tracking-token-wide text-[var(--ds-text-muted)]">
                               {product.title}
                             </span>
                           </div>
@@ -286,14 +286,14 @@ export default async function BestsellersPage({
                         price={formatPrice(product)}
                         variant="compact"
                         className="mt-1"
-                        priceClassName="uppercase tracking-token-wider"
+                        priceClassName=" tracking-token-wider"
                       />
 
                       {rating && rating > 0 ? (
                         <RatingDisplay
                           rating={rating}
                           count={reviewCount}
-                          className="mt-1 uppercase tracking-token-wide"
+                          className="mt-1  tracking-token-wide"
                           starSize={10}
                         />
                       ) : null}

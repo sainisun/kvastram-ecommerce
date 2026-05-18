@@ -43,7 +43,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
             <div className="pt-8">
               <Link
                 href="/products"
-                className="inline-block bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-12 py-4 text-body-sm uppercase tracking-token-wider type-semibold hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)] transition-all duration-300"
+                className="inline-block bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-12 py-4 text-body-sm  tracking-token-wider type-semibold hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)] transition-all duration-300"
               >
                 Shop The Collection
               </Link>
@@ -90,7 +90,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
                 <div className="pt-8">
                   <Link
                     href={banner.link}
-                    className="inline-block bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-12 py-4 text-body-sm uppercase tracking-token-wider type-semibold hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)] transition-all duration-300"
+                    className="inline-block bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-12 py-4 text-body-sm  tracking-token-wider type-semibold hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)] transition-all duration-300"
                   >
                     {banner.button_text || 'Shop Now'}
                   </Link>

@@ -131,7 +131,7 @@ export default function WholesalePage() {
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
           <div className="kv-page-container relative z-10 mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
             <div className="max-w-3xl">
-              <span className="text-[var(--ds-accent-gold)] text-body-xs type-bold uppercase tracking-token-wider block mb-4">
+              <span className="text-[var(--ds-accent-gold)] text-body-xs type-bold  tracking-token-wider block mb-4">
                 B2B Partnership
               </span>
               <h1 className="text-display-xl md:text-display-xl font-display mb-6 leading-token-tight">
@@ -146,13 +146,13 @@ export default function WholesalePage() {
               <div className="flex flex-wrap gap-4">
                 <a
                   href="#inquiry"
-                  className="bg-[var(--ds-warning)] text-[var(--ds-text-primary)] px-8 py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-accent-gold)] transition-colors"
+                  className="bg-[var(--ds-warning)] text-[var(--ds-text-primary)] px-8 py-4 type-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-accent-gold)] transition-colors"
                 >
                   Request Pricing
                 </a>
                 <a
                   href="#benefits"
-                  className="border-2 border-[var(--ds-surface-paper)] text-[var(--ds-text-inverse)] px-8 py-4 type-bold uppercase tracking-token-wider text-body-xs hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] transition-colors"
+                  className="border-2 border-[var(--ds-surface-paper)] text-[var(--ds-text-inverse)] px-8 py-4 type-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-text-primary)] transition-colors"
                 >
                   Learn More
                 </a>
@@ -254,7 +254,7 @@ export default function WholesalePage() {
                     className={`border p-8 ${index === 1 ? 'border-2 border-[var(--ds-warning)] p-8 relative bg-[var(--ds-warning-bg)]' : 'border-[var(--ds-border-subtle)]'}`}
                   >
                     {index === 1 && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--ds-warning)] text-[var(--ds-text-inverse)] text-body-xs type-bold px-4 py-1 uppercase tracking-token-wider">
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--ds-warning)] text-[var(--ds-text-inverse)] text-body-xs type-bold px-4 py-1  tracking-token-wider">
                         Most Popular
                       </div>
                     )}

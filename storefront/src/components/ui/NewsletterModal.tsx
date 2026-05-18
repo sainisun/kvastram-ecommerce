@@ -33,10 +33,10 @@ export function NewsletterModal() {
       className="max-w-[520px]"
     >
       <div className="space-y-4">
-        <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+        <div className="text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
           Welcome gift
         </div>
-        <p className="text-body-sm leading-7 text-[var(--ds-text-secondary)]">
+        <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
           Subscribe for artisan stories, launches, and a welcome discount code.
         </p>
         <Input
@@ -64,7 +64,7 @@ export function NewsletterModal() {
         <Link
           href="/products"
           onClick={() => setOpen(false)}
-          className="block w-full border border-[var(--ds-border-subtle)] px-6 py-4 text-center text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:border-[var(--ds-text-primary)]"
+          className="block w-full border border-[var(--ds-border-subtle)] px-6 py-4 text-center text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:border-[var(--ds-text-primary)]"
         >
           No Thanks
         </Link>

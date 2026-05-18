@@ -68,12 +68,12 @@ export function ArtisanStrip() {
               <p className="mt-1 text-body-xs color-muted">
                 {artisan.craft}
               </p>
-              <p className="mt-1 text-body-xs uppercase tracking-token-wider color-muted">
+              <p className="mt-1 text-body-xs  tracking-token-wider color-muted">
                 {artisan.region}
               </p>
 
               <div className="mt-4 border-t border-[var(--line)] pt-4">
-                <span className="text-body-xs type-medium uppercase tracking-token-wider color-accent">
+                <span className="text-body-xs type-medium  tracking-token-wider color-accent">
                   {artisan.years} of craft
                 </span>
               </div>
@@ -81,7 +81,7 @@ export function ArtisanStrip() {
           ))}
         </div>
 
-        <p className="mt-8 text-body-sm leading-7 color-muted">
+        <p className="mt-8 text-body-sm leading-token-relaxed color-muted">
           Every Kvastram piece is signed by the artisan who made it - their name is on the care label inside.{' '}
           <Link href="/about" className="color-ink underline underline-offset-4 hover:color-accent">
             Learn about our makers {'->'}

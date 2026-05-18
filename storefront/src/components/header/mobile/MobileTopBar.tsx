@@ -60,7 +60,7 @@ export function MobileTopBar({
         >
           <Heart size={20} strokeWidth={1.4} />
           {wishlistCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] text-[8px] font-medium rounded-full flex items-center justify-center ring-[1.5px] ring-[var(--ds-surface-paper)]">
+            <span className="kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center ring-[1.5px] ring-[var(--ds-surface-paper)]">
               {wishlistCount > 9 ? '9+' : wishlistCount}
             </span>
           )}
@@ -75,7 +75,7 @@ export function MobileTopBar({
         >
           <ShoppingBag size={20} strokeWidth={1.4} />
           {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] text-[8px] font-medium rounded-full flex items-center justify-center ring-[1.5px] ring-[var(--ds-surface-paper)]">
+            <span className="kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center ring-[1.5px] ring-[var(--ds-surface-paper)]">
               {totalItems > 9 ? '9+' : totalItems}
             </span>
           )}

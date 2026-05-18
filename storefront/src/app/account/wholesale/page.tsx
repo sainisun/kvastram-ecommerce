@@ -163,7 +163,7 @@ export default function WholesaleDashboardPage() {
               </h2>
               <Link
                 href="/account/orders"
-                className="account-caption uppercase transition-colors hover:text-[var(--ds-text-primary)]"
+                className="account-caption  transition-colors hover:text-[var(--ds-text-primary)]"
               >
                 View All
               </Link>
@@ -221,7 +221,7 @@ export default function WholesaleDashboardPage() {
                       }).format(order.total / 100)}
                     </p>
                     <Badge
-                      className={`account-caption uppercase ${
+                      className={`account-caption  ${
                         order.status === 'completed'
                           ? 'text-[var(--ds-success-text)]'
                           : order.status === 'canceled'

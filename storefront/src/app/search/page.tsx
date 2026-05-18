@@ -264,7 +264,7 @@ function SearchContent() {
 
         <div className="mb-10 grid gap-4 lg:grid-cols-[1.15fr,0.85fr]">
           <Card className="bg-[var(--ds-surface-parchment)] p-6">
-            <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+            <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
               Guided Discovery
             </p>
             <h2 className="mt-3 text-body-xl font-display text-[var(--ds-text-primary)]">
@@ -288,7 +288,7 @@ function SearchContent() {
           </Card>
 
           <Card className="p-6">
-            <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+            <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
               Purchase Help
             </p>
             <h2 className="mt-3 text-body-xl font-display text-[var(--ds-text-primary)]">
@@ -301,19 +301,19 @@ function SearchContent() {
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
                 href={storefrontTrust.policyRoutes.shipping}
-                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
               >
                 Shipping
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.returns}
-                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
               >
                 Returns
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.paymentHelp}
-                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
               >
                 Payment Help
               </Link>
@@ -372,7 +372,7 @@ function SearchContent() {
             <Card className="mt-12 bg-[var(--ds-surface-parchment)] p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <p className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+                  <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
                     Still Deciding?
                   </p>
                   <h2 className="mt-2 text-body-xl font-display text-[var(--ds-text-primary)]">
@@ -386,13 +386,13 @@ function SearchContent() {
                 <div className="flex flex-wrap gap-3">
                   <Link
                     href="/products"
-                    className="rounded-full bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+                    className="rounded-full bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
                   >
                     Shop All
                   </Link>
                   <Link
                     href="/collections"
-                    className="rounded-full border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-paper)]"
+                    className="rounded-full border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-paper)]"
                   >
                     Explore Collections
                   </Link>

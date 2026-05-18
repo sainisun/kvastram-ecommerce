@@ -92,7 +92,7 @@ function PaymentForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-[var(--cream)] p-6 border border-[var(--line)]">
-        <h4 className="text-body-sm type-bold uppercase tracking-token-wider color-muted mb-4">
+        <h4 className="text-body-sm type-bold  tracking-token-wider color-muted mb-4">
           Payment Details
         </h4>
         <PaymentElement />
@@ -386,7 +386,7 @@ export default function CheckoutPage() {
             />
           </div>
         </div>
-        <span className="text-body-xs color-muted type-bold uppercase tracking-token-wider mb-3 block">
+        <span className="text-body-xs color-muted type-bold  tracking-token-wider mb-3 block">
           Order Placed Successfully
         </span>
         <h1 className="text-display-xl font-display mb-3 color-ink">Thank You!</h1>
@@ -402,13 +402,13 @@ export default function CheckoutPage() {
         <div className="flex flex-col sm:flex-row gap-3 mb-10">
           <Link
             href="/"
-            className="bg-[var(--ink)] text-[var(--ds-text-inverse)] px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold hover:bg-[var(--ink)] transition-colors"
+            className="bg-[var(--ink)] text-[var(--ds-text-inverse)] px-8 py-3  tracking-token-wider text-body-xs type-bold hover:bg-[var(--ink)] transition-colors"
           >
             Continue Shopping
           </Link>
           <Link
             href="/account"
-            className="border border-[var(--line)] color-ink px-8 py-3 uppercase tracking-token-wider text-body-xs type-bold hover:bg-[var(--cream)] transition-colors"
+            className="border border-[var(--line)] color-ink px-8 py-3  tracking-token-wider text-body-xs type-bold hover:bg-[var(--cream)] transition-colors"
           >
             Track My Order
           </Link>
@@ -608,7 +608,7 @@ export default function CheckoutPage() {
                     {step === 'payment' ? '✓' : '1'}
                   </div>
                   <span
-                    className={`text-body-xs type-bold uppercase tracking-token-wider mt-1 ${
+                    className={`text-body-xs type-bold  tracking-token-wider mt-1 ${
                       step === 'shipping' ? 'color-ink' : 'color-muted'
                     }`}
                   >
@@ -633,7 +633,7 @@ export default function CheckoutPage() {
                     {'2'}
                   </div>
                   <span
-                    className={`text-body-xs type-bold uppercase tracking-token-wider mt-1 ${
+                    className={`text-body-xs type-bold  tracking-token-wider mt-1 ${
                       step === 'payment' ? 'color-ink' : 'color-muted'
                     }`}
                   >
@@ -646,7 +646,7 @@ export default function CheckoutPage() {
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-body-xs type-bold border-2 border-[var(--line)] bg-[var(--ds-surface-paper)] color-muted">
                     3
                   </div>
-                  <span className="text-body-xs type-bold uppercase tracking-token-wider mt-1 color-muted">
+                  <span className="text-body-xs type-bold  tracking-token-wider mt-1 color-muted">
                     Confirm
                   </span>
                 </div>
@@ -800,7 +800,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div>
-                    <p className="form-label-typography mb-1.5 uppercase text-[var(--ds-text-muted)]">
+                    <p className="form-label-typography mb-1.5  text-[var(--ds-text-muted)]">
                       Country <span className="ml-1 text-[var(--ds-danger)]">*</span>
                     </p>
                     <CountrySelect
@@ -1190,7 +1190,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex-1">
                     <p className="font-display color-ink">{item.title}</p>
-                    <p className="text-body-xs color-muted mt-1 uppercase tracking-token-wider">
+                    <p className="text-body-xs color-muted mt-1  tracking-token-wider">
                       Qty: {item.quantity}
                     </p>
                     {(item.material || item.origin || item.sku) && (
@@ -1215,7 +1215,7 @@ export default function CheckoutPage() {
             {/* Promo Code Input */}
             {step === 'shipping' && (
               <div className="mb-6 pb-6 border-b border-[var(--soft)]">
-                <label className="text-body-xs uppercase tracking-token-wider color-muted type-bold mb-2 block">
+                <label className="text-body-xs  tracking-token-wider color-muted type-bold mb-2 block">
                   Promo Code
                 </label>
                 <div className="flex gap-0 border-b border-[var(--line)] focus-within:border-[var(--ink)] transition-colors">
@@ -1226,7 +1226,7 @@ export default function CheckoutPage() {
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
                     containerClassName="flex-1"
-                    className="h-auto border-0 bg-transparent px-0 py-2 font-display uppercase focus:border-transparent"
+                    className="h-auto border-0 bg-transparent px-0 py-2 font-display  focus:border-transparent"
                   />
                   <Button
                     type="button"
@@ -1331,7 +1331,7 @@ export default function CheckoutPage() {
 
             {/* PHASE 7.3: Payment Icons */}
             <div className="mt-6">
-              <p className="text-body-xs color-muted text-center mb-3 uppercase tracking-token-wider">
+              <p className="text-body-xs color-muted text-center mb-3  tracking-token-wider">
                 Accepted Payment Methods
               </p>
               <PaymentIcons />

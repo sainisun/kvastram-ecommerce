@@ -264,7 +264,7 @@ export default function CartPage() {
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-[var(--ink)] text-[var(--ds-text-inverse)] px-10 py-4 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--ink)] transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--ink)] text-[var(--ds-text-inverse)] px-10 py-4 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--ink)] transition-colors"
             >
               Explore Collection <ArrowRight size={16} />
             </Link>
@@ -275,7 +275,7 @@ export default function CartPage() {
             <div>
               <div className="flex items-center gap-3 mb-8">
                 <Sparkles size={18} className="text-[var(--ds-warning)]" />
-                <h2 className="text-body-sm type-bold uppercase tracking-token-wider color-ink">
+                <h2 className="text-body-sm type-bold  tracking-token-wider color-ink">
                   You Might Love
                 </h2>
               </div>
@@ -311,7 +311,7 @@ export default function CartPage() {
                         href={`/products/${product.handle || product.id}`}
                         className="space-y-1 mb-3"
                       >
-                        <p className="text-body-xs color-muted type-bold tracking-token-wider uppercase">
+                        <p className="text-body-xs color-muted type-bold tracking-token-wider ">
                           {product.collection?.title || 'Kvastram'}
                         </p>
                         <h3 className="font-display text-body-md color-ink leading-token-tight group-hover:color-muted transition-colors">
@@ -326,7 +326,7 @@ export default function CartPage() {
                       <UnstyledButton
                         onClick={() => handleAddRecommendation(product)}
                         disabled={addingRec === product.id || !variant}
-                        className={`w-full py-2.5 text-body-xs type-bold uppercase tracking-token-wider border transition-all ${
+                        className={`w-full py-2.5 text-body-xs type-bold  tracking-token-wider border transition-all ${
                           addingRec === product.id
                             ? 'bg-[var(--ds-success)] text-[var(--ds-text-inverse)] border-[var(--ds-success)]'
                             : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--ds-text-inverse)]'
@@ -494,7 +494,7 @@ export default function CartPage() {
                 <div className="mb-6 flex items-center gap-3">
                   <Sparkles size={18} className="text-[var(--ds-warning)]" />
                   <div>
-                    <p className="text-body-xs type-bold uppercase tracking-token-wider color-muted">
+                    <p className="text-body-xs type-bold  tracking-token-wider color-muted">
                       Pair With Your Bag
                     </p>
                     <h2 className="mt-1 text-body-xl type-medium color-ink">
@@ -535,7 +535,7 @@ export default function CartPage() {
                           href={`/products/${product.handle || product.id}`}
                           className="mb-3 space-y-1"
                         >
-                          <p className="text-body-xs color-muted type-bold tracking-token-wider uppercase">
+                          <p className="text-body-xs color-muted type-bold tracking-token-wider ">
                             {product.collection?.title || 'Kvastram'}
                           </p>
                           <h3 className="font-display text-body-md color-ink leading-token-tight transition-colors group-hover:color-muted">
@@ -550,7 +550,7 @@ export default function CartPage() {
                         <UnstyledButton
                           onClick={() => handleAddRecommendation(product)}
                           disabled={addingRec === product.id || !variant}
-                          className={`w-full border py-2.5 text-body-xs type-bold uppercase tracking-token-wider transition-all ${
+                          className={`w-full border py-2.5 text-body-xs type-bold  tracking-token-wider transition-all ${
                             addingRec === product.id
                               ? 'border-[var(--ds-success)] bg-[var(--ds-success)] text-[var(--ds-text-inverse)]'
                               : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--ds-text-inverse)]'
@@ -820,7 +820,7 @@ export default function CartPage() {
               {/* Checkout Button */}
               <Link
                 href="/checkout"
-                className="mt-6 block w-full bg-[var(--ink)] text-[var(--ds-text-inverse)] text-center py-4 text-body-sm type-bold uppercase tracking-token-wider hover:bg-[var(--ink)] transition-colors"
+                className="mt-6 block w-full bg-[var(--ink)] text-[var(--ds-text-inverse)] text-center py-4 text-body-sm type-bold  tracking-token-wider hover:bg-[var(--ink)] transition-colors"
               >
                 Proceed to Checkout
               </Link>

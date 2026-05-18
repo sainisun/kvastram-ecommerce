@@ -50,7 +50,7 @@ export function WholesaleFooter() {
                   KVASTRAM
                 </div>
                 <div className="h-6 w-px bg-[var(--ds-text-secondary)]"></div>
-                <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
+                <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
                   Wholesale
                 </div>
               </div>
@@ -59,7 +59,7 @@ export function WholesaleFooter() {
                 Serving retailers and distributors worldwide since 2020.
               </p>
               <div className="pt-4">
-                <div className="inline-flex items-center gap-2 text-body-xs text-[var(--ds-accent-gold)] type-bold uppercase tracking-token-wider">
+                <div className="inline-flex items-center gap-2 text-body-xs text-[var(--ds-accent-gold)] type-bold  tracking-token-wider">
                   <Building2 size={16} />
                   B2B Division
                 </div>
@@ -68,7 +68,7 @@ export function WholesaleFooter() {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm type-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Quick Links
               </h4>
               <ul className="space-y-3 text-body-sm text-[var(--ds-text-muted)]">
@@ -121,7 +121,7 @@ export function WholesaleFooter() {
 
             {/* Resources */}
             <div>
-              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm type-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Resources
               </h4>
               <ul className="space-y-3 text-body-sm text-[var(--ds-text-muted)]">
@@ -214,7 +214,7 @@ export function WholesaleFooter() {
 
             {/* Contact */}
             <div>
-              <h4 className="text-body-sm type-bold uppercase tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm type-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Contact B2B Team
               </h4>
               <ul className="space-y-4 text-body-sm text-[var(--ds-text-muted)]">

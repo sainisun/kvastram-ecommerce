@@ -12,6 +12,14 @@
   font-family: var(--font-body);
 }
 
+.font-ui {
+  font-family: var(--font-ui);
+}
+
+.font-label {
+  font-family: var(--font-label);
+}
+
 .page-transition {
   background: var(--cream);
   min-height: 70vh;
@@ -53,11 +61,11 @@
 .kv-tag,
 .tag {
   color: var(--ds-accent-primary);
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-xs);
-  font-weight: 900;
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
 }
 
 .kv-title,
@@ -66,9 +74,9 @@
   color: var(--ink);
   font-family: var(--font-display);
   font-size: var(--text-display-lg);
-  font-weight: 700;
+  font-weight: var(--type-heading-weight);
   line-height: var(--leading-tight);
-  letter-spacing: 0;
+  letter-spacing: var(--type-heading-tracking);
 }
 
 .kv-sub,
@@ -83,12 +91,12 @@
 .kv-section-link {
   align-self: end;
   color: var(--ink);
-  font-family: var(--font-body);
+  font-family: var(--type-ui-font);
   font-size: var(--text-body-xs);
-  font-weight: 900;
-  letter-spacing: var(--tracking-wider);
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-button-tracking);
   line-height: var(--leading-snug);
-  text-transform: uppercase;
+  text-transform: var(--type-button-transform);
   white-space: nowrap;
   text-decoration: none;
   text-underline-offset: 4px;
@@ -108,7 +116,7 @@
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: 700;
+  font-weight: var(--type-strong-weight);
   letter-spacing: 0;
   min-height: 42px;
   padding: 9px 16px;
@@ -128,8 +136,8 @@
   min-height: 34px;
   font-family: var(--font-body);
   font-size: var(--text-body-xs);
-  font-weight: 700;
-  letter-spacing: var(--tracking-wide);
+  font-weight: var(--type-strong-weight);
+  letter-spacing: var(--type-label-tracking);
 }
 
 .announcement-bar .animate-marquee {
@@ -153,20 +161,20 @@
 
 .logo {
   color: var(--ink);
-  font-family: var(--font-display);
+  font-family: var(--type-heading-font);
   font-size: var(--text-display-md);
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: none;
+  font-weight: var(--type-heading-weight);
+  letter-spacing: var(--type-heading-tracking);
+  text-transform: var(--type-heading-transform);
 }
 
 .nav-link-premium {
   color: var(--ink);
-  font-family: var(--font-body);
+  font-family: var(--type-ui-font);
   font-size: var(--text-body-sm);
-  font-weight: 700;
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
 }
 
 .header-icon-wrap {
@@ -226,9 +234,9 @@
 .kv-tag {
   color: var(--ds-accent-primary);
   font-size: var(--text-body-xs);
-  font-weight: 900;
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
 }
 
 .kv-title {
@@ -247,12 +255,12 @@
 .kv-section-link {
   align-self: end;
   color: var(--ink);
-  font-family: var(--font-body);
+  font-family: var(--type-ui-font);
   font-size: var(--text-body-xs);
-  font-weight: 900;
-  letter-spacing: var(--tracking-wider);
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-button-tracking);
   line-height: var(--leading-snug);
-  text-transform: uppercase;
+  text-transform: var(--type-button-transform);
   white-space: nowrap;
   text-decoration: none;
   text-underline-offset: 4px;
@@ -277,7 +285,7 @@
   background: var(--ds-surface-paper);
   border-radius: 999px;
   padding: 9px 14px;
-  font-weight: 700;
+  font-weight: var(--type-strong-weight);
   font-size: var(--text-body-sm);
   cursor: pointer;
 }

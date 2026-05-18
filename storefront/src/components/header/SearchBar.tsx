@@ -56,7 +56,7 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
               type="search"
               placeholder="Search sarees, kantha jackets, tote bags..."
               containerClassName="flex-1 max-w-[400px]"
-              className="h-auto border-0 bg-transparent px-0 py-0 text-[13px] focus:border-transparent"
+              className="h-auto border-0 bg-transparent px-0 py-0 text-body-xs focus:border-transparent"
             />
             <IconButton
               type="button"

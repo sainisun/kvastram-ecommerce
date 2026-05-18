@@ -24,7 +24,7 @@ export default async function JournalPage() {
   return (
     <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="mb-12 space-y-4 text-center md:mb-16">
-        <span className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+        <span className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
           The Journal
         </span>
         <h1 className="text-display-xl font-display text-[var(--ds-text-primary)] italic">
@@ -60,7 +60,7 @@ export default async function JournalPage() {
               )}
             </div>
             <div className="space-y-2">
-              <div className="text-body-xs text-[var(--ds-text-muted)] type-bold uppercase tracking-token-wider">
+              <div className="text-body-xs text-[var(--ds-text-muted)] type-bold  tracking-token-wider">
                 {new Date(post.published_at || new Date()).toLocaleDateString()}
               </div>
               <h2 className="text-display-md font-display text-[var(--ds-text-primary)] group-hover:text-[var(--ds-text-secondary)] transition-colors">

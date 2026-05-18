@@ -79,7 +79,7 @@ function PayPalButtonInner({
 
   return (
     <div className="space-y-2">
-      <p className="text-body-xs text-[var(--ds-text-muted)] text-center uppercase tracking-token-wider type-bold">
+      <p className="text-body-xs text-[var(--ds-text-muted)] text-center  tracking-token-wider type-bold">
         Pay with PayPal
       </p>
       <PayPalButtons

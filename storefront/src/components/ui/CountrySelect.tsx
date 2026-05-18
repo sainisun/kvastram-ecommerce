@@ -113,7 +113,7 @@ export default function CountrySelect({
             {/* Common Countries */}
             {common.length > 0 && (
               <>
-                <div className="bg-[var(--ds-surface-soft)] px-3 py-1.5 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+                <div className="bg-[var(--ds-surface-soft)] px-3 py-1.5 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
                   Popular
                 </div>
                 {common.map((country) => (
@@ -139,7 +139,7 @@ export default function CountrySelect({
             {/* All Countries */}
             {others.length > 0 && (
               <>
-                <div className="bg-[var(--ds-surface-soft)] px-3 py-1.5 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+                <div className="bg-[var(--ds-surface-soft)] px-3 py-1.5 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
                   {common.length > 0 ? 'All Countries' : 'Countries'}
                 </div>
                 {others.map((country) => (

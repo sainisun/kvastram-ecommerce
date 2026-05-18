@@ -18,7 +18,7 @@ export function AsSeenOn({ items }: AsSeenOnProps) {
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-12 lg:gap-x-16">
           {items.map((item) => (
             <div key={item.id} className="flex flex-col items-center text-center">
-              <span className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-primary)]">
+              <span className="text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-primary)]">
                 {item.label}
               </span>
               <span className="mt-0.5 text-body-xs tracking-token-wider text-[var(--ds-text-muted)]">

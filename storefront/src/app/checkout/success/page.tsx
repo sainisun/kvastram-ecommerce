@@ -87,19 +87,19 @@ function SuccessContent() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/checkout"
-                className="bg-[var(--ds-text-primary)] px-8 py-3 text-body-xs uppercase tracking-token-wider text-[var(--ds-text-inverse)] type-bold transition-colors hover:bg-[var(--ds-text-secondary)]"
+                className="bg-[var(--ds-text-primary)] px-8 py-3 text-body-xs  tracking-token-wider text-[var(--ds-text-inverse)] type-bold transition-colors hover:bg-[var(--ds-text-secondary)]"
               >
                 Try Again
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.paymentHelp}
-                className="border border-[var(--ds-border-strong)] px-8 py-3 text-body-xs uppercase tracking-token-wider text-[var(--ds-text-primary)] type-bold transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                className="border border-[var(--ds-border-strong)] px-8 py-3 text-body-xs  tracking-token-wider text-[var(--ds-text-primary)] type-bold transition-colors hover:bg-[var(--ds-surface-parchment)]"
               >
                 Payment Help
               </Link>
               <Link
                 href={`${storefrontTrust.policyRoutes.contact}?order=${orderId || ''}`}
-                className="border border-[var(--ds-border-strong)] px-8 py-3 text-body-xs uppercase tracking-token-wider text-[var(--ds-text-primary)] type-bold transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                className="border border-[var(--ds-border-strong)] px-8 py-3 text-body-xs  tracking-token-wider text-[var(--ds-text-primary)] type-bold transition-colors hover:bg-[var(--ds-surface-parchment)]"
               >
                 Contact Support
               </Link>
@@ -127,7 +127,7 @@ function SuccessContent() {
           <span className="absolute inset-0 rounded-full animate-ping bg-[var(--ds-success-bg)] opacity-30" />
         </div>
 
-        <span className="text-body-xs text-[var(--ds-text-muted)] type-bold uppercase tracking-token-wider block mb-3">
+        <span className="text-body-xs text-[var(--ds-text-muted)] type-bold  tracking-token-wider block mb-3">
           Order Confirmed
         </span>
         <h1 className="text-display-xl md:text-display-xl font-display text-[var(--ds-text-primary)] mb-4">
@@ -193,7 +193,7 @@ function SuccessContent() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--ds-surface-soft)] mb-4">
                 {icon}
               </div>
-              <p className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-1">
+              <p className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-1">
                 {step}
               </p>
               <h3 className="font-display text-[var(--ds-text-primary)] mb-2">{title}</h3>
@@ -206,13 +206,13 @@ function SuccessContent() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
           <Link
             href="/"
-            className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-10 py-4 uppercase tracking-token-wider text-body-xs type-bold hover:bg-[var(--ds-text-secondary)] transition-colors text-center"
+            className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-10 py-4  tracking-token-wider text-body-xs type-bold hover:bg-[var(--ds-text-secondary)] transition-colors text-center"
           >
             Continue Shopping
           </Link>
           <Link
             href="/track"
-            className="border border-[var(--ds-border-strong)] text-[var(--ds-text-primary)] px-10 py-4 uppercase tracking-token-wider text-body-xs type-bold hover:bg-[var(--ds-surface-parchment)] transition-colors text-center"
+            className="border border-[var(--ds-border-strong)] text-[var(--ds-text-primary)] px-10 py-4  tracking-token-wider text-body-xs type-bold hover:bg-[var(--ds-surface-parchment)] transition-colors text-center"
           >
             Track My Order
           </Link>
@@ -220,7 +220,7 @@ function SuccessContent() {
 
         {/* Support */}
         <div className="text-center border-t border-[var(--ds-border-subtle)] pt-10">
-          <p className="text-body-xs text-[var(--ds-text-muted)] mb-3 type-medium uppercase tracking-token-wider">
+          <p className="text-body-xs text-[var(--ds-text-muted)] mb-3 type-medium  tracking-token-wider">
             Need help?
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-body-sm">

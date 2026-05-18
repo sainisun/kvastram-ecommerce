@@ -35,7 +35,7 @@ export function ActionsRight({ onCartOpen }: ActionsRightProps) {
       >
         <Heart size={20} strokeWidth={1.4} />
         {wishlistCount > 0 && (
-          <span className="absolute right-0.5 top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[var(--ds-accent-primary)] px-0.5 text-[8px] font-medium text-[var(--ds-text-inverse)] ring-[1.5px] ring-[var(--ds-surface-parchment)]">
+          <span className="kv-count-badge absolute right-0.5 top-0.5 h-3.5 min-w-3.5 rounded-full bg-[var(--ds-accent-primary)] px-0.5 text-[var(--ds-text-inverse)] ring-[1.5px] ring-[var(--ds-surface-parchment)]">
             {wishlistCount > 9 ? '9+' : wishlistCount}
           </span>
         )}
@@ -51,7 +51,7 @@ export function ActionsRight({ onCartOpen }: ActionsRightProps) {
       >
         <ShoppingBag size={20} strokeWidth={1.4} />
         {totalItems > 0 && (
-          <span className="absolute right-0.5 top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[var(--ds-accent-primary)] px-0.5 text-[8px] font-medium text-[var(--ds-text-inverse)] ring-[1.5px] ring-[var(--ds-surface-parchment)]">
+          <span className="kv-count-badge absolute right-0.5 top-0.5 h-3.5 min-w-3.5 rounded-full bg-[var(--ds-accent-primary)] px-0.5 text-[var(--ds-text-inverse)] ring-[1.5px] ring-[var(--ds-surface-parchment)]">
             {totalItems > 9 ? '9+' : totalItems}
           </span>
         )}

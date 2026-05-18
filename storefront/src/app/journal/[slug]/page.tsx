@@ -100,19 +100,19 @@ export default async function ArticlePage({ params }: Props) {
         <div className="kv-page-container absolute inset-0 mx-auto flex w-full max-w-[1440px] flex-col justify-between p-6 md:p-12 lg:px-20">
           <Link
             href="/journal"
-            className="flex w-fit items-center gap-2 text-body-sm type-bold uppercase tracking-token-wider hover:text-[var(--ds-text-disabled)]"
+            className="flex w-fit items-center gap-2 text-body-sm type-bold  tracking-token-wider hover:text-[var(--ds-text-disabled)]"
           >
             <ArrowLeft size={16} />
             Back to Journal
           </Link>
 
           <div className="max-w-4xl space-y-4">
-            <div className="flex items-center gap-4 text-body-xs type-bold uppercase tracking-token-wider opacity-80">
+            <div className="flex items-center gap-4 text-body-xs type-bold  tracking-token-wider opacity-80">
               <span>{new Date(post.published_at).toLocaleDateString()}</span>
               <span>&bull;</span>
               <span>Kvastram Editorial</span>
             </div>
-            <h1 className="font-display text-display-xl type-semibold uppercase tracking-token-wide md:text-display-xl">
+            <h1 className="font-display text-display-xl type-semibold  tracking-token-wide md:text-display-xl">
               {post.title}
             </h1>
           </div>

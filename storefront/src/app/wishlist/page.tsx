@@ -49,7 +49,7 @@ export default function WishlistPage() {
             actions={
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-8 py-3 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--ds-text-secondary)] transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-8 py-3 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--ds-text-secondary)] transition-colors"
             >
               Start Shopping
               <ArrowRight size={16} />

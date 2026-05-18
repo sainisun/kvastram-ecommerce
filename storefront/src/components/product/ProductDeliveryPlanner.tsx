@@ -145,7 +145,7 @@ export default function ProductDeliveryPlanner() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-body-sm font-medium text-[var(--ds-text-primary)]">
+                  <p className="text-body-sm type-medium text-[var(--ds-text-primary)]">
                     {option.name}
                   </p>
                   {option.description ? (
@@ -154,7 +154,7 @@ export default function ProductDeliveryPlanner() {
                     </p>
                   ) : null}
                 </div>
-                <p className="text-body-sm font-medium text-[var(--ds-text-primary)]">
+                <p className="text-body-sm type-medium text-[var(--ds-text-primary)]">
                   {option.price === 0
                     ? 'Free'
                     : formatShippingPrice(option.price, option.currency_code)}

@@ -98,14 +98,14 @@ function MerchSlotCard({
         <>
           <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.06),rgba(var(--ds-black-rgb),0.54))]" />
           <div className="relative z-10 flex h-full flex-col justify-end">
-            <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-text-inverse)]/75">
+            <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-inverse)]/75">
               {slot.eyebrow || 'Kvastram Edit'}
             </div>
             <h3 className="mt-3 font-display text-display-md leading-token-tight">
               {slot.title}
             </h3>
             {slot.copy ? (
-              <p className="mt-3 max-w-[18rem] text-body-sm leading-7 text-[var(--ds-text-inverse)]/82">
+              <p className="mt-3 max-w-[18rem] text-body-sm leading-token-relaxed text-[var(--ds-text-inverse)]/82">
                 {slot.copy}
               </p>
             ) : null}
@@ -129,8 +129,8 @@ function ProductTile({ product }: { product: Product }) {
       imageAlt={product.title}
       imageSizes="(max-width: 768px) 50vw, 25vw"
       imageClassName="aspect-[4/5] rounded-lg"
-      titleClassName="mt-4 line-clamp-2 text-body-md leading-6 color-ink"
-      priceClassName="text-body-xs uppercase tracking-token-wider color-muted"
+      titleClassName="mt-4 line-clamp-2 text-body-md leading-token-relaxed color-ink"
+      priceClassName="text-body-xs  tracking-token-wider color-muted"
     />
   );
 }

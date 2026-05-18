@@ -56,7 +56,7 @@ export function SettingsList() {
   return (
     <div className="bg-[var(--ds-surface-paper)]">
       <div className="p-4">
-        <h2 className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)] mb-3">
+        <h2 className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)] mb-3">
           Account Settings
         </h2>
       </div>

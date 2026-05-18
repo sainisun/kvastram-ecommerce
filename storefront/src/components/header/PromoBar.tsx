@@ -113,7 +113,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
         </div>
       )}
 
-      <p className="text-[11px] font-light uppercase tracking-[0.12em] text-[var(--ds-text-disabled)] select-none md:max-w-[60%] md:text-center md:font-medium md:text-[var(--ds-accent-hover)]">
+      <p className="text-body-xs type-medium tracking-token-wide text-[var(--ds-text-disabled)] select-none md:max-w-[60%] md:text-center md:text-[var(--ds-accent-hover)]">
         {MESSAGES.map((msg, i) => (
           <span
             key={msg}

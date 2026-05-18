@@ -50,11 +50,11 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
                   </div>
                 ) : null}
                 <div className="text-left">
-                  <p className="font-body text-body-sm type-semibold uppercase tracking-token-wide color-ink">
+                  <p className="font-body text-body-sm type-semibold  tracking-token-wide color-ink">
                     {testimonial.name}
                   </p>
                   {testimonial.location ? (
-                    <p className="font-body text-body-xs uppercase tracking-token-wider color-muted">
+                    <p className="font-body text-body-xs  tracking-token-wider color-muted">
                       {testimonial.location}
                     </p>
                   ) : null}

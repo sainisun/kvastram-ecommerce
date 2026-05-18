@@ -12,25 +12,28 @@ html {
 body {
   background: var(--cream);
   color: var(--color-text-primary);
-  font-family: var(--font-body);
+  font-family: var(--type-body-font);
   font-size: var(--text-body-md);
-  font-weight: var(--weight-regular);
-  line-height: var(--leading-relaxed);
-  letter-spacing: var(--tracking-normal);
+  font-weight: var(--type-body-weight);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--type-body-tracking);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 /* === TYPOGRAPHY BASELINE === */
 h1, h2, h3 {
-  font-family: var(--font-display);
+  font-family: var(--type-heading-font);
+  font-weight: var(--type-heading-weight);
   line-height: var(--leading-tight);
+  letter-spacing: var(--type-heading-tracking);
+  text-transform: var(--type-heading-transform);
   color: var(--color-text-primary);
 }
 
 h4, h5, h6 {
-  font-family: var(--font-body);
-  font-weight: var(--weight-bold);
+  font-family: var(--type-heading-font);
+  font-weight: var(--type-heading-weight);
   line-height: var(--leading-snug);
   color: inherit;
 }
@@ -41,18 +44,18 @@ p {
 
 /* Label / UI text utility */
 .kv-label {
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
 }
 
 .announcement-bar {
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wide);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
   line-height: var(--leading-normal);
   color: var(--color-text-inverse);
   text-transform: none;
@@ -63,17 +66,17 @@ p {
 }
 
 .nav-logo {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-tight);
+  font-family: var(--type-heading-font);
+  font-size: var(--text-display-sm);
+  font-weight: var(--type-heading-weight);
+  letter-spacing: var(--type-heading-tracking);
   color: var(--color-text-primary);
 }
 
 .nav-link {
-  font-family: var(--font-body);
+  font-family: var(--type-ui-font);
   font-size: var(--text-body-lg);
-  font-weight: var(--weight-medium);
+  font-weight: var(--type-ui-weight);
   letter-spacing: var(--tracking-normal);
   line-height: var(--leading-normal);
   color: var(--color-text-primary);
@@ -86,9 +89,9 @@ p {
 }
 
 .nav-dropdown-item {
-  font-family: var(--font-body);
+  font-family: var(--type-body-font);
   font-size: var(--text-body-sm);
-  font-weight: var(--weight-regular);
+  font-weight: var(--type-body-weight);
   color: var(--color-text-secondary);
 }
 
@@ -107,29 +110,29 @@ p {
 
 .nav-icon-label,
 .mega-menu-heading {
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-muted);
 }
 
 .mega-menu-featured-title {
-  font-family: var(--font-display);
+  font-family: var(--type-heading-font);
   font-size: var(--text-display-sm);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-tight);
+  font-weight: var(--type-heading-weight);
+  letter-spacing: var(--type-heading-tracking);
   line-height: var(--leading-snug);
   color: var(--color-text-inverse);
 }
 
 .mega-menu-featured-label {
-  font-family: var(--font-body);
+  font-family: var(--type-label-font);
   font-size: var(--text-body-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+  text-transform: var(--type-label-transform);
   color: var(--color-text-inverse);
   opacity: 0.6;
 }

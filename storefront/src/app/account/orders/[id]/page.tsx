@@ -439,7 +439,7 @@ export default function OrderDetailsPage() {
                         }).format(item.unit_price / 100)}
                       </p>
                       {item.metadata?.variant && (
-                        <p className="account-caption mt-1 uppercase">
+                        <p className="account-caption mt-1 ">
                           {String(item.metadata.variant)}
                         </p>
                       )}
@@ -552,7 +552,7 @@ export default function OrderDetailsPage() {
                     {(order.workflow?.packages || []).map((pkg) => (
                       <div
                         key={pkg.id}
-                        className="rounded border border-[var(--ds-border-subtle)] px-4 py-3 text-sm text-[var(--ds-text-secondary)]"
+                        className="rounded border border-[var(--ds-border-subtle)] px-4 py-3 text-body-sm text-[var(--ds-text-secondary)]"
                       >
                         <p className="account-mono-caption">
                           Package #{pkg.sequence}
@@ -593,20 +593,20 @@ export default function OrderDetailsPage() {
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <p className="account-form-label">Return request</p>
                       <Badge
-                        className={`rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${getReturnStatusClasses(existingReturn.status)}`}
+                        className={`rounded-full border px-3 py-1 text-body-xs type-semibold tracking-token-wide ${getReturnStatusClasses(existingReturn.status)}`}
                       >
                         {existingReturn.status}
                       </Badge>
                     </div>
-                    <p className="mt-3 text-sm text-[var(--ds-text-secondary)]">
+                    <p className="mt-3 text-body-sm text-[var(--ds-text-secondary)]">
                       {existingReturn.reason}
                     </p>
-                    <p className="mt-2 text-xs text-[var(--ds-text-muted)]">
+                    <p className="mt-2 text-body-xs text-[var(--ds-text-muted)]">
                       Submitted{' '}
                       {new Date(existingReturn.created_at).toLocaleDateString()}
                     </p>
                     {existingReturn.admin_notes ? (
-                      <p className="mt-2 text-sm text-[var(--ds-text-muted)]">
+                      <p className="mt-2 text-body-sm text-[var(--ds-text-muted)]">
                         Team note: {existingReturn.admin_notes}
                       </p>
                     ) : null}

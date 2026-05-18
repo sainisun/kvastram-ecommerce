@@ -465,7 +465,7 @@ export default function MobileMenu({
               <Link
                 href="/"
                 onClick={handleClose}
-                className="font-display text-[21px] font-medium tracking-[0.04em]"
+                className="font-display text-display-sm type-medium tracking-token-normal"
               >
                 Kvastram
               </Link>
@@ -479,7 +479,7 @@ export default function MobileMenu({
                 >
                   <Heart size={19} />
                   {wishlistCount > 0 && (
-                    <span className="absolute right-1 top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[var(--ds-accent-primary)] px-1 text-[9px] font-semibold leading-none text-[var(--ds-text-inverse)]">
+                    <span className="kv-count-badge absolute right-1 top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[var(--ds-accent-primary)] px-1 text-[var(--ds-text-inverse)]">
                       {wishlistCount}
                     </span>
                   )}
@@ -494,7 +494,7 @@ export default function MobileMenu({
                 >
                   <ShoppingBag size={19} />
                   {cartCount > 0 && (
-                    <span className="absolute right-1 top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[var(--ds-accent-primary)] px-1 text-[9px] font-semibold leading-none text-[var(--ds-text-inverse)]">
+                    <span className="kv-count-badge absolute right-1 top-1 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[var(--ds-accent-primary)] px-1 text-[var(--ds-text-inverse)]">
                       {cartCount}
                     </span>
                   )}
@@ -520,7 +520,7 @@ export default function MobileMenu({
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
                       placeholder="Search quilts, jackets, bags..."
-                      className="bg-[var(--ds-surface-soft)] pl-10 pr-10 text-sm"
+                      className="bg-[var(--ds-surface-soft)] pl-10 pr-10 text-body-sm"
                       autoComplete="off"
                       aria-label="Search products"
                     />
@@ -567,11 +567,11 @@ export default function MobileMenu({
                               ) : null}
                             </div>
                             <span className="min-w-0 flex-1">
-                              <span className="block truncate text-[13px] font-medium text-[var(--ds-text-primary)]">
+                              <span className="block truncate text-body-xs type-medium text-[var(--ds-text-primary)]">
                                 {product.title}
                               </span>
                               {price !== undefined && (
-                                <span className="block text-xs text-[var(--ds-text-secondary)]">
+                                <span className="block text-body-xs text-[var(--ds-text-secondary)]">
                                   from {formatPrice(price)}
                                 </span>
                               )}
@@ -583,7 +583,7 @@ export default function MobileMenu({
                   )}
                 </div>
 
-                <div className="h-8 overflow-hidden border-b border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-xs font-medium text-[var(--ds-success-text)]">
+                <div className="h-8 overflow-hidden border-b border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-body-xs type-medium text-[var(--ds-success-text)]">
                   <div className="flex h-full w-max animate-marquee items-center whitespace-nowrap">
                     {[
                       'Free shipping on orders above Rs. 2,000',
@@ -618,10 +618,10 @@ export default function MobileMenu({
                           <Icon size={18} strokeWidth={1.8} />
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block text-[15px] font-medium leading-tight text-[var(--ds-text-primary)]">
+                          <span className="block text-body-md type-medium leading-token-tight text-[var(--ds-text-primary)]">
                             {category.title}
                           </span>
-                          <span className="mt-0.5 block truncate text-xs text-[var(--ds-text-disabled)]">
+                          <span className="mt-0.5 block truncate text-body-xs text-[var(--ds-text-disabled)]">
                             {category.subtitle}
                           </span>
                         </span>
@@ -639,21 +639,21 @@ export default function MobileMenu({
                       <Tag size={18} strokeWidth={1.8} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[15px] font-medium leading-tight text-[var(--ds-text-primary)]">
+                      <span className="block text-body-md type-medium leading-token-tight text-[var(--ds-text-primary)]">
                         Sale
                       </span>
-                      <span className="mt-0.5 block truncate text-xs text-[var(--ds-text-disabled)]">
+                      <span className="mt-0.5 block truncate text-body-xs text-[var(--ds-text-disabled)]">
                         Up to 40% off selected items
                       </span>
                     </span>
-                    <span className="rounded-full bg-[var(--ds-danger)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-[var(--ds-text-inverse)]">
+                    <span className="rounded-full bg-[var(--ds-danger)] px-2 py-1 text-body-xs type-semibold tracking-token-wide text-[var(--ds-text-inverse)]">
                       40% off
                     </span>
                   </Link>
                 </nav>
 
                 <section className="border-b border-[var(--ds-border-subtle)] px-4 py-4">
-                  <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ds-text-secondary)]">
+                  <h2 className="mb-3 text-body-xs type-semibold tracking-token-wide text-[var(--ds-text-secondary)]">
                     {featuredCollections.length > 0
                       ? 'Featured collections'
                       : 'Shop by mood'}
@@ -678,7 +678,7 @@ export default function MobileMenu({
                             sizes="48px"
                           />
                         </span>
-                        <span className="block text-[11px] leading-tight text-[var(--ds-text-secondary)]">
+                        <span className="block text-body-xs leading-token-tight text-[var(--ds-text-secondary)]">
                           {item.label}
                         </span>
                       </Link>
@@ -734,7 +734,7 @@ interface UtilityLinkProps {
 
 function UtilityLink({ href, icon: Icon, label, onClick, external = false }: UtilityLinkProps) {
   const className =
-    'flex h-11 items-center gap-3 border-b border-[var(--ds-border-subtle)] px-4 text-sm text-[var(--ds-text-secondary)] last:border-b-0';
+    'flex h-11 items-center gap-3 border-b border-[var(--ds-border-subtle)] px-4 text-body-sm text-[var(--ds-text-secondary)] last:border-b-0';
 
   if (external) {
     return (
@@ -770,13 +770,13 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
           onClick={onBack}
           variant="ghost"
           size="sm"
-          className="flex min-h-10 justify-start gap-1 rounded-md px-0 text-[13px] font-medium normal-case text-[var(--ds-text-secondary)]"
+          className="flex min-h-10 justify-start gap-1 rounded-md px-0 text-body-xs type-medium normal-case text-[var(--ds-text-secondary)]"
           aria-label="Back to menu"
         >
           <ArrowLeft size={16} />
           Menu
         </Button>
-        <h2 className="truncate text-center text-base font-medium text-[var(--ds-text-primary)]">
+        <h2 className="truncate text-center text-body-md type-medium text-[var(--ds-text-primary)]">
           {category.title}
         </h2>
         <span aria-hidden="true" />
@@ -791,7 +791,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
           sizes="400px"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.55)] to-transparent" />
-        <p className="absolute bottom-3 left-4 text-sm font-medium text-[var(--ds-text-inverse)]">
+        <p className="absolute bottom-3 left-4 text-body-sm type-medium text-[var(--ds-text-inverse)]">
           {category.tagline}
         </p>
       </div>
@@ -799,7 +799,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
       <Link
         href={category.href}
         onClick={onClose}
-        className="flex min-h-11 items-center justify-between border-b border-[var(--ds-border-subtle)] px-4 text-[13px] font-semibold text-[var(--ds-info)]"
+        className="flex min-h-11 items-center justify-between border-b border-[var(--ds-border-subtle)] px-4 text-body-xs type-semibold text-[var(--ds-info)]"
       >
         View all {category.title.toLowerCase()}
         <ArrowRight size={16} />
@@ -813,7 +813,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
             onClick={() => setActiveFilter(filter)}
             variant="ghost"
             size="sm"
-            className={`h-8 min-h-8 shrink-0 rounded-full px-3 text-xs font-medium normal-case ${
+            className={`h-8 min-h-8 shrink-0 rounded-full px-3 text-body-xs type-medium normal-case ${
               activeFilter === filter
                 ? 'bg-[var(--ds-text-primary)] text-[var(--ds-surface-page)]'
                 : 'border border-[var(--ds-border-subtle)] text-[var(--ds-text-secondary)]'
@@ -842,10 +842,10 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
               />
             </span>
             <span className="block p-2">
-              <span className="block text-xs font-semibold leading-snug text-[var(--ds-text-primary)]">
+              <span className="block text-body-xs type-semibold leading-token-snug text-[var(--ds-text-primary)]">
                 {item.name}
               </span>
-              <span className="mt-1 block text-[10px] leading-snug text-[var(--ds-text-disabled)]">
+              <span className="mt-1 block text-body-xs leading-token-snug text-[var(--ds-text-disabled)]">
                 {item.meta}
               </span>
             </span>
@@ -854,7 +854,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
       </div>
 
       <div className="border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-soft)] px-3 py-3">
-        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ds-text-secondary)]">
+        <h3 className="mb-2 text-body-xs type-semibold tracking-token-wide text-[var(--ds-text-secondary)]">
           Quick picks
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -867,7 +867,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
               key={pick.label}
               href={pick.href}
               onClick={onClose}
-              className="rounded-md border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-page)] px-3 py-1.5 text-xs font-medium text-[var(--ds-text-secondary)]"
+              className="rounded-md border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-page)] px-3 py-1.5 text-body-xs type-medium text-[var(--ds-text-secondary)]"
             >
               {pick.label}
             </Link>

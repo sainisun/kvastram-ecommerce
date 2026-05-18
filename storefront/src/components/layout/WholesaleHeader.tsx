@@ -42,7 +42,7 @@ export function WholesaleHeader() {
         <Link href="/wholesale" className="flex items-center gap-3">
           <div className="text-display-md type-bold tracking-token-tight">KVASTRAM</div>
           <div className="h-8 w-px bg-[var(--ds-text-secondary)]"></div>
-          <div className="text-body-xs uppercase tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
+          <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
             Wholesale
           </div>
         </Link>
@@ -85,7 +85,7 @@ export function WholesaleHeader() {
         <div className="flex items-center gap-4">
           <a
             href="#inquiry"
-            className="hidden lg:block bg-[var(--ds-warning)] text-[var(--ds-text-primary)] px-6 py-2.5 text-body-xs type-bold uppercase tracking-token-wider hover:bg-[var(--ds-accent-gold)] transition-colors"
+            className="hidden lg:block bg-[var(--ds-warning)] text-[var(--ds-text-primary)] px-6 py-2.5 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--ds-accent-gold)] transition-colors"
           >
             Request Pricing
           </a>

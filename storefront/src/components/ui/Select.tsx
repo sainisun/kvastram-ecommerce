@@ -22,7 +22,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label ? (
           <label
             htmlFor={selectId}
-            className="form-label-typography uppercase text-[var(--ds-text-muted)]"
+            className="form-label-typography  text-[var(--ds-text-muted)]"
           >
             {label}
             {required ? <span className="ml-1 text-[var(--ds-danger)]">*</span> : null}

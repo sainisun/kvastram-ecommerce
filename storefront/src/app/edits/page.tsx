@@ -76,7 +76,7 @@ export default function EditsPage() {
     <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
         <div className="mx-auto max-w-3xl text-center">
-          <span className="text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+          <span className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
             Guided Discovery
           </span>
           <h1 className="mt-4 font-display text-display-xl text-[var(--ds-text-primary)]">
@@ -107,7 +107,7 @@ export default function EditsPage() {
                 <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
                   {copy}
                 </p>
-                <span className="mt-5 inline-flex items-center gap-2 text-body-xs type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)]">
+                <span className="mt-5 inline-flex items-center gap-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)]">
                   Open Edit <ArrowRight size={14} />
                 </span>
               </div>
@@ -118,19 +118,19 @@ export default function EditsPage() {
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           <Link
             href="/products"
-            className="border border-[var(--ds-border-strong)] px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-[var(--ds-border-strong)] px-6 py-4 text-center text-body-sm type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
           >
             Shop All
           </Link>
           <Link
             href={storefrontTrust.policyRoutes.help}
-            className="border border-[var(--ds-border-strong)] px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-[var(--ds-border-strong)] px-6 py-4 text-center text-body-sm type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
           >
             Help Center
           </Link>
           <Link
             href={storefrontTrust.policyRoutes.contact}
-            className="bg-[var(--ds-text-primary)] px-6 py-4 text-center text-body-sm type-bold uppercase tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+            className="bg-[var(--ds-text-primary)] px-6 py-4 text-center text-body-sm type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
           >
             Contact Concierge
           </Link>

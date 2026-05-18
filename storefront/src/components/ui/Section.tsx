@@ -46,7 +46,7 @@ export function SectionHeader({
     >
       <div className="min-w-0">
         {eyebrow ? (
-          <p className="mb-3 font-body text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-muted)]">
+          <p className="mb-3 font-body text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
             {eyebrow}
           </p>
         ) : null}

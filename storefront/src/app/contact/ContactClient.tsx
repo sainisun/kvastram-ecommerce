@@ -284,7 +284,7 @@ export function ContactClient() {
                   error={touched.message ? errors.message : undefined}
                 />
 
-                <div className="border border-[var(--line)] bg-[var(--ds-surface-parchment)] px-4 py-4 text-body-sm leading-7 text-[var(--ds-text-secondary)]">
+                <div className="border border-[var(--line)] bg-[var(--ds-surface-parchment)] px-4 py-4 text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
                   For payment or return questions, the guided help pages may
                   answer faster than a general message.
                   <div className="mt-3 flex flex-wrap gap-3">

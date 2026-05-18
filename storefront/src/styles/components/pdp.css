@@ -38,12 +38,12 @@
   background: var(--ds-surface-paper);
   color: var(--ds-text-primary);
   padding: 0 20px;
-  font-family: var(--font-body);
+  font-family: var(--type-ui-font);
   font-size: var(--text-body-xs);
-  font-weight: 700;
-  letter-spacing: var(--tracking-wider);
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-button-tracking);
   text-decoration: none;
-  text-transform: uppercase;
+  text-transform: var(--type-button-transform);
   transition:
     border-color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease),
     color var(--motion-duration-fast, 160ms) var(--motion-ease-standard, ease);
@@ -75,8 +75,8 @@
   overflow: hidden;
   margin: 0;
   color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--text-body-sm);
+  font-weight: var(--type-ui-weight);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -120,8 +120,8 @@
   border-radius: 999px;
   background: var(--terracotta);
   color: var(--ds-text-inverse);
-  font-size: 9px;
-  font-weight: 800;
+  font-size: var(--text-count-xs);
+  font-weight: var(--type-ui-weight);
 }
 
 .pdp-trust-strip {
@@ -133,8 +133,8 @@
   padding: 5px 16px;
   background: var(--green-lt);
   color: var(--ds-success-text);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-label-weight);
   scrollbar-width: none;
   white-space: nowrap;
 }
@@ -181,8 +181,8 @@
   background: var(--amber-lt);
   color: var(--ds-warning-text);
   padding: 5px 10px;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-label-weight);
 }
 
 .pdp-gallery-wishlist {
@@ -217,8 +217,8 @@
 
 .pdp-brand-tag {
   color: var(--blue);
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  font-size: var(--text-body-xs);
+  letter-spacing: var(--type-label-tracking);
 }
 
 .pdp-title {
@@ -238,8 +238,8 @@
 
 .pdp-page .pd-price {
   color: var(--ink);
-  font-size: 1.65rem;
-  font-weight: 800;
+  font-size: var(--text-display-sm);
+  font-weight: var(--type-strong-weight);
 }
 
 .pdp-save-badge {
@@ -259,8 +259,8 @@
   background: var(--amber-lt);
   color: var(--ds-warning-text);
   padding: 10px 12px;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-label-weight);
 }
 
 .pdp-fire-dot {
@@ -281,15 +281,15 @@
 
 .pdp-option-label {
   color: var(--ink);
-  font-size: 13px;
+  font-size: var(--text-body-xs);
   letter-spacing: 0;
   text-transform: none;
 }
 
 .pdp-option-selected {
   color: var(--ink-muted);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-ui-weight);
 }
 
 .pdp-size-guide {
@@ -327,7 +327,7 @@
   background: var(--ds-surface-paper);
   color: var(--ds-text-primary);
   font-size: var(--ds-text-body-sm);
-  font-weight: var(--ds-weight-semibold);
+  font-weight: var(--type-strong-weight);
   cursor: pointer;
   transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
 }
@@ -370,7 +370,7 @@
   background: var(--ds-surface-paper);
   color: var(--ds-text-primary);
   font-size: var(--ds-text-body-sm);
-  font-weight: var(--ds-weight-semibold);
+  font-weight: var(--type-strong-weight);
 }
 
 .pdp-primary-cta,
@@ -418,11 +418,11 @@
   background: var(--ds-surface-paper);
   padding: 0 28px;
   color: var(--ds-text-primary);
-  font-family: var(--ds-font-body);
+  font-family: var(--type-ui-font);
   font-size: var(--ds-text-body-sm);
-  font-weight: var(--ds-weight-semibold);
-  letter-spacing: var(--ds-tracking-wider);
-  text-transform: uppercase;
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-button-tracking);
+  text-transform: var(--type-button-transform);
   transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
 }
 
@@ -465,8 +465,8 @@
   background: var(--blue-lt);
   color: var(--ds-info-text);
   padding: 10px 12px;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-label-weight);
 }
 
 .pdp-detail-grid {
@@ -519,14 +519,14 @@
 }
 
 .pdp-accordion-text strong {
-  font-size: 14px;
-  font-weight: 800;
+  font-size: var(--text-body-sm);
+  font-weight: var(--type-strong-weight);
 }
 
 .pdp-accordion-text small {
   color: var(--ink-muted);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-label-weight);
 }
 
 .pdp-accordion-trigger svg.is-open {
@@ -539,8 +539,8 @@
 
 .pdp-description {
   color: var(--ink-muted);
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: var(--text-body-md);
+  line-height: var(--leading-relaxed);
 }
 
 .pdp-spec-card,
@@ -560,14 +560,14 @@
 }
 
 .pdp-review-summary strong {
-  font-size: 2.25rem;
-  line-height: 1;
+  font-size: var(--text-display-md);
+  line-height: var(--leading-tight);
 }
 
 .pdp-review-summary p {
   margin: 0;
   color: var(--ink-muted);
-  font-size: 13px;
+  font-size: var(--text-body-xs);
 }
 
 .pdp-review-meter {
@@ -577,8 +577,8 @@
   gap: 8px;
   margin: 8px 0;
   color: var(--ink-muted);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-label-weight);
 }
 
 .pdp-review-meter i {
@@ -614,7 +614,7 @@
 .pdp-verified-card small {
   grid-column: 2;
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--text-body-xs);
 }
 
 .pdp-review-sidebar .border-t {
@@ -629,7 +629,7 @@
 }
 
 .pdp-review-sidebar .review-heading {
-  font-size: 1.25rem;
+  font-size: var(--text-display-sm);
 }
 
 .pdp-review-sidebar form {

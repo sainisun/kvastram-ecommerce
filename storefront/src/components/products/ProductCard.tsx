@@ -85,15 +85,15 @@ export function ProductCard({
 
           <div className="absolute left-[9px] top-[9px] z-10 flex max-w-[calc(100%-58px)] flex-col items-start gap-1.5">
             {isNew && !isOnSale ? (
-              <Badge className="rounded-full px-2 py-1 text-[10px]">New</Badge>
+              <Badge className="rounded-full px-2 py-1">New</Badge>
             ) : null}
             {isOnSale ? (
-              <Badge variant="danger" className="rounded-full px-2 py-1 text-[10px]">
+              <Badge variant="danger" className="rounded-full px-2 py-1">
                 Sale
               </Badge>
             ) : null}
             {isLowStock ? (
-              <Badge variant="accent" className="rounded-full px-2 py-1 text-[10px]">
+              <Badge variant="accent" className="rounded-full px-2 py-1">
                 Almost Gone
               </Badge>
             ) : null}

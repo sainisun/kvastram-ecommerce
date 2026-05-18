@@ -205,7 +205,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {recentSearches.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider">
+                        <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider">
                           Recent Searches
                         </h3>
                         <Button
@@ -238,7 +238,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
                   {/* Trending Now */}
                   <div>
-                    <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-4 flex items-center gap-2">
+                    <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-4 flex items-center gap-2">
                       <Sparkles size={12} /> Trending Now
                     </h3>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -287,7 +287,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
                   {/* Popular Searches */}
                   <div>
-                    <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-3">
+                    <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-3">
                       Popular Searches
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -326,7 +326,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {/* Suggestions List */}
                   {suggestions.length > 0 && (
                     <div className="mb-8">
-                      <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-3">
+                      <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-3">
                         Suggestions
                       </h3>
                       <ul className="space-y-2">
@@ -357,7 +357,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {/* Product Grid Preview */}
                   {results.length > 0 && (
                     <div>
-                      <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)] uppercase tracking-token-wider mb-6">
+                      <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-6">
                         Products
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

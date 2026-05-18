@@ -56,7 +56,7 @@ export default function CheckoutError({
               If you are unsure whether a payment was charged, use payment help
               or contact support before placing another attempt.
             </p>
-            <div className="mt-3 flex flex-wrap gap-3 text-body-xs uppercase tracking-token-wider">
+            <div className="mt-3 flex flex-wrap gap-3 text-body-xs  tracking-token-wider">
               <Link
                 href={storefrontTrust.policyRoutes.paymentHelp}
                 className="underline underline-offset-4"
