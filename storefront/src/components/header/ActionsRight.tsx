@@ -11,7 +11,7 @@ interface ActionsRightProps {
   onCartOpen: () => void;
 }
 
-export function ActionsRight({ onSearchOpen, onCartOpen }: ActionsRightProps) {
+export function ActionsRight({ onCartOpen }: ActionsRightProps) {
   const { totalItems } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
 
@@ -20,16 +20,9 @@ export function ActionsRight({ onSearchOpen, onCartOpen }: ActionsRightProps) {
 
   return (
     <div className="flex items-center justify-end gap-1.5">
-      <IconButton
-        type="button"
-        onClick={onSearchOpen}
-        variant="ghost"
-        size="sm"
-        className={iconCls}
-        aria-label="Search"
-      >
+      <Link href="/search" className={iconCls} aria-label="Search">
         <Search size={20} strokeWidth={1.4} />
-      </IconButton>
+      </Link>
 
       <Link href="/account" className={iconCls} aria-label="My Account">
         <User size={20} strokeWidth={1.4} />
