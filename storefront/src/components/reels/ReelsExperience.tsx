@@ -48,7 +48,7 @@ function formatPrice(price: string) {
   if (!price) return '';
   const num = parseFloat(price.replace(/[^0-9.]/g, ''));
   if (isNaN(num)) return price;
-  return `Rs. ${num.toLocaleString('en-IN')}`;
+  return `\u20b9${num.toLocaleString('en-IN')}`;
 }
 
 function formatCompactNumber(value: number) {
