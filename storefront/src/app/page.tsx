@@ -17,7 +17,8 @@ import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { Testimonials } from '@/components/home/Testimonials';
-import { PrototypeHomeExtras } from '@/components/home/PrototypeHomeExtras';
+import { HomeMerchandisingSections } from '@/components/home/HomeMerchandisingSections';
+import { HomeTrustBar } from '@/components/home/HomeTrustBar';
 import type { Product } from '@/types';
 import type {
   HomepageCollection,
@@ -328,6 +329,7 @@ export default async function Home() {
 
       <CircularCategories />
       <HeroSection banners={heroBanners} />
+      <HomeTrustBar />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
         isCurated={newArrivalProducts.length > 0}
@@ -336,13 +338,13 @@ export default async function Home() {
       <WatchBuyPreview reels={trendingReels} />
       <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
-      <PrototypeHomeExtras
+      <HomeMerchandisingSections
         products={products}
         bestsellerProducts={bestsellerProducts}
         merchandisingSlots={merchandisingSlots}
       >
         <ShopTheLook spotlightProducts={spotlightProducts} />
-      </PrototypeHomeExtras>
+      </HomeMerchandisingSections>
       <Testimonials testimonials={testimonials} />
       <NewsletterSection settings={homepageSettings} />
     </>

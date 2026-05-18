@@ -69,7 +69,7 @@
   margin: 14px auto 0;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(2.35rem, 7vw, 5.7rem);
+  font-size: 5.2rem;
   font-weight: var(--weight-medium);
   letter-spacing: 0;
   line-height: 0.98;
@@ -83,7 +83,7 @@
   max-width: 720px;
   margin: 22px auto 0;
   color: var(--color-text-secondary);
-  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-size: 1.28rem;
   font-weight: var(--weight-regular);
   letter-spacing: 0;
   line-height: 1.72;
@@ -123,7 +123,7 @@
 .content-rich,
 .editorial-text {
   color: var(--color-text-secondary);
-  font-size: clamp(1rem, 1.4vw, 1.075rem);
+  font-size: 1.05rem;
   font-weight: var(--weight-regular);
   letter-spacing: 0;
   line-height: 1.84;
@@ -152,7 +152,7 @@
   margin: clamp(48px, 7vw, 84px) 0 18px;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-size: 2.75rem;
   font-weight: var(--weight-medium);
   letter-spacing: 0;
   line-height: 1.08;
@@ -165,7 +165,7 @@
   margin: 36px 0 12px;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(1.22rem, 2vw, 1.62rem);
+  font-size: 1.52rem;
   font-weight: var(--weight-semibold);
   letter-spacing: 0;
   line-height: 1.2;
@@ -406,7 +406,7 @@
 
 .inline-cta h2 {
   margin: 8px 0 0;
-  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  font-size: 2.2rem;
 }
 
 .inline-cta p:not(.content-eyebrow) {
@@ -437,7 +437,7 @@
   padding: 22px 24px;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-size: 1.2rem;
   font-weight: var(--weight-semibold);
   line-height: 1.35;
 }
@@ -460,7 +460,7 @@
   margin: 0;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(1.65rem, 4vw, 3rem);
+  font-size: 2.7rem;
   font-weight: var(--weight-regular);
   letter-spacing: 0;
   line-height: 1.18;
@@ -577,6 +577,41 @@
   .content-shell,
   .content-layout {
     width: min(100% - 28px, 1180px);
+  }
+
+  .content-hero h1 {
+    font-size: 2.65rem;
+  }
+
+  .content-hero__intro {
+    font-size: 1.05rem;
+  }
+
+  .content-rich,
+  .editorial-text {
+    font-size: 1rem;
+  }
+
+  .content-rich h2,
+  .section-block h2,
+  .craft-story-section h2,
+  .image-text-split h2,
+  .inline-cta h2 {
+    font-size: 1.85rem;
+  }
+
+  .content-rich h3,
+  .info-card h3,
+  .highlight-box h3 {
+    font-size: 1.28rem;
+  }
+
+  .faq-accordion summary {
+    font-size: 1.05rem;
+  }
+
+  .quote-block blockquote {
+    font-size: 1.75rem;
   }
 
   .content-rich table {

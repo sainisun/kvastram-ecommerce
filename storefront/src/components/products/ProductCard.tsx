@@ -11,6 +11,7 @@ import WishlistButton from '@/components/ui/WishlistButton';
 import { Badge } from '@/components/ui/Badge';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { Button, IconButton } from '@/components/ui/Button';
+import { Check, ShoppingBag } from 'lucide-react';
 
 export interface ProductCardPrice {
   label: string;
@@ -151,10 +152,14 @@ export function ProductCard({
             onClick={(event) => onAddToCart(event, product)}
             variant={added ? 'primary' : 'ghost'}
             size="sm"
-            className="product-card-cart-button"
-            aria-label={added ? 'Added to cart' : 'Add to cart'}
-          >
-            {added ? 'OK' : '+'}
+          className="product-card-cart-button"
+          aria-label={added ? 'Added to cart' : 'Add to cart'}
+        >
+            {added ? (
+              <Check aria-hidden="true" size={16} strokeWidth={2} />
+            ) : (
+              <ShoppingBag aria-hidden="true" size={15} strokeWidth={1.9} />
+            )}
           </IconButton>
         </div>
       </div>

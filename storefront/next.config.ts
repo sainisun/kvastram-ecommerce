@@ -42,11 +42,6 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'api.vintaaj.com',
-        pathname: '/uploads/**',
-      },
-      {
-        protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
       {

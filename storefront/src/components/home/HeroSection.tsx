@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
+import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { cloudinaryUrlOrNull } from '@/lib/media';
 import { UnstyledButton } from '@/components/ui/Button';
@@ -26,6 +27,10 @@ interface ResolvedSlide {
   imageUrl?: string;
   mobileImageUrl?: string;
   alt: string;
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonLink: string;
 }
 
 export function HeroSection({ banners = [] }: HeroSectionProps) {
@@ -36,10 +41,29 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
         imageUrl: cloudinaryUrlOrNull(banner.image_url) || undefined,
         mobileImageUrl: cloudinaryUrlOrNull(banner.mobile_image_url) || undefined,
         alt: banner.title?.trim() || banner.subtitle?.trim() || 'Kvastram hero',
+        title: banner.title?.trim() || 'Kvastram',
+        subtitle:
+          banner.subtitle?.trim() ||
+          'Handcrafted Indian fashion, curated for festive moments and everyday elegance.',
+        buttonText: banner.button_text?.trim() || 'Shop New Arrivals',
+        buttonLink: banner.button_link?.trim() || '/products?sort=newest',
       }))
       .filter((banner) => Boolean(banner.imageUrl));
 
-    return realSlides;
+    return realSlides.length > 0
+      ? realSlides
+      : [
+          {
+            id: 'kvastram-fallback-hero',
+            imageUrl: '/images/home/hero-main.jpg',
+            alt: 'Kvastram handcrafted fashion edit',
+            title: 'Kvastram',
+            subtitle:
+              'Handcrafted Indian fashion, curated for festive moments and everyday elegance.',
+            buttonText: 'Shop New Arrivals',
+            buttonLink: '/products?sort=newest',
+          },
+        ];
   }, [banners]);
 
   const autoplay = useMemo(
@@ -80,9 +104,7 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
     [emblaApi]
   );
 
-  if (slides.length === 0) {
-    return null;
-  }
+  const activeSlide = slides[selectedIndex] || slides[0];
 
   return (
     <section className="hero relative block min-h-[min(70svh,620px)] overflow-hidden bg-[var(--ds-accent-hover)]">
@@ -115,8 +137,27 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
                   />
                 </div>
               ) : null}
+              <div className="hero-image-scrim absolute inset-0" aria-hidden="true" />
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="hero-content absolute inset-x-0 bottom-0 z-[2]">
+        <div className="kv-container">
+          <div className="hero-copy">
+            <p className="hero-eyebrow">Handmade in Jaipur</p>
+            <h1>{activeSlide.title}</h1>
+            <p>{activeSlide.subtitle}</p>
+            <div className="hero-actions">
+              <Link href={activeSlide.buttonLink} className="home-link-button home-link-button--primary">
+                {activeSlide.buttonText}
+              </Link>
+              <Link href="/collections" className="home-link-button home-link-button--light">
+                Explore Collections
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 

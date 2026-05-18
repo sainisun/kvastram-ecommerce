@@ -8,7 +8,7 @@ import type { MoneyAmount, Product } from '@/types';
 import type { HomepageMerchandisingSlot } from '@/types/homepage';
 import { useCurrency } from '@/context/currency-context';
 
-interface PrototypeHomeExtrasProps {
+interface HomeMerchandisingSectionsProps {
   products: Product[];
   bestsellerProducts: Product[];
   merchandisingSlots: HomepageMerchandisingSlot[];
@@ -141,12 +141,12 @@ function groupSlots(slots: HomepageMerchandisingSlot[], key: string) {
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 }
 
-export function PrototypeHomeExtras({
+export function HomeMerchandisingSections({
   products,
   bestsellerProducts,
   merchandisingSlots,
   children,
-}: PrototypeHomeExtrasProps) {
+}: HomeMerchandisingSectionsProps) {
   const seasonalSlots = groupSlots(merchandisingSlots, 'seasonal_edits');
   const fabricSlots = groupSlots(merchandisingSlots, 'fabric_edits');
   const occasionSlots = groupSlots(merchandisingSlots, 'occasion_edits');

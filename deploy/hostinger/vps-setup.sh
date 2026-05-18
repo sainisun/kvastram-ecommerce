@@ -5,9 +5,9 @@
 # ============================================================
 set -euo pipefail
 
-DOMAIN="vintaaj.com"
+DOMAIN="kvastram.com"
 REPO_URL="https://github.com/sainisun/kvastram-ecommerce.git"
-APP_DIR="/root/kvastram-platform"
+APP_DIR="/root/kvastram-ecommerce"
 
 echo "=========================================="
 echo "  Kvastram VPS Deployment Starting..."

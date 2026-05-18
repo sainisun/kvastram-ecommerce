@@ -17,7 +17,7 @@ export function BrandStory({ settings }: BrandStoryProps) {
     settings.brand_story_title || 'Preserving craft, one thread at a time';
   const content =
     settings.brand_story_content ||
-    'Use this design language in the real storefront while pulling copy and stats from admin-managed settings where possible.';
+    'Every Kvastram piece is selected for its craft, texture, and everyday wearability, connecting Jaipur-rooted workmanship with modern wardrobes.';
   const imageUrl = cloudinaryUrlOrNull(settings.brand_story_image);
 
   return (
@@ -44,7 +44,7 @@ export function BrandStory({ settings }: BrandStoryProps) {
               />
             </div>
           ) : (
-            'K'
+            <span aria-hidden="true">K</span>
           )}
         </div>
       </div>

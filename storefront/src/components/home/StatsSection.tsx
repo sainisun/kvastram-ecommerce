@@ -194,7 +194,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
 
         .stat-num-prem {
           font-family: var(--font-display);
-          font-size: clamp(2.2rem, 4.6vw, 4rem);
+          font-size: 3.6rem;
           font-weight: var(--weight-medium);
           line-height: var(--leading-tight);
           letter-spacing: var(--tracking-tight);
@@ -234,6 +234,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
 
         @media (max-width: 767px) {
           .stat-num-prem {
+            font-size: 2.3rem;
             white-space: normal;
           }
         }

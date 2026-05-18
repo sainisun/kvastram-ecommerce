@@ -88,3 +88,11 @@ P2 cleanup:
 - Replace old `vintaaj.com` fallback.
 - Drive search/category shortcuts from live admin data.
 - Add automated checks for broken product links, empty homepage slots, duplicate collection handles, missing thumbnails, and price mismatches.
+
+## Implementation Status
+
+Completed in follow-up fixes:
+
+- P0: Cart product links now preserve handles, search routes to `/search?q=...`, checkout INR/gift wrap display is consistent, customer-facing placeholder homepage blocks are hidden, and CTA contrast is improved.
+- P1: Homepage now has a conversion hero with primary/secondary CTAs, a trust bar, resilient fallback hero content, cleaner product-card actions, and better short display-title handling.
+- P2: Live deploy config now points at `kvastram.com`, the old `api.vintaaj.com` fallback/allowlist was removed from live app configs, and the former prototype homepage section was renamed to production `HomeMerchandisingSections`.

@@ -21,7 +21,7 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
   const title = settings.newsletter_title || 'Get craft stories and launch alerts';
   const subtitle =
     settings.newsletter_subtitle ||
-    'A footer/newsletter section is useful, but popup frequency should be controlled.';
+    'Get early access to new handmade edits, limited drops, and styling notes from Kvastram.';
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
