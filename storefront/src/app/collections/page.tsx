@@ -49,6 +49,7 @@ function CollectionCard({
   count: number;
 }) {
   const image = collection.cover_image_url || collection.image;
+  const countLabel = count > 0 ? `${count} ${count === 1 ? 'product' : 'products'}` : null;
 
   return (
     <Link
@@ -67,7 +68,7 @@ function CollectionCard({
       ) : null}
       <div className="p-4">
         <p className="collection-card-kicker">
-          {collection.type || 'Curated edit'} · {count} {count === 1 ? 'product' : 'products'}
+          {[collection.type || 'Curated edit', countLabel].filter(Boolean).join(' · ')}
         </p>
         <h2 className="collection-card-title">
           {collection.title}
@@ -102,8 +103,7 @@ export default async function CollectionsPage({
   const collections: CollectionSummary[] = (data.collections || []).filter(
     (collection: CollectionSummary) =>
       collection.status === 'active' &&
-      collection.handle &&
-      getProductCount(collection) > 0
+      collection.handle
   );
   const featuredCollections = collections
     .filter((collection) => collection.cover_image_url || collection.image)
