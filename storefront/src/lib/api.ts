@@ -1085,6 +1085,18 @@ export const api = {
     }
   },
 
+  async getReelCollections() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/reel-collections`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { collections: [] };
+      return res.json();
+    } catch {
+      return { collections: [] };
+    }
+  },
+
   async recordTrendingReelView(id: string) {
     try {
       const res = await fetchWithTrace(`${API_URL}/trending-reels/${id}/view`, {

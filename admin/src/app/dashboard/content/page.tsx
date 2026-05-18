@@ -74,6 +74,16 @@ export default function ContentDashboard() {
           </p>
         </Link>
         <Link
+          href="/dashboard/content/reel-collections"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <Layers className="mb-4 text-indigo-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Reel Collections</h2>
+          <p className="text-gray-500">
+            Manage reels page hero carousel slides and collection filters.
+          </p>
+        </Link>
+        <Link
           href="/dashboard/content/posts"
           className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
         >
