@@ -26,7 +26,7 @@ import {
 import { api } from '@/lib/api';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { Modal } from '@/components/ui/Modal';
-import { Button, IconButton } from '@/components/ui/Button';
+import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
 
 interface TrendingReelItem {
   id: string;
@@ -48,7 +48,14 @@ function formatPrice(price: string) {
   if (!price) return '';
   const num = parseFloat(price.replace(/[^0-9.]/g, ''));
   if (isNaN(num)) return price;
-  return '₹' + num.toLocaleString('en-IN');
+  return `Rs. ${num.toLocaleString('en-IN')}`;
+}
+
+function formatCompactNumber(value: number) {
+  return new Intl.NumberFormat('en-IN', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value);
 }
 
 function getSavedReels(): Set<string> {
@@ -84,11 +91,11 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [gridCols, setGridCols] = useState<2 | 3>(() => {
-    if (typeof window === 'undefined') return 2;
+    if (typeof window === 'undefined') return 3;
     try {
-      return localStorage.getItem('kvastram_reels_grid') === '3' ? 3 : 2;
+      return localStorage.getItem('kvastram_reels_grid') === '2' ? 2 : 3;
     } catch {
-      return 2;
+      return 3;
     }
   });
   const [showAll, setShowAll] = useState(false);
@@ -126,6 +133,10 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     () => (showAll ? reels : reels.slice(0, 12)),
     [reels, showAll]
   );
+  const totalViews = useMemo(
+    () => reels.reduce((sum, reel) => sum + (reel.view_count || 0), 0),
+    [reels]
+  );
 
   function openReel(index: number) {
     setActiveIndex(index);
@@ -151,19 +162,20 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const gridClass = gridCols === 3 ? 'reels-grid-3' : 'reels-grid';
 
   return (
-    <div className="min-h-screen bg-[var(--cream)] pb-24">
-      {/* Sticky header */}
-      <div className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--ds-surface-paper)]/95 backdrop-blur-md">
-        <div className="kv-container flex items-center justify-between gap-3 py-3">
-          <span className="text-body-sm type-semibold color-ink">Watch &amp; Buy Reels</span>
-          <div className="flex items-center gap-1 rounded-lg border border-[var(--line)] p-1">
+    <div className="reels-page">
+      <header className="reels-topbar">
+        <div className="reels-shell reels-topbar-inner">
+          <Link href="/" className="reels-brand" aria-label="Kvastram home">
+            Kvastram
+          </Link>
+          <div className="reels-grid-toggle" aria-label="Grid layout">
             <IconButton
               type="button"
               onClick={() => setGrid(2)}
               aria-label="2-column grid"
               variant="ghost"
               size="sm"
-              className={`rounded-md border ${gridCols === 2 ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] color-ink' : 'border-transparent color-muted hover:color-ink hover:bg-[var(--ds-surface-soft)]'}`}
+              className={gridCols === 2 ? 'reels-toggle-button active' : 'reels-toggle-button'}
             >
               <Grid2X2 size={16} />
             </IconButton>
@@ -173,30 +185,56 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
               aria-label="3-column grid"
               variant="ghost"
               size="sm"
-              className={`rounded-md border ${gridCols === 3 ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] color-ink' : 'border-transparent color-muted hover:color-ink hover:bg-[var(--ds-surface-soft)]'}`}
+              className={gridCols === 3 ? 'reels-toggle-button active' : 'reels-toggle-button'}
             >
               <Grid3X3 size={16} />
             </IconButton>
           </div>
         </div>
+      </header>
+
+      <section className="reels-shell reels-profile" aria-labelledby="reels-profile-title">
+        <div className="reels-avatar" aria-hidden="true">Kv</div>
+        <div className="reels-profile-copy">
+          <p className="reels-profile-kicker">Watch &amp; Buy</p>
+          <h1 id="reels-profile-title">kvastram</h1>
+          <p>Handmade Jaipur drops, block prints, quilted layers, and styling ideas in motion.</p>
+          <Link href="/products" className="reels-action-link">
+            Shop collection
+          </Link>
+        </div>
+        <dl className="reels-stats" aria-label="Reels stats">
+          <div>
+            <dt>{reels.length || '-'}</dt>
+            <dd>reels</dd>
+          </div>
+          <div>
+            <dt>{totalViews ? formatCompactNumber(totalViews) : '-'}</dt>
+            <dd>views</dd>
+          </div>
+          <div>
+            <dt>Jaipur</dt>
+            <dd>craft</dd>
+          </div>
+        </dl>
+      </section>
+
+      <div className="reels-shell reels-tabs" role="tablist" aria-label="Reels content">
+        <UnstyledButton type="button" className="reels-tab active" role="tab" aria-selected="true">
+          <Grid3X3 size={16} />
+          Reels
+        </UnstyledButton>
       </div>
 
-      {/* Title */}
-      <div className="kv-container pt-6 pb-4">
-        <div className="kv-tag">Watch &amp; Buy</div>
-        <h1 className="kv-title">Reels that sell the story</h1>
-      </div>
-
-      {/* Grid */}
-      <div className="kv-container">
+      <div className="reels-shell reels-grid-shell">
         {loading ? (
-          <div className={gridCols === 3 ? 'grid grid-cols-3 gap-1.5' : 'grid grid-cols-2 gap-3'}>
-            {[1, 2, 3, 4, 6].map((i) => (
-              <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-[var(--ds-surface-soft)]" />
+          <div className={gridCols === 3 ? 'reels-loading-grid reels-loading-grid-3' : 'reels-loading-grid'}>
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="reel-skeleton" />
             ))}
           </div>
         ) : visibleReels.length === 0 ? (
-          <div className="rounded-lg border border-[var(--line)] bg-[var(--ds-surface-paper)] px-6 py-14 text-center">
+          <div className="reels-empty-state">
             <p className="kv-tag">No Reels</p>
             <h2 className="mt-2 kv-title text-display-md">Nothing here yet</h2>
             <Link href="/products" className="reels-action-link mt-5">
@@ -207,12 +245,12 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           <>
             <div className={gridClass}>
               {visibleReels.map((reel, idx) => (
-                <Button
+                <UnstyledButton
                   key={reel.id}
                   type="button"
                   onClick={() => openReel(idx)}
-                  variant="ghost"
-                  className="reel-card group gap-0 p-0 normal-case"
+                  className="reel-card group"
+                  aria-label={`Watch ${reel.product_name}`}
                 >
                   <div className="reel-media">
                     {reel.video_url ? (
@@ -238,24 +276,21 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                     ) : (
                       <div className="absolute inset-0 bg-[var(--soft)]" />
                     )}
-                    {/* Gradient keeps autoplaying thumbnails legible against the card edge. */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.75)] via-[rgba(var(--ds-black-rgb),0.10)] to-transparent" />
-                  </div>
-                  {gridCols === 2 && (
-                    <div className="reel-info">
-                      <div className="reel-title line-clamp-1 color-ink">
-                        {reel.product_name}
-                      </div>
-                      <div className="mt-1 flex items-center justify-between gap-1">
-                        <span className="text-body-xs type-semibold color-accent">{formatPrice(reel.price)}</span>
-                        <span className="inline-flex items-center gap-0.5 text-body-xs color-muted">
-                          <Eye size={10} />
-                          {reel.view_count || 0}
-                        </span>
-                      </div>
+                    <div className="reel-grid-gradient" />
+                    <div className="reel-grid-overlay">
+                      <span className="reel-grid-price">{formatPrice(reel.price)}</span>
+                      <span className="reel-grid-views">
+                        <Eye size={12} />
+                        {formatCompactNumber(reel.view_count || 0)}
+                      </span>
                     </div>
-                  )}
-                </Button>
+                  </div>
+                  {gridCols === 2 ? (
+                    <div className="reel-info" aria-hidden="true">
+                      <span className="reel-title">{reel.product_name}</span>
+                    </div>
+                  ) : null}
+                </UnstyledButton>
               ))}
             </div>
 
