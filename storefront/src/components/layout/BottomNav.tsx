@@ -1,13 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Clapperboard, Heart, Home, LayoutGrid, User } from 'lucide-react';
+import { Clapperboard, Home, LayoutGrid, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useWishlist } from '@/context/wishlist-context';
 
 export function BottomNav() {
   const pathname = usePathname();
-  const { totalItems: wishlistCount } = useWishlist();
   const [isReelPlayerOpen, setIsReelPlayerOpen] = useState(false);
 
   useEffect(() => {
@@ -49,10 +47,11 @@ export function BottomNav() {
       badge: 0,
     },
     {
-      href: '/collections',
+      href: '/products',
       icon: LayoutGrid,
       label: 'Shop',
       active:
+        pathname?.startsWith('/categories') ||
         pathname?.startsWith('/collections') ||
         pathname?.startsWith('/products'),
       badge: 0,
@@ -63,13 +62,6 @@ export function BottomNav() {
       label: 'Reels',
       active: pathname?.startsWith('/reels'),
       badge: 0,
-    },
-    {
-      href: '/wishlist',
-      icon: Heart,
-      label: 'Wishlist',
-      active: pathname === '/wishlist',
-      badge: wishlistCount,
     },
     {
       href: '/account',

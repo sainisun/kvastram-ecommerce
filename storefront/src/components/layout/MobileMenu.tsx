@@ -42,6 +42,9 @@ interface Category {
   slug: string;
   image?: string | null;
   header_image_url?: string | null;
+  display_order?: number;
+  is_active?: boolean;
+  show_in_header?: boolean;
   children?: Category[];
 }
 
@@ -82,220 +85,16 @@ type MenuCategory = {
   href: string;
   icon: typeof Bed;
   iconBg: string;
-  hero: string;
+  hero?: string | null;
   tagline: string;
   filters: string[];
   items: Array<{
     name: string;
     meta: string;
     href: string;
-    image: string;
+    image?: string | null;
   }>;
 };
-
-const IMAGE_POOL = [
-  'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=600&q=80',
-];
-
-const MENU_CATEGORIES: MenuCategory[] = [
-  {
-    key: 'quilts',
-    title: 'Quilts & Throws',
-    subtitle: 'Kantha, block print, reversible',
-    href: '/collections/quilts',
-    icon: Bed,
-    iconBg: 'var(--ds-accent-soft)',
-    hero: IMAGE_POOL[5],
-    tagline: 'New arrivals this season',
-    filters: ['All', 'Kantha', 'Block print', 'Reversible'],
-    items: [
-      {
-        name: 'Single kantha quilt',
-        meta: '12 styles - from Rs. 2,499',
-        href: '/collections/single-quilts',
-        image: IMAGE_POOL[5],
-      },
-      {
-        name: 'Double reversible',
-        meta: '8 styles - from Rs. 3,299',
-        href: '/collections/double-quilts',
-        image: IMAGE_POOL[0],
-      },
-      {
-        name: 'King size quilt',
-        meta: '6 styles - from Rs. 4,499',
-        href: '/collections/king-quilts',
-        image: IMAGE_POOL[3],
-      },
-      {
-        name: 'Throw blankets',
-        meta: '15 styles - from Rs. 1,799',
-        href: '/collections/throws',
-        image: IMAGE_POOL[2],
-      },
-    ],
-  },
-  {
-    key: 'clothing',
-    title: 'Clothing',
-    subtitle: 'Kurtas, jackets, sarees, lehengas',
-    href: '/collections/clothing',
-    icon: Shirt,
-    iconBg: 'var(--ds-success-bg)',
-    hero: IMAGE_POOL[1],
-    tagline: 'Handmade layers for every day',
-    filters: ['All', 'Kurtas', 'Jackets', 'Sarees'],
-    items: [
-      {
-        name: 'Kurtas',
-        meta: '20 styles - from Rs. 1,299',
-        href: '/collections/kurtas',
-        image: IMAGE_POOL[1],
-      },
-      {
-        name: 'Kantha jackets',
-        meta: '10 styles - from Rs. 2,299',
-        href: '/collections/jackets',
-        image: IMAGE_POOL[0],
-      },
-      {
-        name: 'Sarees',
-        meta: '8 styles - from Rs. 3,499',
-        href: '/collections/sarees',
-        image: IMAGE_POOL[3],
-      },
-      {
-        name: 'Lehengas',
-        meta: '5 styles - from Rs. 4,999',
-        href: '/collections/lehengas',
-        image: IMAGE_POOL[4],
-      },
-    ],
-  },
-  {
-    key: 'bags',
-    title: 'Bags & Totes',
-    subtitle: 'Block print, kantha, jute',
-    href: '/collections/bags',
-    icon: BriefcaseBusiness,
-    iconBg: 'var(--ds-info-bg)',
-    hero: IMAGE_POOL[2],
-    tagline: 'Carry craft everywhere',
-    filters: ['All', 'Totes', 'Clutches', 'Jute'],
-    items: [
-      {
-        name: 'Tote bags',
-        meta: '18 styles - from Rs. 699',
-        href: '/collections/totes',
-        image: IMAGE_POOL[2],
-      },
-      {
-        name: 'Shoulder bags',
-        meta: '12 styles - from Rs. 999',
-        href: '/collections/shoulder-bags',
-        image: IMAGE_POOL[4],
-      },
-      {
-        name: 'Clutches',
-        meta: '8 styles - from Rs. 599',
-        href: '/collections/clutches',
-        image: IMAGE_POOL[3],
-      },
-      {
-        name: 'Backpacks',
-        meta: '5 styles - from Rs. 1,499',
-        href: '/collections/backpacks',
-        image: IMAGE_POOL[0],
-      },
-    ],
-  },
-  {
-    key: 'scarves',
-    title: 'Scarves & Dupattas',
-    subtitle: 'Cotton, silk blend, printed',
-    href: '/collections/scarves',
-    icon: Wind,
-    iconBg: 'var(--ds-accent-soft)',
-    hero: IMAGE_POOL[3],
-    tagline: 'Soft prints, effortless drape',
-    filters: ['All', 'Cotton', 'Silk blend', 'Printed'],
-    items: [
-      {
-        name: 'Cotton scarves',
-        meta: '16 styles - from Rs. 799',
-        href: '/collections/cotton-scarves',
-        image: IMAGE_POOL[3],
-      },
-      {
-        name: 'Silk blend dupattas',
-        meta: '9 styles - from Rs. 1,399',
-        href: '/collections/silk-dupattas',
-        image: IMAGE_POOL[1],
-      },
-      {
-        name: 'Printed stoles',
-        meta: '14 styles - from Rs. 999',
-        href: '/collections/stoles',
-        image: IMAGE_POOL[0],
-      },
-      {
-        name: 'Kantha wraps',
-        meta: '7 styles - from Rs. 1,799',
-        href: '/collections/kantha-wraps',
-        image: IMAGE_POOL[5],
-      },
-    ],
-  },
-  {
-    key: 'gifts',
-    title: 'Gift sets',
-    subtitle: 'Curated craft bundles',
-    href: '/collections/gifts',
-    icon: Sparkles,
-    iconBg: 'var(--ds-warning-bg)',
-    hero: IMAGE_POOL[4],
-    tagline: 'Ready-to-gift artisan picks',
-    filters: ['All', 'Under 2000', 'Festive', 'Home'],
-    items: [
-      {
-        name: 'Festive bundles',
-        meta: '10 styles - from Rs. 1,499',
-        href: '/collections/festive-gifts',
-        image: IMAGE_POOL[4],
-      },
-      {
-        name: 'Home gift sets',
-        meta: '8 styles - from Rs. 1,999',
-        href: '/collections/home-gifts',
-        image: IMAGE_POOL[5],
-      },
-      {
-        name: 'Accessory edits',
-        meta: '12 styles - from Rs. 899',
-        href: '/collections/accessory-gifts',
-        image: IMAGE_POOL[2],
-      },
-      {
-        name: 'Premium hampers',
-        meta: '5 styles - from Rs. 3,499',
-        href: '/collections/hampers',
-        image: IMAGE_POOL[0],
-      },
-    ],
-  },
-];
-
-const MOODS = [
-  { label: 'Festive', href: '/collections/festive', image: IMAGE_POOL[4] },
-  { label: 'Everyday', href: '/collections/everyday', image: IMAGE_POOL[1] },
-  { label: 'Gifts', href: '/collections/gifts', image: IMAGE_POOL[2] },
-  { label: 'Home', href: '/collections/home', image: IMAGE_POOL[5] },
-];
 
 function getSearchResultPrice(product: SearchResult) {
   const prices = product.variants?.flatMap((variant) => variant.prices || []) || [];
@@ -327,20 +126,43 @@ export default function MobileMenu({
   const previousPathnameRef = useRef(pathname);
 
   const enrichedCategories = useMemo(
-    () =>
-      MENU_CATEGORIES.map((item) => {
-        const liveCategory = categories.find((category) =>
-          [category.slug, category.name.toLowerCase()].some((value) =>
-            value?.toLowerCase().includes(item.key)
-          )
-        );
+    () => {
+      const icons = [Shirt, BriefcaseBusiness, Wind, Sparkles, Bed];
+      const iconBgs = [
+        'var(--ds-success-bg)',
+        'var(--ds-info-bg)',
+        'var(--ds-accent-soft)',
+        'var(--ds-warning-bg)',
+        'var(--ds-surface-soft)',
+      ];
 
-        return {
-          ...item,
-          href: liveCategory?.slug ? `/collections/${liveCategory.slug}` : item.href,
-          hero: liveCategory?.header_image_url || liveCategory?.image || item.hero,
-        };
-      }),
+      return categories
+        .filter((category) => category.slug && category.name)
+        .slice()
+        .filter((category) => category.is_active !== false && category.show_in_header !== false)
+        .sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99))
+        .map((category, index) => ({
+          key: category.id,
+          title: category.name,
+          subtitle: category.children?.length
+            ? `${category.children.length} sections`
+            : 'Shop category',
+          href: `/categories/${category.slug}`,
+          icon: icons[index % icons.length],
+          iconBg: iconBgs[index % iconBgs.length],
+          hero: category.header_image_url || category.image || null,
+          tagline: category.name,
+          filters: [],
+          items: (category.children || [])
+            .filter((child) => child.slug)
+            .map((child) => ({
+              name: child.name,
+              meta: 'View category',
+              href: `/categories/${child.slug}`,
+              image: child.header_image_url || child.image || null,
+            })),
+        }));
+    },
     [categories]
   );
 
@@ -349,16 +171,15 @@ export default function MobileMenu({
       collections
         .filter(
           (collection) =>
-            collection.status === 'active' && collection.show_in_megamenu
+            collection.status === 'active' &&
+            collection.show_in_megamenu &&
+            (collection.cover_image_url || collection.image)
         )
         .slice(0, 4)
-        .map((collection, index) => ({
+        .map((collection) => ({
           label: collection.title || collection.name || 'Collection',
           href: `/collections/${collection.handle}`,
-          image:
-            collection.cover_image_url ||
-            collection.image ||
-            IMAGE_POOL[index % IMAGE_POOL.length],
+          image: collection.cover_image_url || collection.image || '',
         })),
     [collections]
   );
@@ -599,6 +420,25 @@ export default function MobileMenu({
                 </div>
 
                 <nav aria-label="Mobile categories">
+                  <Link
+                    href="/products"
+                    onClick={handleClose}
+                    className="flex min-h-14 items-center gap-3 border-b border-[var(--ds-border-subtle)] px-4 transition-colors hover:bg-[var(--ds-surface-page)]"
+                  >
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[var(--ds-surface-soft)]">
+                      <ShoppingBag size={18} strokeWidth={1.8} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-body-md type-medium leading-token-tight text-[var(--ds-text-primary)]">
+                        Shop all products
+                      </span>
+                      <span className="mt-0.5 block truncate text-body-xs text-[var(--ds-text-disabled)]">
+                        Browse the full Kvastram catalog
+                      </span>
+                    </span>
+                    <ChevronRight size={17} className="text-[var(--ds-text-disabled)]" />
+                  </Link>
+
                   {enrichedCategories.map((category) => {
                     const Icon = category.icon;
 
@@ -631,7 +471,7 @@ export default function MobileMenu({
                   })}
 
                   <Link
-                    href="/collections/sale"
+                    href="/sale"
                     onClick={handleClose}
                     className="flex min-h-14 items-center gap-3 border-b border-[var(--ds-border-subtle)] px-4 transition-colors hover:bg-[var(--ds-surface-page)]"
                   >
@@ -643,26 +483,20 @@ export default function MobileMenu({
                         Sale
                       </span>
                       <span className="mt-0.5 block truncate text-body-xs text-[var(--ds-text-disabled)]">
-                        Up to 40% off selected items
+                        Current markdowns and limited offers
                       </span>
                     </span>
-                    <span className="rounded-full bg-[var(--ds-danger)] px-2 py-1 text-body-xs type-semibold tracking-token-wide text-[var(--ds-text-inverse)]">
-                      40% off
-                    </span>
+                    <ChevronRight size={17} className="text-[var(--ds-text-disabled)]" />
                   </Link>
                 </nav>
 
+                {featuredCollections.length > 0 ? (
                 <section className="border-b border-[var(--ds-border-subtle)] px-4 py-4">
                   <h2 className="mb-3 text-body-xs type-semibold tracking-token-wide text-[var(--ds-text-secondary)]">
-                    {featuredCollections.length > 0
-                      ? 'Featured collections'
-                      : 'Shop by mood'}
+                    Featured collections
                   </h2>
                   <div className="no-scrollbar flex gap-4 overflow-x-auto">
-                    {(featuredCollections.length > 0
-                      ? featuredCollections
-                      : MOODS
-                    ).map((item) => (
+                    {featuredCollections.map((item) => (
                       <Link
                         key={item.label}
                         href={item.href}
@@ -685,6 +519,7 @@ export default function MobileMenu({
                     ))}
                   </div>
                 </section>
+                ) : null}
 
                 <section className="bg-[var(--ds-surface-soft)]">
                   <UtilityLink href="/track" icon={Package} label="Track my order" onClick={handleClose} />
@@ -760,8 +595,6 @@ interface SubmenuProps {
 }
 
 function Submenu({ category, onBack, onClose }: SubmenuProps) {
-  const [activeFilter, setActiveFilter] = useState(category.filters[0]);
-
   return (
     <div className="min-h-full bg-[var(--ds-surface-page)]">
       <div className="grid h-[52px] grid-cols-[88px_1fr_88px] items-center border-b border-[var(--ds-border-subtle)] px-3">
@@ -782,19 +615,21 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
         <span aria-hidden="true" />
       </div>
 
-      <div className="relative h-[100px] overflow-hidden bg-[var(--ds-surface-soft)]">
-        <OptimizedImage
-          src={category.hero}
-          alt={category.title}
-          fill
-          className="object-cover"
-          sizes="400px"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.55)] to-transparent" />
-        <p className="absolute bottom-3 left-4 text-body-sm type-medium text-[var(--ds-text-inverse)]">
-          {category.tagline}
-        </p>
-      </div>
+      {category.hero ? (
+        <div className="relative h-[100px] overflow-hidden bg-[var(--ds-surface-soft)]">
+          <OptimizedImage
+            src={category.hero}
+            alt={category.title}
+            fill
+            className="object-cover"
+            sizes="400px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.55)] to-transparent" />
+          <p className="absolute bottom-3 left-4 text-body-sm type-medium text-[var(--ds-text-inverse)]">
+            {category.tagline}
+          </p>
+        </div>
+      ) : null}
 
       <Link
         href={category.href}
@@ -805,25 +640,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
         <ArrowRight size={16} />
       </Link>
 
-      <div className="no-scrollbar flex gap-2 overflow-x-auto border-b border-[var(--ds-border-subtle)] px-4 py-3">
-        {category.filters.map((filter) => (
-          <Button
-            key={filter}
-            type="button"
-            onClick={() => setActiveFilter(filter)}
-            variant="ghost"
-            size="sm"
-            className={`h-8 min-h-8 shrink-0 rounded-full px-3 text-body-xs type-medium normal-case ${
-              activeFilter === filter
-                ? 'bg-[var(--ds-text-primary)] text-[var(--ds-surface-page)]'
-                : 'border border-[var(--ds-border-subtle)] text-[var(--ds-text-secondary)]'
-            }`}
-          >
-            {filter}
-          </Button>
-        ))}
-      </div>
-
+      {category.items.length > 0 ? (
       <div className="grid grid-cols-2 gap-2 p-3">
         {category.items.map((item) => (
           <Link
@@ -832,15 +649,17 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
             onClick={onClose}
             className="overflow-hidden rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]"
           >
-            <span className="relative block aspect-square bg-[var(--ds-surface-soft)]">
-              <OptimizedImage
-                src={item.image}
-                alt={item.name}
-                fill
-                className="object-cover"
-                sizes="180px"
-              />
-            </span>
+            {item.image ? (
+              <span className="relative block aspect-square bg-[var(--ds-surface-soft)]">
+                <OptimizedImage
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                  sizes="180px"
+                />
+              </span>
+            ) : null}
             <span className="block p-2">
               <span className="block text-body-xs type-semibold leading-token-snug text-[var(--ds-text-primary)]">
                 {item.name}
@@ -852,6 +671,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
           </Link>
         ))}
       </div>
+      ) : null}
 
       <div className="border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-soft)] px-3 py-3">
         <h3 className="mb-2 text-body-xs type-semibold tracking-token-wide text-[var(--ds-text-secondary)]">
@@ -861,7 +681,7 @@ function Submenu({ category, onBack, onClose }: SubmenuProps) {
           {[
             { label: 'Bestsellers', href: '/bestsellers' },
             { label: 'New in', href: '/products?sort=newest' },
-            { label: 'On sale', href: '/collections/sale' },
+            { label: 'On sale', href: '/sale' },
           ].map((pick) => (
             <Link
               key={pick.label}

@@ -27,6 +27,7 @@ interface FilterSidebarProps {
   categories: Category[];
   tags: Tag[];
   collections?: Collection[];
+  basePath?: string;
   className?: string;
   onApply?: () => void;
   onClose?: () => void;
@@ -53,6 +54,7 @@ export default function FilterSidebar({
   categories,
   tags,
   collections = [],
+  basePath = '/products',
   className = '',
   onApply,
   onClose,
@@ -88,7 +90,7 @@ export default function FilterSidebar({
 
   const pushProductsUrl = (params: URLSearchParams) => {
     const nextQuery = params.toString();
-    router.push(nextQuery ? `/products?${nextQuery}` : '/products');
+    router.push(nextQuery ? `${basePath}?${nextQuery}` : basePath);
   };
 
   const updateDraftFilter = (

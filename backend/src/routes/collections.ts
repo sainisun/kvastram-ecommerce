@@ -143,9 +143,11 @@ collectionsRouter.get('/', async (c) => {
         created_at: product_collections.created_at,
         updated_at: product_collections.updated_at,
         product_count: sql<number>`(
-          SELECT COUNT(*) FROM collection_products cp
-          JOIN products p ON p.id = cp.product_id
-          WHERE cp.collection_id = ${product_collections.id}
+          SELECT COUNT(DISTINCT p.id)
+          FROM products p
+          LEFT JOIN collection_products cp ON cp.product_id = p.id
+          WHERE (cp.collection_id = ${product_collections.id}
+            OR p.collection_id = ${product_collections.id})
             AND p.status = 'published'
         )`.mapWith(Number),
       })
@@ -190,12 +192,15 @@ collectionsRouter.get('/:id', async (c) => {
 
     // Count active products
     const [{ cnt }] = await db
-      .select({ cnt: sql<number>`count(*)`.mapWith(Number) })
-      .from(collection_products)
-      .innerJoin(products, eq(products.id, collection_products.product_id))
+      .select({
+        cnt: sql<number>`COUNT(DISTINCT ${products.id})`.mapWith(Number),
+      })
+      .from(products)
+      .leftJoin(collection_products, eq(collection_products.product_id, products.id))
       .where(
         and(
-          eq(collection_products.collection_id, collection.id),
+          sql`(${collection_products.collection_id} = ${collection.id}
+            OR ${products.collection_id} = ${collection.id})`,
           eq(products.status, 'published')
         )
       );
