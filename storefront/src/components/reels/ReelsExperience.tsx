@@ -660,7 +660,7 @@ function ReelPlayerModal({
       isOpen
       onClose={onClose}
       showHeader={false}
-      rootClassName="z-[1000] p-0"
+      rootClassName="z-[9999] p-0"
       className="reel-player-modal h-dvh max-h-none max-w-none border-0 bg-[var(--ds-text-primary)] shadow-none lg:flex lg:items-center lg:justify-center"
       bodyClassName="h-full overflow-hidden p-0"
     >
@@ -695,12 +695,23 @@ function ReelPlayerModal({
        * Desktop: h-[90dvh] max-w-[390px] with rounded corners.
        */}
       <div
-        className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-[var(--ds-text-primary)] lg:h-[90dvh] lg:max-w-[390px] lg:rounded-lg"
+        className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-[var(--ds-text-primary)] lg:h-[90dvh] lg:max-w-[430px] lg:rounded-lg"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {/* Video fills the container. */}
+        <OptimizedImage
+          src={current.thumbnail_url}
+          alt=""
+          fill
+          sizes="100vw"
+          className="scale-110 object-cover opacity-35 blur-xl"
+          priority
+        />
+
+        <div className="absolute inset-0 bg-[rgba(var(--ds-black-rgb),0.54)]" />
+
+        {/* Keep the full reel visible; non-9:16 uploads should not be cropped. */}
         <video
           key={current.id}
           ref={videoRef}
@@ -710,27 +721,15 @@ function ReelPlayerModal({
           loop
           playsInline
           autoPlay
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-contain"
         />
 
         {/* Gradients */}
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[rgba(var(--ds-black-rgb),0.80)] to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.95)] via-[rgba(var(--ds-black-rgb),0.50)] to-transparent" />
 
-        {/* Progress dots */}
-        {localReels.length > 1 && (
-          <div className="absolute inset-x-0 top-0 z-20 flex gap-1 px-4 pt-2">
-            {localReels.map((_, i) => (
-              <div
-                key={i}
-                className={`h-[3px] flex-1 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-[var(--ds-surface-paper)]' : 'bg-[var(--ds-surface-paper)]/30'}`}
-              />
-            ))}
-          </div>
-        )}
-
         {/* Top bar */}
-        <div className="reel-player-topbar relative z-10 flex items-center gap-3 px-4 pt-10 text-[var(--ds-text-inverse)]">
+        <div className="reel-player-topbar relative z-10 flex items-center gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))] text-[var(--ds-text-inverse)]">
           <IconButton
             type="button"
             onClick={onClose}

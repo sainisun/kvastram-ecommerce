@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { IconButton } from '@/components/ui/Button';
@@ -44,9 +45,9 @@ export function Modal({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
-  return (
+  return createPortal(
     <div className={cn('fixed inset-0 z-[100] flex items-center justify-center p-4', rootClassName)}>
       <button
         type="button"
@@ -77,6 +78,7 @@ export function Modal({
         ) : null}
         <div className={cn('p-5', bodyClassName)}>{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
