@@ -174,6 +174,12 @@ export const retailNavGroups: NavGroup[] = [
         description: 'Short-form media',
       },
       {
+        label: 'Reel Collections',
+        href: '/dashboard/content/reel-collections',
+        icon: Layers,
+        description: 'Reels page hero carousel',
+      },
+      {
         label: 'Pages',
         href: '/dashboard/content/pages',
         icon: FileText,

@@ -108,6 +108,7 @@
   --ds-accent-rgb: 196, 97, 58;
   --ds-accent-gold: #b8924a;
   --ds-accent-gold-rgb: 184, 146, 74;
+  --ds-white-rgb: 255, 255, 255;
 
   /* Status */
   --ds-danger: #c0392b;

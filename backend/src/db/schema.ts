@@ -1301,6 +1301,52 @@ export const trending_reels = pgTable(
   })
 );
 
+export const reel_collections = pgTable(
+  'reel_collections',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    title: text('title').notNull(),
+    handle: text('handle').notNull().unique(),
+    subtitle: text('subtitle'),
+    description: text('description'),
+    hero_image_url: text('hero_image_url'),
+    hero_video_url: text('hero_video_url'),
+    cta_label: text('cta_label').default('Shop Collection').notNull(),
+    cta_url: text('cta_url'),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    activeIdx: index('idx_reel_collections_is_active').on(table.is_active),
+    handleIdx: index('idx_reel_collections_handle').on(table.handle),
+    sortOrderIdx: index('idx_reel_collections_sort_order').on(table.sort_order),
+  })
+);
+
+export const reel_collection_items = pgTable(
+  'reel_collection_items',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    collection_id: uuid('collection_id')
+      .references(() => reel_collections.id, { onDelete: 'cascade' })
+      .notNull(),
+    reel_id: uuid('reel_id')
+      .references(() => trending_reels.id, { onDelete: 'cascade' })
+      .notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    collectionIdx: index('idx_reel_collection_items_collection').on(
+      table.collection_id,
+      table.sort_order
+    ),
+    reelIdx: index('idx_reel_collection_items_reel').on(table.reel_id),
+  })
+);
+
 export const homepage_categories = pgTable(
   'homepage_categories',
   {

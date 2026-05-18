@@ -267,6 +267,13 @@
       "when": 1778198400000,
       "tag": "0037_ai_ecommerce_seo_architecture",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "5",
+      "when": 1779091200000,
+      "tag": "0038_reel_collections",
+      "breakpoints": true
     }
   ]
 }

@@ -40,6 +40,20 @@ interface TrendingReelItem {
   category?: string | null;
 }
 
+interface ReelCollectionItem {
+  id: string;
+  title: string;
+  handle: string;
+  subtitle?: string | null;
+  description?: string | null;
+  hero_image_url?: string | null;
+  hero_video_url?: string | null;
+  cta_label?: string | null;
+  cta_url?: string | null;
+  reel_ids?: string[];
+  reels?: TrendingReelItem[];
+}
+
 interface ReelsExperienceProps {
   basePath?: string;
 }
@@ -88,6 +102,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const searchParams = useSearchParams();
 
   const [reels, setReels] = useState<TrendingReelItem[]>([]);
+  const [collections, setCollections] = useState<ReelCollectionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [gridCols, setGridCols] = useState<2 | 3>(() => {
@@ -100,18 +115,23 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   });
   const [showAll, setShowAll] = useState(false);
   const requestedReelId = searchParams.get('reel');
+  const requestedCollection = searchParams.get('collection');
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
 
   function setGrid(cols: 2 | 3) {
     setGridCols(cols);
     try { localStorage.setItem('kvastram_reels_grid', String(cols)); } catch {}
   }
 
-  // Load reels only after user action.
   useEffect(() => {
     let cancelled = false;
-    api.getTrendingReels().then((res) => {
-      if (!cancelled) setReels(res.reels || []);
-    }).finally(() => { if (!cancelled) setLoading(false); });
+    Promise.all([api.getTrendingReels(), api.getReelCollections()])
+      .then(([reelsResponse, collectionsResponse]) => {
+        if (cancelled) return;
+        setReels(reelsResponse.reels || []);
+        setCollections(collectionsResponse.collections || []);
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
 
@@ -129,15 +149,64 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     return () => window.clearTimeout(openRequestedReel);
   }, [activeIndex, loading, reels, requestedReelId]);
 
+  const activeCollectionHandle = requestedCollection && collections.some(
+    (collection) => collection.handle === requestedCollection
+  )
+    ? requestedCollection
+    : null;
+  const activeCollection = useMemo(
+    () =>
+      activeCollectionHandle
+        ? collections.find((collection) => collection.handle === activeCollectionHandle) || null
+        : null,
+    [activeCollectionHandle, collections]
+  );
+  const filteredReels = useMemo(() => {
+    if (!activeCollection) return reels;
+    const collectionReelIds = new Set(activeCollection.reel_ids || []);
+    return reels.filter((reel) => collectionReelIds.has(reel.id));
+  }, [activeCollection, reels]);
   const visibleReels = useMemo(
-    () => (showAll ? reels : reels.slice(0, 12)),
-    [reels, showAll]
+    () => (showAll ? filteredReels : filteredReels.slice(0, 12)),
+    [filteredReels, showAll]
   );
   const totalViews = useMemo(
-    () => reels.reduce((sum, reel) => sum + (reel.view_count || 0), 0),
-    [reels]
+    () => filteredReels.reduce((sum, reel) => sum + (reel.view_count || 0), 0),
+    [filteredReels]
   );
   const heroReels = visibleReels.slice(0, 3);
+  const carouselHeroCollection =
+    collections.length > 0
+      ? collections[activeHeroIndex % collections.length] || collections[0]
+      : null;
+  const activeHeroCollection = activeCollection || carouselHeroCollection;
+  const heroCollectionReels = activeHeroCollection?.reels || [];
+  const heroFallbackReel = heroCollectionReels[0] || reels[0] || null;
+
+  useEffect(() => {
+    if (collections.length <= 1) return;
+
+    const timer = window.setInterval(() => {
+      setActiveHeroIndex((current) => (current + 1) % collections.length);
+    }, 5200);
+
+    return () => window.clearInterval(timer);
+  }, [collections.length]);
+
+  function selectCollection(handle: string | null) {
+    setShowAll(false);
+    if (handle) {
+      const heroIndex = collections.findIndex((collection) => collection.handle === handle);
+      if (heroIndex >= 0) setActiveHeroIndex(heroIndex);
+      router.replace(`${basePath}?collection=${handle}`, { scroll: false });
+    } else {
+      router.replace(basePath, { scroll: false });
+    }
+  }
+
+  function getCollectionCtaHref(collection: ReelCollectionItem) {
+    return collection.cta_url || `${basePath}?collection=${collection.handle}`;
+  }
 
   function openReel(index: number) {
     setActiveIndex(index);
@@ -165,54 +234,144 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   return (
     <div className="reels-page">
       <section className="reels-shell reels-hero" aria-labelledby="reels-hero-title">
-        <div className="reels-hero-copy">
-          <p className="reels-hero-kicker">Watch &amp; Buy</p>
-          <h1 id="reels-hero-title">Shop the look in motion</h1>
-          <p>See fabric, drape, scale, and styling before you choose your next handmade piece.</p>
-          <div className="reels-hero-actions">
-            <Link href="/products" className="reels-action-link">
-              Shop collection
-            </Link>
-            <span>{reels.length || '-'} reels</span>
-            <span>{totalViews ? formatCompactNumber(totalViews) : '-'} views</span>
-          </div>
-        </div>
-        <div className="reels-hero-preview" aria-hidden="true">
-          {[0, 1, 2].map((slot) => {
-            const reel = heroReels[slot];
-            return (
-              <div key={reel?.id || slot} className="reels-hero-frame">
-                {reel?.video_url ? (
-                  <video
-                    src={reel.video_url}
-                    poster={reel.thumbnail_url || undefined}
-                    muted
-                    loop
-                    playsInline
-                    autoPlay
-                    preload="metadata"
-                  />
-                ) : reel?.thumbnail_url ? (
-                  <OptimizedImage
-                    src={reel.thumbnail_url}
-                    alt=""
-                    fill
-                    sizes="112px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <span />
-                )}
+        {activeHeroCollection ? (
+          <>
+            <div className="reels-hero-media" aria-hidden="true">
+              {activeHeroCollection.hero_video_url ? (
+                <video
+                  src={activeHeroCollection.hero_video_url}
+                  poster={activeHeroCollection.hero_image_url || heroFallbackReel?.thumbnail_url || undefined}
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  preload="metadata"
+                />
+              ) : activeHeroCollection.hero_image_url || heroFallbackReel?.thumbnail_url ? (
+                <OptimizedImage
+                  src={activeHeroCollection.hero_image_url || heroFallbackReel?.thumbnail_url || ''}
+                  alt=""
+                  fill
+                  sizes="(min-width: 760px) 980px, 100vw"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <span />
+              )}
+              <div className="reels-hero-scrim" />
+            </div>
+            <div className="reels-hero-copy">
+              <p className="reels-hero-kicker">Watch &amp; Buy</p>
+              <h1 id="reels-hero-title">{activeHeroCollection.title}</h1>
+              <p>
+                {activeHeroCollection.subtitle ||
+                  activeHeroCollection.description ||
+                  'See fabric, drape, scale, and styling before you choose your next handmade piece.'}
+              </p>
+              <div className="reels-hero-actions">
+                <Link
+                  href={getCollectionCtaHref(activeHeroCollection)}
+                  className="reels-action-link reels-action-link-strong"
+                >
+                  {activeHeroCollection.cta_label || 'Shop Collection'}
+                </Link>
+                <span>{heroCollectionReels.length || '-'} reels</span>
+                <span>{totalViews ? formatCompactNumber(totalViews) : '-'} views</span>
               </div>
-            );
-          })}
-        </div>
+            </div>
+            {collections.length > 1 ? (
+              <div className="reels-hero-dots" aria-label="Reel collections carousel">
+                {collections.map((collection, index) => (
+                  <UnstyledButton
+                    key={collection.id}
+                    type="button"
+                    className={index === activeHeroIndex ? 'active' : ''}
+                    onClick={() => setActiveHeroIndex(index)}
+                    aria-label={`Show ${collection.title}`}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <div className="reels-hero-copy">
+              <p className="reels-hero-kicker">Watch &amp; Buy</p>
+              <h1 id="reels-hero-title">Shop the look in motion</h1>
+              <p>See fabric, drape, scale, and styling before you choose your next handmade piece.</p>
+              <div className="reels-hero-actions">
+                <Link href="/products" className="reels-action-link">
+                  Shop collection
+                </Link>
+                <span>{reels.length || '-'} reels</span>
+                <span>{totalViews ? formatCompactNumber(totalViews) : '-'} views</span>
+              </div>
+            </div>
+            <div className="reels-hero-preview" aria-hidden="true">
+              {[0, 1, 2].map((slot) => {
+                const reel = heroReels[slot];
+                return (
+                  <div key={reel?.id || slot} className="reels-hero-frame">
+                    {reel?.video_url ? (
+                      <video
+                        src={reel.video_url}
+                        poster={reel.thumbnail_url || undefined}
+                        muted
+                        loop
+                        playsInline
+                        autoPlay
+                        preload="metadata"
+                      />
+                    ) : reel?.thumbnail_url ? (
+                      <OptimizedImage
+                        src={reel.thumbnail_url}
+                        alt=""
+                        fill
+                        sizes="112px"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <span />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
       </section>
+
+      {collections.length > 0 ? (
+        <div className="reels-shell reels-collections" aria-label="Reel collections">
+          <UnstyledButton
+            type="button"
+            className={!activeCollectionHandle ? 'reels-collection-chip active' : 'reels-collection-chip'}
+            onClick={() => selectCollection(null)}
+          >
+            All
+          </UnstyledButton>
+          {collections.map((collection) => (
+            <UnstyledButton
+              key={collection.id}
+              type="button"
+              className={
+                activeCollectionHandle === collection.handle
+                  ? 'reels-collection-chip active'
+                  : 'reels-collection-chip'
+              }
+              onClick={() => selectCollection(collection.handle)}
+            >
+              {collection.title}
+            </UnstyledButton>
+          ))}
+        </div>
+      ) : null}
 
       <div className="reels-shell reels-tabs" role="tablist" aria-label="Reels content">
         <UnstyledButton type="button" className="reels-tab active" role="tab" aria-selected="true">
           <Grid3X3 size={16} />
-          Reels
+          {activeCollection ? activeCollection.title : 'Reels'}
         </UnstyledButton>
         <div className="reels-grid-toggle" aria-label="Grid layout">
           <IconButton

@@ -91,6 +91,8 @@ import adminHeroBannersRoutes from './routes/admin/hero-banners';
 import heroBannersRoutes from './routes/hero-banners';
 import adminTrendingReelsRoutes from './routes/admin/trending-reels';
 import trendingReelsRoutes from './routes/trending-reels';
+import adminReelCollectionsRoutes from './routes/admin/reel-collections';
+import reelCollectionsRoutes from './routes/reel-collections';
 import adminHomepageCategoriesRoutes from './routes/admin/homepage-categories';
 import homepageCategoriesRoutes from './routes/homepage-categories';
 import adminHomepageBannersRoutes from './routes/admin/homepage-banners';
@@ -239,6 +241,8 @@ csrfForStateChanging([
   '/admin/hero-banners/*',
   '/admin/trending-reels',
   '/admin/trending-reels/*',
+  '/admin/reel-collections',
+  '/admin/reel-collections/*',
   '/admin/homepage-categories',
   '/admin/homepage-categories/*',
   '/admin/homepage-banners',
@@ -366,6 +370,10 @@ const generalApiRoutes = [
   '/admin/trending-reels/*',
   '/trending-reels',
   '/trending-reels/*',
+  '/reel-collections',
+  '/reel-collections/*',
+  '/admin/reel-collections',
+  '/admin/reel-collections/*',
   '/admin/homepage-categories',
   '/admin/homepage-categories/*',
   '/homepage-categories',
@@ -464,6 +472,8 @@ app.route('/admin/hero-banners', adminHeroBannersRoutes);
 app.route('/hero-banners', heroBannersRoutes);
 app.route('/admin/trending-reels', adminTrendingReelsRoutes);
 app.route('/trending-reels', trendingReelsRoutes);
+app.route('/admin/reel-collections', adminReelCollectionsRoutes);
+app.route('/reel-collections', reelCollectionsRoutes);
 app.route('/admin/homepage-categories', adminHomepageCategoriesRoutes);
 app.route('/homepage-categories', homepageCategoriesRoutes);
 app.route('/admin/homepage-banners', adminHomepageBannersRoutes);

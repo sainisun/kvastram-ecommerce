@@ -2036,6 +2036,58 @@ export const api = {
     return res.json();
   },
 
+  // Reel Collections
+  getReelCollections: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/reel-collections`, {});
+    if (!res.ok) throw new Error('Failed to fetch reel collections');
+    return res.json();
+  },
+
+  createReelCollection: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/reel-collections`, {
+      method: 'POST',
+      body: formData,
+      timeout: 180000,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create reel collection');
+    return res.json();
+  },
+
+  updateReelCollection: async (id: string, formData: FormData) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/reel-collections/${id}`,
+      {
+        method: 'PUT',
+        body: formData,
+        timeout: 180000,
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update reel collection');
+    return res.json();
+  },
+
+  deleteReelCollection: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/reel-collections/${id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete reel collection');
+    return res.json();
+  },
+
+  toggleReelCollection: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/reel-collections/${id}/toggle`,
+      {
+        method: 'PATCH',
+      }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to toggle reel collection');
+    return res.json();
+  },
+
   // Homepage Categories
   getHomepageCategories: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-categories`, {});
