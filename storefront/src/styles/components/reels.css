@@ -13,32 +13,6 @@
   padding-inline: 12px;
 }
 
-.reels-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  border-bottom: 1px solid var(--ds-border-subtle);
-  background: rgba(var(--ds-cream-rgb), 0.96);
-  backdrop-filter: blur(12px);
-}
-
-.reels-topbar-inner {
-  display: flex;
-  min-height: 54px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.reels-brand {
-  color: var(--ds-text-primary);
-  font-family: var(--font-display);
-  font-size: var(--text-body-lg);
-  font-weight: var(--type-ui-weight);
-  letter-spacing: 0;
-  text-decoration: none;
-}
-
 .reels-grid-toggle {
   display: inline-flex;
   align-items: center;
@@ -63,89 +37,86 @@
   color: var(--ds-text-primary);
 }
 
-.reels-profile {
+.reels-hero {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
-  gap: 16px;
+  gap: 20px;
   padding-top: 24px;
-  padding-bottom: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--ds-border-subtle);
 }
 
-.reels-avatar {
-  display: grid;
-  width: 72px;
-  height: 72px;
-  place-items: center;
-  border: 1px solid var(--ds-border-subtle);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 30% 22%, rgba(var(--ds-accent-rgb), 0.18), transparent 34%),
-    var(--ds-surface-paper);
-  color: var(--ds-text-primary);
-  font-family: var(--font-display);
-  font-size: var(--text-display-sm);
-  line-height: 1;
-}
-
-.reels-profile-copy {
+.reels-hero-copy {
   min-width: 0;
 }
 
-.reels-profile-kicker {
+.reels-hero-kicker {
   margin: 0 0 3px;
   color: var(--ds-accent-primary);
   font-size: var(--text-body-xs);
   font-weight: var(--type-ui-weight);
 }
 
-.reels-profile h1 {
+.reels-hero h1 {
   margin: 0;
   color: var(--ds-text-primary);
   font-family: var(--font-display);
-  font-size: var(--text-display-sm);
+  font-size: clamp(2rem, 9vw, 3.25rem);
   font-weight: var(--type-ui-weight);
   line-height: var(--leading-tight);
   letter-spacing: 0;
 }
 
-.reels-profile p {
+.reels-hero p {
   max-width: 520px;
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--ds-text-secondary);
   font-size: var(--text-body-sm);
   line-height: var(--leading-relaxed);
 }
 
-.reels-stats {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 12px 0 0;
-  border-top: 1px solid var(--ds-border-subtle);
-  border-bottom: 1px solid var(--ds-border-subtle);
+.reels-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  margin-top: 14px;
 }
 
-.reels-stats div {
-  padding: 12px 6px;
-  text-align: center;
-}
-
-.reels-stats dt,
-.reels-stats dd {
-  margin: 0;
-}
-
-.reels-stats dt {
-  color: var(--ds-text-primary);
-  font-size: var(--text-body-md);
-  font-weight: var(--type-strong-weight);
-  line-height: var(--leading-tight);
-}
-
-.reels-stats dd {
-  margin-top: 2px;
+.reels-hero-actions span {
   color: var(--ds-text-muted);
   font-size: var(--text-body-xs);
+}
+
+.reels-hero-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  overflow: hidden;
+  background: var(--ds-border-subtle);
+}
+
+.reels-hero-frame {
+  position: relative;
+  min-height: 130px;
+  aspect-ratio: 9 / 14;
+  overflow: hidden;
+  background: var(--ds-surface-soft);
+}
+
+.reels-hero-frame video,
+.reels-hero-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reels-hero-frame span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--ds-surface-soft);
 }
 
 .reels-action-link {
@@ -182,8 +153,12 @@
 
 .reels-tabs {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
   border-top: 1px solid var(--ds-border-subtle);
+  border-bottom: 1px solid var(--ds-border-subtle);
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .reels-tab {
@@ -364,39 +339,24 @@ body.reel-player-open [aria-label='Cookie consent'] {
 }
 
 @media (min-width: 760px) {
+  .reels-page {
+    padding-bottom: 0;
+  }
+
   .reels-shell {
     padding-inline: 24px;
   }
 
-  .reels-profile {
-    grid-template-columns: 96px minmax(0, 1fr) minmax(240px, auto);
+  .reels-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
     align-items: center;
-    gap: 24px;
+    gap: 32px;
     padding-top: 36px;
-    padding-bottom: 28px;
+    padding-bottom: 36px;
   }
 
-  .reels-avatar {
-    width: 96px;
-    height: 96px;
-    font-size: var(--text-display-md);
-  }
-
-  .reels-profile h1 {
-    font-size: var(--text-display-md);
-  }
-
-  .reels-stats {
-    grid-column: auto;
-    align-self: stretch;
-    border-top: 0;
-    border-bottom: 0;
-  }
-
-  .reels-stats div {
-    display: grid;
-    align-content: center;
-    padding: 0 14px;
+  .reels-hero-preview {
+    min-height: 260px;
   }
 
   .reels-grid-shell {
