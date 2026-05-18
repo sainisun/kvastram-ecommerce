@@ -5,10 +5,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
   ArrowLeft,
-  BadgeCheck,
   ChevronDown,
   ClipboardList,
-  HandHeart,
   Leaf,
   MessageCircle,
   Minus,
@@ -16,12 +14,8 @@ import {
   Plus,
   RotateCcw,
   Ruler,
-  ShieldCheck,
   ShoppingBag,
   Truck,
-  Wifi,
-  WifiOff,
-  Zap,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -31,7 +25,6 @@ import { BackInStock } from '@/components/product/BackInStock';
 import { SizeGuide } from '@/components/product/SizeGuide';
 import ShareButtons from '@/components/ui/ShareButtons';
 import { Badge } from '@/components/ui/Badge';
-import { TrustBadge } from '@/components/ui/TrustBadge';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { RatingDisplay } from '@/components/ui/RatingDisplay';
 import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
@@ -321,15 +314,6 @@ export default function ProductView({ product }: { product: Product }) {
         </div>
       </div>
 
-      <div className="pdp-trust-strip">
-        <span><BadgeCheck size={13} /> Free shipping ₹2,000+</span>
-        <span><RotateCcw size={13} /> 7-day returns</span>
-        <span><ShieldCheck size={13} /> Secure checkout</span>
-        {hasReviews && reviewRating && reviewCount ? (
-          <span className="pdp-trust-desktop"><BadgeCheck size={13} /> {reviewRating.toFixed(1)} stars - {reviewCount.toLocaleString()} reviews</span>
-        ) : null}
-      </div>
-
       <div className="kv-container pdp-container">
         <nav aria-label="Breadcrumb" className="breadcrumb pdp-desktop-breadcrumb">
           <Link href="/">Home</Link>
@@ -349,7 +333,6 @@ export default function ProductView({ product }: { product: Product }) {
               media={galleryMedia}
               title={displayTitle}
               videos={product.videos || []}
-              scarcityLabel={scarcityLabel}
               wishlistButton={(
                 <WishlistButton
                   productId={product.id}
@@ -367,7 +350,7 @@ export default function ProductView({ product }: { product: Product }) {
           </div>
 
           <div className="pdp-buy-box">
-            <div className="kv-tag pdp-brand-tag">KVASTRAM</div>
+            {scarcityLabel ? <div className="pdp-stock-label">{scarcityLabel}</div> : null}
             <h1 className="pdp-title">{displayTitle}</h1>
 
             {hasReviews && reviewRating && reviewCount ? (
@@ -402,12 +385,10 @@ export default function ProductView({ product }: { product: Product }) {
               )}
             </div>
 
-            {!isOnRequest && selectedVariant && currentInventory > 0 ? (
-              <div className="pdp-urgency-bar">
-                <span className="pdp-fire-dot" />
-                {currentInventory <= 10 ? `${currentInventory} left in stock` : 'Ready to ship'}
-                {isConnected ? <Wifi size={12} /> : <WifiOff size={12} />}
-              </div>
+            {!isOnRequest && selectedVariant && currentInventory > 0 && !scarcityLabel ? (
+              <p className="pdp-availability-note">
+                {isConnected ? 'Live stock confirmed' : 'Ready to ship'}
+              </p>
             ) : null}
 
             {hasStructuredOptions && product.options?.map((option: ProductOption, optionIndex) => {
@@ -536,7 +517,6 @@ export default function ProductView({ product }: { product: Product }) {
                     size="lg"
                     fullWidth
                     className={`pdp-primary-cta${addedToCart ? ' is-added' : outOfStock ? ' is-disabled' : ''}`}
-                    leadingIcon={<ShoppingBag size={17} />}
                   >
                     {outOfStock ? 'Out of Stock' : addedToCart ? 'Added to cart' : 'Add to cart'}
                   </Button>
@@ -548,9 +528,8 @@ export default function ProductView({ product }: { product: Product }) {
                     size="lg"
                     fullWidth
                     className="pdp-buy-now"
-                    leadingIcon={<Zap size={16} />}
                   >
-                    Buy now - UPI / Card / EMI
+                    Buy now
                   </Button>
                   <WhatsAppCTA
                     message={whatsappMessage}
@@ -563,17 +542,17 @@ export default function ProductView({ product }: { product: Product }) {
               )}
             </div>
 
-            <div className="trust-grid">
-              <TrustBadge icon={Truck} label="Free shipping" description="Over Rs. 2,000" className="pdp-trust-card" />
-              <TrustBadge icon={RotateCcw} label="Returns" description="7-day support" className="pdp-trust-card" />
-              <TrustBadge icon={ShieldCheck} label="Secure" description="UPI / Card" className="pdp-trust-card" />
-              <TrustBadge icon={HandHeart} label="Handmade" description="Jaipur craft" className="pdp-trust-card" />
+            <div className="pdp-service-lines">
+              <span>Tax included. Shipping calculated at checkout.</span>
+              <span>Free shipping above Rs. 2,000.</span>
+              <span>7-day support on eligible returns.</span>
             </div>
 
-            <div className="pdp-integrity-note">
-              <PackageCheck size={15} />
-              Product details and availability are confirmed before checkout.
-            </div>
+            {product.description ? (
+              <div className="pdp-summary-description">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{product.description}</ReactMarkdown>
+              </div>
+            ) : null}
 
             {!isOnRequest && outOfStock && selectedVariant && (
               <div className="pdp-back-in-stock">
