@@ -426,7 +426,7 @@
 .pdp-detail-grid {
   display: grid;
   gap: 24px;
-  margin-top: 34px;
+  margin-top: 48px;
 }
 
 .pdp-accordion-shell,
@@ -436,7 +436,7 @@
 
 .pdp-accordion-item {
   border-bottom: 1px solid var(--border);
-  background: var(--pdp-paper);
+  background: transparent;
 }
 
 .pdp-accordion-item:first-of-type {
@@ -445,25 +445,29 @@
 
 .pdp-accordion-trigger {
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) 20px;
-  gap: 10px;
+  grid-template-columns: 24px minmax(0, 1fr) 20px;
+  gap: 12px;
   align-items: center;
   width: 100%;
   border: 0;
   background: transparent;
-  padding: 16px 0;
+  padding: 18px 0;
   color: var(--ink);
   cursor: pointer;
   text-align: left;
 }
 
+.pdp-accordion-trigger:hover {
+  background: transparent;
+  color: var(--terracotta);
+}
+
 .pdp-accordion-icon {
-  display: grid;
-  width: 32px;
-  height: 32px;
-  place-items: center;
-  border-radius: 999px;
-  background: var(--section-bg);
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
   color: var(--terracotta);
 }
 
@@ -473,14 +477,14 @@
 }
 
 .pdp-accordion-text strong {
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-md);
   font-weight: var(--type-strong-weight);
 }
 
 .pdp-accordion-text small {
   color: var(--ink-muted);
   font-size: var(--text-body-xs);
-  font-weight: var(--type-label-weight);
+  font-weight: var(--type-body-weight);
 }
 
 .pdp-accordion-trigger svg.is-open {
@@ -488,7 +492,7 @@
 }
 
 .pdp-accordion-content {
-  padding: 0 0 18px 42px;
+  padding: 0 0 22px 32px;
 }
 
 .pdp-description {
@@ -497,14 +501,59 @@
   line-height: var(--leading-relaxed);
 }
 
-.pdp-spec-card,
-.pdp-review-summary,
-.pdp-verified-card {
+.pdp-spec-card {
+  margin-top: 28px;
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+}
+
+.pdp-spec-card .pdp-trust-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-size: var(--text-body-md);
+  font-weight: var(--type-strong-weight);
+}
+
+.pdp-spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--ink);
+  font-size: var(--text-body-sm);
+}
+
+.pdp-spec-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.pdp-spec-cell {
+  padding: 12px 0;
+  vertical-align: top;
+}
+
+.pdp-spec-label-cell {
+  width: 38%;
+  color: var(--ink-muted);
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-body-weight);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.pdp-review-summary {
   margin-top: 18px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--pdp-paper);
-  padding: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.pdp-verified-card {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 6px 8px;
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  color: var(--ink);
 }
 
 .pdp-review-summary > div:first-child {
@@ -547,13 +596,6 @@
   height: 100%;
   border-radius: inherit;
   background: var(--gold);
-}
-
-.pdp-verified-card {
-  display: grid;
-  grid-template-columns: 20px 1fr;
-  gap: 6px 8px;
-  color: var(--ink);
 }
 
 .pdp-verified-card svg {
