@@ -4,6 +4,7 @@ import { Heart } from 'lucide-react';
 import { useWishlist } from '@/context/wishlist-context';
 import { useShop } from '@/context/shop-context';
 import { cn } from '@/lib/utils';
+import { Button, IconButton } from '@/components/ui/Button';
 
 interface WishlistButtonProps {
   productId: string;
@@ -64,19 +65,61 @@ export default function WishlistButton({
     lg: 22,
   };
 
+  const buttonSizes = {
+    sm: 'sm',
+    md: 'md',
+    lg: 'lg',
+  } as const;
+
+  const label = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
+
+  if (showLabel) {
+    return (
+      <Button
+        type="button"
+        onClick={handleClick}
+        variant="ghost"
+        size={buttonSizes[size]}
+        className={cn(
+          isWishlisted
+            ? 'text-[var(--ds-danger)] hover:brightness-95'
+            : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-danger)]',
+          className
+        )}
+        aria-label={label}
+        title={label}
+        leadingIcon={(
+          <Heart
+            size={iconSizes[size]}
+            strokeWidth={isWishlisted ? 2.5 : 1.5}
+            className={cn(
+              'transition-transform duration-200',
+              isWishlisted ? 'fill-current' : 'hover:scale-110'
+            )}
+          />
+        )}
+      >
+        {isWishlisted ? 'Saved' : 'Save'}
+      </Button>
+    );
+  }
+
   return (
-    <button
+    <IconButton
+      type="button"
       onClick={handleClick}
+      variant="ghost"
+      size={size}
       className={cn(
-        'flex items-center justify-center rounded-full transition-all duration-200',
+        'rounded-full transition-all duration-200',
         isWishlisted
           ? 'bg-[var(--ds-danger-bg)] text-[var(--ds-danger)] hover:brightness-95'
           : 'bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-muted)] hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-danger)]',
         sizeClasses[size],
         className
       )}
-      aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-      title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+      aria-label={label}
+      title={label}
     >
       <Heart
         size={iconSizes[size]}
@@ -86,18 +129,6 @@ export default function WishlistButton({
           isWishlisted ? 'fill-current' : 'hover:scale-110'
         )}
       />
-      {showLabel && (
-        <span
-          className={cn(
-            'ml-2 type-medium',
-            isWishlisted
-              ? 'text-[var(--ds-danger)]'
-              : 'text-[var(--ds-text-secondary)]'
-          )}
-        >
-          {isWishlisted ? 'Saved' : 'Save'}
-        </span>
-      )}
-    </button>
+    </IconButton>
   );
 }
