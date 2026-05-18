@@ -1,15 +1,19 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { collectDesignSystemMetrics } from './design-system-metrics.mjs';
 
-const roots = [path.resolve('src')];
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const storefrontRoot = path.resolve(scriptDir, '..');
+const workspaceRoot = path.resolve(storefrontRoot, '..');
+const roots = [path.join(storefrontRoot, 'src')];
 const extraFiles = [
-  path.resolve('tailwind.config.ts'),
-  path.resolve('../docs/design-system/storefront-design-system-v1.md'),
-  path.resolve('KVASTRAM_HEADER_DESIGN_SYSTEM.md'),
+  path.join(storefrontRoot, 'tailwind.config.ts'),
+  path.join(workspaceRoot, 'docs/design-system/storefront-design-system-v1.md'),
+  path.join(storefrontRoot, 'KVASTRAM_HEADER_DESIGN_SYSTEM.md'),
 ];
 const baseline = JSON.parse(
-  readFileSync(path.resolve('scripts/design-system-baseline.json'), 'utf8')
+  readFileSync(path.join(storefrontRoot, 'scripts/design-system-baseline.json'), 'utf8')
 );
 const allowedRawHexFiles = new Set([
   path.normalize('src/styles/tokens.css'),
@@ -62,7 +66,7 @@ function walk(dir) {
 }
 
 function auditFile(fullPath) {
-  const rel = path.normalize(path.relative(process.cwd(), fullPath));
+  const rel = path.normalize(path.relative(storefrontRoot, fullPath));
   const ext = path.extname(rel);
   const text = readFileSync(fullPath, 'utf8');
   const lines = text.split(/\r?\n/);
