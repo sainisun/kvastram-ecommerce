@@ -27,29 +27,28 @@ export default function ListingHero({
   variant = 'category',
 }: ListingHeroProps) {
   const isCollection = variant === 'collection';
+  const hasCollectionImage = isCollection && Boolean(image);
 
   return (
     <header className="bg-[var(--ds-surface-paper)]">
       <section
         className={
-          isCollection
+          hasCollectionImage
             ? 'kv-page-container grid gap-6 pb-8 pt-6 md:grid-cols-[0.92fr_1fr] md:items-center md:gap-10 md:pb-12 md:pt-10 lg:gap-16'
             : 'relative overflow-hidden border-b border-[var(--ds-border-subtle)] bg-[var(--ds-surface-soft)]'
         }
       >
-        {isCollection ? (
+        {hasCollectionImage ? (
           <>
             <div className="relative aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)] md:aspect-[5/4]">
-              {image ? (
-                <OptimizedImage
-                  src={image}
-                  alt={title}
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 100vw, 45vw"
-                  className="object-cover"
-                />
-              ) : null}
+              <OptimizedImage
+                src={image || ''}
+                alt={title}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 45vw"
+                className="object-cover"
+              />
             </div>
             <HeroCopy
               eyebrow={eyebrow}
