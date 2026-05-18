@@ -6,8 +6,11 @@
 
 :root {
   /* Typography */
-  --ds-font-display: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
-  --ds-font-body: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+  --ds-kapaas-typeface-stack: 'New York', 'Iowan Old Style', 'Apple Garamond',
+    Baskerville, 'Times New Roman', 'Droid Serif', Times, 'Source Serif Pro',
+    serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --ds-font-display: var(--ds-kapaas-typeface-stack);
+  --ds-font-body: var(--ds-kapaas-typeface-stack);
   --ds-font-ui: var(--ds-font-body);
   --ds-font-label: var(--ds-font-ui);
 
