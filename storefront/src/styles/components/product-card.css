@@ -153,10 +153,17 @@
 }
 
 .product-no-image {
-  color: var(--color-text-muted);
-  font-family: var(--font-body);
-  font-size: var(--text-body-sm);
-  font-style: italic;
+  color: var(--ds-text-muted);
+  background:
+    linear-gradient(135deg, rgba(var(--ds-surface-paper-rgb), 0.32), transparent),
+    var(--ds-surface-soft);
+}
+
+.recently-empty-image {
+  color: var(--ds-text-muted);
+  background:
+    linear-gradient(135deg, rgba(var(--ds-surface-paper-rgb), 0.32), transparent),
+    var(--ds-surface-soft);
 }
 
 .skeleton-line {

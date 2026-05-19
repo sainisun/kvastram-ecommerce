@@ -14,10 +14,16 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
   if (displayed.length === 0) return null;
 
   return (
-    <section className="kv-section bg-[var(--cream)]">
+    <section className="kv-section watch-buy-section bg-[var(--cream)]">
       <div className="kv-container">
         <div className="kv-section-head">
-          <div className="kv-tag">Watch &amp; Buy</div>
+          <div>
+            <div className="kv-tag">Watch &amp; Buy</div>
+            <h2 className="watch-buy-heading">Shop Kvastram in motion</h2>
+            <p className="watch-buy-copy">
+              See fabric, scale, and styling before you open the full reel.
+            </p>
+          </div>
           <Link href="/reels" className="kv-section-link">
             View All
           </Link>
@@ -27,8 +33,9 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
           {displayed.map((reel) => (
             <Link
               key={reel.id}
-              href="/reels"
-              className="reel-card kv-carousel-item"
+              href={`/reels?reel=${encodeURIComponent(reel.id)}`}
+              className="reel-card watch-buy-card kv-carousel-item"
+              aria-label={`Watch and shop ${reel.product_name}`}
             >
               <div className="reel-media">
                 {reel.video_url ? (
@@ -52,13 +59,15 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                     className="object-cover"
                   />
                 ) : null}
-                <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.70)] via-[rgba(var(--ds-black-rgb),0.20)] to-transparent" />
+                <div className="watch-buy-gradient" />
               </div>
               <div className="reel-info">
-                <h3 className="reel-title line-clamp-2 leading-token-snug color-ink">
+                <h3 className="reel-title line-clamp-2 leading-token-snug">
                   {reel.product_name}
                 </h3>
-                <p className="kv-sub mt-1 text-body-xs sm:text-body-sm">Tap to view and shop</p>
+                <p className="watch-buy-meta">
+                  {reel.price ? `${reel.price} · ` : ''}Tap to view and shop
+                </p>
               </div>
             </Link>
           ))}

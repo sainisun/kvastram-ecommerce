@@ -13,6 +13,7 @@ import { ArrowUp } from 'lucide-react';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { NewsletterModal } from '@/components/ui/NewsletterModal';
 import { UnstyledButton } from '@/components/ui/Button';
+import { ChatWidget } from '@/components/ui/ChatWidget';
 
 function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -86,6 +87,7 @@ export function MainLayout({
       {/* Cookie Consent */}
       {!hideSiteChrome && !isWholesalePage && <CookieConsent />}
       {!hideSiteChrome && !isWholesalePage && <NewsletterModal />}
+      {!hideSiteChrome && !isWholesalePage && <ChatWidget />}
     </>
   );
 }

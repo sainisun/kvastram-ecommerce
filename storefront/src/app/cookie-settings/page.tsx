@@ -1,22 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConsentManager } from '@/lib/consent-manager';
 import { Button } from '@/components/ui/Button';
 
 export default function CookieSettingsPage() {
-  const [consent, setConsent] = useState(() =>
-    ConsentManager.getConsent() ?? {
-      timestamp: 0,
-      version: '1.0',
-      categories: {
-        essential: true,
-        analytics: false,
-        marketing: false,
-        session_recording: false,
-      },
-    }
-  );
+  const defaultConsent = {
+    timestamp: 0,
+    version: '1.0',
+    categories: {
+      essential: true,
+      analytics: false,
+      marketing: false,
+      session_recording: false,
+    },
+  };
+  const [consent, setConsent] = useState(defaultConsent);
+
+  useEffect(() => {
+    setConsent(ConsentManager.getConsent() ?? defaultConsent);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToggle = (category: keyof typeof consent.categories) => {
     // essential cannot be toggled

@@ -36,8 +36,9 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
                   />
                 </div>
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[var(--ds-accent-primary)] via-[var(--ds-accent-gold)] to-[var(--ds-info)] text-display-xl">
-                  {collection.title.charAt(0)}
+                <div className="collection-card-fallback absolute inset-0">
+                  <span>{collection.title}</span>
+                  <small>Handmade edit</small>
                 </div>
               )}
               <div className="collection-info collections-as-seen-info">

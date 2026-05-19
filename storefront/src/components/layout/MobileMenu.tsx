@@ -45,6 +45,7 @@ interface Category {
   display_order?: number;
   is_active?: boolean;
   show_in_header?: boolean;
+  product_count?: number | string | null;
   children?: Category[];
 }
 
@@ -64,6 +65,7 @@ interface Collection {
   show_in_megamenu?: boolean;
   cover_image_url?: string | null;
   image?: string | null;
+  product_count?: number | string | null;
 }
 
 interface MobileMenuProps {
@@ -105,6 +107,12 @@ function getSearchResultPrice(product: SearchResult) {
   return preferredPrice?.amount;
 }
 
+function formatMenuCount(value?: number | string | null) {
+  const count = typeof value === 'string' ? Number(value) : value;
+  if (!count || !Number.isFinite(count)) return null;
+  return `${count} ${count === 1 ? 'piece' : 'pieces'}`;
+}
+
 export default function MobileMenu({
   isOpen,
   onClose,
@@ -139,29 +147,36 @@ export default function MobileMenu({
       return categories
         .filter((category) => category.slug && category.name)
         .slice()
-        .filter((category) => category.is_active !== false && category.show_in_header !== false)
+        .filter(
+          (category) =>
+            category.is_active !== false &&
+            category.show_in_header !== false &&
+            !['sale', 'sales', 'markdowns'].includes(category.slug.toLowerCase())
+        )
         .sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99))
-        .map((category, index) => ({
-          key: category.id,
-          title: category.name,
-          subtitle: category.children?.length
-            ? `${category.children.length} sections`
-            : 'Shop category',
-          href: `/categories/${category.slug}`,
-          icon: icons[index % icons.length],
-          iconBg: iconBgs[index % iconBgs.length],
-          hero: category.header_image_url || category.image || null,
-          tagline: category.name,
-          filters: [],
-          items: (category.children || [])
-            .filter((child) => child.slug)
-            .map((child) => ({
-              name: child.name,
-              meta: 'View category',
-              href: `/categories/${child.slug}`,
-              image: child.header_image_url || child.image || null,
-            })),
-        }));
+        .map((category, index) => {
+          const countLabel = formatMenuCount(category.product_count);
+
+          return {
+            key: category.id,
+            title: category.name,
+            subtitle: countLabel || (category.children?.length ? `${category.children.length} sections` : 'Browse styles'),
+            href: `/categories/${category.slug}`,
+            icon: icons[index % icons.length],
+            iconBg: iconBgs[index % iconBgs.length],
+            hero: category.header_image_url || category.image || null,
+            tagline: category.name,
+            filters: [],
+            items: (category.children || [])
+              .filter((child) => child.slug)
+              .map((child) => ({
+                name: child.name,
+                meta: formatMenuCount(child.product_count) || 'View category',
+                href: `/categories/${child.slug}`,
+                image: child.header_image_url || child.image || null,
+              })),
+          };
+        });
     },
     [categories]
   );

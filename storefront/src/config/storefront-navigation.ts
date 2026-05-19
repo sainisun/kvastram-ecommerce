@@ -19,6 +19,7 @@ export const STOREFRONT_NAV_ITEMS: StorefrontNavItem[] = [
   { label: 'Shop', href: '/products', hasMega: true },
   { label: 'Collections', href: '/collections', hasMega: true },
   { label: 'New Arrivals', href: '/products?sort=newest' },
+  { label: 'Reels', href: '/reels' },
   { label: 'About', href: '/about' },
 ];
 

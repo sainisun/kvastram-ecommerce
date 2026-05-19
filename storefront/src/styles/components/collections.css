@@ -133,6 +133,36 @@
   pointer-events: none;
 }
 
+.collection-card-fallback {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(180deg, rgba(var(--ds-black-rgb), 0.02), rgba(var(--ds-black-rgb), 0.38)),
+    repeating-linear-gradient(
+      90deg,
+      var(--ds-surface-soft) 0,
+      var(--ds-surface-soft) 12px,
+      var(--ds-surface-paper) 12px,
+      var(--ds-surface-paper) 24px
+    );
+  color: var(--ds-text-primary);
+  text-align: center;
+}
+
+.collection-card-fallback span {
+  max-width: 14rem;
+  font-family: var(--font-display);
+  font-size: var(--text-display-sm);
+  line-height: var(--leading-tight);
+}
+
+.collection-card-fallback small {
+  margin-top: 10px;
+  color: var(--ds-text-muted);
+  font-size: var(--text-body-xs);
+}
+
 .homepage-category-merch-info {
   position: absolute;
   inset-inline: 0;

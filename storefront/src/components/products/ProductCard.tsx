@@ -69,7 +69,7 @@ export function ProductCard({
             />
           ) : (
             <div className="product-no-image flex h-full w-full items-center justify-center bg-[var(--ds-surface-soft)]">
-              No Image
+              <ShoppingBag aria-hidden="true" size={28} strokeWidth={1.4} />
             </div>
           )}
 
@@ -212,7 +212,7 @@ export function CompactProductCard({
           />
         ) : (
           <div className="recently-empty-image flex h-full w-full items-center justify-center">
-            No Image
+            <ShoppingBag aria-hidden="true" size={22} strokeWidth={1.4} />
           </div>
         )}
       </div>

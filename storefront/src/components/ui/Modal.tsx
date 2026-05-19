@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
@@ -28,18 +28,62 @@ export function Modal({
   bodyClassName,
   showHeader = true,
 }: ModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
+    const focusableSelector = [
+      'a[href]',
+      'button:not([disabled])',
+      'textarea:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(',');
+
+    const focusDialog = () => {
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const firstFocusable = dialog.querySelector<HTMLElement>(focusableSelector);
+      (firstFocusable || dialog).focus();
+    };
+
+    const focusTimer = window.setTimeout(focusDialog, 0);
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
+      if (event.key !== 'Tab') return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(focusableSelector)
+      ).filter((element) => element.offsetParent !== null);
+
+      if (focusable.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
 
     window.addEventListener('keydown', onKeyDown);
     return () => {
+      window.clearTimeout(focusTimer);
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
     };
@@ -56,9 +100,11 @@ export function Modal({
         onClick={onClose}
       />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={typeof title === 'string' ? title : undefined}
+        tabIndex={-1}
         className={cn(
           'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] shadow-[var(--ds-shadow)]',
           className
