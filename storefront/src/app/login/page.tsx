@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ function FacebookOAuthWrapper({ redirect }: { redirect: string }) {
   const FB_APP_ID = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
 
   // Lazy-load the Facebook JS SDK only when the app ID is configured
-  useState(() => {
+  useEffect(() => {
     if (!FB_APP_ID || document.getElementById('facebook-jssdk')) return;
     window.fbAsyncInit = function () {
       window.FB.init({ appId: FB_APP_ID, cookie: true, xfbml: false, version: 'v21.0' });
@@ -34,7 +34,7 @@ function FacebookOAuthWrapper({ redirect }: { redirect: string }) {
     script.async = true;
     script.defer = true;
     document.body.appendChild(script);
-  });
+  }, [FB_APP_ID]);
 
   const handleLogin = () => {
     if (!window.FB) {

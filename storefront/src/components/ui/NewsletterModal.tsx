@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { CheckCircle, Loader2 } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -10,6 +11,8 @@ export function NewsletterModal() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (window.localStorage.getItem('kvastram-newsletter-modal-seen')) return;
@@ -25,25 +28,61 @@ export function NewsletterModal() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!email.trim()) return;
+
+    setStatus('loading');
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to subscribe');
+      }
+
+      setStatus('success');
+      setMessage(data.message || 'You are subscribed. Watch your inbox for the welcome offer.');
+      setEmail('');
+      setName('');
+    } catch (error) {
+      setStatus('error');
+      setMessage(error instanceof Error ? error.message : 'Network error. Please try again.');
+    }
+  }
+
   return (
     <Modal
       isOpen={open}
       onClose={() => setOpen(false)}
-      title="Get 15% off your first order"
+      title="Get early access and a welcome code"
       className="max-w-[520px]"
     >
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
           Welcome gift
         </div>
         <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
-          Subscribe for artisan stories, launches, and a welcome discount code.
+          Subscribe for artisan stories, launches, and the active welcome offer.
         </p>
+        {status === 'success' ? (
+          <div className="flex gap-3 border border-[var(--ds-success)] bg-[var(--ds-success-bg)] p-4 text-body-sm text-[var(--ds-success-text)]" role="status">
+            <CheckCircle className="mt-0.5 shrink-0" size={18} />
+            <p>{message}</p>
+          </div>
+        ) : null}
         <Input
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Your name"
           aria-label="Your name"
+          disabled={status === 'loading' || status === 'success'}
         />
         <Input
           type="email"
@@ -51,15 +90,29 @@ export function NewsletterModal() {
           onChange={(event) => setEmail(event.target.value)}
           placeholder="Email address"
           aria-label="Email address"
+          required
+          disabled={status === 'loading' || status === 'success'}
         />
+        {status === 'error' ? (
+          <p className="text-body-sm text-[var(--ds-danger)]" role="alert">
+            {message}
+          </p>
+        ) : null}
         <Button
-          type="button"
-          onClick={() => setOpen(false)}
+          type="submit"
           variant="secondary"
           size="lg"
           fullWidth
+          disabled={status === 'loading' || status === 'success'}
         >
-          Claim Discount
+          {status === 'loading' ? (
+            <>
+              <Loader2 className="animate-spin" size={16} />
+              Subscribing
+            </>
+          ) : (
+            'Claim Welcome Offer'
+          )}
         </Button>
         <Link
           href="/products"
@@ -68,8 +121,7 @@ export function NewsletterModal() {
         >
           No Thanks
         </Link>
-      </div>
+      </form>
     </Modal>
   );
 }
-

@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { verifyAdminOrMcpService } from '../middleware/auth';
 import { db } from '../db/client';
 import { categories, product_categories, products } from '../db/schema';
-import { eq, desc, count, sql } from 'drizzle-orm';
+import { eq, desc, count, sql, inArray, and } from 'drizzle-orm';
 import { z } from 'zod';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 
@@ -46,7 +46,7 @@ categoriesRouter.get('/', async (c) => {
 // GET /categories/tree
 categoriesRouter.get('/tree', async (c) => {
   try {
-    const allCategories = await db
+    const allCategoriesBase = await db
       .select({
         id: categories.id,
         name: categories.name,
@@ -64,15 +64,34 @@ categoriesRouter.get('/tree', async (c) => {
         og_image_url: categories.og_image_url,
         created_at: categories.created_at,
         updated_at: categories.updated_at,
-        product_count: sql<number>`(
-          SELECT COUNT(*)
-          FROM product_categories pc
-          JOIN products p ON p.id = pc.product_id
-          WHERE pc.category_id = ${categories.id}
-            AND p.status = 'published'
-        )`.mapWith(Number),
       })
       .from(categories);
+
+    const categoryIds = allCategoriesBase.map((category) => category.id);
+    const countRows = categoryIds.length
+      ? await db
+          .select({
+            category_id: product_categories.category_id,
+            product_count: sql<number>`count(distinct ${products.id})`.mapWith(Number),
+          })
+          .from(product_categories)
+          .innerJoin(products, eq(products.id, product_categories.product_id))
+          .where(
+            and(
+              inArray(product_categories.category_id, categoryIds),
+              eq(products.status, 'published')
+            )
+          )
+          .groupBy(product_categories.category_id)
+      : [];
+
+    const productCounts = new Map(
+      countRows.map((row) => [row.category_id, Number(row.product_count || 0)])
+    );
+    const allCategories = allCategoriesBase.map((category) => ({
+      ...category,
+      product_count: productCounts.get(category.id) || 0,
+    }));
 
     const buildTree = (parentId: string | null = null): any[] => {
       return allCategories

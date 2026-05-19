@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import ProductGrid from '@/components/ProductGrid';
+import { ButtonLink } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
 import type { MoneyAmount, Product } from '@/types';
 
 type Campaign = {
@@ -31,6 +33,7 @@ function hasSalePrice(product: Product) {
 
 export default function SalePage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [catalogFallback, setCatalogFallback] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null);
   const [timeLeft, setTimeLeft] = useState<{
@@ -45,6 +48,7 @@ export default function SalePage() {
       .then(([data, campaignData]) => {
         const saleProducts = (data.products || []).filter(hasSalePrice).slice(0, 24);
         setProducts(saleProducts);
+        setCatalogFallback((data.products || []).slice(0, 8));
         const campaign = (campaignData.campaigns || []).find(
           (item: Campaign) => item.name?.toLowerCase().includes('sale') || item.end_date
         );
@@ -90,16 +94,15 @@ export default function SalePage() {
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
-      <section className="kv-page-gutter relative overflow-hidden bg-gradient-to-br from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--soft)] px-6 py-16 text-[var(--ds-text-inverse)] md:px-12 md:py-20 lg:px-20 lg:py-28">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(var(--ds-surface-paper-rgb),0.22),transparent_28%),linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.08),rgba(var(--ds-black-rgb),0.24))]" />
-        <div className="kv-page-frame relative mx-auto max-w-[1440px] space-y-6 text-center">
-          <span className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)]/75">
+      <section className="kv-page-gutter border-b border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-6 py-14 md:px-12 md:py-20 lg:px-20">
+        <div className="kv-page-frame mx-auto max-w-[1440px] space-y-6 text-center">
+          <span className="text-body-xs type-bold tracking-token-wider text-[var(--ds-accent-primary)]">
             {activeCampaign ? 'Limited Time' : 'Current Markdowns'}
           </span>
-          <h1 className="font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-inverse)]">
+          <h1 className="font-display text-display-xl type-medium leading-token-tight tracking-token-normal text-[var(--ds-text-primary)]">
             {activeCampaign?.name || 'Sale'}
           </h1>
-          <p className="mx-auto max-w-xl text-body-lg leading-token-relaxed text-[var(--ds-text-inverse)]/80">
+          <p className="mx-auto max-w-xl text-body-lg leading-token-relaxed text-[var(--ds-text-secondary)]">
             {activeCampaign?.description ||
               'Selected artisan pieces at special prices, powered by real product markdowns.'}
           </p>
@@ -113,12 +116,12 @@ export default function SalePage() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="border border-[var(--ds-surface-paper)]/20 bg-[var(--ds-surface-paper)]/12 px-4 py-4 backdrop-blur-sm"
+                  className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-4"
                 >
-                  <span className="block font-display text-display-md leading-token-tight text-[var(--ds-text-inverse)]">
+                  <span className="block font-display text-display-md leading-token-tight text-[var(--ds-text-primary)]">
                     {String(value).padStart(2, '0')}
                   </span>
-                  <span className="mt-2 block text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-inverse)]/70">
+                  <span className="mt-2 block text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-muted)]">
                     {label}
                   </span>
                 </div>
@@ -127,7 +130,7 @@ export default function SalePage() {
           ) : null}
           <a
             href="#saleGrid"
-            className="inline-flex items-center justify-center bg-[var(--ds-surface-paper)] px-8 py-4 text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-soft)]"
+            className="inline-flex items-center justify-center rounded-sm bg-[var(--ds-text-primary)] px-8 py-4 text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
           >
             Shop Sale
           </a>
@@ -135,11 +138,39 @@ export default function SalePage() {
       </section>
 
       <div id="saleGrid" className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-        <ProductGrid
-          initialProducts={products}
-          loading={loading}
-          emptyMessage="No sale items currently available."
-        />
+        {products.length > 0 || loading ? (
+          <ProductGrid
+            initialProducts={products}
+            loading={loading}
+            emptyMessage="No sale items currently available."
+          />
+        ) : (
+          <div className="space-y-10">
+            <EmptyState
+              title="No live markdowns right now."
+              description="Fresh arrivals and curated collections are still available while the next campaign is prepared."
+              className="rounded-lg bg-[var(--ds-surface-soft)]"
+              actions={
+                <>
+                  <ButtonLink href="/products?sort=newest" variant="secondary" size="md">
+                    New Arrivals
+                  </ButtonLink>
+                  <ButtonLink href="/collections" variant="outline" size="md">
+                    Collections
+                  </ButtonLink>
+                </>
+              }
+            />
+            {catalogFallback.length > 0 ? (
+              <div>
+                <h2 className="mb-5 font-display text-display-sm type-semibold text-[var(--ds-text-primary)]">
+                  Fresh catalog picks
+                </h2>
+                <ProductGrid initialProducts={catalogFallback} />
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

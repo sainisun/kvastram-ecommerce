@@ -5,10 +5,11 @@ import { zValidator } from '@hono/zod-validator';
 import { verifyAdminOrMcpService } from '../middleware/auth';
 import { db } from '../db/client';
 import { product_collections, products, collection_products } from '../db/schema';
-import { eq, desc, inArray, sql, and, ne } from 'drizzle-orm';
+import { eq, desc, sql, and, ne } from 'drizzle-orm';
 import { z } from 'zod';
 import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 import { config } from '../config';
+import { productService } from '../services/product-service';
 
 const isUuid = (val: string): boolean => {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -83,19 +84,20 @@ const ProductAssignmentSchema = z.object({
   product_ids: z.array(z.string().uuid()).default([]),
 });
 
+async function countPublishedProductsForCollection(collectionId: string) {
+  const result = await productService.listDetailed({
+    collectionId,
+    status: 'published',
+    limit: 1,
+    offset: 0,
+  });
+
+  return Number(result.total || 0);
+}
+
 // Active status ke liye min 3 products + cover_image check
 async function validateActiveStatus(collectionId: string): Promise<{ valid: boolean; count: number }> {
-  const rows = await db
-    .select({ cnt: sql<number>`count(*)`.mapWith(Number) })
-    .from(collection_products)
-    .innerJoin(products, eq(products.id, collection_products.product_id))
-    .where(
-      and(
-        eq(collection_products.collection_id, collectionId),
-        eq(products.status, 'published')
-      )
-    );
-  const count = rows[0]?.cnt ?? 0;
+  const count = await countPublishedProductsForCollection(collectionId);
   return { valid: count >= 3, count };
 }
 
@@ -142,14 +144,6 @@ collectionsRouter.get('/', async (c) => {
         metadata: product_collections.metadata,
         created_at: product_collections.created_at,
         updated_at: product_collections.updated_at,
-        product_count: sql<number>`(
-          SELECT COUNT(DISTINCT p.id)
-          FROM products p
-          LEFT JOIN collection_products cp ON cp.product_id = p.id
-          WHERE (cp.collection_id = ${product_collections.id}
-            OR p.collection_id = ${product_collections.id})
-            AND p.status = 'published'
-        )`.mapWith(Number),
       })
       .from(product_collections)
       .where(
@@ -163,7 +157,14 @@ collectionsRouter.get('/', async (c) => {
       )
       .orderBy(product_collections.display_order, desc(product_collections.created_at));
 
-    return c.json({ collections: list });
+    const collectionsWithCounts = await Promise.all(
+      list.map(async (collection) => ({
+        ...collection,
+        product_count: await countPublishedProductsForCollection(collection.id),
+      }))
+    );
+
+    return c.json({ collections: collectionsWithCounts });
   } catch (error: any) {
     console.error('[Collections] GET / error:', error?.message || error);
     return c.json({ error: 'Failed to fetch collections', details: error?.message }, 500);
@@ -190,20 +191,7 @@ collectionsRouter.get('/:id', async (c) => {
 
     if (!collection) return c.json({ error: 'Collection not found' }, 404);
 
-    // Count active products
-    const [{ cnt }] = await db
-      .select({
-        cnt: sql<number>`COUNT(DISTINCT ${products.id})`.mapWith(Number),
-      })
-      .from(products)
-      .leftJoin(collection_products, eq(collection_products.product_id, products.id))
-      .where(
-        and(
-          sql`(${collection_products.collection_id} = ${collection.id}
-            OR ${products.collection_id} = ${collection.id})`,
-          eq(products.status, 'published')
-        )
-      );
+    const cnt = await countPublishedProductsForCollection(collection.id);
 
     return c.json({ collection: { ...collection, product_count: cnt } });
   } catch (error: unknown) {

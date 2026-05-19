@@ -94,6 +94,12 @@ function toggleSavedReel(id: string): boolean {
   return saved.has(id);
 }
 
+function fallbackCollectionTitle(reel: TrendingReelItem, index: number) {
+  if (index === 0) return 'Kvastram reels edit';
+  if (reel.category) return `${reel.category} in motion`;
+  return reel.product_name;
+}
+
 // ─────────────────────────────────────────────────────────
 // GRID
 // ─────────────────────────────────────────────────────────
@@ -105,14 +111,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   const [collections, setCollections] = useState<ReelCollectionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [gridCols, setGridCols] = useState<2 | 3>(() => {
-    if (typeof window === 'undefined') return 3;
-    try {
-      return localStorage.getItem('kvastram_reels_grid') === '2' ? 2 : 3;
-    } catch {
-      return 3;
-    }
-  });
+  const [gridCols, setGridCols] = useState<2 | 3>(3);
   const [showAll, setShowAll] = useState(false);
   const requestedReelId = searchParams.get('reel');
   const requestedCollection = searchParams.get('collection');
@@ -122,6 +121,14 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     setGridCols(cols);
     try { localStorage.setItem('kvastram_reels_grid', String(cols)); } catch {}
   }
+
+  useEffect(() => {
+    try {
+      setGridCols(localStorage.getItem('kvastram_reels_grid') === '2' ? 2 : 3);
+    } catch {
+      setGridCols(3);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -153,15 +160,15 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
     () =>
       reels.slice(0, 3).map((reel, index) => ({
         id: `fallback-${reel.id}`,
-        title: index === 0 ? 'Shop the look in motion' : reel.category || reel.product_name,
+        title: fallbackCollectionTitle(reel, index),
         handle: `look-${index + 1}`,
         subtitle:
           index === 0
-            ? 'See fabric, drape, scale, and styling before you choose your next handmade piece.'
-            : 'A closer look at fabric, styling, and product scale.',
+            ? 'A curated reel rail for fabric movement, handwork details, scale, and quick product discovery.'
+            : 'Open the look, inspect the craft, and continue straight to the product page.',
         hero_image_url: reel.thumbnail_url,
         hero_video_url: reel.video_url || null,
-        cta_label: index === 0 ? 'Shop Collection' : 'Shop Look',
+        cta_label: index === 0 ? 'Shop the edit' : 'View product',
         cta_url: reel.link_url || '/products',
         reel_ids: index === 0 ? reels.map((item) => item.id) : [reel.id],
         reels: index === 0 ? reels : [reel],
@@ -296,9 +303,36 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                 >
                   {activeHeroCollection.cta_label || 'Shop Collection'}
                 </Link>
-                <span>{heroCollectionReels.length || '-'} reels</span>
-                <span>{totalViews ? formatCompactNumber(totalViews) : '-'} views</span>
+                <span>{heroCollectionReels.length} reels</span>
+                <span>{formatCompactNumber(totalViews)} views</span>
               </div>
+            </div>
+            <div className="reels-hero-preview reels-hero-preview-banner" aria-hidden="true">
+              {(heroCollectionReels.length ? heroCollectionReels : heroReels).slice(0, 3).map((reel, slot) => (
+                <div key={reel?.id || slot} className="reels-hero-frame">
+                  {reel?.video_url ? (
+                    <video
+                      src={reel.video_url}
+                      poster={reel.thumbnail_url || undefined}
+                      muted
+                      loop
+                      playsInline
+                      autoPlay
+                      preload="metadata"
+                    />
+                  ) : reel?.thumbnail_url ? (
+                    <OptimizedImage
+                      src={reel.thumbnail_url}
+                      alt=""
+                      fill
+                      sizes="(min-width: 760px) 120px, 30vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span />
+                  )}
+                </div>
+              ))}
             </div>
             {displayCollections.length > 1 ? (
               <div className="reels-hero-dots" aria-label="Reel collections carousel">
@@ -318,14 +352,14 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           <>
             <div className="reels-hero-copy">
               <p className="reels-hero-kicker">Watch &amp; Buy</p>
-              <h1 id="reels-hero-title">Shop the look in motion</h1>
-              <p>See fabric, drape, scale, and styling before you choose your next handmade piece.</p>
+              <h1 id="reels-hero-title">Kvastram reels edit</h1>
+              <p>See fabric movement, handwork detail, scale, and styling before you choose your piece.</p>
               <div className="reels-hero-actions">
                 <Link href="/products" className="reels-action-link">
-                  Shop collection
+                  Shop the edit
                 </Link>
-                <span>{reels.length || '-'} reels</span>
-                <span>{totalViews ? formatCompactNumber(totalViews) : '-'} views</span>
+                <span>{reels.length} reels</span>
+                <span>{formatCompactNumber(totalViews)} views</span>
               </div>
             </div>
             <div className="reels-hero-preview" aria-hidden="true">
@@ -426,11 +460,20 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           </div>
         ) : visibleReels.length === 0 ? (
           <div className="reels-empty-state">
-            <p className="kv-tag">No Reels</p>
-            <h2 className="mt-2 kv-title text-display-md">Nothing here yet</h2>
-            <Link href="/products" className="reels-action-link mt-5">
-              Browse Products
-            </Link>
+            <p className="kv-tag">Watch &amp; Buy</p>
+            <h2 className="mt-2 kv-title text-display-md">Reels are being curated</h2>
+            <p className="mx-auto mt-3 max-w-md text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+              Product videos will appear here once they are published from the admin.
+              Until then, continue with the live catalog and curated collections.
+            </p>
+            <div className="mt-5 flex flex-wrap justify-center gap-3">
+              <Link href="/products" className="reels-action-link">
+                Browse Products
+              </Link>
+              <Link href="/collections" className="reels-action-link">
+                Explore Collections
+              </Link>
+            </div>
           </div>
         ) : (
           <>
@@ -469,18 +512,17 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                     )}
                     <div className="reel-grid-gradient" />
                     <div className="reel-grid-overlay">
-                      <span className="reel-grid-price">{formatPrice(reel.price)}</span>
+                      <span className="reel-grid-copy">
+                        <span className="reel-grid-kicker">{reel.category || 'Kvastram look'}</span>
+                        <span className="reel-grid-title">{reel.product_name}</span>
+                        <span className="reel-grid-price">{formatPrice(reel.price)}</span>
+                      </span>
                       <span className="reel-grid-views">
                         <Eye size={12} />
                         {formatCompactNumber(reel.view_count || 0)}
                       </span>
                     </div>
                   </div>
-                  {gridCols === 2 ? (
-                    <div className="reel-info" aria-hidden="true">
-                      <span className="reel-title">{reel.product_name}</span>
-                    </div>
-                  ) : null}
                 </UnstyledButton>
               ))}
             </div>
@@ -644,7 +686,7 @@ function ReelPlayerModal({
 
   async function handleShare() {
     try {
-      const url = window.location.origin + '/reels';
+      const url = `${window.location.origin}/reels?reel=${encodeURIComponent(current.id)}`;
       if (navigator.share) {
         await navigator.share({ title: current.product_name, url });
       } else {
@@ -672,7 +714,7 @@ function ReelPlayerModal({
         disabled={currentIndex === 0}
         variant="ghost"
         size="lg"
-        className="absolute left-6 top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-[var(--ds-text-inverse)] backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
+        className="reel-player-nav reel-player-nav-prev absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-[var(--ds-text-inverse)] backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
         aria-label="Previous reel"
       >
         <ChevronLeft size={24} />
@@ -683,7 +725,7 @@ function ReelPlayerModal({
         disabled={currentIndex === localReels.length - 1}
         variant="ghost"
         size="lg"
-        className="absolute right-6 top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-[var(--ds-text-inverse)] backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
+        className="reel-player-nav reel-player-nav-next absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-[var(--ds-text-inverse)] backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
         aria-label="Next reel"
       >
         <ChevronRight size={24} />
@@ -721,7 +763,7 @@ function ReelPlayerModal({
           loop
           playsInline
           autoPlay
-          className="absolute inset-0 h-full w-full object-contain"
+          className="reel-player-video absolute inset-0 h-full w-full object-contain"
         />
 
         {/* Gradients */}
@@ -843,6 +885,9 @@ function ReelPlayerModal({
               </p>
               <p className="mt-1 text-body-sm type-bold color-accent">
                 {formatPrice(current.price)}
+              </p>
+              <p className="mt-0.5 hidden text-body-xs text-[var(--ds-text-muted)] sm:block">
+                View details, fabric, care, and shipping
               </p>
             </div>
             <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--ds-accent-primary)] px-3.5 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] shadow-lg">

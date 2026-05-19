@@ -11,6 +11,7 @@ import {
 import { storage } from '@/lib/storage';
 import { useAuth } from './auth-context';
 import { api } from '@/lib/api';
+import { getCanonicalProductHandle } from '@/lib/product-links';
 
 export interface CartItem {
   id: string;
@@ -42,6 +43,18 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+function sanitizeCartItem(item: CartItem): CartItem {
+  return {
+    ...item,
+    handle: getCanonicalProductHandle(item.handle),
+  };
+}
+
+function sanitizeCartItems(items: CartItem[] | null | undefined): CartItem[] {
+  if (!Array.isArray(items)) return [];
+  return items.map(sanitizeCartItem);
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -51,7 +64,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const stored = storage.get<CartItem[]>('kvastram_cart', []);
+    const stored = sanitizeCartItems(
+      storage.get<CartItem[]>('kvastram_cart', [])
+    );
     const timer = setTimeout(() => {
       if (stored && stored.length > 0) {
         setItems(stored);
@@ -121,7 +136,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         // Merge saved cart with current cart - immutable updates
         setItems((prev) => {
           const merged = [...prev];
-          data.items.forEach((savedItem: CartItem) => {
+          sanitizeCartItems(data.items).forEach((savedItem: CartItem) => {
             const existingIndex = merged.findIndex(
               (i) => i.variantId === savedItem.variantId
             );
@@ -155,16 +170,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addItem = (newItem: CartItem) => {
+    const sanitizedItem = sanitizeCartItem(newItem);
     setItems((prev) => {
-      const existing = prev.find((i) => i.variantId === newItem.variantId);
+      const existing = prev.find((i) => i.variantId === sanitizedItem.variantId);
       if (existing) {
         return prev.map((i) =>
-          i.variantId === newItem.variantId
-            ? { ...i, quantity: i.quantity + newItem.quantity }
+          i.variantId === sanitizedItem.variantId
+            ? { ...i, quantity: i.quantity + sanitizedItem.quantity }
             : i
         );
       }
-      return [...prev, newItem];
+      return [...prev, sanitizedItem];
     });
   };
 

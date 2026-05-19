@@ -13,8 +13,12 @@ export function SettingsList() {
   const { currentRegion, setRegion, regions } = useShop();
 
   const handleRegionClick = () => {
-    if (regions.length > 0 && !currentRegion) {
-      setRegion(regions[0]);
+    if (regions.length === 0) return;
+
+    const currentIndex = regions.findIndex((region) => region.id === currentRegion?.id);
+    const nextRegion = regions[(currentIndex + 1) % regions.length];
+    if (nextRegion) {
+      setRegion(nextRegion);
     }
   };
 
@@ -45,11 +49,10 @@ export function SettingsList() {
       onClick: handleRegionClick,
     },
     {
-      href: '#',
+      href: '/account/notifications',
       icon: Bell,
       label: 'Notifications',
-      active: false,
-      badge: 'Coming Soon',
+      active: pathname === '/account/notifications',
     },
   ];
 
@@ -78,11 +81,6 @@ export function SettingsList() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                {item.badge && (
-                  <span className="text-body-xs bg-[var(--ds-surface-warm)] text-[var(--ds-text-secondary)] px-2 py-0.5 rounded">
-                    {item.badge}
-                  </span>
-                )}
                 <ChevronRight size={16} className="text-[var(--ds-text-muted)]" />
               </div>
             </div>
@@ -90,9 +88,9 @@ export function SettingsList() {
 
           if (item.href === '#') {
             return (
-              <div key={item.label} onClick={item.onClick}>
+              <button key={item.label} type="button" onClick={item.onClick} className="block w-full text-left">
                 {content}
-              </div>
+              </button>
             );
           }
 

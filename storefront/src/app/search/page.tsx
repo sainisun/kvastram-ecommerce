@@ -1,10 +1,10 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import { Loader2, Filter, ArrowLeft } from 'lucide-react';
+import { Loader2, Filter, ArrowLeft, Search } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import { Button, ButtonLink, UnstyledButton } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -19,9 +19,12 @@ import { storefrontTrust } from '@/config/storefront-trust';
 
 function SearchContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const query = searchParams.get('q') || '';
+  const hasQuery = query.trim().length > 0;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [draftQuery, setDraftQuery] = useState(query);
   const [sort, setSort] = useState('relevance');
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -38,6 +41,10 @@ function SearchContent() {
       appliedFilters.max ||
       (appliedFilters.attributeCode && appliedFilters.attributeValue)
   );
+
+  useEffect(() => {
+    setDraftQuery(query);
+  }, [query]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -77,12 +84,20 @@ function SearchContent() {
       }
     };
 
-    if (query) {
+    if (hasQuery) {
       fetchResults();
     } else {
+      setProducts([]);
       setLoading(false);
     }
-  }, [query, sort, appliedFilters]);
+  }, [hasQuery, query, sort, appliedFilters]);
+
+  const submitSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    const nextQuery = draftQuery.trim();
+    if (!nextQuery) return;
+    router.push(`/search?q=${encodeURIComponent(nextQuery)}`);
+  };
 
   const handleFilterApply = () => {
     setAppliedFilters({
@@ -125,11 +140,26 @@ function SearchContent() {
           >
             <ArrowLeft size={14} /> Back to Home
           </Link>
-          <h1 className="search-title mb-4">
-            Search Results
-          </h1>
+          <h1 className="search-title mb-4">{hasQuery ? 'Search Results' : 'Search Kvastram'}</h1>
+          <form onSubmit={submitSearch} className="mb-4 max-w-2xl">
+            <div className="relative">
+              <Search
+                size={18}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--ds-text-disabled)]"
+              />
+              <Input
+                value={draftQuery}
+                onChange={(event) => setDraftQuery(event.target.value)}
+                placeholder="Search jackets, bags, sarees..."
+                className="min-h-12 bg-[var(--ds-surface-paper)] pl-11 pr-4"
+                aria-label="Search products"
+              />
+            </div>
+          </form>
           <p className="text-[var(--ds-text-muted)]">
-            {loading ? (
+            {!hasQuery ? (
+              <span>Search by product, fabric, color, occasion, or browse a guided route below.</span>
+            ) : loading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="animate-spin" size={16} /> Searching for
                 &quot;{query}&quot;...
@@ -144,6 +174,7 @@ function SearchContent() {
         </div>
 
         {/* Filters Toolbar */}
+        {hasQuery ? (
         <div className="flex flex-col md:flex-row md:items-center justify-between border-y border-[var(--ds-border-subtle)] py-4 mb-12 gap-4">
           <div className="relative">
             <UnstyledButton
@@ -238,7 +269,9 @@ function SearchContent() {
             )}
           </div>
         </div>
+        ) : null}
 
+        {hasQuery ? (
         <div className="mb-8 flex flex-wrap gap-3">
           {storefrontAttributeFilters.flatMap((group) =>
             group.values.slice(0, 3).map((item) => {
@@ -261,6 +294,7 @@ function SearchContent() {
             })
           )}
         </div>
+        ) : null}
 
         <div className="mb-10 grid gap-4 lg:grid-cols-[1.15fr,0.85fr]">
           <Card className="bg-[var(--ds-surface-parchment)] p-6">
@@ -361,7 +395,23 @@ function SearchContent() {
         ) : null}
 
         {/* Results Grid */}
-        {loading ? (
+        {!hasQuery ? (
+          <EmptyState
+            title="Start with a search or pick a route."
+            description="Try a product name, fabric, color, or occasion, or continue through the curated catalog."
+            className="rounded-lg bg-[var(--ds-surface-soft)]"
+            actions={
+              <>
+                <ButtonLink href="/products" variant="secondary" size="md">
+                  Shop All Products
+                </ButtonLink>
+                <ButtonLink href="/collections" variant="outline" size="md">
+                  Explore Collections
+                </ButtonLink>
+              </>
+            }
+          />
+        ) : loading ? (
           <div className="h-64 flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-[var(--ds-text-disabled)]" />
           </div>

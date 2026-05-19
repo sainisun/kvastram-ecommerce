@@ -42,11 +42,16 @@ interface PromoBarProps {
 }
 
 export function PromoBar({ isSticky }: PromoBarProps) {
-  const [dismissed, setDismissed] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem(SESSION_KEY) === '1';
-  });
+  const [dismissed, setDismissed] = useState(false);
   const [msgIdx, setMsgIdx] = useState(0);
+
+  useEffect(() => {
+    try {
+      setDismissed(sessionStorage.getItem(SESSION_KEY) === '1');
+    } catch {
+      setDismissed(false);
+    }
+  }, []);
 
   useEffect(() => {
     const t = setInterval(
@@ -58,7 +63,9 @@ export function PromoBar({ isSticky }: PromoBarProps) {
 
   const dismiss = useCallback(() => {
     setDismissed(true);
-    sessionStorage.setItem(SESSION_KEY, '1');
+    try {
+      sessionStorage.setItem(SESSION_KEY, '1');
+    } catch {}
   }, []);
 
   const goToPrevious = useCallback(() => {

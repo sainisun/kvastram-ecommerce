@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MessageCircle, X, Minimize2 } from 'lucide-react';
+import { MessageCircle, X, Minimize2, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { cn } from '@/lib/utils';
 import Input from '@/components/ui/Input';
 import { IconButton, UnstyledButton } from '@/components/ui/Button';
 import { cardClasses } from '@/components/ui/Card';
+import { TawkToWidget } from '@/components/ui/TawkToWidget';
 
 declare global {
   interface Window {
@@ -34,9 +35,8 @@ export function ChatWidget() {
 
   const TAWK_PROPERTY_ID = process.env.NEXT_PUBLIC_TAWK_PROPERTY_ID;
 
-  // If Tawk.to is configured, load the script
   if (TAWK_PROPERTY_ID) {
-    return null;
+    return <TawkToWidget propertyId={TAWK_PROPERTY_ID} />;
   }
 
   const quickReplies = [
@@ -104,7 +104,6 @@ export function ChatWidget() {
 
   return (
     <>
-      {/* Chat Trigger Button */}
       {!isOpen && (
         <motion.button
           initial={{ scale: 0 }}
@@ -130,7 +129,6 @@ export function ChatWidget() {
               isMinimized ? 'h-14' : 'h-[500px]'
             )}
           >
-            {/* Header */}
             <div className="flex items-center justify-between bg-[var(--ds-text-primary)] p-4 text-[var(--ds-text-inverse)]">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(var(--ds-cream-rgb),0.2)]">
@@ -165,10 +163,8 @@ export function ChatWidget() {
               </div>
             </div>
 
-            {/* Chat Content - Placeholder */}
             {!isMinimized && (
               <div className="flex flex-col h-[calc(100%-64px)]">
-                {/* Messages Area */}
                 <div className="flex-1 overflow-y-auto bg-[var(--ds-surface-page)] p-4">
                   <div className="space-y-4">
                     {messages.map((message, index) => (
@@ -204,41 +200,31 @@ export function ChatWidget() {
                 </div>
 
                 <div className="border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
-                  <div className="flex gap-2">
+                  <form
+                    className="flex gap-2"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      handleSendMessage();
+                    }}
+                  >
                     <Input
                       type="text"
                       placeholder="Type your message..."
                       value={inputText}
                       onChange={(event) => setInputText(event.target.value)}
-                      onKeyDown={(event) => {
-                          if (event.key === 'Enter') handleSendMessage();
-                        }}
                       containerClassName="flex-1"
                       className="h-10 rounded-full"
                     />
                     <IconButton
-                      type="button"
-                      onClick={handleSendMessage}
+                      type="submit"
                       variant="secondary"
                       size="md"
                       className="rounded-full"
                       aria-label="Send message"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                        />
-                      </svg>
+                      <Send size={16} />
                     </IconButton>
-                  </div>
+                  </form>
                   <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-body-xs text-[var(--ds-text-muted)]">
                     <Link href={storefrontTrust.policyRoutes.paymentHelp} className="underline underline-offset-4">
                       Payment Help

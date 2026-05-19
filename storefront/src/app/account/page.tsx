@@ -4,9 +4,8 @@ import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
 import { OrderWithDetails } from '@/types';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Package, User, LogOut, MapPin } from 'lucide-react';
+import { Package, User, LogOut, MapPin, Bell } from 'lucide-react';
 import { UserCard } from '@/components/account/UserCard';
 import { QuickGrid } from '@/components/account/QuickGrid';
 import { SettingsList } from '@/components/account/SettingsList';
@@ -19,15 +18,8 @@ import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-stat
 
 export default function AccountPage() {
   const { customer, loading, logout } = useAuth();
-  const router = useRouter();
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
-
-  useEffect(() => {
-    if (!loading && !customer) {
-      router.push('/login');
-    }
-  }, [loading, customer, router]);
 
   // UX-001: Guard against race condition; only fetch orders after auth is confirmed.
   useEffect(() => {
@@ -44,7 +36,32 @@ export default function AccountPage() {
       });
   }, [customer, loading]);
 
-  if (loading || !customer) return <AccountSkeleton />;
+  if (loading) return <AccountSkeleton />;
+
+  if (!customer) {
+    return (
+      <div className="min-h-screen bg-[var(--ds-surface-parchment)] px-6 py-16 md:px-12 md:py-24">
+        <div className="mx-auto max-w-2xl">
+          <EmptyState
+            icon={<User size={42} />}
+            title="Sign in to view your account."
+            description="Orders, addresses, wishlist, notifications, and profile settings are available after login."
+            className="rounded-lg bg-[var(--ds-surface-paper)]"
+            actions={
+              <>
+                <ButtonLink href="/login?redirect=/account" variant="secondary" size="md">
+                  Sign In
+                </ButtonLink>
+                <ButtonLink href="/register" variant="outline" size="md">
+                  Create Account
+                </ButtonLink>
+              </>
+            }
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
@@ -116,6 +133,12 @@ export default function AccountPage() {
                     className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]"
                   >
                     <MapPin size={14} /> Addresses
+                  </Link>
+                  <Link
+                    href="/account/notifications"
+                    className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]"
+                  >
+                    <Bell size={14} /> Notifications
                   </Link>
                   <Button
                     type="button"
