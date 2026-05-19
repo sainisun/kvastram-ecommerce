@@ -94,10 +94,49 @@ function toggleSavedReel(id: string): boolean {
   return saved.has(id);
 }
 
-function fallbackCollectionTitle(reel: TrendingReelItem, index: number) {
-  if (index === 0) return 'Kvastram reels edit';
-  if (reel.category) return `${reel.category} in motion`;
-  return reel.product_name;
+function inferReelGroup(reel: TrendingReelItem) {
+  const text = `${reel.category || ''} ${reel.product_name || ''}`.toLowerCase();
+  if (/(jacket|kimono|coat|shrug|overlay)/.test(text)) return 'jackets';
+  if (/(bag|tote|pouch|toiletry|clutch)/.test(text)) return 'bags';
+  return 'looks';
+}
+
+function createFallbackCollections(reels: TrendingReelItem[]): ReelCollectionItem[] {
+  if (reels.length === 0) return [];
+
+  const groups = [
+    {
+      handle: 'kvastram-reels-edit',
+      title: 'Kvastram reels edit',
+      subtitle: 'A curated reel rail for fabric movement, handwork details, scale, and quick product discovery.',
+      reels,
+    },
+    {
+      handle: 'jackets-in-motion',
+      title: 'Jackets in motion',
+      subtitle: 'See quilted jackets, kimono layers, and handmade outerwear from every angle.',
+      reels: reels.filter((reel) => inferReelGroup(reel) === 'jackets'),
+    },
+    {
+      handle: 'bags-in-motion',
+      title: 'Bags in motion',
+      subtitle: 'Inspect tote bags, pouches, scale, stitching, and everyday styling in motion.',
+      reels: reels.filter((reel) => inferReelGroup(reel) === 'bags'),
+    },
+  ].filter((group) => group.reels.length > 0);
+
+  return groups.map((group, index) => ({
+    id: `fallback-${group.handle}`,
+    title: group.title,
+    handle: group.handle,
+    subtitle: group.subtitle,
+    hero_image_url: group.reels[0]?.thumbnail_url,
+    hero_video_url: group.reels[0]?.video_url || null,
+    cta_label: index === 0 ? 'Shop the edit' : 'Shop looks',
+    cta_url: '/products',
+    reel_ids: group.reels.map((reel) => reel.id),
+    reels: group.reels,
+  }));
 }
 
 // ─────────────────────────────────────────────────────────
@@ -161,22 +200,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   }, [activeIndex, loading, reels, requestedReelId]);
 
   const fallbackCollections = useMemo<ReelCollectionItem[]>(
-    () =>
-      reels.slice(0, 3).map((reel, index) => ({
-        id: `fallback-${reel.id}`,
-        title: fallbackCollectionTitle(reel, index),
-        handle: `look-${index + 1}`,
-        subtitle:
-          index === 0
-            ? 'A curated reel rail for fabric movement, handwork details, scale, and quick product discovery.'
-            : 'Open the look, inspect the craft, and continue straight to the product page.',
-        hero_image_url: reel.thumbnail_url,
-        hero_video_url: reel.video_url || null,
-        cta_label: index === 0 ? 'Shop the edit' : 'View product',
-        cta_url: reel.link_url || '/products',
-        reel_ids: index === 0 ? reels.map((item) => item.id) : [reel.id],
-        reels: index === 0 ? reels : [reel],
-      })),
+    () => createFallbackCollections(reels),
     [reels]
   );
   const displayCollections = collections.length > 0 ? collections : fallbackCollections;

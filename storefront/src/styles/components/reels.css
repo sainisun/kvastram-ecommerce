@@ -547,6 +547,29 @@ body.reel-player-open [aria-label='Cookie consent'] {
   display: none;
 }
 
+@media (max-width: 767px) {
+  .cookie-consent {
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    left: 10px;
+    right: 10px;
+  }
+
+  .cookie-consent-card {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .cookie-consent-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .cookie-consent-actions a {
+    grid-column: 1 / -1;
+    padding-block: 4px;
+  }
+}
+
 @keyframes reelPulse {
   0%,
   100% {

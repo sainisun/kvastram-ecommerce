@@ -36,12 +36,12 @@ export function CookieConsent() {
 
   return (
     <div
-      className="fixed bottom-16 left-2 right-2 z-50 animate-fade-in-up md:bottom-6 md:left-auto md:right-6 md:max-w-md"
+      className="cookie-consent fixed bottom-16 left-2 right-2 z-50 animate-fade-in-up md:bottom-6 md:left-auto md:right-6 md:max-w-md"
       role="dialog"
       aria-label="Cookie consent"
       aria-live="polite"
     >
-      <Card className="flex flex-col gap-2 p-3 shadow-xl md:gap-4 md:p-5 md:shadow-2xl">
+      <Card className="cookie-consent-card flex flex-col gap-2 p-3 shadow-xl md:gap-4 md:p-5 md:shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -76,7 +76,7 @@ export function CookieConsent() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="cookie-consent-actions flex items-center gap-2">
           <Button
             onClick={handleAcceptAll}
             variant="secondary"
@@ -104,4 +104,3 @@ export function CookieConsent() {
     </div>
   );
 }
-
