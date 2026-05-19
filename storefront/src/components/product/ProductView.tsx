@@ -38,6 +38,7 @@ import { useShop } from '@/context/shop-context';
 import { useInventoryWebSocket } from '@/hooks/useInventoryWebSocket';
 import { buildProductImageAlt, getCategoryPath, getPrimaryCategory } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
+import { getProductPrimaryImage } from '@/lib/storefront-product-quality';
 import type { MoneyAmount, Product, ProductImage, ProductOption, ProductVariant } from '@/types';
 import { storefrontTrust } from '@/config/storefront-trust';
 
@@ -87,6 +88,7 @@ export default function ProductView({ product }: { product: Product }) {
   const primaryCategory = getPrimaryCategory(product);
   const primaryCategoryPath = primaryCategory ? getCategoryPath(primaryCategory) : null;
   const displayTitle = getProductDisplayTitle(product.title);
+  const productPrimaryImage = getProductPrimaryImage(product);
 
   const { isConnected, subscribeToInventory, unsubscribeFromInventory } = useInventoryWebSocket({
     onInventoryUpdate: (update) =>
@@ -106,11 +108,11 @@ export default function ProductView({ product }: { product: Product }) {
       id: product.id,
       handle: product.handle || product.id,
       title: displayTitle,
-      thumbnail: product.thumbnail || undefined,
+      thumbnail: productPrimaryImage || undefined,
       price: price?.amount || 0,
       currency: price?.currency_code?.toUpperCase() || 'USD',
     });
-  }, [addToRecentlyViewed, displayTitle, product]);
+  }, [addToRecentlyViewed, displayTitle, product, productPrimaryImage]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setShowStickyATC(!entry.isIntersecting), {
@@ -247,7 +249,7 @@ export default function ProductView({ product }: { product: Product }) {
       title: `${displayTitle}${selectedVariant.title !== 'Default Variant' ? ` - ${selectedVariant.title}` : ''}`,
       price: amount,
       currency: 'INR',
-      thumbnail: product.thumbnail || undefined,
+      thumbnail: productPrimaryImage || undefined,
       material: product.material || undefined,
       origin: product.origin_country || undefined,
       sku: selectedVariant.sku || undefined,
@@ -329,7 +331,7 @@ export default function ProductView({ product }: { product: Product }) {
           <ShareButtons
             title={displayTitle}
             description={product.description?.slice(0, 100)}
-            image={product.thumbnail || undefined}
+            image={productPrimaryImage || undefined}
             className="pdp-nav-share"
           />
           <Link href="/cart" className="pdp-cart-icon" aria-label="Open cart">
@@ -364,7 +366,7 @@ export default function ProductView({ product }: { product: Product }) {
                   title={displayTitle}
                   price={selectedVariant?.prices?.[0]?.amount || 0}
                   currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
-                  thumbnail={product.thumbnail || undefined}
+                  thumbnail={productPrimaryImage || undefined}
                   handle={product.handle || product.id}
                   variantId={selectedVariant?.id}
                   size="sm"
