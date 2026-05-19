@@ -31,6 +31,30 @@ interface ProductCardProps {
   onQuickView?: (product: Product) => void;
 }
 
+const SWATCH_CLASS_BY_SLUG: Record<string, string> = {
+  navy: 'product-swatch--navy',
+  blue: 'product-swatch--blue',
+  'off-white': 'product-swatch--off-white',
+  white: 'product-swatch--off-white',
+  cream: 'product-swatch--cream',
+  olive: 'product-swatch--olive',
+  green: 'product-swatch--green',
+  red: 'product-swatch--red',
+  orange: 'product-swatch--orange',
+  yellow: 'product-swatch--yellow',
+  beige: 'product-swatch--beige',
+  brown: 'product-swatch--brown',
+  pink: 'product-swatch--pink',
+  purple: 'product-swatch--purple',
+  grey: 'product-swatch--grey',
+  gray: 'product-swatch--grey',
+};
+
+function getSwatchClassName(color: string) {
+  const slug = color.toLowerCase().trim().replace(/\s+/g, '-');
+  return SWATCH_CLASS_BY_SLUG[slug] || 'product-swatch--fallback';
+}
+
 export function ProductCard({
   product,
   price,
@@ -49,7 +73,22 @@ export function ProductCard({
   const isNew = index < 4;
   const isOnSale = Boolean(price.compareAtLabel);
   const isLowStock = stockQty > 0 && stockQty <= 5;
-  const secondImage = product.images?.[1]?.url;
+  const primaryImage = product.thumbnail || product.images?.find((image) => image.url)?.url;
+  const secondImage = product.images?.find((image) => image.url && image.url !== primaryImage)?.url;
+  const colorValues = [
+    product.attributes?.find((attribute) => attribute.attribute_code?.toLowerCase() === 'color')?.value_label,
+    product.attributes?.find((attribute) => attribute.attribute_code?.toLowerCase() === 'colour')?.value_label,
+    product.merchant?.find((item) => item.color)?.color,
+    firstVariant?.merchant?.color,
+  ]
+    .filter(Boolean)
+    .slice(0, 3) as string[];
+  const materialCue =
+    product.material ||
+    product.attributes?.find((attribute) => attribute.attribute_code?.toLowerCase() === 'material')?.value_label ||
+    firstVariant?.merchant?.material ||
+    product.merchant?.find((item) => item.material)?.material ||
+    null;
 
   return (
     <article className="product-card group">
@@ -59,9 +98,9 @@ export function ProductCard({
           className="relative block h-full w-full"
           aria-label={`View ${displayTitle}`}
         >
-          {product.thumbnail ? (
+          {primaryImage ? (
             <OptimizedImage
-              src={product.thumbnail}
+              src={primaryImage}
               alt={buildProductImageAlt(product, 0)}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
@@ -124,7 +163,7 @@ export function ProductCard({
           title={displayTitle}
           price={firstVariant?.prices?.[0]?.amount || 0}
           currency={currency}
-          thumbnail={product.thumbnail || undefined}
+            thumbnail={primaryImage || undefined}
           handle={product.handle || product.id}
           variantId={firstVariant?.id}
           size="sm"
@@ -138,6 +177,23 @@ export function ProductCard({
             {displayTitle}
           </h3>
         </Link>
+
+        {(materialCue || colorValues.length > 0) ? (
+          <div className="product-merch-cues" aria-label="Product details">
+            {colorValues.length > 0 ? (
+              <span className="product-swatch-row" aria-label={`Available colors: ${colorValues.join(', ')}`}>
+                {colorValues.map((color) => (
+                  <span
+                    key={color}
+                    className={cn('product-swatch', getSwatchClassName(color))}
+                    title={color}
+                  />
+                ))}
+              </span>
+            ) : null}
+            {materialCue ? <span className="product-material-chip">{materialCue}</span> : null}
+          </div>
+        ) : null}
 
         <div className="product-row">
           <PriceDisplay

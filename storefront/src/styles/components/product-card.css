@@ -100,6 +100,53 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+.product-merch-cues {
+  display: flex;
+  min-height: 22px;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  overflow: hidden;
+}
+.product-swatch-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.product-swatch {
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--ds-ink-rgb), 0.14);
+  box-shadow: inset 0 0 0 1px rgba(var(--ds-white-rgb), 0.42);
+}
+.product-swatch--navy { background: var(--ds-swatch-navy); }
+.product-swatch--blue { background: var(--ds-swatch-blue); }
+.product-swatch--off-white { background: var(--ds-swatch-off-white); }
+.product-swatch--cream { background: var(--ds-swatch-cream); }
+.product-swatch--olive { background: var(--ds-swatch-olive); }
+.product-swatch--green { background: var(--ds-swatch-green); }
+.product-swatch--red { background: var(--ds-swatch-red); }
+.product-swatch--orange { background: var(--ds-swatch-orange); }
+.product-swatch--yellow { background: var(--ds-swatch-yellow); }
+.product-swatch--beige { background: var(--ds-swatch-beige); }
+.product-swatch--brown { background: var(--ds-swatch-brown); }
+.product-swatch--pink { background: var(--ds-swatch-pink); }
+.product-swatch--purple { background: var(--ds-swatch-purple); }
+.product-swatch--grey { background: var(--ds-swatch-grey); }
+.product-swatch--fallback { background: var(--ds-swatch-fallback); }
+.product-material-chip {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  font-family: var(--type-label-font);
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--ds-type-product-meta-tracking);
+}
 .product-row {
   display: flex;
   align-items: center;
@@ -140,6 +187,18 @@
   opacity: 1;
   transform: translateY(0);
   z-index: 3;
+}
+@media (min-width: 768px) {
+  .product-card-quick-view {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+  .product-card:hover .product-card-quick-view,
+  .product-card:focus-within .product-card-quick-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .product-empty-state {
