@@ -151,7 +151,7 @@ export default function MobileMenu({
           (category) =>
             category.is_active !== false &&
             category.show_in_header !== false &&
-            !['sale', 'sales', 'markdowns'].includes(category.slug.toLowerCase())
+            !['sale', 'sales', 'sale-cat', 'markdowns'].includes(category.slug.toLowerCase())
         )
         .sort((a, b) => (a.display_order ?? 99) - (b.display_order ?? 99))
         .map((category, index) => {
