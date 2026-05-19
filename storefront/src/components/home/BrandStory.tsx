@@ -18,7 +18,8 @@ export function BrandStory({ settings }: BrandStoryProps) {
   const content =
     settings.brand_story_content ||
     'Every Kvastram piece is selected for its craft, texture, and everyday wearability, connecting Jaipur-rooted workmanship with modern wardrobes.';
-  const imageUrl = cloudinaryUrlOrNull(settings.brand_story_image);
+  const imageUrl =
+    cloudinaryUrlOrNull(settings.brand_story_image) || '/images/home/atelier-story.jpg';
 
   return (
     <section className="kv-section bg-[var(--ds-surface-paper)]">
@@ -33,19 +34,15 @@ export function BrandStory({ settings }: BrandStoryProps) {
           </Link>
         </div>
         <div className="story-art">
-          {imageUrl ? (
-            <div className="relative h-full w-full overflow-hidden rounded-[var(--radius-lg)]">
-              <OptimizedImage
-                src={imageUrl}
-                alt={title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <span aria-hidden="true">K</span>
-          )}
+          <div className="story-art-media relative w-full overflow-hidden">
+            <OptimizedImage
+              src={imageUrl}
+              alt={title}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </div>
     </section>

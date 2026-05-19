@@ -699,6 +699,22 @@
     font-size: var(--text-body-lg);
   }
 
+  .pdp-summary-description {
+    display: none;
+  }
+
+  .pdp-detail-grid {
+    margin-top: 28px;
+  }
+
+  .pdp-accordion-trigger {
+    padding: 14px 0;
+  }
+
+  .pdp-accordion-content {
+    padding-bottom: 18px;
+  }
+
   .pdp-mobile-whatsapp {
     display: inline-flex;
   }

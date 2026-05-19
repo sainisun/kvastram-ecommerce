@@ -16,6 +16,14 @@ export function hasProductMedia(product: Product) {
   );
 }
 
+export function getProductPrimaryImage(product: Product) {
+  return (
+    product.thumbnail?.trim() ||
+    product.images?.find((image: ProductImage) => image.url?.trim())?.url?.trim() ||
+    null
+  );
+}
+
 export function hasSellablePrice(product: Product) {
   if (product.price_type === 'on_request') return false;
 

@@ -23,6 +23,11 @@ import Input from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button, UnstyledButton } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import {
+  getProductPrimaryImage,
+  hasProductMedia,
+  hasSellablePrice,
+} from '@/lib/storefront-product-quality';
 
 interface ShippingOption {
   id: string;
@@ -152,11 +157,16 @@ export default function CartPage() {
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [addingRec, setAddingRec] = useState<string | null>(null);
 
+  const curateCartRecommendations = (products: Product[] = []) =>
+    products
+      .filter((product) => product.handle && hasProductMedia(product) && hasSellablePrice(product))
+      .slice(0, 4);
+
   useEffect(() => {
     if (items.length === 0) {
       api
         .getProducts({ limit: 4, sort: 'newest' })
-        .then((data) => setRecommendations(data.products || []))
+        .then((data) => setRecommendations(curateCartRecommendations(data.products || [])))
         .catch(() => {});
     }
   }, [items.length]);
@@ -173,10 +183,11 @@ export default function CartPage() {
       const product = await api.getProduct(items[0].handle!);
       const cartHandles = new Set(items.map((item) => item.handle).filter(Boolean));
 
-      let relatedProducts =
+      let relatedProducts = curateCartRecommendations(
         product.semantic_related_products?.filter(
           (related) => related.handle && !cartHandles.has(related.handle)
-        ) || [];
+        ) || []
+      );
 
       if (relatedProducts.length === 0) {
         const requests: Promise<{ products?: Product[] }>[] = [];
@@ -198,6 +209,7 @@ export default function CartPage() {
         for (const result of results) {
           for (const related of result.products || []) {
             if (!related.handle || cartHandles.has(related.handle)) continue;
+            if (!hasProductMedia(related) || !hasSellablePrice(related)) continue;
             if (relatedMap.has(related.id)) continue;
             relatedMap.set(related.id, related);
             if (relatedMap.size >= 4) break;
@@ -209,7 +221,7 @@ export default function CartPage() {
       }
 
       if (!cancelled) {
-        setRecommendations(relatedProducts.slice(0, 4));
+        setRecommendations(curateCartRecommendations(relatedProducts));
       }
     };
 
@@ -238,7 +250,7 @@ export default function CartPage() {
       title: product.title,
       price: inrPriceObj.amount,
       currency: 'INR',
-      thumbnail: product.thumbnail || undefined,
+      thumbnail: getProductPrimaryImage(product) || undefined,
       handle: product.handle || product.id,
     });
     setAddingRec(product.id);
@@ -287,6 +299,7 @@ export default function CartPage() {
                     prices.find((p) => p.currency_code?.toLowerCase() === 'inr') ||
                     prices[0];
                   const price = inrPriceObj ? formatCartPrice(inrPriceObj.amount) : '';
+                  const imageUrl = getProductPrimaryImage(product);
 
                   return (
                     <div key={product.id} className="group flex flex-col">
@@ -294,9 +307,9 @@ export default function CartPage() {
                         href={`/products/${product.handle || product.id}`}
                         className="block relative aspect-[3/4] bg-[var(--soft)] overflow-hidden mb-4 rounded-sm"
                       >
-                        {product.thumbnail ? (
+                        {imageUrl ? (
                           <OptimizedImage
-                            src={product.thumbnail}
+                            src={imageUrl}
                             alt={product.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -511,6 +524,7 @@ export default function CartPage() {
                       prices.find((p) => p.currency_code?.toLowerCase() === 'inr') ||
                       prices[0];
                     const price = inrPriceObj ? formatCartPrice(inrPriceObj.amount) : '';
+                    const imageUrl = getProductPrimaryImage(product);
 
                     return (
                       <div key={product.id} className="group flex flex-col">
@@ -518,9 +532,9 @@ export default function CartPage() {
                           href={`/products/${product.handle || product.id}`}
                           className="relative mb-4 block aspect-[3/4] overflow-hidden rounded-sm bg-[var(--soft)]"
                         >
-                          {product.thumbnail ? (
+                          {imageUrl ? (
                             <OptimizedImage
-                              src={product.thumbnail}
+                              src={imageUrl}
                               alt={product.title}
                               fill
                               className="object-cover transition-transform duration-700 group-hover:scale-105"

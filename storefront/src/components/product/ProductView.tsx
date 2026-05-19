@@ -80,7 +80,7 @@ export default function ProductView({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [openAccordions, setOpenAccordions] = useState<AccordionKey[]>(['description']);
+  const [openAccordions, setOpenAccordions] = useState<AccordionKey[]>([]);
   const [showStickyATC, setShowStickyATC] = useState(false);
   const [realTimeInventory, setRealTimeInventory] = useState<Record<string, number>>({});
 

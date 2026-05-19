@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Product } from '@/types';
 import {
   filterStorefrontReadyProducts,
+  getProductPrimaryImage,
   getProductReadinessWarnings,
   getStorefrontReadinessScore,
   isStorefrontProductReady,
@@ -39,6 +40,16 @@ describe('storefront product quality gate', () => {
     ];
 
     expect(filterStorefrontReadyProducts(products)).toEqual([readyProduct]);
+  });
+
+  it('falls back to gallery media when thumbnail is missing', () => {
+    expect(
+      getProductPrimaryImage({
+        ...readyProduct,
+        thumbnail: null,
+        images: [{ id: 'img_1', url: 'https://example.com/gallery.jpg' }],
+      })
+    ).toBe('https://example.com/gallery.jpg');
   });
 
   it('returns admin-friendly readiness warnings', () => {
