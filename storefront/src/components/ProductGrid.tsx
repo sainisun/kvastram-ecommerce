@@ -15,6 +15,7 @@ import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useCurrency } from '@/context/currency-context';
 import { buildProductImageAlt } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 
 interface SpotlightProduct {
   id: string;
@@ -57,7 +58,7 @@ function ProductGrid({
   } = useWholesale();
   const [addedId, setAddedId] = useState<string | null>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-  const products = initialProducts;
+  const products = filterStorefrontReadyProducts(initialProducts);
   const resolvedLoading = externalLoading === true;
   const gridClassName = density === 'compact' ? 'products-grid compact' : 'products-grid';
 

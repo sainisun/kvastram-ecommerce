@@ -3,6 +3,10 @@ import { api } from '@/lib/api';
 import { storefrontHrefOrNull } from '@/lib/links';
 import { cloudinaryUrlOrNull } from '@/lib/media';
 import {
+  filterStorefrontReadyProducts,
+  isStorefrontProductReady,
+} from '@/lib/storefront-product-quality';
+import {
   buildBreadcrumbJsonLd,
   buildHomepageMetadata,
   serializeJsonLd,
@@ -18,6 +22,7 @@ import { NewArrivals } from '@/components/home/NewArrivals';
 import { Testimonials } from '@/components/home/Testimonials';
 import { HomeMerchandisingSections } from '@/components/home/HomeMerchandisingSections';
 import { HomeTrustBar } from '@/components/home/HomeTrustBar';
+import { CraftPromise } from '@/components/home/CraftPromise';
 import type { Product } from '@/types';
 import type {
   HomepageCollection,
@@ -83,13 +88,13 @@ export default async function Home() {
   if (featuredProductIds.length > 0) {
     try {
       const featuredResult = await api.getFeaturedProducts(featuredProductIds);
-      products = featuredResult.products || [];
+      products = filterStorefrontReadyProducts(featuredResult.products || []);
     } catch {
       products = [];
     }
   }
   if (products.length === 0 && productsResult.status === 'fulfilled') {
-    products = productsResult.value.products || [];
+      products = filterStorefrontReadyProducts(productsResult.value.products || []);
   }
 
   const testimonials: HomepageTestimonial[] =
@@ -206,6 +211,7 @@ export default async function Home() {
           .filter((product: Product | null | undefined): product is Product =>
             Boolean(product?.id)
           )
+          .filter(isStorefrontProductReady)
       : [];
 
   const bestsellerProducts: Product[] =
@@ -215,6 +221,7 @@ export default async function Home() {
           .filter((product: Product | null | undefined): product is Product =>
             Boolean(product?.id)
           )
+          .filter(isStorefrontProductReady)
       : [];
 
   const heroBanners =
@@ -287,9 +294,9 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
 
-      <CircularCategories />
       <HeroSection banners={heroBanners} />
       <HomeTrustBar />
+      <CircularCategories />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
         isCurated={newArrivalProducts.length > 0}
@@ -298,6 +305,7 @@ export default async function Home() {
       <WatchBuyPreview reels={trendingReels} />
       <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
+      <CraftPromise />
       <HomeMerchandisingSections
         merchandisingSlots={merchandisingSlots}
       />

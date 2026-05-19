@@ -406,6 +406,44 @@
   line-height: var(--leading-normal);
 }
 
+.pdp-buyer-confidence {
+  display: grid;
+  gap: 1px;
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--border);
+}
+
+.pdp-buyer-confidence-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  padding: 12px;
+  background: var(--ds-surface-parchment);
+}
+
+.pdp-buyer-confidence-item svg {
+  margin-top: 2px;
+  color: var(--ds-accent-primary);
+}
+
+.pdp-buyer-confidence-item strong {
+  display: block;
+  color: var(--ink);
+  font-family: var(--type-label-font);
+  font-size: var(--text-body-xs);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+}
+
+.pdp-buyer-confidence-item p {
+  margin: 4px 0 0;
+  color: var(--ink-muted);
+  font-size: var(--text-body-xs);
+  line-height: var(--leading-normal);
+}
+
 .pdp-summary-description {
   margin-top: 22px;
   border-top: 1px solid var(--border);

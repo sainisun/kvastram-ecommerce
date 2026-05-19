@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   ChevronDown,
   ClipboardList,
+  Globe2,
   Leaf,
   MessageCircle,
   Minus,
@@ -174,6 +175,24 @@ export default function ProductView({ product }: { product: Product }) {
   const reviewCount = product.review_count && product.review_count > 0 ? product.review_count : null;
   const hasReviews = Boolean(reviewRating && reviewCount);
   const scarcityLabel = !isOnRequest && currentInventory > 0 && currentInventory < 10 ? `Only ${currentInventory} left` : undefined;
+  const craftOrigin = product.artisan?.location || product.origin_country || 'Jaipur, India';
+  const buyerConfidenceItems = [
+    {
+      icon: <PackageCheck size={16} aria-hidden="true" />,
+      label: 'Craft proof',
+      copy: `${product.material || 'Handmade textile'} selected in small batches from ${craftOrigin}.`,
+    },
+    {
+      icon: <Globe2 size={16} aria-hidden="true" />,
+      label: 'Global buyer clarity',
+      copy: `${deliveryWindow}. Duties, taxes, and payment support stay visible at checkout.`,
+    },
+    {
+      icon: <MessageCircle size={16} aria-hidden="true" />,
+      label: 'Assisted buying',
+      copy: 'Ask on WhatsApp for sizing, gifting, custom orders, or bulk questions before checkout.',
+    },
+  ];
 
   const galleryMedia = useMemo(() => {
     return product.images?.length
@@ -552,6 +571,18 @@ export default function ProductView({ product }: { product: Product }) {
               <span>Tax included. Shipping calculated at checkout.</span>
               <span>Free shipping above Rs. 2,000.</span>
               <span>7-day support on eligible returns.</span>
+            </div>
+
+            <div className="pdp-buyer-confidence" aria-label="Buyer confidence">
+              {buyerConfidenceItems.map((item) => (
+                <div key={item.label} className="pdp-buyer-confidence-item">
+                  {item.icon}
+                  <div>
+                    <strong>{item.label}</strong>
+                    <p>{item.copy}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {product.description ? (

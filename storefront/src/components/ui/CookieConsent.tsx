@@ -36,12 +36,12 @@ export function CookieConsent() {
 
   return (
     <div
-      className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-50 animate-fade-in-up"
+      className="fixed bottom-16 left-2 right-2 z-50 animate-fade-in-up md:bottom-6 md:left-auto md:right-6 md:max-w-md"
       role="dialog"
       aria-label="Cookie consent"
       aria-live="polite"
     >
-      <Card className="flex flex-col gap-4 p-5 shadow-2xl">
+      <Card className="flex flex-col gap-2 p-3 shadow-xl md:gap-4 md:p-5 md:shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -53,7 +53,7 @@ export function CookieConsent() {
               <p className="text-body-sm text-[var(--ds-text-primary)] type-semibold">
                 We value your privacy
               </p>
-              <p className="mt-0.5 text-body-xs leading-token-relaxed text-[var(--ds-text-muted)] type-light">
+              <p className="mt-0.5 hidden text-body-xs leading-token-relaxed text-[var(--ds-text-muted)] type-light sm:block">
                 Choose which categories of cookies & tracking you allow.{' '}
                 <Link
                   href="/pages/privacy-policy"
