@@ -15,10 +15,31 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+const SESSION_HINT_KEY = 'kv_customer_session';
 
 function eraseCookie(name: string) {
   if (typeof document === 'undefined') return;
   document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+function hasSessionHint() {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.localStorage.getItem(SESSION_HINT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function setSessionHint(enabled: boolean) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (enabled) {
+      window.localStorage.setItem(SESSION_HINT_KEY, '1');
+    } else {
+      window.localStorage.removeItem(SESSION_HINT_KEY);
+    }
+  } catch {}
 }
 
 export function AuthProvider({
@@ -29,10 +50,17 @@ export function AuthProvider({
   const router = useRouter();
 
   const refreshCustomer = async () => {
+    if (!hasSessionHint()) {
+      setCustomer(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await api.getCustomer();
       setCustomer(data.customer);
     } catch {
+      setSessionHint(false);
       eraseCookie('auth_token');
       setCustomer(null);
     } finally {
@@ -61,8 +89,10 @@ export function AuthProvider({
     // Handle both response formats: { customer: {...} } or direct customer object
     if (res.customer) {
       setCustomer(res.customer);
+      setSessionHint(true);
     } else if (res.data?.customer) {
       setCustomer(res.data.customer);
+      setSessionHint(true);
     }
   };
 
@@ -75,12 +105,14 @@ export function AuthProvider({
 
   const logout = () => {
     void api.post('/store/auth/logout', {}).catch(() => undefined);
+    setSessionHint(false);
     eraseCookie('auth_token');
     setCustomer(null);
     router.push('/');
   };
 
   const setUser = (customer: Customer | null) => {
+    setSessionHint(Boolean(customer));
     setCustomer(customer);
   };
 

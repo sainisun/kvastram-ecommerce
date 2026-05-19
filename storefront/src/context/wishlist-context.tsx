@@ -11,6 +11,7 @@ import {
 import { storage } from '@/lib/storage';
 import { api } from '@/lib/api';
 import { useShop } from '@/context/shop-context';
+import { useAuth } from '@/context/auth-context';
 
 export interface WishlistItem {
   id: string;
@@ -59,6 +60,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const { currentRegion } = useShop();
+  const { customer, loading: authLoading } = useAuth();
+  const customerId = customer?.id;
 
   // Load from localStorage on mount, then try backend sync
   useEffect(() => {
@@ -70,7 +73,11 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       }
       setIsLoaded(true);
 
-      // 2. Try backend sync (logged-in users)
+      // 2. Try backend sync only for known logged-in users.
+      if (authLoading || !customerId) {
+        return;
+      }
+
       try {
         const data = await api.getWishlist();
         if (data.wishlist && data.wishlist.length > 0) {
@@ -96,7 +103,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       }
     }, 0);
     return () => clearTimeout(timer);
-  }, [currentRegion?.currency_code]);
+  }, [authLoading, currentRegion?.currency_code, customerId]);
 
   // Save to localStorage when items change
   useEffect(() => {
