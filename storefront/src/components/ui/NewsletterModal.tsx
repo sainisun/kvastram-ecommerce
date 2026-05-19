@@ -6,6 +6,7 @@ import { CheckCircle, Loader2 } from 'lucide-react';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { ConsentManager } from '@/lib/consent-manager';
 
 export function NewsletterModal() {
   const [open, setOpen] = useState(false);
@@ -19,6 +20,8 @@ export function NewsletterModal() {
 
     const onScroll = () => {
       if (window.scrollY <= 650) return;
+      if (!ConsentManager.getConsent()) return;
+
       window.localStorage.setItem('kvastram-newsletter-modal-seen', 'true');
       window.setTimeout(() => setOpen(true), 350);
       window.removeEventListener('scroll', onScroll);
