@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import CatalogClient from '@/components/products/CatalogClient';
 import { api } from '@/lib/api';
 import { buildCatalogMetadata } from '@/lib/seo';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 export const revalidate = 60;
@@ -71,7 +72,12 @@ export default async function CatalogPage({
       }),
       15000
     );
-    productsData = productsResult || { products: [], total: 0 };
+    const readyProducts = filterStorefrontReadyProducts(productsResult?.products || []);
+    productsData = {
+      ...(productsResult || { products: [], total: 0 }),
+      products: readyProducts,
+      total: readyProducts.length,
+    };
 
     const [categoriesResult, tagsResult, collectionsResult] =
       await Promise.allSettled([

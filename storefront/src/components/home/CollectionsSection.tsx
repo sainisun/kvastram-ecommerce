@@ -7,7 +7,9 @@ interface CollectionsSectionProps {
 }
 
 export function CollectionsSection({ collections }: CollectionsSectionProps) {
-  const displayed = collections.slice(0, 12);
+  const displayed = collections
+    .filter((collection) => Boolean(collection.image))
+    .slice(0, 12);
 
   if (displayed.length === 0) return null;
 

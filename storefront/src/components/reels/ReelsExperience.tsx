@@ -123,11 +123,15 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
   }
 
   useEffect(() => {
-    try {
-      setGridCols(localStorage.getItem('kvastram_reels_grid') === '2' ? 2 : 3);
-    } catch {
-      setGridCols(3);
-    }
+    const timer = window.setTimeout(() => {
+      try {
+        setGridCols(localStorage.getItem('kvastram_reels_grid') === '2' ? 2 : 3);
+      } catch {
+        setGridCols(3);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {

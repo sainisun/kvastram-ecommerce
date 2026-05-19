@@ -46,11 +46,15 @@ export function PromoBar({ isSticky }: PromoBarProps) {
   const [msgIdx, setMsgIdx] = useState(0);
 
   useEffect(() => {
-    try {
-      setDismissed(sessionStorage.getItem(SESSION_KEY) === '1');
-    } catch {
-      setDismissed(false);
-    }
+    const timer = window.setTimeout(() => {
+      try {
+        setDismissed(sessionStorage.getItem(SESSION_KEY) === '1');
+      } catch {
+        setDismissed(false);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {

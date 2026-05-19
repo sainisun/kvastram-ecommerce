@@ -7,10 +7,10 @@ import { useCurrency } from '@/context/currency-context';
 import { CompactProductCard } from '@/components/products/ProductCard';
 
 interface RecentlyViewedRowProps {
-  currentProductId: string;
+  currentProductId?: string;
 }
 
-function RecentlyViewedRowComponent({ currentProductId }: RecentlyViewedRowProps) {
+function RecentlyViewedRowComponent({ currentProductId = '' }: RecentlyViewedRowProps) {
   const { items } = useRecentlyViewed();
   const { formatPrice } = useCurrency();
 

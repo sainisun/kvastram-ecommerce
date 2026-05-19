@@ -10,10 +10,12 @@ import {
   SlidersHorizontal,
   X,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import FilterSidebar from '@/components/products/FilterSidebar';
 import ProductGrid from '@/components/ProductGrid';
+import { RecentlyViewedRow } from '@/components/product/RecentlyViewedRow';
 import { Select } from '@/components/ui/Select';
 import { Drawer } from '@/components/ui/Drawer';
 import { api } from '@/lib/api';
@@ -72,6 +74,14 @@ const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
   { value: 'price_asc', label: 'Price: Low to High' },
   { value: 'price_desc', label: 'Price: High to Low' },
+];
+
+const QUICK_SHOP_CHIPS = [
+  { label: 'Jackets', href: '/search?q=jackets' },
+  { label: 'Tote Bags', href: '/search?q=tote%20bags' },
+  { label: 'Kantha', href: '/search?q=kantha' },
+  { label: 'Block Print', href: '/search?q=block%20print' },
+  { label: 'Under Rs. 2,000', href: '/products?max_price=200000' },
 ];
 
 function findCategoryById(categories: Category[], id: string): Category | null {
@@ -238,6 +248,16 @@ export default function CatalogClient({
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] pb-4">
             <div className="min-w-0">
               <h1 className="catalog-page-heading">Products</h1>
+              <p className="catalog-page-subcopy">
+                Handmade jackets, quilted bags, and textile-led edits from Jaipur.
+              </p>
+              <div className="catalog-quick-chips" aria-label="Quick shop filters">
+                {QUICK_SHOP_CHIPS.map((chip) => (
+                  <Link key={chip.label} href={chip.href} className="catalog-quick-chip">
+                    {chip.label}
+                  </Link>
+                ))}
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center justify-end gap-3">
@@ -461,6 +481,7 @@ export default function CatalogClient({
                 </UnstyledButton>
               </div>
             ) : null}
+            <RecentlyViewedRow />
           </main>
         </div>
       </div>

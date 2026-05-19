@@ -22,6 +22,46 @@
   color: var(--ink);
 }
 
+.catalog-page-subcopy {
+  margin-top: 0.35rem;
+  max-width: 48ch;
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+}
+
+.catalog-quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.catalog-quick-chip {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  border: 1px solid var(--ds-border-subtle);
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  background: var(--ds-surface-paper);
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-size: var(--text-body-xs);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+.catalog-quick-chip:hover {
+  border-color: var(--ds-text-primary);
+  background: var(--ds-surface-parchment);
+  color: var(--ds-text-primary);
+}
+
 .kv-text-chip {
   display: inline-flex;
   align-items: center;

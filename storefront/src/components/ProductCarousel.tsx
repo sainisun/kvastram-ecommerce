@@ -9,6 +9,7 @@ import { useShop } from '@/context/shop-context';
 import { ProductCard } from '@/components/products/ProductCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getProductDisplayTitle } from '@/lib/product-title';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 
 interface ProductCarouselProps {
   products?: Product[];
@@ -28,6 +29,7 @@ function ProductCarousel({
   const { showNotification } = useNotification();
   const [addedId, setAddedId] = useState<string | null>(null);
   const loading = externalLoading === true;
+  const displayProducts = filterStorefrontReadyProducts(products);
 
   const handleAddToCart = (event: React.MouseEvent<HTMLButtonElement>, product: Product) => {
     event.preventDefault();
@@ -103,13 +105,13 @@ function ProductCarousel({
     );
   }
 
-  if (products.length === 0) {
+  if (displayProducts.length === 0) {
     return <EmptyState title="No products found." className="product-empty-state" />;
   }
 
   return (
     <div className="products-grid">
-      {products.map((product, index) => (
+      {displayProducts.map((product, index) => (
         <ProductCard
           key={product.id}
           product={product}
