@@ -23,8 +23,20 @@ import { Testimonials } from '@/components/home/Testimonials';
 import { HomeMerchandisingSections } from '@/components/home/HomeMerchandisingSections';
 import { HomeTrustBar } from '@/components/home/HomeTrustBar';
 import { CraftPromise } from '@/components/home/CraftPromise';
+import { CategoriesGrid } from '@/components/home/CategoriesGrid';
+import { ShopByNeed } from '@/components/home/ShopByNeed';
+import {
+  CraftEducationStrip,
+  FitScaleHelp,
+  ShippingReturnsMiniFAQ,
+  WhatsAppHelpStrip,
+} from '@/components/home/ConversionHelpSections';
+import { MobileStickyActions } from '@/components/home/MobileStickyActions';
+import { CATEGORY_QUICK_LINKS } from '@/config/storefront-navigation';
 import type { Product } from '@/types';
 import type {
+  HomepageCategoryCard,
+  HomepageCategoryCircle,
   HomepageCollection,
   HomepageTestimonial,
   HomepageTrendingReel,
@@ -45,6 +57,13 @@ type HomepageSettings = {
   featured_product_ids?: string | null;
 };
 
+const CATEGORY_FALLBACK_IMAGES = [
+  '/images/home/category-kurtas.jpg',
+  '/images/home/category-sarees.jpg',
+  '/images/home/collection-bridal.jpg',
+  '/images/home/collection-summer.jpg',
+];
+
 export const revalidate = 60;
 
 export const metadata: Metadata = buildHomepageMetadata();
@@ -60,6 +79,8 @@ export default async function Home() {
     bestsellersResult,
     heroBannersResult,
     merchandisingResult,
+    homepageCategoriesResult,
+    categoryCirclesResult,
   ] = await Promise.allSettled([
     api.getHomepageSettings(),
     api.getProducts({ limit: 8, sort: 'newest' }),
@@ -70,6 +91,8 @@ export default async function Home() {
     api.getSpotlightProducts('bestsellers'),
     api.getHeroBanners(),
     api.getHomepageMerchandising(),
+    api.getHomepageCategories(),
+    api.getCategoryCircles(),
   ]);
 
   const homepageSettings: HomepageSettings =
@@ -147,6 +170,128 @@ export default async function Home() {
             })
           )
       : [];
+
+  const categoryCircles: HomepageCategoryCircle[] =
+    categoryCirclesResult.status === 'fulfilled'
+      ? (categoryCirclesResult.value.circles || [])
+          .filter(
+            (item: {
+              id?: string;
+              label?: string;
+              image_url?: string | null;
+              link_url?: string | null;
+              is_active?: boolean;
+            }) =>
+              Boolean(
+                item?.id &&
+                  item?.label &&
+                  item?.is_active &&
+                  cloudinaryUrlOrNull(item.image_url) &&
+                  storefrontHrefOrNull(item.link_url)
+              )
+          )
+          .map(
+            (item: {
+              id: string;
+              label: string;
+              image_url: string | null;
+              link_url: string;
+              is_active: boolean;
+              sort_order?: number | null;
+            }) => ({
+              id: item.id,
+              label: item.label,
+              image_url: cloudinaryUrlOrNull(item.image_url),
+              link_url: storefrontHrefOrNull(item.link_url) || '/products',
+              is_active: item.is_active,
+              sort_order: item.sort_order || 0,
+            })
+          )
+      : [];
+
+  const homepageCategories: HomepageCategoryCard[] =
+    homepageCategoriesResult.status === 'fulfilled'
+      ? (homepageCategoriesResult.value.categories || [])
+          .filter(
+            (item: {
+              id?: string;
+              name?: string;
+              image_url?: string | null;
+              link_url?: string | null;
+              is_active?: boolean;
+            }) =>
+              Boolean(
+                item?.id &&
+                  item?.name &&
+                  item?.is_active &&
+                  cloudinaryUrlOrNull(item.image_url) &&
+                  storefrontHrefOrNull(item.link_url)
+              )
+          )
+          .map(
+            (item: {
+              id: string;
+              name: string;
+              image_url: string;
+              link_url: string;
+              is_active: boolean;
+              sort_order?: number | null;
+            }) => ({
+              id: item.id,
+              name: item.name,
+              image_url: cloudinaryUrlOrNull(item.image_url) || '',
+              link_url: storefrontHrefOrNull(item.link_url) || '/products',
+              is_active: item.is_active,
+              sort_order: item.sort_order || 0,
+            })
+          )
+      : [];
+
+  const categoryCards: HomepageCategoryCard[] =
+    homepageCategories.length > 0
+      ? homepageCategories
+      : categoryCircles.length > 0
+        ? categoryCircles.map((circle) => ({
+            id: circle.id,
+            name: circle.label,
+            image_url: circle.image_url || '',
+            link_url: circle.link_url,
+            is_active: circle.is_active,
+            sort_order: circle.sort_order,
+          }))
+        : collections
+            .filter((collection) => collection.image)
+            .slice(0, 8)
+            .map((collection, index) => ({
+              id: collection.id,
+              name: collection.title,
+              image_url: collection.image || '',
+              link_url: `/collections/${collection.handle}`,
+              is_active: true,
+              sort_order: index,
+            }));
+  const resolvedCategoryCards =
+    categoryCards.length > 0
+      ? categoryCards
+      : CATEGORY_QUICK_LINKS.slice(1, 7).map((item, index) => ({
+          id: `fallback-${item.href}`,
+          name: item.label,
+          image_url: CATEGORY_FALLBACK_IMAGES[index % CATEGORY_FALLBACK_IMAGES.length],
+          link_url: item.href,
+          is_active: true,
+          sort_order: index,
+        }));
+  const mobileStoryCircles: HomepageCategoryCircle[] =
+    categoryCircles.length > 0
+      ? categoryCircles
+      : resolvedCategoryCards.map((card) => ({
+          id: card.id,
+          label: card.name,
+          image_url: card.image_url,
+          link_url: card.link_url,
+          is_active: card.is_active,
+          sort_order: card.sort_order,
+        }));
 
   const trendingReels: HomepageTrendingReel[] =
     reelsResult.status === 'fulfilled'
@@ -294,23 +439,30 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
 
+      <CircularCategories circles={mobileStoryCircles} />
       <HeroSection banners={heroBanners} />
       <HomeTrustBar />
-      <CircularCategories />
+      <CategoriesGrid categories={resolvedCategoryCards} />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
         isCurated={newArrivalProducts.length > 0}
       />
+      <WhatsAppHelpStrip />
+      <ShopByNeed collections={collections} />
       <CollectionsSection collections={collections} />
       <WatchBuyPreview reels={trendingReels} />
       <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
       <CraftPromise />
+      <CraftEducationStrip />
       <HomeMerchandisingSections
         merchandisingSlots={merchandisingSlots}
       />
+      <FitScaleHelp />
       <Testimonials testimonials={testimonials} />
+      <ShippingReturnsMiniFAQ />
       <NewsletterSection settings={homepageSettings} />
+      <MobileStickyActions />
     </>
   );
 }

@@ -22,6 +22,15 @@ export interface HomepageCategoryCard {
   sort_order: number;
 }
 
+export interface HomepageCategoryCircle {
+  id: string;
+  label: string;
+  link_url: string;
+  image_url: string | null;
+  sort_order: number;
+  is_active: boolean;
+}
+
 export interface HomepageCollection {
   id: string;
   title: string;

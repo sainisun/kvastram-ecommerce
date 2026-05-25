@@ -17,7 +17,11 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
     <section className="kv-section collections-as-seen-section">
       <div className="kv-container">
         <div className="collections-as-seen-head">
-          <h2>Curated Collections</h2>
+          <div className="kv-tag">Curated collections</div>
+          <h2>Built around how customers actually shop</h2>
+          <p>
+            Explore handmade edits by product family, use case, and textile mood.
+          </p>
         </div>
 
         <div className="kv-carousel collections-carousel collections-as-seen-carousel">

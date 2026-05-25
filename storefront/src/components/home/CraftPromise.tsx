@@ -4,23 +4,23 @@ import { Globe2, Hand, MessageCircle, ShieldCheck } from 'lucide-react';
 const promises = [
   {
     icon: Hand,
-    title: 'Jaipur craft, edited for daily wear',
-    copy: 'Small-batch kantha, block print, and quilted pieces selected for texture, finish, and repeat wear.',
+    title: 'Only sellable pieces make it online',
+    copy: 'Every homepage piece needs real media, clear price, and enough detail to shop with confidence.',
   },
   {
     icon: ShieldCheck,
-    title: 'Storefront-ready quality gate',
-    copy: 'Products without sellable price, image, or publish-ready naming stay out of the customer journey.',
+    title: 'Honest photos and clear details',
+    copy: 'Texture, fabric, color, and handmade variation should be visible before you open the product page.',
   },
   {
     icon: Globe2,
-    title: 'India-first, global-friendly',
-    copy: 'Clear shipping, payment, and support paths for Indian and international shoppers.',
+    title: 'Small-batch, not mass-produced',
+    copy: 'Kantha, block print, and quilted cotton pieces are selected as limited textile edits.',
   },
   {
     icon: MessageCircle,
-    title: 'Assisted commerce when it matters',
-    copy: 'WhatsApp and studio support stay close for custom questions, sizing, gifts, and bulk orders.',
+    title: 'Sizing and gift help on WhatsApp',
+    copy: 'Ask for extra photos, measurements, styling help, or gifting guidance before checkout.',
   },
 ];
 
@@ -29,11 +29,11 @@ export function CraftPromise() {
     <section className="kv-section craft-promise-section">
       <div className="kv-container craft-promise-grid">
         <div className="craft-promise-copy">
-          <div className="kv-tag">Craft-led commerce</div>
-          <h2 className="kv-title">A handmade store should feel edited, not uploaded.</h2>
+          <div className="kv-tag">Why Kvastram</div>
+          <h2 className="kv-title">Handmade, edited, and ready to wear.</h2>
           <p className="kv-sub mt-4">
-            Kvastram is being shaped around fewer, stronger decisions: real product media,
-            short display names, craft proof near buying moments, and fast routes to help.
+            The homepage is designed around real product media, short shopping paths,
+            craft proof near buying moments, and fast routes to help.
           </p>
           <div className="craft-promise-actions">
             <Link href="/about/our-craft" className="home-link-button home-link-button--primary">

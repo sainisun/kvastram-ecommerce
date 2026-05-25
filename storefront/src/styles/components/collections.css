@@ -40,6 +40,18 @@
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-normal);
 }
+.collections-as-seen-head .kv-tag {
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.collections-as-seen-head p {
+  max-width: 38rem;
+  margin: 12px auto 0;
+  color: var(--ds-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-normal);
+}
 .collections-carousel,
 .collections-as-seen-carousel {
   grid-auto-columns: min(82vw, 350px);

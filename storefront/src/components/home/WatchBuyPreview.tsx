@@ -66,7 +66,7 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                   {reel.product_name}
                 </h3>
                 <p className="watch-buy-meta">
-                  {reel.price ? `${reel.price} · ` : ''}Tap to view and shop
+                  {reel.price ? `${reel.price} - ` : ''}Tap to view and shop
                 </p>
               </div>
             </Link>
