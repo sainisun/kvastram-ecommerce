@@ -1,9 +1,7 @@
-const STATIC_CACHE = 'kvastram-static-v1';
-const DYNAMIC_CACHE = 'kvastram-dynamic-v1';
+const STATIC_CACHE = 'kvastram-static-v2';
+const DYNAMIC_CACHE = 'kvastram-dynamic-v2';
 
 const STATIC_ASSETS = [
-  '/',
-  '/dashboard',
   '/manifest.json',
 ];
 
@@ -35,25 +33,33 @@ self.addEventListener('fetch', (event) => {
 
   if (request.method !== 'GET') return;
 
+  if (isAppShellRequest(request, url)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  if (url.pathname.startsWith('/_next/')) {
+    event.respondWith(networkOnly(request));
+    return;
+  }
+
   if (url.origin === location.origin) {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(networkFirst(request));
   } else {
     event.respondWith(networkFirst(request));
   }
 });
 
-async function cacheFirst(request) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
+function isAppShellRequest(request, url) {
+  return request.mode === 'navigate' || url.pathname.startsWith('/dashboard');
+}
 
+async function networkOnly(request) {
   try {
-    const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(DYNAMIC_CACHE);
-      cache.put(request, response.clone());
-    }
-    return response;
+    return await fetch(request);
   } catch {
+    const cached = await caches.match(request);
+    if (cached) return cached;
     return new Response('Offline', { status: 503 });
   }
 }
