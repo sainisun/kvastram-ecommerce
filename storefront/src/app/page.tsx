@@ -21,14 +21,10 @@ import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { Testimonials } from '@/components/home/Testimonials';
 import { HomeMerchandisingSections } from '@/components/home/HomeMerchandisingSections';
-import { HomeTrustBar } from '@/components/home/HomeTrustBar';
-import { CraftPromise } from '@/components/home/CraftPromise';
 import { CategoriesGrid } from '@/components/home/CategoriesGrid';
 import { ShopByNeed } from '@/components/home/ShopByNeed';
 import {
   CraftEducationStrip,
-  FitScaleHelp,
-  ShippingReturnsMiniFAQ,
   WhatsAppHelpStrip,
 } from '@/components/home/ConversionHelpSections';
 import { MobileStickyActions } from '@/components/home/MobileStickyActions';
@@ -441,7 +437,6 @@ export default async function Home() {
 
       <CircularCategories circles={mobileStoryCircles} />
       <HeroSection banners={heroBanners} />
-      <HomeTrustBar />
       <CategoriesGrid categories={resolvedCategoryCards} />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
@@ -453,14 +448,11 @@ export default async function Home() {
       <WatchBuyPreview reels={trendingReels} />
       <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
-      <CraftPromise />
       <CraftEducationStrip />
       <HomeMerchandisingSections
         merchandisingSlots={merchandisingSlots}
       />
-      <FitScaleHelp />
       <Testimonials testimonials={testimonials} />
-      <ShippingReturnsMiniFAQ />
       <NewsletterSection settings={homepageSettings} />
       <MobileStickyActions />
     </>
