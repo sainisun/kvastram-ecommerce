@@ -27,10 +27,10 @@ export function ShopByNeed({ collections }: ShopByNeedProps) {
       <div className="kv-container">
         <div className="kv-section-head">
           <div>
-            <div className="kv-tag">Guided shopping</div>
-            <h2 className="kv-title">Shop by occasion, use, or budget</h2>
+            <div className="kv-tag">Curated paths</div>
+            <h2 className="kv-title">Shop by moment, mood, or use</h2>
             <p className="kv-sub mt-3">
-              Real Kvastram collections grouped around how shoppers decide.
+              A faster route into festive dressing, travel layers, gifts, and home textiles.
             </p>
           </div>
         </div>

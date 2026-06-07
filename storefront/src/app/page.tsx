@@ -13,6 +13,7 @@ import {
 } from '@/lib/seo';
 import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
+import { HomeTrustBar } from '@/components/home/HomeTrustBar';
 import { BrandStory } from '@/components/home/BrandStory';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
 import { BestSellers } from '@/components/home/BestSellers';
@@ -435,8 +436,9 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
 
-      <CircularCategories circles={mobileStoryCircles} />
       <HeroSection banners={heroBanners} />
+      <HomeTrustBar />
+      <CircularCategories circles={mobileStoryCircles} />
       <CategoriesGrid categories={resolvedCategoryCards} />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}

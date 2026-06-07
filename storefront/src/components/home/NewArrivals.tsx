@@ -19,9 +19,9 @@ export function NewArrivals({ products, isCurated = false }: NewArrivalsProps) {
         <div className="kv-section-head">
           <div>
             <div className="kv-tag">New arrivals</div>
-            <h2 className="kv-title">Fresh from the Jaipur edit</h2>
+            <h2 className="kv-title">New pieces, quietly limited</h2>
             <p className="kv-sub mt-3">
-              Small-batch pieces with ready-to-shop photos, price, and craft cues.
+              Recent handmade arrivals selected for texture, drape, colour, and everyday wear.
             </p>
           </div>
           <Link

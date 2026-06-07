@@ -16,10 +16,10 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
       <div className="kv-container">
         <div className="kv-section-head">
           <div>
-            <div className="kv-tag">Guided category browsing</div>
-            <h2 className="kv-title">Find your textile edit</h2>
+            <div className="kv-tag">Shop the atelier</div>
+            <h2 className="kv-title">Choose your starting point</h2>
             <p className="kv-sub mt-3">
-              Shop Kvastram by the product families customers reach for first.
+              Sarees, jackets, bags, quilts, and everyday pieces edited by craft and use.
             </p>
           </div>
         </div>

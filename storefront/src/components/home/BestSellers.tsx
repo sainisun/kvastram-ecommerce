@@ -19,9 +19,9 @@ export function BestSellers({ products }: BestSellersProps) {
         <div className="kv-section-head">
           <div>
             <div className="kv-tag">Customer favourites</div>
-            <h2 className="kv-title">Most loved handmade pieces</h2>
+            <h2 className="kv-title">Pieces customers return to</h2>
             <p className="kv-sub mt-3">
-              Pieces customers return for: light quilting, soft cotton, easy styling, and giftable finishes.
+              Soft cotton, easy styling, light quilting, and thoughtful finishes for gifting.
             </p>
           </div>
           <Link href="/bestsellers" className="kv-section-link">

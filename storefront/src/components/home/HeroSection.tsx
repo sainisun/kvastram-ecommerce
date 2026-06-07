@@ -157,6 +157,20 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
                 Explore Collections
               </Link>
             </div>
+            <dl className="hero-proof-list" aria-label="Kvastram craft promises">
+              <div>
+                <dt>Small batch</dt>
+                <dd>Limited handmade runs</dd>
+              </div>
+              <div>
+                <dt>Craft led</dt>
+                <dd>Block print, kantha, cotton</dd>
+              </div>
+              <div>
+                <dt>Ready to gift</dt>
+                <dd>Edited for Indian occasions</dd>
+              </div>
+            </dl>
           </div>
         </div>
       </div>

@@ -14,8 +14,8 @@ export function CookieConsent() {
     // only show banner when there is no stored consent
     const existing = ConsentManager.getConsent();
     if (!existing) {
-      // delay a bit so it doesn't flash on first render
-      const timer = setTimeout(() => setShowBanner(true), 1500);
+      // Give the first brand viewport a moment before asking for consent.
+      const timer = setTimeout(() => setShowBanner(true), 3200);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -36,24 +36,24 @@ export function CookieConsent() {
 
   return (
     <div
-      className="cookie-consent fixed bottom-16 left-2 right-2 z-50 animate-fade-in-up md:bottom-6 md:left-auto md:right-6 md:max-w-md"
+      className="cookie-consent fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] left-3 right-3 z-50 animate-fade-in-up md:bottom-6 md:left-auto md:right-6 md:max-w-md"
       role="dialog"
       aria-label="Cookie consent"
       aria-live="polite"
     >
-      <Card className="cookie-consent-card flex flex-col gap-2 p-3 shadow-xl md:gap-4 md:p-5 md:shadow-2xl">
+      <Card className="cookie-consent-card flex flex-col gap-3 rounded-[var(--radius-sm)] p-3 shadow-xl md:gap-4 md:p-5 md:shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2.5">
+          <div className="flex min-w-0 items-start gap-2.5">
             <Cookie
               size={20}
               className="mt-0.5 shrink-0 text-[var(--ds-accent-gold)]"
             />
-            <div>
+            <div className="min-w-0">
               <p className="text-body-sm text-[var(--ds-text-primary)] type-semibold">
                 We value your privacy
               </p>
-              <p className="mt-0.5 hidden text-body-xs leading-token-relaxed text-[var(--ds-text-muted)] type-light sm:block">
+              <p className="mt-0.5 text-body-xs leading-token-relaxed text-[var(--ds-text-muted)] type-light">
                 Choose which categories of cookies & tracking you allow.{' '}
                 <Link
                   href="/pages/privacy-policy"
@@ -76,12 +76,12 @@ export function CookieConsent() {
         </div>
 
         {/* Actions */}
-        <div className="cookie-consent-actions flex items-center gap-2">
+        <div className="cookie-consent-actions grid grid-cols-2 gap-2 sm:flex sm:items-center">
           <Button
             onClick={handleAcceptAll}
             variant="secondary"
             size="sm"
-            className="flex-1"
+            className="min-h-10 flex-1 whitespace-nowrap bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]"
           >
             Accept All
           </Button>
@@ -89,13 +89,13 @@ export function CookieConsent() {
             onClick={handleRejectAll}
             variant="outline"
             size="sm"
-            className="flex-1"
+            className="min-h-10 flex-1 whitespace-nowrap"
           >
             Reject All
           </Button>
           <Link
             href="/cookie-settings"
-            className="flex-1 py-2.5 text-center text-body-xs  tracking-token-wider text-[var(--ds-text-primary)] underline transition-colors type-bold hover:text-[var(--ds-accent-primary)]"
+            className="col-span-2 flex min-h-9 flex-1 items-center justify-center text-center text-body-xs tracking-token-wider text-[var(--ds-text-primary)] underline transition-colors type-bold hover:text-[var(--ds-accent-primary)] sm:col-span-1"
           >
             Customize
           </Link>
