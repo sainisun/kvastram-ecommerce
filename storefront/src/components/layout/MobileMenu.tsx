@@ -34,6 +34,7 @@ import { useCart } from '@/context/cart-context';
 import { useCurrency } from '@/context/currency-context';
 import { useWishlist } from '@/context/wishlist-context';
 import { api } from '@/lib/api';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 interface Category {
@@ -78,7 +79,7 @@ interface MobileMenuProps {
   onRegionChange?: (region: Region) => void;
 }
 
-type SearchResult = Pick<Product, 'id' | 'title' | 'handle' | 'thumbnail' | 'variants'>;
+type SearchResult = Product;
 
 type MenuCategory = {
   key: string;
@@ -241,7 +242,7 @@ export default function MobileMenu({
           search: searchQuery.trim(),
           limit: 5,
         });
-        if (!cancelled) setResults(products || []);
+        if (!cancelled) setResults(filterStorefrontReadyProducts(products || []));
       } catch {
         if (!cancelled) setResults([]);
       } finally {

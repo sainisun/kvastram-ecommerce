@@ -19,6 +19,7 @@ import { RecentlyViewedRow } from '@/components/product/RecentlyViewedRow';
 import { Select } from '@/components/ui/Select';
 import { Drawer } from '@/components/ui/Drawer';
 import { api } from '@/lib/api';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import { Product } from '@/types';
 import { UnstyledButton } from '@/components/ui/Button';
 
@@ -177,8 +178,9 @@ export default function CatalogClient({
         });
 
         if (result.products) {
-          setProducts(result.products);
-          setTotal(result.total || result.products.length);
+          const readyProducts = filterStorefrontReadyProducts(result.products);
+          setProducts(readyProducts);
+          setTotal(readyProducts.length);
         }
       } catch (error) {
         console.warn('[CatalogClient] Failed to fetch products:', error);

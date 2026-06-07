@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 
 import { api } from '@/lib/api';
 import { flattenCategories, getProductPath, SITE_URL } from '@/lib/seo';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 async function fetchAllProducts() {
@@ -17,7 +18,7 @@ async function fetchAllProducts() {
     offset += limit;
   } while (offset < total);
 
-  return products;
+  return filterStorefrontReadyProducts(products);
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -133,7 +134,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
 
     const productEntries = products
-      .filter((product) => (product.handle || product.id) && product.status === 'published')
+      .filter((product) => product.handle || product.id)
       .map((product) => {
         const updatedAt = (product as Product & { updated_at?: string }).updated_at;
         return {

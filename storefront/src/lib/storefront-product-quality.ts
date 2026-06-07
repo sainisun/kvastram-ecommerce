@@ -2,7 +2,7 @@ import type { Product, ProductImage, ProductVariant } from '@/types';
 import { getProductDisplayTitle } from '@/lib/product-title';
 
 const PLACEHOLDER_TITLE_PATTERN =
-  /\b(test|dummy|sample|placeholder|lorem|hhj|asdf|untitled)\b/i;
+  /\b(test|testing|dummy|demo|sample|placeholder|lorem|hhj|asdf|abc|untitled)\b/i;
 
 function hasUsableTitle(product: Product) {
   const title = getProductDisplayTitle(product.title || '').trim();
@@ -29,6 +29,7 @@ export function hasSellablePrice(product: Product) {
 
   return Boolean(
     product.variants?.some((variant: ProductVariant) =>
+      Boolean(variant.id) &&
       variant.prices?.some((price) => Number(price.amount) > 0)
     )
   );

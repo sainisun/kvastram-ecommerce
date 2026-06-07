@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useCallback, useState, useEffect } from 'react';
@@ -12,15 +11,15 @@ import {
   Plus,
   Trash2,
   Package,
-  Eye,
   Tag,
 } from 'lucide-react';
 import Link from 'next/link';
 import ProductMediaUpload, {
   type ProductMediaItem,
 } from '@/components/ui/ProductMediaUpload';
-import ProductSeoDiscoveryPanel from '@/components/ProductSeoDiscoveryPanel';
+import ProductReadinessPanel from '@/components/ProductReadinessPanel';
 import { useNotification } from '@/context/notification-context';
+import { getAdminProductReadinessIssues } from '@/lib/product-readiness';
 
 interface Region {
   id: string;
@@ -42,85 +41,6 @@ function getCoverThumbnail(mediaItems: ProductMediaItem[]) {
     return coverItem.metadata.thumbnail_url || toDisplayUrl(firstImage?.url || '') || toDisplayUrl(coverItem.url);
   }
   return toDisplayUrl(coverItem.url);
-}
-
-// ─── Live Preview Card ────────────────────────────────────────────────────────
-function LivePreviewCard({
-  title,
-  subtitle,
-  status,
-  coverUrl,
-  inrPrice,
-}: {
-  title: string;
-  subtitle: string;
-  status: string;
-  coverUrl: string;
-  inrPrice: string;
-}) {
-  const isDraft = status === 'draft';
-  const statusColor = isDraft
-    ? 'bg-yellow-100 text-yellow-700'
-    : 'bg-green-100 text-green-700';
-
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Eye size={15} className="text-gray-400" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-gray-500">
-            Storefront Preview
-          </span>
-        </div>
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${statusColor}`}>
-          {status}
-        </span>
-      </div>
-
-      <div className="p-4">
-        <div className="w-full aspect-[4/5] rounded-lg bg-gray-100 overflow-hidden mb-3 flex items-center justify-center">
-          {coverUrl ? (
-            <img src={coverUrl} alt="Preview" className="w-full h-full object-cover" />
-          ) : (
-            <div className="flex flex-col items-center gap-2 text-gray-300">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <path d="M21 15l-5-5L5 21" />
-              </svg>
-              <span className="text-xs">Upload images</span>
-            </div>
-          )}
-        </div>
-
-        <p className="text-sm font-semibold text-gray-900 truncate leading-snug">
-          {title || <span className="text-gray-300">Product Title</span>}
-        </p>
-        {subtitle && (
-          <p className="text-xs text-gray-500 mt-0.5 truncate">{subtitle}</p>
-        )}
-        <div className="mt-2 flex items-baseline gap-1">
-          <span className="text-base font-bold text-gray-900">
-            {inrPrice ? `₹${Number(inrPrice).toLocaleString('en-IN')}` : '—'}
-          </span>
-        </div>
-
-        <div className={`mt-3 w-full py-2 rounded-lg text-xs font-semibold text-center ${
-          isDraft
-            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            : 'bg-gray-900 text-white'
-        }`}>
-          {isDraft ? 'Not published yet' : 'Add to Cart'}
-        </div>
-      </div>
-
-      <div className="px-4 pb-4">
-        <p className="text-[10px] text-gray-400 text-center">
-          This is an approximate preview. Actual storefront may vary.
-        </p>
-      </div>
-    </div>
-  );
 }
 
 // ─── Shared input classes ─────────────────────────────────────────────────────
@@ -149,13 +69,6 @@ export default function EditProductPage() {
   const [selectedTagIds, setSelectedTagIds]           = useState<string[]>([]);
   const [collections, setCollections]                 = useState<any[]>([]);
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
-  const [homepagePlacement, setHomepagePlacement] = useState({
-    new_arrivals: false,
-    bestsellers: false,
-    new_arrivals_sort: '0',
-    bestsellers_sort: '0',
-  });
-  const [homepagePlacementsLoaded, setHomepagePlacementsLoaded] = useState(false);
 
   // Form
   const [formData, setFormData] = useState({
@@ -267,23 +180,6 @@ export default function EditProductPage() {
         console.error('Failed to load variants/options', e);
       }
 
-      try {
-        setHomepagePlacementsLoaded(false);
-        const placementData = await api.getProductHomepagePlacements(id);
-        const placements = placementData?.placements || [];
-        const newArrival = placements.find((item: any) => item.section_key === 'new_arrivals');
-        const bestseller = placements.find((item: any) => item.section_key === 'bestsellers');
-        setHomepagePlacement({
-          new_arrivals: Boolean(newArrival?.is_active),
-          bestsellers: Boolean(bestseller?.is_active),
-          new_arrivals_sort: String(newArrival?.sort_order ?? 0),
-          bestsellers_sort: String(bestseller?.sort_order ?? 0),
-        });
-        setHomepagePlacementsLoaded(true);
-      } catch (e) {
-        console.error('Failed to load homepage placements', e);
-        setHomepagePlacementsLoaded(false);
-      }
     } catch (error) {
       console.error('Failed to load data', error);
       showNotification('error', 'Error loading product');
@@ -431,6 +327,19 @@ export default function EditProductPage() {
     }
   };
 
+  const readinessInput = {
+    title: formData.title,
+    handle: formData.handle,
+    priceType,
+    inrPrice,
+    mediaCount: mediaItems.length,
+    categoryCount: selectedCategoryIds.length,
+    collectionId: selectedCollectionId,
+    material: formData.material,
+    seoTitle: formData.seo_title,
+    seoDescription: formData.seo_description,
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
@@ -444,6 +353,15 @@ export default function EditProductPage() {
       const parsedInrPrice = Number.parseFloat(inrPrice);
       if (priceType === 'fixed' && (!inrPrice || Number.isNaN(parsedInrPrice) || parsedInrPrice <= 0)) {
         throw new Error('Enter a valid INR price before saving this fixed-price product.');
+      }
+
+      if (formData.status === 'published') {
+        const issues = getAdminProductReadinessIssues(readinessInput);
+        if (issues.length > 0) {
+          throw new Error(
+            `Product is not ready to publish: ${issues.map((issue) => issue.message).join(' ')}`
+          );
+        }
       }
 
       // Save price only for fixed-price products. Region is optional because storefront pricing
@@ -475,34 +393,10 @@ export default function EditProductPage() {
         thumbnail:    getCoverThumbnail(mediaItems) || undefined,
         category_ids: selectedCategoryIds,
         tag_ids:      selectedTagIds,
-        collection_id: selectedCollectionId || undefined,
+        collection_id: selectedCollectionId || null,
       };
 
       await api.updateProduct(id, payload);
-      if (homepagePlacementsLoaded) {
-        await api.updateProductHomepagePlacements(id, [
-          ...(homepagePlacement.new_arrivals
-            ? [
-                {
-                  section_key: 'new_arrivals' as const,
-                  is_active: true,
-                  sort_order:
-                    Number.parseInt(homepagePlacement.new_arrivals_sort) || 0,
-                },
-              ]
-            : []),
-          ...(homepagePlacement.bestsellers
-            ? [
-                {
-                  section_key: 'bestsellers' as const,
-                  is_active: true,
-                  sort_order:
-                    Number.parseInt(homepagePlacement.bestsellers_sort) || 0,
-                },
-              ]
-            : []),
-        ]);
-      }
       showNotification('success', 'Product updated successfully');
       router.push('/dashboard/products');
     } catch (error: any) {
@@ -514,7 +408,6 @@ export default function EditProductPage() {
 
   if (fetching) return <div className="p-10 text-center">Loading...</div>;
 
-  const coverUrl = getCoverThumbnail(mediaItems);
 
   return (
     <div className="space-y-6 px-4 pb-16 md:px-8">
@@ -990,14 +883,7 @@ export default function EditProductPage() {
             ════════════════════════════════════════ */}
         <div className="space-y-5 lg:sticky lg:top-6">
 
-          {/* 1 ── Live Preview */}
-          <LivePreviewCard
-            title={formData.title}
-            subtitle={formData.subtitle}
-            status={formData.status}
-            coverUrl={coverUrl}
-            inrPrice={inrPrice}
-          />
+          <ProductReadinessPanel input={readinessInput} />
 
           {/* 2 ── Organisation */}
           <div className={cardCls}>
@@ -1051,54 +937,6 @@ export default function EditProductPage() {
           </div>
 
           {/* 3 ── Categorization */}
-          <div className={cardCls}>
-            <h2 className="text-base font-bold text-gray-800 mb-4">Homepage Placement</h2>
-            <div className="space-y-4">
-              {[
-                { key: 'new_arrivals', sortKey: 'new_arrivals_sort', label: 'Show in New Arrivals' },
-                { key: 'bestsellers', sortKey: 'bestsellers_sort', label: 'Show in Bestsellers' },
-              ].map((item) => (
-                <div key={item.key} className="rounded-lg border border-gray-200 p-3">
-                  <label className="flex items-center gap-3 text-sm font-medium text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={(homepagePlacement as any)[item.key]}
-                      disabled={!homepagePlacementsLoaded}
-                      onChange={(event) =>
-                        setHomepagePlacement((current) => ({
-                          ...current,
-                          [item.key]: event.target.checked,
-                        }))
-                      }
-                      className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
-                    />
-                    {item.label}
-                  </label>
-                  {(homepagePlacement as any)[item.key] ? (
-                    <div className="mt-3">
-                      <label className="mb-1 block text-xs font-medium text-gray-500">
-                        Sort Order
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={(homepagePlacement as any)[item.sortKey]}
-                        disabled={!homepagePlacementsLoaded}
-                        onChange={(event) =>
-                          setHomepagePlacement((current) => ({
-                            ...current,
-                            [item.sortKey]: event.target.value,
-                          }))
-                        }
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                      />
-                    </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          </div>
-
           <div className={cardCls}>
             <div className="flex items-center gap-2 mb-4">
               <Tag size={15} className="text-gray-400" />
@@ -1181,13 +1019,6 @@ export default function EditProductPage() {
               </div>
             </div>
           </div>
-
-          <ProductSeoDiscoveryPanel
-            productId={id}
-            productHandle={formData.handle}
-            variants={variants}
-            mediaItems={mediaItems}
-          />
 
         </div>
         {/* end right column */}

@@ -14,6 +14,10 @@ import {
   getCategoryPath,
   getPrimaryCategory,
 } from '@/lib/seo';
+import {
+  filterStorefrontReadyProducts,
+  isStorefrontProductReady,
+} from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 type Props = {
@@ -23,7 +27,7 @@ type Props = {
 async function getCanonicalProduct(handle: string) {
   const product = await api.getProduct(handle);
 
-  if (!product || !product.id) {
+  if (!product || !product.id || !isStorefrontProductReady(product)) {
     notFound();
   }
 
@@ -92,8 +96,13 @@ export default async function ProductPage({ params }: Props) {
           )}
         </div>
         <Suspense fallback={<div>Loading...</div>}>
-          {product.semantic_related_products?.length ? (
-            <ProductGrid initialProducts={product.semantic_related_products.slice(0, 4)} />
+          {product.semantic_related_products?.length &&
+          filterStorefrontReadyProducts(product.semantic_related_products).length ? (
+            <ProductGrid
+              initialProducts={filterStorefrontReadyProducts(
+                product.semantic_related_products
+              ).slice(0, 4)}
+            />
           ) : (
             <RelatedProducts
               categoryIds={product.categories?.map((category) => category.id) || []}
@@ -138,7 +147,13 @@ async function RelatedProducts({
 
   for (const result of results) {
     for (const product of result.products || []) {
-      if (product.id === currentId || relatedMap.has(product.id)) continue;
+      if (
+        product.id === currentId ||
+        relatedMap.has(product.id) ||
+        !isStorefrontProductReady(product)
+      ) {
+        continue;
+      }
       relatedMap.set(product.id, product);
       if (relatedMap.size >= 4) break;
     }

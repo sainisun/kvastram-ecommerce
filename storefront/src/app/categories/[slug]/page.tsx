@@ -13,6 +13,7 @@ import {
   serializeJsonLd,
   titleFromHandle,
 } from '@/lib/seo';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 export const revalidate = 60;
@@ -111,8 +112,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   ]);
 
   const title = category.name || titleFromHandle(slug);
-  const products = productsResponse.products || [];
-  const totalProducts = productsResponse.total || products.length;
+  const products = filterStorefrontReadyProducts(productsResponse.products || []);
+  const totalProducts = products.length;
   const children = category.children || [];
   const relatedLinks = [
     ...children

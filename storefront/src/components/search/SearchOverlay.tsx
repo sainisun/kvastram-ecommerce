@@ -9,10 +9,11 @@ import Input from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Button, IconButton } from '@/components/ui/Button';
 import { api } from '@/lib/api';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import { useCurrency } from '@/context/currency-context';
 import type { Product } from '@/types';
 
-type SearchResult = Pick<Product, 'id' | 'title' | 'handle' | 'thumbnail' | 'variants'>;
+type SearchResult = Product;
 
 function getSearchResultPrice(product: SearchResult) {
   const prices = product.variants?.flatMap((variant) => variant.prices || []) || [];
@@ -120,7 +121,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
         // Fetch suggestions
         const { suggestions: suggs } = await api.getSuggestions(debouncedQuery);
 
-        setResults(products || []);
+        setResults(filterStorefrontReadyProducts(products || []));
         setSuggestions(suggs || []);
       } catch (err) {
         console.error(err);

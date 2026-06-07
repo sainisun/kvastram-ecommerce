@@ -12,6 +12,10 @@ import {
   buildBreadcrumbJsonLd,
   serializeJsonLd,
 } from '@/lib/seo';
+import {
+  filterStorefrontReadyProducts,
+  getProductPrimaryImage,
+} from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 export const revalidate = 60;
@@ -95,11 +99,13 @@ export default async function BestsellersPage({
 
   const curatedProducts =
     curatedResult.status === 'fulfilled'
-      ? (curatedResult.value.featuredProducts || [])
+      ? filterStorefrontReadyProducts(
+          (curatedResult.value.featuredProducts || [])
           .map((item: { product?: Product | null }) => item.product)
           .filter((product: Product | null | undefined): product is Product =>
             Boolean(product?.id)
           )
+        )
       : [];
 
   const [taggedProductsResult, fallbackProductsResult] = await Promise.allSettled([
@@ -111,11 +117,11 @@ export default async function BestsellersPage({
 
   const taggedProducts =
     taggedProductsResult.status === 'fulfilled'
-      ? taggedProductsResult.value.products || []
+      ? filterStorefrontReadyProducts(taggedProductsResult.value.products || [])
       : [];
   const fallbackProducts =
     fallbackProductsResult.status === 'fulfilled'
-      ? fallbackProductsResult.value.products || []
+      ? filterStorefrontReadyProducts(fallbackProductsResult.value.products || [])
       : [];
 
   const sourceProducts =
@@ -150,7 +156,9 @@ export default async function BestsellersPage({
     },
   ].filter((stat) => stat.value);
 
-  const heroImage = products.find((product) => product.thumbnail)?.thumbnail;
+  const heroImage = products
+    .map((product) => getProductPrimaryImage(product))
+    .find(Boolean);
 
   const schema = [
     buildBreadcrumbJsonLd([
@@ -257,21 +265,15 @@ export default async function BestsellersPage({
                   >
                     <div className="relative">
                       <div className="relative aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]">
-                        {product.thumbnail ? (
+                        {getProductPrimaryImage(product) ? (
                           <OptimizedImage
-                            src={product.thumbnail}
+                            src={getProductPrimaryImage(product) || ''}
                             alt={product.title}
                             fill
                             sizes="(max-width: 768px) 100vw, 33vw"
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                           />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-surface-warm)]">
-                            <span className="font-display text-display-lg type-semibold  tracking-token-wide text-[var(--ds-text-muted)]">
-                              {product.title}
-                            </span>
-                          </div>
-                        )}
+                        ) : null}
 
                         <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-text-primary)] font-display text-display-sm type-medium text-[var(--ds-text-inverse)]">
                           {index + 1}

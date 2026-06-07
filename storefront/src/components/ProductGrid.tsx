@@ -15,7 +15,10 @@ import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useCurrency } from '@/context/currency-context';
 import { buildProductImageAlt } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
-import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
+import {
+  filterStorefrontReadyProducts,
+  isStorefrontProductReady,
+} from '@/lib/storefront-product-quality';
 
 interface SpotlightProduct {
   id: string;
@@ -201,7 +204,7 @@ function ProductGrid({
       const spotlight = spotlightProducts[spotlightIndex];
       const spotlightProduct = spotlight?.product;
 
-      if (spotlight && spotlightProduct) {
+      if (spotlight && spotlightProduct && isStorefrontProductReady(spotlightProduct)) {
         const spotlightPrice = getPrice(spotlightProduct);
 
         renderedItems.push(

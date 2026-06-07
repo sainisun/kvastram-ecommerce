@@ -17,6 +17,7 @@ import { Drawer } from '@/components/ui/Drawer';
 import { Select } from '@/components/ui/Select';
 import { UnstyledButton } from '@/components/ui/Button';
 import { api } from '@/lib/api';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 type Tag = {
@@ -129,8 +130,9 @@ export default function ListingPageClient({
           cache: false,
         });
 
-        setProducts(result.products || []);
-        setTotal(result.total || result.products?.length || 0);
+        const readyProducts = filterStorefrontReadyProducts(result.products || []);
+        setProducts(readyProducts);
+        setTotal(readyProducts.length);
       } catch (error) {
         console.warn('[ListingPageClient] Failed to fetch products:', error);
       } finally {

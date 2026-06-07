@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import ProductGrid from '@/components/ProductGrid';
 import type { Product } from '@/types';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import {
   storefrontAttributeFilters,
   storefrontDiscoveryQuickLinks,
@@ -76,7 +77,7 @@ function SearchContent() {
         }
 
         const data = await api.getProducts(params);
-        setProducts(data.products || []);
+        setProducts(filterStorefrontReadyProducts(data.products || []));
       } catch (error) {
         console.error('Failed to search products', error);
       } finally {

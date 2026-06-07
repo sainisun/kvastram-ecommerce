@@ -14,6 +14,8 @@ import {
   product_images,
   categories,
   tags,
+  product_collections,
+  collection_products,
   product_categories,
   product_tags,
   product_seo,
@@ -31,17 +33,29 @@ import { emailService } from '../email-service';
 import type {
   CreateProductInput,
   UpdateProductInput,
-  ProductBulkUpdate,
 } from './product-validator';
 import { ValidationError } from '../../middleware/error-handler';
 import type { ValidationErrorDetails } from '../../middleware/error-handler';
+import { getNewProductPublishReadinessIssues } from './product-readiness';
 
+function compactUndefined<T extends Record<string, unknown>>(value: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(value).filter(([, entry]) => entry !== undefined)
+  ) as Partial<T>;
+}
 
 export class ProductMutationService {
   /**
    * Create a base product with default variant and prices.
    */
   async create(data: CreateProductInput) {
+    if (data.status === 'published') {
+      const errors = getNewProductPublishReadinessIssues(data);
+      if (errors.length > 0) {
+        throw new ValidationError('Product is not ready to publish', errors);
+      }
+    }
+
     return await db.transaction(async (tx) => {
       const {
         prices,
@@ -55,7 +69,7 @@ export class ProductMutationService {
       } = data;
 
       // Validate foreign keys exist before proceeding
-      await this.validateForeignKeys(tx, category_ids, tag_ids);
+      await this.validateForeignKeys(tx, category_ids, tag_ids, productData.collection_id);
 
       // 1. Create Product
       const newProduct = await this.createBaseProduct(tx, productData);
@@ -78,15 +92,23 @@ export class ProductMutationService {
       // 7. Assign Tags
       await this.assignTagsToProduct(tx, newProduct.id, tag_ids);
 
-      // 8. Create SEO/discovery baseline so new products are never SEO-empty.
+      // 8. Keep legacy collection_id and the collection_products junction in sync.
+      await this.assignCollectionToProduct(tx, newProduct.id, productData.collection_id);
+
+      // 9. Create SEO/discovery baseline so new products are never SEO-empty.
       await this.createSeoDiscoveryBaseline(tx, newProduct, newVariant, createdImages, data);
 
       return { ...newProduct, default_variant_id: newVariant.id };
     });
   }
 
-  private async validateForeignKeys(tx: any, categoryIds: string[] | undefined, tagIds: string[] | undefined) {
-    if (!categoryIds && !tagIds) return;
+  private async validateForeignKeys(
+    tx: any,
+    categoryIds: string[] | undefined,
+    tagIds: string[] | undefined,
+    collectionId?: string | null
+  ) {
+    if (!categoryIds && !tagIds && !collectionId) return;
 
     const errors: ValidationErrorDetails[] = [];
 
@@ -116,6 +138,20 @@ export class ProductMutationService {
         errors.push({
           field: 'tag_ids',
           message: `Tags not found: ${missing.join(', ')}`,
+        });
+      }
+    }
+
+    if (collectionId) {
+      const existingCollections = await tx
+        .select({ id: product_collections.id })
+        .from(product_collections)
+        .where(eq(product_collections.id, collectionId));
+
+      if (existingCollections.length === 0) {
+        errors.push({
+          field: 'collection_id',
+          message: `Collection not found: ${collectionId}`,
         });
       }
     }
@@ -416,7 +452,7 @@ export class ProductMutationService {
       })
       .onConflictDoNothing();
 
-    if (document) {
+    if (document && process.env.ENABLE_PRODUCT_EMBEDDINGS === 'true') {
       await tx
         .insert(product_embeddings)
         .values({
@@ -451,6 +487,19 @@ export class ProductMutationService {
     );
   }
 
+  private async assignCollectionToProduct(tx: any, productId: string, collectionId: string | null | undefined) {
+    if (!collectionId) return;
+
+    await tx
+      .insert(collection_products)
+      .values({
+        product_id: productId,
+        collection_id: collectionId,
+        position: 0,
+      })
+      .onConflictDoNothing();
+  }
+
   /**
    * Update a product's base details.
    */
@@ -460,6 +509,8 @@ export class ProductMutationService {
     }
 
     const result = await db.transaction(async (tx) => {
+      await this.validateForeignKeys(tx, data.category_ids, data.tag_ids, data.collection_id);
+
       // 1. Update Product Base
       const updatedProduct = await this.updateBaseProductDetails(tx, id, data);
 
@@ -484,6 +535,10 @@ export class ProductMutationService {
       // 6. Handle Tags
       if (data.tag_ids) {
         await this.syncProductTags(tx, id, data.tag_ids);
+      }
+
+      if (data.collection_id !== undefined) {
+        await this.syncProductCollection(tx, id, data.collection_id);
       }
 
       return updatedProduct;
@@ -525,26 +580,38 @@ export class ProductMutationService {
     const hasAttributes = existingAttributes.length > 0 || Boolean(data.material || existing.material);
     const hasSeoTitle = Boolean(data.seo_title || seo?.seo_title || existing.seo_title);
     const hasMetaDescription = Boolean(data.seo_description || seo?.meta_description || existing.seo_description);
-    const hasPriceOrOnRequest =
-      (data.price_type || existing.price_type) === 'on_request' ||
+    const hasFixedPrice = (data.price_type || existing.price_type || 'fixed') === 'fixed';
+    const hasSellablePrice =
       Boolean(data.prices?.some((price) => Number(price.amount) > 0)) ||
       existingPrices.some((price) => Number(price.amount) > 0);
+    const hasPrice = hasFixedPrice && hasSellablePrice;
 
     const errors: ValidationErrorDetails[] = [
       { field: 'title', message: 'Published products need a title.' },
       { field: 'handle', message: 'Published products need an editable URL slug.' },
-      { field: 'prices', message: 'Published products need a price or on-request pricing mode.' },
+      { field: 'prices', message: 'Published products need fixed pricing with at least one positive price.' },
       { field: 'images', message: 'Published products need at least one product image.' },
-      { field: 'category_ids', message: 'Published products need at least one category.' },
+      { field: 'category_ids', message: 'Published products need at least one category or collection.' },
       { field: 'attributes', message: 'Published products need at least one structured attribute or legacy material.' },
       { field: 'seo_title', message: 'Published products need an SEO title.' },
       { field: 'seo_description', message: 'Published products need a meta description.' },
     ].filter((error) => {
-      if (error.field === 'title') return !Boolean(data.title || existing.title);
+      if (error.field === 'title') {
+        return getNewProductPublishReadinessIssues({
+          title: data.title || existing.title,
+          handle: data.handle || existing.handle,
+          thumbnail: data.thumbnail || existing.thumbnail || undefined,
+          images: data.images,
+          price_type: (data.price_type || existing.price_type || 'fixed') as 'fixed' | 'on_request',
+          prices: data.prices,
+          category_ids: data.category_ids,
+          collection_id: data.collection_id ?? existing.collection_id,
+        }).some((issue) => issue.field === 'title');
+      }
       if (error.field === 'handle') return !Boolean(data.handle || existing.handle);
-      if (error.field === 'prices') return !hasPriceOrOnRequest;
+      if (error.field === 'prices') return !hasPrice;
       if (error.field === 'images') return !hasImages;
-      if (error.field === 'category_ids') return !hasCategories;
+      if (error.field === 'category_ids') return !hasCategories && !Boolean(data.collection_id ?? existing.collection_id);
       if (error.field === 'attributes') return !hasAttributes;
       if (error.field === 'seo_title') return !hasSeoTitle;
       if (error.field === 'seo_description') return !hasMetaDescription;
@@ -568,10 +635,10 @@ export class ProductMutationService {
       ...productFields
     } = data;
 
-    const updateData = {
+    const updateData = compactUndefined({
       ...productFields,
       updated_at: new Date(),
-    };
+    });
 
     const result = await tx
       .update(products)
@@ -595,19 +662,21 @@ export class ProductMutationService {
       return null;
     }
 
+    const updateData = compactUndefined({
+      hs_code: data.hs_code,
+      origin_country: data.origin_country,
+      material: data.material,
+      weight: data.weight,
+      length: data.length,
+      height: data.height,
+      width: data.width,
+      inventory_quantity: data.inventory_quantity,
+      updated_at: new Date(),
+    });
+
     await tx
       .update(product_variants)
-      .set({
-        hs_code: data.hs_code,
-        origin_country: data.origin_country,
-        material: data.material,
-        weight: data.weight,
-        length: data.length,
-        height: data.height,
-        width: data.width,
-        inventory_quantity: data.inventory_quantity,
-        updated_at: new Date(),
-      })
+      .set(updateData)
       .where(eq(product_variants.id, variants[0].id));
 
     return variants[0].id;
@@ -632,6 +701,18 @@ export class ProductMutationService {
   }
 
   private async syncProductImages(tx: any, productId: string, images: any[]) {
+    const existingImages = await tx
+      .select({ id: product_images.id })
+      .from(product_images)
+      .where(eq(product_images.product_id, productId));
+    const existingImageIds = existingImages.map((image: { id: string }) => image.id);
+
+    if (existingImageIds.length > 0) {
+      await tx
+        .delete(product_media_seo)
+        .where(inArray(product_media_seo.image_id, existingImageIds));
+    }
+
     await tx
       .delete(product_images)
       .where(eq(product_images.product_id, productId));
@@ -679,6 +760,16 @@ export class ProductMutationService {
           tag_id: tagId,
         }))
       );
+    }
+  }
+
+  private async syncProductCollection(tx: any, productId: string, collectionId: string | null | undefined) {
+    await tx
+      .delete(collection_products)
+      .where(eq(collection_products.product_id, productId));
+
+    if (collectionId) {
+      await this.assignCollectionToProduct(tx, productId, collectionId);
     }
   }
 
@@ -786,71 +877,6 @@ export class ProductMutationService {
       await tx.delete(products).where(eq(products.id, id));
 
       return { id, deleted: true };
-    });
-  }
-
-  /**
-   * Bulk update products
-   */
-  async bulkUpdate(ids: string[], updates: ProductBulkUpdate) {
-    const updateData = { ...updates, updated_at: new Date() };
-    await db.update(products).set(updateData).where(inArray(products.id, ids));
-    return ids.length;
-  }
-
-  /**
-   * Bulk delete products
-   */
-  async bulkDelete(ids: string[]) {
-    return await db.transaction(async (tx) => {
-      // 1. Get all variant IDs for these products
-      const variants = await tx
-        .select({ id: product_variants.id })
-        .from(product_variants)
-        .where(inArray(product_variants.product_id, ids));
-
-      const variantIds = variants.map((v) => v.id);
-
-      // 2. Delete product_options and product_option_values
-      if (variantIds.length > 0) {
-        await tx
-          .delete(product_option_values)
-          .where(inArray(product_option_values.variant_id, variantIds));
-        await tx
-          .delete(product_options)
-          .where(inArray(product_options.product_id, ids));
-      }
-
-      // 3. Delete money_amounts (prices) for all variants
-      if (variantIds.length > 0) {
-        await tx
-          .delete(money_amounts)
-          .where(inArray(money_amounts.variant_id, variantIds));
-      }
-
-      // 4. Delete variants
-      await tx
-        .delete(product_variants)
-        .where(inArray(product_variants.product_id, ids));
-
-      // 5. Delete images
-      await tx
-        .delete(product_images)
-        .where(inArray(product_images.product_id, ids));
-
-      // 6. Delete category associations
-      await tx
-        .delete(product_categories)
-        .where(inArray(product_categories.product_id, ids));
-
-      // 7. Delete tag associations
-      await tx
-        .delete(product_tags)
-        .where(inArray(product_tags.product_id, ids));
-
-      // 8. Finally delete products
-      await tx.delete(products).where(inArray(products.id, ids));
-      return ids.length;
     });
   }
 }

@@ -37,6 +37,12 @@ describe('storefront product quality gate', () => {
       { ...readyProduct, id: 'prod_2', title: 'Test product' },
       { ...readyProduct, id: 'prod_3', thumbnail: null, images: [] },
       { ...readyProduct, id: 'prod_4', variants: [] },
+      { ...readyProduct, id: 'prod_5', title: 'Demo jacket' },
+      {
+        ...readyProduct,
+        id: 'prod_6',
+        variants: [{ ...readyProduct.variants![0], id: '' }],
+      },
     ];
 
     expect(filterStorefrontReadyProducts(products)).toEqual([readyProduct]);

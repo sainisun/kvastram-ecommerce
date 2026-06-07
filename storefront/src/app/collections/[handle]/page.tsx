@@ -16,6 +16,7 @@ import {
   serializeJsonLd,
   titleFromHandle,
 } from '@/lib/seo';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 export const revalidate = 60;
@@ -140,12 +141,8 @@ async function resolveLanding(handle: string): Promise<LandingData | null> {
 }
 
 async function fetchLandingProductCount(landing: LandingData) {
-  if (typeof landing.product_count === 'number') {
-    return landing.product_count;
-  }
-
   const response = await api.getProducts({
-    limit: 1,
+    limit: 100,
     ...(landing.kind === 'collection'
       ? { collection_id: landing.id }
       : {
@@ -172,7 +169,7 @@ async function fetchLandingProductCount(landing: LandingData) {
         }),
   });
 
-  return response.total || response.products?.length || 0;
+  return filterStorefrontReadyProducts(response.products || []).length;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -263,8 +260,8 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       : Promise.resolve(null),
   ]);
 
-  const products = productsResponse.products || [];
-  const totalProducts = productsResponse.total || products.length;
+  const products = filterStorefrontReadyProducts(productsResponse.products || []);
+  const totalProducts = products.length;
   const relatedCollections: Array<{ id: string; handle: string; title: string }> =
     allCollectionsResponse
       ? (allCollectionsResponse.collections || [])

@@ -24,9 +24,9 @@ import { Select } from '@/components/ui/Select';
 import { Button, UnstyledButton } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import {
+  filterStorefrontReadyProducts,
   getProductPrimaryImage,
-  hasProductMedia,
-  hasSellablePrice,
+  isStorefrontProductReady,
 } from '@/lib/storefront-product-quality';
 
 interface ShippingOption {
@@ -158,9 +158,7 @@ export default function CartPage() {
   const [addingRec, setAddingRec] = useState<string | null>(null);
 
   const curateCartRecommendations = (products: Product[] = []) =>
-    products
-      .filter((product) => product.handle && hasProductMedia(product) && hasSellablePrice(product))
-      .slice(0, 4);
+    filterStorefrontReadyProducts(products).slice(0, 4);
 
   useEffect(() => {
     if (items.length === 0) {
@@ -209,7 +207,7 @@ export default function CartPage() {
         for (const result of results) {
           for (const related of result.products || []) {
             if (!related.handle || cartHandles.has(related.handle)) continue;
-            if (!hasProductMedia(related) || !hasSellablePrice(related)) continue;
+            if (!isStorefrontProductReady(related)) continue;
             if (relatedMap.has(related.id)) continue;
             relatedMap.set(related.id, related);
             if (relatedMap.size >= 4) break;

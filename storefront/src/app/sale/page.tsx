@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import ProductGrid from '@/components/ProductGrid';
 import { ButtonLink } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { MoneyAmount, Product } from '@/types';
 
 type Campaign = {
@@ -46,9 +47,10 @@ export default function SalePage() {
   useEffect(() => {
     Promise.all([api.getProducts({ limit: 50, sort: 'newest' }), api.getActiveCampaigns()])
       .then(([data, campaignData]) => {
-        const saleProducts = (data.products || []).filter(hasSalePrice).slice(0, 24);
+        const readyProducts = filterStorefrontReadyProducts(data.products || []);
+        const saleProducts = readyProducts.filter(hasSalePrice).slice(0, 24);
         setProducts(saleProducts);
-        setCatalogFallback((data.products || []).slice(0, 8));
+        setCatalogFallback(readyProducts.slice(0, 8));
         const campaign = (campaignData.campaigns || []).find(
           (item: Campaign) => item.name?.toLowerCase().includes('sale') || item.end_date
         );
