@@ -6,8 +6,8 @@
 
 :root {
   /* Typography */
-  --ds-font-display: var(--font-libre-caslon), 'Libre Caslon Text', 'Cormorant Garamond', Georgia, serif;
-  --ds-font-body: var(--font-hanken-grotesk), 'Hanken Grotesk', 'DM Sans', system-ui, sans-serif;
+  --ds-font-display: 'Libre Caslon Text', 'Cormorant Garamond', Georgia, serif;
+  --ds-font-body: 'Hanken Grotesk', 'DM Sans', system-ui, sans-serif;
   --ds-font-ui: var(--ds-font-body);
   --ds-font-label: var(--ds-font-ui);
 
