@@ -55,10 +55,10 @@ type HomepageSettings = {
 };
 
 const CATEGORY_FALLBACK_IMAGES = [
-  '/images/home/category-kurtas.jpg',
-  '/images/home/category-sarees.jpg',
-  '/images/home/collection-bridal.jpg',
-  '/images/home/collection-summer.jpg',
+  '/images/home/category-jackets.jpg',
+  '/images/home/category-dresses.jpg',
+  '/images/home/category-bags.jpg',
+  '/images/home/category-quilts.jpg',
 ];
 
 export const revalidate = 60;

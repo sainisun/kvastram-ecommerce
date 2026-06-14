@@ -6,11 +6,8 @@
 
 :root {
   /* Typography */
-  --ds-kapaas-typeface-stack: 'New York', 'Iowan Old Style', 'Apple Garamond',
-    Baskerville, 'Times New Roman', 'Droid Serif', Times, 'Source Serif Pro',
-    serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  --ds-font-display: var(--ds-kapaas-typeface-stack);
-  --ds-font-body: var(--ds-kapaas-typeface-stack);
+  --ds-font-display: var(--font-libre-caslon), 'Libre Caslon Text', 'Cormorant Garamond', Georgia, serif;
+  --ds-font-body: var(--font-hanken-grotesk), 'Hanken Grotesk', 'DM Sans', system-ui, sans-serif;
   --ds-font-ui: var(--ds-font-body);
   --ds-font-label: var(--ds-font-ui);
 
@@ -68,46 +65,46 @@
   --ds-type-product-meta-tracking: var(--ds-tracking-normal);
 
   /* Surfaces */
-  --ds-surface-page: #f9f7f4;
+  --ds-surface-page: #fcf9f2;
   --ds-surface-paper: #ffffff;
-  --ds-surface-soft: #f1ede7;
-  --ds-surface-parchment: #f7f4ef;
-  --ds-surface-parchment-2: #ede8e0;
-  --ds-surface-warm: #e8e2d9;
+  --ds-surface-soft: #f1eee7;
+  --ds-surface-parchment: #f6f3ec;
+  --ds-surface-parchment-2: #e5e2db;
+  --ds-surface-warm: #ebe8e1;
 
   /* Text */
-  --ds-text-primary: #1a1714;
-  --ds-text-secondary: #3d3a36;
-  --ds-text-muted: #7a7570;
-  --ds-text-disabled: #b5b0a8;
+  --ds-text-primary: #111111;
+  --ds-text-secondary: #4d453f;
+  --ds-text-muted: #7f756e;
+  --ds-text-disabled: #bfa37e;
   --ds-text-inverse: #ffffff;
-  --ds-text-price: #1a1714;
+  --ds-text-price: #111111;
   --ds-text-price-old: #888888;
 
   /* Borders */
-  --ds-border-subtle: #e8e3db;
-  --ds-border-strong: #d8d2c8;
-  --ds-border-dark: #1a1714;
+  --ds-border-subtle: #d0c4bc;
+  --ds-border-strong: #7f756e;
+  --ds-border-dark: #111111;
 
   /* Footer */
-  --ds-footer-bg: #1a1614;
-  --ds-footer-text: #f8f3ec;
-  --ds-footer-heading: #efe7dd;
-  --ds-footer-link: #d8d0c7;
-  --ds-footer-muted: #c9beb3;
-  --ds-footer-dim: #b8aca0;
+  --ds-footer-bg: #111111;
+  --ds-footer-text: #f4f1ea;
+  --ds-footer-heading: #e6dccf;
+  --ds-footer-link: #d0c4bc;
+  --ds-footer-muted: #7f756e;
+  --ds-footer-dim: #bfa37e;
   --ds-footer-border: #3a3029;
-  --ds-footer-highlight: #f0c36b;
-  --ds-footer-highlight-hover: #ffd98e;
+  --ds-footer-highlight: #BFA37E;
+  --ds-footer-highlight-hover: #e6c594;
   --ds-footer-hover: #ffffff;
 
   /* Accent: TERRACOTTA is canonical. */
-  --ds-accent-primary: #c4613a;
-  --ds-accent-hover: #9f4528;
-  --ds-accent-soft: #f0e0d6;
-  --ds-accent-rgb: 196, 97, 58;
-  --ds-accent-gold: #b8924a;
-  --ds-accent-gold-rgb: 184, 146, 74;
+  --ds-accent-primary: #c46441;
+  --ds-accent-hover: #9b4524;
+  --ds-accent-soft: #ffdbcf;
+  --ds-accent-rgb: 196, 100, 65;
+  --ds-accent-gold: #BFA37E;
+  --ds-accent-gold-rgb: 191, 163, 126;
   --ds-white-rgb: 255, 255, 255;
 
   /* Status */

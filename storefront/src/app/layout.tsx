@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Libre_Caslon_Text, Hanken_Grotesk } from 'next/font/google';
 
 import './globals.css';
 import '../styles/storefront.css';
@@ -23,6 +24,20 @@ import {
   SITE_NAME,
   SITE_URL,
 } from '@/lib/seo';
+
+const libreCaslon = Libre_Caslon_Text({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-libre-caslon',
+  display: 'swap',
+});
+
+const hankenGrotesk = Hanken_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-hanken-grotesk',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -64,7 +79,7 @@ export default async function RootLayout({
   const globalSchema = [buildOrganizationJsonLd(), buildWebsiteJsonLd()];
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${libreCaslon.variable} ${hankenGrotesk.variable}`} suppressHydrationWarning>
       <head>
         <link
           rel="preconnect"
