@@ -114,7 +114,7 @@ export function HomeMerchandisingSections({
   return (
     <>
       {seasonalSlots.length > 0 ? (
-        <section className="kv-section bg-[var(--cream)]">
+        <section className="kv-section bg-[var(--ds-surface-page)]">
           <div className="kv-container">
             <SectionHead
               eyebrow="Limited editions"
@@ -132,7 +132,7 @@ export function HomeMerchandisingSections({
       {children}
 
       {fabricSlots.length > 0 ? (
-        <section className="kv-section bg-[var(--cream)]">
+        <section className="kv-section bg-[var(--ds-surface-page)]">
           <div className="kv-container">
             <SectionHead
               eyebrow="Craft &amp; material"
@@ -152,7 +152,7 @@ export function HomeMerchandisingSections({
       ) : null}
 
       {occasionSlots.length > 0 ? (
-        <section className="kv-section bg-[var(--cream)]">
+        <section className="kv-section bg-[var(--ds-surface-page)]">
           <div className="kv-container">
             <SectionHead
               eyebrow="Dress for the moment"

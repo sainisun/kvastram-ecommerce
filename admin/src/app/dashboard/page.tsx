@@ -220,7 +220,7 @@ export default function DashboardPage() {
         {[
           { label: 'Add Product',    sub: 'New listing',         href: '/dashboard/products/new' },
           { label: 'View Orders',    sub: 'Fulfillment queue',   href: '/dashboard/orders' },
-          { label: 'Hero Banners',   sub: 'Homepage slider',     href: '/dashboard/content/hero-banners' },
+          { label: 'Category Circles', sub: 'Mobile shortcuts', href: '/dashboard/content/category-circles' },
           { label: 'Add Coupon',     sub: 'Discounts & deals',   href: '/dashboard/marketing' },
         ].map((a) => (
           <Link

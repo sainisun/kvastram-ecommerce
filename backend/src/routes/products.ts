@@ -23,13 +23,13 @@ import { triggerStorefrontRevalidation } from '../utils/storefront-revalidate';
 import { config } from '../config';
 import { db } from '../db/client';
 import {
-  product_variants,
   product_options,
   product_option_values,
-  money_amounts,
+  product_variants,
   products,
   product_images,
   product_categories,
+  money_amounts,
   product_seo,
   product_discovery,
   product_attributes,
@@ -456,23 +456,25 @@ productsRouter.put(
         },
       });
 
-    await db
-      .insert(product_embeddings)
-      .values({
-        product_id: id,
-        locale: 'en',
-        document: productDocument,
-        source_hash: documentHash,
-        updated_at: new Date(),
-      })
-      .onConflictDoUpdate({
-        target: product_embeddings.product_id,
-        set: {
+    if (process.env.ENABLE_PRODUCT_EMBEDDINGS === 'true') {
+      await db
+        .insert(product_embeddings)
+        .values({
+          product_id: id,
+          locale: 'en',
           document: productDocument,
           source_hash: documentHash,
           updated_at: new Date(),
-        },
-      });
+        })
+        .onConflictDoUpdate({
+          target: product_embeddings.product_id,
+          set: {
+            document: productDocument,
+            source_hash: documentHash,
+            updated_at: new Date(),
+          },
+        });
+    }
 
     const [discovery] = await db
       .select()
@@ -696,57 +698,6 @@ const createProductHandler = asyncHandler(async (c) => {
 productsRouter.post('', verifyAdminOrMcpService, createProductHandler);
 productsRouter.post('/', verifyAdminOrMcpService, createProductHandler);
 
-// POST /products/bulk-create - Bulk create products (Protected)
-const BulkCreateSchema = z.object({
-  products: z.array(CreateProductSchema).min(1, 'At least one product is required').max(50, 'Maximum 50 products per request'),
-});
-
-productsRouter.post(
-  '/bulk-create',
-  verifyAdminOrMcpService,
-  asyncHandler(async (c) => {
-    const body = await c.req.json();
-    const result = BulkCreateSchema.safeParse(body);
-
-    if (!result.success) {
-      throw new ValidationError('Invalid bulk create data', result.error.errors);
-    }
-
-    const created: unknown[] = [];
-    const failed: { index: number; title: string; error: string }[] = [];
-
-    for (let i = 0; i < result.data.products.length; i++) {
-      const productData = result.data.products[i];
-      try {
-        const product = await productService.create(productData);
-        created.push(product);
-      } catch (err: unknown) {
-        failed.push({
-          index: i,
-          title: productData.title,
-          error: err instanceof Error ? err.message : 'Unknown error',
-        });
-      }
-    }
-
-    try {
-      await triggerStorefrontRevalidation({
-        paths: ['/', '/products'],
-        tags: ['products'],
-      });
-    } catch (err) {
-      console.warn('[StorefrontRevalidate] Revalidation failed for bulk create:', err);
-    }
-
-    return successResponse(
-      c,
-      { created_count: created.length, failed_count: failed.length, products: created, failed },
-      `${created.length} products created successfully`,
-      HttpStatus.CREATED
-    );
-  })
-);
-
 // PUT /products/:id - Update product (Protected)
 productsRouter.put(
   '/:id',
@@ -778,117 +729,6 @@ productsRouter.put(
         throw new NotFoundError('Product not found');
       throw e;
     }
-  })
-);
-
-// POST /products/bulk-update - Bulk update products (Protected)
-const BulkUpdateSchema = z.object({
-  product_ids: z
-    .array(z.string())
-    .min(1, 'At least one product ID is required'),
-  updates: z.object({
-    status: z.enum(['draft', 'published', 'proposed', 'rejected', 'archived']).optional(),
-    collection_id: z.string().optional(),
-    price: z.number().int().min(0).optional(), // price in paise
-  }),
-});
-
-productsRouter.post(
-  '/bulk-update',
-  verifyAdminOrMcpService,
-  asyncHandler(async (c) => {
-    const body = await c.req.json();
-    const result = BulkUpdateSchema.safeParse(body);
-
-    if (!result.success) {
-      throw new ValidationError(
-        'Invalid bulk update data',
-        result.error.errors
-      );
-    }
-
-    const { product_ids, updates } = result.data;
-    const { price, ...productUpdates } = updates;
-
-    const count = await productService.bulkUpdate(product_ids, productUpdates);
-
-    // Bulk price update: update money_amounts for all variants of these products
-    if (price !== undefined) {
-      const variants = await db
-        .select({ id: product_variants.id })
-        .from(product_variants)
-        .where(inArray(product_variants.product_id, product_ids));
-
-      if (variants.length > 0) {
-        const variantIds = variants.map((v) => v.id);
-        await db
-          .update(money_amounts)
-          .set({ amount: price })
-          .where(inArray(money_amounts.variant_id, variantIds));
-      }
-    }
-
-    try {
-      await triggerStorefrontRevalidation({
-        paths: ['/', '/products'],
-        tags: ['products'],
-      });
-    } catch (err) {
-      console.warn('[StorefrontRevalidate] Revalidation failed for bulk update:', err);
-    }
-
-    return successResponse(
-      c,
-      {
-        updated_count: count,
-        product_ids,
-        price_updated: price !== undefined,
-      },
-      `${count} products updated successfully`
-    );
-  })
-);
-
-// POST /products/bulk-delete - Bulk delete products (Protected)
-const BulkDeleteSchema = z.object({
-  product_ids: z
-    .array(z.string())
-    .min(1, 'At least one product ID is required'),
-});
-
-productsRouter.post(
-  '/bulk-delete',
-  verifyAdminOrMcpService,
-  asyncHandler(async (c) => {
-    const body = await c.req.json();
-    const result = BulkDeleteSchema.safeParse(body);
-
-    if (!result.success) {
-      throw new ValidationError(
-        'Invalid bulk delete data',
-        result.error.errors
-      );
-    }
-
-    const { product_ids } = result.data;
-    const count = await productService.bulkDelete(product_ids);
-    try {
-      await triggerStorefrontRevalidation({
-        paths: ['/', '/products'],
-        tags: ['products'],
-      });
-    } catch (err) {
-      console.warn('[StorefrontRevalidate] Revalidation failed for bulk delete:', err);
-    }
-
-    return successResponse(
-      c,
-      {
-        deleted_count: count,
-        product_ids,
-      },
-      `${count} products deleted successfully`
-    );
   })
 );
 

@@ -84,6 +84,10 @@ export async function buildProductEmbeddingDocument(productId: string) {
 }
 
 export async function generateEmbeddingsForProducts(productIds?: string[]) {
+  if (process.env.ENABLE_PRODUCT_EMBEDDINGS !== 'true') {
+    return { generated: 0, skipped: 0, total: 0 };
+  }
+
   const productRows = productIds?.length
     ? await db.select({ id: products.id }).from(products).where(inArray(products.id, productIds))
     : await db.select({ id: products.id }).from(products).where(eq(products.status, 'published'));

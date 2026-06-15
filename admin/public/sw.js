@@ -38,8 +38,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.startsWith('/_next/')) {
-    event.respondWith(networkOnly(request));
+  if (isNextStaticAsset(url)) {
+    event.respondWith(cacheFirst(request));
     return;
   }
 
@@ -54,12 +54,22 @@ function isAppShellRequest(request, url) {
   return request.mode === 'navigate' || url.pathname.startsWith('/dashboard');
 }
 
-async function networkOnly(request) {
+function isNextStaticAsset(url) {
+  return url.pathname.startsWith('/_next/static/');
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+
   try {
-    return await fetch(request);
+    const response = await fetch(request);
+    if (response.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, response.clone());
+    }
+    return response;
   } catch {
-    const cached = await caches.match(request);
-    if (cached) return cached;
     return new Response('Offline', { status: 503 });
   }
 }

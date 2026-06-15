@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { Globe2, Hand, MessageCircle, ShieldCheck } from 'lucide-react';
+import { ButtonLink } from '@/components/ui/Button';
 
 const promises = [
   {
@@ -36,12 +36,12 @@ export function CraftPromise() {
             craft proof near buying moments, and fast routes to help.
           </p>
           <div className="craft-promise-actions">
-            <Link href="/about/our-craft" className="home-link-button home-link-button--primary">
+            <ButtonLink href="/about/our-craft" variant="primary" size="md">
               Explore Craft
-            </Link>
-            <Link href="/products" className="home-link-button home-link-button--outline">
+            </ButtonLink>
+            <ButtonLink href="/products" variant="outline" size="md">
               Shop The Edit
-            </Link>
+            </ButtonLink>
           </div>
         </div>
 

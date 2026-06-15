@@ -121,22 +121,22 @@ export function InstagramSection() {
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4 text-white z-10">
+              <div className="absolute inset-0 bg-[rgba(var(--ds-black-rgb),0.5)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4 text-[var(--ds-text-inverse)] z-10">
                 <div className="flex justify-end">
-                  <Instagram size={20} className="text-white/90" />
+                  <Instagram size={20} className="text-[rgba(var(--ds-white-rgb),0.9)]" />
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-4 items-center justify-center">
                     <span className="flex items-center gap-1 text-sm font-semibold">
-                      <Heart size={16} fill="white" className="text-white" />
+                      <Heart size={16} fill="currentColor" className="text-[var(--ds-text-inverse)]" />
                       {post.likes}
                     </span>
                     <span className="flex items-center gap-1 text-sm font-semibold">
-                      <MessageCircle size={16} fill="white" className="text-white" />
+                      <MessageCircle size={16} fill="currentColor" className="text-[var(--ds-text-inverse)]" />
                       {post.comments}
                     </span>
                   </div>
-                  <p className="text-[10px] text-white/80 line-clamp-2 leading-tight mt-1 text-center">
+                  <p className="text-[10px] text-[rgba(var(--ds-white-rgb),0.8)] line-clamp-2 leading-tight mt-1 text-center">
                     {post.caption}
                   </p>
                 </div>

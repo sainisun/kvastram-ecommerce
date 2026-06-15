@@ -76,9 +76,9 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="w-full p-4 rounded-md bg-white/10 backdrop-blur-sm border border-white/20 text-center"
+                  className="w-full p-4 rounded-md bg-[rgba(var(--ds-white-rgb),0.1)] backdrop-blur-sm border border-[rgba(var(--ds-white-rgb),0.2)] text-center"
                 >
-                  <p className="text-sm font-semibold text-white" role="status">
+                  <p className="text-sm font-semibold text-[var(--ds-text-inverse)]" role="status">
                     {message || 'Thank you for subscribing! ✨'}
                   </p>
                 </motion.div>
@@ -99,7 +99,7 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
                       required
                       placeholder="Email address"
                       containerClassName="flex-1"
-                      className="bg-white/10 border-white/30 text-white placeholder-white/60 focus:bg-white/20 focus:border-white focus:ring-0"
+                      className="bg-[rgba(var(--ds-white-rgb),0.1)] border-[rgba(var(--ds-white-rgb),0.3)] text-[var(--ds-text-inverse)] placeholder-[rgba(var(--ds-white-rgb),0.6)] focus:bg-[rgba(var(--ds-white-rgb),0.2)] focus:border-[var(--ds-text-inverse)] focus:ring-0"
                       disabled={status === 'loading'}
                       aria-label="Email address"
                     />
@@ -107,7 +107,7 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
                       type="submit"
                       variant="outline"
                       size="md"
-                      className="border-white text-white hover:bg-white hover:text-[var(--ds-accent-primary)] transition-all shrink-0 min-h-[48px]"
+                      className="border-[var(--ds-text-inverse)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-text-inverse)] hover:text-[var(--ds-accent-primary)] transition-all shrink-0 min-h-[48px]"
                       disabled={status === 'loading'}
                     >
                       {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
@@ -118,7 +118,7 @@ export function NewsletterSection({ settings }: NewsletterSectionProps) {
                     <motion.p
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-3 text-xs text-white/90 font-medium"
+                      className="mt-3 text-xs text-[rgba(var(--ds-white-rgb),0.9)] font-medium"
                       role="alert"
                     >
                       {message}

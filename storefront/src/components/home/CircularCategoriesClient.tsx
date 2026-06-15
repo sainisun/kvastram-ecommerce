@@ -65,7 +65,7 @@ export function CircularCategoriesClient({ circles }: CircularCategoriesClientPr
                     />
                   </div>
                 </div>
-                <span className="circle-cat-name mt-2 text-xs md:text-sm font-medium text-[var(--ds-text-primary)] group-hover:text-[var(--ds-accent-primary)] transition-colors duration-300">
+                <span className="circle-cat-name mt-2 text-[11px] md:text-[12px] uppercase tracking-[0.06em] font-medium text-[var(--ds-text-primary)] group-hover:text-[var(--ds-accent-primary)] transition-colors duration-300">
                   {circle.label}
                 </span>
               </Link>

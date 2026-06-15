@@ -112,7 +112,11 @@ export default function TrendingReelsManager() {
   async function loadProducts() {
     try {
       const p = await api.getProducts(100);
-      setProducts(p.data?.products || p.products || []);
+      setProducts(
+        Array.isArray(p?.data)
+          ? p.data
+          : p?.data?.products || p?.products || []
+      );
     } catch (e) {
       console.error('Failed to load products for dropdown', e);
     }
@@ -462,6 +466,7 @@ export default function TrendingReelsManager() {
               <button
                 type="button"
                 onClick={closeModal}
+                aria-label="Close trending reel form"
                 className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
               >
                 <X size={18} />

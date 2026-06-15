@@ -45,6 +45,7 @@ interface ProductWithStats {
   title: string;
   handle: string;
   description: string | null;
+  collection_id: string | null;
   size_guide: string | null;
   care_instructions: string | null;
   price_type: string;
@@ -324,6 +325,7 @@ export class ProductQueryService {
         title: String(product.title),
         handle: String(product.handle),
         description: product.description as string | null,
+        collection_id: product.collection_id as string | null,
         size_guide: product.size_guide as string | null,
         care_instructions: product.care_instructions as string | null,
         price_type: (product.price_type as string) || 'fixed',
@@ -341,7 +343,7 @@ export class ProductQueryService {
     });
   }
 
-  private async enrichProducts<T extends { id: string; images?: any[]; variants?: any[] }>(
+  private async enrichProducts<T extends { id: string; collection_id?: string | null; images?: any[]; variants?: any[] }>(
     productsList: T[],
     includeRelatedProducts = true
   ): Promise<T[]> {
@@ -351,7 +353,7 @@ export class ProductQueryService {
     const imageIds = productsList.flatMap((product) => product.images?.map((image) => image.id) || []);
     const variantIds = productsList.flatMap((product) => product.variants?.map((variant) => variant.id) || []);
 
-    const [seoRows, discoveryRows, attributeRows, merchantRows, mediaRows, artisanRows] = await Promise.all([
+    const [seoRows, discoveryRows, attributeRows, merchantRows, mediaRows, artisanRows, collectionRows] = await Promise.all([
       db.select().from(product_seo).where(inArray(product_seo.product_id, productIds)),
       db.select().from(product_discovery).where(inArray(product_discovery.product_id, productIds)),
       db
@@ -391,6 +393,13 @@ export class ProductQueryService {
         .from(product_artisans)
         .leftJoin(artisans, eq(product_artisans.artisan_id, artisans.id))
         .where(inArray(product_artisans.product_id, productIds)),
+      db
+        .select({
+          product_id: collection_products.product_id,
+          collection_id: collection_products.collection_id,
+        })
+        .from(collection_products)
+        .where(inArray(collection_products.product_id, productIds)),
     ]);
 
     const seoByProduct = new Map(seoRows.map((row) => [row.product_id, row]));
@@ -398,6 +407,7 @@ export class ProductQueryService {
     const merchantByVariant = new Map(merchantRows.map((row) => [row.variant_id, row]));
     const mediaByImage = new Map(mediaRows.map((row) => [row.image_id, row]));
     const artisanByProduct = new Map(artisanRows.map((row) => [row.product_id, row]));
+    const collectionByProduct = new Map(collectionRows.map((row) => [row.product_id, row.collection_id]));
     const attrsByProduct = new Map<string, typeof attributeRows>();
 
     for (const row of attributeRows) {
@@ -412,6 +422,7 @@ export class ProductQueryService {
 
     return productsList.map((product) => ({
       ...product,
+      collection_id: product.collection_id || collectionByProduct.get(product.id) || null,
       seo: seoByProduct.get(product.id) || null,
       discovery: discoveryByProduct.get(product.id) || null,
       attributes: attrsByProduct.get(product.id) || [],
@@ -584,6 +595,7 @@ export class ProductQueryService {
         title: products.title,
         handle: products.handle,
         description: products.description,
+        collection_id: products.collection_id,
         size_guide: products.size_guide,
         care_instructions: products.care_instructions,
         price_type: products.price_type,
@@ -895,7 +907,8 @@ export class ProductQueryService {
 
     let usedVectorFallback = false;
     if (query && processedResults.length === 0) {
-      const embedding = await embedText(query).catch(() => null);
+      const embedding =
+        process.env.ENABLE_PRODUCT_EMBEDDINGS === 'true' ? await embedText(query).catch(() => null) : null;
       if (embedding) {
         const vectorLiteral = toVectorLiteral(embedding);
         const vectorRows = await db

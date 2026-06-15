@@ -1,47 +1,15 @@
 'use client';
 
-import {
-  useState,
-  useEffect,
-  useCallback,
-  type Dispatch,
-  type SetStateAction,
-} from 'react';
-import {
-  Megaphone,
-  Mail,
-  Tag,
-  Users,
-  Calendar,
-  DollarSign,
-  Target,
-  Plus,
-  Trash2,
-  Edit2,
-  Bell,
-  Package,
-  Loader2,
-} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
+import { Edit2, Loader2, Plus, Tag, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
 
-interface MarketingCampaign {
-  id: string;
-  name: string;
-  description?: string | null;
-  status: string;
-  type?: string | null;
-  start_date?: string | null;
-  created_at?: string | null;
-  customers_reached?: number | null;
-  conversions?: number | null;
-  revenue?: number | null;
-}
+type DiscountType = 'percentage' | 'fixed_amount' | 'free_shipping';
 
 interface DiscountCode {
   id: string;
   code: string;
-  campaign_id?: string | null;
-  type?: string | null;
+  type?: DiscountType | string | null;
   value: string | number;
   is_active: boolean;
   usage_count?: number | null;
@@ -50,1663 +18,420 @@ interface DiscountCode {
   ends_at?: string | null;
 }
 
-interface BulkDiscount {
-  id: string;
-  product_id?: string | null;
-  product_title?: string | null;
-  min_quantity: number;
-  discount_percent: number;
-  description?: string | null;
-  active: boolean;
-}
-
-interface ProductSummary {
-  id: string;
-  title: string;
-}
-
-interface MarketingFormData {
-  name?: string;
-  description?: string;
-  code?: string;
-  campaign_id?: string;
-  type?: string;
-  value?: string;
-  usage_limit?: string;
-  starts_at?: string;
-  ends_at?: string;
-}
-
-interface CampaignsResponse {
-  campaigns?: MarketingCampaign[];
-}
-
 interface DiscountsResponse {
   discounts?: DiscountCode[];
 }
 
-interface BulkDiscountsResponse {
-  bulk_discounts?: BulkDiscount[];
+interface DiscountFormState {
+  code: string;
+  type: DiscountType;
+  value: string;
+  usage_limit: string;
+  starts_at: string;
+  ends_at: string;
+  is_active: boolean;
 }
 
-interface ProductsResponse {
-  products?: ProductSummary[];
-  data?: ProductSummary[];
-}
-
-interface BlastResponse {
-  message?: string;
-}
-
-interface BulkDiscountFormState {
-  product_id: string | null;
-  min_quantity: number;
-  discount_percent: number;
-  description: string;
-  active: boolean;
-}
-
-interface BulkDiscountsTabContentProps {
-  bulkDiscounts: BulkDiscount[];
-  setBulkDiscounts: Dispatch<SetStateAction<BulkDiscount[]>>;
-  bulkDiscountsLoading: boolean;
-  setBulkDiscountsLoading: Dispatch<SetStateAction<boolean>>;
-  showBulkDiscountForm: boolean;
-  setShowBulkDiscountForm: Dispatch<SetStateAction<boolean>>;
-  editingBulkDiscount: BulkDiscount | null;
-  setEditingBulkDiscount: Dispatch<SetStateAction<BulkDiscount | null>>;
-  products: ProductSummary[];
-  setProducts: Dispatch<SetStateAction<ProductSummary[]>>;
-  bulkDiscountForm: BulkDiscountFormState;
-  setBulkDiscountForm: Dispatch<SetStateAction<BulkDiscountFormState>>;
-}
+const emptyForm: DiscountFormState = {
+  code: '',
+  type: 'percentage',
+  value: '',
+  usage_limit: '',
+  starts_at: '',
+  ends_at: '',
+  is_active: true,
+};
 
 const getErrorMessage = (error: unknown, fallback: string) => {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
+  if (error instanceof Error && error.message) return error.message;
   return fallback;
 };
+
+const toDateInputValue = (value?: string | null) => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toISOString().slice(0, 10);
+};
+
+const toApiDate = (value: string) => {
+  if (!value) return undefined;
+  return new Date(`${value}T00:00:00.000Z`).toISOString();
+};
+
+const formatDiscountValue = (discount: DiscountCode) => {
+  if (discount.type === 'percentage') return `${discount.value}%`;
+  if (discount.type === 'free_shipping') return 'Free shipping';
+  return String(discount.value);
+};
+
+const buildDiscountPayload = (form: DiscountFormState) => ({
+  code: form.code.trim().toUpperCase(),
+  type: form.type,
+  value:
+    form.type === 'free_shipping'
+      ? 0
+      : Number.parseInt(form.value || '0', 10),
+  is_active: form.is_active,
+  usage_limit: form.usage_limit
+    ? Number.parseInt(form.usage_limit, 10)
+    : undefined,
+  starts_at: toApiDate(form.starts_at),
+  ends_at: toApiDate(form.ends_at),
+});
+
 export default function MarketingPage() {
-  const [activeTab, setActiveTab] = useState('campaigns');
-  const [loading, setLoading] = useState(true);
-  const [campaigns, setCampaigns] = useState<MarketingCampaign[]>([]);
   const [discounts, setDiscounts] = useState<DiscountCode[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editingDiscount, setEditingDiscount] = useState<DiscountCode | null>(null);
+  const [form, setForm] = useState<DiscountFormState>(emptyForm);
 
-  // Modal states
-  const [showCampaignModal, setShowCampaignModal] = useState(false);
-  const [showDiscountModal, setShowDiscountModal] = useState(false);
-  const [showEditCampaignModal, setShowEditCampaignModal] = useState(false);
-  const [showEditDiscountModal, setShowEditDiscountModal] = useState(false);
-  const [formData, setFormData] = useState<MarketingFormData>({});
-  const [editingCampaign, setEditingCampaign] =
-    useState<MarketingCampaign | null>(null);
-  const [editingDiscount, setEditingDiscount] =
-    useState<DiscountCode | null>(null);
-
-  // Bulk Discounts state
-  const [bulkDiscounts, setBulkDiscounts] = useState<BulkDiscount[]>([]);
-  const [bulkDiscountsLoading, setBulkDiscountsLoading] = useState(false);
-  const [showBulkDiscountForm, setShowBulkDiscountForm] = useState(false);
-  const [editingBulkDiscount, setEditingBulkDiscount] =
-    useState<BulkDiscount | null>(null);
-  const [products, setProducts] = useState<ProductSummary[]>([]);
-  const [bulkDiscountForm, setBulkDiscountForm] = useState<BulkDiscountFormState>({
-    product_id: '' as string | null,
-    min_quantity: 1,
-    discount_percent: 5,
-    description: '',
-    active: true,
-  });
-
-  // Blast Modal
-  const [showBlastModal, setShowBlastModal] = useState(false);
-  const [blastLoading, setBlastLoading] = useState(false);
-  const [selectedBlastCampaign, setSelectedBlastCampaign] =
-    useState<MarketingCampaign | null>(null);
-  const [blastMsg, setBlastMsg] = useState<string | null>(null);
-  const [blastForm, setBlastForm] = useState({
-    subject: '',
-    headline: '',
-    body_text: '',
-    cta_text: 'Shop Now',
-    cta_url: '/',
-  });
-
-  const fetchData = useCallback(async () => {
+  const fetchDiscounts = useCallback(async () => {
     try {
       setLoading(true);
-      const [campaignsData, discountsData] = await Promise.all([
-        api.getCampaigns(),
-        api.getDiscounts(),
-      ]);
-      setCampaigns(
-        ((campaignsData as CampaignsResponse | null)?.campaigns ?? []).filter(
-          Boolean
-        )
-      );
-      setDiscounts(
-        ((discountsData as DiscountsResponse | null)?.discounts ?? []).filter(
-          Boolean
-        )
-      );
+      const data = (await api.getDiscounts()) as DiscountsResponse;
+      setDiscounts((data.discounts ?? []).filter(Boolean));
     } catch (error) {
-      console.error('Error fetching marketing data:', error);
+      console.error('Error fetching discounts:', error);
+      alert(getErrorMessage(error, 'Failed to load discount codes'));
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
+    void fetchDiscounts();
+  }, [fetchDiscounts]);
 
-  const handleCreateCampaign = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const stats = useMemo(() => {
+    const active = discounts.filter((discount) => discount.is_active).length;
+    const totalUses = discounts.reduce(
+      (sum, discount) => sum + Number(discount.usage_count || 0),
+      0
+    );
+    return { active, totalUses };
+  }, [discounts]);
 
-    try {
-      await api.createCampaign({
-        ...formData,
-        status: 'active', // Default status
-        start_date: new Date().toISOString(), // Default start now
-      });
-      setShowCampaignModal(false);
-      setFormData({});
-      void fetchData();
-    } catch (error) {
-      console.error('Error creating campaign:', error);
-      alert('Failed to create campaign');
-    }
+  const openCreateForm = () => {
+    setEditingDiscount(null);
+    setForm(emptyForm);
+    setShowForm(true);
   };
 
-  const handleDeleteCampaign = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete campaign "${name}"?`)) return;
-
-    try {
-      await api.deleteCampaign(id);
-      void fetchData();
-    } catch (error) {
-      console.error('Error deleting campaign:', error);
-      alert('Failed to delete campaign');
-    }
+  const openEditForm = (discount: DiscountCode) => {
+    setEditingDiscount(discount);
+    setForm({
+      code: discount.code || '',
+      type: (discount.type as DiscountType) || 'percentage',
+      value: String(discount.value ?? ''),
+      usage_limit: discount.usage_limit ? String(discount.usage_limit) : '',
+      starts_at: toDateInputValue(discount.starts_at),
+      ends_at: toDateInputValue(discount.ends_at),
+      is_active: discount.is_active !== false,
+    });
+    setShowForm(true);
   };
 
-  const handleUpdateCampaign = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!editingCampaign) return;
-
-    try {
-      await api.updateCampaign(editingCampaign.id, {
-        name: editingCampaign.name,
-        description: editingCampaign.description,
-        status: editingCampaign.status,
-        type: editingCampaign.type,
-      });
-      setShowEditCampaignModal(false);
-      setEditingCampaign(null);
-      void fetchData();
-    } catch (error) {
-      console.error('Error updating campaign:', error);
-      alert('Failed to update campaign');
-    }
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingDiscount(null);
+    setForm(emptyForm);
   };
 
-  const handleUpdateDiscount = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!editingDiscount) return;
-
-    try {
-      await api.updateDiscount(editingDiscount.id, {
-        code: editingDiscount.code,
-        type: editingDiscount.type,
-        value: Number.parseInt(String(editingDiscount.value), 10),
-        is_active: editingDiscount.is_active,
-        usage_limit: editingDiscount.usage_limit
-          ? Number.parseInt(String(editingDiscount.usage_limit), 10)
-          : null,
-        starts_at: editingDiscount.starts_at
-          ? new Date(editingDiscount.starts_at).toISOString()
-          : undefined,
-        ends_at: editingDiscount.ends_at
-          ? new Date(editingDiscount.ends_at).toISOString()
-          : undefined,
-      });
-      setShowEditDiscountModal(false);
-      setEditingDiscount(null);
-      void fetchData();
-    } catch (error: unknown) {
-      console.error('Error updating discount:', error);
-      alert(getErrorMessage(error, 'Failed to update discount'));
-    }
-  };
-
-  const handleCreateDiscount = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    try {
-      await api.createDiscount({
-        ...formData,
-        value: Number.parseInt(formData.value ?? '0', 10),
-        usage_limit: formData.usage_limit
-          ? Number.parseInt(formData.usage_limit, 10)
-          : null,
-        is_active: true,
-        starts_at: formData.starts_at
-          ? new Date(formData.starts_at).toISOString()
-          : undefined,
-        ends_at: formData.ends_at
-          ? new Date(formData.ends_at).toISOString()
-          : undefined,
-      });
-      setShowDiscountModal(false);
-      setFormData({});
-      void fetchData();
-    } catch (error: unknown) {
-      console.error('Error creating discount:', error);
-      alert(getErrorMessage(error, 'Failed to create discount'));
-    }
-  };
-
-  const handleDeleteDiscount = async (id: string, code: string) => {
-    if (!confirm(`Are you sure you want to delete discount code "${code}"?`))
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!form.code.trim()) {
+      alert('Discount code is required');
       return;
+    }
+    if (form.type !== 'free_shipping' && Number.parseInt(form.value || '0', 10) <= 0) {
+      alert('Discount value must be greater than 0');
+      return;
+    }
 
     try {
-      await api.deleteDiscount(id);
-      void fetchData();
+      setSaving(true);
+      const payload = buildDiscountPayload(form);
+      if (editingDiscount) {
+        await api.updateDiscount(editingDiscount.id, payload);
+      } else {
+        await api.createDiscount(payload);
+      }
+      closeForm();
+      void fetchDiscounts();
+    } catch (error) {
+      console.error('Error saving discount:', error);
+      alert(getErrorMessage(error, 'Failed to save discount code'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (discount: DiscountCode) => {
+    if (!confirm(`Delete discount code "${discount.code}"?`)) return;
+
+    try {
+      await api.deleteDiscount(discount.id);
+      void fetchDiscounts();
     } catch (error) {
       console.error('Error deleting discount:', error);
-      alert('Failed to delete discount');
-    }
-  };
-
-  const handleSendBlast = async () => {
-    if (!selectedBlastCampaign) return;
-    setBlastLoading(true);
-    setBlastMsg(null);
-    try {
-      const res = (await api.sendCampaignBlast(
-        selectedBlastCampaign.id,
-        blastForm
-      )) as BlastResponse;
-      setBlastMsg(res.message || 'Blast sent successfully!');
-      void fetchData();
-    } catch (err: unknown) {
-      setBlastMsg(`Error: ${getErrorMessage(err, 'Failed to send blast')}`);
-    } finally {
-      setBlastLoading(false);
-    }
-  };
-
-  const tabs = [
-    { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
-    { id: 'discounts', label: 'Discounts', icon: Tag },
-    { id: 'bulk_discounts', label: 'Bulk Discounts', icon: Package },
-
-    // { id: 'email', label: 'Email Marketing', icon: Mail },
-
-    // { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-  ];
-
-  if (loading) {
-    return (
-      <div className="p-8 text-center text-gray-500">
-        Loading marketing data...
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-8 relative">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Marketing</h1>
-        <p className="text-gray-600">
-          Manage campaigns, discounts, and promotional activities
-        </p>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Megaphone className="text-purple-600" size={24} />
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 mb-1">Active Campaigns</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {campaigns.filter((c) => c.status === 'active').length}
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <Tag className="text-green-600" size={24} />
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 mb-1">Active Discounts</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {discounts.filter((d) => d.is_active).length}
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Mail className="text-blue-600" size={24} />
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 mb-1">Customers Reached</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {campaigns.reduce(
-              (acc, curr) => acc + (curr.customers_reached || 0),
-              0
-            )}
-          </p>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mb-6">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-          Quick Actions
-        </h2>
-        <div className="flex gap-3">
-          <a
-            href="/dashboard/marketing/back-in-stock"
-            className="flex items-center gap-3 px-5 py-3 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
-          >
-            <Bell size={18} className="text-amber-600" />
-            <div>
-              <p className="text-sm font-semibold text-amber-900">
-                Back-in-Stock Alerts
-              </p>
-              <p className="text-xs text-amber-600">
-                View & manage restock subscribers
-              </p>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Icon size={18} />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {activeTab === 'campaigns' && (
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">
-                  Marketing Campaigns
-                </h2>
-                <button
-                  onClick={() => setShowCampaignModal(true)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
-                >
-                  <Plus size={18} />
-                  Create Campaign
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {campaigns.length === 0 ? (
-                  <p className="text-center text-gray-500 py-8">
-                    No campaigns found. Create your first one!
-                  </p>
-                ) : (
-                  campaigns.map((campaign) => (
-                    <div
-                      key={campaign.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 mb-1">
-                            {campaign.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 mb-3">
-                            {campaign.description}
-                          </p>
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <Calendar size={14} />
-                              <span>
-                                {campaign.start_date || campaign.created_at
-                                  ? new Date(
-                                      campaign.start_date ?? campaign.created_at!
-                                    ).toLocaleDateString()
-                                  : 'N/A'}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Users size={14} />
-                              <span>
-                                {campaign.customers_reached || 0} reached
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Target size={14} />
-                              <span>
-                                {campaign.conversions || 0} conversions
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <DollarSign size={14} />
-                              <span>
-                                {new Intl.NumberFormat('en-US', {
-                                  style: 'currency',
-                                  currency: 'USD',
-                                }).format((campaign.revenue || 0) / 100)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <span
-                            className={`px-3 py-1 text-sm font-medium rounded-full ${
-                              campaign.status === 'active'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {campaign.status}
-                          </span>
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() => {
-                                setEditingCampaign(campaign);
-                                setShowEditCampaignModal(true);
-                              }}
-                              className="text-blue-500 hover:text-blue-700 p-1"
-                              title="Edit Campaign"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            {campaign.status === 'active' && (
-                              <button
-                                onClick={() => {
-                                  setSelectedBlastCampaign(campaign);
-                                  setBlastForm({
-                                    subject: campaign.name + ' — Kvastram',
-                                    headline: campaign.name,
-                                    body_text: campaign.description || '',
-                                    cta_text: 'Shop Now',
-                                    cta_url: '/',
-                                  });
-                                  setBlastMsg(null);
-                                  setShowBlastModal(true);
-                                }}
-                                className="text-purple-500 hover:text-purple-700 p-1"
-                                title="Send Email Blast"
-                              >
-                                <Mail size={16} />
-                              </button>
-                            )}
-                            <button
-                              onClick={() =>
-                                handleDeleteCampaign(campaign.id, campaign.name)
-                              }
-                              className="text-red-500 hover:text-red-700 p-1"
-                              title="Delete Campaign"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'discounts' && (
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">
-                  Discount Codes
-                </h2>
-                <button
-                  onClick={() => setShowDiscountModal(true)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center gap-2"
-                >
-                  <Plus size={18} />
-                  Create Discount
-                </button>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Code
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Type
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Value
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Uses
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Expires
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {discounts.length === 0 ? (
-                      <tr>
-                        <td
-                          colSpan={6}
-                          className="px-6 py-8 text-center text-gray-500"
-                        >
-                          No discount codes found.
-                        </td>
-                      </tr>
-                    ) : (
-                      discounts.map((discount) => (
-                        <tr key={discount.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                            {discount.code}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-600 capitalize">
-                            {(discount.type || 'unknown').replace('_', ' ')}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">
-                            {discount.type === 'percentage'
-                              ? `${discount.value}%`
-                              : `$${discount.value}`}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-600">
-                            {discount.usage_count} /{' '}
-                            {discount.usage_limit || '∞'}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-600">
-                            {discount.ends_at
-                              ? new Date(discount.ends_at).toLocaleDateString()
-                              : 'Never'}
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                discount.is_active
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}
-                            >
-                              {discount.is_active ? 'Active' : 'Inactive'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex justify-end gap-1">
-                              <button
-                                onClick={() => {
-                                  setEditingDiscount(discount);
-                                  setShowEditDiscountModal(true);
-                                }}
-                                className="text-blue-500 hover:text-blue-700 p-1"
-                                title="Edit Discount"
-                              >
-                                <Edit2 size={16} />
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleDeleteDiscount(
-                                    discount.id,
-                                    discount.code
-                                  )
-                                }
-                                className="text-red-500 hover:text-red-700 p-1"
-                                title="Delete Discount"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'bulk_discounts' && (
-          <BulkDiscountsTabContent
-            bulkDiscounts={bulkDiscounts}
-            setBulkDiscounts={setBulkDiscounts}
-            bulkDiscountsLoading={bulkDiscountsLoading}
-            setBulkDiscountsLoading={setBulkDiscountsLoading}
-            showBulkDiscountForm={showBulkDiscountForm}
-            setShowBulkDiscountForm={setShowBulkDiscountForm}
-            editingBulkDiscount={editingBulkDiscount}
-            setEditingBulkDiscount={setEditingBulkDiscount}
-            products={products}
-            setProducts={setProducts}
-            bulkDiscountForm={bulkDiscountForm}
-            setBulkDiscountForm={setBulkDiscountForm}
-          />
-        )}
-      </div>
-
-      {/* Edit Campaign Modal */}
-      {showEditCampaignModal && editingCampaign && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">
-              Edit Campaign
-            </h2>
-            <form onSubmit={handleUpdateCampaign} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="field-1"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Campaign Name
-                </label>
-                <input
-                  id="field-1"
-                  type="text"
-                  required
-                  value={editingCampaign.name || ''}
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingCampaign({
-                      ...editingCampaign,
-                      name: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="field-2"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="field-2"
-                  value={editingCampaign.description || ''}
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingCampaign({
-                      ...editingCampaign,
-                      description: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="field-3"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Status
-                </label>
-                <select
-                  id="field-3"
-                  value={editingCampaign.status || 'draft'}
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingCampaign({
-                      ...editingCampaign,
-                      status: e.target.value,
-                    })
-                  }
-                >
-                  <option value="draft">Draft</option>
-                  <option value="active">Active</option>
-                  <option value="paused">Paused</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="field-4"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Type
-                </label>
-                <select
-                  id="field-4"
-                  value={editingCampaign.type || 'promotion'}
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingCampaign({
-                      ...editingCampaign,
-                      type: e.target.value,
-                    })
-                  }
-                >
-                  <option value="promotion">Promotion</option>
-                  <option value="email">Email</option>
-                  <option value="social">Social</option>
-                </select>
-              </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowEditCampaignModal(false);
-                    setEditingCampaign(null);
-                  }}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded border border-gray-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Discount Modal */}
-      {showEditDiscountModal && editingDiscount && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">
-              Edit Discount Code
-            </h2>
-            <form onSubmit={handleUpdateDiscount} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="field-5"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Code
-                </label>
-                <input
-                  id="field-5"
-                  type="text"
-                  required
-                  value={editingDiscount.code || ''}
-                  className="w-full border border-gray-300 rounded p-2 uppercase text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingDiscount({
-                      ...editingDiscount,
-                      code: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="field-6"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Type
-                </label>
-                <select
-                  id="field-6"
-                  value={editingDiscount.type || 'percentage'}
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingDiscount({
-                      ...editingDiscount,
-                      type: e.target.value,
-                    })
-                  }
-                >
-                  <option value="percentage">Percentage</option>
-                  <option value="fixed_amount">Fixed Amount</option>
-                  <option value="free_shipping">Free Shipping</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="field-7"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Value
-                </label>
-                <input
-                  id="field-7"
-                  type="number"
-                  required
-                  value={editingDiscount.value || ''}
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingDiscount({
-                      ...editingDiscount,
-                      value: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="field-8"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Status
-                </label>
-                <select
-                  id="field-8"
-                  value={editingDiscount.is_active ? 'true' : 'false'}
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingDiscount({
-                      ...editingDiscount,
-                      is_active: e.target.value === 'true',
-                    })
-                  }
-                >
-                  <option value="true">Active</option>
-                  <option value="false">Inactive</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="field-9"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Usage Limit (Optional)
-                </label>
-                <input
-                  id="field-9"
-                  type="number"
-                  value={editingDiscount.usage_limit || ''}
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setEditingDiscount({
-                      ...editingDiscount,
-                      usage_limit: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="field-10"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Start Date
-                  </label>
-                  <input
-                    id="field-10"
-                    type="datetime-local"
-                    value={
-                      editingDiscount.starts_at
-                        ? new Date(editingDiscount.starts_at)
-                            .toISOString()
-                            .slice(0, 16)
-                        : ''
-                    }
-                    className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                    onChange={(e) =>
-                      setEditingDiscount({
-                        ...editingDiscount,
-                        starts_at: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="field-11"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    End Date
-                  </label>
-                  <input
-                    id="field-11"
-                    type="datetime-local"
-                    value={
-                      editingDiscount.ends_at
-                        ? new Date(editingDiscount.ends_at)
-                            .toISOString()
-                            .slice(0, 16)
-                        : ''
-                    }
-                    className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                    onChange={(e) =>
-                      setEditingDiscount({
-                        ...editingDiscount,
-                        ends_at: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowEditDiscountModal(false);
-                    setEditingDiscount(null);
-                  }}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded border border-gray-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Creation Modals */}
-      {showCampaignModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">
-              Create Campaign
-            </h2>
-            <form onSubmit={handleCreateCampaign} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="field-12"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Campaign Name
-                </label>
-                <input
-                  id="field-12"
-                  type="text"
-                  required
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="field-13"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="field-13"
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                />
-              </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowCampaignModal(false)}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded border border-gray-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showDiscountModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">
-              Create Discount Code
-            </h2>
-            <form onSubmit={handleCreateDiscount} className="space-y-4">
-              <div>
-                <label
-                  htmlFor="field-14"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Code
-                </label>
-                <input
-                  id="field-14"
-                  type="text"
-                  required
-                  placeholder="SUMMER2026"
-                  className="w-full border border-gray-300 rounded p-2 uppercase text-gray-900 bg-white placeholder-gray-400"
-                  onChange={(e) =>
-                    setFormData({ ...formData, code: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="field-15"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Campaign (Optional)
-                </label>
-                <select
-                  id="field-15"
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setFormData({ ...formData, campaign_id: e.target.value })
-                  }
-                >
-                  <option value="">None</option>
-                  {campaigns.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="field-16"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Type
-                </label>
-                <select
-                  id="field-16"
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setFormData({ ...formData, type: e.target.value })
-                  }
-                  defaultValue="percentage"
-                >
-                  <option value="percentage">Percentage</option>
-                  <option value="fixed_amount">Fixed Amount</option>
-                  <option value="free_shipping">Free Shipping</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="field-17"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Value
-                </label>
-                <input
-                  id="field-17"
-                  type="number"
-                  required
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setFormData({ ...formData, value: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="field-18"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Usage Limit (Optional)
-                </label>
-                <input
-                  id="field-18"
-                  type="number"
-                  className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                  onChange={(e) =>
-                    setFormData({ ...formData, usage_limit: e.target.value })
-                  }
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="field-19"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Start Date
-                  </label>
-                  <input
-                    id="field-19"
-                    type="datetime-local"
-                    className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                    onChange={(e) =>
-                      setFormData({ ...formData, starts_at: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="field-20"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    End Date
-                  </label>
-                  <input
-                    id="field-20"
-                    type="datetime-local"
-                    className="w-full border border-gray-300 rounded p-2 text-gray-900 bg-white"
-                    onChange={(e) =>
-                      setFormData({ ...formData, ends_at: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowDiscountModal(false)}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded border border-gray-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Send Blast Modal */}
-      {showBlastModal && selectedBlastCampaign && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">
-              Send Email Blast
-            </h2>
-            <p className="text-sm text-gray-500 mb-5">
-              Campaign: <strong>{selectedBlastCampaign.name}</strong> — will
-              send to all active newsletter subscribers
-            </p>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Email Subject
-                </label>
-                <input
-                  type="text"
-                  value={blastForm.subject}
-                  onChange={(e) =>
-                    setBlastForm({ ...blastForm, subject: e.target.value })
-                  }
-                  className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="Subject line..."
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Headline
-                </label>
-                <input
-                  type="text"
-                  value={blastForm.headline}
-                  onChange={(e) =>
-                    setBlastForm({ ...blastForm, headline: e.target.value })
-                  }
-                  className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="Main heading in email..."
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Body Text
-                </label>
-                <textarea
-                  value={blastForm.body_text}
-                  onChange={(e) =>
-                    setBlastForm({ ...blastForm, body_text: e.target.value })
-                  }
-                  rows={3}
-                  className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="Email body message..."
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    CTA Button Text
-                  </label>
-                  <input
-                    type="text"
-                    value={blastForm.cta_text}
-                    onChange={(e) =>
-                      setBlastForm({ ...blastForm, cta_text: e.target.value })
-                    }
-                    className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Shop Now"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    CTA URL
-                  </label>
-                  <input
-                    type="text"
-                    value={blastForm.cta_url}
-                    onChange={(e) =>
-                      setBlastForm({ ...blastForm, cta_url: e.target.value })
-                    }
-                    className="w-full border border-gray-200 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="/collections"
-                  />
-                </div>
-              </div>
-            </div>
-            {blastMsg && (
-              <div
-                className={`mt-4 p-3 rounded-lg text-sm ${blastMsg.startsWith('Error') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}
-              >
-                {blastMsg}
-              </div>
-            )}
-            <div className="flex gap-3 justify-end mt-6">
-              <button
-                onClick={() => {
-                  setShowBlastModal(false);
-                  setBlastMsg(null);
-                }}
-                className="px-4 py-2 text-sm text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSendBlast}
-                disabled={blastLoading}
-                className="px-5 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
-              >
-                <Mail size={14} />
-                {blastLoading ? 'Sending...' : 'Send Blast'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// --- Bulk Discounts Tab Component ---
-function BulkDiscountsTabContent({
-  bulkDiscounts,
-  setBulkDiscounts,
-  bulkDiscountsLoading,
-  setBulkDiscountsLoading,
-  showBulkDiscountForm,
-  setShowBulkDiscountForm,
-  editingBulkDiscount,
-  setEditingBulkDiscount,
-  products,
-  setProducts,
-  bulkDiscountForm,
-  setBulkDiscountForm,
-}: BulkDiscountsTabContentProps) {
-  const defaultForm = {
-    product_id: '' as string | null,
-    min_quantity: 1,
-    discount_percent: 5,
-    description: '',
-    active: true,
-  };
-
-  const fetchBulkDiscounts = useCallback(async () => {
-    try {
-      setBulkDiscountsLoading(true);
-      const data = (await api.getBulkDiscounts()) as BulkDiscountsResponse;
-      setBulkDiscounts(data.bulk_discounts ?? []);
-    } catch (error) {
-      console.error('Error fetching bulk discounts:', error);
-    } finally {
-      setBulkDiscountsLoading(false);
-    }
-  }, [setBulkDiscounts, setBulkDiscountsLoading]);
-
-  const fetchProducts = useCallback(async () => {
-    try {
-      // ⚠️ api.getProducts() already exists — use with limit=100
-      const data = await api.getProducts(100, 0);
-      setProducts(
-        ((data as ProductsResponse | null)?.products ??
-          (data as ProductsResponse | null)?.data ??
-          [])
-      );
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  }, [setProducts]);
-
-  useEffect(() => {
-    void fetchBulkDiscounts();
-    void fetchProducts();
-  }, [fetchBulkDiscounts, fetchProducts]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        ...bulkDiscountForm,
-        product_id: bulkDiscountForm.product_id || null,
-      };
-
-      if (editingBulkDiscount) {
-        await api.updateBulkDiscount(editingBulkDiscount.id, payload);
-      } else {
-        await api.createBulkDiscount(payload);
-      }
-      setShowBulkDiscountForm(false);
-      setEditingBulkDiscount(null);
-      setBulkDiscountForm(defaultForm);
-      void fetchBulkDiscounts();
-    } catch (error: unknown) {
-      alert(getErrorMessage(error, 'Failed to save bulk discount'));
-    }
-  };
-
-  const handleEdit = (discount: BulkDiscount) => {
-    setBulkDiscountForm({
-      product_id: discount.product_id || '',
-      min_quantity: discount.min_quantity || 1,
-      discount_percent: discount.discount_percent || 5,
-      description: discount.description || '',
-      active: discount.active !== false,
-    });
-    setEditingBulkDiscount(discount);
-    setShowBulkDiscountForm(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this bulk discount rule?'))
-      return;
-    try {
-      await api.deleteBulkDiscount(id);
-      void fetchBulkDiscounts();
-    } catch (error: unknown) {
-      alert(getErrorMessage(error, 'Failed to delete bulk discount'));
+      alert(getErrorMessage(error, 'Failed to delete discount code'));
     }
   };
 
   return (
-    <div className="lg:col-span-3">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">
-              Bulk Discount Rules
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Define quantity-based discount rules for products
-            </p>
-          </div>
-          <button
-            onClick={() => {
-              setEditingBulkDiscount(null);
-              setBulkDiscountForm(defaultForm);
-              setShowBulkDiscountForm(!showBulkDiscountForm);
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
-          >
-            <Plus size={16} />
-            Add Rule
-          </button>
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Coupons</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Create and manage discount codes for the storefront.
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={openCreateForm}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
+        >
+          <Plus size={16} />
+          New Coupon
+        </button>
+      </div>
 
-        {/* Create/Edit Form */}
-        {showBulkDiscountForm && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">
-              {editingBulkDiscount ? 'Edit Rule' : 'Create Rule'}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product (optional)
-                  </label>
-                  <select
-                    value={bulkDiscountForm.product_id || ''}
-                    onChange={(e) =>
-                      setBulkDiscountForm({
-                        ...bulkDiscountForm,
-                        product_id: e.target.value || null,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  >
-                    <option value="">All Products</option>
-                    {products.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.title}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Leave blank to apply to all products
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Minimum Quantity
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    value={bulkDiscountForm.min_quantity}
-                    onChange={(e) =>
-                      setBulkDiscountForm({
-                        ...bulkDiscountForm,
-                        min_quantity: parseInt(e.target.value) || 1,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Discount %
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="100"
-                    required
-                    value={bulkDiscountForm.discount_percent}
-                    onChange={(e) =>
-                      setBulkDiscountForm({
-                        ...bulkDiscountForm,
-                        discount_percent: parseInt(e.target.value) || 5,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <input
-                    type="text"
-                    value={bulkDiscountForm.description}
-                    onChange={(e) =>
-                      setBulkDiscountForm({
-                        ...bulkDiscountForm,
-                        description: e.target.value,
-                      })
-                    }
-                    placeholder="e.g. Buy 10+ get 15% off"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-              </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
+          <p className="text-sm text-gray-500">Total Coupons</p>
+          <p className="mt-2 text-3xl font-bold text-gray-900">{discounts.length}</p>
+        </div>
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
+          <p className="text-sm text-gray-500">Active</p>
+          <p className="mt-2 text-3xl font-bold text-green-700">{stats.active}</p>
+        </div>
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
+          <p className="text-sm text-gray-500">Total Uses</p>
+          <p className="mt-2 text-3xl font-bold text-blue-700">{stats.totalUses}</p>
+        </div>
+      </div>
 
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={bulkDiscountForm.active}
-                    onChange={(e) =>
-                      setBulkDiscountForm({
-                        ...bulkDiscountForm,
-                        active: e.target.checked,
-                      })
-                    }
-                    className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    Active
-                  </span>
-                </label>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
-                >
-                  {editingBulkDiscount ? 'Update Rule' : 'Create Rule'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowBulkDiscountForm(false);
-                    setEditingBulkDiscount(null);
-                    setBulkDiscountForm(defaultForm);
-                  }}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+      {showForm && (
+        <form onSubmit={handleSubmit} className="rounded-lg border border-gray-200 bg-white p-5">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">
+              {editingDiscount ? 'Edit Coupon' : 'Create Coupon'}
+            </h2>
+            <button
+              type="button"
+              onClick={closeForm}
+              className="text-sm font-medium text-gray-500 hover:text-gray-900"
+            >
+              Cancel
+            </button>
           </div>
-        )}
 
-        {/* Table */}
-        {bulkDiscountsLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="animate-spin text-gray-400" size={24} />
-            <span className="ml-2 text-gray-500">Loading...</span>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-gray-700">Code</span>
+              <input
+                type="text"
+                value={form.code}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, code: event.target.value.toUpperCase() }))
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+                placeholder="WELCOME10"
+                required
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-gray-700">Type</span>
+              <select
+                value={form.type}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    type: event.target.value as DiscountType,
+                    value: event.target.value === 'free_shipping' ? '0' : current.value,
+                  }))
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+              >
+                <option value="percentage">Percentage</option>
+                <option value="fixed_amount">Fixed Amount</option>
+                <option value="free_shipping">Free Shipping</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-gray-700">Value</span>
+              <input
+                type="number"
+                min="0"
+                value={form.type === 'free_shipping' ? '0' : form.value}
+                disabled={form.type === 'free_shipping'}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, value: event.target.value }))
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black disabled:bg-gray-100"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-gray-700">Usage Limit</span>
+              <input
+                type="number"
+                min="1"
+                value={form.usage_limit}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, usage_limit: event.target.value }))
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+                placeholder="No limit"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-gray-700">Starts At</span>
+              <input
+                type="date"
+                value={form.starts_at}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, starts_at: event.target.value }))
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-gray-700">Ends At</span>
+              <input
+                type="date"
+                value={form.ends_at}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, ends_at: event.target.value }))
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
+              />
+            </label>
           </div>
-        ) : bulkDiscounts.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 border border-dashed border-gray-300 rounded-lg">
-            <Package size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium text-gray-900 mb-1">
-              No bulk discount rules
-            </p>
-            <p className="text-sm mb-4">
-              Create rules to offer quantity-based discounts to your customers.
-            </p>
+
+          <label className="mt-4 flex items-center gap-2 text-sm font-medium text-gray-700">
+            <input
+              type="checkbox"
+              checked={form.is_active}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, is_active: event.target.checked }))
+              }
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            Active
+          </label>
+
+          <div className="mt-5 flex justify-end">
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-60"
+            >
+              {saving && <Loader2 size={16} className="animate-spin" />}
+              {editingDiscount ? 'Update Coupon' : 'Create Coupon'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+        {loading ? (
+          <div className="flex items-center justify-center gap-2 p-10 text-gray-500">
+            <Loader2 size={18} className="animate-spin" />
+            Loading coupons...
+          </div>
+        ) : discounts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center p-12 text-center">
+            <Tag size={36} className="mb-3 text-gray-300" />
+            <h2 className="text-lg font-semibold text-gray-900">No coupons yet</h2>
+            <p className="mt-1 text-sm text-gray-500">Create your first discount code.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Product
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Code
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                    Min Qty
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Type
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                    Discount %
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Value
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Description
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Usage
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                    Active
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Ends
                   </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {bulkDiscounts.map((discount) => (
+              <tbody className="divide-y divide-gray-100 bg-white">
+                {discounts.map((discount) => (
                   <tr key={discount.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-900">
-                      {discount.product_title || 'All Products'}
-                    </td>
-                    <td className="px-4 py-3 text-center text-sm font-medium">
-                      {discount.min_quantity}+
-                    </td>
-                    <td className="px-4 py-3 text-center text-sm font-medium text-green-600">
-                      {discount.discount_percent}%
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">
-                      {discount.description || '—'}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span
-                        className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                          discount.active
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-500'
-                        }`}
-                      >
-                        {discount.active ? 'Active' : 'Inactive'}
+                    <td className="px-6 py-4">
+                      <span className="rounded bg-gray-100 px-2 py-1 font-mono text-sm font-semibold text-gray-900">
+                        {discount.code}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-sm capitalize text-gray-700">
+                      {(discount.type || 'unknown').replace('_', ' ')}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {formatDiscountValue(discount)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {discount.usage_count || 0} / {discount.usage_limit || 'No limit'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {discount.ends_at
+                        ? new Date(discount.ends_at).toLocaleDateString()
+                        : 'No end date'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                          discount.is_active
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {discount.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="inline-flex items-center gap-2">
                         <button
-                          onClick={() => handleEdit(discount)}
-                          className="text-blue-500 hover:text-blue-700 p-1"
-                          title="Edit"
+                          type="button"
+                          onClick={() => openEditForm(discount)}
+                          aria-label={`Edit coupon ${discount.code}`}
+                          className="rounded p-2 text-blue-600 hover:bg-blue-50"
+                          title="Edit coupon"
                         >
                           <Edit2 size={16} />
                         </button>
                         <button
-                          onClick={() => handleDelete(discount.id)}
-                          className="text-red-500 hover:text-red-700 p-1"
-                          title="Delete"
+                          type="button"
+                          onClick={() => handleDelete(discount)}
+                          aria-label={`Delete coupon ${discount.code}`}
+                          className="rounded p-2 text-red-600 hover:bg-red-50"
+                          title="Delete coupon"
                         >
                           <Trash2 size={16} />
                         </button>

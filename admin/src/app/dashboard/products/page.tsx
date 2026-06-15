@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Download,
   Grid2X2,
   List,
   Package,
@@ -12,9 +11,7 @@ import {
   RefreshCw,
   Search,
   Trash2,
-  Upload,
 } from 'lucide-react';
-import { exportToCSV, formatProductsForExport } from '@/lib/csv-export';
 import { api } from '@/lib/api';
 
 type ListingFilter = 'all' | 'published' | 'draft' | 'out_of_stock';
@@ -105,7 +102,6 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [collections, setCollections] = useState<CollectionOption[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
@@ -182,22 +178,15 @@ export default function ProductsPage() {
     out_of_stock: stats?.out_of_stock_products || 0,
   };
 
-  const toggleSelection = (id: string) => {
-    const next = new Set(selectedProducts);
-    if (next.has(id)) {
-      next.delete(id);
-    } else {
-      next.add(id);
-    }
-    setSelectedProducts(next);
-  };
-
   const handleToggleActive = async (product: Product) => {
     try {
       const nextStatus = product.status === 'published' ? 'draft' : 'published';
-      await api.bulkUpdateProducts([product.id], { status: nextStatus });
+      await api.updateProduct(product.id, { status: nextStatus });
       await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (error) { console.error('Failed to toggle product status:', error); }
+    } catch (error) {
+      console.error('Failed to toggle product status:', error);
+      window.alert(error instanceof Error ? error.message : 'Failed to update product status');
+    }
   };
 
   const handleDelete = async (productId: string) => {
@@ -205,26 +194,10 @@ export default function ProductsPage() {
     try {
       await api.deleteProduct(productId);
       await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (error) { console.error('Failed to delete product:', error); }
-  };
-
-  const handleBulkStatus = async (status: 'published' | 'draft' | 'archived') => {
-    if (selectedProducts.size === 0) return;
-    try {
-      await api.bulkUpdateProducts(Array.from(selectedProducts), { status });
-      setSelectedProducts(new Set());
-      await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (error) { console.error('Failed bulk update:', error); }
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedProducts.size === 0) return;
-    if (!window.confirm(`Delete ${selectedProducts.size} selected products?`)) return;
-    try {
-      await api.bulkDeleteProducts(Array.from(selectedProducts));
-      setSelectedProducts(new Set());
-      await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (error) { console.error('Failed bulk delete:', error); }
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+      window.alert(error instanceof Error ? error.message : 'Failed to delete product');
+    }
   };
 
   /* ── Loading skeleton ── */
@@ -258,7 +231,7 @@ export default function ProductsPage() {
             Products
           </h2>
           <p className="mt-2 text-sm font-medium text-[var(--on-surface-variant)]">
-            Manage listings, drafts, stock health, and bulk actions.
+            Manage listings, drafts, stock health, and product edits.
           </p>
         </div>
         <div className="flex gap-2">
@@ -269,19 +242,6 @@ export default function ProductsPage() {
           >
             <RefreshCw size={13} /> Refresh
           </button>
-          <button
-            type="button"
-            onClick={() => exportToCSV(formatProductsForExport(products), 'products')}
-            className="flex items-center gap-1.5 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors"
-          >
-            <Download size={13} /> Export
-          </button>
-          <Link
-            href="/dashboard/products/bulk-import"
-            className="flex items-center gap-1.5 rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors"
-          >
-            <Upload size={13} /> Bulk Import
-          </Link>
           <Link
             href="/dashboard/products/new"
             className="flex items-center gap-1.5 rounded-full bg-[var(--primary)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-white hover:opacity-90 transition-opacity"
@@ -389,23 +349,6 @@ export default function ProductsPage() {
             {collections.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
           </select>
         </div>
-
-        {/* Bulk actions bar */}
-        {selectedProducts.size > 0 && (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-[var(--surface-container-low)] px-4 py-3 text-xs">
-            <span className="font-bold text-[var(--on-surface)]">{selectedProducts.size} selected</span>
-            {(['published', 'draft', 'archived'] as const).map((s) => (
-              <button key={s} type="button" onClick={() => void handleBulkStatus(s)}
-                className="rounded-full border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] px-3 py-1.5 font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-high)] transition-colors capitalize">
-                {s}
-              </button>
-            ))}
-            <button type="button" onClick={() => void handleBulkDelete()}
-              className="rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] px-3 py-1.5 font-bold uppercase tracking-widest text-[var(--on-error-container)] hover:opacity-80 transition-opacity">
-              Delete
-            </button>
-          </div>
-        )}
       </section>
 
       {/* ── Product list ── */}
@@ -428,18 +371,6 @@ export default function ProductsPage() {
             return (
               <div key={product.id} className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] overflow-hidden">
                 <div className="relative aspect-[4/3] bg-[var(--surface-container-low)]">
-                  <button
-                    type="button"
-                    onClick={() => toggleSelection(product.id)}
-                    className={`absolute left-3 top-3 z-10 h-8 w-8 rounded-full border flex items-center justify-center text-xs font-bold transition-colors ${
-                      selectedProducts.has(product.id)
-                        ? 'border-[var(--primary)] bg-[var(--primary)] text-white'
-                        : 'border-[var(--outline-variant)] bg-white/90 text-[var(--on-surface)]'
-                    }`}
-                    aria-label={`Select ${product.title}`}
-                  >
-                    {selectedProducts.has(product.id) ? '✓' : ''}
-                  </button>
                   {product.thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={toDisplayUrl(product.thumbnail)} alt={product.title} className="h-full w-full object-cover"
@@ -471,6 +402,7 @@ export default function ProductsPage() {
 
                   <div className="grid grid-cols-3 gap-1.5">
                     <button type="button" onClick={() => void handleToggleActive(product)}
+                      aria-label={`${product.status === 'published' ? 'Pause' : 'Activate'} ${product.title}`}
                       className="rounded-full border border-[var(--outline-variant)] py-2 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors">
                       {product.status === 'published' ? 'Pause' : 'Activate'}
                     </button>
@@ -479,6 +411,7 @@ export default function ProductsPage() {
                       Edit
                     </Link>
                     <button type="button" onClick={() => void handleDelete(product.id)}
+                      aria-label={`Delete ${product.title}`}
                       className="rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] py-2 text-[9px] font-bold uppercase tracking-widest text-[var(--on-error-container)] hover:opacity-80 transition-opacity">
                       Delete
                     </button>
@@ -499,8 +432,6 @@ export default function ProductsPage() {
 
             return (
               <div key={product.id} className={`flex items-center gap-4 p-4 border-l-4 ${s.border} hover:bg-[var(--surface-container-low)]/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl`}>
-                <input type="checkbox" checked={selectedProducts.has(product.id)} onChange={() => toggleSelection(product.id)}
-                  className="h-4 w-4 rounded border-[var(--outline-variant)]" />
                 <div className="h-14 w-14 flex-shrink-0 rounded-xl overflow-hidden bg-[var(--surface-container-low)] flex items-center justify-center">
                   {product.thumbnail
                     ? <img src={toDisplayUrl(product.thumbnail)} alt={product.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> // eslint-disable-line @next/next/no-img-element
@@ -517,6 +448,7 @@ export default function ProductsPage() {
                 <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{product.status}</span>
                 <div className="flex items-center gap-1.5">
                   <button type="button" onClick={() => void handleToggleActive(product)}
+                    aria-label={`${product.status === 'published' ? 'Pause' : 'Activate'} ${product.title}`}
                     className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
                     {product.status === 'published' ? 'Pause' : 'Activate'}
                   </button>
@@ -525,6 +457,7 @@ export default function ProductsPage() {
                     Edit
                   </Link>
                   <button type="button" onClick={() => void handleDelete(product.id)}
+                    aria-label={`Delete ${product.title}`}
                     className="h-8 w-8 rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] flex items-center justify-center text-[var(--on-error-container)] hover:opacity-80">
                     <Trash2 size={13} />
                   </button>

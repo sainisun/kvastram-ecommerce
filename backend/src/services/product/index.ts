@@ -11,12 +11,10 @@ export {
   ImageSchema,
   ProductFilterSchema,
   ProductSearchSchema,
-  ProductBulkUpdateSchema,
   type CreateProductInput,
   type UpdateProductInput,
   type ProductFilter,
   type ProductSearch,
-  type ProductBulkUpdate,
 } from './product-validator';
 
 // Query Service

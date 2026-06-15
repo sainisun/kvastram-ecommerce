@@ -14,10 +14,10 @@ export const storefrontTrust = {
     'Visa, Mastercard, Amex, and PayPal balance via PayPal for international buyers only.',
   paymentShortSummary: 'Razorpay for INR orders; PayPal for international buyers.',
   policyRoutes: {
-    shipping: '/pages/shipping-returns',
-    shippingPolicy: '/pages/shipping-returns',
+    shipping: '/pages/shipping-policy',
+    shippingPolicy: '/pages/shipping-policy',
     returns: '/returns',
-    refundPolicy: '/pages/shipping-returns',
+    refundPolicy: '/pages/refund-policy',
     privacy: '/pages/privacy-policy',
     terms: '/pages/terms-of-service',
     cookies: '/cookie-settings',

@@ -83,6 +83,7 @@ export default function TagsPage() {
           </p>
         </div>
         <button
+          type="button"
           onClick={() => setIsCreating(true)}
           className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
         >
@@ -98,7 +99,9 @@ export default function TagsPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold">New Tag</h2>
               <button
+                type="button"
                 onClick={() => setIsCreating(false)}
+                aria-label="Close tag form"
                 className="text-gray-400 hover:text-gray-600"
               >
                 <X size={20} />
@@ -175,7 +178,9 @@ export default function TagsPage() {
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => handleDelete(tag.id)}
+                  aria-label={`Delete tag ${tag.name}`}
                   className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors opacity-0 group-hover:opacity-100"
                   title="Delete Tag"
                 >

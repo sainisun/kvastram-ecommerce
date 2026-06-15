@@ -84,17 +84,17 @@ export function CollectionsSection({ collections }: CollectionsSectionProps) {
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.6)] via-[rgba(var(--ds-black-rgb),0.25)] to-transparent transition-opacity duration-300" />
                   </div>
                 ) : (
-                  <div className="collection-card-fallback absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-br from-[var(--ds-accent-primary)] to-[var(--ds-footer-bg)] text-white">
+                  <div className="collection-card-fallback absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-br from-[var(--ds-accent-primary)] to-[var(--ds-footer-bg)] text-[var(--ds-text-inverse)]">
                     <span>{collection.title}</span>
                     <small className="opacity-80">Handmade edit</small>
                   </div>
                 )}
-                <div className="collection-info collections-as-seen-info absolute bottom-0 inset-x-0 p-6 text-white z-10">
-                  <span className="text-[10px] uppercase tracking-widest text-white/80 font-medium">Collection</span>
-                  <h3 className="text-xl md:text-2xl font-display mt-1 text-white">{collection.title}</h3>
+                <div className="collection-info collections-as-seen-info absolute bottom-0 inset-x-0 p-6 text-[var(--ds-text-inverse)] z-10">
+                  <span className="text-[10px] uppercase tracking-widest text-[rgba(var(--ds-white-rgb),0.8)] font-medium">Collection</span>
+                  <h3 className="text-xl md:text-2xl font-display mt-1 text-[var(--ds-text-inverse)]">{collection.title}</h3>
                 </div>
               </Link>
             </motion.div>

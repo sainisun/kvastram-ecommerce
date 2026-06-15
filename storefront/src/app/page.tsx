@@ -13,6 +13,7 @@ import {
 } from '@/lib/seo';
 import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
+import { HomeTrustBar } from '@/components/home/HomeTrustBar';
 import { BrandStory } from '@/components/home/BrandStory';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
 import { BestSellers } from '@/components/home/BestSellers';
@@ -22,6 +23,16 @@ import { NewArrivals } from '@/components/home/NewArrivals';
 import { CategoriesGrid } from '@/components/home/CategoriesGrid';
 import { InstagramSection } from '@/components/home/InstagramSection';
 import { MobileStickyActions } from '@/components/home/MobileStickyActions';
+import {
+  WhatsAppHelpStrip,
+  CraftEducationStrip,
+  FitScaleHelp,
+  ShippingReturnsMiniFAQ,
+} from '@/components/home/ConversionHelpSections';
+import { ShopByNeed } from '@/components/home/ShopByNeed';
+import { CraftPromise } from '@/components/home/CraftPromise';
+import { HomeMerchandisingSections } from '@/components/home/HomeMerchandisingSections';
+import { Testimonials } from '@/components/home/Testimonials';
 import { CATEGORY_QUICK_LINKS } from '@/config/storefront-navigation';
 import type { Product } from '@/types';
 import type {
@@ -110,7 +121,7 @@ export default async function Home() {
       products = filterStorefrontReadyProducts(productsResult.value.products || []);
   }
 
-  const testimonials: HomepageTestimonial[] =
+  const _testimonials: HomepageTestimonial[] =
     testimonialsResult.status === 'fulfilled'
       ? (testimonialsResult.value.testimonials || [])
           .filter(
@@ -404,7 +415,7 @@ export default async function Home() {
           )
       : [];
 
-  const merchandisingSlots: HomepageMerchandisingSlot[] =
+  const _merchandisingSlots: HomepageMerchandisingSlot[] =
     merchandisingResult.status === 'fulfilled'
       ? (merchandisingResult.value.slots || [])
           .filter((slot: { id?: string; slot_key?: string; title?: string }) =>
@@ -431,16 +442,25 @@ export default async function Home() {
 
       <CircularCategories circles={mobileStoryCircles} />
       <HeroSection banners={heroBanners} />
+      <HomeTrustBar />
       <BestSellers products={bestsellerProducts} />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
         isCurated={newArrivalProducts.length > 0}
       />
+      <WhatsAppHelpStrip />
+      <ShopByNeed collections={collections} />
       <CategoriesGrid categories={resolvedCategoryCards} />
       <CollectionsSection collections={collections} />
       <WatchBuyPreview reels={trendingReels} />
       <BrandStory settings={homepageSettings} />
+      <CraftPromise />
+      <CraftEducationStrip />
+      <HomeMerchandisingSections merchandisingSlots={_merchandisingSlots} />
+      <FitScaleHelp />
       <InstagramSection />
+      <Testimonials testimonials={_testimonials} />
+      <ShippingReturnsMiniFAQ />
       <NewsletterSection settings={homepageSettings} />
       <MobileStickyActions />
     </>

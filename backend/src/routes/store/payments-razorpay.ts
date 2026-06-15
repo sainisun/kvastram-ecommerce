@@ -18,12 +18,13 @@ import { zValidator } from '@hono/zod-validator';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { db } from '../../db';
-import { orders, webhook_events } from '../../db/schema';
+import { customers, orders, webhook_events } from '../../db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { logInfo, logError } from '../../utils/logger';
 import { verify } from 'hono/jwt';
 import { getCookie } from 'hono/cookie';
 import { config } from '../../config';
+import { isValidCheckoutPaymentToken } from '../../utils/payment-ownership';
 
 const rzpKeyId = process.env.RAZORPAY_ID;
 const rzpKeySecret = process.env.RAZORPAY_SECRET;
@@ -39,6 +40,7 @@ const razorpayRouter = new Hono();
 
 const CreateRazorpayOrderSchema = z.object({
   order_id: z.string().uuid(),
+  checkout_token: z.string().min(16).optional(),
 });
 
 const VerifyPaymentSchema = z.object({
@@ -46,7 +48,107 @@ const VerifyPaymentSchema = z.object({
   razorpay_order_id: z.string(),
   razorpay_payment_id: z.string(),
   razorpay_signature: z.string(),
+  checkout_token: z.string().min(16).optional(),
 });
+
+async function getOrderWithCustomer(orderId: string) {
+  const [row] = await db
+    .select()
+    .from(orders)
+    .leftJoin(customers, eq(orders.customer_id, customers.id))
+    .where(eq(orders.id, orderId))
+    .limit(1);
+
+  return row
+    ? {
+        order: row.orders,
+        customer: row.customers,
+      }
+    : null;
+}
+
+function safeCompareHex(expected: string, actual: string) {
+  const expectedBuffer = Buffer.from(expected, 'hex');
+  const actualBuffer = Buffer.from(actual, 'hex');
+
+  return (
+    expectedBuffer.length === actualBuffer.length &&
+    crypto.timingSafeEqual(expectedBuffer, actualBuffer)
+  );
+}
+
+async function requirePaymentOwnership(
+  c: any,
+  order: typeof orders.$inferSelect,
+  customer: typeof customers.$inferSelect | null,
+  checkoutToken?: string
+) {
+  if (order.customer_id && customer?.has_account) {
+    const token = getCookie(c, 'auth_token');
+    if (!token) return { ok: false, response: c.json({ error: 'Unauthorized' }, 401) };
+
+    try {
+      const payload = (await verify(token, config.jwt.secret, 'HS256')) as {
+        sub: string;
+        role: string;
+      };
+      if (payload.role !== 'customer' || payload.sub !== order.customer_id) {
+        return { ok: false, response: c.json({ error: 'Forbidden' }, 403) };
+      }
+      return { ok: true };
+    } catch {
+      return { ok: false, response: c.json({ error: 'Unauthorized' }, 401) };
+    }
+  }
+
+  if (
+    isValidCheckoutPaymentToken(
+      order.metadata as Record<string, any> | null,
+      checkoutToken
+    )
+  ) {
+    return { ok: true };
+  }
+
+  return { ok: false, response: c.json({ error: 'Invalid checkout session' }, 401) };
+}
+
+function getStoredRazorpayOrderId(order: typeof orders.$inferSelect) {
+  const metadata = (order.metadata as Record<string, any> | null) || {};
+  return typeof metadata.razorpay_order_id === 'string'
+    ? metadata.razorpay_order_id
+    : null;
+}
+
+function getWebhookEntity(event: any) {
+  return (
+    event.payload?.payment?.entity ||
+    event.payload?.refund?.entity ||
+    event.payload?.order?.entity ||
+    null
+  );
+}
+
+function getWebhookEventId(c: any, payload: string, event: any) {
+  return (
+    c.req.header('x-razorpay-event-id') ||
+    event.id ||
+    getWebhookEntity(event)?.id ||
+    crypto.createHash('sha256').update(payload).digest('hex')
+  );
+}
+
+function getOrderIdFromPayment(payment: any) {
+  return payment?.notes?.order_id || null;
+}
+
+function getOrderIdFromRazorpayOrder(order: any) {
+  return order?.notes?.order_id || order?.receipt || null;
+}
+
+function getOrderIdFromRefund(refund: any) {
+  return refund?.notes?.order_id || null;
+}
 
 // --- ROUTES ---
 
@@ -60,36 +162,23 @@ razorpayRouter.post(
         return c.json({ error: 'Razorpay not configured' }, 503);
       }
 
-      const { order_id } = c.req.valid('json');
+      const { order_id, checkout_token } = c.req.valid('json');
 
-      const [order] = await db
-        .select()
-        .from(orders)
-        .where(eq(orders.id, order_id))
-        .limit(1);
+      const orderRow = await getOrderWithCustomer(order_id);
 
-      if (!order) {
+      if (!orderRow) {
         return c.json({ error: 'Order not found' }, 404);
       }
 
-      // Ownership check for registered customers
-      if (order.customer_id) {
-        const token = getCookie(c, 'auth_token');
-        if (!token) return c.json({ error: 'Unauthorized' }, 401);
-        try {
-          const payload = (await verify(token, config.jwt.secret, 'HS256')) as {
-            sub: string;
-            role: string;
-          };
-          if (
-            payload.role !== 'customer' ||
-            payload.sub !== order.customer_id
-          ) {
-            return c.json({ error: 'Forbidden' }, 403);
-          }
-        } catch {
-          return c.json({ error: 'Unauthorized' }, 401);
-        }
+      const { order, customer } = orderRow;
+      const ownership = await requirePaymentOwnership(
+        c,
+        order,
+        customer,
+        checkout_token
+      );
+      if (!ownership.ok) {
+        return ownership.response;
       }
 
       if (order.payment_status === 'captured') {
@@ -98,6 +187,10 @@ razorpayRouter.post(
 
       if (['cancelled', 'refunded'].includes(order.status ?? '')) {
         return c.json({ error: 'Cannot create payment for this order' }, 400);
+      }
+
+      if ((order.currency_code || '').toUpperCase() !== 'INR') {
+        return c.json({ error: 'Razorpay is available only for INR orders' }, 400);
       }
 
       // Razorpay expects amount in paise (smallest INR unit = 1/100 rupee)
@@ -155,31 +248,92 @@ razorpayRouter.post(
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
+        checkout_token,
       } = c.req.valid('json');
 
-      // Verify HMAC-SHA256 signature
+      const orderRow = await getOrderWithCustomer(order_id);
+
+      if (!orderRow) {
+        return c.json({ error: 'Order not found' }, 404);
+      }
+
+      const { order: existingOrder, customer } = orderRow;
+      const ownership = await requirePaymentOwnership(
+        c,
+        existingOrder,
+        customer,
+        checkout_token
+      );
+      if (!ownership.ok) {
+        return ownership.response;
+      }
+
+      const storedRazorpayOrderId = getStoredRazorpayOrderId(existingOrder);
+
+      if (!storedRazorpayOrderId) {
+        return c.json({ error: 'Razorpay order not initialized' }, 400);
+      }
+
+      if (razorpay_order_id !== storedRazorpayOrderId) {
+        logError('Razorpay order ID mismatch during verification', {
+          order_id,
+          received_razorpay_order_id: razorpay_order_id,
+          stored_razorpay_order_id: storedRazorpayOrderId,
+        });
+        return c.json({ error: 'Invalid Razorpay order' }, 400);
+      }
+
+      // Verify HMAC-SHA256 signature with the server-stored Razorpay order ID.
       const expectedSignature = crypto
         .createHmac('sha256', rzpKeySecret)
-        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+        .update(`${storedRazorpayOrderId}|${razorpay_payment_id}`)
         .digest('hex');
 
-      if (expectedSignature !== razorpay_signature) {
+      if (!safeCompareHex(expectedSignature, razorpay_signature)) {
         logError('Razorpay signature verification failed', {
           order_id,
-          razorpay_order_id,
+          razorpay_order_id: storedRazorpayOrderId,
         });
         return c.json({ error: 'Invalid payment signature' }, 400);
       }
 
-      // Fetch order for metadata merge
-      const [existingOrder] = await db
-        .select()
-        .from(orders)
-        .where(eq(orders.id, order_id))
-        .limit(1);
+      if (!razorpay) {
+        return c.json({ error: 'Razorpay not configured' }, 503);
+      }
 
-      if (!existingOrder) {
-        return c.json({ error: 'Order not found' }, 404);
+      let payment = (await razorpay.payments.fetch(
+        razorpay_payment_id
+      )) as any;
+
+      if (payment.order_id !== storedRazorpayOrderId) {
+        return c.json({ error: 'Payment does not belong to this order' }, 400);
+      }
+
+      const expectedAmount = Math.round(Number(existingOrder.total));
+      if (Number(payment.amount) !== expectedAmount) {
+        logError('Razorpay payment amount mismatch', {
+          order_id,
+          expected_amount: expectedAmount,
+          received_amount: payment.amount,
+        });
+        return c.json({ error: 'Payment amount mismatch' }, 400);
+      }
+
+      const expectedCurrency = (existingOrder.currency_code || 'INR').toUpperCase();
+      if ((payment.currency || '').toUpperCase() !== expectedCurrency) {
+        return c.json({ error: 'Payment currency mismatch' }, 400);
+      }
+
+      if (payment.status === 'authorized') {
+        payment = (await razorpay.payments.capture(
+          razorpay_payment_id,
+          expectedAmount,
+          expectedCurrency
+        )) as any;
+      }
+
+      if (payment.status !== 'captured') {
+        return c.json({ error: `Payment is not captured (${payment.status})` }, 400);
       }
 
       // Mark order as paid
@@ -190,9 +344,11 @@ razorpayRouter.post(
           status: 'completed',
           metadata: {
             ...((existingOrder.metadata as Record<string, any>) || {}),
-            razorpay_order_id,
+            razorpay_order_id: storedRazorpayOrderId,
             razorpay_payment_id,
-            razorpay_signature,
+            razorpay_payment_status: payment.status,
+            razorpay_payment_amount: payment.amount,
+            razorpay_payment_currency: payment.currency,
             payment_provider: 'razorpay',
             paid_at: new Date().toISOString(),
           },
@@ -241,13 +397,14 @@ razorpayRouter.post('/webhook', async (c) => {
     return c.json({ error: 'Invalid JSON' }, 400);
   }
 
-  const eventId = event.payload?.payment?.entity?.id || `rz_${Date.now()}`;
+  const eventId = getWebhookEventId(c, payload, event);
+  const storedEventId = `razorpay_${eventId}`;
   const eventType = event.event;
 
   // Idempotency check
   try {
     await db.insert(webhook_events).values({
-      event_id: `razorpay_${eventId}`,
+      event_id: storedEventId,
       event_type: eventType,
       status: 'processing',
     });
@@ -261,9 +418,40 @@ razorpayRouter.post('/webhook', async (c) => {
 
   try {
     switch (eventType) {
+      case 'payment.authorized': {
+        const payment = event.payload?.payment?.entity;
+        const orderId = getOrderIdFromPayment(payment);
+
+        if (orderId) {
+          const [existingOrder] = await db
+            .select()
+            .from(orders)
+            .where(eq(orders.id, orderId))
+            .limit(1);
+
+          if (existingOrder) {
+            await db
+              .update(orders)
+              .set({
+                payment_status: 'authorized',
+                metadata: {
+                  ...((existingOrder.metadata as Record<string, any>) || {}),
+                  razorpay_payment_id: payment.id,
+                  razorpay_order_id: payment.order_id,
+                  razorpay_payment_status: payment.status,
+                  payment_provider: 'razorpay',
+                  authorized_at: new Date().toISOString(),
+                },
+              })
+              .where(eq(orders.id, orderId));
+          }
+        }
+        break;
+      }
+
       case 'payment.captured': {
         const payment = event.payload?.payment?.entity;
-        const orderId = payment?.notes?.order_id;
+        const orderId = getOrderIdFromPayment(payment);
 
         if (orderId) {
           const [existingOrder] = await db
@@ -282,6 +470,9 @@ razorpayRouter.post('/webhook', async (c) => {
                   ...((existingOrder.metadata as Record<string, any>) || {}),
                   razorpay_payment_id: payment.id,
                   razorpay_order_id: payment.order_id,
+                  razorpay_payment_status: payment.status,
+                  razorpay_payment_amount: payment.amount,
+                  razorpay_payment_currency: payment.currency,
                   payment_provider: 'razorpay',
                   paid_at: new Date().toISOString(),
                 },
@@ -294,9 +485,40 @@ razorpayRouter.post('/webhook', async (c) => {
         break;
       }
 
+      case 'order.paid': {
+        const razorpayOrder = event.payload?.order?.entity;
+        const orderId = getOrderIdFromRazorpayOrder(razorpayOrder);
+
+        if (orderId) {
+          const [existingOrder] = await db
+            .select()
+            .from(orders)
+            .where(eq(orders.id, orderId))
+            .limit(1);
+
+          if (existingOrder) {
+            await db
+              .update(orders)
+              .set({
+                payment_status: 'captured',
+                status: 'completed',
+                metadata: {
+                  ...((existingOrder.metadata as Record<string, any>) || {}),
+                  razorpay_order_id: razorpayOrder.id,
+                  razorpay_order_status: razorpayOrder.status,
+                  payment_provider: 'razorpay',
+                  paid_at: new Date().toISOString(),
+                },
+              })
+              .where(eq(orders.id, orderId));
+          }
+        }
+        break;
+      }
+
       case 'payment.failed': {
         const payment = event.payload?.payment?.entity;
-        const orderId = payment?.notes?.order_id;
+        const orderId = getOrderIdFromPayment(payment);
 
         if (orderId) {
           const [existingOrder] = await db
@@ -313,6 +535,8 @@ razorpayRouter.post('/webhook', async (c) => {
                 metadata: {
                   ...((existingOrder.metadata as Record<string, any>) || {}),
                   razorpay_payment_id: payment.id,
+                  razorpay_order_id: payment.order_id,
+                  razorpay_payment_status: payment.status,
                   payment_provider: 'razorpay',
                   payment_failed_at: new Date().toISOString(),
                   payment_failure_reason: payment.error_description,
@@ -326,33 +550,70 @@ razorpayRouter.post('/webhook', async (c) => {
         break;
       }
 
-      case 'refund.created': {
+      case 'refund.created':
+      case 'refund.processed': {
         const refund = event.payload?.refund?.entity;
         const paymentId = refund?.payment_id;
 
         if (paymentId) {
+          const orderId = getOrderIdFromRefund(refund);
+          const [order] = orderId
+            ? await db.select().from(orders).where(eq(orders.id, orderId)).limit(1)
+            : await db
+                .select()
+                .from(orders)
+                .where(
+                  sql`${orders.metadata}->>'razorpay_payment_id' = ${paymentId}`
+                )
+                .limit(1);
+
+          if (order) {
+            await db
+              .update(orders)
+              .set({
+                payment_status:
+                  eventType === 'refund.processed' ? 'refunded' : 'refund_pending',
+                metadata: {
+                  ...((order.metadata as Record<string, any>) || {}),
+                  razorpay_refund_id: refund.id,
+                  razorpay_refund_status: refund.status,
+                  ...(eventType === 'refund.processed'
+                    ? { refunded_at: new Date().toISOString() }
+                    : { refund_created_at: new Date().toISOString() }),
+                },
+              })
+              .where(eq(orders.id, order.id));
+
+            logInfo(`Razorpay refund for order ${order.id}`);
+          }
+        }
+        break;
+      }
+
+      case 'refund.failed': {
+        const refund = event.payload?.refund?.entity;
+        const paymentId = refund?.payment_id;
+        if (paymentId) {
           const [order] = await db
             .select()
             .from(orders)
-            .where(
-              sql`${orders.metadata}->>'razorpay_payment_id' = ${paymentId}`
-            )
+            .where(sql`${orders.metadata}->>'razorpay_payment_id' = ${paymentId}`)
             .limit(1);
 
           if (order) {
             await db
               .update(orders)
               .set({
-                payment_status: 'refunded',
+                payment_status: 'refund_failed',
                 metadata: {
                   ...((order.metadata as Record<string, any>) || {}),
                   razorpay_refund_id: refund.id,
-                  refunded_at: new Date().toISOString(),
+                  razorpay_refund_status: refund.status,
+                  refund_failed_at: new Date().toISOString(),
+                  refund_failure_reason: refund.error_description || null,
                 },
               })
               .where(eq(orders.id, order.id));
-
-            logInfo(`Razorpay refund for order ${order.id}`);
           }
         }
         break;
@@ -365,7 +626,7 @@ razorpayRouter.post('/webhook', async (c) => {
     await db
       .update(webhook_events)
       .set({ processed_at: new Date(), status: 'processed' })
-      .where(eq(webhook_events.event_id, `razorpay_${eventId}`));
+      .where(eq(webhook_events.event_id, storedEventId));
 
     return c.json({ received: true });
   } catch (error: any) {
@@ -373,7 +634,7 @@ razorpayRouter.post('/webhook', async (c) => {
     await db
       .update(webhook_events)
       .set({ status: 'failed' })
-      .where(eq(webhook_events.event_id, `razorpay_${eventId}`));
+      .where(eq(webhook_events.event_id, storedEventId));
     return c.json({ error: error.message }, 500);
   }
 });

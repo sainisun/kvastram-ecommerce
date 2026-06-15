@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 
 interface RazorpayButtonProps {
   orderId: string;        // Our DB order ID (UUID)
+  checkoutToken: string;
   amount: number;         // Amount in paise
   currency?: string;
   customerName?: string;
@@ -80,6 +81,7 @@ function loadRazorpayScript(): Promise<boolean> {
 
 export default function RazorpayButton({
   orderId,
+  checkoutToken,
   amount: _amount,
   currency = 'INR',
   customerName,
@@ -111,7 +113,10 @@ export default function RazorpayButton({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ order_id: orderId }),
+        body: JSON.stringify({
+          order_id: orderId,
+          checkout_token: checkoutToken,
+        }),
       });
 
       if (!res.ok) {
@@ -152,6 +157,7 @@ export default function RazorpayButton({
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
+                  checkout_token: checkoutToken,
                 }),
               }
             );

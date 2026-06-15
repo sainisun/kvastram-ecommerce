@@ -298,7 +298,11 @@ app.get('/', (c) => {
 
 // Rate Limiting Configuration (Tiered)
 // 1. Admin auth limits
-app.use('/auth/*', adminAuthLimiter);
+// Keep strict limits on credential/2FA attempts, but do not apply them to
+// /auth/me. The admin shell checks /auth/me on every protected page load, and
+// rate-limiting that session check can bounce active admins back to login.
+app.use('/auth/login', adminAuthLimiter);
+app.use('/auth/register', adminAuthLimiter);
 app.use('/auth/2fa/*', adminAuthLimiter);
 
 // 2. Customer auth and verification limits

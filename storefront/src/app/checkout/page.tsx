@@ -191,6 +191,7 @@ export default function CheckoutPage() {
   );
   const [orderId, setOrderId] = useState('');         // display_id for UI
   const [orderUUID, setOrderUUID] = useState('');      // UUID for payment APIs
+  const [checkoutPaymentToken, setCheckoutPaymentToken] = useState('');
   const [clientSecret, setClientSecret] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -502,6 +503,7 @@ export default function CheckoutPage() {
       const newOrderUUID = res.order.id;
       setOrderId(res.order.display_id);
       setOrderUUID(newOrderUUID);
+      setCheckoutPaymentToken(res.checkout_payment_token || '');
 
       const currencyCode = (currentRegion?.currency_code || 'usd').toLowerCase();
 
@@ -1033,12 +1035,14 @@ export default function CheckoutPage() {
 
                 {/* Razorpay — Indian customers (INR) */}
                 {currency.toLowerCase() === 'inr' &&
-                  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && (
+                  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID &&
+                  checkoutPaymentToken && (
                     <ErrorBoundary fallback={
                       <p className="text-body-sm text-[var(--ds-danger)] py-2">Payment failed to load. Please refresh.</p>
                     }>
                       <RazorpayButton
                         orderId={orderUUID}
+                        checkoutToken={checkoutPaymentToken}
                         amount={finalTotal}
                         currency="INR"
                         customerName={`${formData.first_name} ${formData.last_name}`.trim()}

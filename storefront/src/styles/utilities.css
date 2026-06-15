@@ -43,11 +43,11 @@
 }
 
 .kv-section {
-  padding-block: 44px;
+  padding-block: var(--ds-space-2xl);
 }
 
 .kv-section-sm {
-  padding-block: 28px;
+  padding-block: var(--ds-space-lg);
 }
 
 .kv-section-head {
@@ -196,7 +196,7 @@
 
 @media (min-width: 768px) {
   .kv-section {
-    padding-block: 70px;
+    padding-block: var(--ds-space-2xl);
   }
 
   .kv-section-head {
@@ -216,11 +216,11 @@
 }
 
 .kv-section {
-  padding: 44px 0;
+  padding-block: var(--ds-space-2xl);
 }
 
 .kv-section-sm {
-  padding: 28px 0;
+  padding-block: var(--ds-space-lg);
 }
 
 .kv-section-head {

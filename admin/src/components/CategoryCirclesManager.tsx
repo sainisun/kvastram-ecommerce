@@ -408,6 +408,7 @@ export default function CategoryCirclesManager() {
               <button
                 type="button"
                 onClick={closeModal}
+                aria-label="Close category circle form"
                 className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
               >
                 <X size={18} />

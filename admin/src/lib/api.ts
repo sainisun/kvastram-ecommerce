@@ -60,12 +60,34 @@ async function handleApiError(
 ): Promise<never> {
   try {
     const errorData = await res.json();
+    const details = errorData.errors || errorData.details;
+    const detailMessage = Array.isArray(details)
+      ? details
+          .map((detail) => {
+            if (typeof detail === 'string') return detail;
+            const field = detail?.field || detail?.path?.join?.('.');
+            const message = detail?.message || detail?.code;
+            return [field, message].filter(Boolean).join(': ');
+          })
+          .filter(Boolean)
+          .join('; ')
+      : typeof details === 'string'
+        ? details
+        : details?.fieldErrors
+          ? Object.entries(details.fieldErrors)
+              .flatMap(([field, messages]) =>
+                Array.isArray(messages)
+                  ? messages.map((message) => `${field}: ${message}`)
+                  : []
+              )
+              .join('; ')
+        : '';
+
     // Try to get the most detailed error message available
-    const errorMessage =
-      errorData.message ||
-      errorData.error ||
-      errorData.details ||
-      defaultMessage;
+    const baseMessage = errorData.message || errorData.error || defaultMessage;
+    const errorMessage = detailMessage
+      ? `${baseMessage}: ${detailMessage}`
+      : baseMessage;
     console.error('API Error:', errorData);
     throw new Error(errorMessage);
   } catch (e) {
@@ -240,7 +262,7 @@ export const api = {
     const res = await fetchWithTimeout(url, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch products');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch products');
     const response = await res.json();
     return response; // Return full response including pagination
   },
@@ -254,11 +276,7 @@ export const api = {
       }
     );
     debugLog('getProductStats response:', { status: res.status, ok: res.ok });
-    if (!res.ok) {
-      const errorText = await res.text();
-      debugLog('getProductStats error:', errorText);
-      throw new Error('Failed to fetch product stats');
-    }
+    if (!res.ok) return handleApiError(res, 'Failed to fetch product stats');
     const response = await res.json();
     return response.data;
   },
@@ -267,7 +285,7 @@ export const api = {
     const res = await fetchWithTimeout(`${API_BASE_URL}/products/${id}`, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch product');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch product');
     const response = await res.json();
     return response.data;
   },
@@ -306,261 +324,6 @@ export const api = {
     const response = await res.json();
     return response.data;
   },
-
-  bulkDeleteProducts: async (productIds: string[]) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/bulk-delete`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ product_ids: productIds }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete products');
-    const response = await res.json();
-    return response.data;
-  },
-
-  bulkCreateProducts: async (products: unknown[]) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/bulk-create`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ products }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to bulk create products');
-    const response = await res.json();
-    return response.data;
-  },
-
-  bulkUpdateProducts: async (productIds: string[], updates: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/bulk-update`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ product_ids: productIds, updates }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update products');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getProductSeo: async (productId: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/seo`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch product SEO');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateProductSeo: async (productId: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/seo`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update product SEO');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getProductDiscovery: async (productId: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/discovery`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch product discovery data');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateProductDiscovery: async (productId: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/discovery`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update product discovery data');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getProductAttributes: async (productId: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/attributes`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch product attributes');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateProductAttributes: async (productId: string, attributes: unknown[]) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/attributes`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ attributes }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update product attributes');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getProductMerchant: async (productId: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/merchant`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch merchant data');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateProductMerchant: async (productId: string, variants: unknown[]) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/merchant`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ variants }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update merchant data');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getProductMediaSeo: async (productId: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/media-seo`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch product media SEO');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateProductMediaSeo: async (productId: string, images: unknown[]) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/media-seo`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ images }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update product media SEO');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getProductSeoScore: async (productId: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${productId}/seo-score`);
-    if (!res.ok) return handleApiError(res, 'Failed to calculate product SEO score');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getSeoAttributes: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/attributes`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch SEO attributes');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getSearchSynonyms: async (locale = 'en') => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/search/synonyms?locale=${encodeURIComponent(locale)}`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch search synonyms');
-    const response = await res.json();
-    return response.data;
-  },
-
-  createSearchSynonym: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/search/synonyms`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create search synonym');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateSearchSynonym: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/search/synonyms/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update search synonym');
-    const response = await res.json();
-    return response.data;
-  },
-
-  deleteSearchSynonym: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/search/synonyms/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete search synonym');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getSeoLandingPages: async (status = '') => {
-    const query = status ? `?status=${encodeURIComponent(status)}` : '';
-    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/landing-pages${query}`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch SEO landing pages');
-    const response = await res.json();
-    return response.data;
-  },
-
-  createSeoLandingPage: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/landing-pages`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create SEO landing page');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateSeoLandingPage: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/landing-pages/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update SEO landing page');
-    const response = await res.json();
-    return response.data;
-  },
-
-  deleteSeoLandingPage: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/seo/landing-pages/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to archive SEO landing page');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getZeroResultSearches: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/search/analytics/zero-results`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch zero-result searches');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getTopSearchQueries: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/search/analytics/top-queries`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch top search queries');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getAttributeGapReport: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/search/analytics/attribute-gaps`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch attribute gap report');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getGoogleMerchantProducts: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/merchant/google/products.json`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch Google Merchant products');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getGoogleMerchantDiagnostics: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/merchant/google/diagnostics`);
-    if (!res.ok) return handleApiError(res, 'Failed to fetch Google Merchant diagnostics');
-    const response = await res.json();
-    return response.data;
-  },
-
-  // Customer endpoints
   getCustomers: async (page = 1, search = '', filter = 'all') => {
     let url = `${API_BASE_URL}/customers?page=${page}&limit=20`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
@@ -572,7 +335,10 @@ export const api = {
     });
     if (!res.ok) throw new Error('Failed to fetch customers');
     const response = await res.json();
-    return response.data;
+    return {
+      customers: response.data || [],
+      pagination: response.pagination,
+    };
   },
 
   getCustomer: async (id: string) => {
@@ -634,7 +400,7 @@ export const api = {
     const res = await fetchWithTimeout(`${API_BASE_URL}/regions`, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch regions');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch regions');
     return res.json();
   },
 
@@ -734,21 +500,6 @@ export const api = {
     if (!res.ok) return handleApiError(res, 'Failed to delete variant');
     return res.json();
   },
-
-  createProductOption: async (productId: string, title: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/products/${productId}/options`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title }),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to create product option');
-    return res.json();
-  },
-
-  // Order endpoints
   getOrders: async (
     limit = 20,
     offset = 0,
@@ -777,54 +528,20 @@ export const api = {
     const res = await fetchWithTimeout(url, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch orders');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch orders');
     const response = await res.json();
-    return response.data;
+    return {
+      orders: response.data || [],
+      pagination: response.pagination,
+    };
   },
-
-  getDashboardChart: async (range = '30d') => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/stats/chart?range=${range}`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch chart data');
-    const response = await res.json();
-    return response.data;
-  },
-
   getOrder: async (id: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}`, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch order details');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch order details');
     const response = await res.json();
     return response.data;
-  },
-
-  addOrderTracking: async (
-    id: string,
-    data: {
-      tracking_number: string;
-      shipping_carrier?: string;
-      tracking_link?: string;
-      ship_date?: string | null;
-      customer_note?: string | null;
-      internal_note?: string | null;
-      notify_buyer?: boolean;
-      send_admin_copy?: boolean;
-    }
-  ) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/tracking`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to add tracking information');
-    return res.json();
   },
 
   completeOrder: async (
@@ -857,243 +574,6 @@ export const api = {
     return res.json();
   },
 
-  addOrderPackage: async (
-    id: string,
-    data: {
-      ship_date?: string | null;
-      shipping_carrier?: string | null;
-      shipping_service?: string | null;
-      tracking_number?: string | null;
-      tracking_link?: string | null;
-      no_tracking?: boolean;
-      no_tracking_reason?: string | null;
-      notify_buyer?: boolean;
-    }
-  ) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/packages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to add order package');
-    return res.json();
-  },
-
-  updateOrderPackage: async (
-    id: string,
-    packageId: string,
-    data: {
-      ship_date?: string | null;
-      shipping_carrier?: string | null;
-      shipping_service?: string | null;
-      tracking_number?: string | null;
-      tracking_link?: string | null;
-      no_tracking?: boolean;
-      no_tracking_reason?: string | null;
-      notify_buyer?: boolean;
-      label_url?: string | null;
-      label_file_name?: string | null;
-      label_state?: 'draft' | 'created' | 'purchased' | 'printed' | 'voided' | 'refunded';
-      label_cost?: number | null;
-      label_currency?: string | null;
-      package_weight_grams?: number | null;
-      package_length_cm?: number | null;
-      package_width_cm?: number | null;
-      package_height_cm?: number | null;
-      carrier_service?: string | null;
-      delivered_at?: string | null;
-    }
-  ) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/${id}/packages/${packageId}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update order package');
-    return res.json();
-  },
-
-  updateOrderWorkflow: async (
-    id: string,
-    data: {
-      ship_by_date?: string | null;
-      estimated_delivery_start?: string | null;
-      estimated_delivery_end?: string | null;
-      customer_note?: string | null;
-      internal_note?: string | null;
-    }
-  ) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/workflow`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update order workflow');
-    return res.json();
-  },
-
-  updateOrderLabel: async (
-    id: string,
-    data: {
-      label_status?:
-        | 'draft'
-        | 'created'
-        | 'purchased'
-        | 'printed'
-        | 'voided'
-        | 'refunded';
-      label_url?: string | null;
-      label_file_name?: string | null;
-      label_cost?: number | null;
-      label_currency?: string | null;
-      package_weight_grams?: number | null;
-      package_length_cm?: number | null;
-      package_width_cm?: number | null;
-      package_height_cm?: number | null;
-      carrier_service?: string | null;
-    }
-  ) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/label`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update order label');
-    return res.json();
-  },
-
-  getOrderCarrierReadiness: async (
-    id: string,
-    params: {
-      provider?: 'shiprocket' | 'delhivery' | 'easypost' | 'shippo' | null;
-      package_id?: string | null;
-    } = {}
-  ) => {
-    const query = new URLSearchParams();
-    if (params.provider) query.set('provider', params.provider);
-    if (params.package_id) query.set('package_id', params.package_id);
-    const suffix = query.toString() ? `?${query.toString()}` : '';
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/${id}/carrier/readiness${suffix}`,
-      {}
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to check carrier readiness');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getOrderCarrierRates: async (
-    id: string,
-    data: {
-      provider?: 'shiprocket' | 'delhivery' | 'easypost' | 'shippo' | null;
-      package_id?: string | null;
-    } = {}
-  ) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/${id}/carrier/rates`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to fetch carrier rates');
-    const response = await res.json();
-    return response.data;
-  },
-
-  purchaseOrderCarrierLabel: async (
-    id: string,
-    data: {
-      provider?: 'shiprocket' | 'delhivery' | 'easypost' | 'shippo' | null;
-      package_id?: string | null;
-      courier_id: string | number;
-    }
-  ) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/${id}/carrier/purchase-label`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to purchase carrier label');
-    const response = await res.json();
-    return response.data;
-  },
-
-  sendOrderBuyerUpdate: async (
-    id: string,
-    data: {
-      template:
-        | 'order_received'
-        | 'processing_started'
-        | 'packed_with_care'
-        | 'shipped'
-        | 'delayed'
-        | 'delivered_followup'
-        | 'review_request'
-        | 'return_refund_update'
-        | 'custom';
-      subject: string;
-      message: string;
-      include_tracking?: boolean;
-    }
-  ) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/buyer-update`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to send buyer update');
-    return res.json();
-  },
-
-  updateOrderPackagingChecklist: async (
-    id: string,
-    data: {
-      product_quality_checked: boolean;
-      size_color_verified: boolean;
-      care_card_included: boolean;
-      thank_you_note_included: boolean;
-      gift_wrap_applied: boolean;
-      invoice_included: boolean;
-      checked_by?: string | null;
-    }
-  ) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/${id}/packaging-checklist`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok)
-      return handleApiError(res, 'Failed to update packaging checklist');
-    return res.json();
-  },
-
   updateOrderStatus: async (id: string, status: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/status`, {
       method: 'PUT',
@@ -1113,59 +593,10 @@ export const api = {
         // No Authorization header needed - cookie is sent automatically
       }
     );
-    if (!res.ok) throw new Error('Failed to fetch order stats');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch order stats');
     const response = await res.json();
     return response.data;
   },
-
-  getFulfillmentMetrics: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/stats/fulfillment`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch fulfillment metrics');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateOrdersBulk: async (order_ids: string[], status: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/bulk-update-status`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ order_ids, status }),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to bulk update orders');
-    return res.json();
-  },
-
-  exportOrders: async (search: string, status: string) => {
-    let url = `${API_BASE_URL}/orders/export?status=${status}`;
-    if (search) url += `&search=${encodeURIComponent(search)}`;
-
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-
-    if (!res.ok) return handleApiError(res, 'Failed to export orders');
-    return res.blob();
-  },
-
-  deleteOrder: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete order');
-    return res.json();
-  },
-
-  // Upload endpoints
   uploadImage: async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -1223,27 +654,6 @@ export const api = {
     });
   },
 
-  uploadOrderLabel: async (
-    file: File
-  ): Promise<{
-    url: string;
-    filename: string;
-    originalName: string;
-    size: number;
-    type: string;
-  }> => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const res = await fetchWithTimeout(`${API_BASE_URL}/upload/order-label`, {
-      method: 'POST',
-      body: formData,
-      timeout: 120000,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to upload order label');
-    return res.json();
-  },
-
   // Settings endpoints
   getSettings: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/settings`, {
@@ -1295,58 +705,12 @@ export const api = {
     return res.json();
   },
 
-  // Marketing endpoints
-  getCampaigns: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/marketing/campaigns`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch campaigns');
-    return res.json();
-  },
-
-  createCampaign: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/marketing/campaigns`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create campaign');
-    return res.json();
-  },
-
-  updateCampaign: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/marketing/campaigns/${id}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update campaign');
-    return res.json();
-  },
-
-  deleteCampaign: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/marketing/campaigns/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete campaign');
-    return res.json();
-  },
-
+  // Coupon endpoints
   getDiscounts: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/marketing/discounts`, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch discounts');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch discounts');
     return res.json();
   },
 
@@ -1388,19 +752,6 @@ export const api = {
     return res.json();
   },
 
-  sendCampaignBlast: async (id: string, data: { subject: string; headline: string; body_text: string; cta_text: string; cta_url: string }) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/marketing/campaigns/${id}/send`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to send campaign blast');
-    return res.json();
-  },
-
   // Returns & Refunds
   getReturns: async (status?: string) => {
     let url = `${API_BASE_URL}/admin/returns`;
@@ -1409,18 +760,6 @@ export const api = {
     if (!res.ok) throw new Error('Failed to fetch returns');
     return res.json();
   },
-
-  updateReturnStatus: async (id: string, action: 'approve' | 'reject' | 'process-refund', admin_notes?: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/returns/${id}/${action}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ admin_notes }),
-    });
-    if (!res.ok) return handleApiError(res, `Failed to ${action} return`);
-    return res.json();
-  },
-
-  // Reviews
   getReviews: async (limit = 50, offset = 0, status?: string) => {
     let url = `${API_BASE_URL}/reviews?limit=${limit}&offset=${offset}`;
     if (status) url += `&status=${status}`;
@@ -1457,17 +796,6 @@ export const api = {
     if (!res.ok) return handleApiError(res, `POST ${path} failed`);
     return res.json();
   },
-
-  patch: async (path: string, data?: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data || {}),
-    });
-    if (!res.ok) return handleApiError(res, `PATCH ${path} failed`);
-    return res.json();
-  },
-
   delete: async (path: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
       method: 'DELETE',
@@ -1479,92 +807,6 @@ export const api = {
   get: async (path: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {});
     if (!res.ok) return handleApiError(res, `GET ${path} failed`);
-    return res.json();
-  },
-
-  getSupportRequests: async (kind = 'all', search = '') => {
-    const params = new URLSearchParams();
-    if (kind && kind !== 'all') params.set('kind', kind);
-    if (search) params.set('search', search);
-    const query = params.toString();
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/contacts${query ? `?${query}` : ''}`,
-      {}
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to fetch support requests');
-    return res.json();
-  },
-
-  getSupportRequest: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/contacts/${id}`, {});
-    if (!res.ok) return handleApiError(res, 'Failed to fetch support request');
-    return res.json();
-  },
-
-  deleteSupportRequest: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/contacts/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete support request');
-    return res.json();
-  },
-
-  getSecurityEvents: async (severity = 'all', search = '', event = '') => {
-    const params = new URLSearchParams();
-    if (severity && severity !== 'all') params.set('severity', severity);
-    if (search) params.set('search', search);
-    if (event) params.set('event', event);
-    const query = params.toString();
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/security-events${query ? `?${query}` : ''}`,
-      {}
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to fetch security events');
-    return res.json();
-  },
-
-  // Analytics endpoints
-  getGrowth: async (period: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/analytics/growth?period=${period}`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch growth stats');
-    return res.json();
-  },
-
-  getRevenueTrend: async (period: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/analytics/revenue-trend?period=${period}`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch revenue trend');
-    return res.json();
-  },
-
-  getOrdersTrend: async (period: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/analytics/orders-trend?period=${period}`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch orders trend');
-    return res.json();
-  },
-
-  getCustomersTrend: async (period: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/analytics/customers-trend?period=${period}`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch customers trend');
     return res.json();
   },
 
@@ -1837,157 +1079,9 @@ export const api = {
     return res.json();
   },
 
-  // Content (Banners) endpoints
-  getBanners: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/banners`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch banners');
-    return res.json();
-  },
-
-  createBanner: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/banners`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create banner');
-    return res.json();
-  },
-
-  updateBanner: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/banners/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update banner');
-    return res.json();
-  },
-
-  deleteBanner: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/banners/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete banner');
-    return res.json();
-  },
-
-  reorderBanners: async (items: unknown[]) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/banners/reorder`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ items }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to reorder banners');
-    return res.json();
-  },
-
-  // Hero Banners
-  getHeroBanners: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/hero-banners`, {});
-    if (!res.ok) throw new Error('Failed to fetch hero banners');
-    return res.json();
-  },
-
-  createHeroBanner: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/hero-banners`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create hero banner');
-    return res.json();
-  },
-
-  updateHeroBanner: async (id: string, formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/hero-banners/${id}`, {
-      method: 'PUT',
-      body: formData,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update hero banner');
-    return res.json();
-  },
-
-  deleteHeroBanner: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/hero-banners/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete hero banner');
-    return res.json();
-  },
-
-  toggleHeroBanner: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/hero-banners/${id}/toggle`,
-      {
-        method: 'PATCH',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to toggle hero banner');
-    return res.json();
-  },
-
-  // Category Page Banners
-  getHomepageBanners: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-banners`, {});
-    if (!res.ok) throw new Error('Failed to fetch homepage banners');
-    return res.json();
-  },
-
-  createHomepageBanner: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-banners`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create homepage banner');
-    return res.json();
-  },
-
-  updateHomepageBanner: async (id: string, formData: FormData) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-banners/${id}`,
-      {
-        method: 'PUT',
-        body: formData,
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update homepage banner');
-    return res.json();
-  },
-
-  deleteHomepageBanner: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-banners/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete homepage banner');
-    return res.json();
-  },
-
-  toggleHomepageBanner: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-banners/${id}/toggle`,
-      {
-        method: 'PATCH',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to toggle homepage banner');
-    return res.json();
-  },
-
-  // Trending Reels
   getTrendingReels: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/admin/trending-reels`, {});
-    if (!res.ok) throw new Error('Failed to fetch trending reels');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch trending reels');
     return res.json();
   },
 
@@ -2039,7 +1133,7 @@ export const api = {
   // Reel Collections
   getReelCollections: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/admin/reel-collections`, {});
-    if (!res.ok) throw new Error('Failed to fetch reel collections');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch reel collections');
     return res.json();
   },
 
@@ -2088,60 +1182,10 @@ export const api = {
     return res.json();
   },
 
-  // Homepage Categories
-  getHomepageCategories: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-categories`, {});
-    if (!res.ok) throw new Error('Failed to fetch homepage categories');
-    return res.json();
-  },
-
-  createHomepageCategory: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-categories`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create homepage category');
-    return res.json();
-  },
-
-  updateHomepageCategory: async (id: string, formData: FormData) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-categories/${id}`,
-      {
-        method: 'PUT',
-        body: formData,
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update homepage category');
-    return res.json();
-  },
-
-  deleteHomepageCategory: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-categories/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete homepage category');
-    return res.json();
-  },
-
-  toggleHomepageCategory: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-categories/${id}/toggle`,
-      {
-        method: 'PATCH',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to toggle homepage category');
-    return res.json();
-  },
-
   // Category Circles
   getCategoryCircles: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/admin/category-circles`, {});
-    if (!res.ok) throw new Error('Failed to fetch category circles');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch category circles');
     return res.json();
   },
 
@@ -2188,14 +1232,7 @@ export const api = {
     return res.json();
   },
 
-  // Featured Products
-  getFeaturedProductsAdmin: async (section = '') => {
-    const suffix = section ? `?section=${encodeURIComponent(section)}` : '';
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/featured-products${suffix}`, {});
-    if (!res.ok) throw new Error('Failed to fetch featured products');
-    return res.json();
-  },
-
+  // Product search used by category and collection assignment pickers.
   searchFeaturedProductCandidates: async (query: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/admin/featured-products/product-search?q=${encodeURIComponent(query)}`,
@@ -2205,156 +1242,9 @@ export const api = {
     return res.json();
   },
 
-  createFeaturedProduct: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/featured-products`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create featured product');
-    return res.json();
-  },
-
-  updateFeaturedProduct: async (id: string, formData: FormData) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/featured-products/${id}`,
-      {
-        method: 'PUT',
-        body: formData,
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update featured product');
-    return res.json();
-  },
-
-  deleteFeaturedProduct: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/featured-products/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete featured product');
-    return res.json();
-  },
-
-  toggleFeaturedProduct: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/featured-products/${id}/toggle`,
-      {
-        method: 'PATCH',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to toggle featured product');
-    return res.json();
-  },
-
-  getProductHomepagePlacements: async (productId: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/featured-products/product/${productId}/placements`,
-      {}
-    );
-    if (!res.ok) throw new Error('Failed to fetch product placements');
-    return res.json();
-  },
-
-  updateProductHomepagePlacements: async (
-    productId: string,
-    placements: Array<{
-      section_key: 'new_arrivals' | 'bestsellers';
-      is_active: boolean;
-      sort_order: number;
-      badge_text?: string | null;
-    }>
-  ) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/featured-products/product/${productId}/placements`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ placements }),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update product placements');
-    return res.json();
-  },
-
-  // Blog Posts
-  getPosts: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/posts`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch posts');
-    return res.json();
-  },
-
-  getPost: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/posts/${id}`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch post');
-    return res.json();
-  },
-
-  createPost: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/posts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create post');
-    return res.json();
-  },
-
-  updatePost: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/posts/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update post');
-    return res.json();
-  },
-
-  deletePost: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/posts/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete post');
-    return res.json();
-  },
-
-  // Pages
   getPages: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/pages`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch pages');
-    return res.json();
-  },
-
-  getPage: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/pages/${id}`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch page');
-    return res.json();
-  },
-
-  createPage: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/pages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create page');
+    const res = await fetchWithTimeout(`${API_BASE_URL}/pages`, {});
+    if (!res.ok) return handleApiError(res, 'Failed to fetch pages');
     return res.json();
   },
 
@@ -2370,20 +1260,12 @@ export const api = {
     return res.json();
   },
 
-  deletePage: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/pages/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete page');
-    return res.json();
-  },
-
   // Categories
   getCategories: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/categories`, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch categories');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch categories');
     return res.json();
   },
 
@@ -2391,7 +1273,7 @@ export const api = {
     const res = await fetchWithTimeout(`${API_BASE_URL}/categories/tree`, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch category tree');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch category tree');
     return res.json();
   },
 
@@ -2458,7 +1340,7 @@ export const api = {
     const res = await fetchWithTimeout(`${API_BASE_URL}/collections?status=all`, {
       // No Authorization header needed - cookie is sent automatically
     });
-    if (!res.ok) throw new Error('Failed to fetch collections');
+    if (!res.ok) return handleApiError(res, 'Failed to fetch collections');
     return res.json();
   },
 
@@ -2562,81 +1444,6 @@ export const api = {
     return res.json();
   },
 
-  // Email Templates
-  getEmailTemplates: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/email-templates`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch email templates');
-    return res.json();
-  },
-
-  updateEmailTemplate: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/email-templates/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update email template');
-    return res.json();
-  },
-
-  // File Manager
-  getFiles: async (params?: { path?: string }) => {
-    let url = `${API_BASE_URL}/files`;
-    if (params?.path) {
-      url += `?path=${encodeURIComponent(params.path)}`;
-    }
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch files');
-    return res.json();
-  },
-
-  uploadFile: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/files/upload`, {
-      method: 'POST',
-      body: formData,
-      // Don't set Content-Type - let the browser set it for FormData
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to upload file');
-    return res.json();
-  },
-
-  deleteFile: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/files/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete file');
-    return res.json();
-  },
-
-  // Analytics
-  getAnalytics: async (params?: { range?: string }) => {
-    let url = `${API_BASE_URL}/analytics`;
-    if (params?.range) {
-      url += `?range=${params.range}`;
-    }
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch analytics');
-    return res.json();
-  },
-
-  // System Status
-  getSystemStatus: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/system/status`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch system status');
-    return res.json();
-  },
-
-  // Analytics - These endpoints return DIRECT responses (not wrapped)
   getAnalyticsOverview: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/analytics/overview`, {
       // No Authorization header needed - cookie is sent automatically
@@ -2667,202 +1474,6 @@ export const api = {
     return res.json();
   },
 
-  // Testimonials
-  getAdminTestimonials: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/testimonials`, {
-      // Cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch testimonials');
-    return res.json();
-  },
-
-  createTestimonial: async (data: {
-    name: string;
-    location?: string;
-    avatar_url?: string;
-    rating: number;
-    content: string;
-    is_active: boolean;
-    display_order: number;
-  }) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/testimonials`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create testimonial');
-    return res.json();
-  },
-
-  updateTestimonial: async (
-    id: string,
-    data: Partial<{
-      name: string;
-      location?: string;
-      avatar_url?: string;
-      rating: number;
-      content: string;
-      is_active: boolean;
-      display_order: number;
-    }>
-  ) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/testimonials/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update testimonial');
-    return res.json();
-  },
-
-  deleteTestimonial: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/testimonials/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete testimonial');
-    return res.json();
-  },
-
-  // Notifications
-  getNotifications: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/notifications`, {
-      credentials: 'include',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch notifications');
-    return res.json();
-  },
-
-  getUnreadNotificationCount: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/notifications/unread-count`,
-      {
-        credentials: 'include',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to fetch unread count');
-    return res.json();
-  },
-
-  markNotificationRead: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/notifications/${id}/read`,
-      {
-        method: 'POST',
-        credentials: 'include',
-      }
-    );
-    if (!res.ok)
-      return handleApiError(res, 'Failed to mark notification as read');
-    return res.json();
-  },
-
-  markAllNotificationsRead: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/notifications/read-all`,
-      {
-        method: 'POST',
-        credentials: 'include',
-      }
-    );
-    if (!res.ok)
-      return handleApiError(res, 'Failed to mark all notifications as read');
-    return res.json();
-  },
-
-  deleteNotification: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/notifications/${id}`,
-      {
-        method: 'DELETE',
-        credentials: 'include',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete notification');
-    return res.json();
-  },
-
-  // Abandoned Carts endpoints
-  getAbandonedCarts: async (period = '30d') => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/abandoned-carts?period=${period}`,
-      {}
-    );
-    if (!res.ok) throw new Error('Failed to fetch abandoned carts');
-    return res.json();
-  },
-
-  recoverAbandonedCart: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/abandoned-carts/${id}/recover`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to send recovery email');
-    return res.json();
-  },
-
-  deleteAbandonedCart: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/abandoned-carts/${id}`,
-      { method: 'DELETE' }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete abandoned cart');
-    return res.json();
-  },
-
-  // Bulk Discounts endpoints
-  getBulkDiscounts: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/bulk-discounts`,
-      {}
-    );
-    if (!res.ok) throw new Error('Failed to fetch bulk discounts');
-    return res.json();
-  },
-
-  createBulkDiscount: async (data: unknown) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/bulk-discounts`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to create bulk discount');
-    return res.json();
-  },
-
-  updateBulkDiscount: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/bulk-discounts/${id}`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update bulk discount');
-    return res.json();
-  },
-
-  deleteBulkDiscount: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/bulk-discounts/${id}`,
-      { method: 'DELETE' }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete bulk discount');
-    return res.json();
-  },
-
-  // Wholesale Tiers endpoints (Admin CRUD)
-  // Path: /admin/tiers — mounted at index.ts, routes use / /:id /stats/overview
   getTiers: async () => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/admin/tiers`,
@@ -2907,13 +1518,4 @@ export const api = {
     return res.json();
   },
 
-  // Generic authenticated request — for pages that need endpoints not yet in api.*
-  request: async (path: string, options: RequestInit = {}) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-      ...options,
-    });
-    if (!res.ok) return handleApiError(res, `Request failed: ${path}`);
-    return res.json();
-  },
 };

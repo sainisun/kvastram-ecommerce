@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { cloudinaryUrlOrNull } from '@/lib/media';
+import { ButtonLink } from '@/components/ui/Button';
 
 interface HomepageSettings {
   brand_story_title?: string | null;
@@ -37,9 +37,9 @@ export function BrandStory({ settings }: BrandStoryProps) {
           <h2 className="kv-title text-[var(--ds-text-primary)] font-display text-3xl md:text-4xl leading-tight">{title}</h2>
           <p className="kv-sub mt-4 text-[var(--ds-text-secondary)] text-sm md:text-base leading-relaxed">{content}</p>
           <div className="mt-6">
-            <Link href="/about" className="home-link-button home-link-button--primary inline-flex items-center">
+            <ButtonLink href="/about" variant="primary" size="md" className="inline-flex items-center">
               Our Full Story
-            </Link>
+            </ButtonLink>
           </div>
         </motion.div>
         

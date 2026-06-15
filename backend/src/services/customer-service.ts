@@ -1,8 +1,15 @@
 import { db } from '../db/client';
 import { customers, orders, addresses } from '../db/schema';
-import { eq, desc, like, or, sql, and, inArray } from 'drizzle-orm';
+import { eq, desc, ilike, or, sql, and, inArray } from 'drizzle-orm';
 import { z } from 'zod';
-import { sanitizeSearchInput } from '../utils/validation';
+
+function sanitizeCustomerSearchInput(input: string, maxLen = 100): string {
+  return String(input)
+    .replace(/[%_\\]/g, '')
+    .replace(/[;]/g, '')
+    .trim()
+    .substring(0, maxLen);
+}
 
 export const UpdateCustomerSchema = z.object({
   first_name: z.string().min(1, 'First name is required').optional(),
@@ -48,15 +55,15 @@ class CustomerService {
     const conditions = [];
 
     if (search) {
-      const sanitizedSearch = sanitizeSearchInput(search);
+      const sanitizedSearch = sanitizeCustomerSearchInput(search);
       if (sanitizedSearch) {
         const pattern = `%${sanitizedSearch}%`;
         conditions.push(
           or(
-            like(customers.email, pattern),
-            like(customers.first_name, pattern),
-            like(customers.last_name, pattern),
-            like(customers.phone, pattern)
+            ilike(customers.email, pattern),
+            ilike(customers.first_name, pattern),
+            ilike(customers.last_name, pattern),
+            ilike(customers.phone, pattern)
           )
         );
       }

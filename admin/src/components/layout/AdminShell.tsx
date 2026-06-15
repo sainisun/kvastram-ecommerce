@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/auth-context';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Sidebar from '@/components/layout/Sidebar';
 import TopHeader from '@/components/layout/TopHeader';
@@ -23,6 +24,7 @@ export default function AdminShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [pendingOrders, setPendingOrders] = useState(0);
   const [drawerState, setDrawerState] = useState({
     open: false,
@@ -68,7 +70,7 @@ export default function AdminShell({
   }, [isDashboardRoute, pathname, router]);
 
   useEffect(() => {
-    if (!isDashboardRoute) return;
+    if (!isDashboardRoute || authLoading || !user) return;
 
     let active = true;
     const load = async () => {
@@ -86,7 +88,7 @@ export default function AdminShell({
       active = false;
       window.clearInterval(id);
     };
-  }, [isDashboardRoute, pathname]);
+  }, [authLoading, isDashboardRoute, pathname, user]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -125,7 +127,7 @@ export default function AdminShell({
         />
 
         <div className="relative min-h-screen md:pl-[240px]">
-          <TopHeader pendingOrders={pendingOrders} onMenuOpen={openDrawer} />
+          <TopHeader onMenuOpen={openDrawer} />
 
           <main className="min-h-screen pb-28 pt-20 md:pb-10 md:pt-[72px]">
             <div className="mx-auto max-w-[1560px] page-fade" key={pathname}>

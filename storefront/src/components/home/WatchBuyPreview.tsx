@@ -101,21 +101,21 @@ export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     />
                   ) : null}
-                  <div className="watch-buy-gradient absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="watch-buy-gradient absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.7)] via-[rgba(var(--ds-black-rgb),0.1)] to-transparent" />
                   
                   {/* Play Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-90 group-hover:scale-100">
-                      <Play size={20} fill="white" className="text-white ml-0.5" />
+                    <div className="w-12 h-12 rounded-full bg-[rgba(var(--ds-white-rgb),0.2)] backdrop-blur-md border border-[rgba(var(--ds-white-rgb),0.4)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-90 group-hover:scale-100">
+                      <Play size={20} fill="currentColor" className="text-[var(--ds-text-inverse)] ml-0.5" />
                     </div>
                   </div>
                 </div>
-                <div className="reel-info absolute bottom-0 inset-x-0 p-4 text-white z-10">
-                  <h3 className="reel-title text-sm font-semibold line-clamp-2 leading-snug text-white">
+                <div className="reel-info absolute bottom-0 inset-x-0 p-4 text-[var(--ds-text-inverse)] z-10">
+                  <h3 className="reel-title text-sm font-semibold line-clamp-2 leading-snug text-[var(--ds-text-inverse)]">
                     {reel.product_name}
                   </h3>
-                  <p className="watch-buy-meta text-xs text-white/80 mt-1 flex items-center gap-1 font-medium">
-                    {reel.price ? <span className="text-white">{reel.price}</span> : null}
+                  <p className="watch-buy-meta text-xs text-[rgba(var(--ds-white-rgb),0.8)] mt-1 flex items-center gap-1 font-medium">
+                    {reel.price ? <span className="text-[var(--ds-text-inverse)]">{reel.price}</span> : null}
                     {reel.price ? <span>•</span> : null}
                     <span>Tap to shop</span>
                   </p>

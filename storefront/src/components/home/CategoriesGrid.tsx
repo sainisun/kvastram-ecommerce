@@ -76,7 +76,7 @@ export function CategoriesGrid({ categories }: CategoriesGridProps) {
                     sizes="(max-width: 768px) 50vw, 25vw"
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 bg-[rgba(var(--ds-black-rgb),0.05)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
                 <span className="mt-3 block text-sm font-medium text-[var(--ds-text-primary)] group-hover:text-[var(--ds-accent-primary)] transition-colors duration-300">
                   {cat.name}

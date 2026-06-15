@@ -132,7 +132,7 @@ export default function CollectionsPage() {
       });
     } catch (error) {
       console.error('Failed to save collection:', error);
-      alert('Failed to save collection');
+      alert(error instanceof Error ? error.message : 'Failed to save collection');
     }
   };
 
@@ -559,14 +559,18 @@ export default function CollectionsPage() {
               </div>
               <div className="w-20 py-3 px-4 flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => void handleEdit(collection)}
+                  aria-label={`Edit collection ${collection.title}`}
                   className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                   title="Edit"
                 >
                   <Edit size={16} />
                 </button>
                 <button
+                  type="button"
                   onClick={() => handleDelete(collection.id)}
+                  aria-label={`Delete collection ${collection.title}`}
                   className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                   title="Delete"
                 >

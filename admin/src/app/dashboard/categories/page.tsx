@@ -52,7 +52,9 @@ function CategoryItem({
         >
           {hasChildren ? (
             <button
+              type="button"
               onClick={() => setIsOpen(!isOpen)}
+              aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${category.name}`}
               className="mr-2 text-gray-500 hover:text-gray-700"
             >
               {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -113,13 +115,16 @@ function CategoryItem({
         <div className="py-3 px-4 flex items-center gap-2">
           <Link
             href={`/dashboard/categories/${category.id}`}
+            aria-label={`Edit category ${category.name}`}
             className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
             title="Edit"
           >
             <Edit size={16} />
           </Link>
           <button
+            type="button"
             onClick={() => onDelete(category.id)}
+            aria-label={`Delete category ${category.name}`}
             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
             title="Delete"
           >

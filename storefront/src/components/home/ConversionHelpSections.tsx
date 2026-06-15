@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { HelpCircle, MessageCircle, PackageCheck, Ruler, Shirt, Sparkles } from 'lucide-react';
+import { ButtonLink } from '@/components/ui/Button';
 
 function whatsappHref(message: string) {
   return `https://wa.me/message/kvastram?text=${encodeURIComponent(message)}&utm_source=homepage&utm_medium=cta`;
@@ -13,14 +14,15 @@ export function WhatsAppHelpStrip() {
           <span>Need size, fabric, or more photos?</span>
           <p>Ask before you buy. It is especially useful for jackets, kimonos, bags, and gifts.</p>
         </div>
-        <a
+        <ButtonLink
           href={whatsappHref('Hi, I need help choosing a Kvastram piece')}
           target="_blank"
           rel="noopener noreferrer"
-          className="home-help-link"
+          variant="primary"
+          size="md"
         >
           Message on WhatsApp
-        </a>
+        </ButtonLink>
       </div>
     </section>
   );
@@ -79,20 +81,21 @@ export function FitScaleHelp() {
           </p>
         </div>
         <div className="fit-help-actions">
-          <Link href="/reels" className="home-link-button home-link-button--primary">
+          <ButtonLink href="/reels" variant="primary" size="md">
             Watch fit reels
-          </Link>
-          <a
+          </ButtonLink>
+          <ButtonLink
             href={whatsappHref('Hi, I need sizing help for a Kvastram product')}
             target="_blank"
             rel="noopener noreferrer"
-            className="home-link-button home-link-button--outline"
+            variant="outline"
+            size="md"
           >
             WhatsApp help
-          </a>
-          <Link href="/size-guide" className="home-link-button home-link-button--outline">
+          </ButtonLink>
+          <ButtonLink href="/size-guide" variant="outline" size="md">
             Size guide
-          </Link>
+          </ButtonLink>
         </div>
       </div>
     </section>

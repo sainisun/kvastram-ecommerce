@@ -15,12 +15,10 @@ export {
   ImageSchema,
   ProductFilterSchema,
   ProductSearchSchema,
-  ProductBulkUpdateSchema,
   type CreateProductInput,
   type UpdateProductInput,
   type ProductFilter,
   type ProductSearch,
-  type ProductBulkUpdate,
 } from './product';
 
 // Re-export query service
@@ -95,17 +93,6 @@ export class ProductService {
 
   async delete(id: string) {
     return mutationService.delete(id);
-  }
-
-  async bulkUpdate(
-    ids: string[],
-    updates: Parameters<typeof mutationService.bulkUpdate>[1]
-  ) {
-    return mutationService.bulkUpdate(ids, updates);
-  }
-
-  async bulkDelete(ids: string[]) {
-    return mutationService.bulkDelete(ids);
   }
 
   // Stats methods

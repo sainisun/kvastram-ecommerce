@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { cloudinaryUrlOrNull } from '@/lib/media';
-import { UnstyledButton } from '@/components/ui/Button';
+import { ButtonLink, UnstyledButton } from '@/components/ui/Button';
 
 interface HeroBannerSlide {
   id: string;
@@ -159,12 +159,12 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
               <h1>{activeSlide.title}</h1>
               <p>{activeSlide.subtitle}</p>
               <div className="hero-actions">
-                <Link href={activeSlide.buttonLink} className="home-link-button home-link-button--primary">
+                <ButtonLink href={activeSlide.buttonLink} variant="secondary" size="lg">
                   {activeSlide.buttonText}
-                </Link>
-                <Link href="/collections" className="home-link-button home-link-button--light">
+                </ButtonLink>
+                <ButtonLink href="/collections" variant="outline" size="lg">
                   Explore Collections
-                </Link>
+                </ButtonLink>
               </div>
             </motion.div>
           </AnimatePresence>

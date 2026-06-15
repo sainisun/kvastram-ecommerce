@@ -310,15 +310,19 @@ export default function RegionsPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-2">
                         <button
+                          type="button"
                           onClick={() => handleEdit(region)}
+                          aria-label={`Edit ${region.name}`}
                           className="text-blue-600 hover:text-blue-900 p-1"
                           title="Edit"
                         >
                           <Edit size={18} />
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleDelete(region.id)}
                           disabled={deleting === region.id}
+                          aria-label={`Delete ${region.name}`}
                           className="text-red-600 hover:text-red-900 p-1 disabled:opacity-50"
                           title="Delete"
                         >
@@ -347,10 +351,12 @@ export default function RegionsPage() {
                 {editingId ? 'Edit Region' : 'Add Region'}
               </h2>
               <button
+                type="button"
                 onClick={() => {
                   setShowModal(false);
                   setEditingId(null);
                 }}
+                aria-label="Close region form"
                 className="text-gray-500 hover:text-gray-700"
               >
                 <XIcon size={24} />

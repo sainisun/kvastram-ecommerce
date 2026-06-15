@@ -28,7 +28,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
   }
-  .kv-section { padding: 70px 0; }
+  .kv-section { padding-block: var(--ds-space-2xl); }
   .kv-section-head {
     grid-template-columns: 1fr auto;
     align-items: end;

@@ -66,7 +66,7 @@ export const CreateProductSchema = z.object({
   inventory_quantity: z.number().int().optional().default(0),
   thumbnail: optionalUrlOrPath,
   sku: z.string().optional(),
-  collection_id: z.string().uuid().optional(),
+  collection_id: z.string().uuid().nullable().optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
   options: z
     .array(
@@ -116,14 +116,8 @@ export const ProductSearchSchema = z.object({
   attributeValue: z.string().optional(),
 });
 
-// --- Bulk Update Schema ---
-export const ProductBulkUpdateSchema = z.object({
-  status: z.enum(['draft', 'published', 'proposed', 'rejected', 'archived']).optional(),
-});
-
 // --- Type Exports ---
 export type CreateProductInput = z.infer<typeof CreateProductSchema>;
 export type UpdateProductInput = z.infer<typeof UpdateProductSchema>;
 export type ProductFilter = z.infer<typeof ProductFilterSchema>;
 export type ProductSearch = z.infer<typeof ProductSearchSchema>;
-export type ProductBulkUpdate = z.infer<typeof ProductBulkUpdateSchema>;

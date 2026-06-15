@@ -24,7 +24,6 @@ import { alias } from 'drizzle-orm/pg-core';
 import { generateInvoice } from '../services/pdf-service';
 import { carrierService } from '../services/carrier-service';
 import { settingService } from '../services/setting-service';
-import { sanitizeSearchInput } from '../utils/validation';
 import {
   buildWorkflowSummary,
   deriveWorkflowStatus,
@@ -80,6 +79,14 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 // Aliases
 const shippingAddr = alias(addresses, 'shipping_address');
 const billingAddr = alias(addresses, 'billing_address');
+
+function sanitizeOrderSearchInput(input: string, maxLen = 100): string {
+  return String(input)
+    .replace(/[%_\\]/g, '')
+    .replace(/[;]/g, '')
+    .trim()
+    .substring(0, maxLen);
+}
 
 function sortPackages(packages: WorkflowPackage[]) {
   return [...packages].sort((left, right) => left.sequence - right.sequence);
@@ -482,7 +489,7 @@ class OrderService {
     const conditions = [];
 
     if (search) {
-      const sanitizedSearch = sanitizeSearchInput(search);
+      const sanitizedSearch = sanitizeOrderSearchInput(search);
       if (sanitizedSearch) {
         const pattern = `%${sanitizedSearch}%`;
         conditions.push(

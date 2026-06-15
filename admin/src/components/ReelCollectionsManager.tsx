@@ -425,6 +425,7 @@ export default function ReelCollectionsManager() {
               <button
                 type="button"
                 onClick={closeModal}
+                aria-label="Close reel collection form"
                 className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
               >
                 <X size={18} />

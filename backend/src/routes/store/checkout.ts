@@ -19,6 +19,10 @@ import { eq, and, gte, sql, inArray } from 'drizzle-orm';
 import { config } from '../../config';
 import { calculateTax, type TaxBreakdown } from '../../utils/tax-calculator';
 import { carrierService } from '../../services/carrier-service';
+import {
+  buildCheckoutPaymentTokenMetadata,
+  generateCheckoutPaymentToken,
+} from '../../utils/payment-ownership';
 
 const checkoutRouter = new Hono();
 
@@ -603,6 +607,7 @@ checkoutRouter.post(
 
       // 4. Create Order Transaction
       let newOrder: typeof orders.$inferSelect | undefined;
+      const checkoutPaymentToken = generateCheckoutPaymentToken();
 
       await db.transaction(async (tx) => {
         // Find or Create Customer
@@ -686,6 +691,7 @@ checkoutRouter.post(
           total,
           shipping_address_id: shAddr.id,
           metadata: {
+            ...buildCheckoutPaymentTokenMetadata(checkoutPaymentToken),
             tax_rate: taxBreakdown.rate,
             tax_breakdown: {
               gross_subtotal: subtotal,
@@ -830,7 +836,20 @@ checkoutRouter.post(
         console.error('Failed to send WhatsApp notification:', whatsappError);
       }
 
-      return c.json({ order: newOrder });
+      const publicOrder = {
+        ...newOrder,
+        metadata: {
+          ...((newOrder.metadata as Record<string, any>) || {}),
+        },
+      };
+      delete publicOrder.metadata.checkout_payment_token_hash;
+      delete publicOrder.metadata.checkout_payment_token_issued_at;
+      delete publicOrder.metadata.checkout_payment_token_expires_at;
+
+      return c.json({
+        order: publicOrder,
+        checkout_payment_token: checkoutPaymentToken,
+      });
     } catch (error: any) {
       console.error('Checkout error:', error);
 
