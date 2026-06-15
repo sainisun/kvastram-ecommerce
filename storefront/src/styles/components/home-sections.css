@@ -820,3 +820,55 @@
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
+
+/* Premium Story Categories & Instagram Section Redesign */
+
+.story-categories {
+  padding-block: 14px;
+  background-color: var(--ds-surface-paper);
+  border-bottom: 1px solid var(--ds-border-subtle);
+}
+
+.story-categories .circle-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 16px;
+  justify-content: flex-start;
+  padding: 4px 16px;
+  scrollbar-width: none; /* Hide scrollbar on Firefox */
+}
+
+.story-categories .circle-row::-webkit-scrollbar {
+  display: none; /* Hide scrollbar on Chrome/Safari */
+}
+
+@media (min-width: 768px) {
+  .story-categories .circle-row {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 36px;
+    padding: 8px 24px;
+    overflow-x: visible;
+  }
+}
+
+/* Instagram Grid Section Styling */
+.instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .instagram-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .instagram-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+

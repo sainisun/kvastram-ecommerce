@@ -8,6 +8,7 @@ import { useShop } from '@/context/shop-context';
 import { useWholesale } from '@/context/wholesale-context';
 import { QuickViewModal } from '@/components/product/QuickViewModal';
 import { ProductCard } from '@/components/products/ProductCard';
+import { motion } from 'framer-motion';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -182,21 +183,28 @@ function ProductGrid({
     const priceInfo = getPrice(product);
 
     renderedItems.push(
-      <ProductCard
+      <motion.div
         key={product.id}
-        product={product}
-        price={{
-          label: priceInfo.price,
-          isWholesale: priceInfo.isWholesale,
-          compareAtLabel: priceInfo.compareAtLabel,
-        }}
-        index={index}
-        added={addedId === product.id}
-        currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
-        categoryLabel={product.collection?.title || 'Kvastram'}
-        onAddToCart={handleAddToCart}
-        onQuickView={setQuickViewProduct}
-      />
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ duration: 0.5, delay: (index % 4) * 0.1, ease: 'easeOut' }}
+      >
+        <ProductCard
+          product={product}
+          price={{
+            label: priceInfo.price,
+            isWholesale: priceInfo.isWholesale,
+            compareAtLabel: priceInfo.compareAtLabel,
+          }}
+          index={index}
+          added={addedId === product.id}
+          currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
+          categoryLabel={product.collection?.title || 'Kvastram'}
+          onAddToCart={handleAddToCart}
+          onQuickView={setQuickViewProduct}
+        />
+      </motion.div>
     );
 
     if (spotlightProducts.length > 0 && (index + 1) % 4 === 0) {

@@ -13,21 +13,14 @@ import {
 } from '@/lib/seo';
 import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
-import { HomeTrustBar } from '@/components/home/HomeTrustBar';
 import { BrandStory } from '@/components/home/BrandStory';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
 import { BestSellers } from '@/components/home/BestSellers';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { NewArrivals } from '@/components/home/NewArrivals';
-import { Testimonials } from '@/components/home/Testimonials';
-import { HomeMerchandisingSections } from '@/components/home/HomeMerchandisingSections';
 import { CategoriesGrid } from '@/components/home/CategoriesGrid';
-import { ShopByNeed } from '@/components/home/ShopByNeed';
-import {
-  CraftEducationStrip,
-  WhatsAppHelpStrip,
-} from '@/components/home/ConversionHelpSections';
+import { InstagramSection } from '@/components/home/InstagramSection';
 import { MobileStickyActions } from '@/components/home/MobileStickyActions';
 import { CATEGORY_QUICK_LINKS } from '@/config/storefront-navigation';
 import type { Product } from '@/types';
@@ -436,25 +429,18 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
 
-      <HeroSection banners={heroBanners} />
-      <HomeTrustBar />
       <CircularCategories circles={mobileStoryCircles} />
-      <CategoriesGrid categories={resolvedCategoryCards} />
+      <HeroSection banners={heroBanners} />
+      <BestSellers products={bestsellerProducts} />
       <NewArrivals
         products={newArrivalProducts.length > 0 ? newArrivalProducts : products}
         isCurated={newArrivalProducts.length > 0}
       />
-      <WhatsAppHelpStrip />
-      <ShopByNeed collections={collections} />
+      <CategoriesGrid categories={resolvedCategoryCards} />
       <CollectionsSection collections={collections} />
       <WatchBuyPreview reels={trendingReels} />
-      <BestSellers products={bestsellerProducts} />
       <BrandStory settings={homepageSettings} />
-      <CraftEducationStrip />
-      <HomeMerchandisingSections
-        merchandisingSlots={merchandisingSlots}
-      />
-      <Testimonials testimonials={testimonials} />
+      <InstagramSection />
       <NewsletterSection settings={homepageSettings} />
       <MobileStickyActions />
     </>

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { cloudinaryUrlOrNull } from '@/lib/media';
 import { UnstyledButton } from '@/components/ui/Button';
@@ -145,33 +146,50 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
 
       <div className="hero-content absolute inset-x-0 bottom-0 z-[2]">
         <div className="kv-container">
-          <div className="hero-copy">
-            <p className="hero-eyebrow">Handmade in Jaipur</p>
-            <h1>{activeSlide.title}</h1>
-            <p>{activeSlide.subtitle}</p>
-            <div className="hero-actions">
-              <Link href={activeSlide.buttonLink} className="home-link-button home-link-button--primary">
-                {activeSlide.buttonText}
-              </Link>
-              <Link href="/collections" className="home-link-button home-link-button--light">
-                Explore Collections
-              </Link>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="hero-copy"
+            >
+              <p className="hero-eyebrow">Handmade in Jaipur</p>
+              <h1>{activeSlide.title}</h1>
+              <p>{activeSlide.subtitle}</p>
+              <div className="hero-actions">
+                <Link href={activeSlide.buttonLink} className="home-link-button home-link-button--primary">
+                  {activeSlide.buttonText}
+                </Link>
+                <Link href="/collections" className="home-link-button home-link-button--light">
+                  Explore Collections
+                </Link>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          <motion.dl
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="hero-proof-list"
+            aria-label="Kvastram craft promises"
+          >
+            <div>
+              <dt>Small batch</dt>
+              <dd>Limited handmade runs</dd>
             </div>
-            <dl className="hero-proof-list" aria-label="Kvastram craft promises">
-              <div>
-                <dt>Small batch</dt>
-                <dd>Limited handmade runs</dd>
-              </div>
-              <div>
-                <dt>Craft led</dt>
-                <dd>Block print, kantha, cotton</dd>
-              </div>
-              <div>
-                <dt>Ready to gift</dt>
-                <dd>Edited for Indian occasions</dd>
-              </div>
-            </dl>
-          </div>
+            <div>
+              <dt>Craft led</dt>
+              <dd>Block print, kantha, cotton</dd>
+            </div>
+            <div>
+              <dt>Ready to gift</dt>
+              <dd>Edited for Indian occasions</dd>
+            </div>
+          </motion.dl>
         </div>
       </div>
 
@@ -184,7 +202,7 @@ export function HeroSection({ banners = [] }: HeroSectionProps) {
             onClick={() => scrollTo(index)}
             aria-label={`Go to slide ${index + 1}`}
             className={`hero-dot h-2 w-2 rounded-full transition-all ${
-              selectedIndex === index ? 'bg-brand-cream' : 'bg-brand-cream/50'
+              selectedIndex === index ? 'bg-[var(--ds-surface-page)]' : 'bg-[var(--ds-surface-page)]/50'
             }`}
           />
         ))}

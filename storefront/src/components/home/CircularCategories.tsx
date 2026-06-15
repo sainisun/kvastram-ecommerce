@@ -1,9 +1,8 @@
-import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
 import { api } from '@/lib/api';
 import { storefrontHrefOrNull } from '@/lib/links';
 import { cloudinaryUrlOrNull } from '@/lib/media';
 import type { HomepageCategoryCircle } from '@/types/homepage';
+import { CircularCategoriesClient } from './CircularCategoriesClient';
 
 interface CircularCategoriesProps {
   circles?: HomepageCategoryCircle[];
@@ -41,35 +40,5 @@ export async function CircularCategories({ circles: providedCircles }: CircularC
 
   if (displayed.length === 0) return null;
 
-  return (
-    <section className="mobile-story-categories bg-[var(--ds-surface-paper)]" aria-label="Quick category shortcuts">
-      <div className="kv-container">
-        <div className="circle-row">
-          {displayed.map((circle) => (
-            <Link
-              key={circle.id}
-              href={circle.link_url}
-              className="circle-cat"
-            >
-              <div className="circle-cat-art">
-                <div className="relative h-full w-full overflow-hidden rounded-full">
-                  <OptimizedImage
-                    src={circle.image_url || ''}
-                    alt={circle.label}
-                    fill
-                    sizes="78px"
-                    className="rounded-full object-cover"
-                  />
-                </div>
-              </div>
-              <span className="circle-cat-name">
-                {circle.label}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+  return <CircularCategoriesClient circles={displayed} />;
 }
-
