@@ -5,8 +5,24 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
+EXPECTED_PRODUCTION_ROOT="${EXPECTED_PRODUCTION_ROOT:-/root/kvastram-ecommerce}"
 
 cd "$PROJECT_ROOT"
+
+if [[ "${KVASTRAM_PRODUCTION_DEPLOY:-0}" == "1" && "$PROJECT_ROOT" != "$EXPECTED_PRODUCTION_ROOT" ]]; then
+  echo "Refusing production deploy from $PROJECT_ROOT"
+  echo "Expected canonical checkout: $EXPECTED_PRODUCTION_ROOT"
+  exit 1
+fi
+
+if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+  echo "Refusing deploy from a checkout with tracked changes."
+  git status --short
+  exit 1
+fi
+
+export APP_GIT_SHA
+APP_GIT_SHA="$(git rev-parse HEAD)"
 
 log() {
   echo "=== $1 ==="
@@ -73,7 +89,7 @@ wait_for_service_health() {
   exit 1
 }
 
-trap 'echo "=== Deployment failed ==="; docker compose -f "$COMPOSE_FILE" ps || true; docker compose -f "$COMPOSE_FILE" logs --tail=120 backend storefront admin mcp || true' ERR
+trap 'echo "=== Deployment failed ==="; docker compose -f "$COMPOSE_FILE" ps || true; docker compose -f "$COMPOSE_FILE" logs --tail=120 backend storefront admin || true' ERR
 
 log "Verifying production env files"
 for file in \
@@ -106,21 +122,38 @@ wait_for_service_health storefront 180
 wait_for_service_health admin 180
 
 log "Building and starting MCP (best effort)"
-if [[ -f /root/kvastram-secrets/mcp.env ]]; then
-  docker compose -f "$COMPOSE_FILE" up -d --build mcp || {
+if [[ -d "$PROJECT_ROOT/kvastram-mcp-server" && -f /root/kvastram-secrets/mcp.env ]]; then
+  docker compose -f "$COMPOSE_FILE" --profile mcp up -d --build mcp || {
     echo "MCP deploy failed; continuing because storefront/admin/backend are healthy."
   }
 else
-  echo "Skipping MCP: /root/kvastram-secrets/mcp.env is not present."
+  echo "Skipping MCP: source directory or external secret file is not present."
 fi
 
 log "Final service status"
 docker compose -f "$COMPOSE_FILE" ps
 
 log "Health checks"
-curl -sf http://localhost:4000/health >/dev/null || { echo "Backend health check FAILED"; exit 1; }
-curl -sf http://localhost:3000/health >/dev/null || { echo "Storefront health check FAILED"; exit 1; }
-curl -sf http://localhost:3001/health >/dev/null || { echo "Admin health check FAILED"; exit 1; }
+verify_health_sha() {
+  local service="$1"
+  local url="$2"
+  local response
+  response="$(curl -sf "$url")" || { echo "$service health check FAILED"; exit 1; }
+  node -e '
+    const body = JSON.parse(process.argv[1]);
+    const expected = process.argv[2];
+    const actual = body.gitSha || body.data?.gitSha;
+    if (actual !== expected) {
+      console.error(`Health SHA mismatch: expected ${expected}, received ${actual || "missing"}`);
+      process.exit(1);
+    }
+  ' "$response" "$APP_GIT_SHA"
+  echo "$service health SHA verified: $APP_GIT_SHA"
+}
+
+verify_health_sha backend http://localhost:4000/health
+verify_health_sha storefront http://localhost:3000/health
+verify_health_sha admin http://localhost:3001/health
 
 log "Removing unused Docker images"
 docker image prune -f --filter "until=24h"

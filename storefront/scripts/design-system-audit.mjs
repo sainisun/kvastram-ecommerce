@@ -52,6 +52,21 @@ const allowedInlineStylePatterns = [
 ];
 
 const findings = [];
+const tokenSource = readFileSync(path.join(storefrontRoot, 'src/styles/tokens.css'), 'utf8');
+const designSystemDoc = readFileSync(
+  path.join(workspaceRoot, 'docs/design-system/storefront-design-system-v1.md'),
+  'utf8'
+);
+
+if (!/--ds-font-display:\s*'Libre Caslon Text'/.test(tokenSource)) {
+  findings.push('Typography contract: --ds-font-display must start with Libre Caslon Text.');
+}
+if (!/--ds-font-body:\s*'Hanken Grotesk'/.test(tokenSource)) {
+  findings.push('Typography contract: --ds-font-body must start with Hanken Grotesk.');
+}
+if (!designSystemDoc.includes('Libre Caslon Text') || !designSystemDoc.includes('Hanken Grotesk')) {
+  findings.push('Typography contract: active documentation must match runtime font tokens.');
+}
 
 function walk(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {

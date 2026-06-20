@@ -10,15 +10,53 @@ const app = new Hono();
 
 app.use('*', verifyAdminOrMcpService);
 
-const heroBannerFieldsSchema = z.object({
-  title: z.string().trim().max(255).nullable(),
-  subtitle: z.string().trim().max(500).nullable(),
-  button_text: z.string().trim().max(100).nullable(),
-  button_link: z.string().trim().max(500).nullable(),
-  mobile_image_url: z.string().trim().max(500).nullable().optional(),
-  is_active: z.boolean().default(true),
-  sort_order: z.number().int().min(0).default(0),
-});
+const safeDestination = z
+  .string()
+  .trim()
+  .max(500)
+  .refine(
+    (value) =>
+      (value.startsWith('/') && !value.startsWith('//')) ||
+      (() => {
+        try {
+          return new URL(value).protocol === 'https:';
+        } catch {
+          return false;
+        }
+      })(),
+    'CTA destination must be a local path or an HTTPS URL'
+  );
+
+const optionalHttpsUrl = z
+  .string()
+  .trim()
+  .max(500)
+  .url()
+  .refine((value) => new URL(value).protocol === 'https:', 'Media URL must use HTTPS');
+
+const heroBannerFieldsSchema = z
+  .object({
+    title: z.string().trim().max(255).nullable(),
+    subtitle: z.string().trim().max(500).nullable(),
+    button_text: z.string().trim().max(100).nullable(),
+    button_link: safeDestination.nullable(),
+    mobile_image_url: optionalHttpsUrl.nullable().optional(),
+    is_active: z.boolean().default(true),
+    sort_order: z.number().int().min(0).default(0),
+  })
+  .superRefine((banner, context) => {
+    if (!banner.is_active) return;
+
+    for (const field of ['title', 'subtitle', 'button_text', 'button_link'] as const) {
+      if (!banner[field]) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [field],
+          message: 'Active hero banners require complete HTML copy and a valid CTA',
+        });
+      }
+    }
+  });
 
 function normalizeOptionalString(value: unknown): string | null {
   if (typeof value !== 'string') {
@@ -231,10 +269,28 @@ app.patch('/:id/toggle', async (c) => {
       return c.json({ error: 'Hero banner not found' }, 404);
     }
 
+    const activating = !existingBanner.is_active;
+    if (
+      activating &&
+      (!existingBanner.image_url ||
+        !existingBanner.title ||
+        !existingBanner.subtitle ||
+        !existingBanner.button_text ||
+        !existingBanner.button_link)
+    ) {
+      return c.json(
+        {
+          error:
+            'Complete the desktop image, title, subtitle, CTA label, and CTA destination before publishing.',
+        },
+        400
+      );
+    }
+
     const [banner] = await db
       .update(hero_banners)
       .set({
-        is_active: !existingBanner.is_active,
+        is_active: activating,
       })
       .where(eq(hero_banners.id, id))
       .returning();

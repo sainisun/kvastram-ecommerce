@@ -1,7 +1,7 @@
 # Kvastram Storefront Design System v1
 
 Status: Active
-Date: 2026-05-17
+Date: 2026-06-20
 
 ## Source Of Truth
 
@@ -26,12 +26,13 @@ npm.cmd run audit:design-system
 
 ## Typography
 
-Kvastram storefront typography follows a Mulmul-inspired restrained sans commerce direction:
+Kvastram storefront typography uses an editorial serif display face with a restrained grotesk body:
 
-- `--ds-font-display` and `--ds-font-body` use the same Montserrat-compatible sans stack.
-- Hierarchy comes from weight, case, tracking, spacing, and imagery.
+- `--ds-font-display` uses `Libre Caslon Text`, with `Cormorant Garamond` and system serif fallbacks.
+- `--ds-font-body` and UI roles use `Hanken Grotesk`, with `DM Sans` and system sans fallbacks.
+- Hierarchy comes from the display/body contrast plus weight, spacing, scale, and imagery.
 - New storefront UI should use `font-display`, `font-body`, `type-*`, and `tracking-token-*` utilities.
-- Decorative serif typography is outside the active storefront system.
+- Components must consume typography roles instead of declaring page-local font families.
 
 ## Accent
 
@@ -56,6 +57,14 @@ Public terracotta bridges are available only where a non-`--ds-*` bridge is unav
 ```
 
 Do not add alternate accent token names or raw accent hex values outside `tokens.css`.
+
+## CMS Visual Contract
+
+- Hero desktop and mobile media must be previewed before activation.
+- Active hero banners require a title, subtitle, CTA label, and valid local or HTTPS destination.
+- Do not bake headlines, brand names, subtitles, prices, or CTA labels into hero artwork when HTML copy is enabled.
+- Empty homepage collections render nothing; public pages must never show admin instructions or configuration placeholders.
+- A content-only hero image is preferred because HTML copy remains accessible, responsive, searchable, and editable.
 
 ## Primitives
 

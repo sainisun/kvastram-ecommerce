@@ -268,6 +268,7 @@ app.get('/health', async (c) => {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       version: '1.0.0',
+      gitSha: process.env.APP_GIT_SHA || 'unknown',
       timestamp: new Date().toISOString(), // OPT-008: Add timestamp for monitoring
     },
     dbHealthy ? 'Service is healthy' : 'Service is experiencing issues',

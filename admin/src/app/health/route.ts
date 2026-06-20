@@ -7,6 +7,7 @@ export function GET() {
     success: true,
     service: 'admin',
     status: 'healthy',
+    gitSha: process.env.APP_GIT_SHA || 'unknown',
     timestamp: new Date().toISOString(),
   });
 }

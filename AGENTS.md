@@ -1,0 +1,57 @@
+# Kvastram Engineering Rules
+
+These rules apply to humans and AI agents working in this repository.
+
+## Canonical Sources
+
+- GitHub source of truth: `origin/main`
+- Production checkout: `/root/kvastram-ecommerce`
+- Storefront tokens: `storefront/src/styles/tokens.css`
+- Storefront design-system specification: `docs/design-system/storefront-design-system-v1.md`
+- Production deployment workflow: `.github/workflows/deploy-hostinger.yml`
+
+## Before Editing
+
+1. Run `git fetch origin main`.
+2. Confirm the work starts from `origin/main`.
+3. Use a fresh feature branch. Do not develop directly on local `main`.
+4. Inspect `git status --short` and preserve unrelated user changes.
+5. Do not use an old worktree as a deployment source.
+
+## Storefront Rules
+
+- Use `--ds-*` tokens and shared primitives.
+- Do not create broad CSS overrides or a second owner for an existing selector.
+- Do not change typography or palette tokens without updating the active design-system specification.
+- Empty CMS sections must render nothing, never public admin instructions.
+- Hero images should not contain baked-in copy when HTML hero copy is enabled.
+
+## Required Verification
+
+For storefront changes run:
+
+```text
+npm.cmd run audit:design-system
+npm.cmd run audit:design-system:metrics
+npm.cmd run lint
+npm.cmd run verify:design-system -- --pool=threads
+npm.cmd run build
+```
+
+Run Playwright desktop/mobile smoke tests for visual or layout changes.
+
+## Publishing
+
+- Do not deploy with a manual `docker compose up` command.
+- Do not deploy from any path except `/root/kvastram-ecommerce`.
+- Push through a reviewed branch/PR when branch protection is available.
+- Production deploys only through `.github/workflows/deploy-hostinger.yml`.
+- Verify the deployed Git SHA through `/health` after deployment.
+
+## Prohibited
+
+- Force-pushing `main`
+- Resetting or deleting unrelated user work
+- Deploying from `/root/kvastram-platform` or any alternate checkout
+- Running multiple Compose projects against the same production ports
+- Silently changing the design-system typography or accent contract

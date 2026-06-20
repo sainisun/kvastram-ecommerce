@@ -8,6 +8,9 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
+ARG APP_GIT_SHA=unknown
+ENV APP_GIT_SHA=$APP_GIT_SHA
+
 # Bundle server and migration script; externalize native/binary modules
 RUN npm run build
 
@@ -17,6 +20,8 @@ FROM node:20-bookworm-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+ARG APP_GIT_SHA=unknown
+ENV APP_GIT_SHA=$APP_GIT_SHA
 
 # Install only production dependencies so externalized native modules are available
 COPY package*.json ./

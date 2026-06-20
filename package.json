@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "audit:repository": "node scripts/check-repository-state.mjs",
     "verify:system": "npx tsx scripts/verify-system.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "cd backend && npm install --legacy-peer-deps",
