@@ -16,16 +16,26 @@ export default defineConfig({
   },
   webServer: process.env.BASE_URL
     ? undefined
-    : {
-        command: process.env.CI ? 'npm run start' : 'npm run dev',
-        url: 'http://127.0.0.1:3000/health',
-        reuseExistingServer: !process.env.CI,
-        timeout: 120000,
-        env: {
-          ...process.env,
-          INTERNAL_API_URL: process.env.INTERNAL_API_URL || 'https://api.kvastram.com',
+    : [
+        {
+          command: 'node scripts/e2e-mock-api.mjs',
+          url: 'http://127.0.0.1:4000/health',
+          reuseExistingServer: !process.env.CI,
+          timeout: 30000,
         },
-      },
+        {
+          command: process.env.CI ? 'npm run start' : 'npm run dev',
+          url: 'http://127.0.0.1:3000/health',
+          reuseExistingServer: !process.env.CI,
+          timeout: 120000,
+          env: {
+            ...process.env,
+            INTERNAL_API_URL: process.env.INTERNAL_API_URL || 'http://127.0.0.1:4000',
+            NEXT_PUBLIC_API_URL:
+              process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000',
+          },
+        },
+      ],
   projects: [
     {
       name: 'desktop-chromium',
