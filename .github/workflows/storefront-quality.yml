@@ -7,14 +7,6 @@ on:
       - "docs/design-system/**"
       - "scripts/check-repository-state.mjs"
       - ".github/workflows/storefront-quality.yml"
-  push:
-    branches: [main]
-    paths:
-      - "storefront/**"
-      - "docs/design-system/**"
-      - "scripts/check-repository-state.mjs"
-      - ".github/workflows/storefront-quality.yml"
-
 concurrency:
   group: storefront-quality-${{ github.ref }}
   cancel-in-progress: true
