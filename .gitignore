@@ -75,8 +75,13 @@ kvastram-storefront-complete-audit-report.md
 quick_view_audit_report_*.md
 reels_instagram_execution_plan.md
 trending_reels_execution_plan.md
+storefront_audit_report.md
+storefront_design_audit_report.md
+docs/*-artifacts/
 
 # Misc
 *.pem
 *.log
 kvastram-platform/
+tmp/
+=

@@ -88,3 +88,6 @@ Prevent stale branches, alternate worktrees, old VPS checkouts, CSS ownership dr
 - Local audits, unit tests, storefront build, admin build, and backend build passed on 2026-06-20.
 - Live desktop smoke tests passed; live mobile smoke tests passed after correcting the mobile navigation assertion.
 - Docker Compose validation remains a VPS/CI gate because Docker is not installed in the local Windows workspace.
+- Shared Git hooks now reject direct pushes to `main`.
+- Production deployment now requires the pushed commit to belong to a pull request merged into `main`; manual workflow dispatch remains the explicit emergency path.
+- GitHub server-side branch protection still requires repository-admin authentication and should be enabled as an additional remote control.
