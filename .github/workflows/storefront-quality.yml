@@ -47,6 +47,9 @@ jobs:
         run: npm run audit:design-system:metrics
       - name: Build storefront
         working-directory: storefront
+        env:
+          INTERNAL_API_URL: https://api.kvastram.com
+          NEXT_PUBLIC_API_URL: https://api.kvastram.com
         run: npm run build
       - name: Install Playwright Chromium
         working-directory: storefront

@@ -52,6 +52,9 @@ jobs:
         run: npm ci --legacy-peer-deps
       - name: Verify storefront
         working-directory: storefront
+        env:
+          INTERNAL_API_URL: https://api.kvastram.com
+          NEXT_PUBLIC_API_URL: https://api.kvastram.com
         run: |
           npm run verify:design-system
           npm run audit:design-system:metrics
