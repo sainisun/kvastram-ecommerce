@@ -7,14 +7,6 @@ on:
       - "docs/design-system/**"
       - "scripts/check-repository-state.mjs"
       - ".github/workflows/storefront-quality.yml"
-  push:
-    branches: [main]
-    paths:
-      - "storefront/**"
-      - "docs/design-system/**"
-      - "scripts/check-repository-state.mjs"
-      - ".github/workflows/storefront-quality.yml"
-
 concurrency:
   group: storefront-quality-${{ github.ref }}
   cancel-in-progress: true
@@ -48,8 +40,8 @@ jobs:
       - name: Build storefront
         working-directory: storefront
         env:
-          INTERNAL_API_URL: https://api.kvastram.com
-          NEXT_PUBLIC_API_URL: https://api.kvastram.com
+          INTERNAL_API_URL: http://127.0.0.1:4000
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:4000
         run: npm run build
       - name: Install Playwright Chromium
         working-directory: storefront
