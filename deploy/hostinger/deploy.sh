@@ -139,15 +139,11 @@ verify_health_sha() {
   local url="$2"
   local response
   response="$(curl -sf "$url")" || { echo "$service health check FAILED"; exit 1; }
-  node -e '
-    const body = JSON.parse(process.argv[1]);
-    const expected = process.argv[2];
-    const actual = body.gitSha || body.data?.gitSha;
-    if (actual !== expected) {
-      console.error(`Health SHA mismatch: expected ${expected}, received ${actual || "missing"}`);
-      process.exit(1);
-    }
-  ' "$response" "$APP_GIT_SHA"
+  if [[ "$response" != *"\"gitSha\":\"$APP_GIT_SHA\""* ]]; then
+    echo "$service health SHA mismatch: expected $APP_GIT_SHA"
+    echo "Health response: $response"
+    exit 1
+  fi
   echo "$service health SHA verified: $APP_GIT_SHA"
 }
 
