@@ -1486,6 +1486,25 @@ export const homepage_merchandising_slots = pgTable(
   })
 );
 
+export const homepage_social_posts = pgTable(
+  'homepage_social_posts',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    image_url: text('image_url').notNull(),
+    alt_text: text('alt_text').notNull(),
+    caption: text('caption'),
+    destination_url: text('destination_url').notNull(),
+    is_active: boolean('is_active').default(true).notNull(),
+    sort_order: integer('sort_order').default(0).notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    activeIdx: index('idx_homepage_social_posts_is_active').on(table.is_active),
+    sortOrderIdx: index('idx_homepage_social_posts_sort_order').on(table.sort_order),
+  })
+);
+
 // --- BLOG & CONTENT ---
 export const posts = pgTable('posts', {
   id: uuid('id').defaultRandom().primaryKey(),

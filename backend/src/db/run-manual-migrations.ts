@@ -40,6 +40,7 @@ const MIGRATION_FILES = [
   '20260509_seo_gap_closure.sql',
   '20260509_privacy_policy_update.sql',
   '20260621_critical_integrity.sql',
+  '20260621_homepage_social_posts.sql',
 ];
 
 const MIGRATIONS_DIR = path.join(__dirname, 'migrations');

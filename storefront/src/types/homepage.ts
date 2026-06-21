@@ -4,13 +4,9 @@ export interface HomepageTrendingReel {
   id: string;
   video_url: string;
   thumbnail_url: string;
-  product_name: string;
-  price: string;
-  price_amount: number | null;
-  link_url: string;
-  view_count: number;
-  is_active: boolean;
   sort_order: number;
+  caption?: string | null;
+  product: Product;
 }
 
 export interface HomepageCategoryCard {
@@ -35,7 +31,68 @@ export interface HomepageCollection {
   id: string;
   title: string;
   handle: string;
-  image?: string | null;
+  description?: string | null;
+  image: string;
+  products: Product[];
+}
+
+export interface HomepageHeroSlide {
+  id: string;
+  image_url: string;
+  mobile_image_url?: string | null;
+  title: string;
+  button_text: string;
+  button_link: string;
+}
+
+export interface HomepageBrandStory {
+  title: string;
+  content: string;
+  image_url: string;
+}
+
+export interface HomepageSocialPost {
+  id: string;
+  image_url: string;
+  alt_text: string;
+  caption?: string | null;
+  destination_url: string;
+  sort_order: number;
+}
+
+export interface HomepageNewsletter {
+  title: string;
+  subtitle: string;
+}
+
+export type HomepageSectionState = {
+  status: 'ready' | 'empty' | 'error';
+  count: number;
+};
+
+export interface HomepagePayload {
+  generated_at: string;
+  status: Record<
+    | 'categoryCircles'
+    | 'hero'
+    | 'featuredCategories'
+    | 'bestSellers'
+    | 'collections'
+    | 'watchShop'
+    | 'brandStory'
+    | 'social'
+    | 'newsletter',
+    HomepageSectionState
+  >;
+  category_circles: HomepageCategoryCircle[];
+  hero: HomepageHeroSlide[];
+  featured_categories: HomepageCategoryCard[];
+  best_sellers: Product[];
+  collections: HomepageCollection[];
+  watch_shop: HomepageTrendingReel[];
+  brand_story: HomepageBrandStory | null;
+  social: HomepageSocialPost[];
+  newsletter: HomepageNewsletter | null;
 }
 
 export interface HomepageSpotlightProduct {

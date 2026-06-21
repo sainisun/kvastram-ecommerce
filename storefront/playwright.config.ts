@@ -24,7 +24,9 @@ export default defineConfig({
           timeout: 30000,
         },
         {
-          command: process.env.CI ? 'npm run start' : 'npm run dev',
+          command: process.env.CI
+            ? 'node node_modules/next/dist/bin/next start -p 3000 -H 0.0.0.0'
+            : 'node node_modules/next/dist/bin/next dev -p 3000',
           url: 'http://127.0.0.1:3000/health',
           reuseExistingServer: !process.env.CI,
           timeout: 120000,

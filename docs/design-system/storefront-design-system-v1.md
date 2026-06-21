@@ -107,6 +107,14 @@ Use these before adding page-local UI systems:
 - Keep priority overrides limited to documented accessibility resets.
 - Keep inline styles limited to runtime data, measured dimensions, stagger timing, third-party SDK config, or product swatches.
 
+## Homepage Layout Contract
+
+- Homepage content width: `--ds-home-content-width` (`1520px`).
+- Homepage gutters: `72px` desktop, `28px` tablet, and `16px` mobile through the `--ds-home-gutter-*` tokens.
+- Homepage section rhythm: `108px` desktop and `56px` mobile through the `--ds-home-section-space-*` tokens.
+- Hero is full bleed. Other homepage content uses `.homepage-container`.
+- Homepage media containers must declare an intrinsic aspect ratio or explicit dimensions.
+
 ## Current Metrics
 
 Latest verified metrics:

@@ -27,6 +27,7 @@ interface ProductCardProps {
   currency?: string;
   categoryLabel?: string;
   showQuickView?: boolean;
+  actionLabel?: string;
   onAddToCart: (event: React.MouseEvent<HTMLButtonElement>, product: Product) => void;
   onQuickView?: (product: Product) => void;
 }
@@ -63,6 +64,7 @@ export function ProductCard({
   currency = 'USD',
   categoryLabel,
   showQuickView = true,
+  actionLabel,
   onAddToCart,
   onQuickView,
 }: ProductCardProps) {
@@ -218,6 +220,11 @@ export function ProductCard({
             )}
           </IconButton>
         </div>
+        {actionLabel ? (
+          <Link href={href} className="product-card-shop-link">
+            {actionLabel}
+          </Link>
+        ) : null}
       </div>
     </article>
   );

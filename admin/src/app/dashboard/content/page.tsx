@@ -3,6 +3,7 @@ import {
   Layers,
   Clapperboard,
   LayoutGrid,
+  Images,
 } from 'lucide-react';
 
 export default function ContentDashboard() {
@@ -18,6 +19,16 @@ export default function ContentDashboard() {
           <h2 className="text-xl font-bold mb-2">Category Circles</h2>
           <p className="text-gray-500">
             Manage the circular quick-link row shown under category banners.
+          </p>
+        </Link>
+        <Link
+          href="/dashboard/content/social-gallery"
+          className="block p-6 bg-white rounded-xl border hover:border-blue-500 transition shadow-sm"
+        >
+          <Images className="mb-4 text-amber-600" size={32} />
+          <h2 className="text-xl font-bold mb-2">Social Gallery</h2>
+          <p className="text-gray-500">
+            Curate the real images and destinations used in Follow Our Journey.
           </p>
         </Link>
         <Link

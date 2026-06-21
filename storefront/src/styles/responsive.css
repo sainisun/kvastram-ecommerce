@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════ */
 
 @media (min-width: 560px) {
-  .products-grid { gap: 16px; }
+  .products-grid { gap: var(--product-grid-gap, 16px); }
   .collections-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .slider-row { grid-auto-columns: minmax(42%, 1fr); }
 }
@@ -26,7 +26,7 @@
   }
   .products-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
+    gap: var(--product-grid-gap, 20px);
   }
   .kv-section { padding-block: var(--ds-space-2xl); }
   .kv-section-head {

@@ -34,6 +34,8 @@ interface ProductGridProps {
   spotlightProducts?: SpotlightProduct[];
   density?: 'grid' | 'compact';
   emptyMessage?: string;
+  cardActionLabel?: string;
+  animateCards?: boolean;
 }
 
 interface ProductPriceInfo {
@@ -50,6 +52,8 @@ function ProductGrid({
   spotlightProducts = [],
   density = 'grid',
   emptyMessage = 'No products found in this collection.',
+  cardActionLabel,
+  animateCards = true,
 }: ProductGridProps) {
   const { currentRegion } = useShop();
   const { formatPrice } = useCurrency();
@@ -185,8 +189,8 @@ function ProductGrid({
     renderedItems.push(
       <motion.div
         key={product.id}
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={animateCards ? { opacity: 0, y: 30 } : false}
+        whileInView={animateCards ? { opacity: 1, y: 0 } : undefined}
         viewport={{ once: true, margin: '-50px' }}
         transition={{ duration: 0.5, delay: (index % 4) * 0.1, ease: 'easeOut' }}
       >
@@ -201,6 +205,7 @@ function ProductGrid({
           added={addedId === product.id}
           currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
           categoryLabel={product.collection?.title || 'Kvastram'}
+          actionLabel={cardActionLabel}
           onAddToCart={handleAddToCart}
           onQuickView={setQuickViewProduct}
         />

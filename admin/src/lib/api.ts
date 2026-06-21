@@ -1232,6 +1232,48 @@ export const api = {
     return res.json();
   },
 
+  getHomepageSocialPosts: async () => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-social-posts`, {});
+    if (!res.ok) return handleApiError(res, 'Failed to fetch homepage social posts');
+    return res.json();
+  },
+
+  createHomepageSocialPost: async (formData: FormData) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-social-posts`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to create homepage social post');
+    return res.json();
+  },
+
+  updateHomepageSocialPost: async (id: string, formData: FormData) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-social-posts/${id}`,
+      { method: 'PUT', body: formData }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to update homepage social post');
+    return res.json();
+  },
+
+  toggleHomepageSocialPost: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-social-posts/${id}/toggle`,
+      { method: 'PATCH' }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to toggle homepage social post');
+    return res.json();
+  },
+
+  deleteHomepageSocialPost: async (id: string) => {
+    const res = await fetchWithTimeout(
+      `${API_BASE_URL}/admin/homepage-social-posts/${id}`,
+      { method: 'DELETE' }
+    );
+    if (!res.ok) return handleApiError(res, 'Failed to delete homepage social post');
+    return res.json();
+  },
+
   // Product search used by category and collection assignment pickers.
   searchFeaturedProductCandidates: async (query: string) => {
     const res = await fetchWithTimeout(
