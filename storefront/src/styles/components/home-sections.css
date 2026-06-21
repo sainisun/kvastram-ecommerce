@@ -1210,12 +1210,19 @@
 
 .homepage-watch-layout {
   display: grid;
+  width: min(
+    calc(100% - (var(--homepage-gutter) * 2)),
+    var(--ds-home-content-width)
+  );
+  margin-inline: auto;
   gap: var(--ds-space-lg);
+  align-items: center;
 }
 
 .homepage-watch-video {
   position: relative;
   aspect-ratio: 4 / 5;
+  max-height: 680px;
   overflow: hidden;
   background: var(--ds-text-primary);
 }
@@ -1228,14 +1235,15 @@
 
 .homepage-watch-copy {
   align-self: center;
-  padding-inline: var(--homepage-gutter);
+  padding-inline: 0;
 }
 
 .homepage-watch-product {
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  gap: var(--ds-space-md);
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: var(--ds-space-sm);
   margin-top: var(--ds-space-lg);
+  align-items: start;
 }
 
 .homepage-watch-product-media {
@@ -1248,8 +1256,13 @@
 .homepage-watch-product h3 {
   margin: 0 0 var(--ds-space-sm);
   font-family: var(--ds-type-heading-font);
-  font-size: var(--ds-text-display-sm);
+  font-size: clamp(var(--ds-text-body-lg), 4vw, var(--ds-text-display-sm));
   font-weight: var(--ds-type-heading-weight);
+  line-height: var(--ds-leading-tight);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .homepage-watch-product a {
@@ -1261,11 +1274,17 @@
   gap: var(--ds-space-sm);
   margin-top: var(--ds-space-lg);
   overflow-x: auto;
+  padding-bottom: var(--ds-space-xs);
+  scrollbar-width: none;
+}
+
+.homepage-watch-thumbnails::-webkit-scrollbar {
+  display: none;
 }
 
 .homepage-watch-thumbnails button {
   position: relative;
-  width: 72px;
+  width: 64px;
   aspect-ratio: 4 / 5;
   flex: 0 0 auto;
   overflow: hidden;
@@ -1442,12 +1461,11 @@
 
   .homepage-watch-layout,
   .homepage-story {
-    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.88fr);
   }
 
   .homepage-watch-copy {
-    padding-right: var(--homepage-gutter);
-    padding-left: 0;
+    padding-inline: 0;
   }
 
   .homepage-story-media {
@@ -1479,7 +1497,11 @@
   }
 
   .homepage-watch-video {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 5;
+  }
+
+  .homepage-watch-thumbnails button {
+    width: 76px;
   }
 }
 

@@ -91,7 +91,11 @@ function settingValue(value: unknown): string | null {
 const PLACEHOLDER_TITLE =
   /\b(test|testing|dummy|demo|sample|placeholder|lorem|hhj|asdf|abc|untitled)\b/i;
 
-function isHomepageProductReady(product: any) {
+function isHomepageProductReady(
+  product: any,
+  options: { requirePrice?: boolean } = {}
+) {
+  const requirePrice = options.requirePrice !== false;
   const image =
     product?.thumbnail ||
     product?.images?.find((item: { url?: string }) => isCloudinaryUrl(item?.url))?.url;
@@ -106,7 +110,7 @@ function isHomepageProductReady(product: any) {
       product?.title?.trim() &&
       !PLACEHOLDER_TITLE.test(product.title) &&
       isCloudinaryUrl(image) &&
-      hasPrice
+      (!requirePrice || hasPrice)
   );
 }
 
@@ -144,7 +148,9 @@ async function loadBestSellers(limit = 4) {
 
   const enriched = await productService.retrieveMany(rows.map((row) => row.product_id));
   const byId = new Map(
-    enriched.filter(isHomepageProductReady).map((product) => [product.id, product])
+    enriched
+      .filter((product) => isHomepageProductReady(product, { requirePrice: false }))
+      .map((product) => [product.id, product])
   );
 
   return rows
@@ -175,7 +181,9 @@ async function loadCuratedFeaturedProducts(sectionKeys: string[], limit = 4) {
   const productIds = Array.from(new Set(rows.map((row) => row.product_id)));
   const enriched = await productService.retrieveMany(productIds);
   const byId = new Map(
-    enriched.filter(isHomepageProductReady).map((product) => [product.id, product])
+    enriched
+      .filter((product) => isHomepageProductReady(product, { requirePrice: false }))
+      .map((product) => [product.id, product])
   );
 
   return rows
@@ -186,7 +194,7 @@ async function loadCuratedFeaturedProducts(sectionKeys: string[], limit = 4) {
 
 async function loadCollections(bestSellerIds: ReadonlySet<string>) {
   const now = new Date();
-  const collections = await db
+  let collections = await db
     .select()
     .from(product_collections)
     .where(
@@ -201,6 +209,23 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
     )
     .orderBy(asc(product_collections.display_order), desc(product_collections.created_at))
     .limit(6);
+
+  if (collections.length === 0) {
+    collections = await db
+      .select()
+      .from(product_collections)
+      .where(
+        and(
+          eq(product_collections.status, 'active'),
+          eq(product_collections.rule_type, 'manual'),
+          isNull(product_collections.deleted_at),
+          or(isNull(product_collections.valid_from), sql`${product_collections.valid_from} <= ${now}`),
+          or(isNull(product_collections.valid_until), sql`${product_collections.valid_until} >= ${now}`)
+        )
+      )
+      .orderBy(asc(product_collections.display_order), desc(product_collections.created_at))
+      .limit(6);
+  }
 
   const collectionIds = collections.map((collection) => collection.id);
   if (collectionIds.length === 0) return [];
@@ -241,25 +266,41 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
   );
   const previewProducts = await productService.retrieveMany(previewIds);
   const productById = new Map(
-    previewProducts.filter(isHomepageProductReady).map((product) => [product.id, product])
+    previewProducts
+      .filter((product) => isHomepageProductReady(product))
+      .map((product) => [product.id, product])
   );
 
   return collections
-    .filter((collection) => isCloudinaryUrl(collection.cover_image_url || collection.image))
-    .map((collection) => ({
-      id: collection.id,
-      title: collection.title,
-      handle: collection.handle,
-      description: collection.description,
-      image: collection.cover_image_url || collection.image,
-      products: dedupeCampaignProductIds(
+    .map((collection) => {
+      const products = dedupeCampaignProductIds(
         previewIdsByCollection.get(collection.id) || [],
         bestSellerIds
       )
         .map((id) => productById.get(id))
-        .filter((product): product is NonNullable<typeof product> => Boolean(product)),
-    }))
-    .filter((collection) => collection.products.length > 0);
+        .filter((product): product is NonNullable<typeof product> => Boolean(product));
+      const image =
+        collection.cover_image_url ||
+        collection.image ||
+        products.find((product) => isCloudinaryUrl(product.thumbnail))?.thumbnail ||
+        products
+          .flatMap((product) => product.images || [])
+          .find((image) => isCloudinaryUrl(image.url))?.url ||
+        null;
+
+      return {
+        id: collection.id,
+        title: collection.title,
+        handle: collection.handle,
+        description: collection.description,
+        image,
+        products,
+      };
+    })
+    .filter(
+      (collection) =>
+        collection.products.length > 0 && isCloudinaryUrl(collection.image)
+    );
 }
 
 async function loadWatchShop() {
@@ -281,7 +322,9 @@ async function loadWatchShop() {
       .filter((id): id is string => Boolean(id))
   );
   const productById = new Map(
-    productsForReels.filter(isHomepageProductReady).map((product) => [product.id, product])
+    productsForReels
+      .filter((product) => isHomepageProductReady(product))
+      .map((product) => [product.id, product])
   );
 
   return validReels
@@ -400,16 +443,12 @@ export class HomepageService {
           .limit(8),
       ]);
 
-    const categoryCircles =
+    let categoryCircles =
       circlesResult.status === 'fulfilled'
         ? circlesResult.value.filter(
             (item) => isCloudinaryUrl(item.image_url) && isStorefrontHref(item.link_url)
           )
         : [];
-    statuses.categoryCircles =
-      circlesResult.status === 'rejected'
-        ? { status: 'error', count: 0 }
-        : statusFor(categoryCircles);
 
     const hero =
       heroResult.status === 'fulfilled'
@@ -441,6 +480,22 @@ export class HomepageService {
             status: featuredCategories.length === 4 ? 'ready' : 'empty',
             count: featuredCategories.length,
           };
+    if (categoryCircles.length === 0) {
+      categoryCircles = featuredCategories.slice(0, 10).map((category) => ({
+        id: `featured-category-circle-${category.id}`,
+        category_id: category.category_id,
+        label: category.name,
+        link_url: category.link_url,
+        image_url: category.image_url,
+        sort_order: category.sort_order,
+        is_active: category.is_active,
+        created_at: category.created_at,
+      }));
+    }
+    statuses.categoryCircles =
+      circlesResult.status === 'rejected' && categoryCircles.length === 0
+        ? { status: 'error', count: 0 }
+        : statusFor(categoryCircles);
 
     let bestSellers: Awaited<ReturnType<typeof loadBestSellers>> = [];
     try {
@@ -477,6 +532,8 @@ export class HomepageService {
     const brandStoryImage = settingValue(settingsMap.brand_story_image);
     const brandStoryTitle = settingValue(settingsMap.brand_story_title);
     const brandStoryContent = settingValue(settingsMap.brand_story_content);
+    const fallbackBrandStoryImage =
+      hero[0]?.image_url || featuredCategories[0]?.image_url || watchShop[0]?.thumbnail_url;
     const brandStory =
       brandStoryImage &&
       isCloudinaryUrl(brandStoryImage) &&
@@ -487,26 +544,36 @@ export class HomepageService {
             content: brandStoryContent,
             image_url: brandStoryImage,
           }
+        : fallbackBrandStoryImage
+          ? {
+              title:
+                brandStoryTitle ||
+                settingValue(settingsMap.hero_title) ||
+                'Crafted slowly, worn beautifully',
+              content:
+                brandStoryContent ||
+                settingValue(settingsMap.hero_subtitle) ||
+                'Kvastram brings Jaipur-rooted textile craft into modern wardrobes through considered silhouettes, handmade details, and small-batch edits.',
+              image_url: fallbackBrandStoryImage,
+            }
         : null;
     statuses.brandStory =
       settingsResult.status === 'rejected'
         ? { status: 'error', count: 0 }
         : statusFor(brandStory ? [brandStory] : []);
 
-    const newsletterSubtitle = settingValue(settingsMap.newsletter_subtitle);
-    const newsletter = newsletterSubtitle
-      ? {
-          title:
-            settingValue(settingsMap.newsletter_title) || 'Join The Kvastram Circle',
-          subtitle: newsletterSubtitle,
-        }
-      : null;
+    const newsletter = {
+      title: settingValue(settingsMap.newsletter_title) || 'Join The Kvastram Circle',
+      subtitle:
+        settingValue(settingsMap.newsletter_subtitle) ||
+        'Craft stories, considered launches, and notes from Jaipur.',
+    };
     statuses.newsletter =
       settingsResult.status === 'rejected'
         ? { status: 'error', count: 0 }
         : statusFor(newsletter ? [newsletter] : []);
 
-    const social =
+    let social =
       socialResult.status === 'fulfilled'
         ? socialResult.value.filter(
             (item) =>
@@ -514,6 +581,19 @@ export class HomepageService {
               isStorefrontHref(item.destination_url)
           )
         : [];
+    if (social.length === 0) {
+      social = watchShop.slice(0, 8).map((reel, index) => ({
+        id: `watch-social-${reel.id}`,
+        image_url: reel.thumbnail_url,
+        alt_text: `${reel.product.title} on Kvastram`,
+        caption: reel.caption || reel.product.title,
+        destination_url: reel.link_url || '/reels',
+        is_active: true,
+        sort_order: index,
+        created_at: new Date(),
+        updated_at: new Date(),
+      }));
+    }
     statuses.social =
       socialResult.status === 'rejected'
         ? { status: 'error', count: 0 }

@@ -4,7 +4,7 @@ import { getProductDisplayTitle } from '@/lib/product-title';
 const PLACEHOLDER_TITLE_PATTERN =
   /\b(test|testing|dummy|demo|sample|placeholder|lorem|hhj|asdf|abc|untitled)\b/i;
 
-function hasUsableTitle(product: Product) {
+export function hasUsableTitle(product: Product) {
   const title = getProductDisplayTitle(product.title || '').trim();
   return title.length > 2 && !PLACEHOLDER_TITLE_PATTERN.test(title);
 }
@@ -35,19 +35,26 @@ export function hasSellablePrice(product: Product) {
   );
 }
 
-export function isStorefrontProductReady(product: Product) {
+export function isStorefrontProductReady(
+  product: Product,
+  options: { requireSellablePrice?: boolean } = {}
+) {
+  const requireSellablePrice = options.requireSellablePrice !== false;
   return Boolean(
     product?.id &&
       product.status === 'published' &&
       product.handle?.trim() &&
       hasUsableTitle(product) &&
       hasProductMedia(product) &&
-      hasSellablePrice(product)
+      (!requireSellablePrice || hasSellablePrice(product))
   );
 }
 
-export function filterStorefrontReadyProducts(products: Product[] = []) {
-  return products.filter(isStorefrontProductReady);
+export function filterStorefrontReadyProducts(
+  products: Product[] = [],
+  options: { requireSellablePrice?: boolean } = {}
+) {
+  return products.filter((product) => isStorefrontProductReady(product, options));
 }
 
 export function getProductReadinessWarnings(product: Product) {
