@@ -7,7 +7,10 @@ type AuditAction =
   | 'category.create' | 'category.update' | 'category.delete'
   | 'collection.create' | 'collection.update' | 'collection.status_change' | 'collection.delete'
   | 'product.create' | 'product.update' | 'product.category_change' | 'product.delete' | 'product.status_change'
-  | 'nav.update' | 'role.change' | 'redirect.create' | 'redirect.delete';
+  | 'nav.update' | 'role.change' | 'redirect.create' | 'redirect.delete'
+  | 'region.create' | 'region.update' | 'region.delete'
+  | 'tag.create' | 'tag.update' | 'tag.delete'
+  | 'page.create' | 'page.update' | 'page.delete';
 
 /**
  * Middleware factory: wraps a route handler with audit logging.
@@ -15,8 +18,6 @@ type AuditAction =
  */
 export function auditLog(entityType: string, action: AuditAction) {
   return async (c: Context, next: Next) => {
-    // Capture old value for updates/deletes
-    let oldValue: Record<string, unknown> | null = null;
     const entityId = c.req.param('id') || undefined;
 
     await next();
@@ -30,6 +31,9 @@ export function auditLog(entityType: string, action: AuditAction) {
       const userId = user?.sub || 'unknown';
       const userRole = user?.role || 'unknown';
       const ip = getClientIp(c);
+      const oldValue =
+        ((c as any).get?.('auditOldValue') as Record<string, unknown> | null) ||
+        null;
 
       // Try to get response body as new_value
       let newValue: Record<string, unknown> | null = null;

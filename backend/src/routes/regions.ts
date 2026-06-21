@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdmin } from '../middleware/auth';
 import { zValidator } from '@hono/zod-validator';
 import { regionService, RegionSchema } from '../services/region-service';
+import { auditLog } from '../middleware/audit';
 
 const regionsRouter = new Hono();
 
@@ -32,7 +33,8 @@ regionsRouter.get('/:id', async (c) => {
 // POST /regions - Create a new region (Protected)
 regionsRouter.post(
   '/',
-  verifyAuth,
+  verifyAdmin,
+  auditLog('region', 'region.create'),
   zValidator('json', RegionSchema),
   async (c) => {
     const data = c.req.valid('json');
@@ -58,7 +60,8 @@ regionsRouter.post(
 // PUT /regions/:id - Update a region (Protected)
 regionsRouter.put(
   '/:id',
-  verifyAuth,
+  verifyAdmin,
+  auditLog('region', 'region.update'),
   zValidator('json', RegionSchema.partial()),
   async (c) => {
     const id = c.req.param('id');
@@ -66,6 +69,8 @@ regionsRouter.put(
     console.log('📝 Updating region:', id, data);
 
     try {
+      const oldValue = await regionService.getById(id);
+      c.set('auditOldValue' as never, oldValue as never);
       const updatedRegion = await regionService.update(id, data);
       if (!updatedRegion) return c.json({ error: 'Region not found' }, 404);
 
@@ -85,15 +90,22 @@ regionsRouter.put(
 );
 
 // DELETE /regions/:id - Delete a region (Protected)
-regionsRouter.delete('/:id', verifyAuth, async (c) => {
+regionsRouter.delete(
+  '/:id',
+  verifyAdmin,
+  auditLog('region', 'region.delete'),
+  async (c) => {
   const id = c.req.param('id');
   try {
+    const oldValue = await regionService.getById(id);
+    c.set('auditOldValue' as never, oldValue as never);
     await regionService.delete(id);
     return c.json({ success: true });
   } catch (error: unknown) {
     console.error('Error deleting region:', error);
     return c.json({ error: String(error) }, 500);
   }
-});
+  }
+);
 
 export default regionsRouter;

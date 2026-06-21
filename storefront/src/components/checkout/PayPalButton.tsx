@@ -9,6 +9,7 @@ import {
 
 interface PayPalButtonProps {
   orderId: string;      // Our DB order UUID
+  checkoutToken: string;
   currency?: string;
   onSuccess: () => void;
   onError: (msg: string) => void;
@@ -18,6 +19,7 @@ const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
 
 function PayPalButtonInner({
   orderId,
+  checkoutToken,
   onSuccess,
   onError,
 }: PayPalButtonProps) {
@@ -31,7 +33,10 @@ function PayPalButtonInner({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ order_id: orderId }),
+    body: JSON.stringify({
+      order_id: orderId,
+      checkout_token: checkoutToken,
+    }),
     });
 
     if (!res.ok) {
@@ -53,6 +58,7 @@ function PayPalButtonInner({
         body: JSON.stringify({
           order_id: orderId,
           paypal_order_id: data.orderID,
+          checkout_token: checkoutToken,
         }),
       });
 
@@ -125,4 +131,3 @@ export default function PayPalButton(props: PayPalButtonProps) {
     </PayPalScriptProvider>
   );
 }
-

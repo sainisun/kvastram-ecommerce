@@ -20,13 +20,20 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import Stripe from 'stripe';
 import { db } from '../../db';
-import { orders, line_items, webhook_events } from '../../db/schema';
+import { customers, orders, line_items, webhook_events } from '../../db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { logInfo, logError } from '../../utils/logger';
 import { asyncHandler } from '../../middleware/error-handler';
 import { verify } from 'hono/jwt';
 import { getCookie } from 'hono/cookie';
 import { config } from '../../config';
+import { isValidCheckoutPaymentToken } from '../../utils/payment-ownership';
+import {
+  isInventoryReservationActive,
+  releaseInventoryReservation,
+} from '../../utils/inventory-reservation';
+import { claimWebhookEvent } from '../../utils/webhook-events';
+import { finalizeCapturedPayment } from '../../utils/payment-capture';
 
 // Only create Stripe instance if key is available
 const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -41,7 +48,39 @@ const paymentRouter = new Hono();
 
 const CreatePaymentIntentSchema = z.object({
   order_id: z.string().uuid(),
+  checkout_token: z.string().min(16).optional(),
 });
+
+async function requirePaymentOwnership(
+  c: any,
+  order: typeof orders.$inferSelect,
+  customer: typeof customers.$inferSelect | null,
+  checkoutToken?: string
+) {
+  if (order.customer_id && customer?.has_account) {
+    const token = getCookie(c, 'auth_token');
+    if (!token) return c.json({ error: 'Unauthorized' }, 401);
+    try {
+      const payload = (await verify(token, config.jwt.secret, 'HS256')) as {
+        sub: string;
+        role: string;
+      };
+      if (payload.role !== 'customer' || payload.sub !== order.customer_id) {
+        return c.json({ error: 'Forbidden' }, 403);
+      }
+      return null;
+    } catch {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+  }
+
+  return isValidCheckoutPaymentToken(
+    order.metadata as Record<string, any> | null,
+    checkoutToken
+  )
+    ? null
+    : c.json({ error: 'Invalid checkout session' }, 401);
+}
 
 // --- ROUTES ---
 
@@ -57,34 +96,35 @@ paymentRouter.post(
         return c.json({ error: 'Payment processing not configured' }, 503);
       }
 
-      const { order_id } = c.req.valid('json');
+      const { order_id, checkout_token } = c.req.valid('json');
 
       // Fetch the order with line items
-      const [order] = await db
+      const [orderRow] = await db
         .select()
         .from(orders)
+        .leftJoin(customers, eq(orders.customer_id, customers.id))
         .where(eq(orders.id, order_id))
         .limit(1);
 
-      if (!order) {
+      if (!orderRow) {
         return c.json({ error: 'Order not found' }, 404);
       }
 
-      // SEC-004: Ownership check
-      // If order belongs to a registered customer, verify the caller is that customer
-      if (order.customer_id) {
-        const token = getCookie(c, 'auth_token');
-        if (!token) {
-          return c.json({ error: 'Unauthorized' }, 401);
-        }
-        try {
-          const payload = await verify(token, config.jwt.secret, 'HS256') as { sub: string; role: string };
-          if (payload.role !== 'customer' || payload.sub !== order.customer_id) {
-            return c.json({ error: 'Forbidden' }, 403);
-          }
-        } catch {
-          return c.json({ error: 'Unauthorized' }, 401);
-        }
+      const order = orderRow.orders;
+      const ownershipError = await requirePaymentOwnership(
+        c,
+        order,
+        orderRow.customers,
+        checkout_token
+      );
+      if (ownershipError) return ownershipError;
+
+      if (
+        !isInventoryReservationActive(
+          order.metadata as Record<string, any> | null
+        )
+      ) {
+        return c.json({ error: 'Checkout session expired' }, 410);
       }
 
       if (order.payment_status === 'captured') {
@@ -198,36 +238,10 @@ paymentRouter.post('/webhook', async (c) => {
   const eventId = event.id;
   const eventType = event.type;
 
-  // Try to insert the event record first (idempotent insert)
-  try {
-    await db.insert(webhook_events).values({
-      event_id: eventId,
-      event_type: eventType,
-      status: 'processing',
-    });
-  } catch (insertError: any) {
-    // If insert fails (event already exists), check if already processed
-    if (insertError.code === '23505') {
-      // PostgreSQL unique violation
-      const [existingEvent] = await db
-        .select({
-          processed_at: webhook_events.processed_at,
-          status: webhook_events.status,
-        })
-        .from(webhook_events)
-        .where(eq(webhook_events.event_id, eventId))
-        .limit(1);
-
-      if (existingEvent?.status === 'processed') {
-        logInfo(`Duplicate webhook event ${eventId}, already processed`);
-        return c.json({ received: true, duplicate: true });
-      }
-
-      // If still processing, return error to avoid duplicate processing
-      logInfo(`Webhook event ${eventId} is currently being processed`);
-      return c.json({ error: 'Event already being processed' }, 409);
-    }
-    throw insertError; // Re-throw other errors
+  const claim = await claimWebhookEvent(eventId, eventType);
+  if (!claim.claimed) {
+    logInfo(`Duplicate Stripe webhook event ${eventId}`);
+    return c.json({ received: true, duplicate: true });
   }
 
   // Handle the event
@@ -245,21 +259,18 @@ paymentRouter.post('/webhook', async (c) => {
             .where(eq(orders.id, order_id))
             .limit(1);
 
-          await db
-            .update(orders)
-            .set({
-              payment_status: 'captured',
-              status: 'completed',
-              metadata: {
-                ...((existingOrder?.metadata as Record<string, any>) || {}),
-                stripe_payment_intent_id: paymentIntent.id,
-                stripe_payment_status: paymentIntent.status,
-                paid_at: new Date().toISOString(),
-              },
-            })
-            .where(eq(orders.id, order_id));
+          const completed = await finalizeCapturedPayment(order_id, {
+            stripe_payment_intent_id: paymentIntent.id,
+            stripe_payment_status: paymentIntent.status,
+            payment_provider: 'stripe',
+            paid_at: new Date().toISOString(),
+          });
 
-          logInfo(`Payment succeeded for order ${order_id}`);
+          if (!completed) {
+            logError(`Payment review required for released order ${order_id}`);
+          } else {
+            logInfo(`Payment succeeded for order ${order_id}`);
+          }
         }
         break;
       }
@@ -291,6 +302,7 @@ paymentRouter.post('/webhook', async (c) => {
             })
             .where(eq(orders.id, order_id));
 
+          await releaseInventoryReservation(order_id, 'stripe_payment_failed');
           logInfo(`Payment failed for order ${order_id}`);
         }
         break;

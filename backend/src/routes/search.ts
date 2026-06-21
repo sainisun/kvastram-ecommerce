@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { desc, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db/client';
-import { verifyAuth, verifyAdminOrMcpService } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { asyncHandler, NotFoundError, ValidationError } from '../middleware/error-handler';
 import { paginatedResponse, successResponse, HttpStatus } from '../utils/api-response';
 import { search_query_logs, search_synonyms } from '../db/schema';
@@ -62,7 +62,7 @@ searchRouter.get(
 
 searchRouter.get(
   '/synonyms',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const locale = c.req.query('locale') || 'en';
     const rows = await db
@@ -134,7 +134,7 @@ searchRouter.delete(
 
 searchRouter.get(
   '/analytics/top-queries',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const rows = await db
       .select({
@@ -154,7 +154,7 @@ searchRouter.get(
 
 searchRouter.get(
   '/analytics/attribute-gaps',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const zeroRows = await db
       .select()
@@ -192,7 +192,7 @@ searchRouter.get(
 
 searchRouter.get(
   '/analytics/zero-results',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const rows = await db
       .select()

@@ -16,6 +16,8 @@ import {
   store_settings,
 } from '../../db/schema';
 import { eq, and, gte, sql, inArray } from 'drizzle-orm';
+import { getCookie } from 'hono/cookie';
+import { verify } from 'hono/jwt';
 import { config } from '../../config';
 import { calculateTax, type TaxBreakdown } from '../../utils/tax-calculator';
 import { carrierService } from '../../services/carrier-service';
@@ -23,6 +25,7 @@ import {
   buildCheckoutPaymentTokenMetadata,
   generateCheckoutPaymentToken,
 } from '../../utils/payment-ownership';
+import { buildInventoryReservationMetadata } from '../../utils/inventory-reservation';
 
 const checkoutRouter = new Hono();
 
@@ -78,6 +81,9 @@ const PlaceOrderSchema = z.object({
       })
     )
     .min(1),
+  shipping_method: z.string().min(1).max(100),
+  gift_wrapping: z.boolean().optional().default(false),
+  gift_message: z.string().max(200).optional(),
   discount_code: z.string().min(1).max(50).optional(),
 });
 
@@ -222,6 +228,72 @@ function getDefaultShippingOptions(input: {
     free_shipping_threshold: input.freeThreshold,
     currency_code: input.currencyCode,
   };
+}
+
+async function getAuthenticatedCustomerId(c: any) {
+  const token = getCookie(c, 'auth_token');
+  if (!token) return null;
+
+  try {
+    const payload = (await verify(token, config.jwt.secret, 'HS256')) as {
+      sub?: string;
+      role?: string;
+    };
+    return payload.role === 'customer' && payload.sub ? payload.sub : null;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveShippingOption(input: {
+  shippingMethod: string;
+  countryCode: string;
+  postalCode: string;
+  currencyCode: string;
+  domesticRate: number;
+  intlRate: number;
+  freeThreshold: number;
+  shippingAddress: z.infer<typeof PlaceOrderSchema>['shipping_address'];
+}) {
+  const fallback = getDefaultShippingOptions(input);
+  let options = fallback.options;
+
+  if (input.countryCode === 'IN' && input.postalCode) {
+    try {
+      const liveRates = await carrierService.getRates({
+        email: 'checkout@kvastram.com',
+        payment_status: 'awaiting',
+        shipping_address: input.shippingAddress,
+        workflow: {
+          label: {
+            package_weight_grams: 500,
+            package_length_cm: 25,
+            package_width_cm: 20,
+            package_height_cm: 4,
+          },
+        },
+      });
+
+      if (liveRates.rates.length > 0) {
+        options = liveRates.rates.map((rate) => ({
+          id: rate.id,
+          name: rate.service,
+          description: rate.estimated_delivery_days
+            ? `Estimated ${rate.estimated_delivery_days} day delivery`
+            : 'Courier ETA confirmed at checkout',
+          price: rate.amount,
+          estimated_days: rate.estimated_delivery_days
+            ? String(rate.estimated_delivery_days)
+            : '',
+          currency_code: rate.currency,
+        }));
+      }
+    } catch {
+      // Use the deterministic fallback options returned by the preview endpoint.
+    }
+  }
+
+  return options.find((option) => option.id === input.shippingMethod) ?? null;
 }
 
 // --- ROUTES ---
@@ -427,7 +499,9 @@ checkoutRouter.post(
   async (c) => {
     try {
       const body = c.req.valid('json');
-      const { region_id, currency_code } = body;
+      const { region_id } = body;
+      const normalizedEmail = body.email.trim().toLowerCase();
+      const authenticatedCustomerId = await getAuthenticatedCustomerId(c);
 
       if (process.env.NODE_ENV !== 'production') {
         console.log(
@@ -445,7 +519,10 @@ checkoutRouter.post(
 
       // Fetch region for baseline tax
       const [region] = await db
-        .select({ tax_rate: regions.tax_rate })
+        .select({
+          tax_rate: regions.tax_rate,
+          currency_code: regions.currency_code,
+        })
         .from(regions)
         .where(eq(regions.id, region_id))
         .limit(1);
@@ -454,13 +531,22 @@ checkoutRouter.post(
         return c.json({ error: 'Region not found' }, 400);
       }
 
+      const currencyCode = region.currency_code.toUpperCase();
+      if (body.currency_code.toUpperCase() !== currencyCode) {
+        return c.json(
+          { error: 'Currency does not match the selected region' },
+          400
+        );
+      }
+
       // Merge dynamic settings with NaN-safe coercion
-      const parsedGlobalTax = parseFloat(settingsMap['tax_rate']);
-      const globalTaxRate = Number.isFinite(parsedGlobalTax) ? parsedGlobalTax : config.tax.defaultRate;
       const parsedRegionTax = parseFloat(region.tax_rate as string);
-      const taxRate = Number.isFinite(globalTaxRate) && globalTaxRate > 0
-        ? globalTaxRate
-        : (Number.isFinite(parsedRegionTax) ? parsedRegionTax : 0);
+      const parsedGlobalTax = parseFloat(settingsMap['tax_rate']);
+      const taxRate = Number.isFinite(parsedRegionTax)
+        ? parsedRegionTax
+        : Number.isFinite(parsedGlobalTax)
+          ? parsedGlobalTax
+          : config.tax.defaultRate;
 
       const domesticRate = (Number.isFinite(Number(settingsMap['domestic_shipping_rate'])) ? Number(settingsMap['domestic_shipping_rate']) : 10) * 100;
       const intlRate = (Number.isFinite(Number(settingsMap['international_shipping_rate'])) ? Number(settingsMap['international_shipping_rate']) : 30) * 100;
@@ -472,6 +558,24 @@ checkoutRouter.post(
       
       if (!allowedCountries.includes(destCountry)) {
          return c.json({ error: `Shipping is not available to ${destCountry}` }, 400);
+      }
+
+      const selectedShipping = await resolveShippingOption({
+        shippingMethod: body.shipping_method,
+        countryCode: destCountry,
+        postalCode: body.shipping_address.postal_code,
+        currencyCode,
+        domesticRate,
+        intlRate,
+        freeThreshold,
+        shippingAddress: body.shipping_address,
+      });
+
+      if (!selectedShipping) {
+        return c.json(
+          { error: 'Selected shipping method is unavailable' },
+          400
+        );
       }
 
       // 1. Validate Items & Calculate Subtotal
@@ -594,16 +698,22 @@ checkoutRouter.post(
       }
 
       // 3. Calculate Totals
-      let shippingTotal = 0;
-      if (subtotal < freeThreshold) {
-        shippingTotal = destCountry === 'US' ? domesticRate : intlRate;
-      }
+      const giftWrappingTotal = body.gift_wrapping
+        ? (Number.isFinite(Number(settingsMap['gift_wrapping_fee']))
+            ? Number(settingsMap['gift_wrapping_fee'])
+            : 299) * 100
+        : 0;
+      const shippingTotal =
+        subtotal >= freeThreshold || discount?.type === 'free_shipping'
+          ? 0
+          : selectedShipping.price;
 
       // Tax is calculated on the discounted subtotal (post-discount), not gross subtotal
       const taxableAmount = Math.max(0, subtotal - discountTotal);
       const taxBreakdown: TaxBreakdown = calculateTax(taxableAmount, taxRate);
       const taxTotal = taxBreakdown.total;
-      const total = taxableAmount + shippingTotal + taxTotal;
+      const total =
+        taxableAmount + shippingTotal + taxTotal + giftWrappingTotal;
 
       // 4. Create Order Transaction
       let newOrder: typeof orders.$inferSelect | undefined;
@@ -613,18 +723,39 @@ checkoutRouter.post(
         // Find or Create Customer
         let customerId: string | null = null;
         const [existingCustomer] = await tx
-          .select()
-          .from(customers)
-          .where(eq(customers.email, body.email))
-          .limit(1);
+            .select()
+            .from(customers)
+            .where(sql`lower(${customers.email}) = ${normalizedEmail}`)
+            .limit(1);
 
         if (existingCustomer) {
+          if (
+            existingCustomer.has_account &&
+            authenticatedCustomerId !== existingCustomer.id
+          ) {
+            throw new Error(
+              'AUTH_REQUIRED: Sign in to place an order with this email address.'
+            );
+          }
+          if (
+            authenticatedCustomerId &&
+            authenticatedCustomerId !== existingCustomer.id
+          ) {
+            throw new Error(
+              'AUTH_REQUIRED: Checkout email must match the signed-in account.'
+            );
+          }
           customerId = existingCustomer.id;
         } else {
+          if (authenticatedCustomerId) {
+            throw new Error(
+              'AUTH_REQUIRED: Checkout email must match the signed-in account.'
+            );
+          }
           // For guest checkout, create a minimal customer record.
           // ON CONFLICT DO NOTHING prevents duplicate inserts in concurrent requests.
           const customerData: Record<string, unknown> = {
-            email: body.email,
+            email: normalizedEmail,
             has_account: false,
           };
           if (body.first_name) customerData.first_name = body.first_name;
@@ -644,7 +775,7 @@ checkoutRouter.post(
             const [raceCustomer] = await tx
               .select()
               .from(customers)
-              .where(eq(customers.email, body.email))
+              .where(sql`lower(${customers.email}) = ${normalizedEmail}`)
               .limit(1);
             customerId = raceCustomer?.id ?? null;
           }
@@ -677,11 +808,32 @@ checkoutRouter.post(
           .values(addressData)
           .returning();
 
+        let billingAddressId: string | null = null;
+        if (body.billing_address) {
+          const billingData: Record<string, unknown> = {
+            customer_id: customerId,
+          };
+          for (const field of addressFields) {
+            const value =
+              body.billing_address[
+                field as keyof typeof body.billing_address
+              ];
+            if (value !== undefined && value !== null && value !== '') {
+              billingData[field] = value;
+            }
+          }
+          const [billingAddress] = await tx
+            .insert(addresses)
+            .values(billingData)
+            .returning();
+          billingAddressId = billingAddress.id;
+        }
+
         // Create Order - only include defined values
         const orderData: any = {
-          email: body.email,
+          email: normalizedEmail,
           region_id: region_id,
-          currency_code: currency_code,
+          currency_code: currencyCode,
           status: 'pending',
           payment_status: 'awaiting',
           fulfillment_status: 'not_fulfilled',
@@ -690,8 +842,20 @@ checkoutRouter.post(
           tax_total: taxTotal,
           total,
           shipping_address_id: shAddr.id,
+          billing_address_id: billingAddressId,
           metadata: {
             ...buildCheckoutPaymentTokenMetadata(checkoutPaymentToken),
+            ...buildInventoryReservationMetadata(),
+            shipping_method: {
+              id: selectedShipping.id,
+              name: selectedShipping.name,
+              price: shippingTotal,
+            },
+            gift_wrapping: body.gift_wrapping,
+            gift_message: body.gift_wrapping
+              ? body.gift_message || null
+              : null,
+            gift_wrapping_total: giftWrappingTotal,
             tax_rate: taxBreakdown.rate,
             tax_breakdown: {
               gross_subtotal: subtotal,
@@ -854,10 +1018,18 @@ checkoutRouter.post(
       console.error('Checkout error:', error);
 
       // Return 400 for validation/inventory errors, 500 for server errors
+      if (error.message.startsWith('AUTH_REQUIRED:')) {
+        return c.json(
+          { error: error.message.replace('AUTH_REQUIRED: ', '') },
+          401
+        );
+      }
+
       const isValidationError =
         error.message.includes('Insufficient stock') ||
         error.message.includes('Product not found') ||
-        error.message.includes('Invalid discount');
+        error.message.includes('Invalid discount') ||
+        error.message.includes('Discount usage limit');
 
       return c.json({ error: error.message }, isValidationError ? 400 : 500);
     }

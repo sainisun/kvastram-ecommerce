@@ -193,6 +193,12 @@ export default function CheckoutPage() {
   const [orderUUID, setOrderUUID] = useState('');      // UUID for payment APIs
   const [checkoutPaymentToken, setCheckoutPaymentToken] = useState('');
   const [clientSecret, setClientSecret] = useState('');
+  const [confirmedOrderTotals, setConfirmedOrderTotals] = useState<{
+    total: number;
+    shipping_total: number;
+    tax_total: number;
+    gift_wrapping_total: number;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Discount State
@@ -504,6 +510,14 @@ export default function CheckoutPage() {
       setOrderId(res.order.display_id);
       setOrderUUID(newOrderUUID);
       setCheckoutPaymentToken(res.checkout_payment_token || '');
+      setConfirmedOrderTotals({
+        total: Number(res.order.total),
+        shipping_total: Number(res.order.shipping_total || 0),
+        tax_total: Number(res.order.tax_total || 0),
+        gift_wrapping_total: Number(
+          res.order.metadata?.gift_wrapping_total || 0
+        ),
+      });
 
       const currencyCode = (currentRegion?.currency_code || 'usd').toLowerCase();
 
@@ -518,7 +532,10 @@ export default function CheckoutPage() {
 
       if (!hasRazorpay && !hasPayPal) {
         // Fallback: use Stripe
-        const paymentRes = await api.createPaymentIntent(newOrderUUID);
+        const paymentRes = await api.createPaymentIntent(
+          newOrderUUID,
+          res.checkout_payment_token
+        );
         setClientSecret(paymentRes.client_secret);
       }
 
@@ -546,23 +563,29 @@ export default function CheckoutPage() {
   };
 
   // PHASE 1.3: Calculate shipping cost
-  const shippingCost = selectedShipping
-    ? cartTotal >= freeShippingThreshold
-      ? 0
-      : selectedShipping.price || 0
-    : 0;
+  const shippingCost =
+    confirmedOrderTotals?.shipping_total ??
+    (selectedShipping
+      ? cartTotal >= freeShippingThreshold
+        ? 0
+        : selectedShipping.price || 0
+      : 0);
 
   // Gift wrapping is stored in INR paise to match cart totals.
   const giftWrappingFee = 29900;
-  const giftWrappingCost = giftWrapping ? giftWrappingFee : 0;
+  const giftWrappingCost =
+    confirmedOrderTotals?.gift_wrapping_total ??
+    (giftWrapping ? giftWrappingFee : 0);
+  const displayedTaxAmount = confirmedOrderTotals?.tax_total ?? taxAmount;
 
   // PHASE 1.4: Final total includes subtotal - discount + shipping + tax + gift
   const finalTotal =
-    cartTotal -
-    (discount?.amount || 0) +
-    shippingCost +
-    taxAmount +
-    giftWrappingCost;
+    confirmedOrderTotals?.total ??
+    (cartTotal -
+      (discount?.amount || 0) +
+      shippingCost +
+      displayedTaxAmount +
+      giftWrappingCost);
 
   // Payment currency can differ by selected region, but all local cart amounts
   // are stored in INR paise and displayed through the currency provider.
@@ -1062,6 +1085,7 @@ export default function CheckoutPage() {
                     }>
                       <PayPalButton
                         orderId={orderUUID}
+                        checkoutToken={checkoutPaymentToken}
                         currency={currency.toUpperCase()}
                         onSuccess={handlePaymentSuccess}
                         onError={handlePaymentError}
@@ -1294,14 +1318,14 @@ export default function CheckoutPage() {
                 </div>
               )}
               {/* PHASE 1.4: Tax Display */}
-              {(taxLoading || taxAmount > 0) && (
+              {(taxLoading || displayedTaxAmount > 0) && (
                 <div className="flex justify-between color-muted">
                   <span>{taxName}</span>
                   <span>
                     {taxLoading ? (
                       <span className="color-muted">Calculating...</span>
                     ) : (
-                      displayMoney(taxAmount)
+                      displayMoney(displayedTaxAmount)
                     )}
                   </span>
                 </div>

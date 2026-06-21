@@ -20,6 +20,8 @@ const isSupabase =
   connectionString.includes('supabase.com') ||
   connectionString.includes('aws-0-');
 const requiresSsl = isSupabase || process.env.DATABASE_SSL === 'true';
+const rejectUnauthorized =
+  process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== 'false';
 
 // Connection type logging removed for security
 
@@ -29,7 +31,7 @@ const client = postgres(connectionString, {
   idle_timeout: 20,
   connect_timeout: 10, // fail fast instead of hanging
   max_lifetime: 1800,  // recycle connections every 30 min
-  ssl: requiresSsl ? { rejectUnauthorized: false } : false,
+  ssl: requiresSsl ? { rejectUnauthorized } : false,
   prepare: false,
   onnotice: () => {}, // suppress noise
 });

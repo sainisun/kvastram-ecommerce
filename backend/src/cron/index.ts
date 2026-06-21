@@ -1,6 +1,7 @@
 import { generateEmbeddingsForProducts } from '../jobs/generateEmbeddings';
 import { sendReviewRequestEmails } from '../jobs/reviewEmailJob';
 import { syncGSCPerformance } from '../jobs/syncGSC';
+import { releaseExpiredInventoryReservations } from '../utils/inventory-reservation';
 
 type JobResult = {
   name: string;
@@ -25,6 +26,9 @@ async function runJob(name: string, fn: () => Promise<unknown>): Promise<JobResu
 
 export async function runSeoCronJobs() {
   return Promise.all([
+    runJob('release_expired_inventory', () =>
+      releaseExpiredInventoryReservations()
+    ),
     runJob('generate_embeddings', () => generateEmbeddingsForProducts()),
     runJob('sync_gsc', () => syncGSCPerformance()),
     runJob('review_request_emails', () => sendReviewRequestEmails()),
@@ -54,6 +58,9 @@ export function startSeoCronScheduler() {
   if (process.env.SEO_CRON_ENABLED === 'false') return;
 
   const hour = 60 * 60 * 1000;
+  scheduleJob('release_expired_inventory', 5 * 60 * 1000, () =>
+    releaseExpiredInventoryReservations()
+  );
   scheduleJob('review_request_emails', 6 * hour, () => sendReviewRequestEmails());
   scheduleJob('generate_embeddings', 24 * hour, () => generateEmbeddingsForProducts());
   scheduleJob('sync_gsc', 7 * 24 * hour, () => syncGSCPerformance());

@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { desc, eq, inArray } from 'drizzle-orm';
 
 import { db } from '../db/client';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { asyncHandler } from '../middleware/error-handler';
 import { successResponse } from '../utils/api-response';
 import {
@@ -20,7 +20,7 @@ const SITE_URL = process.env.STOREFRONT_URL || process.env.NEXT_PUBLIC_SITE_URL 
 
 merchantRouter.get(
   '/feeds/health',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const rows = await db
       .select()
@@ -415,7 +415,7 @@ merchantRouter.get(
 
 merchantRouter.get(
   '/google/diagnostics',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const publishedProducts = await db.query.products.findMany({
       where: eq(products.status, 'published'),
