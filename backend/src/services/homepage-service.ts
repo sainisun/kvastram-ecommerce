@@ -13,6 +13,7 @@ import { db } from '../db/client';
 import {
   category_circles,
   collection_products,
+  featured_products,
   hero_banners,
   homepage_categories,
   homepage_social_posts,
@@ -110,6 +111,11 @@ function isHomepageProductReady(product: any) {
 }
 
 async function loadBestSellers(limit = 4) {
+  const curatedProducts = await loadCuratedFeaturedProducts(['bestsellers'], limit);
+  if (curatedProducts.length > 0) {
+    return curatedProducts;
+  }
+
   const rows = await db
     .select({
       product_id: products.id,
@@ -147,6 +153,35 @@ async function loadBestSellers(limit = 4) {
       return product ? { ...product, units_sold: Number(row.units_sold || 0) } : null;
     })
     .filter((product): product is NonNullable<typeof product> => Boolean(product));
+}
+
+async function loadCuratedFeaturedProducts(sectionKeys: string[], limit = 4) {
+  const rows = await db
+    .select()
+    .from(featured_products)
+    .where(
+      and(
+        inArray(featured_products.section_key, sectionKeys),
+        eq(featured_products.is_active, true)
+      )
+    )
+    .orderBy(
+      asc(featured_products.section_key),
+      asc(featured_products.sort_order),
+      asc(featured_products.created_at)
+    )
+    .limit(limit * sectionKeys.length);
+
+  const productIds = Array.from(new Set(rows.map((row) => row.product_id)));
+  const enriched = await productService.retrieveMany(productIds);
+  const byId = new Map(
+    enriched.filter(isHomepageProductReady).map((product) => [product.id, product])
+  );
+
+  return rows
+    .map((row) => byId.get(row.product_id))
+    .filter((product): product is NonNullable<typeof product> => Boolean(product))
+    .slice(0, limit);
 }
 
 async function loadCollections(bestSellerIds: ReadonlySet<string>) {
@@ -236,12 +271,14 @@ async function loadWatchShop() {
     .limit(6);
   const validReels = reels.filter(
     (reel) =>
-      reel.product_id &&
       isCloudinaryUrl(reel.video_url) &&
-      isCloudinaryUrl(reel.thumbnail_url)
+      isCloudinaryUrl(reel.thumbnail_url) &&
+      isStorefrontHref(reel.link_url)
   );
   const productsForReels = await productService.retrieveMany(
-    validReels.map((reel) => reel.product_id as string)
+    validReels
+      .map((reel) => reel.product_id)
+      .filter((id): id is string => Boolean(id))
   );
   const productById = new Map(
     productsForReels.filter(isHomepageProductReady).map((product) => [product.id, product])
@@ -249,18 +286,82 @@ async function loadWatchShop() {
 
   return validReels
     .map((reel) => {
-      const product = productById.get(reel.product_id as string);
-      if (!product || product.status !== 'published') return null;
+      const product = reel.product_id ? productById.get(reel.product_id) : null;
+      const fallbackProduct = product || createReelProductFallback(reel);
       return {
         id: reel.id,
         video_url: reel.video_url,
         thumbnail_url: reel.thumbnail_url,
         caption: reel.caption,
         sort_order: reel.sort_order,
-        product,
+        link_url: reel.link_url,
+        product: fallbackProduct,
       };
     })
     .filter((reel): reel is NonNullable<typeof reel> => Boolean(reel));
+}
+
+function createReelProductFallback(reel: typeof trending_reels.$inferSelect) {
+  const priceAmount =
+    Number.isFinite(reel.price_amount) && Number(reel.price_amount) > 0
+      ? Number(reel.price_amount)
+      : parseReelPriceAmount(reel.price);
+  const handle = productHandleFromHref(reel.link_url) || reel.id;
+
+  return {
+    id: reel.product_id || reel.id,
+    title: reel.product_name,
+    description: reel.caption || '',
+    handle,
+    thumbnail: reel.thumbnail_url,
+    status: 'published' as const,
+    images: [
+      {
+        id: `${reel.id}-thumbnail`,
+        url: reel.thumbnail_url,
+        alt_text: reel.product_name,
+        position: 0,
+        is_thumbnail: true,
+      },
+    ],
+    variants: priceAmount
+      ? [
+          {
+            id: `${reel.id}-variant`,
+            title: 'Default Variant',
+            inventory_quantity: 1,
+            prices: [
+              {
+                id: `${reel.id}-price`,
+                currency_code: 'inr',
+                amount: priceAmount,
+              },
+            ],
+          },
+        ]
+      : [],
+    created_at: reel.created_at,
+  };
+}
+
+function parseReelPriceAmount(value: string | null) {
+  if (!value) return null;
+  const parsed = Number.parseFloat(value.replace(/[^0-9.]/g, ''));
+  return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed * 100) : null;
+}
+
+function productHandleFromHref(value: string | null) {
+  if (!value) return null;
+  try {
+    const url = value.startsWith('http')
+      ? new URL(value)
+      : new URL(value, 'https://kvastram.com');
+    const segments = url.pathname.split('/').filter(Boolean);
+    const productIndex = segments.indexOf('products');
+    return productIndex >= 0 ? segments[productIndex + 1] || null : null;
+  } catch {
+    return null;
+  }
 }
 
 export class HomepageService {
@@ -312,13 +413,11 @@ export class HomepageService {
 
     const hero =
       heroResult.status === 'fulfilled'
-        ? heroResult.value.filter(
-            (item) =>
-              isCloudinaryUrl(item.image_url) &&
-              Boolean(item.title?.trim() && item.button_text?.trim()) &&
-              isStorefrontHref(item.button_link)
-          ).map((item) => ({
+        ? heroResult.value.filter((item) => isCloudinaryUrl(item.image_url)).map((item) => ({
             ...item,
+            title: item.title?.trim() || 'Kvastram',
+            button_text: item.button_text?.trim() || 'Shop Now',
+            button_link: isStorefrontHref(item.button_link) ? item.button_link : '/products',
             mobile_image_url: isCloudinaryUrl(item.mobile_image_url)
               ? item.mobile_image_url
               : null,
