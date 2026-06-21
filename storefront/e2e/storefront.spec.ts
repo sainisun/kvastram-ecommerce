@@ -73,9 +73,14 @@ test.describe('Storefront visual contract', () => {
 
   test('category circles support arrow-key focus navigation', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    const links = page.locator('.homepage-circle-link');
+    const row = page
+      .locator('#main-content .homepage-circle-row[data-keyboard-ready="true"]')
+      .first();
+    await expect(row).toBeVisible();
+    const links = row.locator('.homepage-circle-link');
+    await links.first().focus();
+    await expect(links.first()).toBeFocused();
     await links.first().evaluate((node) => {
-      node.focus();
       node.dispatchEvent(
         new KeyboardEvent('keydown', {
           key: 'ArrowRight',
@@ -85,6 +90,8 @@ test.describe('Storefront visual contract', () => {
       );
     });
     await expect(links.nth(1)).toBeFocused();
+    await page.keyboard.press('ArrowLeft');
+    await expect(links.first()).toBeFocused();
   });
 
   test('only the first hero image is eager loaded', async ({ page }) => {
