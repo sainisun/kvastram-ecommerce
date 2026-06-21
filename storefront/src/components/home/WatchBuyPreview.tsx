@@ -13,6 +13,9 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
   const [selectedId, setSelectedId] = useState(reels[0]?.id || '');
   const selected = reels.find((reel) => reel.id === selectedId) || reels[0];
   const { formatPrice } = useCurrency();
+  const productHref = selected?.link_url || (
+    selected ? `/products/${selected.product.handle || selected.product.id}` : '/products'
+  );
   const price = useMemo(() => {
     const prices = selected?.product.variants?.[0]?.prices || [];
     const amount =
@@ -56,7 +59,7 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
               <h3>{selected.product.title}</h3>
               {price ? <PriceDisplay price={price} variant="inline" /> : null}
               <ButtonLink
-                href={`/products/${selected.product.handle || selected.product.id}`}
+                href={productHref}
                 variant="primary"
                 size="md"
               >
