@@ -25,6 +25,12 @@ import { verify } from 'hono/jwt';
 import { getCookie } from 'hono/cookie';
 import { config } from '../../config';
 import { isValidCheckoutPaymentToken } from '../../utils/payment-ownership';
+import {
+  isInventoryReservationActive,
+  releaseInventoryReservation,
+} from '../../utils/inventory-reservation';
+import { claimWebhookEvent } from '../../utils/webhook-events';
+import { finalizeCapturedPayment } from '../../utils/payment-capture';
 
 const rzpKeyId = process.env.RAZORPAY_ID;
 const rzpKeySecret = process.env.RAZORPAY_SECRET;
@@ -83,6 +89,17 @@ async function requirePaymentOwnership(
   customer: typeof customers.$inferSelect | null,
   checkoutToken?: string
 ) {
+  if (
+    !isInventoryReservationActive(
+      order.metadata as Record<string, any> | null
+    )
+  ) {
+    return {
+      ok: false,
+      response: c.json({ error: 'Checkout session expired' }, 410),
+    };
+  }
+
   if (order.customer_id && customer?.has_account) {
     const token = getCookie(c, 'auth_token');
     if (!token) return { ok: false, response: c.json({ error: 'Unauthorized' }, 401) };
@@ -337,23 +354,21 @@ razorpayRouter.post(
       }
 
       // Mark order as paid
-      await db
-        .update(orders)
-        .set({
-          payment_status: 'captured',
-          status: 'completed',
-          metadata: {
-            ...((existingOrder.metadata as Record<string, any>) || {}),
-            razorpay_order_id: storedRazorpayOrderId,
-            razorpay_payment_id,
-            razorpay_payment_status: payment.status,
-            razorpay_payment_amount: payment.amount,
-            razorpay_payment_currency: payment.currency,
-            payment_provider: 'razorpay',
-            paid_at: new Date().toISOString(),
-          },
-        })
-        .where(eq(orders.id, order_id));
+      const completed = await finalizeCapturedPayment(order_id, {
+        razorpay_order_id: storedRazorpayOrderId,
+        razorpay_payment_id,
+        razorpay_payment_status: payment.status,
+        razorpay_payment_amount: payment.amount,
+        razorpay_payment_currency: payment.currency,
+        payment_provider: 'razorpay',
+        paid_at: new Date().toISOString(),
+      });
+      if (!completed) {
+        return c.json(
+          { error: 'Payment received after checkout expiry; support review required' },
+          409
+        );
+      }
 
       logInfo(`Razorpay payment verified for order ${order_id}`);
       return c.json({ success: true });
@@ -401,19 +416,10 @@ razorpayRouter.post('/webhook', async (c) => {
   const storedEventId = `razorpay_${eventId}`;
   const eventType = event.event;
 
-  // Idempotency check
-  try {
-    await db.insert(webhook_events).values({
-      event_id: storedEventId,
-      event_type: eventType,
-      status: 'processing',
-    });
-  } catch (insertError: any) {
-    if (insertError.code === '23505') {
-      logInfo(`Duplicate Razorpay webhook event ${eventId}`);
-      return c.json({ received: true, duplicate: true });
-    }
-    throw insertError;
+  const claim = await claimWebhookEvent(storedEventId, eventType);
+  if (!claim.claimed) {
+    logInfo(`Duplicate Razorpay webhook event ${eventId}`);
+    return c.json({ received: true, duplicate: true });
   }
 
   try {
@@ -461,25 +467,21 @@ razorpayRouter.post('/webhook', async (c) => {
             .limit(1);
 
           if (existingOrder) {
-            await db
-              .update(orders)
-              .set({
-                payment_status: 'captured',
-                status: 'completed',
-                metadata: {
-                  ...((existingOrder.metadata as Record<string, any>) || {}),
-                  razorpay_payment_id: payment.id,
-                  razorpay_order_id: payment.order_id,
-                  razorpay_payment_status: payment.status,
-                  razorpay_payment_amount: payment.amount,
-                  razorpay_payment_currency: payment.currency,
-                  payment_provider: 'razorpay',
-                  paid_at: new Date().toISOString(),
-                },
-              })
-              .where(eq(orders.id, orderId));
+            const completed = await finalizeCapturedPayment(orderId, {
+              razorpay_payment_id: payment.id,
+              razorpay_order_id: payment.order_id,
+              razorpay_payment_status: payment.status,
+              razorpay_payment_amount: payment.amount,
+              razorpay_payment_currency: payment.currency,
+              payment_provider: 'razorpay',
+              paid_at: new Date().toISOString(),
+            });
 
-            logInfo(`Razorpay payment captured for order ${orderId}`);
+            if (!completed) {
+              logError(`Razorpay payment review required for order ${orderId}`);
+            } else {
+              logInfo(`Razorpay payment captured for order ${orderId}`);
+            }
           }
         }
         break;
@@ -497,20 +499,12 @@ razorpayRouter.post('/webhook', async (c) => {
             .limit(1);
 
           if (existingOrder) {
-            await db
-              .update(orders)
-              .set({
-                payment_status: 'captured',
-                status: 'completed',
-                metadata: {
-                  ...((existingOrder.metadata as Record<string, any>) || {}),
-                  razorpay_order_id: razorpayOrder.id,
-                  razorpay_order_status: razorpayOrder.status,
-                  payment_provider: 'razorpay',
-                  paid_at: new Date().toISOString(),
-                },
-              })
-              .where(eq(orders.id, orderId));
+            await finalizeCapturedPayment(orderId, {
+              razorpay_order_id: razorpayOrder.id,
+              razorpay_order_status: razorpayOrder.status,
+              payment_provider: 'razorpay',
+              paid_at: new Date().toISOString(),
+            });
           }
         }
         break;
@@ -544,6 +538,10 @@ razorpayRouter.post('/webhook', async (c) => {
               })
               .where(eq(orders.id, orderId));
 
+            await releaseInventoryReservation(
+              orderId,
+              'razorpay_payment_failed'
+            );
             logInfo(`Razorpay payment failed for order ${orderId}`);
           }
         }

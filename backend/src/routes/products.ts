@@ -7,7 +7,7 @@ import {
   CreateProductSchema,
   UpdateProductSchema,
 } from '../services/product-service';
-import { verifyAuth, verifyAdminOrMcpService } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { z } from 'zod';
 import {
   successResponse,
@@ -307,7 +307,7 @@ productsRouter.get(
 // GET /products/stats/overview - Get product statistics
 productsRouter.get(
   '/stats/overview',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const stats = await productService.getStats();
     return successResponse(
@@ -354,7 +354,7 @@ productsRouter.get(
 // GET /products/:id/seo - Product SEO controls
 productsRouter.get(
   '/:id/seo',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const [seo] = await db.select().from(product_seo).where(eq(product_seo.product_id, id)).limit(1);
@@ -397,7 +397,7 @@ productsRouter.put(
 // GET/PUT /products/:id/discovery - Semantic keyword and intent controls
 productsRouter.get(
   '/:id/discovery',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const [discovery] = await db
@@ -488,7 +488,7 @@ productsRouter.put(
 // GET/PUT /products/:id/attributes - Structured fashion/product facets
 productsRouter.get(
   '/:id/attributes',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const assignments = await db
@@ -542,7 +542,7 @@ productsRouter.put(
 // GET/PUT /products/:id/merchant - Google Merchant apparel fields
 productsRouter.get(
   '/:id/merchant',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const variants = await db.select().from(product_variants).where(eq(product_variants.product_id, id));
@@ -586,7 +586,7 @@ productsRouter.put(
 // GET/PUT /products/:id/media-seo - Per-image SEO metadata
 productsRouter.get(
   '/:id/media-seo',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const images = await db.select().from(product_images).where(eq(product_images.product_id, id));
@@ -637,7 +637,7 @@ productsRouter.put(
 
 productsRouter.get(
   '/:id/seo-score',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const id = c.req.param('id');
     const score = await calculateProductSeoScore(id);

@@ -14,12 +14,19 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { db } from '../../db';
-import { orders, webhook_events } from '../../db/schema';
+import { customers, orders, webhook_events } from '../../db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { logInfo, logError } from '../../utils/logger';
 import { verify } from 'hono/jwt';
 import { getCookie } from 'hono/cookie';
 import { config } from '../../config';
+import { isValidCheckoutPaymentToken } from '../../utils/payment-ownership';
+import {
+  isInventoryReservationActive,
+  releaseInventoryReservation,
+} from '../../utils/inventory-reservation';
+import { claimWebhookEvent } from '../../utils/webhook-events';
+import { finalizeCapturedPayment } from '../../utils/payment-capture';
 
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
@@ -62,7 +69,7 @@ function toDecimalAmount(amountInSmallestUnit: number, currencyCode: string): st
   const noDecimalCurrencies = ['JPY', 'HUF', 'TWD', 'KRW'];
   const upper = currencyCode.toUpperCase();
   if (noDecimalCurrencies.includes(upper)) {
-    return String(Math.round(amountInSmallestUnit / 100));
+    return String(Math.round(amountInSmallestUnit));
   }
   return (amountInSmallestUnit / 100).toFixed(2);
 }
@@ -73,12 +80,82 @@ const paypalRouter = new Hono();
 
 const CreatePaypalOrderSchema = z.object({
   order_id: z.string().uuid(),
+  checkout_token: z.string().min(16).optional(),
 });
 
 const CapturePaypalOrderSchema = z.object({
   order_id: z.string().uuid(),        // Our DB order ID
   paypal_order_id: z.string(),        // PayPal order ID
+  checkout_token: z.string().min(16).optional(),
 });
+
+async function getOrderWithCustomer(orderId: string) {
+  const [row] = await db
+    .select()
+    .from(orders)
+    .leftJoin(customers, eq(orders.customer_id, customers.id))
+    .where(eq(orders.id, orderId))
+    .limit(1);
+
+  return row
+    ? {
+        order: row.orders,
+        customer: row.customers,
+      }
+    : null;
+}
+
+async function requirePaymentOwnership(
+  c: any,
+  order: typeof orders.$inferSelect,
+  customer: typeof customers.$inferSelect | null,
+  checkoutToken?: string
+) {
+  if (
+    !isInventoryReservationActive(
+      order.metadata as Record<string, any> | null
+    )
+  ) {
+    return {
+      ok: false,
+      response: c.json({ error: 'Checkout session expired' }, 410),
+    };
+  }
+
+  if (order.customer_id && customer?.has_account) {
+    const token = getCookie(c, 'auth_token');
+    if (!token) {
+      return { ok: false, response: c.json({ error: 'Unauthorized' }, 401) };
+    }
+
+    try {
+      const payload = (await verify(token, config.jwt.secret, 'HS256')) as {
+        sub: string;
+        role: string;
+      };
+      if (payload.role !== 'customer' || payload.sub !== order.customer_id) {
+        return { ok: false, response: c.json({ error: 'Forbidden' }, 403) };
+      }
+      return { ok: true };
+    } catch {
+      return { ok: false, response: c.json({ error: 'Unauthorized' }, 401) };
+    }
+  }
+
+  if (
+    isValidCheckoutPaymentToken(
+      order.metadata as Record<string, any> | null,
+      checkoutToken
+    )
+  ) {
+    return { ok: true };
+  }
+
+  return {
+    ok: false,
+    response: c.json({ error: 'Invalid checkout session' }, 401),
+  };
+}
 
 // --- ROUTES ---
 
@@ -92,36 +169,23 @@ paypalRouter.post(
         return c.json({ error: 'PayPal not configured' }, 503);
       }
 
-      const { order_id } = c.req.valid('json');
+      const { order_id, checkout_token } = c.req.valid('json');
 
-      const [order] = await db
-        .select()
-        .from(orders)
-        .where(eq(orders.id, order_id))
-        .limit(1);
+      const orderRow = await getOrderWithCustomer(order_id);
 
-      if (!order) {
+      if (!orderRow) {
         return c.json({ error: 'Order not found' }, 404);
       }
 
-      // Ownership check for registered customers
-      if (order.customer_id) {
-        const token = getCookie(c, 'auth_token');
-        if (!token) return c.json({ error: 'Unauthorized' }, 401);
-        try {
-          const payload = (await verify(token, config.jwt.secret, 'HS256')) as {
-            sub: string;
-            role: string;
-          };
-          if (
-            payload.role !== 'customer' ||
-            payload.sub !== order.customer_id
-          ) {
-            return c.json({ error: 'Forbidden' }, 403);
-          }
-        } catch {
-          return c.json({ error: 'Unauthorized' }, 401);
-        }
+      const { order, customer } = orderRow;
+      const ownership = await requirePaymentOwnership(
+        c,
+        order,
+        customer,
+        checkout_token
+      );
+      if (!ownership.ok) {
+        return ownership.response;
       }
 
       if (order.payment_status === 'captured') {
@@ -133,6 +197,12 @@ paypalRouter.post(
       }
 
       const currencyCode = (order.currency_code || 'USD').toUpperCase();
+      if (currencyCode === 'INR') {
+        return c.json(
+          { error: 'PayPal is available only for international orders' },
+          400
+        );
+      }
       const decimalAmount = toDecimalAmount(Number(order.total), currencyCode);
 
       const accessToken = await getPaypalAccessToken();
@@ -142,6 +212,8 @@ paypalRouter.post(
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
+          'PayPal-Request-Id': `kvastram-create-${order.id}`,
+          Prefer: 'return=representation',
         },
         signal: AbortSignal.timeout(10000),
         body: JSON.stringify({
@@ -159,7 +231,7 @@ paypalRouter.post(
           payment_source: {
             paypal: {
               experience_context: {
-                no_shipping: true,
+                shipping_preference: 'NO_SHIPPING',
                 user_action: 'PAY_NOW',
               },
             },
@@ -207,18 +279,25 @@ paypalRouter.post(
         return c.json({ error: 'PayPal not configured' }, 503);
       }
 
-      const { order_id, paypal_order_id } = c.req.valid('json');
+      const { order_id, paypal_order_id, checkout_token } = c.req.valid('json');
 
       // Cross-check: paypal_order_id must match what was stored when we created the order.
       // This prevents an attacker from supplying a different PayPal order to mark an arbitrary DB order as paid.
-      const [orderCheck] = await db
-        .select()
-        .from(orders)
-        .where(eq(orders.id, order_id))
-        .limit(1);
+      const orderRow = await getOrderWithCustomer(order_id);
 
-      if (!orderCheck) {
+      if (!orderRow) {
         return c.json({ error: 'Order not found' }, 404);
+      }
+
+      const { order: orderCheck, customer } = orderRow;
+      const ownership = await requirePaymentOwnership(
+        c,
+        orderCheck,
+        customer,
+        checkout_token
+      );
+      if (!ownership.ok) {
+        return ownership.response;
       }
 
       const storedPaypalOrderId = (orderCheck.metadata as Record<string, any>)
@@ -246,7 +325,11 @@ paypalRouter.post(
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
+            'PayPal-Request-Id': `kvastram-capture-${paypal_order_id}`,
+            Prefer: 'return=representation',
           },
+          body: '{}',
+          signal: AbortSignal.timeout(10000),
         }
       );
 
@@ -260,34 +343,65 @@ paypalRouter.post(
         id: string;
         status: string;
         purchase_units: Array<{
-          payments: { captures: Array<{ id: string; status: string }> };
+          reference_id?: string;
+          payments: {
+            captures: Array<{
+              id: string;
+              status: string;
+              amount?: {
+                currency_code?: string;
+                value?: string;
+              };
+            }>;
+          };
         }>;
       };
 
-      const captureId =
-        captureData.purchase_units?.[0]?.payments?.captures?.[0]?.id;
-      const captureStatus =
-        captureData.purchase_units?.[0]?.payments?.captures?.[0]?.status;
+      const purchaseUnit = captureData.purchase_units?.[0];
+      const capture = purchaseUnit?.payments?.captures?.[0];
+      const captureId = capture?.id;
+      const captureStatus = capture?.status;
 
-      if (captureStatus !== 'COMPLETED') {
+      if (captureData.status !== 'COMPLETED' || captureStatus !== 'COMPLETED') {
         return c.json({ error: `Capture status: ${captureStatus}` }, 400);
       }
 
+      if (purchaseUnit?.reference_id !== orderCheck.id) {
+        return c.json({ error: 'PayPal order reference mismatch' }, 400);
+      }
+
+      const expectedCurrency = (orderCheck.currency_code || 'USD').toUpperCase();
+      const expectedAmount = toDecimalAmount(
+        Number(orderCheck.total),
+        expectedCurrency
+      );
+      if (
+        capture?.amount?.currency_code?.toUpperCase() !== expectedCurrency ||
+        capture?.amount?.value !== expectedAmount
+      ) {
+        logError('PayPal capture amount or currency mismatch', {
+          order_id,
+          expected_amount: expectedAmount,
+          expected_currency: expectedCurrency,
+          received_amount: capture?.amount?.value,
+          received_currency: capture?.amount?.currency_code,
+        });
+        return c.json({ error: 'PayPal payment amount mismatch' }, 400);
+      }
+
       // Use orderCheck fetched earlier (already verified)
-      await db
-        .update(orders)
-        .set({
-          payment_status: 'captured',
-          status: 'completed',
-          metadata: {
-            ...((orderCheck.metadata as Record<string, any>) || {}),
-            paypal_order_id,
-            paypal_capture_id: captureId,
-            payment_provider: 'paypal',
-            paid_at: new Date().toISOString(),
-          },
-        })
-        .where(eq(orders.id, order_id));
+      const completed = await finalizeCapturedPayment(order_id, {
+        paypal_order_id,
+        paypal_capture_id: captureId,
+        payment_provider: 'paypal',
+        paid_at: new Date().toISOString(),
+      });
+      if (!completed) {
+        return c.json(
+          { error: 'Payment received after checkout expiry; support review required' },
+          409
+        );
+      }
 
       logInfo(`PayPal payment captured for order ${order_id}`);
       return c.json({ success: true, capture_id: captureId });
@@ -305,6 +419,7 @@ async function verifyPaypalWebhook(
     transmissionId: string;
     transmissionTime: string;
     certUrl: string;
+    authAlgo: string;
     transmissionSig: string;
   },
   webhookId: string,
@@ -324,7 +439,7 @@ async function verifyPaypalWebhook(
           transmission_id: headers.transmissionId,
           transmission_time: headers.transmissionTime,
           cert_url: headers.certUrl,
-          auth_algo: 'SHA256withRSA',
+          auth_algo: headers.authAlgo,
           transmission_sig: headers.transmissionSig,
           webhook_id: webhookId,
           webhook_event: JSON.parse(rawBody),
@@ -353,15 +468,22 @@ paypalRouter.post('/webhook', async (c) => {
   const transmissionId = c.req.header('paypal-transmission-id') || '';
   const transmissionTime = c.req.header('paypal-transmission-time') || '';
   const certUrl = c.req.header('paypal-cert-url') || '';
+  const authAlgo = c.req.header('paypal-auth-algo') || '';
   const transmissionSig = c.req.header('paypal-transmission-sig') || '';
 
-  if (!transmissionId || !transmissionTime || !certUrl || !transmissionSig) {
+  if (
+    !transmissionId ||
+    !transmissionTime ||
+    !certUrl ||
+    !authAlgo ||
+    !transmissionSig
+  ) {
     logError('PayPal webhook: missing verification headers');
     return c.json({ error: 'Missing webhook headers' }, 400);
   }
 
   const isValid = await verifyPaypalWebhook(
-    { transmissionId, transmissionTime, certUrl, transmissionSig },
+    { transmissionId, transmissionTime, certUrl, authAlgo, transmissionSig },
     PAYPAL_WEBHOOK_ID,
     payload
   );
@@ -381,19 +503,11 @@ paypalRouter.post('/webhook', async (c) => {
   const eventId = event.id || `pp_${Date.now()}`;
   const eventType = event.event_type;
 
-  // Idempotency check
-  try {
-    await db.insert(webhook_events).values({
-      event_id: `paypal_${eventId}`,
-      event_type: eventType,
-      status: 'processing',
-    });
-  } catch (insertError: any) {
-    if (insertError.code === '23505') {
-      logInfo(`Duplicate PayPal webhook event ${eventId}`);
-      return c.json({ received: true, duplicate: true });
-    }
-    throw insertError;
+  const storedEventId = `paypal_${eventId}`;
+  const claim = await claimWebhookEvent(storedEventId, eventType);
+  if (!claim.claimed) {
+    logInfo(`Duplicate PayPal webhook event ${eventId}`);
+    return c.json({ received: true, duplicate: true });
   }
 
   try {
@@ -423,21 +537,31 @@ paypalRouter.post('/webhook', async (c) => {
             .limit(1);
 
           if (order && order.payment_status !== 'captured') {
-            await db
-              .update(orders)
-              .set({
-                payment_status: 'captured',
-                status: 'completed',
-                metadata: {
-                  ...((order.metadata as Record<string, any>) || {}),
-                  paypal_capture_id: resource?.id,
-                  payment_provider: 'paypal',
-                  paid_at: new Date().toISOString(),
-                },
-              })
-              .where(eq(orders.id, order.id));
+            const expectedCurrency = (order.currency_code || 'USD').toUpperCase();
+            const expectedAmount = toDecimalAmount(
+              Number(order.total),
+              expectedCurrency
+            );
+            if (
+              resource?.amount?.currency_code?.toUpperCase() !== expectedCurrency ||
+              resource?.amount?.value !== expectedAmount
+            ) {
+              throw new Error(
+                `PayPal webhook amount mismatch for order ${order.id}`
+              );
+            }
 
-            logInfo(`PayPal payment confirmed for order ${order.id}`);
+            const completed = await finalizeCapturedPayment(order.id, {
+              paypal_capture_id: resource?.id,
+              payment_provider: 'paypal',
+              paid_at: new Date().toISOString(),
+            });
+
+            if (!completed) {
+              logError(`PayPal payment review required for order ${order.id}`);
+            } else {
+              logInfo(`PayPal payment confirmed for order ${order.id}`);
+            }
           }
         }
         break;
@@ -470,6 +594,10 @@ paypalRouter.post('/webhook', async (c) => {
               })
               .where(eq(orders.id, order.id));
 
+            await releaseInventoryReservation(
+              order.id,
+              'paypal_payment_denied'
+            );
             logInfo(`PayPal payment denied for order ${order.id}`);
           }
         }
@@ -519,7 +647,7 @@ paypalRouter.post('/webhook', async (c) => {
     await db
       .update(webhook_events)
       .set({ processed_at: new Date(), status: 'processed' })
-      .where(eq(webhook_events.event_id, `paypal_${eventId}`));
+      .where(eq(webhook_events.event_id, storedEventId));
 
     return c.json({ received: true });
   } catch (error: any) {
@@ -527,7 +655,7 @@ paypalRouter.post('/webhook', async (c) => {
     await db
       .update(webhook_events)
       .set({ status: 'failed' })
-      .where(eq(webhook_events.event_id, `paypal_${eventId}`));
+      .where(eq(webhook_events.event_id, storedEventId));
     return c.json({ error: error.message }, 500);
   }
 });

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { asc, desc, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db/client';
-import { verifyAuth, verifyAdminOrMcpService } from '../middleware/auth';
+import { verifyAdminOrMcpService } from '../middleware/auth';
 import { asyncHandler, NotFoundError, ValidationError } from '../middleware/error-handler';
 import { successResponse, HttpStatus } from '../utils/api-response';
 import {
@@ -175,7 +175,7 @@ seoRouter.delete(
 
 seoRouter.get(
   '/attributes',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const rows = await db.select().from(product_attributes).orderBy(asc(product_attributes.display_order));
     return successResponse(c, { attributes: rows }, 'SEO attributes retrieved successfully');
@@ -205,7 +205,7 @@ seoRouter.post(
 
 seoRouter.get(
   '/attributes/:attributeId/values',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const attributeId = c.req.param('attributeId');
     const rows = await db
@@ -266,7 +266,7 @@ seoRouter.get(
 
 seoRouter.get(
   '/gsc/performance',
-  verifyAuth,
+  verifyAdminOrMcpService,
   asyncHandler(async (c) => {
     const rows = await db
       .select()

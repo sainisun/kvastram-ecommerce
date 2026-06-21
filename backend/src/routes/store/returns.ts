@@ -2,9 +2,13 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { db } from '../../db/client';
 import { returns, return_items, orders } from '../../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { verifyCustomer } from '../../middleware/customer-auth';
 import { deriveWorkflowStatus } from '../../utils/order-workflow';
+import {
+  applyOrderDiscountToRefund,
+  validateReturnItems,
+} from '../../utils/return-validation';
 
 const router = new Hono();
 
@@ -37,6 +41,8 @@ router.post('/', verifyCustomer, async (c) => {
         fulfillment_status: orders.fulfillment_status,
         tracking_number: orders.tracking_number,
         metadata: orders.metadata,
+        subtotal: orders.subtotal,
+        discount_total: orders.discount_total,
       })
       .from(orders)
       .where(eq(orders.id, data.order_id))
@@ -57,42 +63,56 @@ router.post('/', verifyCustomer, async (c) => {
       return c.json({ error: 'Returns can only be requested for delivered orders' }, 400);
     }
 
-    // Check if a return already exists for this order
-    const [existing] = await db
-      .select({ id: returns.id, status: returns.status })
-      .from(returns)
-      .where(eq(returns.order_id, data.order_id))
-      .limit(1);
+    const newReturn = await db.transaction(async (tx) => {
+      await tx.execute(
+        sql`SELECT id FROM orders WHERE id = ${data.order_id} FOR UPDATE`
+      );
 
-    if (existing) {
-      return c.json({
-        error: `A return request for this order already exists (status: ${existing.status})`,
-      }, 409);
-    }
+      const [existing] = await tx
+        .select({ id: returns.id, status: returns.status })
+        .from(returns)
+        .where(eq(returns.order_id, data.order_id))
+        .limit(1);
 
-    // Create the return
-    const [newReturn] = await db
-      .insert(returns)
-      .values({
-        order_id: data.order_id,
-        customer_id: order.customer_id || null,
-        reason: data.reason,
-        status: 'pending',
-        refund_amount: 0,
-      })
-      .returning();
+      if (existing) {
+        throw new Error(
+          `RETURN_EXISTS:A return request for this order already exists (status: ${existing.status})`
+        );
+      }
 
-    // Insert return items
-    if (data.items.length > 0) {
-      await db.insert(return_items).values(
+      const { maximumRefundAmount } = await validateReturnItems(
+        tx,
+        data.order_id,
+        data.items
+      );
+      const refundAmount = applyOrderDiscountToRefund(
+        maximumRefundAmount,
+        Number(order.subtotal),
+        Number(order.discount_total || 0)
+      );
+
+      const [created] = await tx
+        .insert(returns)
+        .values({
+          order_id: data.order_id,
+          customer_id: order.customer_id || null,
+          reason: data.reason,
+          status: 'pending',
+          refund_amount: refundAmount,
+        })
+        .returning();
+
+      await tx.insert(return_items).values(
         data.items.map((item) => ({
-          return_id: newReturn.id,
+          return_id: created.id,
           line_item_id: item.line_item_id,
           quantity: item.quantity,
           restock: item.restock ?? true,
         }))
       );
-    }
+
+      return created;
+    });
 
     return c.json(
       {
@@ -105,6 +125,16 @@ router.post('/', verifyCustomer, async (c) => {
   } catch (e: any) {
     if (e instanceof z.ZodError) {
       return c.json({ error: e.errors[0].message }, 400);
+    }
+    if (e.message?.startsWith('RETURN_EXISTS:')) {
+      return c.json({ error: e.message.slice('RETURN_EXISTS:'.length) }, 409);
+    }
+    if (
+      e.message?.includes('return items') ||
+      e.message?.includes('Return quantity') ||
+      e.message?.includes('Duplicate line')
+    ) {
+      return c.json({ error: e.message }, 400);
     }
     return c.json({ error: e.message || 'Internal server error' }, 500);
   }

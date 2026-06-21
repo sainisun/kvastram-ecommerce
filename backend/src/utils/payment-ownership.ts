@@ -1,6 +1,5 @@
 import crypto from 'crypto';
-
-const PAYMENT_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
+import { getInventoryReservationTtlMs } from './inventory-reservation';
 
 export type PaymentOwnershipMetadata = Record<string, any> & {
   checkout_payment_token_hash?: string;
@@ -18,7 +17,9 @@ export function hashCheckoutPaymentToken(token: string) {
 
 export function buildCheckoutPaymentTokenMetadata(token: string) {
   const issuedAt = new Date();
-  const expiresAt = new Date(issuedAt.getTime() + PAYMENT_TOKEN_TTL_MS);
+  const expiresAt = new Date(
+    issuedAt.getTime() + getInventoryReservationTtlMs()
+  );
 
   return {
     checkout_payment_token_hash: hashCheckoutPaymentToken(token),

@@ -140,6 +140,10 @@ interface OrderCreateData {
     variant_id: string;
     quantity: number;
   }>;
+  shipping_method: string;
+  discount_code?: string;
+  gift_wrapping?: boolean;
+  gift_message?: string;
 }
 
 interface RegisterData {
@@ -1358,7 +1362,7 @@ export const api = {
   },
 
   // --- Payments ---
-  async createPaymentIntent(orderId: string) {
+  async createPaymentIntent(orderId: string, checkoutToken: string) {
     const csrfHeader = await getCsrfHeader();
     const res = await fetchWithTrace(
       `${API_URL}/store/payments/create-intent`,
@@ -1368,7 +1372,10 @@ export const api = {
           'Content-Type': 'application/json',
           ...csrfHeader,
         },
-        body: JSON.stringify({ order_id: orderId }),
+        body: JSON.stringify({
+          order_id: orderId,
+          checkout_token: checkoutToken,
+        }),
         credentials: 'include',
       }
     );

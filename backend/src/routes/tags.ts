@@ -1,10 +1,11 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
-import { verifyAuth } from '../middleware/auth';
+import { verifyAdmin } from '../middleware/auth';
 import { db } from '../db/client';
 import { tags } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
+import { auditLog } from '../middleware/audit';
 
 const tagsRouter = new Hono();
 
@@ -25,7 +26,7 @@ tagsRouter.get('/', async (c) => {
 });
 
 // POST /tags
-tagsRouter.post('/', verifyAuth, zValidator('json', TagSchema), async (c) => {
+tagsRouter.post('/', verifyAdmin, auditLog('tag', 'tag.create'), zValidator('json', TagSchema), async (c) => {
   const data = c.req.valid('json');
   try {
     const [newTag] = await db
@@ -45,12 +46,15 @@ tagsRouter.post('/', verifyAuth, zValidator('json', TagSchema), async (c) => {
 // PUT /tags/:id - Update tag
 tagsRouter.put(
   '/:id',
-  verifyAuth,
+  verifyAdmin,
+  auditLog('tag', 'tag.update'),
   zValidator('json', TagSchema.partial()),
   async (c) => {
     const id = c.req.param('id');
     const data = c.req.valid('json');
     try {
+      const [oldValue] = await db.select().from(tags).where(eq(tags.id, id));
+      c.set('auditOldValue' as never, oldValue as never);
       const [updatedTag] = await db
         .update(tags)
         .set({
@@ -72,9 +76,11 @@ tagsRouter.put(
 );
 
 // DELETE /tags/:id
-tagsRouter.delete('/:id', verifyAuth, async (c) => {
+tagsRouter.delete('/:id', verifyAdmin, auditLog('tag', 'tag.delete'), async (c) => {
   const id = c.req.param('id');
   try {
+    const [oldValue] = await db.select().from(tags).where(eq(tags.id, id));
+    c.set('auditOldValue' as never, oldValue as never);
     await db.delete(tags).where(eq(tags.id, id));
     return c.json({ success: true });
   } catch (error: any) {

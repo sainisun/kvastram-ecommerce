@@ -9,8 +9,13 @@ import {
   product_variants,
   customers,
 } from '../../db/schema';
-import { eq, desc, sql } from 'drizzle-orm';
+import { and, eq, desc, sql } from 'drizzle-orm';
 import { verifyAdmin } from '../../middleware/auth';
+import {
+  applyOrderDiscountToRefund,
+  validateReturnItems,
+} from '../../utils/return-validation';
+import { createProviderRefund } from '../../services/refund-service';
 
 const returnsRouter = new Hono();
 
@@ -111,16 +116,43 @@ returnsRouter.post('/', verifyAdmin, async (c) => {
 
     // Verify order exists
     const [order] = await db
-      .select({ id: orders.id, customer_id: orders.customer_id })
+      .select({
+        id: orders.id,
+        customer_id: orders.customer_id,
+        subtotal: orders.subtotal,
+        discount_total: orders.discount_total,
+      })
       .from(orders)
       .where(eq(orders.id, data.order_id))
       .limit(1);
 
     if (!order) return c.json({ error: 'Order not found' }, 404);
 
-    let newReturn: typeof returns.$inferSelect | undefined;
+    const newReturn = await db.transaction(async (tx) => {
+      await tx.execute(
+        sql`SELECT id FROM orders WHERE id = ${data.order_id} FOR UPDATE`
+      );
+      const [existing] = await tx
+        .select({ id: returns.id })
+        .from(returns)
+        .where(eq(returns.order_id, data.order_id))
+        .limit(1);
+      if (existing) throw new Error('A return already exists for this order');
 
-    await db.transaction(async (tx) => {
+      const { maximumRefundAmount } = await validateReturnItems(
+        tx,
+        data.order_id,
+        data.items
+      );
+      const discountedMaximum = applyOrderDiscountToRefund(
+        maximumRefundAmount,
+        Number(order.subtotal),
+        Number(order.discount_total || 0)
+      );
+      if (data.refund_amount > discountedMaximum) {
+        throw new Error('Refund amount exceeds the value of returned items');
+      }
+
       const [created] = await tx
         .insert(returns)
         .values({
@@ -133,16 +165,15 @@ returnsRouter.post('/', verifyAdmin, async (c) => {
         })
         .returning();
 
-      newReturn = created;
-
-      for (const item of data.items) {
-        await tx.insert(return_items).values({
+      await tx.insert(return_items).values(
+        data.items.map((item) => ({
           return_id: created.id,
           line_item_id: item.line_item_id,
           quantity: item.quantity,
           restock: item.restock,
-        });
-      }
+        }))
+      );
+      return created;
     });
 
     return c.json({ return: newReturn }, 201);
@@ -213,6 +244,19 @@ returnsRouter.post('/:id/process-refund', verifyAdmin, async (c) => {
     if (!returnRequest) return c.json({ error: 'Return not found' }, 404);
     if (returnRequest.status === 'refunded')
       return c.json({ error: 'Already refunded' }, 400);
+    if (returnRequest.status !== 'approved') {
+      return c.json({ error: 'Return must be approved before refunding' }, 400);
+    }
+
+    const [order] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, returnRequest.order_id))
+      .limit(1);
+    if (!order) return c.json({ error: 'Order not found' }, 404);
+    if (order.payment_status !== 'captured') {
+      return c.json({ error: 'Only captured payments can be refunded' }, 400);
+    }
 
     // Fetch return items that need restock
     const items = await db
@@ -224,6 +268,37 @@ returnsRouter.post('/:id/process-refund', verifyAdmin, async (c) => {
       .from(return_items)
       .leftJoin(line_items, eq(return_items.line_item_id, line_items.id))
       .where(eq(return_items.return_id, id));
+
+    const [claimed] = await db
+      .update(returns)
+      .set({ status: 'refund_processing', updated_at: new Date() })
+      .where(and(eq(returns.id, id), eq(returns.status, 'approved')))
+      .returning({ id: returns.id });
+    if (!claimed) {
+      return c.json({ error: 'Refund is already being processed' }, 409);
+    }
+
+    let refund;
+    try {
+      refund = await createProviderRefund(
+        {
+          id: order.id,
+          total: Number(order.total),
+          currency_code: order.currency_code,
+          metadata: order.metadata,
+        },
+        Number(returnRequest.refund_amount),
+        id
+      );
+    } catch (error) {
+      await db
+        .update(returns)
+        .set({ status: 'approved', updated_at: new Date() })
+        .where(
+          and(eq(returns.id, id), eq(returns.status, 'refund_processing'))
+        );
+      throw error;
+    }
 
     await db.transaction(async (tx) => {
       // Mark return as refunded
@@ -248,13 +323,28 @@ returnsRouter.post('/:id/process-refund', verifyAdmin, async (c) => {
       // Update order payment status to refunded
       await tx
         .update(orders)
-        .set({ payment_status: 'refunded', updated_at: new Date() })
+        .set({
+          payment_status:
+            Number(returnRequest.refund_amount) >= Number(order.total)
+              ? 'refunded'
+              : 'partially_refunded',
+          metadata: {
+            ...((order.metadata as Record<string, any>) || {}),
+            refund_provider: refund.provider,
+            refund_id: refund.id,
+            refund_status: refund.status,
+            refund_return_id: id,
+            refunded_at: new Date().toISOString(),
+          },
+          updated_at: new Date(),
+        })
         .where(eq(orders.id, returnRequest.order_id));
     });
 
     return c.json({
       success: true,
-      message: `Return #${id} processed. Refund of $${((returnRequest.refund_amount || 0) / 100).toFixed(2)} recorded and inventory restocked.`,
+      refund,
+      message: `Return #${id} refunded through ${refund.provider} and inventory restocked.`,
     });
   } catch (error: any) {
     return c.json({ error: error.message }, 500);

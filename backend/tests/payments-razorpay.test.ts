@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { buildCheckoutPaymentTokenMetadata } from '../src/utils/payment-ownership';
+import { buildInventoryReservationMetadata } from '../src/utils/inventory-reservation';
 
 const mocks = vi.hoisted(() => ({
   selectRows: [] as any[],
@@ -46,15 +47,16 @@ vi.mock('../src/db', () => ({
 }));
 
 vi.mock('razorpay', () => ({
-  default: vi.fn(() => ({
-    orders: {
+  default: class MockRazorpay {
+    orders = {
       create: mocks.ordersCreate,
-    },
-    payments: {
+    };
+
+    payments = {
       fetch: mocks.paymentsFetch,
       capture: mocks.paymentsCapture,
-    },
-  })),
+    };
+  },
 }));
 
 describe('Razorpay payment routes', () => {
@@ -72,6 +74,7 @@ describe('Razorpay payment routes', () => {
     status: 'pending',
     metadata: {
       ...buildCheckoutPaymentTokenMetadata(checkoutToken),
+      ...buildInventoryReservationMetadata(),
       razorpay_order_id: 'order_rzp_123',
     },
   };
