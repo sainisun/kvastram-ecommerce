@@ -36,6 +36,7 @@ interface ProductGridProps {
   emptyMessage?: string;
   cardActionLabel?: string;
   animateCards?: boolean;
+  requireSellablePrice?: boolean;
 }
 
 interface ProductPriceInfo {
@@ -54,6 +55,7 @@ function ProductGrid({
   emptyMessage = 'No products found in this collection.',
   cardActionLabel,
   animateCards = true,
+  requireSellablePrice = true,
 }: ProductGridProps) {
   const { currentRegion } = useShop();
   const { formatPrice } = useCurrency();
@@ -66,7 +68,7 @@ function ProductGrid({
   } = useWholesale();
   const [addedId, setAddedId] = useState<string | null>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-  const products = filterStorefrontReadyProducts(initialProducts);
+  const products = filterStorefrontReadyProducts(initialProducts, { requireSellablePrice });
   const resolvedLoading = externalLoading === true;
   const gridClassName = density === 'compact' ? 'products-grid compact' : 'products-grid';
 

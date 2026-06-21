@@ -29,6 +29,7 @@ export function BestSellers({
                 ? 'Most loved pieces are temporarily unavailable.'
                 : 'Our most loved edit is being refreshed.'
             }
+            requireSellablePrice={false}
           />
         </div>
       </div>

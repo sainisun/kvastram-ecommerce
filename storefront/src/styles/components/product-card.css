@@ -201,6 +201,11 @@
   z-index: 3;
 }
 @media (min-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--product-grid-gap, 18px);
+  }
+
   .product-card-quick-view {
     opacity: 0;
     transform: translateY(8px);
