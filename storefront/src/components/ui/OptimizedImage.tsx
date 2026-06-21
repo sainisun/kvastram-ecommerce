@@ -1,7 +1,7 @@
 'use client';
 
 import Image, { type ImageProps } from 'next/image';
-import { optimizeCloudinaryUrl } from '@/lib/media';
+import { cloudinaryImageLoader, isCloudinaryUrl, optimizeCloudinaryUrl } from '@/lib/media';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'onError' | 'onLoad'> {
   fallbackSrc?: string;
@@ -14,9 +14,13 @@ export default function OptimizedImage({
   sizes,
   ...props
 }: OptimizedImageProps) {
+  const originalSrc = typeof props.src === 'string' ? props.src : null;
   // Auto-convert HEIC/HEIF and optimize format for browser via Cloudinary
   if (typeof props.src === 'string') {
-    props = { ...props, src: optimizeCloudinaryUrl(props.src) };
+    props = {
+      ...props,
+      src: isCloudinaryUrl(props.src) ? props.src : optimizeCloudinaryUrl(props.src),
+    };
   }
   // Default loading behavior: lazy unless explicitly priority
   const resolvedLoading: NonNullable<ImageProps['loading']> =
@@ -34,6 +38,9 @@ export default function OptimizedImage({
     quality,
     loading: resolvedLoading,
     sizes: resolvedSizes,
+    ...(originalSrc && isCloudinaryUrl(originalSrc)
+      ? { loader: cloudinaryImageLoader }
+      : {}),
     ...(shouldProvideDefaults ? { width: defaultWidth, height: defaultHeight } : {}),
     ...props,
   };

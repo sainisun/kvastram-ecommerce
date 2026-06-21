@@ -1,34 +1,36 @@
-'use client';
-
 import Link from 'next/link';
 import ProductGrid from '@/components/ProductGrid';
 import type { Product } from '@/types';
 
-interface BestSellersProps {
+export function BestSellers({
+  products,
+  state,
+}: {
   products: Product[];
-}
-
-export function BestSellers({ products }: BestSellersProps) {
-  const displayed = products.slice(0, 4);
-
-  if (displayed.length === 0) return null;
-
+  state: 'ready' | 'empty' | 'error';
+}) {
   return (
-    <section className="kv-section bg-[var(--cream)]">
-      <div className="kv-container">
-        <div className="kv-section-head">
+    <section className="homepage-section" data-home-section="4-best-sellers">
+      <div className="homepage-container">
+        <div className="homepage-section-head">
           <div>
-            <div className="kv-tag">Customer favourites</div>
-            <h2 className="kv-title">Pieces customers return to</h2>
-            <p className="kv-sub mt-3">
-              Soft cotton, easy styling, light quilting, and thoughtful finishes for gifting.
-            </p>
+            <p className="homepage-eyebrow">Most Loved Pieces</p>
+            <h2>Best Sellers</h2>
           </div>
-          <Link href="/bestsellers" className="kv-section-link">
-            View All
-          </Link>
+          <Link href="/bestsellers">Shop all</Link>
         </div>
-        <ProductGrid initialProducts={displayed} />
+        <div className="homepage-best-seller-grid">
+          <ProductGrid
+            initialProducts={products.slice(0, 4)}
+            cardActionLabel="Shop Now"
+            animateCards={false}
+            emptyMessage={
+              state === 'error'
+                ? 'Most loved pieces are temporarily unavailable.'
+                : 'Our most loved edit is being refreshed.'
+            }
+          />
+        </div>
       </div>
     </section>
   );

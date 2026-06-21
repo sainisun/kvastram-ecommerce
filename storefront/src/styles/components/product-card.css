@@ -3,7 +3,7 @@
 .products-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: var(--product-grid-gap, 12px);
 }
 .products-grid.compact {
   grid-template-columns: 1fr;
@@ -153,6 +153,18 @@
   justify-content: space-between;
   gap: 8px;
   min-height: 34px;
+}
+.product-card-shop-link {
+  display: inline-flex;
+  margin-top: var(--ds-space-xs);
+  color: var(--ds-text-primary);
+  font-size: var(--ds-text-body-xs);
+  font-weight: var(--ds-type-ui-weight);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.product-card-shop-link:hover {
+  color: var(--ds-accent-primary);
 }
 .product-discount,
 .wholesale-price {

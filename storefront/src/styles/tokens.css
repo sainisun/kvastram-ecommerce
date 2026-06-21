@@ -160,6 +160,12 @@
   --ds-caption-width: 45ch;
   --ds-content-width: 1280px;
   --ds-narrow-width: 860px;
+  --ds-home-content-width: 1520px;
+  --ds-home-gutter-desktop: 72px;
+  --ds-home-gutter-tablet: 28px;
+  --ds-home-gutter-mobile: 16px;
+  --ds-home-section-space-desktop: 108px;
+  --ds-home-section-space-mobile: 56px;
 
   /* Radius */
   --ds-radius-xs: 2px;

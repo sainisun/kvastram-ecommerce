@@ -20,6 +20,7 @@ import { adaptProduct, adaptProducts } from './api-adapters';
 import { getApiBaseUrl } from './api-base-url';
 
 import type { Product } from '@/types';
+import type { HomepagePayload } from '@/types/homepage';
 
 const API_URL = getApiBaseUrl();
 
@@ -227,6 +228,15 @@ async function getCsrfHeader(): Promise<Record<string, string>> {
 }
 
 export const api = {
+  async getHomepage(): Promise<HomepagePayload> {
+    const res = await fetchWithTrace(`${API_URL}/homepage`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      throw new Error(`Homepage API failed with ${res.status}`);
+    }
+    return res.json();
+  },
   // Generic methods for untyped calls (fixes compilation errors and enables tracing)
   async get(endpoint: string) {
     const res = await fetchWithTrace(`${API_URL}${endpoint}`, {

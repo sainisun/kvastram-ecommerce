@@ -1,129 +1,92 @@
 'use client';
 
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useMemo, useState } from 'react';
 import { Play } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { ButtonLink, UnstyledButton } from '@/components/ui/Button';
+import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { useCurrency } from '@/context/currency-context';
+import type { MoneyAmount } from '@/types';
 import type { HomepageTrendingReel } from '@/types/homepage';
 
-interface WatchBuyPreviewProps {
-  reels: HomepageTrendingReel[];
-}
+export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
+  const [selectedId, setSelectedId] = useState(reels[0]?.id || '');
+  const selected = reels.find((reel) => reel.id === selectedId) || reels[0];
+  const { formatPrice } = useCurrency();
+  const price = useMemo(() => {
+    const prices = selected?.product.variants?.[0]?.prices || [];
+    const amount =
+      prices.find((item: MoneyAmount) => item.currency_code?.toLowerCase() === 'inr') ||
+      prices[0];
+    return amount ? formatPrice(amount.amount) : null;
+  }, [formatPrice, selected]);
 
-export function WatchBuyPreview({ reels }: WatchBuyPreviewProps) {
-  const displayed = reels.slice(0, 12);
-
-  if (displayed.length === 0) return null;
-
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.08,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 80,
-        damping: 15,
-      },
-    },
-  } as const;
+  if (!selected) return null;
 
   return (
-    <section className="kv-section watch-buy-section bg-[var(--cream)] border-b border-[var(--ds-border-subtle)]">
-      <div className="kv-container">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.6 }}
-          className="kv-section-head"
-        >
-          <div>
-            <div className="kv-tag">Watch &amp; Buy</div>
-            <h2 className="watch-buy-heading text-[var(--ds-text-primary)]">Shop Kvastram in motion</h2>
-            <p className="watch-buy-copy text-[var(--ds-text-secondary)]">
-              See fabric, scale, and styling before you open the full reel.
-            </p>
-          </div>
-          <Link href="/reels" className="kv-section-link text-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-hover)] font-medium transition-colors">
-            View All
-          </Link>
-        </motion.div>
-
-        <motion.div
-          className="kv-carousel watch-buy-carousel flex overflow-x-auto gap-6 py-4 scrollbar-none"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
-        >
-          {displayed.map((reel) => (
-            <motion.div
-              key={reel.id}
-              variants={itemVariants}
-              className="kv-carousel-item flex-shrink-0 w-[200px] md:w-[240px]"
-              whileHover={{ y: -6 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Link
-                href={`/reels?reel=${encodeURIComponent(reel.id)}`}
-                className="reel-card watch-buy-card relative block w-full aspect-[9/16] overflow-hidden rounded-lg group shadow-sm hover:shadow-md transition-shadow"
-                aria-label={`Watch and shop ${reel.product_name}`}
+    <section className="homepage-watch" data-home-section="6-watch-shop">
+      <div className="homepage-watch-layout">
+        <div className="homepage-watch-video">
+          <video
+            key={selected.id}
+            controls
+            muted
+            playsInline
+            preload="none"
+            poster={selected.thumbnail_url}
+            aria-label={`Watch ${selected.product.title}`}
+          >
+            <source src={selected.video_url} />
+          </video>
+        </div>
+        <div className="homepage-watch-copy">
+          <p className="homepage-eyebrow">Watch &amp; Shop</p>
+          <h2>See the craft in motion</h2>
+          <div className="homepage-watch-product">
+            <span className="homepage-watch-product-media">
+              <OptimizedImage
+                src={selected.product.thumbnail || selected.product.images?.[0]?.url || ''}
+                alt={selected.product.title}
+                fill
+                sizes="160px"
+                className="object-cover"
+              />
+            </span>
+            <div>
+              <h3>{selected.product.title}</h3>
+              {price ? <PriceDisplay price={price} variant="inline" /> : null}
+              <ButtonLink
+                href={`/products/${selected.product.handle || selected.product.id}`}
+                variant="primary"
+                size="md"
               >
-                <div className="reel-media absolute inset-0 bg-[var(--ds-surface-soft)]">
-                  {reel.video_url ? (
-                    <video
-                      className="reel-video w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      src={reel.video_url}
-                      poster={reel.thumbnail_url || undefined}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      aria-label={reel.product_name}
-                    />
-                  ) : reel.thumbnail_url ? (
-                    <OptimizedImage
-                      src={reel.thumbnail_url}
-                      alt={reel.product_name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                  ) : null}
-                  <div className="watch-buy-gradient absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.7)] via-[rgba(var(--ds-black-rgb),0.1)] to-transparent" />
-                  
-                  {/* Play Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-12 h-12 rounded-full bg-[rgba(var(--ds-white-rgb),0.2)] backdrop-blur-md border border-[rgba(var(--ds-white-rgb),0.4)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-90 group-hover:scale-100">
-                      <Play size={20} fill="currentColor" className="text-[var(--ds-text-inverse)] ml-0.5" />
-                    </div>
-                  </div>
-                </div>
-                <div className="reel-info absolute bottom-0 inset-x-0 p-4 text-[var(--ds-text-inverse)] z-10">
-                  <h3 className="reel-title text-sm font-semibold line-clamp-2 leading-snug text-[var(--ds-text-inverse)]">
-                    {reel.product_name}
-                  </h3>
-                  <p className="watch-buy-meta text-xs text-[rgba(var(--ds-white-rgb),0.8)] mt-1 flex items-center gap-1 font-medium">
-                    {reel.price ? <span className="text-[var(--ds-text-inverse)]">{reel.price}</span> : null}
-                    {reel.price ? <span>•</span> : null}
-                    <span>Tap to shop</span>
-                  </p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
+                Shop this piece
+              </ButtonLink>
+            </div>
+          </div>
+          {reels.length > 1 ? (
+            <div className="homepage-watch-thumbnails" aria-label="Choose a video">
+              {reels.map((reel) => (
+                <UnstyledButton
+                  key={reel.id}
+                  type="button"
+                  onClick={() => setSelectedId(reel.id)}
+                  aria-label={`Show ${reel.product.title} video`}
+                  aria-pressed={selected.id === reel.id}
+                >
+                  <OptimizedImage
+                    src={reel.thumbnail_url}
+                    alt=""
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
+                  <Play aria-hidden="true" size={18} />
+                </UnstyledButton>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </div>
     </section>
   );

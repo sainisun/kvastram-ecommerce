@@ -32,3 +32,17 @@ export function optimizeCloudinaryUrl(src: string): string {
   if (seoSafeSrc.includes('f_auto') || seoSafeSrc.includes('q_auto')) return seoSafeSrc;
   return seoSafeSrc.replace('/upload/', '/upload/f_auto,q_auto/');
 }
+
+export function cloudinaryImageLoader({
+  src,
+  width,
+}: {
+  src: string;
+  width: number;
+  quality?: number;
+}) {
+  if (!isCloudinaryUrl(src)) return src;
+  const seoSafeSrc = forceSeoSafeImageExtension(src);
+  const transformations = `f_auto,q_auto,w_${width},c_limit`;
+  return seoSafeSrc.replace('/upload/', `/upload/${transformations}/`);
+}

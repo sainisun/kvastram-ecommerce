@@ -103,6 +103,8 @@ import categoryCirclesRoutes from './routes/category-circles';
 import featuredProductsRoutes from './routes/featured-products';
 import trustItemsRoutes from './routes/trust-items';
 import homepageMerchandisingRoutes from './routes/homepage-merchandising';
+import homepageRoutes from './routes/homepage';
+import adminHomepageSocialPostsRoutes from './routes/admin/homepage-social-posts';
 
 import docsApp from './docs';
 import { initSocketServer, io } from './services/socket';
@@ -391,6 +393,9 @@ const generalApiRoutes = [
   '/featured-products/*',
   '/homepage-merchandising',
   '/homepage-merchandising/*',
+  '/homepage',
+  '/admin/homepage-social-posts',
+  '/admin/homepage-social-posts/*',
   '/admin/homepage-banners',
   '/admin/homepage-banners/*',
   '/admin/category-circles',
@@ -489,6 +494,8 @@ app.route('/category-circles', categoryCirclesRoutes);
 app.route('/featured-products', featuredProductsRoutes);
 app.route('/trust-items', trustItemsRoutes);
 app.route('/homepage-merchandising', homepageMerchandisingRoutes);
+app.route('/homepage', homepageRoutes);
+app.route('/admin/homepage-social-posts', adminHomepageSocialPostsRoutes);
 app.route('/reviews', reviewsRoutes);
 
 // Documentation Routes

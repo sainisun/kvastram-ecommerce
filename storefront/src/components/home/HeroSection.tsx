@@ -1,211 +1,135 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import { motion, AnimatePresence } from 'framer-motion';
+import useEmblaCarousel from 'embla-carousel-react';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
-import { cloudinaryUrlOrNull } from '@/lib/media';
-import { ButtonLink, UnstyledButton } from '@/components/ui/Button';
+import { ButtonLink, IconButton, UnstyledButton } from '@/components/ui/Button';
+import type { HomepageHeroSlide } from '@/types/homepage';
 
-interface HeroBannerSlide {
-  id: string;
-  image_url?: string | null;
-  mobile_image_url?: string | null;
-  title?: string | null;
-  subtitle?: string | null;
-  button_text?: string | null;
-  button_link?: string | null;
-}
-
-interface HeroSectionProps {
-  banners?: HeroBannerSlide[];
-}
-
-interface ResolvedSlide {
-  id: string;
-  imageUrl?: string;
-  mobileImageUrl?: string;
-  alt: string;
-  title: string;
-  subtitle: string;
-  buttonText: string;
-  buttonLink: string;
-}
-
-export function HeroSection({ banners = [] }: HeroSectionProps) {
-  const slides = useMemo<ResolvedSlide[]>(() => {
-    const realSlides = banners
-      .map((banner): ResolvedSlide => ({
-        id: banner.id,
-        imageUrl: cloudinaryUrlOrNull(banner.image_url) || undefined,
-        mobileImageUrl: cloudinaryUrlOrNull(banner.mobile_image_url) || undefined,
-        alt: banner.title?.trim() || banner.subtitle?.trim() || 'Kvastram hero',
-        title: banner.title?.trim() || 'Kvastram',
-        subtitle:
-          banner.subtitle?.trim() ||
-          'Handcrafted Indian fashion, curated for festive moments and everyday elegance.',
-        buttonText: banner.button_text?.trim() || 'Shop New Arrivals',
-        buttonLink: banner.button_link?.trim() || '/products?sort=newest',
-      }))
-      .filter((banner) => Boolean(banner.imageUrl));
-
-    return realSlides.length > 0
-      ? realSlides
-      : [
-          {
-            id: 'kvastram-fallback-hero',
-            imageUrl: '/images/home/hero-main.jpg',
-            alt: 'Kvastram handcrafted fashion edit',
-            title: 'Kvastram',
-            subtitle:
-              'Handcrafted Indian fashion, curated for festive moments and everyday elegance.',
-            buttonText: 'Shop New Arrivals',
-            buttonLink: '/products?sort=newest',
-          },
-        ];
-  }, [banners]);
-
+export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
+  const slides = banners.slice(0, 4);
+  const [paused, setPaused] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const autoplay = useMemo(
-    () =>
-      Autoplay({
-        delay: 5000,
-        stopOnInteraction: false,
-        stopOnMouseEnter: true,
-      }),
+    () => Autoplay({ delay: 5500, stopOnInteraction: false, stopOnMouseEnter: true }),
     []
   );
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: slides.length > 1 }, [autoplay]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  useEffect(() => {
-    if (!emblaApi) {
-      return;
-    }
-
-    const syncSelection = () => {
-      setSelectedIndex(emblaApi.selectedScrollSnap());
-    };
-
-    syncSelection();
-    emblaApi.on('select', syncSelection);
-    emblaApi.on('reInit', syncSelection);
-
-    return () => {
-      emblaApi.off('select', syncSelection);
-      emblaApi.off('reInit', syncSelection);
-    };
-  }, [emblaApi]);
-
-  const scrollTo = useCallback(
-    (index: number) => {
-      emblaApi?.scrollTo(index);
-    },
-    [emblaApi]
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: slides.length > 1, watchDrag: slides.length > 1 },
+    [autoplay]
   );
 
-  const activeSlide = slides[selectedIndex] || slides[0];
+  useEffect(() => {
+    if (!emblaApi) return;
+    const select = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    select();
+    emblaApi.on('select', select);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduceMotion.matches) {
+      autoplay.stop();
+      setPaused(true);
+    }
+    return () => {
+      emblaApi.off('select', select);
+    };
+  }, [autoplay, emblaApi]);
+
+  const toggleAutoplay = useCallback(() => {
+    if (paused) autoplay.play();
+    else autoplay.stop();
+    setPaused((current) => !current);
+  }, [autoplay, paused]);
+
+  if (slides.length === 0) return null;
 
   return (
-    <section className="hero relative block min-h-[min(70svh,620px)] overflow-hidden bg-[var(--ds-accent-hover)]">
-      <div className="overflow-hidden h-full" ref={emblaRef}>
-        <div className="hero-slider flex h-[min(70svh,620px)] min-h-[420px]">
-          {slides.map((slide) => (
-            <div
-              key={slide.id}
-              className="hero-slide relative min-h-full min-w-0 flex-[0_0_100%] [scroll-snap-align:start]"
-            >
-              {slide.imageUrl ? (
-                <div className="absolute inset-0">
-                  {slide.mobileImageUrl ? (
-                    <OptimizedImage
-                      src={slide.mobileImageUrl}
-                      alt={slide.alt}
-                      fill
-                      priority={slide.id === slides[0]?.id}
-                      sizes="100vw"
-                      className="object-cover object-center md:hidden"
-                    />
-                  ) : null}
-                  <OptimizedImage
-                    src={slide.imageUrl}
-                    alt={slide.alt}
-                    fill
-                    priority={slide.id === slides[0]?.id}
-                    sizes="100vw"
-                    className={`object-cover object-center ${slide.mobileImageUrl ? 'hidden md:block' : ''}`}
-                  />
-                </div>
-              ) : null}
-              <div className="hero-image-scrim absolute inset-0" aria-hidden="true" />
-            </div>
+    <section
+      className="homepage-hero"
+      aria-label="Featured campaigns"
+      data-home-section="2-hero"
+      onFocusCapture={() => autoplay.stop()}
+      onBlurCapture={() => {
+        if (!paused) autoplay.play();
+      }}
+    >
+      <div className="homepage-hero-viewport" ref={emblaRef}>
+        <div className="homepage-hero-track">
+          {slides.map((slide, index) => (
+            <article className="homepage-hero-slide" key={slide.id}>
+              <picture>
+                {slide.mobile_image_url ? (
+                  <source media="(max-width: 767px)" srcSet={slide.mobile_image_url} />
+                ) : null}
+                <OptimizedImage
+                  src={slide.image_url}
+                  alt=""
+                  fill
+                  priority={index === 0}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              </picture>
+              <div className="homepage-hero-scrim" />
+              <div className="homepage-container homepage-hero-copy">
+                <h1>{slide.title}</h1>
+                <ButtonLink href={slide.button_link} variant="secondary" size="lg">
+                  {slide.button_text}
+                </ButtonLink>
+              </div>
+            </article>
           ))}
         </div>
       </div>
 
-      <div className="hero-content absolute inset-x-0 bottom-0 z-[2]">
-        <div className="kv-container">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="hero-copy"
+      {slides.length > 1 ? (
+        <>
+          <div className="homepage-hero-arrows">
+            <IconButton
+              type="button"
+              variant="ghost"
+              size="md"
+              onClick={() => emblaApi?.scrollPrev()}
+              aria-label="Previous hero slide"
             >
-              <p className="hero-eyebrow">Handmade in Jaipur</p>
-              <h1>{activeSlide.title}</h1>
-              <p>{activeSlide.subtitle}</p>
-              <div className="hero-actions">
-                <ButtonLink href={activeSlide.buttonLink} variant="secondary" size="lg">
-                  {activeSlide.buttonText}
-                </ButtonLink>
-                <ButtonLink href="/collections" variant="outline" size="lg">
-                  Explore Collections
-                </ButtonLink>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          <motion.dl
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="hero-proof-list"
-            aria-label="Kvastram craft promises"
-          >
-            <div>
-              <dt>Small batch</dt>
-              <dd>Limited handmade runs</dd>
+              <ChevronLeft aria-hidden="true" />
+            </IconButton>
+            <IconButton
+              type="button"
+              variant="ghost"
+              size="md"
+              onClick={() => emblaApi?.scrollNext()}
+              aria-label="Next hero slide"
+            >
+              <ChevronRight aria-hidden="true" />
+            </IconButton>
+          </div>
+          <div className="homepage-hero-controls">
+            <div className="homepage-hero-dots">
+              {slides.map((slide, index) => (
+                <UnstyledButton
+                  key={slide.id}
+                  type="button"
+                  onClick={() => emblaApi?.scrollTo(index)}
+                  aria-label={`Go to hero slide ${index + 1}`}
+                  aria-current={selectedIndex === index ? 'true' : undefined}
+                />
+              ))}
             </div>
-            <div>
-              <dt>Craft led</dt>
-              <dd>Block print, kantha, cotton</dd>
-            </div>
-            <div>
-              <dt>Ready to gift</dt>
-              <dd>Edited for Indian occasions</dd>
-            </div>
-          </motion.dl>
-        </div>
-      </div>
-
-      {/* Slider dots */}
-      <div className="hero-dots absolute left-0 right-0 bottom-4 flex justify-center gap-2" aria-hidden="true">
-        {slides.map((slide, index) => (
-          <UnstyledButton
-            key={slide.id}
-            type="button"
-            onClick={() => scrollTo(index)}
-            aria-label={`Go to slide ${index + 1}`}
-            className={`hero-dot h-2 w-2 rounded-full transition-all ${
-              selectedIndex === index ? 'bg-[var(--ds-surface-page)]' : 'bg-[var(--ds-surface-page)]/50'
-            }`}
-          />
-        ))}
-      </div>
+            <IconButton
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={toggleAutoplay}
+              aria-label={paused ? 'Play hero slideshow' : 'Pause hero slideshow'}
+            >
+              {paused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
+            </IconButton>
+          </div>
+        </>
+      ) : null}
     </section>
   );
 }
