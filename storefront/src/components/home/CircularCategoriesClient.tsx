@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import type { HomepageCategoryCircle } from '@/types/homepage';
 
@@ -10,40 +10,46 @@ export function CircularCategoriesClient({
 }: {
   circles: HomepageCategoryCircle[];
 }) {
+  const rowRef = useRef<HTMLDivElement | null>(null);
   const linksRef = useRef<Array<HTMLAnchorElement | null>>([]);
 
-  function focusCircle(index: number, direction: 1 | -1) {
+  const focusCircle = useCallback((index: number, direction: 1 | -1) => {
     const nextIndex = (index + direction + circles.length) % circles.length;
     const nextLink = linksRef.current[nextIndex];
     nextLink?.focus({ preventScroll: true });
     nextLink?.scrollIntoView({
-      behavior: 'smooth',
       block: 'nearest',
       inline: 'center',
     });
-  }
+  }, [circles.length]);
 
-  function handleRowKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-    const target = event.target instanceof Element
-      ? event.target.closest<HTMLAnchorElement>('.homepage-circle-link')
-      : null;
-    const activeIndex = linksRef.current.findIndex((link) => link === target);
-    if (activeIndex < 0) return;
-    event.preventDefault();
-    const direction = event.key === 'ArrowRight' ? 1 : -1;
-    focusCircle(activeIndex, direction);
-  }
+  useEffect(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    const keyboardRow = row;
 
-  function handleLinkKeyDown(
-    event: React.KeyboardEvent<HTMLAnchorElement>,
-    index: number
-  ) {
-    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-    event.preventDefault();
-    event.stopPropagation();
-    focusCircle(index, event.key === 'ArrowRight' ? 1 : -1);
-  }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+      const target = event.target instanceof Element
+        ? event.target.closest<HTMLAnchorElement>('.homepage-circle-link')
+        : null;
+      if (!target || !keyboardRow.contains(target)) return;
+
+      const activeIndex = Number.parseInt(target.dataset.circleIndex || '', 10);
+      if (!Number.isFinite(activeIndex)) return;
+
+      event.preventDefault();
+      focusCircle(activeIndex, event.key === 'ArrowRight' ? 1 : -1);
+    }
+
+    keyboardRow.addEventListener('keydown', handleKeyDown);
+    keyboardRow.setAttribute('data-keyboard-ready', 'true');
+
+    return () => {
+      keyboardRow.removeEventListener('keydown', handleKeyDown);
+      keyboardRow.removeAttribute('data-keyboard-ready');
+    };
+  }, [focusCircle]);
 
   return (
     <section
@@ -55,8 +61,8 @@ export function CircularCategoriesClient({
         Shop by category
       </h2>
       <div
+        ref={rowRef}
         className="homepage-container homepage-circle-row"
-        onKeyDown={handleRowKeyDown}
       >
         {circles.map((circle, index) => (
           <Link
@@ -66,7 +72,7 @@ export function CircularCategoriesClient({
             }}
             href={circle.link_url}
             className="homepage-circle-link"
-            onKeyDown={(event) => handleLinkKeyDown(event, index)}
+            data-circle-index={index}
           >
             <span className="homepage-circle-media">
               <OptimizedImage
