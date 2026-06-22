@@ -323,7 +323,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   ]);
 
   const products = filterStorefrontReadyProducts(productsResponse.products || []);
-  const totalProducts = products.length;
+  const totalProducts = productsResponse.total;
 
   let relatedLinks: Array<{ label: string; href: string }> = [];
   if (landing.kind === 'category') {

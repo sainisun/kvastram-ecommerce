@@ -35,11 +35,11 @@ interface ButtonAnchorProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:border-[var(--ds-accent-hover)] hover:bg-[var(--ds-accent-hover)]',
+    'border-[var(--ds-border-dark)] bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-border-strong)] hover:border-[var(--ds-border-strong)]',
   secondary:
-    'border-[var(--ds-text-primary)] bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] hover:border-[var(--ds-accent-hover)] hover:bg-[var(--ds-accent-hover)]',
+    'border-[var(--ds-border-dark)] bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-border-strong)] hover:border-[var(--ds-border-strong)]',
   outline:
-    'border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]',
+    'border-[var(--ds-border-dark)] bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]',
   ghost:
     'border-transparent bg-transparent text-[var(--ds-text-primary)] hover:bg-[var(--ds-surface-soft)]',
   danger:

@@ -1,11 +1,13 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import { PaymentIcons } from '@/components/ui/SecurityBadges';
 import NewsletterForm from '@/components/NewsletterForm';
 import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
 import { storefrontTrust } from '@/config/storefront-trust';
+import { api } from '@/lib/api';
 
 const shopLinks = [
   { label: 'New Arrivals', href: '/products?sort=newest' },
@@ -136,6 +138,39 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const [activeShopLinks, setActiveShopLinks] = useState(shopLinks);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([api.getCategories(), api.getCollections()])
+      .then(([categoriesData, collectionsData]) => {
+        if (!active) return;
+        const cats = categoriesData.categories || [];
+        const cols = collectionsData.collections || [];
+
+        const filtered = shopLinks.filter((link) => {
+          if (link.href.startsWith('/collections/')) {
+            const handle = link.href.replace('/collections/', '');
+            const existsInCols = cols.some(
+              (c: { handle?: string; status?: string }) => c.handle === handle && c.status === 'active'
+            );
+            const existsInCats = cats.some(
+              (c: { slug?: string; is_active?: boolean }) => c.slug === handle && c.is_active !== false
+            );
+            return existsInCols || existsInCats;
+          }
+          return true; // Keep "New Arrivals" etc.
+        });
+        setActiveShopLinks(filtered);
+      })
+      .catch((err) => {
+        console.warn('[Footer] Failed to load categories/collections for filter:', err);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <footer data-home-section="11-footer" className="kvastram-footer border-t border-[var(--ds-footer-border)]">
       <div
@@ -146,9 +181,9 @@ export function Footer() {
       </div>
 
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 pb-10 pt-10 sm:px-8 md:px-12 md:pb-12 md:pt-12 lg:px-20 lg:pt-24">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-12">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-12">
           {/* Brand Column */}
-          <div className="space-y-5 sm:col-span-2 lg:col-span-1">
+          <div className="space-y-5 col-span-2 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
               <span className="kf-logo font-body text-display-sm type-semibold tracking-token-wider">
                 KVASTRAM
@@ -181,12 +216,12 @@ export function Footer() {
           </div>
 
           {/* Shop Column */}
-          <div>
+          <div className="col-span-1">
             <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Shop
             </h4>
             <ul className="space-y-3">
-              {shopLinks.map(({ label, href }) => (
+              {activeShopLinks.map(({ label, href }) => (
                 <li key={label}>
                   <Link
                     href={href}
@@ -200,7 +235,7 @@ export function Footer() {
           </div>
 
           {/* Support Column */}
-          <div>
+          <div className="col-span-1">
             <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Support
             </h4>
@@ -219,7 +254,7 @@ export function Footer() {
           </div>
 
           {/* Company Column */}
-          <div>
+          <div className="col-span-1">
             <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Company
             </h4>
@@ -242,7 +277,7 @@ export function Footer() {
           </div>
 
           {/* Stay Updated Column */}
-          <div className="sm:col-span-2 lg:col-span-1">
+          <div className="col-span-2 sm:col-span-2 lg:col-span-1">
             <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Stay Updated
             </h4>
