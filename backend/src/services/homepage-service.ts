@@ -304,7 +304,7 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
       })
       .filter(
         (collection) =>
-          collection.products.length > 0 && isCloudinaryUrl(collection.image)
+          collection.products.length > 0 && !!collection.image
       );
   }
 
@@ -349,7 +349,7 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
         image,
         products: filtered.slice(0, 3),
       };
-    }).filter(c => c.products.length > 0 && isCloudinaryUrl(c.image));
+    }).filter(c => c.products.length > 0 && !!c.image);
 
     const combined = [...loadedCollections];
     for (const gen of generated) {
@@ -473,7 +473,7 @@ async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {
       })
       .filter(
         (collection) =>
-          collection.products.length > 0 && isCloudinaryUrl(collection.image)
+          collection.products.length > 0 && !!collection.image
       );
   }
 
@@ -522,7 +522,7 @@ async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {
         image,
         products: filtered.slice(0, 4),
       };
-    }).filter(c => c.products.length > 0 && isCloudinaryUrl(c.image));
+    }).filter(c => c.products.length > 0 && !!c.image);
 
     const combined = [...loadedCollections];
     for (const gen of generatedCollections) {
