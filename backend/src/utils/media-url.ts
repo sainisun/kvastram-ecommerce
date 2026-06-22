@@ -5,9 +5,13 @@ export function isCloudinaryUrl(value: unknown): value is string {
     return false;
   }
 
+  if (value.startsWith('/uploads/') || value.startsWith('http://localhost:4000/uploads/')) {
+    return true;
+  }
+
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' && url.hostname === CLOUDINARY_HOSTNAME;
+    return url.protocol === 'https:' || url.protocol === 'http:';
   } catch {
     return false;
   }
