@@ -202,7 +202,10 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
       and(
         eq(product_collections.status, 'active'),
         eq(product_collections.rule_type, 'manual'),
-        eq(product_collections.homepage_section, 'collections'),
+        or(
+          eq(product_collections.homepage_section, 'collections'),
+          eq(product_collections.homepage_section, 'curated_collections')
+        ),
         isNull(product_collections.deleted_at),
         or(isNull(product_collections.valid_from), sql`${product_collections.valid_from} <= ${now}`),
         or(isNull(product_collections.valid_until), sql`${product_collections.valid_until} >= ${now}`)
