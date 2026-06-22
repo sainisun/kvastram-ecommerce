@@ -1,0 +1,43 @@
+'use client';
+
+import Link from 'next/link';
+import OptimizedImage from '@/components/ui/OptimizedImage';
+import type { HomepageCategoryCard } from '@/types/homepage';
+
+export function CategoryCarousel({ categories }: { categories: HomepageCategoryCard[] }) {
+  if (categories.length === 0) return null;
+
+  return (
+    <section
+      className="w-full py-6 md:py-10"
+      aria-label="Category Carousel"
+      data-home-section="3-category-carousel"
+    >
+      <div className="homepage-container overflow-x-auto no-scrollbar flex gap-[5px] scroll-smooth">
+        {categories.map((category) => (
+          <Link
+            key={category.id}
+            href={category.link_url}
+            className="relative flex-shrink-0 w-[70vw] md:w-[314px] aspect-[2/3] overflow-hidden group animate-fade-in"
+          >
+            <OptimizedImage
+              src={category.image_url}
+              alt={category.name}
+              fill
+              sizes="(max-width: 767px) 70vw, 314px"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            {/* Soft gradient overlay for text readability */}
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.4)] to-transparent" />
+            
+            <div className="absolute bottom-[10px] left-1/2 -translate-x-1/2 text-center w-full px-[10px]">
+              <span className="inline-block text-[var(--ds-text-inverse)] text-[14px] font-ui font-medium uppercase tracking-token-wider">
+                {category.name}
+              </span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}

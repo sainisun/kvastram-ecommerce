@@ -1,94 +1,71 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Play } from 'lucide-react';
+import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
-import { ButtonLink, UnstyledButton } from '@/components/ui/Button';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useCurrency } from '@/context/currency-context';
 import type { MoneyAmount } from '@/types';
 import type { HomepageTrendingReel } from '@/types/homepage';
+import { Play } from 'lucide-react';
 
 export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
-  const [selectedId, setSelectedId] = useState(reels[0]?.id || '');
-  const selected = reels.find((reel) => reel.id === selectedId) || reels[0];
   const { formatPrice } = useCurrency();
-  const productHref = selected?.link_url || (
-    selected ? `/products/${selected.product.handle || selected.product.id}` : '/products'
-  );
-  const price = useMemo(() => {
-    const prices = selected?.product.variants?.[0]?.prices || [];
-    const amount =
-      prices.find((item: MoneyAmount) => item.currency_code?.toLowerCase() === 'inr') ||
-      prices[0];
-    return amount ? formatPrice(amount.amount) : null;
-  }, [formatPrice, selected]);
 
-  if (!selected) return null;
+  if (reels.length === 0) return null;
 
   return (
-    <section className="homepage-watch" data-home-section="6-watch-shop">
-      <div className="homepage-watch-layout">
-        <div className="homepage-watch-video">
-          <video
-            key={selected.id}
-            controls
-            muted
-            playsInline
-            preload="none"
-            poster={selected.thumbnail_url}
-            aria-label={`Watch ${selected.product.title}`}
-          >
-            <source src={selected.video_url} />
-          </video>
-        </div>
-        <div className="homepage-watch-copy">
-          <p className="homepage-eyebrow">Watch &amp; Shop</p>
-          <h2>See the craft in motion</h2>
-          <div className="homepage-watch-product">
-            <span className="homepage-watch-product-media">
-              <OptimizedImage
-                src={selected.product.thumbnail || selected.product.images?.[0]?.url || ''}
-                alt={selected.product.title}
-                fill
-                sizes="160px"
-                className="object-cover"
-              />
-            </span>
-            <div>
-              <h3>{selected.product.title}</h3>
-              {price ? <PriceDisplay price={price} variant="inline" /> : null}
-              <ButtonLink
-                href={productHref}
-                variant="primary"
-                size="md"
-              >
-                Shop this piece
-              </ButtonLink>
-            </div>
+    <section className="w-full py-6 md:py-10" data-home-section="7-watch-shop">
+      <div className="homepage-container">
+        <div className="homepage-section-head flex justify-between items-end mb-6">
+          <div>
+            <p className="homepage-eyebrow text-body-xs uppercase tracking-token-wider text-brand-gold">Trending Reels</p>
+            <h2 className="text-display-sm font-display font-medium text-brand-ink">See the craft in motion</h2>
           </div>
-          {reels.length > 1 ? (
-            <div className="homepage-watch-thumbnails" aria-label="Choose a video">
-              {reels.map((reel) => (
-                <UnstyledButton
-                  key={reel.id}
-                  type="button"
-                  onClick={() => setSelectedId(reel.id)}
-                  aria-label={`Show ${reel.product.title} video`}
-                  aria-pressed={selected.id === reel.id}
-                >
+          <Link href="/reels" className="text-body-sm type-medium tracking-token-wide border-b border-brand-ink pb-0.5 hover:text-brand-accent hover:border-brand-accent transition-colors">
+            View all
+          </Link>
+        </div>
+
+        <div className="overflow-x-auto no-scrollbar flex gap-4 scroll-smooth">
+          {reels.map((reel) => {
+            const prices = reel.product.variants?.[0]?.prices || [];
+            const amount =
+              prices.find((item: MoneyAmount) => item.currency_code?.toLowerCase() === 'inr') ||
+              prices[0];
+            const price = amount ? formatPrice(amount.amount) : null;
+            const productHref = reel.link_url || `/products/${reel.product.handle || reel.product.id}`;
+
+            return (
+              <div key={reel.id} className="flex-shrink-0 w-[180px] md:w-[230px] animate-fade-in group">
+                <Link href={`/reels?id=${reel.id}`} className="relative block aspect-[9/16] overflow-hidden rounded-[8px] bg-[var(--ds-surface-soft)]">
                   <OptimizedImage
                     src={reel.thumbnail_url}
-                    alt=""
+                    alt={reel.caption || reel.product.title}
                     fill
-                    sizes="80px"
-                    className="object-cover"
+                    sizes="(max-width: 767px) 180px, 230px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <Play aria-hidden="true" size={18} />
-                </UnstyledButton>
-              ))}
-            </div>
-          ) : null}
+                  <div className="absolute inset-0 bg-[rgba(var(--ds-black-rgb),0.25)] flex items-center justify-center transition-colors group-hover:bg-[rgba(var(--ds-black-rgb),0.35)]">
+                    <span className="w-12 h-12 rounded-full bg-[rgba(var(--ds-white-rgb),0.95)] flex items-center justify-center text-brand-ink shadow-md transition-transform duration-300 group-hover:scale-110">
+                      <Play size={20} fill="currentColor" className="ml-1" />
+                    </span>
+                  </div>
+                </Link>
+
+                <div className="mt-3 text-left">
+                  <h3 className="text-body-sm type-medium text-brand-ink line-clamp-1 group-hover:text-brand-accent transition-colors" title={reel.product.title}>
+                    {reel.product.title}
+                  </h3>
+                  <div className="flex items-center justify-between mt-1">
+                    {price ? <PriceDisplay price={price} variant="inline" /> : <span />}
+                    <Link href={productHref} className="text-body-xs font-ui font-semibold text-brand-gold hover:text-brand-ink transition-colors uppercase tracking-wider">
+                      Shop
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -38,7 +38,7 @@ export function NewsletterSection({
   }
 
   return (
-    <section className="homepage-newsletter" data-home-section="9-newsletter">
+    <section className="homepage-newsletter" data-home-section="10-newsletter">
       <div className="homepage-container homepage-newsletter-inner">
         <p className="homepage-eyebrow">Newsletter</p>
         <h2>{settings.title}</h2>

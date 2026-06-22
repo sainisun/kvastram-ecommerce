@@ -6,7 +6,7 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
   if (posts.length === 0) return null;
 
   return (
-    <section className="homepage-section" data-home-section="8-social">
+    <section className="homepage-section" data-home-section="9-social">
       <div className="homepage-container">
         <div className="homepage-section-head homepage-section-head-centered">
           <div>

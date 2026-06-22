@@ -6,7 +6,7 @@ export function BrandStory({ story }: { story: HomepageBrandStory | null }) {
   if (!story) return null;
 
   return (
-    <section className="homepage-section" data-home-section="7-brand-story">
+    <section className="homepage-section" data-home-section="8-brand-story">
       <div className="homepage-container homepage-story">
         <div className="homepage-story-media">
           <OptimizedImage

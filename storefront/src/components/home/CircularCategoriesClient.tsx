@@ -55,14 +55,14 @@ export function CircularCategoriesClient({
     <section
       className="homepage-circles"
       aria-labelledby="homepage-circles-title"
-      data-home-section="1-categories"
+      data-home-section="1-circle-categories"
     >
       <h2 id="homepage-circles-title" className="sr-only">
         Shop by category
       </h2>
       <div
         ref={rowRef}
-        className="homepage-container homepage-circle-row"
+        className="homepage-container homepage-circle-row no-scrollbar"
       >
         {circles.map((circle, index) => (
           <Link

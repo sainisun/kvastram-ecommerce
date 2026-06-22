@@ -36,7 +36,7 @@ Kvastram storefront typography uses an editorial serif display face with a restr
 
 ## Accent
 
-The final accent is TERRACOTTA.
+The final accent is GOLD.
 
 Use:
 
@@ -47,7 +47,7 @@ Use:
 --ds-accent-rgb
 ```
 
-Public terracotta bridges are available only where a non-`--ds-*` bridge is unavoidable:
+Public gold/accent bridges are available only where a non-`--ds-*` bridge is unavoidable:
 
 ```text
 --terracotta
@@ -110,7 +110,7 @@ Use these before adding page-local UI systems:
 ## Homepage Layout Contract
 
 - Homepage content width: `--ds-home-content-width` (`1520px`).
-- Homepage gutters: `72px` desktop, `28px` tablet, and `16px` mobile through the `--ds-home-gutter-*` tokens.
+- Homepage gutters: `30px` desktop, `28px` tablet, and `15px` mobile through the `--ds-home-gutter-*` tokens.
 - Homepage section rhythm: `108px` desktop and `56px` mobile through the `--ds-home-section-space-*` tokens.
 - Hero is full bleed. Other homepage content uses `.homepage-container`.
 - Homepage media containers must declare an intrinsic aspect ratio or explicit dimensions.

@@ -848,3 +848,17 @@
     transform: translateY(0);
   }
 }
+
+/* Oh Polly Style Product Card overrides in homepage slider */
+.homepage-best-seller-slider .product-card {
+  border-radius: 0px;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+.homepage-best-seller-slider .product-card .product-media {
+  aspect-ratio: 2 / 3;
+}
+.homepage-best-seller-slider .product-card .product-info {
+  padding: 8px 0;
+}

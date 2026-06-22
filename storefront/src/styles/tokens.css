@@ -65,7 +65,7 @@
   --ds-type-product-meta-tracking: var(--ds-tracking-normal);
 
   /* Surfaces */
-  --ds-surface-page: #fcf9f2;
+  --ds-surface-page: #F8F5F0;
   --ds-surface-paper: #ffffff;
   --ds-surface-soft: #f1eee7;
   --ds-surface-parchment: #f6f3ec;
@@ -73,12 +73,12 @@
   --ds-surface-warm: #ebe8e1;
 
   /* Text */
-  --ds-text-primary: #111111;
-  --ds-text-secondary: #4d453f;
+  --ds-text-primary: #1A1A1A;
+  --ds-text-secondary: #666666;
   --ds-text-muted: #7f756e;
-  --ds-text-disabled: #bfa37e;
+  --ds-text-disabled: #B89B5E;
   --ds-text-inverse: #ffffff;
-  --ds-text-price: #111111;
+  --ds-text-price: #1A1A1A;
   --ds-text-price-old: #888888;
 
   /* Borders */
@@ -99,12 +99,12 @@
   --ds-footer-hover: #ffffff;
 
   /* Accent: TERRACOTTA is canonical. */
-  --ds-accent-primary: #c46441;
-  --ds-accent-hover: #9b4524;
-  --ds-accent-soft: #ffdbcf;
-  --ds-accent-rgb: 196, 100, 65;
-  --ds-accent-gold: #BFA37E;
-  --ds-accent-gold-rgb: 191, 163, 126;
+  --ds-accent-primary: #B89B5E;
+  --ds-accent-hover: #9E8148;
+  --ds-accent-soft: #F5EEDC;
+  --ds-accent-rgb: 184, 155, 94;
+  --ds-accent-gold: #B89B5E;
+  --ds-accent-gold-rgb: 184, 155, 94;
   --ds-white-rgb: 255, 255, 255;
 
   /* Status */
@@ -161,9 +161,9 @@
   --ds-content-width: 1280px;
   --ds-narrow-width: 860px;
   --ds-home-content-width: 1520px;
-  --ds-home-gutter-desktop: 72px;
+  --ds-home-gutter-desktop: 30px;
   --ds-home-gutter-tablet: 28px;
-  --ds-home-gutter-mobile: 16px;
+  --ds-home-gutter-mobile: 15px;
   --ds-home-section-space-desktop: 108px;
   --ds-home-section-space-mobile: 56px;
 

@@ -10,7 +10,7 @@ export function CollectionsSection({
   if (collections.length === 0) return null;
 
   return (
-    <section className="homepage-section" data-home-section="5-collections">
+    <section className="homepage-section" data-home-section="6-collections">
       <div className="homepage-container">
         <div className="homepage-section-head">
           <div>
