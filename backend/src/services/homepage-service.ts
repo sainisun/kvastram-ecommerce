@@ -229,79 +229,136 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
   }
 
   const collectionIds = collections.map((collection) => collection.id);
-  if (collectionIds.length === 0) return [];
+  let loadedCollections: any[] = [];
 
-  const assignments = await db
-    .select({
-      collection_id: collection_products.collection_id,
-      product_id: collection_products.product_id,
-      position: collection_products.position,
-    })
-    .from(collection_products)
-    .innerJoin(products, eq(collection_products.product_id, products.id))
-    .where(
-      and(
-        inArray(collection_products.collection_id, collectionIds),
-        eq(products.status, 'published'),
-        eq(products.is_wholesale_only, false)
+  if (collectionIds.length > 0) {
+    const assignments = await db
+      .select({
+        collection_id: collection_products.collection_id,
+        product_id: collection_products.product_id,
+        position: collection_products.position,
+      })
+      .from(collection_products)
+      .innerJoin(products, eq(collection_products.product_id, products.id))
+      .where(
+        and(
+          inArray(collection_products.collection_id, collectionIds),
+          eq(products.status, 'published'),
+          eq(products.is_wholesale_only, false)
+        )
       )
-    )
-    .orderBy(asc(collection_products.collection_id), asc(collection_products.position));
+      .orderBy(asc(collection_products.collection_id), asc(collection_products.position));
 
-  const previewIdsByCollection = new Map<string, string[]>();
-  for (const assignment of assignments) {
-    const current = previewIdsByCollection.get(assignment.collection_id) || [];
-    current.push(assignment.product_id);
-    previewIdsByCollection.set(assignment.collection_id, current);
-  }
+    const previewIdsByCollection = new Map<string, string[]>();
+    for (const assignment of assignments) {
+      const current = previewIdsByCollection.get(assignment.collection_id) || [];
+      current.push(assignment.product_id);
+      previewIdsByCollection.set(assignment.collection_id, current);
+    }
 
-  const previewIds = Array.from(
-    new Set(
-      collections.flatMap((collection) =>
-        dedupeCampaignProductIds(
+    const previewIds = Array.from(
+      new Set(
+        collections.flatMap((collection) =>
+          dedupeCampaignProductIds(
+            previewIdsByCollection.get(collection.id) || [],
+            bestSellerIds
+          )
+        )
+      )
+    );
+    const previewProducts = await productService.retrieveMany(previewIds);
+    const productById = new Map(
+      previewProducts
+        .filter((product) => isHomepageProductReady(product))
+        .map((product) => [product.id, product])
+    );
+
+    loadedCollections = collections
+      .map((collection) => {
+        const products = dedupeCampaignProductIds(
           previewIdsByCollection.get(collection.id) || [],
           bestSellerIds
         )
-      )
-    )
-  );
-  const previewProducts = await productService.retrieveMany(previewIds);
-  const productById = new Map(
-    previewProducts
-      .filter((product) => isHomepageProductReady(product))
-      .map((product) => [product.id, product])
-  );
+          .map((id) => productById.get(id))
+          .filter((product): product is NonNullable<typeof product> => Boolean(product));
+        const image =
+          collection.cover_image_url ||
+          collection.image ||
+          products.find((product) => isCloudinaryUrl(product.thumbnail))?.thumbnail ||
+          products
+            .flatMap((product) => product.images || [])
+            .find((image) => isCloudinaryUrl(image.url))?.url ||
+          null;
 
-  return collections
-    .map((collection) => {
-      const products = dedupeCampaignProductIds(
-        previewIdsByCollection.get(collection.id) || [],
-        bestSellerIds
-      )
-        .map((id) => productById.get(id))
-        .filter((product): product is NonNullable<typeof product> => Boolean(product));
-      const image =
-        collection.cover_image_url ||
-        collection.image ||
-        products.find((product) => isCloudinaryUrl(product.thumbnail))?.thumbnail ||
-        products
-          .flatMap((product) => product.images || [])
-          .find((image) => isCloudinaryUrl(image.url))?.url ||
-        null;
+        return {
+          id: collection.id,
+          title: collection.title,
+          handle: collection.handle,
+          description: collection.description,
+          image,
+          products,
+        };
+      })
+      .filter(
+        (collection) =>
+          collection.products.length > 0 && isCloudinaryUrl(collection.image)
+      );
+  }
 
+  if (loadedCollections.length < 2) {
+    const allPublishedProducts = await db
+      .select({ id: products.id })
+      .from(products)
+      .where(
+        and(
+          eq(products.status, 'published'),
+          eq(products.is_wholesale_only, false)
+        )
+      )
+      .limit(20);
+
+    const publishedIds = allPublishedProducts.map((p) => p.id);
+    const enriched = await productService.retrieveMany(publishedIds);
+    const validProducts = enriched.filter((p) => isHomepageProductReady(p));
+
+    const fallbackCampaigns = [
+      { title: 'The Indigo Edit', handle: 'indigo-edit', keyword: 'indigo' },
+      { title: 'Summer in Jaipur', handle: 'summer-jaipur', keyword: 'cotton' },
+    ];
+
+    const generated = fallbackCampaigns.map((item, index) => {
+      let filtered = validProducts.filter((p) => 
+        p.title.toLowerCase().includes(item.keyword) || 
+        p.description?.toLowerCase().includes(item.keyword)
+      );
+      if (filtered.length < 3) {
+        filtered = validProducts.slice(index * 4 + 2, (index + 1) * 4 + 2);
+      }
+      if (filtered.length === 0) {
+        filtered = validProducts.slice(0, 4);
+      }
+      const image = filtered[0]?.thumbnail || '';
       return {
-        id: collection.id,
-        title: collection.title,
-        handle: collection.handle,
-        description: collection.description,
+        id: `fallback-campaign-col-${item.handle}`,
+        title: item.title,
+        handle: item.handle,
+        description: `A study in handcrafted designs and beautiful colors.`,
         image,
-        products,
+        products: filtered.slice(0, 3),
       };
-    })
-    .filter(
-      (collection) =>
-        collection.products.length > 0 && isCloudinaryUrl(collection.image)
-    );
+    }).filter(c => c.products.length > 0 && isCloudinaryUrl(c.image));
+
+    const combined = [...loadedCollections];
+    for (const gen of generated) {
+      if (combined.length >= 2) break;
+      if (!combined.some((c) => c.handle === gen.handle)) {
+        combined.push(gen);
+      }
+    }
+    return combined;
+  }
+
+  return loadedCollections;
 }
 
 async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {

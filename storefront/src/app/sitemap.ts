@@ -93,7 +93,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const categoryEntries = flattenCategories(categoriesData.categories || [])
       .filter((category) => (category.slug || category.handle) && (category as unknown as { is_active?: boolean }).is_active !== false)
       .map((category) => ({
-        url: `${SITE_URL}/categories/${category.slug || category.handle}`,
+        url: `${SITE_URL}/collections/${category.slug || category.handle}`,
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.8,

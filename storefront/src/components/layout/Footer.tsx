@@ -9,19 +9,19 @@ import { storefrontTrust } from '@/config/storefront-trust';
 
 const shopLinks = [
   { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Kantha Jackets', href: '/categories/kantha-jackets' },
-  { label: 'Cotton Jackets', href: '/categories/cotton-jackets' },
-  { label: 'Bohemian Dresses', href: '/categories/bohemian-dresses' },
-  { label: 'Long Dresses', href: '/categories/long-dress' },
-  { label: 'Short Dresses', href: '/categories/short-dress' },
-  { label: 'Duffle Bags', href: '/categories/duffle-bags' },
-  { label: 'Quilted Tote Bags', href: '/categories/quilted-bags' },
-  { label: 'Velvet Bags', href: '/categories/velvet-bags' },
-  { label: 'Skirts', href: '/categories/skirts' },
-  { label: 'Kitchen Aprons', href: '/categories/kitchen-aprons' },
-  { label: 'Block Print Fabrics', href: '/categories/block-print-fabrics' },
-  { label: 'Kantha Quilts', href: '/categories/kantha-quilts' },
-  { label: 'Vintage Throws', href: '/categories/vintage-throws' },
+  { label: 'Kantha Jackets', href: '/collections/kantha-jackets' },
+  { label: 'Cotton Jackets', href: '/collections/cotton-jackets' },
+  { label: 'Bohemian Dresses', href: '/collections/bohemian-dresses' },
+  { label: 'Long Dresses', href: '/collections/long-dress' },
+  { label: 'Short Dresses', href: '/collections/short-dress' },
+  { label: 'Duffle Bags', href: '/collections/duffle-bags' },
+  { label: 'Quilted Tote Bags', href: '/collections/quilted-bags' },
+  { label: 'Velvet Bags', href: '/collections/velvet-bags' },
+  { label: 'Skirts', href: '/collections/skirts' },
+  { label: 'Kitchen Aprons', href: '/collections/kitchen-aprons' },
+  { label: 'Block Print Fabrics', href: '/collections/block-print-fabrics' },
+  { label: 'Kantha Quilts', href: '/collections/kantha-quilts' },
+  { label: 'Vintage Throws', href: '/collections/vintage-throws' },
 ];
 
 const supportLinks = [
@@ -39,9 +39,6 @@ const companyLinks: { label: string; href: string; highlight?: boolean }[] = [
   { label: 'Meet the Artisans', href: '/about#artisans' },
   { label: 'Blog / Journal', href: '/journal' },
 ];
-
-const mobileShopLinks = shopLinks;
-const mobileHelpLinks = supportLinks;
 
 const socialLinks = [
   {
@@ -138,73 +135,11 @@ const socialLinks = [
   },
 ];
 
-function MobileFooter() {
+export function Footer() {
   return (
-    <div className="kvastram-mobile-footer md:hidden">
-      <div className="grid grid-cols-2 gap-8 px-6 py-16">
-        <div>
-          <h4 className="kf-mobile-heading mb-6 text-body-xs type-semibold  tracking-token-wide">
-            Shop
-          </h4>
-          <div className="space-y-3">
-            {mobileShopLinks.map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                className="kf-mobile-link block text-body-md type-regular leading-token-relaxed transition-colors"
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h4 className="kf-mobile-heading mb-6 text-body-xs type-semibold  tracking-token-wide">
-            Help
-          </h4>
-          <div className="space-y-3">
-            {mobileHelpLinks.map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                className="kf-mobile-link block text-body-md type-regular leading-token-relaxed transition-colors"
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="kf-mobile-border border-t px-6 py-6">
-        <div className="kf-mobile-social flex items-center justify-center gap-4">
-          {socialLinks.slice(0, 3).map(({ label, href, icon: Icon, color }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className={`transition-colors ${color}`}
-            >
-              <Icon size={16} />
-            </a>
-          ))}
-        </div>
-        <p className="kf-mobile-copy mt-4 text-center text-body-xs">
-          Copyright {new Date().getFullYear()} Kvastram. All rights reserved.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function DesktopFooter() {
-  return (
-    <div className="kvastram-footer hidden md:block">
+    <footer data-home-section="11-footer" className="kvastram-footer border-t border-[var(--ds-footer-border)]">
       <div
-        className="footer-watermark-prem overflow-hidden px-6 pt-8 sm:px-8 md:px-12 md:pt-10"
+        className="footer-watermark-prem overflow-hidden px-6 pt-8 sm:px-8 md:px-12 md:pt-10 select-none"
         aria-hidden="true"
       >
         Kvastram
@@ -212,9 +147,10 @@ function DesktopFooter() {
 
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 pb-10 pt-10 sm:px-8 md:px-12 md:pb-12 md:pt-12 lg:px-20 lg:pt-24">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-12">
+          {/* Brand Column */}
           <div className="space-y-5 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
-              <span className="kf-logo font-body text-display-sm type-semibold  tracking-token-wider">
+              <span className="kf-logo font-body text-display-sm type-semibold tracking-token-wider">
                 KVASTRAM
               </span>
             </Link>
@@ -244,8 +180,9 @@ function DesktopFooter() {
             </div>
           </div>
 
+          {/* Shop Column */}
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium  tracking-token-wide">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -253,7 +190,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="kf-link font-body text-body-md type-light transition-colors"
+                    className="kf-link font-body text-body-md type-light transition-colors block"
                   >
                     {label}
                   </Link>
@@ -262,8 +199,9 @@ function DesktopFooter() {
             </ul>
           </div>
 
+          {/* Support Column */}
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium  tracking-token-wide">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Support
             </h4>
             <ul className="space-y-3">
@@ -271,7 +209,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="kf-link font-body text-body-md type-light transition-colors"
+                    className="kf-link font-body text-body-md type-light transition-colors block"
                   >
                     {label}
                   </Link>
@@ -280,8 +218,9 @@ function DesktopFooter() {
             </ul>
           </div>
 
+          {/* Company Column */}
           <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium  tracking-token-wide">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Company
             </h4>
             <ul className="space-y-3">
@@ -289,7 +228,7 @@ function DesktopFooter() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className={`font-body text-body-md transition-colors ${
+                    className={`font-body text-body-md transition-colors block ${
                       highlight
                         ? 'kf-highlight type-medium'
                         : 'kf-link type-light'
@@ -302,8 +241,9 @@ function DesktopFooter() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-medium  tracking-token-wide">
+          {/* Stay Updated Column */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Stay Updated
             </h4>
             <p className="kf-muted font-body mb-4 text-body-md type-light leading-token-relaxed">
@@ -345,15 +285,6 @@ function DesktopFooter() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-export function Footer() {
-  return (
-    <footer data-home-section="11-footer">
-      <MobileFooter />
-      <DesktopFooter />
     </footer>
   );
 }

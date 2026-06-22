@@ -50,7 +50,7 @@ function sortByDisplayOrder<T extends { display_order?: number }>(items: T[]) {
 }
 
 function categoryHref(category: HeaderCategory) {
-  return `/categories/${category.slug || category.handle}`;
+  return `/collections/${category.slug || category.handle}`;
 }
 
 function collectionTitle(collection: Collection) {

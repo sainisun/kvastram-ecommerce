@@ -37,6 +37,21 @@ type LandingSeoFields = {
   answer_capsule?: string | null;
 };
 
+type CategoryNode = {
+  id: string;
+  name?: string;
+  slug?: string;
+  handle?: string;
+  description?: string | null;
+  image?: string | null;
+  header_image_url?: string | null;
+  is_active?: boolean;
+  seo_title?: string | null;
+  seo_desc?: string | null;
+  children?: CategoryNode[];
+  parent?: CategoryNode;
+};
+
 type LandingData =
   | ({
       kind: 'collection';
@@ -60,7 +75,28 @@ type LandingData =
       intro_content?: string | null;
       outro_content?: string | null;
       rule_definition?: Record<string, unknown> | null;
+    } & LandingSeoFields)
+  | ({
+      kind: 'category';
+      id: string;
+      handle: string;
+      title: string;
+      description: string;
+      image?: string | null;
+      is_active: boolean;
+      children?: CategoryNode[];
     } & LandingSeoFields);
+
+function siblingLinks(categories: CategoryNode[], activeId: string) {
+  return categories
+    .filter((category) => category.id !== activeId && category.is_active !== false)
+    .slice(0, 6)
+    .map((category) => ({
+      label: category.name || titleFromHandle(category.slug || category.handle || ''),
+      href: `/collections/${category.slug || category.handle}`,
+    }))
+    .filter((item) => item.href !== '/collections/undefined');
+}
 
 async function resolveLanding(handle: string): Promise<LandingData | null> {
   const [categoriesData, collectionsData, seoLandingPage] = await Promise.all([
@@ -69,9 +105,23 @@ async function resolveLanding(handle: string): Promise<LandingData | null> {
     api.getSeoLandingPage(handle),
   ]);
 
-  const category = findCategoryBySlug(categoriesData.categories || [], handle);
+  const category = findCategoryBySlug(categoriesData.categories || [], handle) as CategoryNode | undefined;
   if (category) {
-    permanentRedirect(`/categories/${category.slug || category.handle || handle}`);
+    const title = category.name || titleFromHandle(handle);
+    return {
+      kind: 'category',
+      id: category.id,
+      handle: category.slug || category.handle || handle,
+      title,
+      description:
+        category.description ||
+        `Shop ${title} at Kvastram, handmade in Jaipur with artisan craft and thoughtful finishing.`,
+      image: category.header_image_url || category.image,
+      is_active: category.is_active !== false,
+      seo_title: category.seo_title,
+      seo_desc: category.seo_desc,
+      children: category.children,
+    };
   }
 
   let collection = (collectionsData.collections || []).find(
@@ -145,6 +195,8 @@ async function fetchLandingProductCount(landing: LandingData) {
     limit: 100,
     ...(landing.kind === 'collection'
       ? { collection_id: landing.id }
+      : landing.kind === 'category'
+      ? { category_id: landing.id }
       : {
           category_id:
             typeof landing.rule_definition?.category_id === 'string'
@@ -189,6 +241,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const noindex =
     productCount === 0 ||
     landing.is_indexable === false ||
+    (landing.kind === 'category' ? !landing.is_active : false) ||
     robotsPolicy.startsWith('noindex');
 
   return buildCollectionMetadata({
@@ -197,7 +250,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `/collections/${landing.handle}`,
     description: landing.seo_desc || landing.description,
     image: landing.image,
-    kind: 'collection',
+    kind: landing.kind === 'category' ? 'category' : 'collection',
     noindex,
     robotsFollow: !robotsPolicy.endsWith('nofollow'),
     canonicalUrl: landing.canonical_url || undefined,
@@ -208,6 +261,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 function productParamsForLanding(landing: LandingData) {
   if (landing.kind === 'collection') {
     return { collection_id: landing.id };
+  }
+  if (landing.kind === 'category') {
+    return { category_id: landing.id };
   }
 
   return {
@@ -242,9 +298,12 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   if (landing.kind === 'collection' && landing.status === 'draft' && preview !== 'true') {
     redirect('/collections');
   }
+  if (landing.kind === 'category' && !landing.is_active) {
+    notFound();
+  }
 
   const productParams = productParamsForLanding(landing);
-  const [productsResponse, tagsResponse, allCollectionsResponse] = await Promise.all([
+  const [productsResponse, tagsResponse, allCollectionsResponse, categoriesData] = await Promise.all([
     api.getProducts({
       limit: 12,
       sort,
@@ -258,10 +317,30 @@ export default async function CollectionPage({ params, searchParams }: Props) {
     landing.kind === 'collection' && landing.type
       ? api.getCollections()
       : Promise.resolve(null),
+    landing.kind === 'category'
+      ? api.getCategories()
+      : Promise.resolve(null),
   ]);
 
   const products = filterStorefrontReadyProducts(productsResponse.products || []);
   const totalProducts = products.length;
+
+  let relatedLinks: Array<{ label: string; href: string }> = [];
+  if (landing.kind === 'category') {
+    const categories = (categoriesData?.categories || []) as CategoryNode[];
+    const children = landing.children || [];
+    relatedLinks = [
+      ...children
+        .filter((child) => child.is_active !== false && (child.slug || child.handle))
+        .map((child) => ({
+          label: child.name || titleFromHandle(child.slug || child.handle || ''),
+          href: `/collections/${child.slug || child.handle}`,
+        })),
+      ...siblingLinks(categories, landing.id),
+      { label: 'Shop all products', href: '/products' },
+    ].slice(0, 8);
+  }
+
   const relatedCollections: Array<{ id: string; handle: string; title: string }> =
     allCollectionsResponse
       ? (allCollectionsResponse.collections || [])
@@ -273,7 +352,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             product_count?: number;
           }) =>
             collection.id !== landing.id &&
-            collection.type === landing.type &&
+            collection.type === ('type' in landing ? landing.type : undefined) &&
             collection.status === 'active' &&
             collection.handle &&
             (collection.product_count ?? 0) > 0
@@ -292,12 +371,20 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         path: `/products/${product.handle || product.id}`,
       })),
     }),
-    buildBreadcrumbJsonLd([
-      { name: 'Home', path: '/' },
-      { name: 'Collections', path: '/collections' },
-      { name: landing.title, path: `/collections/${landing.handle}` },
-    ]),
-    ...(landing.faq_items && landing.faq_items.length > 0
+    buildBreadcrumbJsonLd(
+      landing.kind === 'category'
+        ? [
+            { name: 'Home', path: '/' },
+            { name: 'Shop', path: '/products' },
+            { name: landing.title, path: `/collections/${landing.handle}` },
+          ]
+        : [
+            { name: 'Home', path: '/' },
+            { name: 'Collections', path: '/collections' },
+            { name: landing.title, path: `/collections/${landing.handle}` },
+          ]
+    ),
+    ...(landing.kind === 'collection' && landing.faq_items && landing.faq_items.length > 0
       ? [
           {
             '@context': 'https://schema.org',
@@ -323,18 +410,50 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       />
 
       <ListingHero
-        eyebrow={landing.kind === 'seo_landing' ? 'Edit' : 'Collection'}
+        eyebrow={
+          landing.kind === 'category'
+            ? 'Category'
+            : landing.kind === 'seo_landing'
+            ? 'Edit'
+            : 'Collection'
+        }
         title={landing.title}
         description={landing.description}
         image={landing.image}
         count={totalProducts}
-        variant="collection"
-        breadcrumbs={[
-          { label: 'Home', href: '/' },
-          { label: 'Collections', href: '/collections' },
-          { label: landing.title },
-        ]}
+        variant={landing.kind === 'category' ? 'category' : 'collection'}
+        breadcrumbs={
+          landing.kind === 'category'
+            ? [
+                { label: 'Home', href: '/' },
+                { label: 'Shop', href: '/products' },
+                { label: landing.title },
+              ]
+            : [
+                { label: 'Home', href: '/' },
+                { label: 'Collections', href: '/collections' },
+                { label: landing.title },
+              ]
+        }
       />
+
+      {landing.kind === 'category' && landing.children && landing.children.length > 0 ? (
+        <section className="kv-page-container border-b border-[var(--ds-border-subtle)] py-5">
+          <div className="flex flex-wrap gap-3">
+            {landing.children
+              .filter((child) => child.is_active !== false && (child.slug || child.handle))
+              .map((child) => (
+                <Link
+                  key={child.id}
+                  href={`/collections/${child.slug || child.handle}`}
+                  className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
+                >
+                  {child.name || titleFromHandle(child.slug || child.handle || '')}
+                </Link>
+              ))}
+          </div>
+        </section>
+      ) : null}
 
       <ListingPageClient
         basePath={`/collections/${landing.handle}`}
@@ -349,19 +468,29 @@ export default async function CollectionPage({ params, searchParams }: Props) {
           attribute_value: productParams.attribute_value,
         }}
         intro={
-          landing.answer_capsule ||
-          (landing.kind === 'seo_landing' && landing.intro_content
-            ? landing.intro_content
-            : null)
+          landing.kind === 'category'
+            ? landing.description
+            : landing.answer_capsule ||
+              (landing.kind === 'seo_landing' && landing.intro_content
+                ? landing.intro_content
+                : null)
         }
-        emptyTitle={`This ${landing.kind === 'seo_landing' ? 'edit' : 'collection'} is being curated.`}
-        emptyLinks={[
-          { label: 'View all collections', href: '/collections' },
-          { label: 'Shop all products', href: '/products' },
-        ]}
+        emptyTitle={
+          landing.kind === 'category'
+            ? `No products in ${landing.title} right now.`
+            : `This ${landing.kind === 'seo_landing' ? 'edit' : 'collection'} is being curated.`
+        }
+        emptyLinks={
+          landing.kind === 'category'
+            ? relatedLinks
+            : [
+                { label: 'View all collections', href: '/collections' },
+                { label: 'Shop all products', href: '/products' },
+              ]
+        }
       />
 
-      {relatedCollections.length > 0 ? (
+      {landing.kind === 'collection' && relatedCollections.length > 0 ? (
         <section className="kv-page-container border-t border-[var(--ds-border-subtle)] py-10 md:py-14">
           <h2 className="collection-section-title mb-6">Related collections</h2>
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
@@ -389,7 +518,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         </section>
       ) : null}
 
-      {landing.faq_items && landing.faq_items.length > 0 ? (
+      {landing.kind === 'collection' && landing.faq_items && landing.faq_items.length > 0 ? (
         <section className="kv-page-container border-t border-[var(--ds-border-subtle)] py-10">
           <div className="mx-auto max-w-3xl space-y-6">
             {landing.faq_items.map((item) => (

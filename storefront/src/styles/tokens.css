@@ -66,11 +66,11 @@
 
   /* Surfaces */
   --ds-surface-page: #F8F5F0;
-  --ds-surface-paper: #ffffff;
-  --ds-surface-soft: #f1eee7;
-  --ds-surface-parchment: #f6f3ec;
-  --ds-surface-parchment-2: #e5e2db;
-  --ds-surface-warm: #ebe8e1;
+  --ds-surface-paper: #F8F5F0;
+  --ds-surface-soft: #F2EDE4;
+  --ds-surface-parchment: #F2EDE4;
+  --ds-surface-parchment-2: #E5DEC6;
+  --ds-surface-warm: #EBE5D6;
 
   /* Text */
   --ds-text-primary: #1A1A1A;
@@ -87,16 +87,16 @@
   --ds-border-dark: #111111;
 
   /* Footer */
-  --ds-footer-bg: #111111;
-  --ds-footer-text: #f4f1ea;
-  --ds-footer-heading: #e6dccf;
-  --ds-footer-link: #d0c4bc;
-  --ds-footer-muted: #7f756e;
-  --ds-footer-dim: #bfa37e;
-  --ds-footer-border: #3a3029;
-  --ds-footer-highlight: #BFA37E;
-  --ds-footer-highlight-hover: #e6c594;
-  --ds-footer-hover: #ffffff;
+  --ds-footer-bg: #F8F5F0;
+  --ds-footer-text: #1A1A1A;
+  --ds-footer-heading: #1A1A1A;
+  --ds-footer-link: #4D4742;
+  --ds-footer-muted: #7F756E;
+  --ds-footer-dim: #B89B5E;
+  --ds-footer-border: #D0C4BC;
+  --ds-footer-highlight: #B89B5E;
+  --ds-footer-highlight-hover: #9E8148;
+  --ds-footer-hover: #000000;
 
   /* Accent: TERRACOTTA is canonical. */
   --ds-accent-primary: #B89B5E;
@@ -178,11 +178,11 @@
   --ds-ink-rgb: 26, 23, 20;
   --ds-text-primary-rgb: 26, 23, 20;
   --ds-text-secondary-rgb: 61, 58, 54;
-  --ds-cream-rgb: 249, 247, 244;
-  --ds-surface-page-rgb: 249, 247, 244;
-  --ds-surface-paper-rgb: 255, 255, 255;
-  --ds-surface-soft-rgb: 241, 237, 231;
-  --ds-surface-parchment-rgb: 247, 244, 239;
+  --ds-cream-rgb: 248, 245, 240;
+  --ds-surface-page-rgb: 248, 245, 240;
+  --ds-surface-paper-rgb: 248, 245, 240;
+  --ds-surface-soft-rgb: 242, 237, 228;
+  --ds-surface-parchment-rgb: 242, 237, 228;
   --ds-black-rgb: 0, 0, 0;
   --ds-shadow: 0 10px 34px rgba(var(--ds-ink-rgb), 0.12);
   --ds-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
