@@ -17,7 +17,7 @@ export function CategoryCarousel({ categories }: { categories: HomepageCategoryC
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={category.link_url}
+            href={category.link_url.replace('/categories/', '/collections/')}
             className="relative flex-shrink-0 w-[70vw] md:w-[314px] aspect-[2/3] overflow-hidden group animate-fade-in"
           >
             <OptimizedImage

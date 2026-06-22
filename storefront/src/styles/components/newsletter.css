@@ -51,7 +51,7 @@
   font-size: clamp(4rem, 4rem, 8.75rem);
   font-weight: var(--type-light-weight);
   letter-spacing: var(--type-heading-tracking);
-  color: rgba(var(--cream-rgb), 0.04);
+  color: rgba(var(--ds-text-primary-rgb), 0.04);
   line-height: var(--leading-tight);
   margin-bottom: calc(var(--space-5) * -1);
   overflow: hidden;

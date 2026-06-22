@@ -70,7 +70,7 @@ export function CircularCategoriesClient({
             ref={(element) => {
               linksRef.current[index] = element;
             }}
-            href={circle.link_url}
+            href={circle.link_url.replace('/categories/', '/collections/')}
             className="homepage-circle-link"
             data-circle-index={index}
           >

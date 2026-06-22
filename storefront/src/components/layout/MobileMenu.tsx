@@ -162,7 +162,7 @@ export default function MobileMenu({
             key: category.id,
             title: category.name,
             subtitle: countLabel || (category.children?.length ? `${category.children.length} sections` : 'Browse styles'),
-            href: `/categories/${category.slug}`,
+            href: `/collections/${category.slug}`,
             icon: icons[index % icons.length],
             iconBg: iconBgs[index % iconBgs.length],
             hero: category.header_image_url || category.image || null,
@@ -173,7 +173,7 @@ export default function MobileMenu({
               .map((child) => ({
                 name: child.name,
                 meta: formatMenuCount(child.product_count) || 'View category',
-                href: `/categories/${child.slug}`,
+                href: `/collections/${child.slug}`,
                 image: child.header_image_url || child.image || null,
               })),
           };
