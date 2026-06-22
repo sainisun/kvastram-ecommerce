@@ -73,9 +73,9 @@
   color: var(--ds-accent-primary);
 }
 .quickview-option-button.active {
-  border-color: var(--ds-accent-primary);
-  background: var(--ds-accent-soft);
-  color: var(--ds-accent-primary);
+  border-color: var(--ds-text-primary);
+  background: var(--ds-text-primary);
+  color: var(--ds-text-inverse);
 }
 
 .quickview-image-button {
