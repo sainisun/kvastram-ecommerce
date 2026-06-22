@@ -85,3 +85,13 @@ docs/*-artifacts/
 kvastram-platform/
 tmp/
 =
+
+# Redesign doc archive (removed from repo)
+Redesign doc/
+
+# Content verification screenshots
+docs/content-reverify*/
+
+# SEO plan extracts
+docs/kvastram-seo-fix-plan-extract/
+
