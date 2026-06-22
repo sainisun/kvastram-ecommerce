@@ -12,6 +12,7 @@ interface MobileTopBarProps {
   onToggleDrawer: () => void;
   onSearchOpen: () => void;
   onCartOpen: () => void;
+  isTransparent?: boolean;
 }
 
 export function MobileTopBar({
@@ -19,28 +20,40 @@ export function MobileTopBar({
   onToggleDrawer,
   onSearchOpen,
   onCartOpen,
+  isTransparent = false,
 }: MobileTopBarProps) {
   const { totalItems } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
 
+  const wrapperCls = isTransparent
+    ? 'flex md:hidden items-center justify-between h-[54px] px-4 bg-transparent border-b border-transparent transition-all duration-300'
+    : 'flex md:hidden items-center justify-between h-[54px] px-4 bg-[rgba(var(--ds-surface-paper-rgb),0.9)] backdrop-blur-md border-b border-[var(--ds-border-subtle)] transition-all duration-300';
+
+  const iconCls = isTransparent
+    ? 'text-[var(--ds-text-inverse)] transition-colors'
+    : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] transition-colors';
+
+  const menuIconColor = isTransparent ? 'text-[var(--ds-text-inverse)]' : 'text-[var(--ds-text-secondary)]';
+  const ringCls = isTransparent ? 'ring-[var(--ds-surface-page)]' : 'ring-[var(--ds-surface-paper)]';
+
   return (
-    <div className="flex md:hidden items-center justify-between h-[54px] px-4 bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-strong)]">
+    <div className={wrapperCls}>
       <IconButton
         type="button"
         onClick={onToggleDrawer}
         variant="ghost"
         size="md"
-        className="h-10 w-10"
+        className="h-10 w-10 animate-fade-in"
         aria-label={isDrawerOpen ? 'Close navigation' : 'Open navigation'}
       >
         {isDrawerOpen ? (
           <X size={20} strokeWidth={1.8} className="text-[var(--ds-accent-primary)]" />
         ) : (
-          <Menu size={20} strokeWidth={1.8} className="text-[var(--ds-text-secondary)]" />
+          <Menu size={20} strokeWidth={1.8} className={menuIconColor} />
         )}
       </IconButton>
 
-      <Logo size="mobile" />
+      <Logo size="mobile" isTransparent={isTransparent} />
 
       <div className="flex items-center gap-3">
         <IconButton
@@ -48,19 +61,19 @@ export function MobileTopBar({
           onClick={onSearchOpen}
           variant="ghost"
           size="sm"
-          className="text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
+          className={iconCls}
           aria-label="Search"
         >
           <Search size={20} strokeWidth={1.4} />
         </IconButton>
         <Link
           href="/wishlist"
-          className="relative text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] transition-colors"
+          className={`relative ${iconCls}`}
           aria-label={`Wishlist, ${wishlistCount} items`}
         >
           <Heart size={20} strokeWidth={1.4} />
           {wishlistCount > 0 && (
-            <span className="kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center ring-[1.5px] ring-[var(--ds-surface-paper)]">
+            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
               {wishlistCount > 9 ? '9+' : wishlistCount}
             </span>
           )}
@@ -70,12 +83,12 @@ export function MobileTopBar({
           onClick={onCartOpen}
           variant="ghost"
           size="sm"
-          className="relative text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
+          className={`relative ${iconCls}`}
           aria-label={`Cart, ${totalItems} items`}
         >
           <ShoppingBag size={20} strokeWidth={1.4} />
           {totalItems > 0 && (
-            <span className="kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center ring-[1.5px] ring-[var(--ds-surface-paper)]">
+            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
               {totalItems > 9 ? '9+' : totalItems}
             </span>
           )}

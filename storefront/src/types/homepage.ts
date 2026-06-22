@@ -78,6 +78,7 @@ export interface HomepagePayload {
     | 'hero'
     | 'featuredCategories'
     | 'bestSellers'
+    | 'collectionSlider'
     | 'collections'
     | 'watchShop'
     | 'brandStory'
@@ -89,6 +90,7 @@ export interface HomepagePayload {
   hero: HomepageHeroSlide[];
   featured_categories: HomepageCategoryCard[];
   best_sellers: Product[];
+  collection_slider: HomepageCollection[];
   collections: HomepageCollection[];
   watch_shop: HomepageTrendingReel[];
   brand_story: HomepageBrandStory | null;

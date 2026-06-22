@@ -38,6 +38,7 @@ const homepage = {
       'hero',
       'featuredCategories',
       'bestSellers',
+      'collectionSlider',
       'collections',
       'watchShop',
       'brandStory',
@@ -70,6 +71,40 @@ const homepage = {
     sort_order: index,
   })),
   best_sellers: bestSellers,
+  collection_slider: [
+    {
+      id: 'slider-1',
+      title: 'Travel Edit',
+      handle: 'travel-edit',
+      description: 'Effortless styles for the journey ahead.',
+      image,
+      products: [product('travel-1', 'Travel Set')],
+    },
+    {
+      id: 'slider-2',
+      title: 'One Of Kind',
+      handle: 'one-of-a-kind',
+      description: 'Artisanal unique pieces.',
+      image,
+      products: [product('unique-1', 'One of a Kind Scarf')],
+    },
+    {
+      id: 'slider-3',
+      title: 'Chic Layers',
+      handle: 'chic-layers',
+      description: 'Layering essentials for any season.',
+      image,
+      products: [product('layers-1', 'Artisan Coat')],
+    },
+    {
+      id: 'slider-4',
+      title: 'Jaipur Stories',
+      handle: 'jaipur-stories',
+      description: 'Vibrant hand-block prints.',
+      image,
+      products: [product('jaipur-1', 'Block Print Dress')],
+    },
+  ],
   collections: [
     {
       id: 'campaign-1',

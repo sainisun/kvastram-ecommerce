@@ -7,7 +7,8 @@ import {
 } from '@/lib/seo';
 import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
-import { CategoriesGrid } from '@/components/home/CategoriesGrid';
+import { CategoryCarousel } from '@/components/home/CategoryCarousel';
+import { CollectionSlider } from '@/components/home/CollectionSlider';
 import { BestSellers } from '@/components/home/BestSellers';
 import { CollectionsSection } from '@/components/home/CollectionsSection';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
@@ -26,6 +27,7 @@ const EMPTY_HOMEPAGE: HomepagePayload = {
     hero: { status: 'error', count: 0 },
     featuredCategories: { status: 'error', count: 0 },
     bestSellers: { status: 'error', count: 0 },
+    collectionSlider: { status: 'error', count: 0 },
     collections: { status: 'error', count: 0 },
     watchShop: { status: 'error', count: 0 },
     brandStory: { status: 'error', count: 0 },
@@ -36,6 +38,7 @@ const EMPTY_HOMEPAGE: HomepagePayload = {
   hero: [],
   featured_categories: [],
   best_sellers: [],
+  collection_slider: [],
   collections: [],
   watch_shop: [],
   brand_story: null,
@@ -59,14 +62,34 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
+      {/* 1. Circle Category Strip */}
       <CircularCategories circles={homepage.category_circles} />
+      
+      {/* 2. Hero Section */}
       <HeroSection banners={homepage.hero} />
-      <CategoriesGrid categories={homepage.featured_categories} />
+      
+      {/* 3. Category Carousel */}
+      <CategoryCarousel categories={homepage.featured_categories} />
+      
+      {/* 4. Collection Slider */}
+      <CollectionSlider collections={homepage.collection_slider} />
+      
+      {/* 5. Chosen For You / Best Seller Product Slider */}
       <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
+      
+      {/* 6. Editorial Collection / Campaign Section */}
       <CollectionsSection collections={homepage.collections} />
+      
+      {/* 7. Watch & Buy / Trending Now Section */}
       <WatchBuyPreview reels={homepage.watch_shop} />
+      
+      {/* 8. Brand Story Section */}
       <BrandStory story={homepage.brand_story} />
+      
+      {/* 9. Instagram / Social Feed Section */}
       <InstagramSection posts={homepage.social} />
+      
+      {/* 10. Newsletter Section */}
       <NewsletterSection settings={homepage.newsletter} />
     </div>
   );

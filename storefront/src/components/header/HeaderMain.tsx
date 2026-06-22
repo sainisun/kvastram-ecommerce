@@ -8,6 +8,7 @@ interface HeaderMainProps {
   onMegaLeave: () => void;
   onSearchOpen: () => void;
   onCartOpen: () => void;
+  isTransparent?: boolean;
 }
 
 export function HeaderMain({
@@ -16,23 +17,29 @@ export function HeaderMain({
   onMegaLeave,
   onSearchOpen,
   onCartOpen,
+  isTransparent = false,
 }: HeaderMainProps) {
-  return (
-    <div className="kv-page-frame relative mx-auto mt-3 hidden h-[74px] w-full max-w-[1440px] grid-cols-[minmax(170px,0.7fr)_minmax(420px,1.8fr)_minmax(170px,0.7fr)] items-center rounded-[999px] border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-7 shadow-[0_18px_40px_rgba(var(--ds-ink-rgb),0.10)] md:grid xl:px-10">
-      <div className="flex items-center justify-start">
-        <Logo size="desktop" />
-      </div>
+  const containerCls = isTransparent
+    ? 'relative hidden w-full h-[74px] grid-cols-3 items-center bg-transparent border-b border-transparent transition-all duration-300 md:grid px-[30px]'
+    : 'relative hidden w-full h-[74px] grid-cols-3 items-center bg-[rgba(var(--ds-surface-paper-rgb),0.9)] backdrop-blur-md border-b border-[var(--ds-border-subtle)] shadow-sm transition-all duration-300 md:grid px-[30px]';
 
-      <div className="flex min-w-0 items-center justify-center">
+  return (
+    <div className={containerCls}>
+      <div className="flex items-center justify-start min-w-0">
         <DesktopNav
           activeMega={activeMega}
           onMegaEnter={onMegaEnter}
           onMegaLeave={onMegaLeave}
+          isTransparent={isTransparent}
         />
       </div>
 
+      <div className="flex items-center justify-center">
+        <Logo size="desktop" isTransparent={isTransparent} />
+      </div>
+
       <div className="flex items-center justify-end">
-        <ActionsRight onSearchOpen={onSearchOpen} onCartOpen={onCartOpen} />
+        <ActionsRight onSearchOpen={onSearchOpen} onCartOpen={onCartOpen} isTransparent={isTransparent} />
       </div>
     </div>
   );

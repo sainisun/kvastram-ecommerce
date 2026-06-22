@@ -22,35 +22,37 @@ test.describe('Storefront visual contract', () => {
     await expect(hero.getByRole('link').first()).toBeVisible();
   });
 
-  test('homepage renders the exact nine-section contract in order', async ({ page }) => {
+  test('homepage renders the exact 11-section contract in order', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const sections = page.locator('[data-home-section]');
-    await expect(sections).toHaveCount(9);
-    await expect(sections.first()).toHaveAttribute('data-home-section', /1-categories/, {
+    await expect(sections).toHaveCount(11);
+    await expect(sections.first()).toHaveAttribute('data-home-section', /1-circle-categories/, {
       timeout: 10000,
     });
     expect(await sections.evaluateAll((nodes) =>
       nodes.map((node) => node.getAttribute('data-home-section'))
     )).toEqual([
-      '1-categories',
+      '1-circle-categories',
       '2-hero',
-      '3-featured-categories',
-      '4-best-sellers',
-      '5-collections',
-      '6-watch-shop',
-      '7-brand-story',
-      '8-social',
-      '9-newsletter',
+      '3-category-carousel',
+      '4-collection-slider',
+      '5-best-sellers',
+      '6-collections',
+      '7-watch-shop',
+      '8-brand-story',
+      '9-social',
+      '10-newsletter',
+      '11-footer',
     ]);
   });
 
   test('homepage keeps best sellers out of campaign previews', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await expect(
-      page.locator('[data-home-section="4-best-sellers"] .product-card')
+      page.locator('[data-home-section="5-best-sellers"] .product-card')
     ).toHaveCount(4);
     const bestSellerIds = await page
-      .locator('[data-home-section="4-best-sellers"] article')
+      .locator('[data-home-section="5-best-sellers"] article')
       .evaluateAll((nodes) =>
         nodes.map((node) =>
           node.querySelector('a[href^="/products/"]')?.getAttribute('href')?.split('/').pop()

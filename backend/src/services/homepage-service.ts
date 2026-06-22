@@ -38,6 +38,7 @@ type HomepageSectionKey =
   | 'hero'
   | 'featuredCategories'
   | 'bestSellers'
+  | 'collectionSlider'
   | 'collections'
   | 'watchShop'
   | 'brandStory'
@@ -303,6 +304,179 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
     );
 }
 
+async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {
+  const now = new Date();
+  let collections = await db
+    .select()
+    .from(product_collections)
+    .where(
+      and(
+        eq(product_collections.status, 'active'),
+        eq(product_collections.rule_type, 'manual'),
+        eq(product_collections.homepage_section, 'collection_slider'),
+        isNull(product_collections.deleted_at),
+        or(isNull(product_collections.valid_from), sql`${product_collections.valid_from} <= ${now}`),
+        or(isNull(product_collections.valid_until), sql`${product_collections.valid_until} >= ${now}`)
+      )
+    )
+    .orderBy(asc(product_collections.display_order), desc(product_collections.created_at))
+    .limit(4);
+
+  if (collections.length === 0) {
+    collections = await db
+      .select()
+      .from(product_collections)
+      .where(
+        and(
+          eq(product_collections.status, 'active'),
+          eq(product_collections.rule_type, 'manual'),
+          ne(product_collections.homepage_section, 'collections'),
+          isNull(product_collections.deleted_at),
+          or(isNull(product_collections.valid_from), sql`${product_collections.valid_from} <= ${now}`),
+          or(isNull(product_collections.valid_until), sql`${product_collections.valid_until} >= ${now}`)
+        )
+      )
+      .orderBy(asc(product_collections.display_order), desc(product_collections.created_at))
+      .limit(4);
+  }
+
+  const collectionIds = collections.map((collection) => collection.id);
+  let loadedCollections: any[] = [];
+  
+  if (collectionIds.length > 0) {
+    const assignments = await db
+      .select({
+        collection_id: collection_products.collection_id,
+        product_id: collection_products.product_id,
+        position: collection_products.position,
+      })
+      .from(collection_products)
+      .innerJoin(products, eq(collection_products.product_id, products.id))
+      .where(
+        and(
+          inArray(collection_products.collection_id, collectionIds),
+          eq(products.status, 'published'),
+          eq(products.is_wholesale_only, false)
+        )
+      )
+      .orderBy(asc(collection_products.collection_id), asc(collection_products.position));
+
+    const previewIdsByCollection = new Map<string, string[]>();
+    for (const assignment of assignments) {
+      const current = previewIdsByCollection.get(assignment.collection_id) || [];
+      current.push(assignment.product_id);
+      previewIdsByCollection.set(assignment.collection_id, current);
+    }
+
+    const previewIds = Array.from(
+      new Set(
+        collections.flatMap((collection) =>
+          dedupeCampaignProductIds(
+            previewIdsByCollection.get(collection.id) || [],
+            bestSellerIds
+          )
+        )
+      )
+    );
+    const previewProducts = await productService.retrieveMany(previewIds);
+    const productById = new Map(
+      previewProducts
+        .filter((product) => isHomepageProductReady(product))
+        .map((product) => [product.id, product])
+    );
+
+    loadedCollections = collections
+      .map((collection) => {
+        const products = dedupeCampaignProductIds(
+          previewIdsByCollection.get(collection.id) || [],
+          bestSellerIds
+        )
+          .map((id) => productById.get(id))
+          .filter((product): product is NonNullable<typeof product> => Boolean(product));
+        const image =
+          collection.cover_image_url ||
+          collection.image ||
+          products.find((product) => isCloudinaryUrl(product.thumbnail))?.thumbnail ||
+          products
+            .flatMap((product) => product.images || [])
+            .find((img) => isCloudinaryUrl(img.url))?.url ||
+          null;
+
+        return {
+          id: collection.id,
+          title: collection.title,
+          handle: collection.handle,
+          description: collection.description,
+          image,
+          products,
+        };
+      })
+      .filter(
+        (collection) =>
+          collection.products.length > 0 && isCloudinaryUrl(collection.image)
+      );
+  }
+
+  if (loadedCollections.length < 4) {
+    const allPublishedProducts = await db
+      .select({ id: products.id })
+      .from(products)
+      .where(
+        and(
+          eq(products.status, 'published'),
+          eq(products.is_wholesale_only, false)
+        )
+      )
+      .limit(20);
+
+    const publishedIds = allPublishedProducts.map((p) => p.id);
+    const enriched = await productService.retrieveMany(publishedIds);
+    const validProducts = enriched.filter((p) => isHomepageProductReady(p));
+
+    const fallbackTitles = [
+      { title: 'Travel Edit', handle: 'travel-edit', keyword: 'bag' },
+      { title: 'One Of Kind', handle: 'one-of-kind', keyword: 'jacket' },
+      { title: 'Artisan Favorites', handle: 'artisan-favorites', keyword: 'shawl' },
+      { title: 'Heritage Collection', handle: 'heritage-collection', keyword: 'saree' },
+    ];
+
+    const generatedCollections = fallbackTitles.map((item, index) => {
+      let filtered = validProducts.filter((p) => 
+        p.title.toLowerCase().includes(item.keyword) || 
+        p.description?.toLowerCase().includes(item.keyword)
+      );
+      if (filtered.length < 3) {
+        filtered = validProducts.slice(index * 4, (index + 1) * 4);
+      }
+      if (filtered.length === 0) {
+        filtered = validProducts.slice(0, 4);
+      }
+      
+      const image = filtered[0]?.thumbnail || '';
+      
+      return {
+        id: `fallback-slider-col-${item.handle}`,
+        title: item.title,
+        handle: item.handle,
+        description: `Handcrafted ${item.title} selection`,
+        image,
+        products: filtered.slice(0, 4),
+      };
+    }).filter(c => c.products.length > 0 && isCloudinaryUrl(c.image));
+
+    const combined = [...loadedCollections];
+    for (const gen of generatedCollections) {
+      if (combined.length >= 4) break;
+      if (!combined.some((c) => c.handle === gen.handle)) {
+        combined.push(gen);
+      }
+    }
+    return combined;
+  }
+
+  return loadedCollections.slice(0, 4);
+}
+
 async function loadWatchShop() {
   const reels = await db
     .select()
@@ -515,6 +689,15 @@ export class HomepageService {
       statuses.collections = { status: 'error', count: 0 };
     }
 
+    let collectionSlider: Awaited<ReturnType<typeof loadCollectionSlider>> = [];
+    try {
+      collectionSlider = await loadCollectionSlider(new Set(bestSellers.map((product) => product.id)));
+      statuses.collectionSlider = statusFor(collectionSlider);
+    } catch (error) {
+      console.error('[Homepage] collection slider failed:', error);
+      statuses.collectionSlider = { status: 'error', count: 0 };
+    }
+
     let watchShop: Awaited<ReturnType<typeof loadWatchShop>> = [];
     try {
       watchShop = await loadWatchShop();
@@ -606,6 +789,7 @@ export class HomepageService {
       hero,
       featured_categories: featuredCategories,
       best_sellers: bestSellers,
+      collection_slider: collectionSlider,
       collections,
       watch_shop: watchShop,
       brand_story: brandStory,

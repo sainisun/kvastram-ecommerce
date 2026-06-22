@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { PromoBar } from './PromoBar';
 import { HeaderMain } from './HeaderMain';
 import { SearchBar } from './SearchBar';
@@ -77,18 +78,26 @@ export function SiteHeader() {
     megaLeaveTimer.current = setTimeout(() => setActiveMega(null), 180);
   }, []);
 
+  const pathname = usePathname();
+  const isHomepage = pathname === '/';
+  const isTransparent = isHomepage && !isSticky;
+
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
   }, []);
 
+  const headerCls = isTransparent
+    ? 'sticky top-0 z-50 w-full bg-transparent transition-all duration-300'
+    : 'sticky top-0 z-50 w-full bg-[var(--ds-surface-paper)] shadow-sm transition-all duration-300';
+
   return (
     <>
       <header
-        className="sticky top-0 z-50 bg-[var(--ds-surface-paper)] md:bg-transparent md:px-5 md:pt-3"
+        className={headerCls}
         onMouseLeave={handleMegaLeave}
       >
-        {/* PromoBar — hidden when sticky */}
-        <PromoBar isSticky={isSticky} />
+        {/* PromoBar — hidden when sticky or transparent */}
+        {!isTransparent && <PromoBar isSticky={isSticky} />}
 
         {/* Desktop header */}
         <HeaderMain
@@ -97,6 +106,7 @@ export function SiteHeader() {
           onMegaLeave={handleMegaLeave}
           onSearchOpen={() => setSearchOpen(true)}
           onCartOpen={() => setCartOpen(true)}
+          isTransparent={isTransparent}
         />
 
         {/* Desktop search bar */}
@@ -120,6 +130,7 @@ export function SiteHeader() {
           onToggleDrawer={() => setDrawerOpen((v) => !v)}
           onSearchOpen={() => setSearchOpen(true)}
           onCartOpen={() => setCartOpen(true)}
+          isTransparent={isTransparent}
         />
 
       </header>

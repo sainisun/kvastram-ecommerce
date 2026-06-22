@@ -9,55 +9,39 @@ import { storefrontTrust } from '@/config/storefront-trust';
 
 const shopLinks = [
   { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Curated Edits', href: '/edits' },
-  { label: 'Kantha Quilts & Throws', href: '/collections/kantha-essentials' },
-  { label: 'Handmade Bags & Totes', href: '/categories/tote-bags' },
-  { label: 'Block Print Clothing', href: '/collections/block-print-edit' },
-  { label: 'Artisan Scarves & Wraps', href: '/categories/scarves-wraps' },
-  { label: 'Gifts Under ₹2,000', href: '/collections/gifts-under-2000' },
-  { label: 'Last Pieces — On Sale', href: '/sale' },
+  { label: 'Kantha Jackets', href: '/categories/kantha-jackets' },
+  { label: 'Cotton Jackets', href: '/categories/cotton-jackets' },
+  { label: 'Bohemian Dresses', href: '/categories/bohemian-dresses' },
+  { label: 'Long Dresses', href: '/categories/long-dress' },
+  { label: 'Short Dresses', href: '/categories/short-dress' },
+  { label: 'Duffle Bags', href: '/categories/duffle-bags' },
+  { label: 'Quilted Tote Bags', href: '/categories/quilted-bags' },
+  { label: 'Velvet Bags', href: '/categories/velvet-bags' },
+  { label: 'Skirts', href: '/categories/skirts' },
+  { label: 'Kitchen Aprons', href: '/categories/kitchen-aprons' },
+  { label: 'Block Print Fabrics', href: '/categories/block-print-fabrics' },
+  { label: 'Kantha Quilts', href: '/categories/kantha-quilts' },
+  { label: 'Vintage Throws', href: '/categories/vintage-throws' },
 ];
 
 const supportLinks = [
-  { label: 'Help Center', href: storefrontTrust.policyRoutes.help },
   { label: 'Track Order', href: storefrontTrust.policyRoutes.track },
   { label: 'Shipping Policy', href: storefrontTrust.policyRoutes.shipping },
   { label: 'Returns & Refunds', href: storefrontTrust.policyRoutes.returns },
-  { label: 'Payment Help', href: storefrontTrust.policyRoutes.paymentHelp },
-  { label: 'Contact Us', href: storefrontTrust.policyRoutes.contact },
   { label: 'FAQ', href: storefrontTrust.policyRoutes.faq },
-  { label: 'Size Guide', href: '/size-guide' },
+  { label: 'Contact Us', href: storefrontTrust.policyRoutes.contact },
   { label: 'Privacy Policy', href: storefrontTrust.policyRoutes.privacy },
   { label: 'Terms of Service', href: storefrontTrust.policyRoutes.terms },
 ];
 
-const companyLinks = [
-  { label: 'Our Story', href: '/about' },
+const companyLinks: { label: string; href: string; highlight?: boolean }[] = [
+  { label: 'About Us', href: '/about' },
   { label: 'Meet the Artisans', href: '/about#artisans' },
-  { label: 'What is Kantha?', href: '/journal/what-is-kantha' },
-  { label: 'Slow Fashion Journal', href: '/journal' },
-  { label: 'Wholesale / B2B', href: '/wholesale', highlight: true },
+  { label: 'Blog / Journal', href: '/journal' },
 ];
 
-const mobileShopLinks = [
-  { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Curated Edits', href: '/edits' },
-  { label: 'Best Sellers', href: '/products' },
-  { label: 'Collections', href: '/collections' },
-  { label: 'Shawls & Wraps', href: '/categories/scarves-wraps' },
-  { label: 'Kurtis & Tops', href: '/categories/suits-kurtas' },
-  { label: 'Accessories', href: '/categories/accessories' },
-  { label: 'Sale', href: '/sale' },
-];
-
-const mobileHelpLinks = [
-  { label: 'Help Center', href: storefrontTrust.policyRoutes.help },
-  { label: 'Track Order', href: storefrontTrust.policyRoutes.track },
-  { label: 'Shipping Policy', href: storefrontTrust.policyRoutes.shipping },
-  { label: 'Returns & Refunds', href: storefrontTrust.policyRoutes.returns },
-  { label: 'Contact Us', href: storefrontTrust.policyRoutes.contact },
-  { label: 'FAQ', href: storefrontTrust.policyRoutes.faq },
-];
+const mobileShopLinks = shopLinks;
+const mobileHelpLinks = supportLinks;
 
 const socialLinks = [
   {
@@ -367,7 +351,7 @@ function DesktopFooter() {
 
 export function Footer() {
   return (
-    <footer>
+    <footer data-home-section="11-footer">
       <MobileFooter />
       <DesktopFooter />
     </footer>

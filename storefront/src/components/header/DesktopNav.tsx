@@ -10,9 +10,10 @@ interface DesktopNavProps {
   activeMega: string | null;
   onMegaEnter: (label: string) => void;
   onMegaLeave: () => void;
+  isTransparent?: boolean;
 }
 
-export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave }: DesktopNavProps) {
+export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave, isTransparent = false }: DesktopNavProps) {
   const pathname = usePathname();
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const enterTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,7 +50,9 @@ export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave }: DesktopNavP
                 'font-ui text-body-sm type-medium tracking-token-wide pb-1 transition-colors',
                 isActive || isMegaOpen
                   ? 'text-[var(--ds-accent-primary)] border-b border-[var(--ds-accent-primary)]'
-                  : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] hover:border-b hover:border-[var(--ds-text-disabled)]',
+                  : isTransparent
+                    ? 'text-[var(--ds-text-inverse)] hover:text-[var(--ds-text-inverse)] hover:border-b hover:border-[var(--ds-text-inverse)]'
+                    : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] hover:border-b hover:border-[var(--ds-text-disabled)]',
               ].join(' ')}
               aria-haspopup={item.hasMega ? 'true' : undefined}
               aria-expanded={item.hasMega ? isMegaOpen : undefined}

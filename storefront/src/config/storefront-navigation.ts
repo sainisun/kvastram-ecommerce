@@ -26,20 +26,21 @@ export const STOREFRONT_NAV_ITEMS: StorefrontNavItem[] = [
 export const CATEGORY_QUICK_LINKS: StorefrontNavLink[] = [
   { label: 'New Arrivals', href: '/products?sort=newest' },
   { label: 'Kantha Jackets', href: '/categories/kantha-jackets' },
+  { label: 'Cotton Jackets', href: '/categories/cotton-jackets' },
   { label: 'Bohemian Dresses', href: '/categories/bohemian-dresses' },
-  { label: 'Quilted Bags', href: '/categories/quilted-bags' },
+  { label: 'Quilted Tote Bags', href: '/categories/quilted-bags' },
   { label: 'Kantha Quilts', href: '/categories/kantha-quilts' },
-  { label: 'Block Print Fabrics', href: '/categories/block-print-fabrics' },
 ];
 
 export const MEGA_FALLBACK_CATEGORY_GROUPS: StorefrontNavGroup[] = [
   {
-    label: 'Jackets & Robes',
+    label: 'Jackets & Coats',
     items: [
       { label: 'Kantha Jackets', href: '/categories/kantha-jackets' },
-      { label: 'Velvet Suzani Jackets', href: '/categories/velvet-suzani-jackets' },
+      { label: 'Cotton Jackets', href: '/categories/cotton-jackets' },
+      { label: 'Velvet Jackets', href: '/categories/velvet-jackets' },
+      { label: 'Vintage Jackets', href: '/categories/vintage-jackets' },
       { label: 'Printed Kimonos', href: '/categories/printed-kimonos' },
-      { label: 'Bohemian Dresses', href: '/categories/bohemian-dresses' },
       { label: 'Kimono Robes', href: '/categories/kimono-robes' },
     ],
   },
@@ -47,16 +48,21 @@ export const MEGA_FALLBACK_CATEGORY_GROUPS: StorefrontNavGroup[] = [
 
 export const MEGA_FALLBACK_SECONDARY_GROUPS: StorefrontNavGroup[] = [
   {
-    label: 'Bags & Accessories',
+    label: 'Dresses & Bags',
     items: [
+      { label: 'Long Dress', href: '/categories/long-dress' },
+      { label: 'Short Dress', href: '/categories/short-dress' },
+      { label: 'Duffle Bags', href: '/categories/duffle-bags' },
       { label: 'Quilted Tote Bags', href: '/categories/quilted-bags' },
-      { label: 'Toiletry Pouches', href: '/categories/toiletry-pouches' },
       { label: 'Velvet Bags', href: '/categories/velvet-bags' },
+      { label: 'Toiletry Pouches', href: '/categories/toiletry-pouches' },
     ],
   },
   {
-    label: 'Textiles & Home',
+    label: 'Apparel & Home',
     items: [
+      { label: 'Skirts', href: '/categories/skirts' },
+      { label: 'Kitchen Aprons', href: '/categories/kitchen-aprons' },
       { label: 'Block Print Fabrics', href: '/categories/block-print-fabrics' },
       { label: 'Kantha Quilts', href: '/categories/kantha-quilts' },
       { label: 'Vintage Throws', href: '/categories/vintage-throws' },
@@ -68,6 +74,7 @@ export const MEGA_FALLBACK_COLLECTION_GROUPS: StorefrontNavGroup[] = [
   {
     label: 'Collections',
     items: [
+      { label: 'Velvet Luxe Collection', href: '/collections/velvet-luxe' },
       { label: 'Kantha Essentials', href: '/collections/kantha-essentials' },
       { label: 'Indigo Dye Edit', href: '/collections/indigo-dye-edit' },
       { label: 'Handcrafted Gifts', href: '/collections/gifts' },
