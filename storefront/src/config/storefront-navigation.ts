@@ -24,22 +24,22 @@ export const STOREFRONT_NAV_ITEMS: StorefrontNavItem[] = [
 ];
 
 export const CATEGORY_QUICK_LINKS: StorefrontNavLink[] = [
-  { label: 'New Kantha Short Kimono', href: '/collections/new-kantha-short-kimono' },
-  { label: 'Vintage Kantha Jacket', href: '/collections/vintage-kantha-jacket' },
-  { label: 'Velvet Suzani Jacket', href: '/collections/velvet-suzani-jacket' },
-  { label: 'Velvet Long Kimono', href: '/collections/velvet-long-kimono' },
-  { label: 'Tote Bags', href: '/collections/tote-bags' },
-  { label: 'Gown & Dress', href: '/collections/gown-dress' },
+  { label: 'New Kantha Short Kimono', href: '/categories/new-kantha-short-kimono' },
+  { label: 'Vintage Kantha Jacket', href: '/categories/vintage-kantha-jacket' },
+  { label: 'Velvet Suzani Jacket', href: '/categories/velvet-suzani-jacket' },
+  { label: 'Velvet Long Kimono', href: '/categories/velvet-long-kimono' },
+  { label: 'Tote Bags', href: '/categories/tote-bags' },
+  { label: 'Gown & Dress', href: '/categories/gown-dress' },
 ];
 
 export const MEGA_FALLBACK_CATEGORY_GROUPS: StorefrontNavGroup[] = [
   {
     label: 'Jackets & Kimonos',
     items: [
-      { label: 'New Kantha Short Kimono', href: '/collections/new-kantha-short-kimono' },
-      { label: 'Vintage Kantha Jacket', href: '/collections/vintage-kantha-jacket' },
-      { label: 'Velvet Suzani Jacket', href: '/collections/velvet-suzani-jacket' },
-      { label: 'Velvet Long Kimono', href: '/collections/velvet-long-kimono' },
+      { label: 'New Kantha Short Kimono', href: '/categories/new-kantha-short-kimono' },
+      { label: 'Vintage Kantha Jacket', href: '/categories/vintage-kantha-jacket' },
+      { label: 'Velvet Suzani Jacket', href: '/categories/velvet-suzani-jacket' },
+      { label: 'Velvet Long Kimono', href: '/categories/velvet-long-kimono' },
     ],
   },
 ];
@@ -48,8 +48,8 @@ export const MEGA_FALLBACK_SECONDARY_GROUPS: StorefrontNavGroup[] = [
   {
     label: 'Apparel & Accessories',
     items: [
-      { label: 'Gown & Dress', href: '/collections/gown-dress' },
-      { label: 'Tote Bags', href: '/collections/tote-bags' },
+      { label: 'Gown & Dress', href: '/categories/gown-dress' },
+      { label: 'Tote Bags', href: '/categories/tote-bags' },
     ],
   },
 ];
@@ -62,6 +62,8 @@ export const MEGA_FALLBACK_COLLECTION_GROUPS: StorefrontNavGroup[] = [
       { label: 'New Arrivals', href: '/collections/new-arrivals' },
       { label: 'Trending', href: '/collections/trending' },
       { label: 'Sale', href: '/collections/sale' },
+      { label: 'Editors Picks', href: '/collections/editors-picks' },
+      { label: 'Essentials', href: '/collections/essentials' },
     ],
   },
 ];

@@ -10,12 +10,12 @@ import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 
 const shopLinks = [
-  { label: 'New Kantha Short Kimono', href: '/collections/new-kantha-short-kimono' },
-  { label: 'Vintage Kantha Jacket', href: '/collections/vintage-kantha-jacket' },
-  { label: 'Velvet Suzani Jacket', href: '/collections/velvet-suzani-jacket' },
-  { label: 'Velvet Long Kimono', href: '/collections/velvet-long-kimono' },
-  { label: 'Tote Bags', href: '/collections/tote-bags' },
-  { label: 'Gown & Dress', href: '/collections/gown-dress' },
+  { label: 'New Kantha Short Kimono', href: '/categories/new-kantha-short-kimono' },
+  { label: 'Vintage Kantha Jacket', href: '/categories/vintage-kantha-jacket' },
+  { label: 'Velvet Suzani Jacket', href: '/categories/velvet-suzani-jacket' },
+  { label: 'Velvet Long Kimono', href: '/categories/velvet-long-kimono' },
+  { label: 'Tote Bags', href: '/categories/tote-bags' },
+  { label: 'Gown & Dress', href: '/categories/gown-dress' },
 ];
 
 const supportLinks = [
