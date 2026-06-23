@@ -16,20 +16,9 @@ jobs:
           username: root
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
-          timeout: 300s
-          command_timeout: 10m
           script: |
             set -e
-            echo "=== Seeding Live Database ==="
-            cd /root/kvastram-ecommerce/backend
-            
-            echo "Running seed-real-data.ts using a temporary docker container..."
-            docker run --rm \
-              --network kvastram_default \
-              --env-file .env.production \
-              -v "$(pwd)":/app \
-              -w /app \
-              node:20-bookworm-slim \
-              bash -c "npm ci && npx tsx scripts/seed-real-data.ts"
+            cd /root/kvastram-ecommerce/deploy/hostinger
+            docker compose exec -T backend node dist/seed-real-data.js
             
             echo "✅ Seed Complete!"
