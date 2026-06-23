@@ -107,8 +107,23 @@ jobs:
             echo "=== Seeding Live Database Automatically ==="
             cd /root/kvastram-ecommerce/deploy/hostinger
             
-            # Capture output to print exact errors
-            OUTPUT=$(docker compose exec -T backend node dist/seed-real-data.js 2>&1)
+            # Source the production environment file to get the exact DATABASE_URL
+            set -a
+            source /root/kvastram-ecommerce/backend/.env.production
+            set +a
+            
+            echo "--- DEBUG: Environment Variables inside Exec ---"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node -e "console.log('DATABASE_URL:', process.env.DATABASE_URL ? process.env.DATABASE_URL.replace(/:[^:@]*@/, ':***@') : 'MISSING')"
+            
+            echo "--- DEBUG: Direct DB Connection Test ---"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node -e "
+            const postgres = require('postgres');
+            const sql = postgres(process.env.DATABASE_URL, { max: 1 });
+            sql\`SELECT 1\`.then(() => { console.log('DB Connection OK'); process.exit(0); }).catch(e => { console.error('DB Connection Failed:', e); process.exit(1); });
+            "
+            
+            # Capture output to print exact errors, explicitly passing the environment variable
+            OUTPUT=$(docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-real-data.js 2>&1)
             EXIT_CODE=$?
             
             echo "$OUTPUT"
