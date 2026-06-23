@@ -70,13 +70,13 @@ export default async function Home() {
       
       {/* 3. Category Carousel */}
       <CategoryCarousel categories={homepage.featured_categories} />
-      
+
       {/* 4. Collection Slider */}
       <CollectionSlider collections={homepage.collection_slider} />
       
       {/* 5. Chosen For You / Best Seller Product Slider */}
       <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
-      
+
       {/* 6. Editorial Collection / Campaign Section */}
       <CollectionsSection collections={homepage.collections} />
       

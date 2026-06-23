@@ -397,44 +397,6 @@ export default function CategoryForm({ initialData }: CategoryFormProps) {
         helpText="Select products that should appear on this category storefront page."
       />
 
-      <details className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        <summary className="cursor-pointer px-8 py-4 text-sm font-semibold text-gray-700">SEO Settings</summary>
-        <div className="space-y-4 px-8 pb-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Meta Title</label>
-            <input
-              type="text"
-              name="seo_title"
-              value={formData.seo_title}
-              onChange={handleChange}
-              maxLength={200}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
-              placeholder={formData.name ? `${formData.name} — Handmade Indian Fashion | Kvastram` : 'Auto-generated from name if empty'}
-            />
-            <p className="text-xs text-gray-500">{formData.seo_title.length}/200 characters</p>
-          </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Meta Description</label>
-            <textarea
-              name="seo_desc"
-              value={formData.seo_desc}
-              onChange={handleChange}
-              maxLength={300}
-              rows={3}
-              className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2 outline-none transition-all focus:border-black focus:ring-2 focus:ring-black"
-              placeholder="Brief description for search engines..."
-            />
-            <p className="text-xs text-gray-500">{formData.seo_desc.length}/300 characters</p>
-          </div>
-          <ImageUploadField
-            label="OG Image (Social Share)"
-            value={formData.og_image_url}
-            onChange={(og_image_url) => setFormData((prev) => ({ ...prev, og_image_url }))}
-            helpText="Image shown when sharing on social media. Recommended: 1200×630px."
-            uploadButtonText="Upload OG image"
-          />
-        </div>
-      </details>
 
       <div className="flex justify-end rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
         <button
