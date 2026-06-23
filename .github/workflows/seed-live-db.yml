@@ -21,9 +21,15 @@ jobs:
           script: |
             set -e
             echo "=== Seeding Live Database ==="
-            cd /root/kvastram-ecommerce
+            cd /root/kvastram-ecommerce/backend
             
-            echo "Running seed-real-data.ts inside backend container..."
-            docker compose -f deploy/hostinger/docker-compose.yml exec -T backend npx tsx scripts/seed-real-data.ts
+            echo "Running seed-real-data.ts using a temporary docker container..."
+            docker run --rm \
+              --network kvastram_default \
+              --env-file .env.production \
+              -v "$(pwd)":/app \
+              -w /app \
+              node:20-bookworm-slim \
+              bash -c "npm ci && npx tsx scripts/seed-real-data.ts"
             
             echo "✅ Seed Complete!"
