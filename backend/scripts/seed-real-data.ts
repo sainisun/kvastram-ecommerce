@@ -4,7 +4,6 @@ import {
   products,
   product_variants,
   product_categories,
-  category_assignments,
   product_collections,
   collection_products,
   product_images,
@@ -31,7 +30,6 @@ async function seed() {
   // Clear existing catalog data to give a clean slate
   await db.delete(money_amounts);
   await db.delete(collection_products);
-  await db.delete(category_assignments);
   await db.delete(product_tags);
   await db.delete(product_images);
   await db.delete(product_variants);
@@ -43,8 +41,8 @@ async function seed() {
   console.log('Cleared existing catalog data.');
 
   // Load JSON
-  const dataPath = path.resolve(__dirname, 'seed-data.json');
-  const categoriesData = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+  // We import directly so esbuild bundles the JSON data into the script
+  const categoriesData = require('./seed-data.json');
 
   // Create Collections
   const collectionsToCreate = [
