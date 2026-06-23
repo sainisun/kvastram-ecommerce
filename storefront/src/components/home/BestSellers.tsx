@@ -135,8 +135,8 @@ export function BestSellers({
             <p className="homepage-eyebrow text-body-xs uppercase tracking-token-wider text-brand-gold">Chosen For You</p>
             <h2 className="text-display-sm font-display font-medium text-brand-ink">Best Sellers</h2>
           </div>
-          <Link href="/bestsellers" className="text-body-sm type-medium tracking-token-wide border-b border-brand-ink pb-0.5 hover:text-brand-accent hover:border-brand-accent transition-colors">
-            Shop all
+          <Link href="/collections/best-sellers" className="inline-flex h-10 items-center justify-center rounded-sm bg-black px-6 text-sm font-medium text-white transition-colors hover:bg-zinc-800">
+            View All Best Sellers
           </Link>
         </div>
         

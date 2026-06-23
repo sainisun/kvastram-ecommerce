@@ -70,15 +70,15 @@ export default async function Home() {
       
       {/* 3. Category Carousel */}
       <CategoryCarousel categories={homepage.featured_categories} />
+
+      {/* 4. Editorial Collection / Campaign Section */}
+      <CollectionsSection collections={homepage.collections} />
       
-      {/* 4. Collection Slider */}
+      {/* 5. Collection Slider */}
       <CollectionSlider collections={homepage.collection_slider} />
       
-      {/* 5. Chosen For You / Best Seller Product Slider */}
+      {/* 6. Chosen For You / Best Seller Product Slider */}
       <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
-      
-      {/* 6. Editorial Collection / Campaign Section */}
-      <CollectionsSection collections={homepage.collections} />
       
       {/* 7. Watch & Buy / Trending Now Section */}
       <WatchBuyPreview reels={homepage.watch_shop} />

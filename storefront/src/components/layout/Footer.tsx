@@ -10,20 +10,12 @@ import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 
 const shopLinks = [
-  { label: 'New Arrivals', href: '/products?sort=newest' },
-  { label: 'Kantha Jackets', href: '/collections/kantha-jackets' },
-  { label: 'Cotton Jackets', href: '/collections/cotton-jackets' },
-  { label: 'Bohemian Dresses', href: '/collections/bohemian-dresses' },
-  { label: 'Long Dresses', href: '/collections/long-dress' },
-  { label: 'Short Dresses', href: '/collections/short-dress' },
-  { label: 'Duffle Bags', href: '/collections/duffle-bags' },
-  { label: 'Quilted Tote Bags', href: '/collections/quilted-bags' },
-  { label: 'Velvet Bags', href: '/collections/velvet-bags' },
-  { label: 'Skirts', href: '/collections/skirts' },
-  { label: 'Kitchen Aprons', href: '/collections/kitchen-aprons' },
-  { label: 'Block Print Fabrics', href: '/collections/block-print-fabrics' },
-  { label: 'Kantha Quilts', href: '/collections/kantha-quilts' },
-  { label: 'Vintage Throws', href: '/collections/vintage-throws' },
+  { label: 'New Kantha Short Kimono', href: '/collections/new-kantha-short-kimono' },
+  { label: 'Vintage Kantha Jacket', href: '/collections/vintage-kantha-jacket' },
+  { label: 'Velvet Suzani Jacket', href: '/collections/velvet-suzani-jacket' },
+  { label: 'Velvet Long Kimono', href: '/collections/velvet-long-kimono' },
+  { label: 'Tote Bags', href: '/collections/tote-bags' },
+  { label: 'Gown & Dress', href: '/collections/gown-dress' },
 ];
 
 const supportLinks = [
