@@ -77,20 +77,45 @@ jobs:
           command_timeout: 25m
           script: |
             set -e
+            set -x
             echo "=== Pulling latest code ==="
             cd /root/kvastram-ecommerce
+            
             # Hard reset to match GitHub exactly (prevents divergence errors)
             git fetch origin main
             git reset --hard origin/main
             git clean -fd
+            
             if [ ! -f deploy/hostinger/.env ]; then
               echo "=== Creating compose env defaults ==="
               mkdir -p deploy/hostinger
               printf 'NEXT_PUBLIC_API_URL=https://api.kvastram.com\n' > deploy/hostinger/.env
             fi
+            
             KVASTRAM_PRODUCTION_DEPLOY=1 bash deploy/hostinger/deploy.sh
             
+      - name: Run Database Seeder via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 2.24.193.227
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            set +e
+            set -x
             echo "=== Seeding Live Database Automatically ==="
             cd /root/kvastram-ecommerce/deploy/hostinger
-            docker compose exec -T backend node dist/seed-real-data.js
+            
+            # Capture output to print exact errors
+            OUTPUT=$(docker compose exec -T backend node dist/seed-real-data.js 2>&1)
+            EXIT_CODE=$?
+            
+            echo "$OUTPUT"
+            
+            if [ $EXIT_CODE -ne 0 ]; then
+              echo "❌ Seed script failed with exit code $EXIT_CODE"
+              exit $EXIT_CODE
+            fi
+            
             echo "✅ Seed Complete!"
