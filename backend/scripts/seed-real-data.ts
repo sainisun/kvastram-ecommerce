@@ -12,7 +12,7 @@ import {
   settings,
   money_amounts,
 } from '../src/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -27,16 +27,11 @@ function toHandle(text: string) {
 async function seed() {
   console.log('--- Seeding Kanthaprint Catalog ---');
 
-  // Clear existing catalog data to give a clean slate
-  await db.delete(money_amounts);
-  await db.delete(collection_products);
-  await db.delete(product_tags);
-  await db.delete(product_images);
-  await db.delete(product_variants);
-  await db.delete(products);
-  await db.delete(product_collections);
-  await db.delete(product_categories);
-  await db.delete(tags);
+  // Clear existing catalog data using TRUNCATE CASCADE to avoid foreign key constraint violations
+  // (e.g. from cart_items, order_items, reviews that might reference existing products)
+  await db.execute(sql`TRUNCATE TABLE products CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE product_collections CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE tags CASCADE`);
 
   console.log('Cleared existing catalog data.');
 
