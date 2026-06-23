@@ -136,8 +136,7 @@ async function seed() {
       await db.insert(homepage_categories).values({
         id: uuidv4(),
         category_id: id,
-        title: catData.name,
-        subtitle: 'Shop the look',
+        name: catData.name,
         image_url: finalImageUrl,
         link_url: `/categories/${handle}`,
         sort_order: catDisplayOrder,
