@@ -89,3 +89,14 @@ jobs:
               printf 'NEXT_PUBLIC_API_URL=https://api.kvastram.com\n' > deploy/hostinger/.env
             fi
             KVASTRAM_PRODUCTION_DEPLOY=1 bash deploy/hostinger/deploy.sh
+            
+            echo "=== Seeding Live Database Automatically ==="
+            cd /root/kvastram-ecommerce/backend
+            docker run --rm \
+              --network kvastram_default \
+              --env-file .env.production \
+              -v "$(pwd)":/app \
+              -w /app \
+              node:20-bookworm-slim \
+              bash -c "npm ci && npx tsx scripts/seed-real-data.ts"
+            echo "✅ Seed Complete!"
