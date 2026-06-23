@@ -113,6 +113,10 @@ log "Building and starting backend"
 compose_up_with_retry backend backend
 wait_for_service_health backend 150
 
+log "Syncing real_products images to backend volume"
+docker compose -f "$COMPOSE_FILE" exec -T backend mkdir -p /app/uploads/real_products
+docker cp backend/uploads/real_products/. "$(docker compose -f "$COMPOSE_FILE" ps -q backend):/app/uploads/real_products/" || echo "Warning: Image sync failed"
+
 log "Running manual backend migrations"
 docker compose -f "$COMPOSE_FILE" exec -T backend node dist/run-manual-migrations.js
 

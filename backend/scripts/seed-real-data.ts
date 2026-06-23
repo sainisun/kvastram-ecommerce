@@ -16,6 +16,8 @@ import {
   homepage_merchandising_slots,
   hero_banners,
   homepage_social_posts,
+  homepage_categories,
+  featured_products,
 } from '../src/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import crypto from 'crypto';
@@ -41,6 +43,8 @@ async function seed() {
   await db.execute(sql`TRUNCATE TABLE homepage_merchandising_slots CASCADE`);
   await db.execute(sql`TRUNCATE TABLE hero_banners CASCADE`);
   await db.execute(sql`TRUNCATE TABLE homepage_social_posts CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE homepage_categories CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE featured_products CASCADE`);
 
   console.log('Cleared existing catalog data.');
 
@@ -48,12 +52,12 @@ async function seed() {
 
   // 1. Create 6 Collections
   const collectionsToCreate = [
-    { title: 'Best Sellers', handle: 'best-sellers', image: 'collection_best_sellers_1782214309551.png' },
-    { title: 'New Arrivals', handle: 'new-arrivals', image: 'collection_new_arrivals_1782214328383.png' },
-    { title: 'Trending', handle: 'trending', image: 'collection_trending_1782214338591.png' },
-    { title: 'Sale', handle: 'sale', image: 'collection_sale_1782214349010.png' },
-    { title: 'Editors Picks', handle: 'editors-picks', image: 'collection_best_sellers_1782214309551.png' }, // placeholder fallback
-    { title: 'Essentials', handle: 'essentials', image: 'collection_new_arrivals_1782214328383.png' }, // placeholder fallback
+    { title: 'Best Sellers', handle: 'best-sellers', image: 'collection_best_sellers_1782214309551.png', homepage_section: 'collections' },
+    { title: 'New Arrivals', handle: 'new-arrivals', image: 'collection_new_arrivals_1782214328383.png', homepage_section: 'collection_slider' },
+    { title: 'Trending', handle: 'trending', image: 'collection_trending_1782214338591.png', homepage_section: 'collections' },
+    { title: 'Sale', handle: 'sale', image: 'collection_sale_1782214349010.png', homepage_section: 'collection_slider' },
+    { title: 'Editors Picks', handle: 'editors-picks', image: 'collection_best_sellers_1782214309551.png', homepage_section: 'collections' }, // placeholder fallback
+    { title: 'Essentials', handle: 'essentials', image: 'collection_new_arrivals_1782214328383.png', homepage_section: 'collection_slider' }, // placeholder fallback
   ];
 
   const collectionIds: Record<string, string> = {};
@@ -67,7 +71,8 @@ async function seed() {
       status: 'active',
       display_order: collDisplayOrder++,
       cover_image_url: `/uploads/real_products/${coll.image}`,
-      image: `/uploads/real_products/${coll.image}`
+      image: `/uploads/real_products/${coll.image}`,
+      homepage_section: coll.homepage_section
     });
     collectionIds[coll.handle] = id;
     console.log(`Created collection: ${coll.title}`);
@@ -125,6 +130,21 @@ async function seed() {
       sort_order: catDisplayOrder,
       is_active: true
     });
+    
+    // Create Featured Category for homepage (first 4)
+    if (catDisplayOrder <= 4) {
+      await db.insert(homepage_categories).values({
+        id: uuidv4(),
+        category_id: id,
+        title: catData.name,
+        subtitle: 'Shop the look',
+        image_url: finalImageUrl,
+        link_url: `/categories/${handle}`,
+        sort_order: catDisplayOrder,
+        is_active: true
+      });
+    }
+
     catDisplayOrder++;
   }
 
@@ -197,6 +217,14 @@ async function seed() {
 
         if (isBestSeller) {
           await db.insert(collection_products).values({ product_id: createdProduct.id, collection_id: collectionIds['best-sellers'] });
+          // Also insert into featured_products for bestsellers section
+          await db.insert(featured_products).values({
+            id: uuidv4(),
+            section_key: 'bestsellers',
+            product_id: createdProduct.id,
+            sort_order: prod.index,
+            is_active: true
+          });
         }
         if (isNewArrival) {
           await db.insert(collection_products).values({ product_id: createdProduct.id, collection_id: collectionIds['new-arrivals'] });
