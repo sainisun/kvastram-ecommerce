@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ButtonLink } from '@/components/ui/Button';
 import type { MoneyAmount, Product } from '@/types';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
@@ -135,9 +136,13 @@ export function BestSellers({
             <p className="homepage-eyebrow text-body-xs uppercase tracking-token-wider text-brand-gold">Chosen For You</p>
             <h2 className="text-display-sm font-display font-medium text-brand-ink">Best Sellers</h2>
           </div>
-          <Link href="/collections/best-sellers" className="inline-flex h-10 items-center justify-center rounded-sm bg-black px-6 text-sm font-medium text-white transition-colors hover:bg-zinc-800">
+          <ButtonLink 
+            href="/collections/best-sellers" 
+            variant="primary" 
+            size="md"
+          >
             View All Best Sellers
-          </Link>
+          </ButtonLink>
         </div>
         
         <div className="homepage-best-seller-slider overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">
