@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { db } from '../src/db';
 import {
+  categories,
   products,
   product_variants,
   product_categories,
@@ -67,11 +68,10 @@ async function seed() {
     // Use the first product's image as the category image
     const firstImg = catData.products[0]?.image;
     
-    await db.insert(product_categories).values({
+    await db.insert(categories).values({
       id,
-      title: catData.name,
-      handle,
-      status: 'active',
+      name: catData.name,
+      slug: handle,
       is_active: true,
       display_order: catDisplayOrder++,
       image: firstImg ? `/uploads/real_products/${firstImg}` : null,
