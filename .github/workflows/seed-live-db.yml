@@ -1,0 +1,29 @@
+name: Seed Live Database
+
+on:
+  workflow_dispatch: # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  seed:
+    name: Run Database Seed Script
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Run Seed Script via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 2.24.193.227
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          timeout: 300s
+          command_timeout: 10m
+          script: |
+            set -e
+            echo "=== Seeding Live Database ==="
+            cd /root/kvastram-ecommerce
+            
+            echo "Running seed-real-data.ts inside backend container..."
+            docker compose -f deploy/hostinger/docker-compose.yml exec -T backend npx tsx scripts/seed-real-data.ts
+            
+            echo "✅ Seed Complete!"
