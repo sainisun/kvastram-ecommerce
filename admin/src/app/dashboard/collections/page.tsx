@@ -324,6 +324,8 @@ export default function CollectionsPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                 >
                   <option value="">None</option>
+                  <option value="collections">Collections (Homepage Grid)</option>
+                  <option value="collection_slider">Collection Slider</option>
                   <option value="shop_by_occasion">Shop by Occasion</option>
                   <option value="seasonal_edits">Seasonal Edits</option>
                   <option value="shop_by_fabric">Shop by Fabric</option>
@@ -341,139 +343,6 @@ export default function CollectionsPage() {
                 <label htmlFor="show_in_megamenu" className="text-sm font-medium text-gray-700">Show in Mega Menu</label>
               </div>
             </div>
-            <details className="border border-gray-200 rounded-lg">
-              <summary className="px-4 py-2 text-sm font-medium text-gray-700 cursor-pointer">Advanced SEO & Discovery</summary>
-              <div className="p-4 space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Meta Title</label>
-                  <input
-                    type="text"
-                    value={formData.seo_title}
-                    onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
-                    maxLength={200}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                    placeholder="Auto-generated from title if empty"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Meta Description</label>
-                  <textarea
-                    value={formData.seo_desc}
-                    onChange={(e) => setFormData({ ...formData, seo_desc: e.target.value })}
-                    maxLength={300}
-                    rows={2}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Robots Policy</label>
-                    <select
-                      value={formData.robots_policy}
-                      onChange={(e) => {
-                        const robotsPolicy = e.target.value;
-                        setFormData({
-                          ...formData,
-                          robots_policy: robotsPolicy,
-                          is_indexable: robotsPolicy === 'index,follow',
-                        });
-                      }}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                    >
-                      <option value="index,follow">Index, follow</option>
-                      <option value="noindex,follow">Noindex, follow</option>
-                      <option value="noindex,nofollow">Noindex, nofollow</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Canonical URL</label>
-                    <input
-                      type="text"
-                      value={formData.canonical_url}
-                      onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                      placeholder="/collections/summer-cotton-dresses"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <label className="flex items-center gap-2 text-xs font-medium text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={formData.is_indexable}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          is_indexable: e.target.checked,
-                          robots_policy: e.target.checked ? 'index,follow' : 'noindex,follow',
-                        })
-                      }
-                      className="w-4 h-4 rounded border-gray-300"
-                    />
-                    Allow sitemap/indexing
-                  </label>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Seasonal flag</label>
-                    <select
-                      value={formData.seasonal_flag}
-                      onChange={(e) => setFormData({ ...formData, seasonal_flag: e.target.value })}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                    >
-                      <option value="evergreen">Evergreen</option>
-                      <option value="seasonal">Seasonal</option>
-                      <option value="campaign">Campaign</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Answer Capsule</label>
-                  <textarea
-                    value={formData.answer_capsule}
-                    onChange={(e) => setFormData({ ...formData, answer_capsule: e.target.value })}
-                    maxLength={1000}
-                    rows={2}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
-                    placeholder="Short AI-search answer for this collection, e.g. what it is, who it is for, fabric/craft, shipping promise."
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium text-gray-600">FAQ 1</label>
-                    <input
-                      type="text"
-                      value={formData.faq_question_1}
-                      onChange={(e) => setFormData({ ...formData, faq_question_1: e.target.value })}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                      placeholder="Question"
-                    />
-                    <textarea
-                      value={formData.faq_answer_1}
-                      onChange={(e) => setFormData({ ...formData, faq_answer_1: e.target.value })}
-                      rows={2}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
-                      placeholder="Answer"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium text-gray-600">FAQ 2</label>
-                    <input
-                      type="text"
-                      value={formData.faq_question_2}
-                      onChange={(e) => setFormData({ ...formData, faq_question_2: e.target.value })}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                      placeholder="Question"
-                    />
-                    <textarea
-                      value={formData.faq_answer_2}
-                      onChange={(e) => setFormData({ ...formData, faq_answer_2: e.target.value })}
-                      rows={2}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
-                      placeholder="Answer"
-                    />
-                  </div>
-                </div>
-              </div>
-            </details>
             <div className="flex gap-3">
               <button
                 type="submit"

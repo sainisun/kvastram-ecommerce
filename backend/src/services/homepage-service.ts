@@ -276,36 +276,37 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
         .map((product) => [product.id, product])
     );
 
-    loadedCollections = collections
-      .map((collection) => {
-        const products = dedupeCampaignProductIds(
-          previewIdsByCollection.get(collection.id) || [],
-          bestSellerIds
-        )
-          .map((id) => productById.get(id))
-          .filter((product): product is NonNullable<typeof product> => Boolean(product));
-        const image =
-          collection.cover_image_url ||
-          collection.image ||
-          products.find((product) => isCloudinaryUrl(product.thumbnail))?.thumbnail ||
-          products
-            .flatMap((product) => product.images || [])
-            .find((image) => isCloudinaryUrl(image.url))?.url ||
-          null;
-
-        return {
-          id: collection.id,
-          title: collection.title,
-          handle: collection.handle,
-          description: collection.description,
-          image,
-          products,
-        };
-      })
-      .filter(
-        (collection) =>
-          collection.products.length > 0 && !!collection.image
-      );
+      loadedCollections = collections
+        .map((collection) => {
+          const products = dedupeCampaignProductIds(
+            previewIdsByCollection.get(collection.id) || [],
+            bestSellerIds
+          )
+            .map((id) => productById.get(id))
+            .filter((product): product is NonNullable<typeof product> => Boolean(product));
+          const image =
+            collection.cover_image_url ||
+            collection.image ||
+            products.find((product) => isCloudinaryUrl(product.thumbnail))?.thumbnail ||
+            products
+              .flatMap((product) => product.images || [])
+              .find((image) => isCloudinaryUrl(image.url))?.url ||
+            null;
+  
+          return {
+            id: collection.id,
+            title: collection.title,
+            handle: collection.handle,
+            description: collection.description,
+            image: image || 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800', // Fallback image if none
+            products,
+          };
+        })
+        .filter((collection) => collection.products.length > 0);
+    } catch (e) {
+      console.error('Error loading collections mapping:', e);
+      loadedCollections = [];
+    }
   }
 
   if (loadedCollections.length < 2) {
@@ -349,7 +350,7 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
         image,
         products: filtered.slice(0, 3),
       };
-    }).filter(c => c.products.length > 0 && !!c.image);
+    }).filter(c => c.products.length > 0 && isCloudinaryUrl(c.image));
 
     const combined = [...loadedCollections];
     for (const gen of generated) {
@@ -445,36 +446,38 @@ async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {
         .map((product) => [product.id, product])
     );
 
-    loadedCollections = collections
-      .map((collection) => {
-        const products = dedupeCampaignProductIds(
-          previewIdsByCollection.get(collection.id) || [],
-          bestSellerIds
-        )
-          .map((id) => productById.get(id))
-          .filter((product): product is NonNullable<typeof product> => Boolean(product));
-        const image =
-          collection.cover_image_url ||
-          collection.image ||
-          products.find((product) => isCloudinaryUrl(product.thumbnail))?.thumbnail ||
-          products
-            .flatMap((product) => product.images || [])
-            .find((img) => isCloudinaryUrl(img.url))?.url ||
-          null;
-
-        return {
-          id: collection.id,
-          title: collection.title,
-          handle: collection.handle,
-          description: collection.description,
-          image,
-          products,
-        };
-      })
-      .filter(
-        (collection) =>
-          collection.products.length > 0 && !!collection.image
-      );
+    try {
+      loadedCollections = collections
+        .map((collection) => {
+          const products = dedupeCampaignProductIds(
+            previewIdsByCollection.get(collection.id) || [],
+            bestSellerIds
+          )
+            .map((id) => productById.get(id))
+            .filter((product): product is NonNullable<typeof product> => Boolean(product));
+          const image =
+            collection.cover_image_url ||
+            collection.image ||
+            products.find((product) => isCloudinaryUrl(product.thumbnail))?.thumbnail ||
+            products
+              .flatMap((product) => product.images || [])
+              .find((image) => isCloudinaryUrl(image.url))?.url ||
+            null;
+  
+          return {
+            id: collection.id,
+            title: collection.title,
+            handle: collection.handle,
+            description: collection.description,
+            image: image || 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800', // Fallback image if none
+            products,
+          };
+        })
+        .filter((collection) => collection.products.length > 0);
+    } catch (e) {
+      console.error('Error loading collection slider mapping:', e);
+      loadedCollections = [];
+    }
   }
 
   if (loadedCollections.length < 4) {
@@ -522,7 +525,7 @@ async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {
         image,
         products: filtered.slice(0, 4),
       };
-    }).filter(c => c.products.length > 0 && !!c.image);
+    }).filter(c => c.products.length > 0 && isCloudinaryUrl(c.image));
 
     const combined = [...loadedCollections];
     for (const gen of generatedCollections) {
