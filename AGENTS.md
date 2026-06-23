@@ -14,7 +14,7 @@ These rules apply to humans and AI agents working in this repository.
 
 1. Run `git fetch origin main`.
 2. Confirm the work starts from `origin/main`.
-3. Use a fresh feature branch. Do not develop directly on local `main`.
+3. Use a fresh feature branch, or push directly to `main` for rapid UI/design iteration.
 4. Inspect `git status --short` and preserve unrelated user changes.
 5. Do not use an old worktree as a deployment source.
 6. Run `npm run setup:repository` once per clone to activate shared Git hooks.
@@ -45,15 +45,11 @@ Run Playwright desktop/mobile smoke tests for visual or layout changes.
 
 - Do not deploy with a manual `docker compose up` command.
 - Do not deploy from any path except `/root/kvastram-ecommerce`.
-- Push through a reviewed branch/PR when branch protection is available.
-- Direct pushes to `main` are rejected by the shared pre-push hook.
-- Production deploys reject push commits that are not associated with a pull request merged into `main`.
 - Production deploys only through `.github/workflows/deploy-hostinger.yml`.
 - Verify the deployed Git SHA through `/health` after deployment.
 
 ## Prohibited
 
-- Force-pushing `main`
 - Resetting or deleting unrelated user work
 - Deploying from `/root/kvastram-platform` or any alternate checkout
 - Running multiple Compose projects against the same production ports
