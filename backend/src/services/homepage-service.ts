@@ -235,9 +235,10 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
   let loadedCollections: any[] = [];
 
   if (collectionIds.length > 0) {
-    const assignments = await db
-      .select({
-        collection_id: collection_products.collection_id,
+    try {
+      const assignments = await db
+        .select({
+          collection_id: collection_products.collection_id,
         product_id: collection_products.product_id,
         position: collection_products.position,
       })
