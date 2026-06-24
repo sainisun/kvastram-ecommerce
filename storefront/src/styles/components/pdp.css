@@ -66,7 +66,7 @@
   padding: 0 var(--ds-space-xs);
   border-bottom: 1px solid var(--ds-border-subtle);
   background: rgba(var(--ds-cream-rgb), 0.96);
-  backdrop-filter: blur(var(--ds-space-xs));
+  backdrop-filter: blur(12px);
 }
 
 .pdp-mobile-nav p {
