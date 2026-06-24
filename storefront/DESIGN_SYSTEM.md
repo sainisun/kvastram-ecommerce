@@ -59,6 +59,10 @@ The canonical palette for the application.
 - **`--ds-accent-primary` / `--ds-accent-gold`**: `#B89B5E` (TERRACOTTA is canonical intent) — Primary brand action color.
 - **`--ds-accent-hover`**: `#9E8148` — Hover state for accent elements.
 
+**RGB Tokens (For Opacity):**
+- **`--ds-ink-rgb`**, **`--ds-cream-rgb`**, **`--ds-black-rgb`**, **`--ds-white-rgb`**
+- **Usage Pattern:** `rgba(var(--ds-black-rgb), 0.5)` — This is the correct pattern for transparent overlays.
+
 ## Spacing tokens (--ds-space-*)
 Standardized gaps and padding.
 
@@ -72,6 +76,7 @@ Container restrictions.
 - **`--ds-content-width`**: `1280px` — Standard max page width.
 - **`--ds-home-content-width`**: `1520px` — Expanded max width for the homepage.
 - **`--ds-home-gutter-[desktop|tablet|mobile]`**: Viewport-specific gutters.
+- **`--ds-home-section-space-desktop`**: `108px` — Standard vertical section spacing on homepage desktop.
 
 ## Shadow & Radius tokens
 - **`--ds-radius-[xs|sm|md|lg|pill]`**: Corner radii from `2px` to `999px`.
@@ -101,6 +106,7 @@ Semantic status colors used for alerts, forms, and validation.
 ## Social & Swatch tokens
 - **`--ds-social-[facebook|twitter]`**: Brand-compliant social colors.
 - **`--ds-swatch-[navy|blue|off-white|cream|olive|green|red|orange|yellow|beige|brown|pink|purple|grey]`**: Product variant swatches mapped to hex values.
+  - **Usage Case:** Used in the product catalog and PDP to render dynamic color swatch buttons for product variants (e.g., `<button className="bg-[var(--ds-swatch-navy)]" />`).
 
 ---
 
@@ -235,3 +241,13 @@ A map of the CSS architecture and what each file "owns":
 - **`components/home-sections.css`**: Primitives specifically shared across homepage sections.
 - **`components/footer.css`**: Scoped styles for the global footer.
 - **`components/pdp.css`**: Scoped styles for the Product Details Page.
+
+---
+
+# 10. PHASE COMPLETION STATUS
+- Phase 5A: ✅
+- Phase 5B: ✅
+- Phase 5C: ✅
+- Phase 5D: ✅
+- Phase 5E: ✅
+- Phase 6: ✅

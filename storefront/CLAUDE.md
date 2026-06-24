@@ -17,6 +17,43 @@ CSS design tokens.
 Every visual value MUST come from tokens.css via --ds-* tokens.
 No exceptions. No shortcuts.
 
+## PHASE STATUS
+- Phases 5A-5D: All complete
+- Phase 5E: Visual check complete
+
+## AUDIT FALSE POSITIVES & EXCEPTIONS
+- **rgba(var(--ds-*), opacity)**: This pattern is CORRECT and intentional for transparent overlays. Do not flag as a violation.
+- **Rule 2**: Blur radius and filter values are NOT spacing. They are intentional and should be left hardcoded.
+- **Rule 3**: `48px` and `64px` magic numbers are sometimes intentional to avoid risk with `--ds-space-xl` and `--ds-space-2xl`, as those are fluid `clamp()` values which could cause layout breakage in strict bounds.
+
+## CURRENT STATUS — MAINTENANCE MODE
+
+Design system migration: COMPLETE ✅
+
+All phases done:
+- Phase 1-4: Foundation, primitives, homepage, CSS hygiene ✅
+- Phase 5A: Content pages TSX ✅
+- Phase 5B: pdp.css ✅
+- Phase 5C: 17 CSS files ✅
+- Phase 5D: 7 TSX components ✅
+- Phase 5E: Visual regression check ✅
+- Phase 6: Documentation sync ✅
+
+## ONGOING MAINTENANCE RULES
+
+New component banao → follow token rules from day 1
+New token chahiye → tokens.css mein add karo only
+Audit scripts CI pe run hote hain automatically
+Koi bhi hardcoded value → Rule 1 dekho
+
+## NEXT CODEX SESSION
+
+Koi naya kaam aaye toh:
+1. AGENTS.md padho pehle
+2. tokens.css padho
+3. Target file padho
+4. Audit karo → categorize karo → fix karo → verify karo → commit karo
+
 ## NEVER DO THIS
 - Hardcoded hex: color: #1A1A1A ❌
 - Raw values: padding: 16px ❌  
