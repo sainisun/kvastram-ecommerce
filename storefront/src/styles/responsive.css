@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════ */
 
 @media (min-width: 560px) {
-  .products-grid { gap: var(--product-grid-gap, 16px); }
+  .products-grid { gap: var(--product-grid-gap, var(--ds-space-sm)); }
   .collections-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .slider-row { grid-auto-columns: minmax(42%, 1fr); }
 }
@@ -16,7 +16,7 @@
   .desktop-nav {
     display: flex;
     align-items: center;
-    gap: 22px;
+      gap: var(--ds-space-md);
     font-size: var(--ds-text-body-sm);
     font-weight: var(--ds-type-strong-weight);
   }
@@ -26,7 +26,7 @@
   }
   .products-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--product-grid-gap, 20px);
+      gap: var(--product-grid-gap, var(--ds-space-sm));
   }
   .kv-section { padding-block: var(--ds-space-2xl); }
   .kv-section-head {
@@ -35,7 +35,7 @@
   }
   .story-block {
     grid-template-columns: 1fr 1fr;
-    gap: 34px;
+      gap: var(--ds-space-lg);
   }
   .footer-grid {
     grid-template-columns: 1.4fr repeat(3, 1fr);
