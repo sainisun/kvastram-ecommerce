@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 const homePath = 'src/styles/components/home-sections.css';
 let homeCss = fs.readFileSync(homePath, 'utf8');
@@ -39,3 +39,4 @@ extractAndAppend(blocks.shopNeedMedia, 'components/category-sections.css', '(min
 homeCss = homeCss.replace(/\\n{3,}/g, '\\n\\n');
 
 fs.writeFileSync(homePath, homeCss);
+

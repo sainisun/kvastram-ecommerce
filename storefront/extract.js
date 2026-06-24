@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 const css = fs.readFileSync('src/styles/components/home-sections.css', 'utf8');
 
 const patternsToExtract = [
@@ -14,3 +14,4 @@ patternsToExtract.forEach((p, i) => {
     fs.writeFileSync('block_' + i + '.css', match[0]);
   }
 });
+

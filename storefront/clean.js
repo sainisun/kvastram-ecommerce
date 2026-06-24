@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 let css = fs.readFileSync('src/styles/components/home-sections.css', 'utf8');
 
@@ -56,3 +56,4 @@ patterns.forEach(p => {
 css = css.replace(/\\n{3,}/g, '\\n\\n');
 
 fs.writeFileSync('src/styles/components/home-sections.css', css);
+

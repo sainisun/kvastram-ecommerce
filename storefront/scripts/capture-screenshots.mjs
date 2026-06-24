@@ -14,7 +14,7 @@ import path from 'path';
     try {
       const response = await page.goto('http://localhost:3000/', { timeout: 10000 });
       if (response && response.ok()) break;
-    } catch (e) {
+    } catch (_e) {
       console.log('Server not ready, retrying...');
       await new Promise(r => setTimeout(r, 3000));
       retries--;

@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { ButtonLink } from '@/components/ui/Button';
 import type { MoneyAmount, Product } from '@/types';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
-import { useShop } from '@/context/shop-context';
 import { useWholesale } from '@/context/wholesale-context';
 import { ProductCard } from '@/components/products/ProductCard';
 import { useCurrency } from '@/context/currency-context';
@@ -23,12 +21,10 @@ interface ProductPriceInfo {
 
 export function BestSellers({
   products: initialProducts,
-  state,
 }: {
   products: Product[];
   state?: 'ready' | 'empty' | 'error';
 }) {
-  const { currentRegion } = useShop();
   const { formatPrice } = useCurrency();
   const { addItem } = useCart();
   const { showNotification } = useNotification();

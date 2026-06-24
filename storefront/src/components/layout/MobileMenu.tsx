@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { Drawer } from '@/components/ui/Drawer';
 import { STOREFRONT_NAV_ITEMS } from '@/config/storefront-navigation';
 import { ChevronRight } from 'lucide-react';
-import type { Product } from '@/types';
 
 // Kept for prop compatibility
 interface Category {
