@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import {
   ArrowLeft,
   Package,
+  CreditCard,
   Clock,
   Truck,
   CheckCircle,
@@ -407,9 +408,9 @@ export default function OrderDetailsPage() {
 
           <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--ds-border-subtle)]">
             <div className="md:col-span-2 p-6 md:p-8">
-              <h3 className="account-kicker mb-6 flex items-center gap-2">
+              <p className="account-kicker mb-6 flex items-center gap-2">
                 <Package size={16} /> Items ({(order.items || []).length})
-              </h3>
+              </p>
               <div className="space-y-6">
                 {(order.items || []).map((item) => (
                   <div key={item.id} className="flex gap-4">
@@ -489,9 +490,9 @@ export default function OrderDetailsPage() {
 
             <div className="p-6 md:p-8 bg-[var(--ds-surface-parchment)]/50 space-y-8">
               <div>
-                <h3 className="account-form-label mb-3 flex items-center gap-2">
-                  <Truck size={14} /> Shipping Address
-                </h3>
+                <p className="account-form-label mb-3 flex items-center gap-2">
+                  <Package size={16} /> Shipping Address
+                </p>
                 <address className="account-body space-y-1 not-italic">
                   <p className="account-name">
                     {order.shipping_address?.first_name}{' '}
@@ -510,9 +511,9 @@ export default function OrderDetailsPage() {
               </div>
 
               <div>
-                <h3 className="account-form-label mb-3">
-                  Payment Status
-                </h3>
+                <p className="account-form-label mb-3">
+                  <CreditCard size={16} className="inline mr-2" /> Payment Method
+                </p>
                 <div className="account-body">
                   <p className="capitalize mb-1">
                     {order.payment_status?.replace('_', ' ') || 'Unknown'}
@@ -527,7 +528,7 @@ export default function OrderDetailsPage() {
                 order.workflow?.estimated_delivery_end ||
                 order.workflow?.customer_note) && (
                 <div>
-                  <h3 className="account-form-label mb-3">Delivery updates</h3>
+                  <p className="account-form-label mb-3">Delivery updates</p>
                   <div className="account-body space-y-2">
                     {(order.workflow?.estimated_delivery_start ||
                       order.workflow?.estimated_delivery_end) && (
@@ -547,7 +548,7 @@ export default function OrderDetailsPage() {
 
               {(order.workflow?.packages || []).length > 0 && (
                 <div>
-                  <h3 className="account-form-label mb-3">Packages</h3>
+                  <p className="account-form-label mb-3">Packages</p>
                   <div className="space-y-3">
                     {(order.workflow?.packages || []).map((pkg) => (
                       <div

@@ -6,21 +6,21 @@
 
 :root {
   /* Typography */
-  --ds-font-display: 'Libre Caslon Text', 'Cormorant Garamond', Georgia, serif;
-  --ds-font-body: 'Hanken Grotesk', 'DM Sans', system-ui, sans-serif;
+  --ds-font-display: 'Amiri', 'Cardo', serif;
+  --ds-font-body: 'Cardo', serif;
   --ds-font-ui: var(--ds-font-body);
   --ds-font-label: var(--ds-font-ui);
 
-  --ds-text-display-xl: clamp(2.25rem, 4vw, 4.25rem);
-  --ds-text-display-lg: clamp(1.875rem, 3.1vw, 3.125rem);
-  --ds-text-display-md: clamp(1.5rem, 2.2vw, 2.25rem);
-  --ds-text-display-sm: clamp(1.2rem, 1.45vw, 1.5rem);
-  --ds-text-body-xl: clamp(1rem, 1vw, 1.125rem);
-  --ds-text-body-lg: 1rem;
-  --ds-text-body-md: 0.9375rem;
-  --ds-text-body-sm: 0.875rem;
-  --ds-text-body-xs: 0.75rem;
-  --ds-text-count-xs: 0.625rem;
+  --ds-text-display-xl: clamp(1.875rem, 3vw, 2.75rem); /* 30px → 44px */
+  --ds-text-display-lg: clamp(1.5rem, 2vw, 1.875rem); /* 24px → 30px */
+  --ds-text-display-md: clamp(1.25rem, 1.5vw, 1.5rem); /* 20px → 24px */
+  --ds-text-display-sm: clamp(1.125rem, 1.2vw, 1.25rem); /* 18px → 20px */
+  --ds-text-body-xl: clamp(1rem, 1vw, 1.125rem); /* 16px → 18px */
+  --ds-text-body-lg: 1rem; /* 16px */
+  --ds-text-body-md: 0.9375rem; /* 15px */
+  --ds-text-body-sm: 0.875rem; /* 14px */
+  --ds-text-body-xs: 0.75rem; /* 12px */
+  --ds-text-count-xs: 0.625rem; /* 10px */
 
   --ds-weight-light: 300;
   --ds-weight-regular: 400;
@@ -155,8 +155,8 @@
   --ds-space-sm: 1rem;     /* 16px */
   --ds-space-md: 1.5rem;   /* 24px */
   --ds-space-lg: 2rem;     /* 32px */
-  --ds-space-xl: clamp(3rem, 6vw, 5rem);     /* 48px → 80px fluid */
-  --ds-space-2xl: clamp(4.5rem, 9vw, 7.5rem); /* 72px → 120px fluid */
+  --ds-space-xl: clamp(2rem, 4vw, 3rem);     /* 32px → 48px fluid */
+  --ds-space-2xl: clamp(3rem, 5vw, 4rem); /* 48px → 64px fluid */
 
   /* Layout */
   --ds-prose-width: 65ch;

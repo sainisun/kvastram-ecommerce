@@ -757,6 +757,18 @@ h6,
   text-transform: var(--ds-type-heading-transform);
 }
 
+h1 {
+  font-size: var(--ds-text-display-lg);
+}
+
+h2 {
+  font-size: var(--ds-text-display-md);
+}
+
+h3 {
+  font-size: var(--ds-text-display-sm);
+}
+
 .font-body,
 .font-sans,
 .font-ui,

@@ -285,9 +285,9 @@ export default function CartPage() {
             <div>
               <div className="flex items-center gap-3 mb-8">
                 <Sparkles size={18} className="text-[var(--ds-warning)]" />
-                <h2 className="text-body-sm type-bold  tracking-token-wider color-ink">
+                <p className="text-body-sm type-bold  tracking-token-wider color-ink">
                   You Might Love
-                </h2>
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
                 {recommendations.map((product) => {
@@ -325,9 +325,9 @@ export default function CartPage() {
                         <p className="text-body-xs color-muted type-bold tracking-token-wider ">
                           {product.collection?.title || 'Kvastram'}
                         </p>
-                        <h3 className="font-display text-body-md color-ink leading-token-tight group-hover:color-muted transition-colors">
+                        <p className="font-display text-body-md color-ink leading-token-tight group-hover:color-muted transition-colors">
                           {product.title}
-                        </h3>
+                        </p>
                         {price && (
                           <p className="text-body-sm type-medium color-ink">
                             {price}
@@ -404,7 +404,7 @@ export default function CartPage() {
                     <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
                       <div>
                         <div className="flex justify-between">
-                          <h3 className="text-body-sm type-medium color-ink">
+                          <p className="text-body-sm type-medium color-ink">
                             {item.handle ? (
                               <Link
                                 href={`/products/${item.handle}`}
@@ -415,7 +415,7 @@ export default function CartPage() {
                             ) : (
                               <span>{item.title}</span>
                             )}
-                          </h3>
+                          </p>
                         </div>
                         <p className="mt-1 text-body-sm color-muted">
                           {formatCartPrice(item.price)}
@@ -508,9 +508,9 @@ export default function CartPage() {
                     <p className="text-body-xs type-bold  tracking-token-wider color-muted">
                       Pair With Your Bag
                     </p>
-                    <h2 className="mt-1 text-body-xl type-medium color-ink">
+                    <p className="mt-1 text-body-xl type-medium color-ink">
                       Complete the look before checkout
-                    </h2>
+                    </p>
                   </div>
                 </div>
 
@@ -550,9 +550,9 @@ export default function CartPage() {
                           <p className="text-body-xs color-muted type-bold tracking-token-wider ">
                             {product.collection?.title || 'Kvastram'}
                           </p>
-                          <h3 className="font-display text-body-md color-ink leading-token-tight transition-colors group-hover:color-muted">
+                          <p className="font-display text-body-md color-ink leading-token-tight transition-colors group-hover:color-muted">
                             {product.title}
-                          </h3>
+                          </p>
                           {price ? (
                             <p className="text-body-sm type-medium color-ink">
                               {price}
@@ -581,9 +581,9 @@ export default function CartPage() {
           {/* Order Summary */}
           <div className="mt-16 lg:col-span-5 lg:mt-0">
             <Card className="p-6">
-              <h2 className="text-body-xl type-medium color-ink mb-6">
+              <p className="text-body-xl type-medium color-ink mb-6">
                 Order Summary
-              </h2>
+              </p>
 
               {/* Promo Code */}
               <div className="mb-6">

@@ -165,9 +165,9 @@ export default function AccountPage() {
                 <Card className="p-6">
                   <div className="flex items-center gap-3 mb-2">
                     <Package size={20} className="text-[var(--ds-text-muted)]" />
-                    <h3 className="account-kicker">
+                    <p className="account-kicker">
                       Total Orders
-                    </h3>
+                    </p>
                   </div>
                   <p className="account-stat-value">
                     {orders.length}
@@ -176,9 +176,9 @@ export default function AccountPage() {
                 <Card className="p-6">
                   <div className="flex items-center gap-3 mb-2">
                     <User size={20} className="text-[var(--ds-text-muted)]" />
-                    <h3 className="account-kicker">
+                    <p className="account-kicker">
                       Member Since
-                    </h3>
+                    </p>
                   </div>
                   <p className="account-stat-date">
                     {customer.created_at
