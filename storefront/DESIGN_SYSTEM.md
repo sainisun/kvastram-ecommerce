@@ -13,6 +13,11 @@ Modifying a single token in `tokens.css` (e.g., changing the primary accent colo
 - **Styling:** Tailwind CSS v4 + Vanilla CSS Primitives
 - **Tokens:** CSS Custom Properties prefixed with `--ds-*`
 
+## AI Agent Files
+- **Codex (ChatGPT):** `AGENTS.md` — auto-loaded each session
+- **Gemini (IDX):** `GEMINI.md` — paste or reference in chat
+- **Rules summary:** Never use values outside tokens.css
+
 ---
 
 # 2. TOKEN REFERENCE
