@@ -50,7 +50,7 @@ function MerchSlotCard({
 }) {
   const isCategoryOverlay = variant === 'categoryOverlay';
   const cardClassName = isCategoryOverlay
-    ? 'homepage-category-merch-card group'
+    ? 'relative block flex-none snap-start aspect-[5/7] min-w-[80vw] overflow-hidden bg-[linear-gradient(135deg,var(--ds-accent-hover),var(--ds-accent-primary)_48%,var(--ds-accent-soft))] text-[var(--ds-text-inverse)] before:content-[\'\'] before:absolute before:inset-0 before:z-[1] before:pointer-events-none before:bg-[linear-gradient(180deg,rgba(var(--ds-black-rgb),.05),rgba(var(--ds-black-rgb),.72))] min-[741px]:min-w-[60vw] min-[1000px]:min-w-[23vw] group'
     : 'relative min-h-[320px] min-w-[78%] snap-start overflow-hidden rounded-lg bg-gradient-to-br from-[var(--ds-accent-hover)] via-[var(--ds-accent-primary)] to-[var(--ds-accent-soft)] p-8 text-[var(--ds-text-inverse)] sm:min-w-[42%] lg:min-w-[31%]';
   const imageSizes = isCategoryOverlay
     ? '(max-width: 740px) 80vw, (max-width: 999px) 60vw, 23vw'
@@ -72,8 +72,8 @@ function MerchSlotCard({
       ) : null}
 
       {isCategoryOverlay ? (
-        <div className="homepage-category-merch-info">
-          <h3>{slot.title}</h3>
+        <div className="absolute inset-x-0 bottom-6 z-[2] w-full px-6 text-center">
+          <h3 className="inline-block max-w-full m-0 px-2 pb-2 border-b-2 border-[rgba(var(--ds-surface-paper-rgb),0.85)] text-[var(--ds-text-inverse)] font-display text-display-sm font-[var(--ds-type-body-weight)] [overflow-wrap:anywhere]">{slot.title}</h3>
         </div>
       ) : (
         <>

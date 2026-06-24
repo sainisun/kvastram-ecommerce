@@ -8,22 +8,22 @@ export function CategoriesGrid({ categories }: { categories: HomepageCategoryCar
 
   return (
     <section
-      className="homepage-featured-categories"
+      className="pt-[clamp(8px,1vw,12px)]"
       aria-label="Featured categories"
       data-home-section="3-featured-categories"
     >
-      <div className="homepage-container homepage-featured-grid">
+      <div className="homepage-container grid grid-cols-2 md:grid-cols-4 gap-[clamp(8px,1vw,12px)]">
         {displayed.map((category) => (
-          <Link key={category.id} href={category.link_url} className="homepage-featured-card">
+          <Link key={category.id} href={category.link_url} className="relative aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)] group block">
             <OptimizedImage
               src={category.image_url}
               alt={category.name}
               fill
               sizes="(max-width: 767px) 50vw, 25vw"
-              className="object-cover"
+              className="object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-[var(--ds-transition)] motion-safe:group-hover:scale-[1.03] motion-safe:group-focus-visible:scale-[1.03]"
             />
             <span className="homepage-featured-overlay" />
-            <span className="homepage-featured-name">{category.name}</span>
+            <span className="absolute inset-x-[var(--ds-space-sm)] bottom-[var(--ds-space-sm)] z-[1] text-[var(--ds-text-inverse)] font-display text-display-sm">{category.name}</span>
           </Link>
         ))}
       </div>

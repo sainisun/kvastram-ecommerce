@@ -194,7 +194,7 @@ async function loadCuratedFeaturedProducts(sectionKeys: string[], limit = 4) {
 }
 
 async function loadCollections(bestSellerIds: ReadonlySet<string>) {
-  const now = new Date();
+  const now = new Date().toISOString();
   let collections = await db
     .select()
     .from(product_collections)
@@ -236,6 +236,7 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
 
   if (collectionIds.length > 0) {
     try {
+      console.log('loadCollections: collectionIds', collectionIds);
       const assignments = await db
         .select({
           collection_id: collection_products.collection_id,
@@ -252,6 +253,7 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
         )
       )
       .orderBy(asc(collection_products.collection_id), asc(collection_products.position));
+      console.log('loadCollections: assignments length', assignments.length);
 
     const previewIdsByCollection = new Map<string, string[]>();
     for (const assignment of assignments) {
@@ -367,7 +369,7 @@ async function loadCollections(bestSellerIds: ReadonlySet<string>) {
 }
 
 async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {
-  const now = new Date();
+  const now = new Date().toISOString();
   let collections = await db
     .select()
     .from(product_collections)
@@ -406,6 +408,7 @@ async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {
   let loadedCollections: any[] = [];
   
   if (collectionIds.length > 0) {
+    console.log('loadCollectionSlider: collectionIds', collectionIds);
     const assignments = await db
       .select({
         collection_id: collection_products.collection_id,
@@ -422,6 +425,7 @@ async function loadCollectionSlider(bestSellerIds: ReadonlySet<string>) {
         )
       )
       .orderBy(asc(collection_products.collection_id), asc(collection_products.position));
+    console.log('loadCollectionSlider: assignments length', assignments.length);
 
     const previewIdsByCollection = new Map<string, string[]>();
     for (const assignment of assignments) {

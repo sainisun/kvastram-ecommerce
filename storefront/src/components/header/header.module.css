@@ -7,8 +7,8 @@
 }
 
 .mmLink {
-  font-family: var(--type-heading-font);
-  font-size: var(--text-body-md);
+  font-family: var(--ds-type-heading-font);
+  font-size: var(--ds-text-body-md);
   font-weight: var(--type-heading-weight);
   color: var(--kv-ink-2);
   padding: 6px 0;

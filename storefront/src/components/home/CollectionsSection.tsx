@@ -19,12 +19,12 @@ export function CollectionsSection({
           </div>
           <Link href="/collections">View all collections</Link>
         </div>
-        <div className="homepage-campaign-grid">
+        <div className="grid gap-[var(--ds-home-section-space-mobile)] md:grid-cols-2">
           {collections.slice(0, 4).map((collection) => (
-            <article className="homepage-campaign" key={collection.id}>
+            <article className="grid gap-6" key={collection.id}>
               <Link
                 href={`/collections/${collection.handle}`}
-                className="homepage-campaign-media"
+                className="relative block aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)]"
               >
                 <OptimizedImage
                   src={collection.image}
@@ -34,19 +34,20 @@ export function CollectionsSection({
                   className="object-cover"
                 />
                 <span className="homepage-campaign-scrim" />
-                <span className="homepage-campaign-copy">
-                  <strong>{collection.title}</strong>
-                  {collection.description ? <small>{collection.description}</small> : null}
+                <span className="absolute inset-x-8 bottom-8 z-[1] grid gap-2 text-[var(--ds-text-inverse)]">
+                  <strong className="font-display text-display-md font-[var(--ds-type-heading-weight)]">{collection.title}</strong>
+                  {collection.description ? <small className="max-w-[42ch] text-body-sm">{collection.description}</small> : null}
                 </span>
               </Link>
-              <div className="homepage-campaign-products" aria-label={`${collection.title} preview`}>
+              <div className="grid grid-cols-3 gap-4" aria-label={`${collection.title} preview`}>
                 {collection.products.map((product) => (
                   <Link
                     key={product.id}
                     href={`/products/${product.handle || product.id}`}
                     data-campaign-product-id={product.id}
+                    className="grid gap-2 text-[var(--ds-text-primary)] text-body-xs no-underline"
                   >
-                    <span className="homepage-campaign-product-media">
+                    <span className="relative aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)]">
                       <OptimizedImage
                         src={product.thumbnail || product.images?.[0]?.url || ''}
                         alt={product.title}
@@ -55,7 +56,7 @@ export function CollectionsSection({
                         className="object-cover"
                       />
                     </span>
-                    <span>{product.title}</span>
+                    <span className="line-clamp-2">{product.title}</span>
                   </Link>
                 ))}
               </div>

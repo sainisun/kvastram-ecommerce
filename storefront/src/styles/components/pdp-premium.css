@@ -1,43 +1,43 @@
 /* ═══ PDP — Premium Product Detail ═══ */
 .pdp-prem {
-  padding-top: var(--space-24);
+  padding-top: var(--ds-space-2xl);
 }
 .pdp-grid-prem {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
-  gap: var(--space-16);
+  gap: var(--ds-space-2xl);
   min-height: 90vh;
 }
 .pdp-gallery-prem {
   position: sticky;
-  top: var(--space-24);
-  height: calc(100vh - var(--space-24));
+  top: var(--ds-space-2xl);
+  height: calc(100vh - var(--ds-space-2xl));
   overflow: hidden;
 }
 .pdp-info-prem {
-  padding: var(--space-20);
+  padding: var(--ds-space-2xl);
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--ds-space-lg);
 }
 .pdp-brand-prem {
-  font-family: var(--font-body);
-  font-size: var(--text-body-xs);
-  font-weight: var(--type-ui-weight);
-  letter-spacing: var(--type-label-tracking);
-  text-transform: var(--type-label-transform);
-  color: var(--muted);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body-xs);
+  font-weight: var(--ds-type-ui-weight);
+  letter-spacing: var(--ds-type-label-tracking);
+  text-transform: var(--ds-type-label-transform);
+  color: var(--ds-text-muted);
 }
 .pdp-name-prem {
-  font-family: var(--font-display);
-  font-size: var(--text-display-xl);
-  font-weight: var(--type-light-weight);
-  letter-spacing: var(--type-heading-tracking);
-  line-height: var(--leading-tight);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display-xl);
+  font-weight: var(--ds-type-light-weight);
+  letter-spacing: var(--ds-type-heading-tracking);
+  line-height: var(--ds-leading-tight);
 }
 .pdp-price-prem {
-  font-size: var(--text-display-sm);
-  font-weight: var(--type-body-weight);
+  font-size: var(--ds-text-display-sm);
+  font-weight: var(--ds-type-body-weight);
 }
 
 /* ─── PDP Size Buttons ─── */
@@ -48,53 +48,56 @@
 .trust-strip-prem {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
-  padding: var(--space-6) var(--space-0);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  gap: var(--ds-space-sm);
+  padding: var(--ds-space-md) 0px;
+  border-top: 1px solid var(--ds-border-subtle);
+  border-bottom: 1px solid var(--ds-border-subtle);
 }
 .trust-item-prem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--ds-space-xs);
   text-align: center;
 }
 .trust-text-prem {
-  font-family: var(--font-body);
-  font-size: var(--text-body-xs);
-  font-weight: var(--type-ui-weight);
-  letter-spacing: var(--type-label-tracking);
-  text-transform: var(--type-label-transform);
-  color: var(--muted);
-  line-height: var(--leading-normal);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body-xs);
+  font-weight: var(--ds-type-ui-weight);
+  letter-spacing: var(--ds-type-label-tracking);
+  text-transform: var(--ds-type-label-transform);
+  color: var(--ds-text-muted);
+  line-height: var(--ds-leading-normal);
 }
 
 /* ─── Accordion (PDP) ─── */
 .accordion-item-prem {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--ds-border-subtle);
   overflow: hidden;
 }
 .accordion-item-prem:last-child {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--ds-border-subtle);
 }
 .accordion-trigger-prem {
   width: 100%;
   background: none;
   border: none;
-  padding: var(--space-5) var(--space-0);
+  padding: var(--ds-space-sm) 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: var(--font-body);
-  font-size: var(--text-body-xs);
-  font-weight: var(--type-ui-weight);
-  letter-spacing: var(--type-label-tracking);
-  text-transform: var(--type-label-transform);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body-xs);
+  font-weight: var(--ds-type-ui-weight);
+  letter-spacing: var(--ds-type-label-tracking);
+  text-transform: var(--ds-type-label-transform);
   cursor: pointer;
   transition: opacity 0.25s;
-  color: var(--ink);
+  color: var(--ds-text-primary);
 }
 .accordion-trigger-prem:hover {
   opacity: 0.6;
 }
+
+
+

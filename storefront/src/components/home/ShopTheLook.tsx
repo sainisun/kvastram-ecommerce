@@ -53,7 +53,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
               <Link
                 key={item.id}
                 href={href}
-                className="group relative block aspect-[3/4] overflow-hidden bg-[var(--soft)]"
+                className="group relative block aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]"
               >
                 <OptimizedImage
                   src={item.image || ''}
@@ -64,7 +64,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(var(--ds-black-rgb),0.02)_30%,rgba(var(--ds-black-rgb),0.72)_100%)]" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-[var(--ds-text-inverse)] sm:p-4 md:p-6">
-                  <div className="mb-3 flex items-center justify-between gap-4 text-body-xs type-bold tracking-token-wider text-[var(--ds-text-inverse)]/80">
+                  <div className="mb-3 flex items-center justify-between gap-4 text-body-xs type-bold tracking-[var(--ds-type-label-tracking)] text-[var(--ds-text-inverse)]/80">
                     <span>Look {String(index + 1).padStart(2, '0')}</span>
                     <ArrowUpRight
                       aria-hidden="true"
@@ -72,7 +72,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                       strokeWidth={1.8}
                     />
                   </div>
-                  <h3 className="line-clamp-2 font-display text-display-sm leading-token-tight text-[var(--ds-text-inverse)]">
+                  <h3 className="line-clamp-2 font-display text-display-sm leading-[var(--ds-leading-tight)] text-[var(--ds-text-inverse)]">
                     {item.product.title}
                   </h3>
                   {price ? (
@@ -81,7 +81,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
                       price={formatCurrency(price.amount, price.currency_code)}
                       variant="compact"
                       className="mt-2"
-                      priceClassName="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)]/78"
+                      priceClassName="text-body-xs type-bold tracking-[var(--ds-type-label-tracking)] text-[var(--ds-text-inverse)]/78"
                     />
                   ) : null}
                 </div>
@@ -90,12 +90,12 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
           })}
         </div>
 
-        <div className="mt-6 grid gap-4 border-t border-[var(--line)] pt-5 md:grid-cols-[1fr,auto] md:items-center">
+        <div className="mt-6 grid gap-4 border-t border-[var(--ds-border-subtle)] pt-5 md:grid-cols-[1fr,auto] md:items-center">
           <p className="kv-sub max-w-[680px]">
             Curated pieces styled as complete festive edits, so every print,
             layer, and accessory feels intentional.
           </p>
-          <Link href="/products" className="home-link-button home-link-button--primary w-fit">
+          <Link href="/products" className="w-fit inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--ds-radius-sm)] px-6 font-ui text-body-xs font-[var(--ds-type-ui-weight)] tracking-[var(--ds-type-button-tracking)] leading-[var(--ds-leading-tight)] [text-transform:var(--ds-type-button-transform)] transition-colors duration-150 no-underline border border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:border-[var(--ds-accent-hover)] hover:bg-[var(--ds-accent-hover)] hover:text-[var(--ds-text-inverse)] focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-2">
             Shop The Edit
           </Link>
         </div>

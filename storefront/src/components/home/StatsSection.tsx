@@ -186,7 +186,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         .stat-symbol-prem {
           margin-bottom: var(--space-4);
           font-size: var(--text-body-lg);
-          line-height: var(--leading-tight);
+          line-height: var(--ds-leading-tight);
           color: var(--ds-accent-gold);
           text-shadow: 0 0 18px rgba(var(--ds-accent-gold-rgb), 0.14);
           animation: symbolFloat 4.2s ease-in-out infinite;
@@ -196,7 +196,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           font-family: var(--font-display);
           font-size: var(--text-display-lg);
           font-weight: var(--type-heading-weight);
-          line-height: var(--leading-tight);
+          line-height: var(--ds-leading-tight);
           letter-spacing: var(--type-heading-tracking);
           color: var(--ds-text-primary);
           white-space: nowrap;
@@ -206,7 +206,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           margin-top: var(--space-4);
           font-size: var(--text-body-xs);
           font-weight: var(--type-label-weight);
-          line-height: var(--leading-relaxed);
+          line-height: var(--ds-leading-relaxed);
           letter-spacing: var(--type-label-tracking);
           text-transform: var(--type-label-transform);
           color: rgba(var(--ds-text-secondary-rgb), 0.72);

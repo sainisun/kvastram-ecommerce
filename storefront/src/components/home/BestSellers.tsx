@@ -133,8 +133,8 @@ export function BestSellers({
       <div className="homepage-container">
         <div className="homepage-section-head flex justify-between items-end mb-6 md:mb-8">
           <div>
-            <p className="homepage-eyebrow text-body-xs uppercase tracking-token-wider text-brand-gold">Chosen For You</p>
-            <h2 className="text-display-sm font-display font-medium text-brand-ink">Best Sellers</h2>
+            <p className="homepage-eyebrow text-body-xs uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-gold)]">Chosen For You</p>
+            <h2 className="text-display-sm font-display font-medium text-[var(--ds-text-primary)]">Best Sellers</h2>
           </div>
           <ButtonLink 
             href="/collections/best-sellers" 
@@ -145,7 +145,7 @@ export function BestSellers({
           </ButtonLink>
         </div>
         
-        <div className="homepage-best-seller-slider overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">
+        <div className="[&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-media]:aspect-[2/3] [&_.product-info]:py-2 overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">
           {products.map((product) => {
             const priceInfo = getPrice(product);
             return (

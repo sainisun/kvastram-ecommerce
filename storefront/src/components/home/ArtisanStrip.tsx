@@ -8,7 +8,7 @@ const ARTISANS = [
     region: 'Jaipur, Rajasthan',
     years: '22 years',
     initials: 'SD',
-    color: 'bg-[var(--soft)]',
+    color: 'bg-[var(--ds-surface-soft)]',
   },
   {
     name: 'Rekha Kumari',
@@ -16,7 +16,7 @@ const ARTISANS = [
     region: 'Sanganer, Rajasthan',
     years: '15 years',
     initials: 'RK',
-    color: 'bg-[var(--soft)]',
+    color: 'bg-[var(--ds-surface-soft)]',
   },
   {
     name: 'Champa Bai',
@@ -24,7 +24,7 @@ const ARTISANS = [
     region: 'Murshidabad, West Bengal',
     years: '30 years',
     initials: 'CB',
-    color: 'bg-[var(--soft)]',
+    color: 'bg-[var(--ds-surface-soft)]',
   },
   {
     name: 'Geeta Sharma',
@@ -32,20 +32,20 @@ const ARTISANS = [
     region: 'Jaipur, Rajasthan',
     years: '18 years',
     initials: 'GS',
-    color: 'bg-[var(--soft)]',
+    color: 'bg-[var(--ds-surface-soft)]',
   },
 ];
 
 export function ArtisanStrip() {
   return (
-    <section className="kv-section bg-[var(--cream)]">
+    <section className="kv-section bg-[var(--ds-surface-page)]">
       <div className="kv-container">
         <div className="kv-section-head mb-8 md:mb-12">
           <div>
             <div className="kv-tag">The hands behind every piece</div>
             <h2 className="kv-title">Meet our <em className="italic">artisans</em></h2>
           </div>
-          <Link href="/about#artisans" className="home-link-button home-link-button--outline">
+          <Link href="/about#artisans" className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--ds-radius-sm)] px-6 font-ui text-body-xs font-[var(--ds-type-ui-weight)] tracking-[var(--ds-type-button-tracking)] leading-[var(--ds-leading-tight)] [text-transform:var(--ds-type-button-transform)] transition-colors duration-150 no-underline border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)] focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-2">
             All artisans
           </Link>
         </div>
@@ -57,23 +57,23 @@ export function ArtisanStrip() {
               className="group relative overflow-hidden p-6 transition-shadow hover:shadow-md"
             >
               <div
-                className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-body-sm type-semibold color-ink`}
+                className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-body-sm type-semibold text-[var(--ds-text-primary)]`}
               >
                 {artisan.initials}
               </div>
 
-              <p className="text-body-sm type-semibold color-ink">
+              <p className="text-body-sm type-semibold text-[var(--ds-text-primary)]">
                 {artisan.name}
               </p>
-              <p className="mt-1 text-body-xs color-muted">
+              <p className="mt-1 text-body-xs text-[var(--ds-text-muted)]">
                 {artisan.craft}
               </p>
-              <p className="mt-1 text-body-xs  tracking-token-wider color-muted">
+              <p className="mt-1 text-body-xs tracking-[var(--ds-type-label-tracking)] text-[var(--ds-text-muted)]">
                 {artisan.region}
               </p>
 
-              <div className="mt-4 border-t border-[var(--line)] pt-4">
-                <span className="text-body-xs type-medium  tracking-token-wider color-accent">
+              <div className="mt-4 border-t border-[var(--ds-border-subtle)] pt-4">
+                <span className="text-body-xs type-medium tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-primary)]">
                   {artisan.years} of craft
                 </span>
               </div>
@@ -81,9 +81,9 @@ export function ArtisanStrip() {
           ))}
         </div>
 
-        <p className="mt-8 text-body-sm leading-token-relaxed color-muted">
+        <p className="mt-8 text-body-sm leading-[var(--ds-leading-relaxed)] text-[var(--ds-text-muted)]">
           Every Kvastram piece is signed by the artisan who made it - their name is on the care label inside.{' '}
-          <Link href="/about" className="color-ink underline underline-offset-4 hover:color-accent">
+          <Link href="/about" className="text-[var(--ds-text-primary)] underline underline-offset-4 hover:text-[var(--ds-accent-primary)]">
             Learn about our makers {'->'}
           </Link>
         </p>

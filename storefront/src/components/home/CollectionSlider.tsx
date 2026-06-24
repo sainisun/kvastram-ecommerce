@@ -24,7 +24,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
               alt={collection.title}
               fill
               sizes="(max-width: 767px) 65vw, 350px"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-[var(--ds-transition)] motion-safe:group-hover:scale-105"
             />
             {/* Dark gradient overlay for text readability */}
             <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.5)] to-transparent" />

@@ -7,55 +7,22 @@
 
 :root {
   --font-display: var(--ds-font-display);
-  --font-body: var(--ds-font-body);
-  --font-ui: var(--ds-font-ui);
-  --font-label: var(--ds-font-label);
-  --transition: var(--ds-transition);
 
-  --text-display-xl: var(--ds-text-display-xl);
   --text-display-lg: var(--ds-text-display-lg);
   --text-display-md: var(--ds-text-display-md);
-  --text-display-sm: var(--ds-text-display-sm);
-  --text-body-xl: var(--ds-text-body-xl);
   --text-body-lg: var(--ds-text-body-lg);
-  --text-body-md: var(--ds-text-body-md);
-  --text-body-sm: var(--ds-text-body-sm);
   --text-body-xs: var(--ds-text-body-xs);
-  --text-count-xs: var(--ds-text-count-xs);
 
-  --weight-light: var(--ds-weight-light);
-  --weight-regular: var(--ds-weight-regular);
-  --weight-medium: var(--ds-weight-medium);
-  --weight-semibold: var(--ds-weight-semibold);
-  --weight-bold: var(--ds-weight-bold);
+
 
   --leading-tight: var(--ds-leading-tight);
-  --leading-snug: var(--ds-leading-snug);
-  --leading-normal: var(--ds-leading-normal);
   --leading-relaxed: var(--ds-leading-relaxed);
 
-  --tracking-tight: var(--ds-tracking-tight);
-  --tracking-normal: var(--ds-tracking-normal);
-  --tracking-wide: var(--ds-tracking-wide);
-  --tracking-wider: var(--ds-tracking-wider);
-  --type-body-font: var(--ds-type-body-font);
-  --type-heading-font: var(--ds-type-heading-font);
-  --type-ui-font: var(--ds-type-ui-font);
-  --type-label-font: var(--ds-type-label-font);
-  --type-body-weight: var(--ds-type-body-weight);
-  --type-light-weight: var(--ds-type-light-weight);
   --type-heading-weight: var(--ds-type-heading-weight);
-  --type-subheading-weight: var(--ds-type-subheading-weight);
-  --type-ui-weight: var(--ds-type-ui-weight);
   --type-label-weight: var(--ds-type-label-weight);
-  --type-strong-weight: var(--ds-type-strong-weight);
-  --type-heading-transform: var(--ds-type-heading-transform);
   --type-label-transform: var(--ds-type-label-transform);
-  --type-button-transform: var(--ds-type-button-transform);
   --type-heading-tracking: var(--ds-type-heading-tracking);
-  --type-body-tracking: var(--ds-type-body-tracking);
   --type-label-tracking: var(--ds-type-label-tracking);
-  --type-button-tracking: var(--ds-type-button-tracking);
 
   --color-text-primary: var(--ds-text-primary);
   --color-text-secondary: var(--ds-text-secondary);
@@ -157,7 +124,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-body);
+  --font-sans: var(--ds-font-body);
   --font-display: var(--font-display);
 }
 

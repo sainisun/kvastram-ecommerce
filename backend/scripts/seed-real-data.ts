@@ -80,15 +80,16 @@ async function seed() {
     // Create homepage merchandising slot for the collection
     await db.insert(homepage_merchandising_slots).values({
       id: uuidv4(),
-      slot_key: 'collectionSlider',
+      slot_key: collDisplayOrder <= 3 ? 'collections' : 'collectionSlider',
+      linked_collection_id: id,
       title: coll.title,
       eyebrow: 'Curated',
       image_url: `/uploads/real_products/${coll.image}`,
       link_url: `/collections/${coll.handle}`,
-      linked_collection_id: id,
       sort_order: collDisplayOrder,
       is_active: true
     });
+    collDisplayOrder++;
   }
 
   // 2. Create 6 Categories & Category Circles

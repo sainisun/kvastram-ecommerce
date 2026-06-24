@@ -26,16 +26,16 @@ const promises = [
 
 export function CraftPromise() {
   return (
-    <section className="kv-section craft-promise-section">
-      <div className="kv-container craft-promise-grid">
-        <div className="craft-promise-copy">
+    <section className="kv-section bg-[var(--ds-surface-parchment)] border-y border-[var(--ds-border-subtle)]">
+      <div className="kv-container grid gap-[28px] items-start md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div className="max-w-[620px]">
           <div className="kv-tag">Why Kvastram</div>
           <h2 className="kv-title">Handmade, edited, and ready to wear.</h2>
           <p className="kv-sub mt-4">
             The homepage is designed around real product media, short shopping paths,
             craft proof near buying moments, and fast routes to help.
           </p>
-          <div className="craft-promise-actions">
+          <div className="flex flex-wrap gap-[10px] mt-[24px]">
             <ButtonLink href="/about/our-craft" variant="primary" size="md">
               Explore Craft
             </ButtonLink>
@@ -45,13 +45,13 @@ export function CraftPromise() {
           </div>
         </div>
 
-        <div className="craft-promise-list" aria-label="Kvastram commerce promises">
+        <div className="grid gap-[1px] overflow-hidden border border-[var(--ds-border-subtle)] bg-[var(--ds-border-subtle)] md:grid-cols-2" aria-label="Kvastram commerce promises">
           {promises.map(({ icon: Icon, title, copy }) => (
-            <div key={title} className="craft-promise-item">
-              <Icon size={18} strokeWidth={1.7} aria-hidden="true" />
+            <div key={title} className="grid grid-cols-[auto_1fr] gap-[12px] p-[18px] bg-[var(--ds-surface-paper)]">
+              <Icon size={18} strokeWidth={1.7} aria-hidden="true" className="mt-[2px] text-[var(--ds-accent-primary)]" />
               <div>
-                <strong>{title}</strong>
-                <p>{copy}</p>
+                <strong className="block text-[var(--ds-text-primary)] font-label text-body-sm font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-label-tracking)]">{title}</strong>
+                <p className="mt-[6px] text-[var(--ds-text-muted)] font-body text-body-sm leading-[var(--ds-leading-normal)]">{copy}</p>
               </div>
             </div>
           ))}

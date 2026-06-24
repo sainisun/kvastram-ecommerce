@@ -8,11 +8,11 @@ function whatsappHref(message: string) {
 
 export function WhatsAppHelpStrip() {
   return (
-    <section className="home-help-strip" aria-label="Product help">
-      <div className="kv-container home-help-strip-inner">
+    <section className="border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]" aria-label="Product help">
+      <div className="kv-container grid gap-[14px] items-center py-[18px] md:grid-cols-[1fr_auto]">
         <div>
-          <span>Need size, fabric, or more photos?</span>
-          <p>Ask before you buy. It is especially useful for jackets, kimonos, bags, and gifts.</p>
+          <span className="block text-[var(--ds-text-primary)] font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)] [text-transform:var(--type-label-transform)]">Need size, fabric, or more photos?</span>
+          <p className="mt-[5px] text-[var(--ds-text-muted)] text-body-sm">Ask before you buy. It is especially useful for jackets, kimonos, bags, and gifts.</p>
         </div>
         <ButtonLink
           href={whatsappHref('Hi, I need help choosing a Kvastram piece')}
@@ -51,15 +51,15 @@ const craftCards = [
 
 export function CraftEducationStrip() {
   return (
-    <section className="kv-section craft-education-section bg-[var(--ds-surface-paper)]">
+    <section className="kv-section bg-[var(--ds-surface-paper)]">
       <div className="kv-container">
-        <div className="craft-education-grid">
+        <div className="grid gap-3 md:grid-cols-3">
           {craftCards.map(({ icon: Icon, title, copy, href }) => (
-            <Link key={title} href={href} className="craft-education-card">
-              <Icon aria-hidden="true" size={18} strokeWidth={1.7} />
+            <Link key={title} href={href} className="grid gap-[10px] grid-cols-[auto_1fr] border border-[var(--ds-border-subtle)] rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-[var(--ds-text-primary)] no-underline">
+              <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-[var(--ds-accent-primary)]" />
               <div>
-                <h3>{title}</h3>
-                <p>{copy}</p>
+                <h3 className="m-0 text-[var(--ds-text-primary)] font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)]">{title}</h3>
+                <p className="mt-1.5 text-[var(--ds-text-muted)] text-body-sm">{copy}</p>
               </div>
             </Link>
           ))}
@@ -71,8 +71,8 @@ export function CraftEducationStrip() {
 
 export function FitScaleHelp() {
   return (
-    <section className="kv-section fit-help-section bg-[var(--ds-surface-parchment)]">
-      <div className="kv-container fit-help-inner">
+    <section className="kv-section bg-[var(--ds-surface-parchment)]">
+      <div className="kv-container grid gap-[22px] items-center md:grid-cols-[1fr_auto]">
         <div>
           <div className="kv-tag">Fit &amp; scale help</div>
           <h2 className="kv-title">Unsure about fit or size?</h2>
@@ -80,7 +80,7 @@ export function FitScaleHelp() {
             See pieces in motion, check measurements, or ask for extra photos before checkout.
           </p>
         </div>
-        <div className="fit-help-actions">
+        <div className="flex flex-wrap gap-2.5">
           <ButtonLink href="/reels" variant="primary" size="md">
             Watch fit reels
           </ButtonLink>
@@ -127,7 +127,7 @@ const faqItems = [
 
 export function ShippingReturnsMiniFAQ() {
   return (
-    <section className="kv-section mini-faq-section bg-[var(--ds-surface-paper)]">
+    <section className="kv-section bg-[var(--ds-surface-paper)]">
       <div className="kv-container">
         <div className="kv-section-head">
           <div>
@@ -138,12 +138,12 @@ export function ShippingReturnsMiniFAQ() {
             Returns Help
           </Link>
         </div>
-        <div className="mini-faq-grid">
+        <div className="grid gap-3 md:grid-cols-4">
           {faqItems.map(({ icon: Icon, title, copy }) => (
-            <article key={title} className="mini-faq-card">
-              <Icon aria-hidden="true" size={18} strokeWidth={1.7} />
-              <h3>{title}</h3>
-              <p>{copy}</p>
+            <article key={title} className="grid content-start gap-[10px] border border-[var(--ds-border-subtle)] rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-[var(--ds-text-primary)] no-underline">
+              <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-[var(--ds-accent-primary)]" />
+              <h3 className="m-0 text-[var(--ds-text-primary)] font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)]">{title}</h3>
+              <p className="mt-1.5 text-[var(--ds-text-muted)] text-body-sm">{copy}</p>
             </article>
           ))}
         </div>

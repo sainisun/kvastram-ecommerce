@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════ */
 
 .footer {
-  background: var(--ink);
+  background: var(--ds-text-primary);
   color: rgba(var(--ds-surface-paper-rgb), 0.7);
   padding: 42px 0 28px;
 }
@@ -19,5 +19,7 @@
 .footer a {
   display: block;
   margin: 8px 0;
-  font-size: var(--text-body-sm);
+  font-size: var(--ds-text-body-sm);
 }
+
+

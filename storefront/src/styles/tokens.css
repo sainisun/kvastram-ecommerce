@@ -28,10 +28,10 @@
   --ds-weight-semibold: 600;
   --ds-weight-bold: 700;
 
-  --ds-leading-tight: 1.15;
-  --ds-leading-snug: 1.3;
+  --ds-leading-tight: 1.2;
+  --ds-leading-snug: 1.375;
   --ds-leading-normal: 1.5;
-  --ds-leading-relaxed: 1.7;
+  --ds-leading-relaxed: 1.625;
 
   --ds-tracking-tight: 0em;
   --ds-tracking-normal: 0em;
@@ -59,26 +59,26 @@
   --ds-type-label-tracking: var(--ds-tracking-wide);
   --ds-type-button-tracking: var(--ds-tracking-wide);
   --ds-type-product-title-font: var(--ds-font-body);
-  --ds-type-product-title-size: var(--ds-text-body-sm);
-  --ds-type-product-title-weight: var(--ds-weight-regular);
-  --ds-type-product-meta-transform: none;
-  --ds-type-product-meta-tracking: var(--ds-tracking-normal);
+  --ds-type-product-title-size: var(--ds-text-body-md);
+  --ds-type-product-title-weight: var(--ds-weight-medium);
+  --ds-type-product-meta-tracking: 0.05em;
+  --ds-type-product-meta-transform: uppercase;
 
   /* Surfaces */
-  --ds-surface-page: #FFFFFF;
+  --ds-surface-page: var(--ds-surface-paper);
   --ds-surface-paper: #FFFFFF;
   --ds-surface-soft: #F7F7F7;
-  --ds-surface-parchment: #F7F7F7;
-  --ds-surface-parchment-2: #E5E5E5;
+  --ds-surface-parchment: var(--ds-surface-soft);
+  --ds-surface-parchment-2: var(--ds-border-subtle);
   --ds-surface-warm: #F5F5F5;
 
   /* Text */
   --ds-text-primary: #1A1A1A;
   --ds-text-secondary: #666666;
   --ds-text-muted: #7f756e;
-  --ds-text-disabled: #B89B5E;
-  --ds-text-inverse: #ffffff;
-  --ds-text-price: #1A1A1A;
+  --ds-text-disabled: var(--ds-accent-gold);
+  --ds-text-inverse: var(--ds-surface-paper);
+  --ds-text-price: var(--ds-text-primary);
   --ds-text-price-old: #888888;
 
   /* Borders */
@@ -87,19 +87,19 @@
   --ds-border-dark: #111111;
 
   /* Footer */
-  --ds-footer-bg: #FFFFFF;
-  --ds-footer-text: #1A1A1A;
-  --ds-footer-heading: #1A1A1A;
+  --ds-footer-bg: var(--ds-surface-paper);
+  --ds-footer-text: var(--ds-text-primary);
+  --ds-footer-heading: var(--ds-text-primary);
   --ds-footer-link: #4D4742;
   --ds-footer-muted: #7F756E;
-  --ds-footer-dim: #B89B5E;
-  --ds-footer-border: #E5E5E5;
-  --ds-footer-highlight: #B89B5E;
+  --ds-footer-dim: var(--ds-accent-gold);
+  --ds-footer-border: var(--ds-border-subtle);
+  --ds-footer-highlight: var(--ds-accent-gold);
   --ds-footer-highlight-hover: #9E8148;
   --ds-footer-hover: #000000;
 
   /* Accent: TERRACOTTA is canonical. */
-  --ds-accent-primary: #B89B5E;
+  --ds-accent-primary: var(--ds-accent-gold);
   --ds-accent-hover: #9E8148;
   --ds-accent-soft: #F5EEDC;
   --ds-accent-rgb: 184, 155, 94;
@@ -128,6 +128,10 @@
   --ds-danger-dot: #ef4444;
   --ds-social-facebook: #1877f2;
   --ds-social-twitter: #1da1f2;
+  --ds-danger-border: color-mix(in srgb, var(--ds-danger) 40%, transparent);
+  --ds-info-border: color-mix(in srgb, var(--ds-info) 40%, transparent);
+  --ds-success-border: color-mix(in srgb, var(--ds-success) 40%, transparent);
+  --ds-warning-border: color-mix(in srgb, var(--ds-warning) 40%, transparent);
 
   /* Product swatches */
   --ds-swatch-navy: #1e3a8a;
@@ -174,6 +178,12 @@
   --ds-radius-lg: 12px;
   --ds-radius-pill: 999px;
 
+  /* Z-index */
+  --ds-z-dropdown: 50;
+  --ds-z-sticky: 100;
+  --ds-z-overlay: 200;
+  --ds-z-modal: 300;
+
   /* Channels and effects */
   --ds-ink-rgb: 26, 23, 20;
   --ds-text-primary-rgb: 26, 23, 20;
@@ -185,5 +195,9 @@
   --ds-surface-parchment-rgb: 247, 247, 247;
   --ds-black-rgb: 0, 0, 0;
   --ds-shadow: 0 10px 34px rgba(var(--ds-ink-rgb), 0.12);
+  --ds-transition-fast: 150ms ease;
+  --ds-transition-normal: 220ms ease;
   --ds-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
+

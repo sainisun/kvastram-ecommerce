@@ -14,14 +14,14 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
             <h2>From our circle</h2>
           </div>
         </div>
-        <div className="homepage-social-grid">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-[6px]">
           {posts.slice(0, 8).map((post) => (
             <a
               key={post.id}
               href={post.destination_url}
               target={post.destination_url.startsWith('https://') ? '_blank' : undefined}
               rel={post.destination_url.startsWith('https://') ? 'noopener noreferrer' : undefined}
-              className="homepage-social-card"
+              className="relative aspect-square overflow-hidden bg-[var(--ds-surface-soft)] group block"
             >
               <OptimizedImage
                 src={post.image_url}
@@ -30,9 +30,9 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
                 sizes="(max-width: 767px) 50vw, 25vw"
                 className="object-cover"
               />
-              <span className="homepage-social-overlay">
+              <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--ds-space-sm)] p-[var(--ds-space-md)] bg-[rgba(var(--ds-black-rgb),0.6)] text-[var(--ds-text-inverse)] opacity-0 text-center transition-opacity duration-[180ms] ease-[ease] group-hover:opacity-100 group-focus-visible:opacity-100">
                 <Instagram aria-hidden="true" />
-                {post.caption ? <span>{post.caption}</span> : null}
+                {post.caption ? <span className="line-clamp-3 overflow-hidden text-[var(--ds-text-body-xs)]">{post.caption}</span> : null}
               </span>
             </a>
           ))}

@@ -92,7 +92,7 @@ export function Modal({
   if (!isOpen || typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className={cn('fixed inset-0 z-[100] flex items-center justify-center p-4', rootClassName)}>
+    <div className={cn('fixed inset-0 z-[var(--ds-z-modal)] flex items-center justify-center p-4', rootClassName)}>
       <button
         type="button"
         className="absolute inset-0 bg-[rgba(var(--ds-ink-rgb),0.48)]"

@@ -33,12 +33,12 @@
 }
 .collections-as-seen-head h2 {
   margin: 0;
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: var(--text-display-md);
-  font-weight: var(--type-body-weight);
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-normal);
+  color: var(--ds-text-primary);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display-md);
+  font-weight: var(--ds-type-body-weight);
+  line-height: var(--ds-leading-tight);
+  letter-spacing: var(--ds-tracking-normal);
 }
 .collections-as-seen-head .kv-tag {
   justify-content: center;
@@ -48,9 +48,9 @@
   max-width: 38rem;
   margin: 12px auto 0;
   color: var(--ds-text-muted);
-  font-family: var(--font-body);
-  font-size: var(--text-body-sm);
-  line-height: var(--leading-normal);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body-sm);
+  line-height: var(--ds-leading-normal);
 }
 .collections-carousel,
 .collections-as-seen-carousel {
@@ -59,12 +59,12 @@
 }
 .collection-card {
   min-height: 260px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--ds-radius-lg);
   overflow: hidden;
   position: relative;
   display: flex;
   align-items: end;
-  background: var(--soft);
+  background: var(--ds-surface-soft);
   cursor: pointer;
 }
 .collections-as-seen-card {
@@ -97,16 +97,16 @@
 .collections-as-seen-info span {
   display: block;
   margin-bottom: 6px;
-  font-family: var(--font-body);
-  font-size: var(--text-body-xs);
-  font-weight: var(--type-ui-weight);
-  letter-spacing: var(--type-label-tracking);
-  line-height: var(--leading-normal);
-  text-transform: var(--type-label-transform);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body-xs);
+  font-weight: var(--ds-type-ui-weight);
+  letter-spacing: var(--ds-type-label-tracking);
+  line-height: var(--ds-leading-normal);
+  text-transform: var(--ds-type-label-transform);
 }
 .collection-info h3 {
   margin: 0 0 4px;
-  font-size: var(--text-display-md);
+  font-size: var(--ds-text-display-md);
   color: var(--ds-text-inverse);
 }
 .collections-as-seen-info h3 {
@@ -116,33 +116,12 @@
   padding-inline: 8px;
   padding-bottom: 8px;
   border-bottom: 2px solid rgba(var(--ds-surface-paper-rgb), 0.85);
-  font-family: var(--font-display);
-  font-size: var(--text-display-sm);
-  font-weight: var(--type-body-weight);
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-normal);
-  text-transform: var(--type-label-transform);
-}
-.homepage-category-merch-card {
-  display: block;
-  flex: 0 0 auto;
-  position: relative;
-  min-width: 80vw;
-  aspect-ratio: 5 / 7;
-  scroll-snap-align: start;
-  overflow: hidden;
-  border-radius: 0;
-  background: linear-gradient(135deg, var(--ds-accent-hover), var(--ds-accent-primary) 48%, var(--ds-accent-soft));
-  color: var(--ds-text-inverse);
-}
-
-.homepage-category-merch-card:before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(var(--ds-black-rgb),.05), rgba(var(--ds-black-rgb),.72));
-  z-index: 1;
-  pointer-events: none;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display-sm);
+  font-weight: var(--ds-type-body-weight);
+  line-height: var(--ds-leading-tight);
+  letter-spacing: var(--ds-tracking-normal);
+  text-transform: var(--ds-type-label-transform);
 }
 
 .collection-card-fallback {
@@ -164,52 +143,16 @@
 
 .collection-card-fallback span {
   max-width: 14rem;
-  font-family: var(--font-display);
-  font-size: var(--text-display-sm);
-  line-height: var(--leading-tight);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display-sm);
+  line-height: var(--ds-leading-tight);
 }
 
 .collection-card-fallback small {
   margin-top: 10px;
   color: var(--ds-text-muted);
-  font-size: var(--text-body-xs);
+  font-size: var(--ds-text-body-xs);
 }
 
-.homepage-category-merch-info {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 24px;
-  z-index: 2;
-  width: 100%;
-  padding-inline: 24px;
-  text-align: center;
-}
 
-.homepage-category-merch-info h3 {
-  display: inline-block;
-  max-width: 100%;
-  margin: 0;
-  padding-inline: 8px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid rgba(var(--ds-surface-paper-rgb), 0.85);
-  color: var(--ds-text-inverse);
-  font-family: var(--font-display);
-  font-size: var(--text-display-sm);
-  font-weight: var(--type-body-weight);
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-normal);
-  overflow-wrap: anywhere;
-  text-transform: var(--type-label-transform);
-}
 
-@media screen and (min-width: 741px) {
-  .homepage-category-merch-card {
-    min-width: 60vw;
-  }
-}
-
-@media screen and (min-width: 1000px) {
-  .homepage-category-merch-card {
-    min-width: 23vw;
-  }
-}

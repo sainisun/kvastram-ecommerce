@@ -9,9 +9,9 @@
   aspect-ratio: 4 / 5;
   display: grid;
   place-items: center;
-  border-radius: var(--radius-lg);
-  background: var(--soft);
-  font-size: var(--text-display-xl);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-surface-soft);
+  font-size: var(--ds-text-display-xl);
   overflow: hidden;
   position: relative;
 }
@@ -25,8 +25,8 @@
 
 .pd-thumb {
   aspect-ratio: 1;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-md);
+  border: 1.5px solid var(--ds-border-subtle);
+  border-radius: var(--ds-radius-md);
   background: var(--ds-surface-paper);
   display: grid;
   place-items: center;
@@ -42,16 +42,16 @@
 }
 
 .pd-price {
-  font-size: var(--text-display-sm);
+  font-size: var(--ds-text-display-sm);
   color: var(--color-text-price);
-  font-weight: var(--type-strong-weight);
+  font-weight: var(--ds-type-strong-weight);
 }
 
 .pd-tabs {
   display: flex;
   gap: 4px;
   overflow-x: auto;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--ds-border-subtle);
   margin-top: 32px;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -67,16 +67,16 @@
   border-bottom: 3px solid transparent;
   background: transparent;
   padding: 12px 10px;
-  color: var(--muted);
-  font-size: var(--text-body-sm);
-  font-weight: var(--type-ui-weight);
+  color: var(--ds-text-muted);
+  font-size: var(--ds-text-body-sm);
+  font-weight: var(--ds-type-ui-weight);
   cursor: pointer;
   transition: 0.15s ease;
   white-space: nowrap;
 }
 
 .pd-tab:hover {
-  color: var(--ink);
+  color: var(--ds-text-primary);
 }
 
 .pd-tab.active {
@@ -99,3 +99,5 @@
     gap: 48px;
   }
 }
+
+

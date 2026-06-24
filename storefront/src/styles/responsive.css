@@ -17,8 +17,8 @@
     display: flex;
     align-items: center;
     gap: 22px;
-    font-size: var(--text-body-sm);
-    font-weight: var(--type-strong-weight);
+    font-size: var(--ds-text-body-sm);
+    font-weight: var(--ds-type-strong-weight);
   }
   .desktop-nav a.active,
   .desktop-nav a:hover {
@@ -59,3 +59,6 @@
     transform: translateY(6px);
   }
 }
+
+
+

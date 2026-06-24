@@ -14,7 +14,7 @@ export function NewArrivals({ products, isCurated = false }: NewArrivalsProps) {
   if (displayed.length === 0) return null;
 
   return (
-    <section className={isCurated ? 'kv-section bg-[var(--cream)]' : 'kv-section bg-[var(--ds-surface-paper)]'}>
+    <section className={isCurated ? 'kv-section bg-[var(--ds-surface-page)]' : 'kv-section bg-[var(--ds-surface-paper)]'}>
       <div className="kv-container">
         <div className="kv-section-head">
           <div>

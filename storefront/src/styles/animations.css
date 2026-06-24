@@ -125,7 +125,7 @@
   }
 }
 .heart-pop {
-  animation: heartPop 0.4s var(--transition);
+  animation: heartPop 0.4s var(--ds-transition);
 }
 
 @keyframes slideInCart {
@@ -157,7 +157,7 @@
 
 /* ═══ GLASS & HOVER UTILITIES ═══ */
 .glass {
-  background: rgba(var(--cream-rgb), 0.85);
+  background: rgba(var(--ds-cream-rgb), 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -222,3 +222,6 @@ a:active,
   --tw-ring-offset-shadow: 0 0 transparent;
   --tw-ring-shadow: 0 0 transparent;
 }
+
+
+

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-20T08:12:05.583Z",
+  "generatedAt": "2026-06-24T10:01:33.500Z",
   "duplicates": {
     "active": [
       "src/styles/components/pdp-gallery.css",
@@ -59,18 +59,6 @@
       "src/styles/components/content-pages.css",
       "src/styles/components/pdp.css"
     ],
-    "cookie-consent": [
-      "src/styles/components/home-sections.css",
-      "src/styles/components/reels.css"
-    ],
-    "cookie-consent-actions": [
-      "src/styles/components/home-sections.css",
-      "src/styles/components/reels.css"
-    ],
-    "cookie-consent-card": [
-      "src/styles/components/home-sections.css",
-      "src/styles/components/reels.css"
-    ],
     "css": [
       "src/app/globals.css",
       "src/styles/storefront.css",
@@ -113,19 +101,11 @@
       "src/styles/responsive.css"
     ],
     "hero-copy": [
-      "src/styles/components/home-sections.css",
+      "src/styles/components/reels.css",
       "src/styles/typography.css"
     ],
     "hero-eyebrow": [
-      "src/styles/components/home-sections.css",
-      "src/styles/typography.css"
-    ],
-    "home-link-button": [
-      "src/styles/components/home-sections.css",
-      "src/styles/typography.css"
-    ],
-    "home-trust-item": [
-      "src/styles/components/home-sections.css",
+      "src/styles/components/reels.css",
       "src/styles/typography.css"
     ],
     "html": [
@@ -137,8 +117,8 @@
       "src/styles/components/quick-view.css"
     ],
     "is-visible": [
-      "src/styles/components/home-sections.css",
-      "src/styles/components/pdp.css"
+      "src/styles/components/pdp.css",
+      "src/styles/mobile-overrides.css"
     ],
     "kv-container": [
       "src/styles/components/pdp.css",
@@ -359,10 +339,6 @@
       "src/styles/typography.css",
       "src/styles/utilities.css"
     ],
-    "slider-row": [
-      "src/styles/components/home-sections.css",
-      "src/styles/responsive.css"
-    ],
     "spotlight-action": [
       "src/styles/components/product-card.css",
       "src/styles/typography.css"
@@ -386,10 +362,6 @@
     "stats-bar-prem": [
       "src/styles/components/premium-sections.css",
       "src/styles/mobile-overrides.css"
-    ],
-    "story-block": [
-      "src/styles/components/home-sections.css",
-      "src/styles/responsive.css"
     ],
     "tag": [
       "src/styles/typography.css",
