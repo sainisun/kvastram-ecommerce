@@ -30,7 +30,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--ds-space-xs);
   margin-bottom: 28px;
   color: var(--ds-text-muted);
   font-size: var(--ds-text-body-xs);
@@ -66,7 +66,7 @@
 
 .content-hero h1 {
   max-width: 13ch;
-  margin: 14px auto 0;
+  margin: var(--ds-space-sm) auto 0;
   color: var(--ds-text-primary);
   font-family: var(--ds-font-display);
   font-size: var(--ds-text-display-xl);
@@ -81,7 +81,7 @@
 
 .content-hero__intro {
   max-width: 720px;
-  margin: 22px auto 0;
+  margin: var(--ds-space-md) auto 0;
   color: var(--color-text-secondary);
   font-size: var(--ds-text-body-xl);
   font-weight: var(--ds-type-body-weight);
@@ -95,9 +95,9 @@
 
 .content-hero__meta {
   width: fit-content;
-  margin: 26px auto 0;
+  margin: var(--ds-space-md) auto 0;
   border-top: 1px solid rgba(var(--ds-accent-rgb), 0.22);
-  padding-top: 14px;
+  padding-top: var(--ds-space-sm);
   color: var(--ds-text-muted);
   font-size: var(--ds-text-body-xs);
   font-weight: var(--ds-type-label-weight);
@@ -112,7 +112,7 @@
 .content-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 32px;
+  gap: var(--ds-space-lg);
   padding-top: clamp(38px, 6vw, 76px);
 }
 
@@ -149,7 +149,7 @@
 .image-text-split h2,
 .inline-cta h2 {
   scroll-margin-top: 120px;
-  margin: clamp(48px, 7vw, 84px) 0 18px;
+  margin: clamp(48px, 7vw, 84px) 0 var(--ds-space-sm);
   color: var(--ds-text-primary);
   font-family: var(--ds-font-display);
   font-size: var(--ds-text-display-lg);
@@ -162,7 +162,7 @@
 .info-card h3,
 .highlight-box h3 {
   scroll-margin-top: 120px;
-  margin: 36px 0 12px;
+  margin: 36px 0 var(--ds-space-xs);
   color: var(--ds-text-primary);
   font-family: var(--ds-font-display);
   font-size: var(--ds-text-display-sm);
@@ -172,7 +172,7 @@
 }
 
 .content-rich h4 {
-  margin: 28px 0 10px;
+  margin: 28px 0 var(--ds-space-xs);
   color: var(--ds-text-primary);
   font-size: var(--ds-text-body-lg);
   font-weight: var(--ds-type-strong-weight);
@@ -186,19 +186,19 @@
 .editorial-text p,
 .editorial-text ul,
 .editorial-text ol {
-  margin: 0 0 22px;
+  margin: 0 0 var(--ds-space-md);
 }
 
 .content-rich ul,
 .content-rich ol,
 .editorial-text ul,
 .editorial-text ol {
-  padding-left: 1.25rem;
+  padding-left: var(--ds-space-sm);
 }
 
 .content-rich li,
 .editorial-text li {
-  margin: 10px 0;
+  margin: var(--ds-space-xs) 0;
   padding-left: 4px;
 }
 
@@ -243,7 +243,7 @@
 .content-rich table th,
 .content-rich table td {
   border: 1px solid var(--ds-border-subtle);
-  padding: 16px;
+  padding: var(--ds-space-sm);
   vertical-align: top;
 }
 
@@ -253,7 +253,7 @@
 
 .content-rich :has(> table),
 .policy-table {
-  margin: 30px 0;
+  margin: var(--ds-space-lg) 0;
   overflow-x: auto;
   border: 1px solid var(--ds-border-subtle);
   background: var(--ds-surface-paper);
@@ -275,7 +275,7 @@
 
 .content-toc summary {
   cursor: pointer;
-  padding: 16px 18px;
+  padding: var(--ds-space-sm);
   color: var(--ds-text-primary);
   font-size: var(--ds-text-body-xs);
   font-weight: var(--ds-type-label-weight);
@@ -285,9 +285,9 @@
 
 .content-toc ol {
   display: grid;
-  gap: 10px;
+  gap: var(--ds-space-xs);
   margin: 0;
-  padding: 0 18px 18px;
+  padding: 0 var(--ds-space-sm) var(--ds-space-sm);
   list-style: none;
 }
 
@@ -304,7 +304,7 @@
 }
 
 .content-toc .is-nested {
-  padding-left: 14px;
+  padding-left: var(--ds-space-sm);
 }
 
 .section-block,
@@ -316,7 +316,7 @@
 
 .section-block__intro {
   max-width: 62ch;
-  margin: 0 0 24px;
+  margin: 0 0 var(--ds-space-md);
   color: var(--ds-text-muted);
   font-size: var(--ds-text-body-lg);
   line-height: var(--ds-leading-relaxed);
@@ -329,7 +329,7 @@
 
 .info-grid {
   display: grid;
-  gap: 16px;
+  gap: var(--ds-space-sm);
 }
 
 .info-card {
@@ -352,7 +352,7 @@
 }
 
 .info-card__eyebrow {
-  margin: 0 0 8px;
+  margin: 0 0 var(--ds-space-xs);
   color: var(--ds-accent-primary);
   font-size: var(--ds-text-body-xs);
   font-weight: var(--ds-type-label-weight);
@@ -372,7 +372,7 @@
 
 .info-card__cta {
   display: inline-block;
-  margin-top: 18px;
+  margin-top: var(--ds-space-sm);
   border-bottom: 1px solid currentColor;
   color: var(--ds-text-primary);
   font-size: var(--ds-text-body-xs);
@@ -382,10 +382,10 @@
 }
 
 .highlight-box {
-  margin: 34px 0;
+  margin: var(--ds-space-lg) 0;
   border-left: 3px solid var(--ds-accent-primary);
-  background: var(--ds-surface-parchment);
-  padding: 22px 24px;
+  margin-top: 0;
+  padding: var(--ds-space-md);
   color: var(--color-text-secondary);
   font-size: var(--ds-text-body-sm);
   line-height: var(--ds-leading-relaxed);
@@ -397,7 +397,7 @@
 
 .inline-cta {
   display: grid;
-  gap: 24px;
+  gap: var(--ds-space-md);
   margin-top: clamp(44px, 6vw, 78px);
   border: 1px solid rgba(var(--ds-accent-rgb), 0.22);
   background: linear-gradient(135deg, var(--ds-surface-parchment), var(--ds-surface-paper));
@@ -405,13 +405,13 @@
 }
 
 .inline-cta h2 {
-  margin: 8px 0 0;
+  margin: var(--ds-space-xs) 0 0;
   font-size: var(--ds-text-display-md);
 }
 
 .inline-cta p:not(.content-eyebrow) {
   max-width: 58ch;
-  margin: 12px 0 0;
+  margin: var(--ds-space-xs) 0 0;
   color: var(--ds-text-muted);
   line-height: var(--ds-leading-relaxed);
 }
@@ -419,12 +419,12 @@
 .inline-cta__links {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--ds-space-xs);
 }
 
 .faq-accordion {
   display: grid;
-  gap: 14px;
+  gap: var(--ds-space-sm);
 }
 
 .faq-accordion details {
@@ -434,7 +434,7 @@
 
 .faq-accordion summary {
   cursor: pointer;
-  padding: 22px 24px;
+  padding: var(--ds-space-md);
   color: var(--ds-text-primary);
   font-family: var(--ds-font-display);
   font-size: var(--ds-text-display-sm);
@@ -444,7 +444,7 @@
 
 .faq-accordion p {
   margin: 0;
-  border-top: 1px solid var(--ds-border-subtle);
+  padding: 0 var(--ds-space-md) var(--ds-space-md);
   padding: 0 24px 24px;
   color: var(--ds-text-muted);
   line-height: var(--ds-leading-relaxed);
@@ -467,7 +467,7 @@
 }
 
 .quote-block figcaption {
-  margin-top: 18px;
+  margin-top: var(--ds-space-sm);
   color: var(--ds-text-muted);
   font-size: var(--ds-text-body-xs);
   font-weight: var(--ds-type-label-weight);
@@ -510,7 +510,7 @@
 }
 
 .craft-story-section h2 {
-  margin-top: 10px;
+  margin-top: var(--ds-space-xs);
 }
 
 @media (min-width: 768px) {
@@ -544,11 +544,11 @@
   .content-toc__desktop {
     display: block;
     border-left: 1px solid var(--ds-border-subtle);
-    padding-left: 18px;
+  padding-left: var(--ds-space-sm);
   }
 
   .content-toc__desktop p {
-    margin: 0 0 18px;
+  margin: 0 0 var(--ds-space-sm);
     color: var(--ds-text-primary);
     font-size: var(--ds-text-body-xs);
     font-weight: var(--ds-type-label-weight);
