@@ -36,7 +36,7 @@
   display: flex;
   gap: 0;
   max-width: 480px;
-  margin: 0 auto 24px;
+    margin: 0 auto var(--ds-space-md);
   border: 1px solid rgba(var(--ds-cream-rgb), 0.2);
 }
 .newsletter-note-prem {
