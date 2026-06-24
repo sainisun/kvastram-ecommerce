@@ -21,8 +21,8 @@ function PolicySection({
 }) {
   return (
     <section className="border-t border-[var(--ds-border-subtle)] py-8">
-      <h2 className="text-2xl font-semibold text-[var(--ds-text-primary)]">{title}</h2>
-      <div className="mt-4 space-y-4 text-base leading-7 text-[var(--ds-text-secondary)]">
+      <h2 className="text-display-sm font-display font-[var(--ds-type-heading-weight)] text-[var(--ds-text-primary)]">{title}</h2>
+      <div className="mt-4 space-y-4 text-body-md leading-[var(--ds-leading-relaxed)] text-[var(--ds-text-secondary)]">
         {children}
       </div>
     </section>
@@ -50,11 +50,11 @@ function PolicyTable({
 }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-[var(--ds-border-subtle)]">
-      <table className="min-w-full divide-y divide-[var(--ds-border-subtle)] text-left text-sm">
+      <table className="min-w-full divide-y divide-[var(--ds-border-subtle)] text-left text-body-sm">
         <thead className="bg-[var(--ds-surface-soft)] text-[var(--ds-text-secondary)]">
           <tr>
-            <th className="px-4 py-3 font-semibold">{firstHeader}</th>
-            <th className="px-4 py-3 font-semibold">{secondHeader}</th>
+            <th className="px-4 py-3 font-[var(--ds-type-heading-weight)]">{firstHeader}</th>
+            <th className="px-4 py-3 font-[var(--ds-type-heading-weight)]">{secondHeader}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
@@ -74,17 +74,17 @@ export default function RefundPolicyPage() {
   return (
     <main className="bg-[var(--ds-surface-page)]">
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        <p className="text-sm font-semibold uppercase tracking-wide text-[var(--ds-text-muted)]">
+        <p className="text-body-xs font-ui uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-text-muted)]">
           Policies
         </p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-[var(--ds-text-primary)]">
+        <h1 className="mt-3 text-display-md font-display font-[var(--ds-type-heading-weight)] text-[var(--ds-text-primary)]">
           Cancellation & Refund Policy
         </h1>
-        <p className="mt-4 text-lg leading-8 text-[var(--ds-text-secondary)]">
+        <p className="mt-4 text-body-lg leading-[var(--ds-leading-relaxed)] text-[var(--ds-text-secondary)]">
           This policy explains how cancellations, returns, exchanges, and
           refunds are handled for orders placed on kvastram.com.
         </p>
-        <p className="mt-3 text-sm text-[var(--ds-text-muted)]">Effective Date: 7 June 2026</p>
+        <p className="mt-3 text-body-sm text-[var(--ds-text-muted)]">Effective Date: 7 June 2026</p>
 
         <PolicySection title="1. Cancellation Before Dispatch">
           <p>
