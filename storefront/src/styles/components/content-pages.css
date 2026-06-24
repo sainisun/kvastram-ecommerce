@@ -382,9 +382,8 @@
 }
 
 .highlight-box {
-  margin: var(--ds-space-lg) 0;
+  margin: 0 0 var(--ds-space-lg);
   border-left: 3px solid var(--ds-accent-primary);
-  margin-top: 0;
   padding: var(--ds-space-md);
   color: var(--color-text-secondary);
   font-size: var(--ds-text-body-sm);
@@ -445,7 +444,6 @@
 .faq-accordion p {
   margin: 0;
   padding: 0 var(--ds-space-md) var(--ds-space-md);
-  padding: 0 24px 24px;
   color: var(--ds-text-muted);
   line-height: var(--ds-leading-relaxed);
 }
