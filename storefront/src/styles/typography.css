@@ -35,8 +35,8 @@
 .catalog-quick-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.9rem;
+    gap: var(--ds-space-xs);
+    margin-top: var(--ds-space-sm);
 }
 
 .catalog-quick-chip {
@@ -65,7 +65,7 @@
 .kv-text-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+    gap: var(--ds-space-xs);
   border: 1px solid var(--ds-border-subtle);
   border-radius: 999px;
   background: var(--ds-surface-paper);
@@ -103,7 +103,7 @@
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 0.75rem;
+    gap: var(--ds-space-xs);
   border: 1px solid transparent;
   background: var(--ds-surface-paper);
   color: var(--color-text-secondary);
