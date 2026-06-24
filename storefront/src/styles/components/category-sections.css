@@ -124,7 +124,7 @@
 
 .shop-need-grid {
   display: grid;
-  gap: 14px;
+  gap: var(--ds-space-sm);
 }
 
 .shop-need-card {
@@ -145,7 +145,7 @@
 }
 
 .shop-need-copy {
-  padding: 18px;
+  padding: var(--ds-space-sm);
 }
 
 .shop-need-copy span {
@@ -158,7 +158,7 @@
 }
 
 .shop-need-copy h3 {
-  margin: 8px 0 0;
+  margin: var(--ds-space-xs) 0 0;
   color: var(--ds-text-primary);
   font-family: var(--ds-type-heading-font);
   font-size: var(--ds-text-display-sm);
@@ -168,7 +168,7 @@
 }
 
 .shop-need-copy p {
-  margin: 10px 0 0;
+  margin: var(--ds-space-xs) 0 0;
   color: var(--ds-text-muted);
   font-family: var(--ds-font-body);
   font-size: var(--ds-text-body-sm);
@@ -178,6 +178,6 @@
 @media (min-width: 768px) {
   .shop-need-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 18px;
+    gap: var(--ds-space-sm);
   }
 }
