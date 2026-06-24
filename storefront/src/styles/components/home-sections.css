@@ -4,20 +4,20 @@
 
 @media (max-width: 767px) {
   .kv-section {
-    padding-block: 22px;
+    padding-block: var(--ds-space-md);
   }
 
   .kv-section-head {
-    margin-bottom: 14px;
+    margin-bottom: var(--ds-space-sm);
   }
 
   .mobile-circle-categories {
-    padding-top: 8px;
+    padding-top: var(--ds-space-xs);
     padding-bottom: 4px;
   }
 
   .hero + .kv-section {
-    padding-top: 18px;
+    padding-top: var(--ds-space-sm);
   }
 
   .hero {
