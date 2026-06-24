@@ -113,9 +113,9 @@
 
 .mobile-sticky-actions {
   position: fixed;
-  right: 12px;
+  right: var(--ds-space-xs);
   bottom: calc(92px + env(safe-area-inset-bottom));
-  left: 12px;
+  left: var(--ds-space-xs);
   z-index: 45;
   display: none;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -142,7 +142,7 @@
   min-height: 54px;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--ds-space-xs);
   background: var(--ds-surface-paper);
   color: var(--ds-text-primary);
   font-family: var(--ds-type-ui-font);
