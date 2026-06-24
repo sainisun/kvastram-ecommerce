@@ -66,7 +66,7 @@ test.describe('Storefront visual contract', () => {
 
   test('hero exposes four slides and accessible playback controls', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.homepage-hero-slide')).toHaveCount(4);
+    await expect(page.locator('[data-home-section="2-hero"] article')).toHaveCount(4);
     await expect(page.getByRole('button', { name: 'Pause hero slideshow' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Next hero slide' })).toBeVisible();
     await page.getByRole('button', { name: 'Pause hero slideshow' }).click();
@@ -76,7 +76,7 @@ test.describe('Storefront visual contract', () => {
   test('category circles support arrow-key focus navigation', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const row = page
-      .locator('#main-content .homepage-circle-row[data-keyboard-ready="true"]')
+      .locator('#main-content [data-keyboard-ready="true"]')
       .first();
     await expect(row).toBeVisible();
     const links = row.locator('.homepage-circle-link');
@@ -98,7 +98,7 @@ test.describe('Storefront visual contract', () => {
 
   test('only the first hero image is eager loaded', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    const heroImages = page.locator('.homepage-hero-slide img');
+    const heroImages = page.locator('[data-home-section="2-hero"] article img');
     await expect(heroImages).toHaveCount(4);
     await expect(heroImages.first()).toHaveAttribute('loading', 'eager');
     for (let index = 1; index < 4; index += 1) {
