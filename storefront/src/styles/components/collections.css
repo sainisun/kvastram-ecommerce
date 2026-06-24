@@ -4,13 +4,13 @@
 
 .collections-grid {
   display: grid;
-  gap: 14px;
+  gap: var(--ds-space-sm);
 }
 .kv-carousel {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(250px, 78%);
-  gap: 12px;
+  gap: var(--ds-space-xs);
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -28,7 +28,7 @@
   background: var(--ds-surface-paper);
 }
 .collections-as-seen-head {
-  margin-bottom: 34px;
+  margin-bottom: var(--ds-space-lg);
   text-align: center;
 }
 .collections-as-seen-head h2 {
@@ -42,11 +42,11 @@
 }
 .collections-as-seen-head .kv-tag {
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: var(--ds-space-xs);
 }
 .collections-as-seen-head p {
   max-width: 38rem;
-  margin: 12px auto 0;
+  margin: var(--ds-space-xs) auto 0;
   color: var(--ds-text-muted);
   font-family: var(--ds-font-body);
   font-size: var(--ds-text-body-sm);
@@ -55,7 +55,7 @@
 .collections-carousel,
 .collections-as-seen-carousel {
   grid-auto-columns: min(82vw, 350px);
-  gap: 28px;
+  gap: var(--ds-space-md);
 }
 .collection-card {
   min-height: 260px;
@@ -81,13 +81,13 @@
 }
 .collection-info {
   position: relative;
-  padding: 22px;
+  padding: var(--ds-space-md);
   color: var(--ds-text-inverse);
   z-index: 2;
 }
 .collections-as-seen-info {
   width: 100%;
-  padding: 0 24px 24px;
+  padding: 0 var(--ds-space-md) var(--ds-space-md);
   text-align: center;
 }
 .collections-as-seen-info span,
@@ -96,7 +96,7 @@
 }
 .collections-as-seen-info span {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: var(--ds-space-xs);
   font-family: var(--ds-font-body);
   font-size: var(--ds-text-body-xs);
   font-weight: var(--ds-type-ui-weight);
@@ -113,8 +113,8 @@
   display: inline-block;
   max-width: 100%;
   margin: 0;
-  padding-inline: 8px;
-  padding-bottom: 8px;
+  padding-inline: var(--ds-space-xs);
+  padding-bottom: var(--ds-space-xs);
   border-bottom: 2px solid rgba(var(--ds-surface-paper-rgb), 0.85);
   font-family: var(--ds-font-display);
   font-size: var(--ds-text-display-sm);
@@ -127,7 +127,7 @@
 .collection-card-fallback {
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: var(--ds-space-md);
   background:
     linear-gradient(180deg, rgba(var(--ds-black-rgb), 0.02), rgba(var(--ds-black-rgb), 0.38)),
     repeating-linear-gradient(
@@ -149,7 +149,7 @@
 }
 
 .collection-card-fallback small {
-  margin-top: 10px;
+  margin-top: var(--ds-space-xs);
   color: var(--ds-text-muted);
   font-size: var(--ds-text-body-xs);
 }
