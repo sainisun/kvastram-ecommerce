@@ -6,7 +6,7 @@
   z-index: 200;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: var(--ds-space-sm);
   background: rgba(var(--ds-ink-rgb), 0.55);
   opacity: 0;
   visibility: hidden;
@@ -28,16 +28,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 18px;
+  gap: var(--ds-space-xs);
+  padding: var(--ds-space-sm);
   border-bottom: 1px solid var(--ds-border-subtle);
 }
 .modal-body {
-  padding: 18px;
+  padding: var(--ds-space-sm);
 }
 .quickview-layout {
   display: grid;
-  gap: 18px;
+  gap: var(--ds-space-sm);
 }
 .quickview-img {
   min-height: 280px;
@@ -53,12 +53,12 @@
 .option-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 8px 0 18px;
+  gap: var(--ds-space-xs);
+  margin: var(--ds-space-xs) 0 var(--ds-space-sm);
 }
 .quickview-option-button {
   min-height: 36px;
-  padding: 0 14px;
+  padding: 0 var(--ds-space-sm);
   border: 1.5px solid var(--ds-border-subtle);
   border-radius: var(--ds-radius-sm);
   background: var(--ds-surface-paper);
@@ -95,10 +95,10 @@
   width: 100%;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--ds-space-xs);
   border: 1px solid var(--ds-border-strong);
   background: var(--ds-surface-paper);
-  padding: 0 28px;
+  padding: 0 var(--ds-space-md);
   color: var(--ds-text-primary);
   font-family: var(--ds-font-body);
   font-size: var(--ds-text-body-sm);
