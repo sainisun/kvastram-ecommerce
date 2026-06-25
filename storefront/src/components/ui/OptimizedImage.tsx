@@ -17,9 +17,17 @@ export default function OptimizedImage({
   const originalSrc = typeof props.src === 'string' ? props.src : null;
   // Auto-convert HEIC/HEIF and optimize format for browser via Cloudinary
   if (typeof props.src === 'string') {
+    let finalSrc = isCloudinaryUrl(props.src) ? props.src : optimizeCloudinaryUrl(props.src);
+    
+    // Fallback: If it's a local /uploads path (e.g. from seed data), convert to absolute remote URL
+    if (finalSrc.startsWith('/uploads/')) {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.odhvica.com';
+      finalSrc = `${apiUrl.replace(/\/$/, '')}${finalSrc}`;
+    }
+
     props = {
       ...props,
-      src: isCloudinaryUrl(props.src) ? props.src : optimizeCloudinaryUrl(props.src),
+      src: finalSrc,
     };
   }
   // Default loading behavior: lazy unless explicitly priority
