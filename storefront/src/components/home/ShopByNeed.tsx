@@ -53,7 +53,7 @@ export function ShopByNeed({ collections }: ShopByNeedProps) {
               </div>
               <div className="shop-need-copy">
                 <span>Curated edit</span>
-                <h3 className="font-display text-heading-md text-[var(--ds-text-primary)]">{collection.title}</h3>
+                <h3 className="font-display text-display-sm text-[var(--ds-text-primary)]">{collection.title}</h3>
                 <p>{collectionSummary(collection.title)}</p>
               </div>
             </Link>
