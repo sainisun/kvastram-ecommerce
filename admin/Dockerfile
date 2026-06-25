@@ -11,8 +11,10 @@ COPY . .
 # Pass via docker-compose build.args or --build-arg on the CLI.
 ARG NEXT_PUBLIC_API_URL=http://localhost:4000
 ARG APP_GIT_SHA=unknown
+ARG BACKEND_URL=http://backend:4000
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV APP_GIT_SHA=$APP_GIT_SHA
+ENV BACKEND_URL=$BACKEND_URL
 
 RUN npm run build
 
