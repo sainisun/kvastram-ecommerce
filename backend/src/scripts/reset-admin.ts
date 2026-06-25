@@ -7,7 +7,7 @@ async function resetAdmin() {
   console.log('🔄 Resetting Admin Password...');
 
   const email = 'admin@odhvica.com';
-  const newPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const newPassword = 'admin123';
 
   try {
     const salt = await bcrypt.genSalt(10);
