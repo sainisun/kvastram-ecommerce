@@ -65,12 +65,12 @@
   --ds-type-product-meta-transform: uppercase;
 
   /* ═══════════════════════════════════════════════
-     PRIMITIVE COLORS — Brand ke actual raw colors
-     Inhe directly components mein use mat karo
-     Sirf semantic tokens ke through use karo
-  ═══════════════════════════════════════════════ */
+     PRIMITIVE COLORS — Brand's raw color palette
+     Never use these directly in components.
+     Always use semantic tokens below.
+     ═══════════════════════════════════════════════ */
 
-  /* Terracotta — Jaipur ki mitti, Amber Fort */
+  /* Terracotta — Jaipur ki mitti, Amber Fort walls */
   --ds-terracotta-50:  #FDF3EF;
   --ds-terracotta-100: #FADDD3;
   --ds-terracotta-200: #F4B8A4;
@@ -79,114 +79,115 @@
   --ds-terracotta-800: #8F3D1F;
   --ds-terracotta-950: #5C2210;
 
-  /* Gold — Artisan gold thread, meenakari */
+  /* Gold — artisan gold thread, Kantha embroidery */
+  --ds-gold-50:  #FAF5E9;
   --ds-gold-100: #F5EEDC;
   --ds-gold-400: #C9AE77;
   --ds-gold-600: #B89B5E;
   --ds-gold-800: #7A6335;
 
-  /* Parchment — Aged paper, handmade feel */
+  /* Parchment — aged paper, handmade feel */
   --ds-parchment-50:  #FDFAF6;
   --ds-parchment-100: #F5EFE6;
   --ds-parchment-200: #EDE8E0;
   --ds-parchment-300: #D9D0C4;
 
-  /* Ink — Warm charcoal, not cold black */
-  --ds-ink-50:  #6B5E52;
+  /* Ink — warm charcoal, not cold black */
+  --ds-ink-50:  #9C8B7E;
+  --ds-ink-100: #6B5E52;
   --ds-ink-200: #3D3530;
   --ds-ink-600: #1C1410;
   --ds-ink-900: #0E0A07;
 
   /* ═══════════════════════════════════════════════
-     SEMANTIC TOKENS — Intent-based naming
-     Inhe components mein use karo
-  ═══════════════════════════════════════════════ */
+     SEMANTIC TOKENS — What components use
+     Always reference primitives above.
+     ═══════════════════════════════════════════════ */
 
   /* Surfaces */
-  --ds-surface-page:        var(--ds-parchment-50);
-  --ds-surface-paper:       #FFFFFF;
-  --ds-surface-soft:        var(--ds-parchment-100);
-  --ds-surface-warm:        var(--ds-parchment-200);
-  --ds-surface-parchment:   var(--ds-parchment-100);
+  --ds-surface-page:      var(--ds-parchment-50);
+  --ds-surface-paper:     #FFFFFF;
+  --ds-surface-soft:      var(--ds-parchment-100);
+  --ds-surface-warm:      var(--ds-parchment-200);
+  --ds-surface-parchment: var(--ds-parchment-100);
   --ds-surface-parchment-2: var(--ds-parchment-200);
-  --ds-surface-dark:        var(--ds-ink-600);
-  --ds-surface-darkest:     var(--ds-ink-900);
+  --ds-surface-dark:      var(--ds-ink-600);
+  --ds-surface-darkest:   var(--ds-ink-900);
 
   /* Text */
-  --ds-text-primary:    var(--ds-ink-600);
-  --ds-text-secondary:  var(--ds-ink-50);
-  --ds-text-muted:      #9C8B7E;
-  --ds-text-disabled:   var(--ds-parchment-300);
-  --ds-text-inverse:    var(--ds-parchment-50);
-  --ds-text-on-dark:    var(--ds-parchment-50);
-  --ds-text-on-accent:  #FFFFFF;
-  --ds-text-price:      var(--ds-ink-600);
-  --ds-text-price-old:  #9C8B7E;
+  --ds-text-primary:      var(--ds-ink-600);
+  --ds-text-secondary:    var(--ds-ink-100);
+  --ds-text-muted:        var(--ds-ink-50);
+  --ds-text-disabled:     var(--ds-parchment-300);
+  --ds-text-inverse:      var(--ds-parchment-50);
+  --ds-text-on-dark:      var(--ds-parchment-50);
+  --ds-text-on-accent:    #FFFFFF;
+  --ds-text-price:        var(--ds-ink-600);
+  --ds-text-price-old:    var(--ds-ink-50);
 
-  /* Accent — Terracotta CTA */
-  --ds-accent-primary:  var(--ds-terracotta-600);
-  --ds-accent-hover:    var(--ds-terracotta-800);
-  --ds-accent-subtle:   var(--ds-terracotta-100);
-  --ds-accent-focus:    var(--ds-terracotta-400);
-  --ds-accent-soft:     var(--ds-terracotta-50);
-  --ds-accent-disabled: var(--ds-parchment-200);
+  /* Accent — Primary CTA (Terracotta) */
+  --ds-accent-primary:    var(--ds-terracotta-600);
+  --ds-accent-hover:      var(--ds-terracotta-800);
+  --ds-accent-subtle:     var(--ds-terracotta-100);
+  --ds-accent-focus:      var(--ds-terracotta-400);
+  --ds-accent-soft:       var(--ds-terracotta-50);
+  --ds-accent-rgb:        196, 96, 58;
 
-  /* Gold — Secondary accent */
-  --ds-accent-gold:      var(--ds-gold-600);
-  --ds-accent-gold-soft: var(--ds-gold-100);
-
-  /* RGB variants — for rgba() usage */
-  --ds-accent-rgb:          196, 96, 58;
-  --ds-accent-gold-rgb:     184, 155, 94;
-  --ds-ink-rgb:             28, 20, 16;
-  --ds-text-primary-rgb:    28, 20, 16;
-  --ds-text-secondary-rgb:  107, 94, 82;
-  --ds-cream-rgb:           253, 250, 246;
-  --ds-surface-page-rgb:    253, 250, 246;
-  --ds-surface-paper-rgb:   255, 255, 255;
-  --ds-surface-soft-rgb:    245, 239, 230;
-  --ds-surface-parchment-rgb: 245, 239, 230;
-  --ds-white-rgb:           255, 255, 255;
-  --ds-black-rgb:           0, 0, 0;
+  /* Accent — Gold (secondary, eyebrows, badges) */
+  --ds-accent-gold:       var(--ds-gold-600);
+  --ds-accent-gold-soft:  var(--ds-gold-100);
+  --ds-accent-gold-rgb:   184, 155, 94;
 
   /* Borders */
-  --ds-border-subtle: var(--ds-parchment-200);
-  --ds-border-medium: var(--ds-parchment-300);
-  --ds-border-strong: var(--ds-ink-50);
-  --ds-border-dark:   var(--ds-ink-200);
+  --ds-border-subtle:     var(--ds-parchment-200);
+  --ds-border-medium:     var(--ds-parchment-300);
+  --ds-border-strong:     var(--ds-ink-100);
+  --ds-border-dark:       var(--ds-ink-200);
+
+  /* RGB values for rgba() usage */
+  --ds-ink-rgb:               28, 20, 16;
+  --ds-text-primary-rgb:      28, 20, 16;
+  --ds-text-secondary-rgb:    107, 94, 82;
+  --ds-cream-rgb:             253, 250, 246;
+  --ds-surface-page-rgb:      253, 250, 246;
+  --ds-surface-paper-rgb:     255, 255, 255;
+  --ds-surface-soft-rgb:      245, 239, 230;
+  --ds-surface-parchment-rgb: 245, 239, 230;
+  --ds-white-rgb:             255, 255, 255;
+  --ds-black-rgb:             0, 0, 0;
 
   /* Footer */
-  --ds-footer-bg:        var(--ds-surface-dark);
-  --ds-footer-text:      var(--ds-text-on-dark);
-  --ds-footer-heading:   var(--ds-text-on-dark);
-  --ds-footer-link:      var(--ds-parchment-200);
-  --ds-footer-dim:       var(--ds-gold-400);
-  --ds-footer-border:    var(--ds-ink-200);
-  --ds-footer-highlight: var(--ds-gold-400);
+  --ds-footer-bg:         var(--ds-surface-dark);
+  --ds-footer-text:       var(--ds-text-on-dark);
+  --ds-footer-heading:    var(--ds-parchment-50);
+  --ds-footer-link:       var(--ds-parchment-200);
+  --ds-footer-dim:        var(--ds-gold-400);
+  --ds-footer-border:     var(--ds-ink-200);
+  --ds-footer-highlight:  var(--ds-accent-gold);
 
-  /* Shadows */
+  /* Semantic states */
+  --ds-danger-bg:     #fcebeb;
+  --ds-danger-border: color-mix(in srgb, #dc2626 40%, transparent);
+  --ds-success-bg:    #f0fdf4;
+  --ds-success-text:  #166534;
+  --ds-success-rgb:   62, 138, 95;
+  --ds-success-border: color-mix(in srgb, #16a34a 40%, transparent);
+  --ds-warning-bg:    #faeeda;
+  --ds-warning-text:  #633806;
+  --ds-warning-rgb:   186, 117, 23;
+  --ds-warning-border: color-mix(in srgb, #d97706 40%, transparent);
+  --ds-info-bg:       #e6f1fb;
+  --ds-info-text:     #124779;
+  --ds-info-border:   color-mix(in srgb, #2563eb 40%, transparent);
+  --ds-whatsapp-bg:   #e1f5ee;
+
+  /* Swatch tokens */
+  --ds-swatch-cream:  #fdfbf7;
+  --ds-swatch-pink:   #f4a6b7;
+  --ds-swatch-grey:   #6b7280;
+
+  /* Shadow */
   --ds-shadow: 0 10px 34px rgba(var(--ds-ink-rgb), 0.12);
-
-  /* Semantic — Status colors (unchanged) */
-  --ds-danger-bg:      #fcebeb;
-  --ds-success-bg:     #f0fdf4;
-  --ds-success-text:   #166534;
-  --ds-success-rgb:    62, 138, 95;
-  --ds-warning-bg:     #faeeda;
-  --ds-warning-text:   #633806;
-  --ds-warning-rgb:    186, 117, 23;
-  --ds-info-bg:        #e6f1fb;
-  --ds-info-text:      #124779;
-  --ds-whatsapp-bg:    #e1f5ee;
-  --ds-danger-border:  color-mix(in srgb, var(--ds-danger)  40%, transparent);
-  --ds-info-border:    color-mix(in srgb, var(--ds-info)    40%, transparent);
-  --ds-success-border: color-mix(in srgb, var(--ds-success) 40%, transparent);
-  --ds-warning-border: color-mix(in srgb, var(--ds-warning) 40%, transparent);
-
-  /* Swatches */
-  --ds-swatch-cream: #fdfbf7;
-  --ds-swatch-pink:  #f4a6b7;
-  --ds-swatch-grey:  #6b7280;
 
   /* ── Spacing scale (8pt base grid) ── */
   --ds-space-2xs: 0.25rem;    /* 4px  — icon gaps, micro spacing */
