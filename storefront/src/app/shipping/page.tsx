@@ -61,28 +61,28 @@ export default function ShippingPage() {
 
         <SectionBlock title="Shipping Details">
           <div className="editorial-text">
-            <h3>Shipping methods and rates</h3>
+            <h3 className="font-display text-display-sm text-[var(--ds-text-primary)] mt-8 leading-token-tight">Shipping methods and rates</h3>
             <p>
             Shipping rates, taxes, and available methods are confirmed after
             you enter your delivery address during checkout. This protects
             buyers from seeing inaccurate hardcoded delivery promises.
             </p>
 
-            <h3>Processing</h3>
+            <h3 className="font-display text-display-sm text-[var(--ds-text-primary)] mt-8 leading-token-tight">Processing</h3>
             <p>
             Order preparation time can vary by item availability, hand-finished
             processes, and order volume. Tracking details are shared once your
             order is dispatched.
             </p>
 
-            <h3>Duties, taxes, and region rules</h3>
+            <h3 className="font-display text-display-sm text-[var(--ds-text-primary)] mt-8 leading-token-tight">Duties, taxes, and region rules</h3>
             <p>
             Duties, import handling, and checkout taxes may vary by destination.
             The amount displayed during checkout should be treated as the final
             customer-facing payment summary for that order.
             </p>
 
-            <h3>Returns and support</h3>
+            <h3 className="font-display text-display-sm text-[var(--ds-text-primary)] mt-8 leading-token-tight">Returns and support</h3>
             <p>
             Return and refund eligibility is handled separately from shipping.
             Please review the returns guidance and refund policy before

@@ -87,7 +87,7 @@ export function GiftCardsClient() {
             <p className="text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-muted)]">
               Gift Cards
             </p>
-            <h1 className="font-display text-heading-xl text-[var(--ds-text-primary)]">
+            <h1 className="font-display text-display-lg text-[var(--ds-text-primary)]">
               Send a Kvastram gift request
             </h1>
             <p className="max-w-xl text-body-md leading-token-relaxed text-[var(--ds-text-secondary)]">

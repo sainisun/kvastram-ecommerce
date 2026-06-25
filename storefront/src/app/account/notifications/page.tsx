@@ -122,7 +122,7 @@ export default function AccountNotificationsPage() {
           <p className="text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-muted)]">
             Account
           </p>
-          <h1 className="font-display text-heading-lg text-[var(--ds-text-primary)]">
+          <h1 className="font-display text-display-md text-[var(--ds-text-primary)]">
             Notification Preferences
           </h1>
           <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">

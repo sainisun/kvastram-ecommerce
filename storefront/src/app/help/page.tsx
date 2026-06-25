@@ -72,7 +72,7 @@ export default function HelpPage() {
           {helpCards.map(({ title, description, href, cta, icon: Icon }) => (
             <Link key={title} href={href} className="info-card info-card--link">
               <Icon className="text-[var(--ds-text-primary)]" size={26} />
-              <h3>{title}</h3>
+              <h3 className="font-display text-display-sm text-[var(--ds-text-primary)] mt-8 leading-token-tight">{title}</h3>
               <div className="info-card__body">{description}</div>
               <span className="info-card__cta">{cta}</span>
             </Link>

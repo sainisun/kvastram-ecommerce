@@ -83,19 +83,19 @@ export default function FAQPage() {
         <div className="info-grid">
           <Link href={storefrontTrust.policyRoutes.shipping} className="info-card info-card--link">
             <p className="info-card__eyebrow">Delivery</p>
-            <h3>Shipping Policy</h3>
+            <h3 className="font-display text-display-sm text-[var(--ds-text-primary)] mt-8 leading-token-tight">Shipping Policy</h3>
             <div className="info-card__body">Timelines, charges, international shipping, and tracking guidance.</div>
             <span className="info-card__cta">Read policy</span>
           </Link>
           <Link href={storefrontTrust.policyRoutes.returns} className="info-card info-card--link">
             <p className="info-card__eyebrow">After Purchase</p>
-            <h3>Returns Help</h3>
+            <h3 className="font-display text-display-sm text-[var(--ds-text-primary)] mt-8 leading-token-tight">Returns Help</h3>
             <div className="info-card__body">Eligibility, refunds, exchanges, and how to start a request.</div>
             <span className="info-card__cta">Open returns</span>
           </Link>
           <Link href={storefrontTrust.policyRoutes.paymentHelp} className="info-card info-card--link">
             <p className="info-card__eyebrow">Checkout</p>
-            <h3>Payment Help</h3>
+            <h3 className="font-display text-display-sm text-[var(--ds-text-primary)] mt-8 leading-token-tight">Payment Help</h3>
             <div className="info-card__body">Razorpay, PayPal, failed attempts, and safe retry guidance.</div>
             <span className="info-card__cta">Get help</span>
           </Link>
