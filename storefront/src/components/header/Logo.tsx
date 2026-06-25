@@ -15,7 +15,7 @@ export function Logo({ size = 'desktop', isTransparent = false }: LogoProps) {
 
   return (
     <Link href="/" aria-label="Odhvica — Home" className={`${cls} ${textColor}`}>
-      Kva<span className="text-[var(--ds-accent-primary)]">s</span>tram
+      Odhvi<span className="text-[var(--ds-accent-primary)]">c</span>a
     </Link>
   );
 }
