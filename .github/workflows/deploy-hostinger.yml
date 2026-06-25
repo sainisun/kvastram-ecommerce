@@ -126,6 +126,9 @@ jobs:
             sql\`SELECT 1\`.then(() => { console.log('DB Connection OK'); process.exit(0); }).catch(e => { console.error('DB Connection Failed:', e); process.exit(1); });
             "
             
+            echo "--- DEBUG: Resetting Admin Password ---"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/reset-admin.js
+            
             # Capture output to print exact errors, explicitly passing the environment variable
             OUTPUT=$(docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-real-data.js 2>&1)
             EXIT_CODE=$?
