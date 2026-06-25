@@ -259,7 +259,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-[var(--ds-surface-paper)]">
-        <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+        <div className="kv-page-container mx-auto max-w-[1440px] py-12 md:py-16 lg:py-24">
           {/* Hero empty message */}
           <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[var(--soft)] mb-6">
@@ -358,7 +358,7 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[var(--cream)]">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] py-12 md:py-16 lg:py-24">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-display-lg font-display color-ink">Shopping Cart</h1>

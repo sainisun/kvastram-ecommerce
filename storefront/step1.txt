@@ -1,0 +1,29 @@
+=== responsive.css (1 spacing violations) ===
+      padding-inline: 28px;
+=== utilities.css (3 spacing violations) ===
+    text-underline-offset: 4px;
+    padding: 9px 16px;
+    padding: 9px 14px;
+=== content-pages.css (4 spacing violations) ===
+    margin-bottom: 28px;
+    padding-left: 4px;
+    text-underline-offset: 4px;
+=== home-sections.css (2 spacing violations) ===
+      padding-bottom: 4px;
+    text-underline-offset: 5px;
+=== pdp-gallery.css (2 spacing violations) ===
+    gap: 4px;
+      gap: 48px;
+=== pdp.css (15 spacing violations) ===
+    padding-bottom: 96px;
+    top: 3px;
+    right: 14px;
+=== product-card.css (4 spacing violations) ===
+    margin-top: 3px;
+    gap: 4px;
+    text-underline-offset: 4px;
+=== reels.css (9 spacing violations) ===
+    padding-bottom: 96px;
+    padding: 3px;
+    padding-top: 5px;
+

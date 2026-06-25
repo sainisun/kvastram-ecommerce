@@ -139,7 +139,7 @@ export default function SalePage() {
         </div>
       </section>
 
-      <div id="saleGrid" className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div id="saleGrid" className="kv-page-container mx-auto max-w-[1440px] py-12 md:py-16 lg:py-24">
         {products.length > 0 || loading ? (
           <ProductGrid
             initialProducts={products}

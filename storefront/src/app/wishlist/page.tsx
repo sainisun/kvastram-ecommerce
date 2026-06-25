@@ -41,7 +41,7 @@ export default function WishlistPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
-        <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+        <div className="kv-page-container mx-auto max-w-[1440px]">
           <EmptyState
             icon={<Heart size={56} />}
             title="Your Wishlist is Empty"
@@ -63,7 +63,7 @@ export default function WishlistPage() {
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px]">
         <div className="flex items-center justify-between mb-12">
           <div>
             <h1 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-2">

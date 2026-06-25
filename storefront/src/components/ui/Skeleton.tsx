@@ -48,7 +48,7 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
 export function ProductDetailSkeleton() {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px]">
         {/* Breadcrumb skeleton */}
         <Skeleton className="h-4 w-64 mb-8" />
 
@@ -108,7 +108,7 @@ export function ProductDetailSkeleton() {
 export function CartSkeleton() {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="grid lg:grid-cols-12 gap-8">
@@ -145,7 +145,7 @@ export function CartSkeleton() {
 export function CheckoutSkeleton() {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
@@ -192,7 +192,7 @@ export function CheckoutSkeleton() {
 export function AccountSkeleton() {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -242,7 +242,7 @@ export function AccountSkeleton() {
 export function OrdersListSkeleton() {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-4xl px-6 md:px-12 lg:px-20">
+      <div className="mx-auto max-w-4xl">
         <Skeleton className="h-10 w-64 mb-8" />
 
         <div className="bg-[var(--ds-surface-paper)]">
@@ -288,7 +288,7 @@ export function TextSkeleton({
 export function HeroSkeleton() {
   return (
     <div className="relative flex min-h-[70vh] items-center bg-[var(--ds-surface-soft)]">
-      <div className="kv-page-container mx-auto w-full max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto w-full max-w-[1440px] py-12 md:py-16 lg:py-24">
         <div className="max-w-2xl space-y-6">
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="h-6 w-full" />

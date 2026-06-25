@@ -74,7 +74,7 @@ const editCards = [
 export default function EditsPage() {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px]">
         <div className="mx-auto max-w-3xl text-center">
           <span className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
             Guided Discovery

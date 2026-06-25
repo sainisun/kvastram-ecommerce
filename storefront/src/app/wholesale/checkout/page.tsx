@@ -208,7 +208,7 @@ export default function WholesaleCheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px]">
         {/* Header */}
         <div className="mb-8">
           <Link

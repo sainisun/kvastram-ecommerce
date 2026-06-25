@@ -70,7 +70,7 @@ export default function AboutPage() {
       </div>
 
       {/* The Story */}
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] py-12 md:py-16 lg:py-24">
         <div className="grid items-start gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
@@ -119,7 +119,7 @@ export default function AboutPage() {
       </div>
 
       {/* How we work */}
-      <div className="kv-page-gutter border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-gutter border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
         <div className="kv-page-frame mx-auto max-w-[1440px]">
           <div className="text-body-xs  tracking-token-wider text-[var(--ds-warning-text)]">
             How Kvastram works
@@ -159,7 +159,7 @@ export default function AboutPage() {
       </div>
 
       {/* Artisans */}
-      <div id="artisans" className="kv-page-gutter px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div id="artisans" className="kv-page-gutter py-12 md:py-16 lg:py-24">
         <div className="kv-page-frame mx-auto max-w-[1440px]">
           <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
             The people behind every piece
@@ -197,7 +197,7 @@ export default function AboutPage() {
       </div>
 
       {/* Sustainability */}
-      <div id="sustainability" className="kv-page-gutter bg-[var(--ds-surface-soft)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div id="sustainability" className="kv-page-gutter bg-[var(--ds-surface-soft)] py-12 md:py-16 lg:py-24">
         <div className="kv-page-frame mx-auto max-w-[1440px]">
           <div className="grid items-center gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
             <div>

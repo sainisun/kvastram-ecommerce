@@ -73,7 +73,7 @@ export default function AccountMessagesPage() {
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] py-12 md:py-16 lg:py-24">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
             <Link href="/account" className="account-muted hover:text-[var(--ds-text-primary)]">

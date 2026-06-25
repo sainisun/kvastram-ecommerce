@@ -40,6 +40,21 @@
 .kv-page-container,
 .kv-page-frame {
   margin-inline: auto;
+  padding-inline: var(--ds-home-gutter-mobile);
+}
+
+@media (min-width: 768px) {
+  .kv-page-container,
+  .kv-page-frame {
+    padding-inline: var(--ds-home-gutter-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  .kv-page-container,
+  .kv-page-frame {
+    padding-inline: var(--ds-home-gutter-desktop);
+  }
 }
 
 .kv-section {

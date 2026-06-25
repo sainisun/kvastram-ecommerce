@@ -16,7 +16,7 @@ export default function CheckoutError({
 }) {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">
+      <div className="kv-page-container mx-auto max-w-[1440px]">
         <Link
           href="/cart"
           className="inline-flex items-center gap-2 text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] mb-8 text-body-sm transition-colors"

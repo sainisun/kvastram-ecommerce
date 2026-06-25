@@ -1,0 +1,5 @@
+NO TOKENS: \src\app\cookie-settings\page.tsx
+NO TOKENS: \src\app\payment-help\page.tsx
+NO TOKENS: \src\app\products\[handle]\page.tsx
+NO TOKENS: \src\app\shipping\page.tsx
+
