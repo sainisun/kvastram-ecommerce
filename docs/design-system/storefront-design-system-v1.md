@@ -28,8 +28,8 @@ npm.cmd run audit:design-system
 
 Kvastram storefront typography uses an editorial serif display face with a restrained grotesk body:
 
-- `--ds-font-display` uses `Libre Caslon Text`, with `Cormorant Garamond` and system serif fallbacks.
-- `--ds-font-body` and UI roles use `Hanken Grotesk`, with `DM Sans` and system sans fallbacks.
+- `--ds-font-display` uses `Amiri`, with `Cardo` and system serif fallbacks.
+- `--ds-font-body` and UI roles use `Cardo`, with system serif fallbacks.
 - Hierarchy comes from the display/body contrast plus weight, spacing, scale, and imagery.
 - New storefront UI should use `font-display`, `font-body`, `type-*`, and `tracking-token-*` utilities.
 - Components must consume typography roles instead of declaring page-local font families.

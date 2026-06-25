@@ -58,13 +58,13 @@ const designSystemDoc = readFileSync(
   'utf8'
 );
 
-if (!/--ds-font-display:\s*'Libre Caslon Text'/.test(tokenSource)) {
-  findings.push('Typography contract: --ds-font-display must start with Libre Caslon Text.');
+if (!/--ds-font-display:\s*'Amiri'/.test(tokenSource)) {
+  findings.push('Typography contract: --ds-font-display must start with Amiri.');
 }
-if (!/--ds-font-body:\s*'Hanken Grotesk'/.test(tokenSource)) {
-  findings.push('Typography contract: --ds-font-body must start with Hanken Grotesk.');
+if (!/--ds-font-body:\s*'Cardo'/.test(tokenSource)) {
+  findings.push('Typography contract: --ds-font-body must start with Cardo.');
 }
-if (!designSystemDoc.includes('Libre Caslon Text') || !designSystemDoc.includes('Hanken Grotesk')) {
+if (!designSystemDoc.includes('Amiri') || !designSystemDoc.includes('Cardo')) {
   findings.push('Typography contract: active documentation must match runtime font tokens.');
 }
 
