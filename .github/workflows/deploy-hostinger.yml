@@ -90,6 +90,10 @@ jobs:
               echo "=== Creating compose env defaults ==="
               mkdir -p deploy/hostinger
               printf 'NEXT_PUBLIC_API_URL=https://api.odhvica.com\n' > deploy/hostinger/.env
+              printf 'CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}\n' >> deploy/hostinger/.env
+              printf 'CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}\n' >> deploy/hostinger/.env
+              printf 'CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}\n' >> deploy/hostinger/.env
+              printf 'NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}\n' >> deploy/hostinger/.env
             fi
             
             ODHVICA_PRODUCTION_DEPLOY=1 bash deploy/hostinger/deploy.sh
