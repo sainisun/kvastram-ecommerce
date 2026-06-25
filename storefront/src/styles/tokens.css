@@ -150,13 +150,15 @@
   --ds-swatch-grey: #6b7280;
   --ds-swatch-fallback: #b9afa4;
 
-  /* Spacing */
-  --ds-space-xs: 0.5rem;   /* 8px */
-  --ds-space-sm: 1rem;     /* 16px */
-  --ds-space-md: 1.5rem;   /* 24px */
-  --ds-space-lg: 2rem;     /* 32px */
-  --ds-space-xl: clamp(2rem, 4vw, 3rem);     /* 32px → 48px fluid */
-  --ds-space-2xl: clamp(3rem, 5vw, 4rem); /* 48px → 64px fluid */
+  /* ── Spacing scale (8pt base grid) ── */
+  --ds-space-2xs: 0.25rem;    /* 4px  — icon gaps, micro spacing */
+  --ds-space-xs:  0.5rem;     /* 8px  — badge gaps, tight pairs */
+  --ds-space-sm:  1rem;       /* 16px — component internal padding */
+  --ds-space-md:  1.5rem;     /* 24px — card padding, form gaps */
+  --ds-space-lg:  2.5rem;     /* 40px — within-section gaps */
+  --ds-space-xl:  clamp(3rem, 5vw, 4.5rem);   /* 48→72px — section padding */
+  --ds-space-2xl: clamp(4rem, 7vw, 6rem);     /* 64→96px — major sections */
+  --ds-space-3xl: clamp(5rem, 9vw, 8rem);     /* 80→128px — hero, editorial */
 
   /* Layout */
   --ds-prose-width: 65ch;
@@ -165,11 +167,27 @@
   --ds-content-width: 1280px;
   --ds-narrow-width: 860px;
   --ds-home-content-width: 1520px;
-  --ds-home-gutter-desktop: 30px;
-  --ds-home-gutter-tablet: 28px;
-  --ds-home-gutter-mobile: 15px;
-  --ds-home-section-space-desktop: 108px;
-  --ds-home-section-space-mobile: 56px;
+  /* ── Page gutters ── */
+  --ds-home-gutter-mobile:  1.25rem;   /* 20px — premium mobile feel */
+  --ds-home-gutter-tablet:  2rem;      /* 32px */
+  --ds-home-gutter-desktop: 3rem;      /* 48px — editorial breathing room */
+
+  /* ── Section spacing (homepage) ── */
+  --ds-home-section-space-mobile:  var(--ds-space-2xl);  /* 64→96px */
+  --ds-home-section-space-desktop: var(--ds-space-3xl);  /* 80→128px */
+
+  /* ── Component spacing rules ── */
+  --ds-btn-padding-y:    0.875rem;  /* 14px — 52px total height with line-height */
+  --ds-btn-padding-x:    1.75rem;   /* 28px */
+  --ds-btn-gap:          var(--ds-space-xs);    /* 8px between buttons */
+  --ds-btn-whitespace:   var(--ds-space-sm);    /* 16px around CTA (research: +49% tap rate) */
+
+  --ds-card-padding:     var(--ds-space-md);    /* 24px card internal */
+  --ds-card-gap:         var(--ds-space-md);    /* 24px between cards desktop */
+  --ds-card-gap-mobile:  var(--ds-space-sm);    /* 16px between cards mobile */
+
+  --ds-section-head-gap: var(--ds-space-xs);    /* 8px eyebrow→heading */
+  --ds-section-body-gap: var(--ds-space-md);    /* 24px heading→body */
 
   /* Radius */
   --ds-radius-xs: 2px;
