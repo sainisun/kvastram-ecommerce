@@ -91,6 +91,15 @@ export default function ReturnsPage() {
       />
       <div className="content-page-band">
       <div className="content-shell max-w-4xl py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+        <StatusBanner tone="info" className="mb-8">
+          <p className="type-semibold">
+            Refunds are processed within 3–7 business days to the original payment method after return approval.
+          </p>
+          <p className="mt-1 text-body-sm">
+            UPI: 3–5 business days. Cards/Net Banking: 5–7 business days.
+          </p>
+        </StatusBanner>
+
         <div className="info-grid">
           <InfoCard title="Before delivery" eyebrow="Cancellation">
             If your order has not shipped yet, contact support as early as
