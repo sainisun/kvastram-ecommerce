@@ -430,6 +430,7 @@ export class ProductMutationService {
           images.map((image, index) => ({
             image_id: image.id,
             alt_text: image.alt_text || `${product.title} ${index === 0 ? 'product image' : `view ${index + 1}`}`,
+            cloudinary_public_id: image.metadata?.cloudinary_public_id || null,
             image_role: index === 0 ? 'primary' : 'gallery',
             view_type: index === 0 ? 'front' : null,
             color: null,
@@ -730,7 +731,24 @@ export class ProductMutationService {
         }));
 
       if (imageValues.length > 0) {
-        await tx.insert(product_images).values(imageValues);
+        const newImages = await tx.insert(product_images).values(imageValues).returning();
+        
+        const [product] = await tx.select({ title: products.title, handle: products.handle }).from(products).where(eq(products.id, productId)).limit(1);
+        await tx
+          .insert(product_media_seo)
+          .values(
+            newImages.map((image: any, index: number) => ({
+              image_id: image.id,
+              alt_text: image.alt_text || `${product?.title || 'product'} ${index === 0 ? 'product image' : `view ${index + 1}`}`,
+              cloudinary_public_id: image.metadata?.cloudinary_public_id || null,
+              image_role: index === 0 ? 'primary' : 'gallery',
+              view_type: index === 0 ? 'front' : null,
+              color: null,
+              seo_filename: product?.handle || 'product',
+              metadata: { source: 'auto_sync_images' },
+            }))
+          )
+          .onConflictDoNothing();
       }
     }
   }

@@ -614,6 +614,7 @@ export const api = {
     onProgress?: (progress: number) => void
   ): Promise<{
     url: string;
+    publicId?: string;
     filename: string;
     originalName: string;
     size: number;

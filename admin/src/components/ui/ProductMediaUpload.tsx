@@ -45,6 +45,7 @@ export interface ProductMediaMetadata {
   thumbnail_url?: string;
   mime_type?: string;
   file_size?: number;
+  cloudinary_public_id?: string;
 }
 
 export interface ProductMediaItem {
@@ -452,6 +453,7 @@ export default function ProductMediaUpload({
               thumbnail_url: posterUrl,
               mime_type: file.type,
               file_size: file.size,
+              cloudinary_public_id: uploadedFile.publicId,
             },
             },
           ]);
