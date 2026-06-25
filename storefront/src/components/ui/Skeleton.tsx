@@ -47,7 +47,7 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
 // Product detail skeleton
 export function ProductDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-[1440px]">
         {/* Breadcrumb skeleton */}
         <Skeleton className="h-4 w-64 mb-8" />
@@ -107,7 +107,7 @@ export function ProductDetailSkeleton() {
 // Cart page skeleton
 export function CartSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-page)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
@@ -144,7 +144,7 @@ export function CartSkeleton() {
 // Checkout page skeleton
 export function CheckoutSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-page)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
@@ -191,7 +191,7 @@ export function CheckoutSkeleton() {
 // Account page skeleton
 export function AccountSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-page)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
@@ -241,7 +241,7 @@ export function AccountSkeleton() {
 // Orders list skeleton
 export function OrdersListSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-page)] py-12 md:py-16 lg:py-24">
+    <div className="min-h-screen bg-[var(--ds-surface-page)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="mx-auto max-w-4xl">
         <Skeleton className="h-10 w-64 mb-8" />
 
@@ -288,7 +288,7 @@ export function TextSkeleton({
 export function HeroSkeleton() {
   return (
     <div className="relative flex min-h-[70vh] items-center bg-[var(--ds-surface-soft)]">
-      <div className="kv-page-container mx-auto w-full max-w-[1440px] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto w-full max-w-[1440px] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="max-w-2xl space-y-6">
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="h-6 w-full" />

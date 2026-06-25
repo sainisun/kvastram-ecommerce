@@ -14,7 +14,7 @@ export default async function ArtisansPage() {
   const { artisans = [] } = await api.getArtisans();
 
   return (
-    <main className="kv-container py-12 md:py-16 lg:py-20">
+    <main className="kv-container py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <h1 className="collection-detail-title">Artisans</h1>
       <p className="collection-detail-copy mt-4 max-w-3xl">
         Kvastram works with textile artisans and small craft teams connected to Jaipur block printing, quilting, embroidery, and handmade cotton accessories.

@@ -31,7 +31,7 @@ export default async function ArtisanPage({ params }: Props) {
   const { artisan, products = [] } = data;
 
   return (
-    <main className="kv-container py-12 md:py-16 lg:py-20">
+    <main className="kv-container py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildPersonJsonLd(artisan)) }}

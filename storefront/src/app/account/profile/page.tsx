@@ -68,8 +68,8 @@ export default function ProfilePage() {
     );
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
-      <div className="mx-auto max-w-2xl px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="mx-auto max-w-2xl px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]">
         <Link
           href="/account"
           className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"

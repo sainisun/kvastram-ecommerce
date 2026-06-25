@@ -40,7 +40,7 @@ export function WholesaleFooter() {
   return (
     <footer className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]">
       {/* Main Footer */}
-      <div className="border-t border-[var(--ds-text-secondary)] py-12 md:py-16 lg:py-24">
+      <div className="border-t border-[var(--ds-text-secondary)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="kv-page-container mx-auto max-w-[1440px]">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
             {/* Company Info */}

@@ -119,7 +119,7 @@ export default async function ArticlePage({ params }: Props) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl px-6 py-12 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-3xl px-6 py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         {post.excerpt && (
           <p className="mb-12 border-l-4 border-[var(--ds-text-primary)] pl-6 font-display text-display-md type-medium leading-token-relaxed text-[var(--ds-text-secondary)]">
             {post.excerpt}

@@ -163,7 +163,7 @@ export function ContactClient() {
 
   return (
     <section className="content-page-band">
-        <div className="content-shell grid gap-10 py-12 md:py-16 lg:grid-cols-[0.82fr_1.18fr] lg:gap-16 lg:py-24">
+        <div className="content-shell grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:gap-16 py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           <div className="space-y-6">
             <div className="info-grid lg:grid-cols-1">
               <InfoCard title="Email Us" eyebrow="Support">

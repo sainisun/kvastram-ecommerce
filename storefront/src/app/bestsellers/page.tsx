@@ -196,7 +196,7 @@ export default async function BestsellersPage({
         </div>
       </section>
 
-      <div className="kv-page-container mx-auto max-w-[1440px] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 flex items-center gap-2 text-body-xs type-medium  tracking-token-wide text-[var(--ds-text-muted)]"
@@ -250,7 +250,7 @@ export default async function BestsellersPage({
           </div>
         ) : null}
 
-        <section className="py-12 md:py-16 lg:py-24">
+        <section className="py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           {products.length > 0 ? (
             <div className="grid gap-x-4 gap-y-8 sm:grid-cols-2 md:gap-x-6 md:gap-y-12 xl:grid-cols-3 xl:gap-x-8 xl:gap-y-16">
               {products.map((product, index) => {

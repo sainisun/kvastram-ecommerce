@@ -162,7 +162,7 @@ export default function WholesalePage() {
         </section>
 
         {/* Benefits Section */}
-        <section id="benefits" className="bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
+        <section id="benefits" className="bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           <div className="kv-page-container mx-auto max-w-[1440px]">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
@@ -231,7 +231,7 @@ export default function WholesalePage() {
         </section>
 
         {/* Pricing Tiers */}
-        <section className="bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+        <section className="bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           <div className="kv-page-container mx-auto max-w-[1440px]">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
@@ -321,7 +321,7 @@ export default function WholesalePage() {
         </section>
 
         {/* Process Section */}
-        <section className="bg-[var(--ds-surface-parchment)] py-12 md:py-16 lg:py-24">
+        <section className="bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           <div className="kv-page-container mx-auto max-w-[1440px]">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
@@ -372,7 +372,7 @@ export default function WholesalePage() {
         </section>
 
         {/* Inquiry Form */}
-        <section id="inquiry" className="bg-[var(--ds-surface-paper)] py-12 md:py-16 lg:py-24">
+        <section id="inquiry" className="bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           <div className="mx-auto max-w-4xl">
             <div className="text-center mb-12">
               <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">

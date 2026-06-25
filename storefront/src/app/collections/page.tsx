@@ -216,7 +216,7 @@ export default async function CollectionsPage({
         </section>
       )}
 
-      <div className="kv-page-container mx-auto max-w-[1440px] py-12 md:py-16 lg:py-24">
+      <div className="kv-page-container mx-auto max-w-[1440px] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <nav
           aria-label="Breadcrumb"
           className="listing-breadcrumb mb-10 flex items-center gap-2"

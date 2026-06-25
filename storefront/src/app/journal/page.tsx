@@ -22,7 +22,7 @@ export default async function JournalPage() {
   const posts: Post[] = data.posts || [];
 
   return (
-    <div className="kv-page-container mx-auto max-w-[1440px] py-12 md:py-16 lg:py-24">
+    <div className="kv-page-container mx-auto max-w-[1440px] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="mb-12 space-y-4 text-center md:mb-16">
         <span className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
           The Journal

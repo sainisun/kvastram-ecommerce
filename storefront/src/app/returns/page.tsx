@@ -90,7 +90,7 @@ export default function ReturnsPage() {
         ]}
       />
       <div className="content-page-band">
-      <div className="content-shell max-w-4xl py-12 md:py-16 lg:py-20">
+      <div className="content-shell max-w-4xl py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="info-grid">
           <InfoCard title="Before delivery" eyebrow="Cancellation">
             If your order has not shipped yet, contact support as early as
