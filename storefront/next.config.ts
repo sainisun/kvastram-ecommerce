@@ -86,6 +86,7 @@ const nextConfig = {
         source: '/uploads/:path*',
         destination: `${apiUrl}/uploads/:path*`,
       },
+
       {
         source: '/merchant/:path*',
         destination: `${apiUrl}/merchant/:path*`,

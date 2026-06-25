@@ -27,8 +27,8 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
       id: item.id,
       product: item.product,
       image:
-        cloudinaryUrlOrNull(item.custom_image_url) ||
-        cloudinaryUrlOrNull(item.product.thumbnail),
+        item.custom_image_url ||
+        item.product.thumbnail,
     }))
     .filter((item) => Boolean(item.product?.id && item.product?.title && item.image))
     .slice(0, 3);
