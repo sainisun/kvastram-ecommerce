@@ -21,7 +21,9 @@ export default function OptimizedImage({
     
     // Fallback: If it's a local /uploads path (e.g. from seed data), convert to absolute remote URL
     if (finalSrc.startsWith('/uploads/')) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.odhvica.com';
+      let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.odhvica.com';
+      // FORCE correct domain to avoid SSL errors from legacy kvastram domain
+      apiUrl = apiUrl.replace('api.kvastram.com', 'api.odhvica.com');
       finalSrc = `${apiUrl.replace(/\/$/, '')}${finalSrc}`;
     }
 
