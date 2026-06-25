@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { LinkProps } from 'next/link';
 import { cn } from '@/lib/utils';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'accent' | 'pdp' | 'success' | 'compact' | 'inline' | 'categoryOverlay' | 'product-card';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -37,13 +37,27 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary:
     'border-[var(--ds-border-dark)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-border-strong)] hover:border-[var(--ds-border-strong)]',
   secondary:
-    'border-[var(--ds-border-dark)] bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-border-strong)] hover:border-[var(--ds-border-strong)]',
+    'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-border-subtle)] hover:border-[var(--ds-border-strong)]',
   outline:
     'border-[var(--ds-border-dark)] bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]',
   ghost:
     'border-transparent bg-transparent text-[var(--ds-text-primary)] hover:bg-[var(--ds-surface-soft)]',
   danger:
     'border-[var(--ds-danger)] bg-[var(--ds-danger)] text-[var(--ds-text-inverse)] hover:brightness-95',
+  accent:
+    'bg-[var(--ds-accent-gold)] text-[var(--ds-text-primary)] border-[var(--ds-accent-gold)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
+  pdp:
+    'bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] border-[var(--ds-accent-primary)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)] w-full',
+  success:
+    'bg-[var(--ds-success)] text-[var(--ds-text-inverse)] border-[var(--ds-success)] hover:bg-[var(--ds-success-dark)] hover:border-[var(--ds-success-dark)]',
+  compact:
+    'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-border-subtle)] hover:border-[var(--ds-border-subtle)] text-body-xs py-1 px-3',
+  inline:
+    'bg-transparent text-[var(--ds-accent-primary)] border-transparent hover:text-[var(--ds-accent-hover)] underline underline-offset-2 p-0 h-auto',
+  categoryOverlay:
+    'bg-[rgba(var(--ds-white-rgb),0.15)] text-[var(--ds-text-inverse)] border-[rgba(var(--ds-white-rgb),0.3)] hover:bg-[rgba(var(--ds-white-rgb),0.25)] backdrop-blur-sm',
+  'product-card':
+    'bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-surface-soft)] hover:border-[var(--ds-border-subtle)] text-body-xs',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
