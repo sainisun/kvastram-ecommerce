@@ -35,7 +35,7 @@ interface ButtonAnchorProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'border-[var(--ds-border-dark)] bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-border-strong)] hover:border-[var(--ds-border-strong)]',
+    'border-[var(--ds-border-dark)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-border-strong)] hover:border-[var(--ds-border-strong)]',
   secondary:
     'border-[var(--ds-border-dark)] bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-border-strong)] hover:border-[var(--ds-border-strong)]',
   outline:
