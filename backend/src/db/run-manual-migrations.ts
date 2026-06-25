@@ -9,7 +9,7 @@
  * script is safe to re-run.
  *
  * Usage (on VPS):
- *   docker exec -it kvastram-backend-1 npm run migrate:manual
+ *   docker exec -it odhvica-backend-1 npm run migrate:manual
  *
  * Or directly:
  *   NODE_ENV=production tsx src/db/run-manual-migrations.ts
@@ -59,7 +59,7 @@ function isIdempotentRerunError(message: string) {
 async function runManualMigrations() {
   const connectionString =
     process.env.DATABASE_URL ||
-    'postgresql://postgres:postgres@localhost:5432/kvastram_dev';
+    'postgresql://postgres:postgres@localhost:5432/odhvica_dev';
 
   const isSupabase =
     connectionString.includes('supabase.com') ||

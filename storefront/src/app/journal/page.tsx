@@ -55,7 +55,7 @@ export default async function JournalPage() {
                 />
               ) : (
                 <div className="w-full h-full bg-[var(--ds-surface-soft)] flex items-center justify-center text-[var(--ds-text-disabled)] italic font-display">
-                  Kvastram Journal
+                  Odhvica Journal
                 </div>
               )}
             </div>

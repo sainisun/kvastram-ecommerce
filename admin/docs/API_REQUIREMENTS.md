@@ -1,4 +1,4 @@
-# API Requirements — Kvastram Admin Panel Upgrade
+# API Requirements — Odhvica Admin Panel Upgrade
 
 ---
 

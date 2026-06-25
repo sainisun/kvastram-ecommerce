@@ -8,5 +8,5 @@ ALTER TABLE categories
 
 -- Auto-populate seo_title from name (format from guide Section 11.1)
 UPDATE categories
-  SET seo_title = name || ' — Handmade Indian Fashion | Kvastram'
+  SET seo_title = name || ' — Handmade Indian Fashion | Odhvica'
   WHERE seo_title IS NULL;

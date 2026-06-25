@@ -150,7 +150,7 @@ app.use('/store/payments/paypal/webhook', webhookTimeout);
 
 // CORS Configuration
 // In production set ALLOWED_ORIGINS in backend/.env.production, e.g.:
-//   ALLOWED_ORIGINS=https://kvastram.com,https://www.kvastram.com,https://admin.kvastram.com
+//   ALLOWED_ORIGINS=https://odhvica.com,https://www.odhvica.com,https://admin.odhvica.com
 const isProd = process.env.NODE_ENV === 'production';
 const allowedOrigins =
   process.env.ALLOWED_ORIGINS
@@ -158,7 +158,7 @@ const allowedOrigins =
     .map(origin => origin.trim())
     .filter(Boolean) ||
   (isProd
-    ? ['https://kvastram.com', 'https://www.kvastram.com', 'https://admin.kvastram.com']
+    ? ['https://odhvica.com', 'https://www.odhvica.com', 'https://admin.odhvica.com']
     : [
         'http://localhost:3000',
         'http://localhost:3001',
@@ -283,7 +283,7 @@ app.get('/', (c) => {
   return successResponse(
     c,
     {
-      name: 'Kvastram API',
+      name: 'Odhvica API',
       version: '1.0.0',
       description: 'E-commerce platform API',
       documentation: '/api/docs',
@@ -295,7 +295,7 @@ app.get('/', (c) => {
         store: '/store',
       },
     },
-    'Welcome to Kvastram API'
+    'Welcome to Odhvica API'
   );
 });
 

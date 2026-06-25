@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 const connectionString =
   process.env.DATABASE_URL ||
-  'postgresql://postgres:postgres@localhost:5432/kvastram_dev';
+  'postgresql://postgres:postgres@localhost:5432/odhvica_dev';
 
 const client = postgres(connectionString);
 

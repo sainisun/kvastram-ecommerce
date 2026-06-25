@@ -22,7 +22,7 @@ export function BrandStory({ story }: { story: HomepageBrandStory | null }) {
           <h2 className="m-0 font-display text-display-md font-[var(--ds-type-heading-weight)]">{story.title}</h2>
           <p className="max-w-[58ch] mt-[var(--ds-space-md)] mb-[var(--ds-space-lg)] text-[var(--ds-text-secondary)]">{story.content}</p>
           <ButtonLink href="/about" variant="outline" size="md">
-            Discover Kvastram
+            Discover Odhvica
           </ButtonLink>
         </div>
       </div>

@@ -261,7 +261,7 @@ async function resolveShippingOption(input: {
   if (input.countryCode === 'IN' && input.postalCode) {
     try {
       const liveRates = await carrierService.getRates({
-        email: 'checkout@kvastram.com',
+        email: 'checkout@odhvica.com',
         payment_status: 'awaiting',
         shipping_address: input.shippingAddress,
         workflow: {
@@ -381,7 +381,7 @@ checkoutRouter.get(
       }
 
       const previewOrder = {
-        email: 'preview@kvastram.com',
+        email: 'preview@odhvica.com',
         payment_status: 'paid',
         shipping_address: {
           first_name: 'Preview',

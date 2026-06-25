@@ -16,7 +16,7 @@ import { normalizeCloudinaryUrl } from '../utils/cloudinary';
 
 const merchantRouter = new Hono();
 
-const SITE_URL = process.env.STOREFRONT_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
+const SITE_URL = process.env.STOREFRONT_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://odhvica.com';
 
 merchantRouter.get(
   '/feeds/health',
@@ -143,7 +143,7 @@ async function buildGoogleMerchantItems() {
           image_link: optimizedImageUrl(image),
           availability: (variant.inventory_quantity || 0) > 0 ? 'in stock' : 'out of stock',
           price: `${amount.toFixed(2)} ${currency}`,
-          brand: 'Kvastram',
+          brand: 'Odhvica',
           gtin: merchant?.gtin || variant.barcode || variant.ean || variant.upc || undefined,
           mpn: merchant?.mpn || variant.sku || undefined,
           condition: merchant?.condition || 'new',
@@ -509,7 +509,7 @@ merchantRouter.get(
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
 <channel>
-  <title>Kvastram Google Merchant Feed</title>
+  <title>Odhvica Google Merchant Feed</title>
   <link>${escapeXml(SITE_URL)}</link>
   <description>Handcrafted Indian ethnic, boho, block-print and artisan fashion products</description>${xmlItems}
 </channel>

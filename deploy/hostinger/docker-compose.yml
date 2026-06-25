@@ -1,4 +1,4 @@
-name: kvastram
+name: odhvica
 
 # ---------------------------------------------------------------------------
 # Variable substitution: create deploy/hostinger/.env from .env.example
@@ -52,8 +52,8 @@ services:
       dockerfile: Dockerfile
       args:
         # Baked into client bundle at build time (WebSocket, direct API refs).
-        # Should be your public API URL, e.g. https://api.kvastram.com
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.kvastram.com}
+        # Should be your public API URL, e.g. https://api.odhvica.com
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.odhvica.com}
         APP_GIT_SHA: ${APP_GIT_SHA:-unknown}
     restart: unless-stopped
     env_file:
@@ -86,7 +86,7 @@ services:
       dockerfile: Dockerfile
       args:
         # Baked into client bundle at build time.
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.kvastram.com}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.odhvica.com}
         APP_GIT_SHA: ${APP_GIT_SHA:-unknown}
     restart: unless-stopped
     env_file:
@@ -116,12 +116,12 @@ services:
   mcp:
     profiles: ["mcp"]
     build:
-      context: ../../kvastram-mcp-server
+      context: ../../odhvica-mcp-server
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
       # Keep MCP runtime secrets outside the git checkout to prevent deploy drift.
-      - /root/kvastram-secrets/mcp.env
+      - /root/odhvica-secrets/mcp.env
     depends_on:
       backend:
         condition: service_healthy

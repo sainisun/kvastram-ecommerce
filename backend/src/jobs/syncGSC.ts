@@ -56,7 +56,7 @@ async function getAccessToken() {
 
 export async function syncGSCPerformance() {
   const token = await getAccessToken();
-  const siteUrl = process.env.GSC_SITE_URL || 'https://kvastram.com';
+  const siteUrl = process.env.GSC_SITE_URL || 'https://odhvica.com';
   if (!token) {
     return { synced: 0, skipped: true, reason: 'GSC credentials are not configured' };
   }

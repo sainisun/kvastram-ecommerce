@@ -1,4 +1,4 @@
-# Execution Plan — Kvastram Admin Panel Upgrade
+# Execution Plan — Odhvica Admin Panel Upgrade
 
 ---
 

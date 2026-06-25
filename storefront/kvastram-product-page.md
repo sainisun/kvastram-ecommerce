@@ -1,4 +1,4 @@
-# Kvastram — Product Page Redesign
+# Odhvica — Product Page Redesign
 **Target CVR:** 10%+ · **Brand:** Handmade artisan, Jaipur · **Stack:** Shopify Liquid
 
 ---
@@ -20,7 +20,7 @@
 │                            [♡] │      wishlist heart top-right
 │              ● ○ ○ ○            │      dot indicators bottom-center
 ├─────────────────────────────────┤  [4] PRODUCT INFO + URGENCY
-│ KVASTRAM                        │      brand name (blue, caps)
+│ ODHVICA                        │      brand name (blue, caps)
 │ Block Print Reversible Kantha   │      title (Cormorant Garamond)
 │ Quilt — Double                  │
 │ ★★★★★ 4.9  2,412 reviews  430↑ │      ratings + social proof inline
@@ -73,7 +73,7 @@
 ├──────────────────────────────────────────────────────────────────────┤
 │ Home / Quilts / Block Print Reversible Quilt                         │  breadcrumb
 ├───────────────────────────────┬──────────────────────────────────────┤
-│                               │ KVASTRAM                             │
+│                               │ ODHVICA                             │
 │   ┌───────────────────────┐   │ Block Print Reversible Kantha Quilt  │
 │   │  [New arrival]        │   │ ★★★★★ 4.9  2,412 reviews  430 sold  │
 │   │                       │   │                                      │
@@ -167,7 +167,7 @@ Improvements: Instant visual anchor · Sentence case = warmer · Hint text = rea
 Paste this into Claude Code to implement the redesign:
 
 ```
-You are redesigning the product page for Kvastram (kvastram.com), a handmade
+You are redesigning the product page for Odhvica (odhvica.com), a handmade
 artisan fashion brand based in Jaipur, India. The tech stack is Shopify Liquid.
 
 The brand tone is: warm, artisan, refined minimal — like a premium Indian craft
@@ -237,7 +237,7 @@ Desktop:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ZONE 4 — PRODUCT INFO + URGENCY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Brand name: "Kvastram" — font-size 11px, font-weight 500, color var(--blue),
+- Brand name: "Odhvica" — font-size 11px, font-weight 500, color var(--blue),
   letter-spacing 0.1em, text-transform uppercase
 - Product title: font-family Cormorant Garamond, font-size 22px (mobile 18px),
   font-weight 500, line-height 1.3, color var(--ink)
@@ -350,7 +350,7 @@ FOUR ITEMS:
    Hint: "7 days from delivery · Unused condition"
    Content: "We accept returns within 7 days of delivery. Item must be unused,
    unwashed, and in original condition with all tags attached. Email
-   support@kvastram.com with your order number and photos of the item. See our
+   support@odhvica.com with your order number and photos of the item. See our
    full Return Policy for details."
 
 4. Shipping policy

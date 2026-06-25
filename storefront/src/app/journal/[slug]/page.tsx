@@ -22,16 +22,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { post } = await api.getPost(slug);
     return buildArticleMetadata({
-      title: `${post.seo_title || post.title} | Kvastram Journal`,
+      title: `${post.seo_title || post.title} | Odhvica Journal`,
       description:
         post.seo_description ||
         post.excerpt ||
-        `Read ${post.title} on the Kvastram Journal.`,
+        `Read ${post.title} on the Odhvica Journal.`,
       path: `/journal/${slug}`,
       image: post.cover_image,
       keywords: post.seo_keywords
         ? post.seo_keywords.split(',').map((value: string) => value.trim())
-        : [post.title, 'Kvastram Journal'],
+        : [post.title, 'Odhvica Journal'],
     });
   } catch {
     return {
@@ -59,7 +59,7 @@ export default async function ArticlePage({ params }: Props) {
       description:
         post.seo_description ||
         post.excerpt ||
-        `Read ${post.title} on the Kvastram Journal.`,
+        `Read ${post.title} on the Odhvica Journal.`,
       image: post.cover_image,
       publishedAt: post.published_at,
       updatedAt: post.updated_at || post.published_at,
@@ -85,7 +85,7 @@ export default async function ArticlePage({ params }: Props) {
           <div className="absolute inset-0">
             <OptimizedImage
               src={post.cover_image}
-              alt={`${post.title} - Kvastram Journal`}
+              alt={`${post.title} - Odhvica Journal`}
               fill
               priority
               className="object-cover brightness-[0.85]"
@@ -110,7 +110,7 @@ export default async function ArticlePage({ params }: Props) {
             <div className="flex items-center gap-4 text-body-xs type-bold  tracking-token-wider opacity-80">
               <span>{new Date(post.published_at).toLocaleDateString()}</span>
               <span>&bull;</span>
-              <span>Kvastram Editorial</span>
+              <span>Odhvica Editorial</span>
             </div>
             <h1 className="font-display text-display-xl type-semibold  tracking-token-wide md:text-display-xl">
               {post.title}

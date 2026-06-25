@@ -141,7 +141,7 @@ function SearchContent() {
           >
             <ArrowLeft size={14} /> Back to Home
           </Link>
-          <h1 className="search-title mb-4">{hasQuery ? 'Search Results' : 'Search Kvastram'}</h1>
+          <h1 className="search-title mb-4">{hasQuery ? 'Search Results' : 'Search Odhvica'}</h1>
           <form onSubmit={submitSearch} className="mb-4 max-w-2xl">
             <div className="relative">
               <Search

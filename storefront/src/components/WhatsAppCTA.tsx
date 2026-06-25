@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { trackEvent } from '@/components/Analytics';
 
 export function buildWhatsAppHref(message: string) {
-  const url = new URL('https://wa.me/message/kvastram');
+  const url = new URL('https://wa.me/message/odhvica');
   url.searchParams.set('text', message);
   url.searchParams.set('utm_source', 'whatsapp');
   url.searchParams.set('utm_medium', 'cta');

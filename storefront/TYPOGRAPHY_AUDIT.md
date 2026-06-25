@@ -1,4 +1,4 @@
-# Kvastram Typography Audit
+# Odhvica Typography Audit
 **Date:** 2026-06-24
 **Status:** Audit Only (No Fixes Applied)
 

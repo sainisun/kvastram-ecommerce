@@ -6,11 +6,11 @@ import { ContactClient } from './ContactClient';
 import { buildBasicPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildBasicPageMetadata({
-  title: 'Contact Kvastram | Customer Support & Jaipur Atelier',
+  title: 'Contact Odhvica | Customer Support & Jaipur Atelier',
   description:
-    'Contact Kvastram for sizing questions, order tracking, payment help, returns, WhatsApp support, and Jaipur atelier enquiries.',
+    'Contact Odhvica for sizing questions, order tracking, payment help, returns, WhatsApp support, and Jaipur atelier enquiries.',
   path: '/contact',
-  keywords: ['Kvastram contact', 'Kvastram support', 'Kvastram WhatsApp'],
+  keywords: ['Odhvica contact', 'Odhvica support', 'Odhvica WhatsApp'],
 });
 
 export default function ContactPage() {
@@ -18,7 +18,7 @@ export default function ContactPage() {
     <>
       <PageHero
         eyebrow="Concierge"
-        title="Contact Kvastram"
+        title="Contact Odhvica"
         intro="Questions about sizing, payments, order tracking, returns, or atelier visits reach the same Jaipur support desk."
         breadcrumbs={[
           { label: 'Home', href: '/' },

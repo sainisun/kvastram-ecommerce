@@ -8,12 +8,12 @@ import { cn } from '@/lib/utils';
 import { cardClasses } from '@/components/ui/Card';
 
 export const metadata: Metadata = buildBasicPageMetadata({
-  title: 'Curated Edits | Kvastram',
+  title: 'Curated Edits | Odhvica',
   description:
-    'Browse curated Kvastram edits for gifting, bestsellers, new arrivals, block prints, sale picks, and collection-led discovery.',
+    'Browse curated Odhvica edits for gifting, bestsellers, new arrivals, block prints, sale picks, and collection-led discovery.',
   path: '/edits',
   keywords: [
-    'Kvastram curated edits',
+    'Odhvica curated edits',
     'gift guide',
     'bestsellers',
     'block print edit',

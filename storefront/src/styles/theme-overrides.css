@@ -8,11 +8,11 @@
   color: var(--ds-text-primary);
 }
 
-:where(.kvastram-surface-paper) {
+:where(.odhvica-surface-paper) {
   background-color: var(--ds-surface-paper);
 }
 
-:where(.kvastram-surface-soft) {
+:where(.odhvica-surface-soft) {
   background-color: var(--ds-surface-soft);
 }
 

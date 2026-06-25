@@ -237,7 +237,7 @@ export class ProductMutationService {
   private buildSeoTitle(data: CreateProductInput | UpdateProductInput) {
     const raw = (data.seo_title || data.title || '').trim();
     if (!raw) return null;
-    const branded = raw.toLowerCase().includes('kvastram') ? raw : `${raw} | Kvastram`;
+    const branded = raw.toLowerCase().includes('odhvica') ? raw : `${raw} | Odhvica`;
     return branded.slice(0, 70);
   }
 
@@ -323,7 +323,7 @@ export class ProductMutationService {
 
   private inferSemanticEntities(data: CreateProductInput | UpdateProductInput) {
     const text = this.inferText(data);
-    const entities = new Set(['Kvastram', 'handcrafted', 'slow fashion']);
+    const entities = new Set(['Odhvica', 'handcrafted', 'slow fashion']);
     if (/(jaipur|rajasthan|rajasthani)/.test(text)) entities.add('Jaipur');
     if (/block print|bagru|sanganeri/.test(text)) entities.add('block print');
     if (/kantha/.test(text)) entities.add('Kantha');

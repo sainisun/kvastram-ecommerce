@@ -139,7 +139,7 @@ export default function WholesalePage() {
                 Bulk Orders
               </h1>
               <p className="text-display-sm text-[var(--ds-text-disabled)] type-light leading-token-relaxed mb-8">
-                Partner with Kvastram to bring authentic artisanal luxury to
+                Partner with Odhvica to bring authentic artisanal luxury to
                 your customers. Exclusive pricing, dedicated support, and global
                 logistics for retailers and distributors worldwide.
               </p>
@@ -166,7 +166,7 @@ export default function WholesalePage() {
           <div className="kv-page-container mx-auto max-w-[1440px]">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
-                Why Partner With Kvastram?
+                Why Partner With Odhvica?
               </h2>
               <p className="text-[var(--ds-text-secondary)] type-light max-w-2xl mx-auto">
                 We provide everything you need to offer premium artisanal
@@ -552,10 +552,10 @@ export default function WholesalePage() {
                 <Mail size={32} className="mx-auto mb-4 text-[var(--ds-accent-gold)]" />
                 <h3 className="type-bold mb-2">Email Us</h3>
                 <a
-                  href="mailto:wholesale@kvastram.com"
+                  href="mailto:wholesale@odhvica.com"
                   className="text-[var(--ds-text-muted)] hover:text-[var(--ds-text-inverse)] text-body-sm"
                 >
-                  wholesale@kvastram.com
+                  wholesale@odhvica.com
                 </a>
               </div>
               <div>

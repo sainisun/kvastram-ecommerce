@@ -47,7 +47,7 @@ export function WholesaleFooter() {
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-6">
                 <div className="text-display-md type-bold tracking-token-tight">
-                  KVASTRAM
+                  ODHVICA
                 </div>
                 <div className="h-6 w-px bg-[var(--ds-text-secondary)]"></div>
                 <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
@@ -226,10 +226,10 @@ export function WholesaleFooter() {
                   <div>
                     <div className="text-[var(--ds-text-inverse)] type-medium mb-1">Email</div>
                     <a
-                      href="mailto:wholesale@kvastram.com"
+                      href="mailto:wholesale@odhvica.com"
                       className="hover:text-[var(--ds-text-inverse)] transition-colors"
                     >
-                      wholesale@kvastram.com
+                      wholesale@odhvica.com
                     </a>
                   </div>
                 </li>
@@ -279,7 +279,7 @@ export function WholesaleFooter() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-body-xs text-[var(--ds-text-muted)]">
             <div className="flex items-center gap-6">
               <span>
-                &copy; {new Date().getFullYear()} Kvastram Wholesale. All rights
+                &copy; {new Date().getFullYear()} Odhvica Wholesale. All rights
                 reserved.
               </span>
               <span className="hidden md:block">|</span>

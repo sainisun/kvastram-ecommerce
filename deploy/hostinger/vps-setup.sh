@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # ============================================================
-# Kvastram Platform — Full VPS Deployment Script
+# Odhvica Platform — Full VPS Deployment Script
 # Run this on Ubuntu VPS as root
 # ============================================================
 set -euo pipefail
 
-DOMAIN="kvastram.com"
-REPO_URL="https://github.com/sainisun/kvastram-ecommerce.git"
-APP_DIR="/root/kvastram-ecommerce"
+DOMAIN="odhvica.com"
+REPO_URL="https://github.com/sainisun/odhvica-ecommerce.git"
+APP_DIR="/root/odhvica-ecommerce"
 
 echo "=========================================="
-echo "  Kvastram VPS Deployment Starting..."
+echo "  Odhvica VPS Deployment Starting..."
 echo "  Domain: $DOMAIN"
 echo "=========================================="
 
@@ -91,8 +91,8 @@ STRIPE_PUBLISHABLE_PLACEHOLDER="pk_live_replace_before_launch"
 
 # 4a: .env.hostinger (Postgres config)
 cat > "$APP_DIR/.env.hostinger" << EOF
-POSTGRES_DB=kvastram
-POSTGRES_USER=kvastram
+POSTGRES_DB=odhvica
+POSTGRES_USER=odhvica
 POSTGRES_PASSWORD=${DB_PASSWORD}
 
 STORE_DOMAIN=${DOMAIN}
@@ -103,7 +103,7 @@ EOF
 
 # 4b: backend/.env.production
 cat > "$APP_DIR/backend/.env.production" << EOF
-DATABASE_URL=postgresql://kvastram:${DB_PASSWORD}@postgres:5432/kvastram
+DATABASE_URL=postgresql://odhvica:${DB_PASSWORD}@postgres:5432/odhvica
 NODE_ENV=production
 PORT=4000
 JWT_SECRET=${JWT_SECRET}
@@ -125,7 +125,7 @@ SMTP_HOST=smtp.resend.com
 SMTP_PORT=465
 SMTP_USER=resend
 SMTP_PASS=re_replace_with_your_resend_api_key
-SMTP_FROM="Kvastram" <noreply@${DOMAIN}>
+SMTP_FROM="Odhvica" <noreply@${DOMAIN}>
 RESEND_API_KEY=re_replace_with_your_resend_api_key
 
 # Google OAuth
@@ -176,10 +176,10 @@ echo ">>> STEP 4 DONE"
 echo ""
 echo ">>> STEP 5: Configuring Nginx..."
 
-cp "$APP_DIR/deploy/hostinger/nginx/kvastram.conf" /etc/nginx/sites-available/kvastram.conf
+cp "$APP_DIR/deploy/hostinger/nginx/odhvica.conf" /etc/nginx/sites-available/odhvica.conf
 
 # Enable the site
-ln -sf /etc/nginx/sites-available/kvastram.conf /etc/nginx/sites-enabled/kvastram.conf
+ln -sf /etc/nginx/sites-available/odhvica.conf /etc/nginx/sites-enabled/odhvica.conf
 rm -f /etc/nginx/sites-enabled/default
 
 # Test and reload
@@ -232,7 +232,7 @@ echo "  2. Wait for DNS propagation (5min - 48hrs)"
 echo "  3. Run SSL setup:"
 echo "     sudo certbot --nginx -d ${DOMAIN} -d www.${DOMAIN} -d admin.${DOMAIN} -d api.${DOMAIN} -d mcp.${DOMAIN}"
 echo "  4. Run manual DB migrations (one-time after first deploy):"
-echo "     docker exec -it kvastram-backend-1 npm run migrate:manual"
+echo "     docker exec -it odhvica-backend-1 npm run migrate:manual"
 echo "  5. Fill in API secrets in $APP_DIR/backend/.env.production:"
 echo "     RESEND_API_KEY, SMTP_PASS, GOOGLE_CLIENT_ID, CLOUDINARY_*"
 echo ""

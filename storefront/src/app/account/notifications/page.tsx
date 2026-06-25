@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { StatusBanner } from '@/components/ui/StatusBanner';
 import { AccountSkeleton } from '@/components/ui/Skeleton';
 
-const STORAGE_KEY = 'kvastram-notification-preferences';
+const STORAGE_KEY = 'odhvica-notification-preferences';
 
 type Preferences = {
   orderUpdates: boolean;
@@ -126,7 +126,7 @@ export default function AccountNotificationsPage() {
             Notification Preferences
           </h1>
           <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
-            Choose how Kvastram should keep you posted about orders, launches, and product availability.
+            Choose how Odhvica should keep you posted about orders, launches, and product availability.
           </p>
         </div>
 

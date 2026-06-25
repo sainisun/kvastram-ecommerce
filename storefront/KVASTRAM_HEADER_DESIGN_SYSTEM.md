@@ -1,4 +1,4 @@
-# Kvastram Header Design System
+# Odhvica Header Design System
 
 Status: Superseded
 

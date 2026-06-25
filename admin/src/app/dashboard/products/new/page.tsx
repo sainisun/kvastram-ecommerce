@@ -566,7 +566,7 @@ export default function NewProductPage() {
               Search Engine Optimisation
             </h2>
             <p className="mb-4 text-xs leading-relaxed text-gray-500">
-              On save, Kvastram auto-creates the advanced SEO baseline: canonical, robots, schema-ready discovery document,
+              On save, Odhvica auto-creates the advanced SEO baseline: canonical, robots, schema-ready discovery document,
               structured attribute guesses, media SEO, Merchant draft fields, and vector-ready product text. Review the full
               SEO & Discovery panel on the next screen.
             </p>
@@ -577,7 +577,7 @@ export default function NewProductPage() {
                   id="seo_title" type="text" name="seo_title"
                   value={formData.seo_title || ''} onChange={handleChange}
                   className={inputCls}
-                  placeholder="e.g. Elegant Summer Linen Shirt | Kvastram"
+                  placeholder="e.g. Elegant Summer Linen Shirt | Odhvica"
                 />
               </div>
               <div>

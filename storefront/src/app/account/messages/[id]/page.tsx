@@ -144,7 +144,7 @@ export default function AccountMessageDetailPage() {
                   <div key={message.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
                     <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)]' : 'bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'}`}>
                       <p className={`account-message-meta mb-1 ${isAdmin ? 'text-[var(--ds-text-muted)]' : 'text-[var(--ds-text-disabled)]'}`}>
-                        {isAdmin ? message.sender_name || 'Kvastram Studio' : 'You'}
+                        {isAdmin ? message.sender_name || 'Odhvica Studio' : 'You'}
                       </p>
                       <p className="account-message-body whitespace-pre-wrap">{message.message}</p>
                     </div>

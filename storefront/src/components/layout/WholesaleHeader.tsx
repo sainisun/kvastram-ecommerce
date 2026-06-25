@@ -19,11 +19,11 @@ export function WholesaleHeader() {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="mailto:wholesale@kvastram.com"
+              href="mailto:wholesale@odhvica.com"
               className="hover:text-[var(--ds-text-inverse)] flex items-center gap-1"
             >
               <Mail size={12} />
-              <span className="hidden sm:inline">wholesale@kvastram.com</span>
+              <span className="hidden sm:inline">wholesale@odhvica.com</span>
             </a>
             <a
               href="tel:+1234567890"
@@ -40,7 +40,7 @@ export function WholesaleHeader() {
       <div className="kv-page-container mx-auto flex h-16 max-w-[1440px] items-center justify-between lg:h-20">
         {/* Logo */}
         <Link href="/wholesale" className="flex items-center gap-3">
-          <div className="text-display-md type-bold tracking-token-tight">KVASTRAM</div>
+          <div className="text-display-md type-bold tracking-token-tight">ODHVICA</div>
           <div className="h-8 w-px bg-[var(--ds-text-secondary)]"></div>
           <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
             Wholesale

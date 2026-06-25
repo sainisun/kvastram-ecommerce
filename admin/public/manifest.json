@@ -1,7 +1,7 @@
 {
-  "name": "Kvastram Admin",
-  "short_name": "Kvastram",
-  "description": "Kvastram E-commerce Admin Panel",
+  "name": "Odhvica Admin",
+  "short_name": "Odhvica",
+  "description": "Odhvica E-commerce Admin Panel",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -18,7 +18,7 @@ jobs:
           port: 22
           script: |
             set -e
-            cd /root/kvastram-ecommerce/deploy/hostinger
+            cd /root/odhvica-ecommerce/deploy/hostinger
             docker compose exec -T backend node dist/seed-real-data.js
             
             echo "✅ Seed Complete!"

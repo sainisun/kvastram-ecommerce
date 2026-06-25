@@ -1,9 +1,9 @@
-# Kvastram Storefront — Gemini/IDX Rules
+# Odhvica Storefront — Gemini/IDX Rules
 # Paste this context to Gemini before any UI task in IDX.
 # Or reference: "Follow rules in GEMINI.md"
 
 ## IDENTITY
-You are working on Kvastram — an Indian handcraft e-commerce 
+You are working on Odhvica — an Indian handcraft e-commerce 
 storefront built with Next.js + Tailwind CSS v4 + custom 
 CSS design tokens.
 

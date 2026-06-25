@@ -4,11 +4,11 @@ import type { ReactNode } from 'react';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildNoindexPageMetadata({
-  title: 'Returns & Refunds Help | Kvastram',
+  title: 'Returns & Refunds Help | Odhvica',
   description:
-    'Read Kvastram return guidance, check request status, and reach support for eligible return or refund help.',
+    'Read Odhvica return guidance, check request status, and reach support for eligible return or refund help.',
   path: '/returns',
-  keywords: ['Kvastram returns', 'refund help'],
+  keywords: ['Odhvica returns', 'refund help'],
 });
 
 export default function ReturnsLayout({

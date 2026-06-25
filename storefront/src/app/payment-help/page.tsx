@@ -13,11 +13,11 @@ import { storefrontTrust } from '@/config/storefront-trust';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildNoindexPageMetadata({
-  title: 'Payment Help | Kvastram',
+  title: 'Payment Help | Odhvica',
   description:
     'Get help if a Razorpay or PayPal payment attempt fails or if you need to confirm whether your order was charged.',
   path: '/payment-help',
-  keywords: ['Kvastram payment help', 'Razorpay support', 'order charged'],
+  keywords: ['Odhvica payment help', 'Razorpay support', 'order charged'],
 });
 
 export default function PaymentHelpPage() {

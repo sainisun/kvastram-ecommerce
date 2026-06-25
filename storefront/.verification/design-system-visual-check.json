@@ -11,7 +11,7 @@
     "bodyBg": "rgb(249, 247, 244)",
     "headerVisible": true,
     "productCards": 3,
-    "hasKvastram": true,
+    "hasOdhvica": true,
     "errors": [
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
@@ -19,7 +19,7 @@
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
     ],
-    "screenshotPath": "E:\\Kvastram projects\\storefront\\.verification\\home-desktop.png"
+    "screenshotPath": "E:\\Odhvica projects\\storefront\\.verification\\home-desktop.png"
   },
   {
     "name": "collections-desktop",
@@ -33,7 +33,7 @@
     "bodyBg": "rgb(249, 247, 244)",
     "headerVisible": true,
     "productCards": 0,
-    "hasKvastram": true,
+    "hasOdhvica": true,
     "errors": [
       "Failed to load resource: net::ERR_NETWORK_ACCESS_DENIED",
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
@@ -41,7 +41,7 @@
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
     ],
-    "screenshotPath": "E:\\Kvastram projects\\storefront\\.verification\\collections-desktop.png"
+    "screenshotPath": "E:\\Odhvica projects\\storefront\\.verification\\collections-desktop.png"
   },
   {
     "name": "home-mobile",
@@ -55,7 +55,7 @@
     "bodyBg": "rgb(249, 247, 244)",
     "headerVisible": true,
     "productCards": 3,
-    "hasKvastram": true,
+    "hasOdhvica": true,
     "errors": [
       "Failed to load resource: net::ERR_NETWORK_ACCESS_DENIED",
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
@@ -63,6 +63,6 @@
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
       "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
     ],
-    "screenshotPath": "E:\\Kvastram projects\\storefront\\.verification\\home-mobile.png"
+    "screenshotPath": "E:\\Odhvica projects\\storefront\\.verification\\home-mobile.png"
   }
 ]

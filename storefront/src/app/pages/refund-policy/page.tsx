@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Cancellation & Refund Policy | Kvastram',
+  title: 'Cancellation & Refund Policy | Odhvica',
   description:
-    'Read Kvastram cancellation, return eligibility, refund timeline, non-returnable items, and refund method policy before buying.',
+    'Read Odhvica cancellation, return eligibility, refund timeline, non-returnable items, and refund method policy before buying.',
 };
 
 const refundTimelines = [
@@ -82,7 +82,7 @@ export default function RefundPolicyPage() {
         </h1>
         <p className="mt-4 text-body-lg leading-[var(--ds-leading-relaxed)] text-[var(--ds-text-secondary)]">
           This policy explains how cancellations, returns, exchanges, and
-          refunds are handled for orders placed on kvastram.com.
+          refunds are handled for orders placed on odhvica.com.
         </p>
         <p className="mt-3 text-body-sm text-[var(--ds-text-muted)]">Effective Date: 7 June 2026</p>
 
@@ -91,7 +91,7 @@ export default function RefundPolicyPage() {
             You may request cancellation on the same business day, before the
             order is dispatched.
           </p>
-          <p>To request cancellation, email support@kvastram.com with:</p>
+          <p>To request cancellation, email support@odhvica.com with:</p>
           <BulletList
             items={['Order number', 'Purchase email', 'Reason for cancellation']}
           />
@@ -141,7 +141,7 @@ export default function RefundPolicyPage() {
               'Custom or personalised products',
               'Items that have been worn, washed, dry-cleaned, altered, or damaged after delivery',
               'Returns requested more than 15 days after delivery',
-              'Products returned without approval from Kvastram support',
+              'Products returned without approval from Odhvica support',
               'Change-of-mind returns',
               'Size issues that could have been checked against the size guide before ordering',
               'Gift cards or digital vouchers, if offered',
@@ -151,7 +151,7 @@ export default function RefundPolicyPage() {
 
         <PolicySection title="5. How To Start a Return">
           <p>
-            Email support@kvastram.com within 15 days of delivery with your
+            Email support@odhvica.com within 15 days of delivery with your
             order number, purchase email, clear photos or video showing the
             issue, and a short description of the problem.
           </p>
@@ -164,12 +164,12 @@ export default function RefundPolicyPage() {
         <PolicySection title="6. Return Shipping">
           <p>
             If the return is due to our error, such as a wrong item, defective
-            item, or item materially different from the listing, Kvastram will
+            item, or item materially different from the listing, Odhvica will
             cover reasonable return shipping.
           </p>
           <p>
             For any other approved return, the buyer is responsible for return
-            shipping. We recommend using a tracked courier because Kvastram is
+            shipping. We recommend using a tracked courier because Odhvica is
             not responsible for items lost in return transit.
           </p>
         </PolicySection>
@@ -232,7 +232,7 @@ export default function RefundPolicyPage() {
 
         <PolicySection title="11. Support">
           <p>
-            Email: support@kvastram.com
+            Email: support@odhvica.com
             <br />
             WhatsApp: +91-9588078064
             <br />

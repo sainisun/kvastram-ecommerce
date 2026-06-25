@@ -4,11 +4,11 @@ import type { ReactNode } from 'react';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildNoindexPageMetadata({
-  title: 'Create Account | Kvastram',
+  title: 'Create Account | Odhvica',
   description:
-    'Create a Kvastram account to track orders, save addresses, and manage post-purchase support.',
+    'Create a Odhvica account to track orders, save addresses, and manage post-purchase support.',
   path: '/register',
-  keywords: ['Kvastram register', 'create account'],
+  keywords: ['Odhvica register', 'create account'],
 });
 
 export default function RegisterLayout({

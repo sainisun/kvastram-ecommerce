@@ -17,10 +17,10 @@ VALUES (
 <p><strong>Effective Date:</strong> 9 May 2026</p>
 
 <h2>1. About Us</h2>
-<p>Kvastram is a handmade fashion brand based in Jaipur, Rajasthan, India. We sell handmade kantha quilts, block-print clothing, artisan bags, sarees, jackets, tote bags, and related handcrafted products through <a href="https://kvastram.com">https://kvastram.com</a>.</p>
-<p>Kvastram was previously known as KanthaPrints on Etsy and now operates independently.</p>
+<p>Odhvica is a handmade fashion brand based in Jaipur, Rajasthan, India. We sell handmade kantha quilts, block-print clothing, artisan bags, sarees, jackets, tote bags, and related handcrafted products through <a href="https://odhvica.com">https://odhvica.com</a>.</p>
+<p>Odhvica was previously known as KanthaPrints on Etsy and now operates independently.</p>
 <p>For privacy matters, you can contact us at:</p>
-<p>Kvastram<br>Jaipur, Rajasthan, India<br>Website: <a href="https://kvastram.com">https://kvastram.com</a><br>Email: <a href="mailto:support@kvastram.com">support@kvastram.com</a><br>Support hours: Monday to Friday, 9:00 am to 6:00 pm IST</p>
+<p>Odhvica<br>Jaipur, Rajasthan, India<br>Website: <a href="https://odhvica.com">https://odhvica.com</a><br>Email: <a href="mailto:support@odhvica.com">support@odhvica.com</a><br>Support hours: Monday to Friday, 9:00 am to 6:00 pm IST</p>
 <p>This Privacy Policy explains how we collect, use, store, share, and protect your personal information when you visit our website, place an order, contact us, subscribe to updates, or interact with us online.</p>
 <p>We comply with applicable Indian privacy and data protection laws, including the Information Technology Act, 2000 as amended in 2008, applicable Information Technology rules, and the Digital Personal Data Protection Act, 2023. Where applicable, we also comply with the EU General Data Protection Regulation and the UK GDPR for customers located in the European Union, European Economic Area, and United Kingdom.</p>
 
@@ -60,7 +60,7 @@ VALUES (
 <p>We may collect this information through cookies, pixels, server logs, analytics tools, and similar technologies.</p>
 
 <h2>3. How We Use Your Information</h2>
-<p>We use your personal information only for lawful and necessary business purposes connected with running Kvastram, processing orders, improving our services, and communicating with you.</p>
+<p>We use your personal information only for lawful and necessary business purposes connected with running Odhvica, processing orders, improving our services, and communicating with you.</p>
 <p>Where the GDPR or UK GDPR applies, we rely on the lawful bases listed below. Where Indian law applies, including the DPDP Act, we process personal data based on consent, voluntary provision of data for a specified purpose, legitimate uses permitted by law, legal obligations, and other lawful grounds available under applicable law.</p>
 <table>
   <thead>
@@ -104,7 +104,7 @@ VALUES (
   <li>Accounting, tax, legal, and compliance advisers</li>
   <li>Customs authorities, import authorities, postal authorities, and regulators where required for international shipping</li>
   <li>Government authorities, courts, law enforcement, or regulators where required by law</li>
-  <li>Business transferees if Kvastram is involved in a merger, acquisition, restructuring, or sale of business assets</li>
+  <li>Business transferees if Odhvica is involved in a merger, acquisition, restructuring, or sale of business assets</li>
 </ul>
 <p>These service providers are allowed to use personal information only as needed to provide services to us or comply with legal requirements. We require them to handle personal information securely and in accordance with applicable law.</p>
 <p><strong>We do not sell, rent, or share user data for third-party marketing.</strong></p>
@@ -162,17 +162,17 @@ VALUES (
 <h3>Right to withdraw consent</h3>
 <p>Where we rely on your consent, you can withdraw it at any time. This includes marketing emails and optional cookies.</p>
 <h3>Right to opt out of marketing</h3>
-<p>You can unsubscribe from marketing emails by using the unsubscribe link in the email or by contacting us at <a href="mailto:support@kvastram.com">support@kvastram.com</a>.</p>
+<p>You can unsubscribe from marketing emails by using the unsubscribe link in the email or by contacting us at <a href="mailto:support@odhvica.com">support@odhvica.com</a>.</p>
 <h3>Right to grievance redressal</h3>
 <p>Under Indian law, you may contact us to raise a privacy complaint or grievance. We will review and respond in accordance with applicable law.</p>
 <h3>Right to nominate under the DPDP Act</h3>
 <p>Where the Digital Personal Data Protection Act, 2023 applies, you may have the right to nominate another individual who may exercise your rights in the event of your death or incapacity, as permitted by law.</p>
 <h3>Right to complain to a regulator</h3>
 <p>If you are in the EU, EEA, or UK, you may have the right to complain to your local data protection authority. In India, you may have rights before the applicable Data Protection Board or other authority once available under law.</p>
-<p>To exercise your rights, contact us at <a href="mailto:support@kvastram.com">support@kvastram.com</a>. We may ask you to verify your identity before responding to your request.</p>
+<p>To exercise your rights, contact us at <a href="mailto:support@odhvica.com">support@odhvica.com</a>. We may ask you to verify your identity before responding to your request.</p>
 
 <h2>8. International Data Transfers</h2>
-<p>Kvastram is based in Jaipur, Rajasthan, India, and we sell to customers in India, the USA, the UK, the EU, Australia, and more than 50 countries.</p>
+<p>Odhvica is based in Jaipur, Rajasthan, India, and we sell to customers in India, the USA, the UK, the EU, Australia, and more than 50 countries.</p>
 <p>When you order from outside India, your personal information may be processed in India and may also be shared with service providers, payment processors, shipping partners, analytics providers, advertising platforms, and technology providers located in other countries.</p>
 <p>For EU, EEA, and UK customers, where personal data is transferred outside the EU, EEA, or UK, we use appropriate safeguards where required. These may include Standard Contractual Clauses approved by the European Commission, the UK International Data Transfer Agreement, the UK Addendum to the EU Standard Contractual Clauses, contractual safeguards, technical safeguards, and transfer risk assessments where applicable.</p>
 <p>We take steps to ensure that international transfers are handled securely and in accordance with applicable data protection laws.</p>
@@ -181,7 +181,7 @@ VALUES (
 <p>Our website and products are intended for customers who are 18 years of age or older.</p>
 <p>We do not knowingly collect personal information from children under 18. If you are under 18, you should not place orders, create an account, or provide personal information to us.</p>
 <p>If we learn that we have collected personal information from a child under 18 without appropriate legal basis or required consent, we will delete it as soon as reasonably possible.</p>
-<p>If you believe a child has provided personal information to us, please contact us at <a href="mailto:support@kvastram.com">support@kvastram.com</a>.</p>
+<p>If you believe a child has provided personal information to us, please contact us at <a href="mailto:support@odhvica.com">support@odhvica.com</a>.</p>
 
 <h2>10. Security</h2>
 <p>We use reasonable technical and organizational safeguards to protect your personal information from unauthorized access, loss, misuse, alteration, or disclosure.</p>
@@ -206,12 +206,12 @@ VALUES (
 
 <h2>12. Contact Us</h2>
 <p>If you have questions, requests, complaints, or concerns about this Privacy Policy or how we handle your personal information, please contact us:</p>
-<p>Kvastram<br>Jaipur, Rajasthan, India<br>Website: <a href="https://kvastram.com">https://kvastram.com</a><br>Email: <a href="mailto:support@kvastram.com">support@kvastram.com</a><br>Support hours: Monday to Friday, 9:00 am to 6:00 pm IST</p>
+<p>Odhvica<br>Jaipur, Rajasthan, India<br>Website: <a href="https://odhvica.com">https://odhvica.com</a><br>Email: <a href="mailto:support@odhvica.com">support@odhvica.com</a><br>Support hours: Monday to Friday, 9:00 am to 6:00 pm IST</p>
 <p>For privacy requests, please include your name, email address, order number if relevant, country of residence, and a clear description of your request. We will respond within the timeframe required by applicable law.</p>
 $CONTENT$,
   true,
-  'Privacy Policy | Kvastram',
-  'Learn how Kvastram collects, uses, shares, protects, and retains personal information under Indian privacy law, DPDP, GDPR, and UK GDPR.',
+  'Privacy Policy | Odhvica',
+  'Learn how Odhvica collects, uses, shares, protects, and retains personal information under Indian privacy law, DPDP, GDPR, and UK GDPR.',
   now(),
   now()
 )
@@ -243,7 +243,7 @@ VALUES (
 <p><strong>Effective Date:</strong> 9 May 2026</p>
 
 <h2>1. Order Processing</h2>
-<p>Every Kvastram piece is handmade with care in Jaipur, Rajasthan, so we take a little time to prepare your order properly.</p>
+<p>Every Odhvica piece is handmade with care in Jaipur, Rajasthan, so we take a little time to prepare your order properly.</p>
 <p>Standard orders are usually processed within <strong>2-5 business days</strong>. This applies to most handmade kantha quilts, block-print clothing, bags, sarees, jackets, tote bags, lehengas, kurtas, and other ready designs.</p>
 <p>Custom or personalised orders usually take <strong>5-10 business days</strong> to process, depending on the work involved.</p>
 <p>During busy seasons such as Diwali, Christmas, and New Year, processing may take a little longer than usual. If there is any major delay, we will do our best to keep you informed.</p>
@@ -257,7 +257,7 @@ VALUES (
 <p>For remote pin codes, rural areas, or locations with limited courier access, delivery may take a few extra days. In some cases, India Post may be used because it has wider coverage.</p>
 
 <h2>3. International Shipping</h2>
-<p>Kvastram ships to the USA, UK, EU, Australia, Canada, UAE, and more than 50 countries worldwide.</p>
+<p>Odhvica ships to the USA, UK, EU, Australia, Canada, UAE, and more than 50 countries worldwide.</p>
 <p>International shipping charges are calculated at checkout based on your order weight and delivery destination.</p>
 <p>Estimated delivery times after dispatch are:</p>
 <ul>
@@ -274,7 +274,7 @@ VALUES (
 <h2>4. Tracking Your Order</h2>
 <p>Once your order has been dispatched, we will send you a tracking email with your tracking number and courier details.</p>
 <p>Tracking may take <strong>24-48 hours</strong> to update after dispatch, so please do not worry if the link does not show movement immediately.</p>
-<p>You can track your Kvastram order at <a href="https://kvastram.com/track">https://kvastram.com/track</a>.</p>
+<p>You can track your Odhvica order at <a href="https://odhvica.com/track">https://odhvica.com/track</a>.</p>
 <p>For India Post shipments, you may also track directly at <a href="https://www.indiapost.gov.in">https://www.indiapost.gov.in</a>.</p>
 
 <h2>5. Customs &amp; Import Duties</h2>
@@ -284,11 +284,11 @@ VALUES (
 <p>If a parcel is refused because of unpaid customs duties, taxes, or import charges, we may issue a partial refund only after the parcel is safely returned to us. Any shipping fees, return charges, customs costs, or courier deductions will be deducted from the refund.</p>
 
 <h2>6. Return Policy</h2>
-<p>We want you to love your Kvastram piece. If something is not right, you may request a return within <strong>7 days of delivery</strong>.</p>
+<p>We want you to love your Odhvica piece. If something is not right, you may request a return within <strong>7 days of delivery</strong>.</p>
 <p>To be eligible for return, the item must be unused, unwashed, unworn, and in its original condition with tags and packaging intact.</p>
-<p>To initiate a return, please email us at <a href="mailto:support@kvastram.com">support@kvastram.com</a> with your order number, reason for return, and clear photos of the item.</p>
+<p>To initiate a return, please email us at <a href="mailto:support@odhvica.com">support@odhvica.com</a> with your order number, reason for return, and clear photos of the item.</p>
 <p>For regular returns within India, return shipping is the customer&apos;s responsibility. If the item is defective or we made an error, we will cover the return shipping cost.</p>
-<p>Please remember that our products are handmade. Small differences in print placement, stitching, colour tone, fabric texture, or kantha embroidery are natural signs of handcraft, not defects. These variations are what make each Kvastram piece special.</p>
+<p>Please remember that our products are handmade. Small differences in print placement, stitching, colour tone, fabric texture, or kantha embroidery are natural signs of handcraft, not defects. These variations are what make each Odhvica piece special.</p>
 
 <h2>7. Exchange Policy</h2>
 <p>We offer size exchanges for clothing items within <strong>7 days of delivery</strong>, subject to availability.</p>
@@ -309,7 +309,7 @@ VALUES (
 
 <h2>9. Damaged or Wrong Items</h2>
 <p>If your order arrives damaged, defective, or different from what you ordered, please contact us within <strong>48 hours of delivery</strong>.</p>
-<p>Email us at <a href="mailto:support@kvastram.com">support@kvastram.com</a> with your order number and clear photos of the product, packaging, and issue.</p>
+<p>Email us at <a href="mailto:support@odhvica.com">support@odhvica.com</a> with your order number and clear photos of the product, packaging, and issue.</p>
 <p>For damaged, defective, or wrong items, we will arrange a free return pickup within India where service is available, or provide a prepaid return label where possible.</p>
 <p>Once verified, we will offer a full refund or replacement at no extra cost to you.</p>
 
@@ -333,16 +333,16 @@ VALUES (
 
 <h2>12. Contact Us</h2>
 <p>We are always happy to help.</p>
-<p><strong>Email:</strong> <a href="mailto:support@kvastram.com">support@kvastram.com</a><br>
-<strong>WhatsApp:</strong> <a href="https://wa.me/message/kvastram">https://wa.me/message/kvastram</a><br>
-<strong>Track your order:</strong> <a href="https://kvastram.com/track">https://kvastram.com/track</a></p>
+<p><strong>Email:</strong> <a href="mailto:support@odhvica.com">support@odhvica.com</a><br>
+<strong>WhatsApp:</strong> <a href="https://wa.me/message/odhvica">https://wa.me/message/odhvica</a><br>
+<strong>Track your order:</strong> <a href="https://odhvica.com/track">https://odhvica.com/track</a></p>
 <p>We usually respond within <strong>24-48 hours</strong>.</p>
 <p><strong>Support hours:</strong> Monday to Friday, 9:00 am to 6:00 pm IST</p>
-<p>Thank you for choosing Kvastram. Every order supports handmade craft, slow fashion, and artisan work from Jaipur, India.</p>
+<p>Thank you for choosing Odhvica. Every order supports handmade craft, slow fashion, and artisan work from Jaipur, India.</p>
 $CONTENT$,
   true,
-  'Shipping & Returns | Kvastram',
-  'Shipping, delivery, customs, returns, exchanges, refunds, and support details for handmade Kvastram orders from Jaipur, India.',
+  'Shipping & Returns | Odhvica',
+  'Shipping, delivery, customs, returns, exchanges, refunds, and support details for handmade Odhvica orders from Jaipur, India.',
   now(),
   now()
 )

@@ -37,7 +37,7 @@ const companyLinks: { label: string; href: string; highlight?: boolean }[] = [
 const socialLinks = [
   {
     label: 'Instagram',
-    href: 'https://instagram.com/kvastram',
+    href: 'https://instagram.com/odhvica',
     icon: () => (
       <svg
         viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ const socialLinks = [
   },
   {
     label: 'TikTok',
-    href: 'https://tiktok.com/@kvastram',
+    href: 'https://tiktok.com/@odhvica',
     icon: () => (
       <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.7a4.85 4.85 0 0 1-1.01-.01z" />
@@ -67,13 +67,13 @@ const socialLinks = [
   },
   {
     label: 'WhatsApp',
-    href: buildWhatsAppHref('Hi, I need help from Kvastram'),
+    href: buildWhatsAppHref('Hi, I need help from Odhvica'),
     icon: MessageCircle,
     color: 'kf-social-whatsapp',
   },
   {
     label: 'YouTube',
-    href: 'https://youtube.com/@kvastram',
+    href: 'https://youtube.com/@odhvica',
     icon: () => (
       <svg
         viewBox="0 0 24 24"
@@ -92,7 +92,7 @@ const socialLinks = [
   },
   {
     label: 'Facebook',
-    href: 'https://facebook.com/kvastram',
+    href: 'https://facebook.com/odhvica',
     icon: () => (
       <svg
         viewBox="0 0 24 24"
@@ -110,7 +110,7 @@ const socialLinks = [
   },
   {
     label: 'Twitter / X',
-    href: 'https://x.com/kvastram',
+    href: 'https://x.com/odhvica',
     icon: () => (
       <svg
         viewBox="0 0 24 24"
@@ -164,12 +164,12 @@ export function Footer() {
   }, []);
 
   return (
-    <footer data-home-section="11-footer" className="kvastram-footer border-t border-[var(--ds-footer-border)]">
+    <footer data-home-section="11-footer" className="odhvica-footer border-t border-[var(--ds-footer-border)]">
       <div
         className="footer-watermark-prem overflow-hidden px-6 pt-8 sm:px-8 md:px-12 md:pt-10 select-none"
         aria-hidden="true"
       >
-        Kvastram
+        Odhvica
       </div>
 
       <div className="kv-page-container mx-auto max-w-[1440px] px-6 pb-10 pt-10 sm:px-8 md:px-12 md:pb-12 md:pt-12 lg:px-20 lg:pt-24">
@@ -178,7 +178,7 @@ export function Footer() {
           <div className="space-y-5 col-span-2 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
               <span className="kf-logo font-body text-display-sm type-semibold tracking-token-wider">
-                KVASTRAM
+                ODHVICA
               </span>
             </Link>
             <p className="kf-link font-body text-body-md type-light leading-token-relaxed">
@@ -288,7 +288,7 @@ export function Footer() {
         <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-8 sm:px-8 md:px-12 md:py-12 lg:px-20">
           <PaymentIcons className="mb-4" />
           <div className="kf-legal font-body flex flex-col items-center justify-between gap-4 text-center text-body-xs sm:flex-row sm:text-left">
-            <p>Copyright {new Date().getFullYear()} Kvastram. All rights reserved.</p>
+            <p>Copyright {new Date().getFullYear()} Odhvica. All rights reserved.</p>
             <div className="flex gap-6">
               <Link
                 href={storefrontTrust.policyRoutes.privacy}

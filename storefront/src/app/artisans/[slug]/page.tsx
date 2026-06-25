@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!artisan) return { title: 'Artisan Not Found', robots: { index: false, follow: false } };
 
   return buildBasicPageMetadata({
-    title: `${artisan.name} | Kvastram Artisan`,
-    description: artisan.bio || `${artisan.name} is connected to Kvastram handmade textile craft.`,
+    title: `${artisan.name} | Odhvica Artisan`,
+    description: artisan.bio || `${artisan.name} is connected to Odhvica handmade textile craft.`,
     path: `/artisans/${artisan.slug}`,
     image: artisan.image_url,
   });
@@ -38,7 +38,7 @@ export default async function ArtisanPage({ params }: Props) {
       />
       <h1 className="collection-detail-title">{artisan.name}</h1>
       <p className="collection-detail-copy mt-4 max-w-3xl">
-        {artisan.bio || artisan.craft_specialty || 'Textile artisan connected to Kvastram handmade craft.'}
+        {artisan.bio || artisan.craft_specialty || 'Textile artisan connected to Odhvica handmade craft.'}
       </p>
       <div className="mt-6 grid gap-3 text-body-sm text-[var(--ds-text-secondary)] md:grid-cols-2">
         <p><strong>Craft:</strong> {artisan.craft_specialty || 'Textile craft'}</p>

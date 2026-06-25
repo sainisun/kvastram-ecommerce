@@ -1002,7 +1002,7 @@ export default function EditProductPage() {
                   id="seo_title" type="text" name="seo_title"
                   value={formData.seo_title || ''} onChange={handleChange}
                   className={inputCls}
-                  placeholder="e.g. Elegant Summer Linen Shirt | Kvastram"
+                  placeholder="e.g. Elegant Summer Linen Shirt | Odhvica"
                 />
               </div>
               <div>

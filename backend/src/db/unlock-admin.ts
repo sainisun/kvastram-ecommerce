@@ -5,10 +5,10 @@
  * Run this when an admin account is locked out due to too many failed logins.
  *
  * Usage (on VPS inside the backend container):
- *   docker exec -it kvastram-backend-1 npm run unlock-admin -- admin@kvastram.com
+ *   docker exec -it odhvica-backend-1 npm run unlock-admin -- admin@odhvica.com
  *
  * Or directly if running Node.js without Docker:
- *   NODE_ENV=production tsx src/db/unlock-admin.ts admin@kvastram.com
+ *   NODE_ENV=production tsx src/db/unlock-admin.ts admin@odhvica.com
  */
 
 import { db } from './client';
@@ -21,7 +21,7 @@ async function unlockAdmin() {
 
   if (!email) {
     console.error('❌  Usage: npm run unlock-admin -- <email>');
-    console.error('    Example: npm run unlock-admin -- admin@kvastram.com');
+    console.error('    Example: npm run unlock-admin -- admin@odhvica.com');
     process.exit(1);
   }
 
@@ -44,7 +44,7 @@ async function unlockAdmin() {
   console.log(`✅  Account unlocked successfully!`);
   console.log(`    ID:    ${result[0].id}`);
   console.log(`    Email: ${result[0].email}`);
-  console.log(`\nYou can now log in at https://admin.kvastram.com`);
+  console.log(`\nYou can now log in at https://admin.odhvica.com`);
 
   process.exit(0);
 }

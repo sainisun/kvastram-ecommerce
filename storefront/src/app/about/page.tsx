@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Our Story | Kvastram — Handmade in Jaipur, India',
+  title: 'Our Story | Odhvica — Handmade in Jaipur, India',
   description:
-    'Kvastram is a small workshop in Jaipur run by skilled artisan women who practice Kantha — a 300-year-old Indian embroidery art. Every piece is handmade, fairly paid, and shipped worldwide.',
+    'Odhvica is a small workshop in Jaipur run by skilled artisan women who practice Kantha — a 300-year-old Indian embroidery art. Every piece is handmade, fairly paid, and shipped worldwide.',
 };
 
 const ARTISANS = [
@@ -63,7 +63,7 @@ export default function AboutPage() {
           <em className="italic">A family of hands.</em>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-body-lg leading-token-relaxed text-[var(--ds-text-secondary)]">
-          Kvastram is a small workshop run by artisan women in Jaipur who practice
+          Odhvica is a small workshop run by artisan women in Jaipur who practice
           Kantha — a 300-year-old Indian embroidery tradition. Every piece is
           handmade, fairly paid, and carries the signature of the woman who made it.
         </p>
@@ -93,7 +93,7 @@ export default function AboutPage() {
                 it were getting older.
               </p>
               <p>
-                Kvastram started because we believed that shouldn&apos;t happen. We found
+                Odhvica started because we believed that shouldn&apos;t happen. We found
                 these women — in workshops and homes and small village cooperatives — and
                 asked them a simple question: if the world was willing to pay fairly,
                 would you teach others and keep making?
@@ -122,7 +122,7 @@ export default function AboutPage() {
       <div className="kv-page-gutter border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="kv-page-frame mx-auto max-w-[1440px]">
           <div className="text-body-xs  tracking-token-wider text-[var(--ds-warning-text)]">
-            How Kvastram works
+            How Odhvica works
           </div>
           <h2 className="mt-4 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
             From hands in Jaipur to your door
@@ -169,7 +169,7 @@ export default function AboutPage() {
           </h2>
           <p className="mt-4 max-w-xl text-body-lg leading-token-relaxed text-[var(--ds-text-muted)]">
             These are not stock photos. These are real women, real names, real craft.
-            When you buy a Kvastram piece, one of them made it.
+            When you buy a Odhvica piece, one of them made it.
           </p>
 
           <div className="mt-8 grid gap-x-4 gap-y-8 sm:grid-cols-2 md:mt-12 md:gap-x-6 md:gap-y-12 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
@@ -251,7 +251,7 @@ export default function AboutPage() {
           Ready to own something real?
         </h2>
         <p className="mx-auto mt-4 max-w-md text-body-lg leading-token-relaxed text-[var(--ds-text-muted)]">
-          Every Kvastram piece ships with a handwritten note from the artisan who
+          Every Odhvica piece ships with a handwritten note from the artisan who
           made it — and their name on the care label inside.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">

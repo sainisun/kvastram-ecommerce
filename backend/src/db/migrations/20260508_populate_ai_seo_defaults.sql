@@ -1,4 +1,4 @@
--- Populate production-ready SEO discovery defaults for Kvastram's current
+-- Populate production-ready SEO discovery defaults for Odhvica's current
 -- handcrafted Jaipur / boho / block-print fashion catalog.
 
 WITH values_to_seed(attribute_code, slug, label, synonyms) AS (

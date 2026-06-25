@@ -1,5 +1,5 @@
-# Kvastram vs Etsy — Gap Analysis & Action Plan
-**Goal:** Replicate JaipurMotifStudio Etsy buying experience on Kvastram personal store
+# Odhvica vs Etsy — Gap Analysis & Action Plan
+**Goal:** Replicate JaipurMotifStudio Etsy buying experience on Odhvica personal store
 
 ---
 
@@ -22,9 +22,9 @@
 
 ---
 
-## 🏪 Current Kvastram Storefront
+## 🏪 Current Odhvica Storefront
 
-![Kvastram Homepage](C:\Users\User\.gemini\antigravity\brain\861b441f-186a-47c5-b06b-61c0e32624cf\kvastram_homepage_top_1772306134628.png)
+![Odhvica Homepage](C:\Users\User\.gemini\antigravity\brain\861b441f-186a-47c5-b06b-61c0e32624cf\odhvica_homepage_top_1772306134628.png)
 
 ![Product Detail](C:\Users\User\.gemini\antigravity\brain\861b441f-186a-47c5-b06b-61c0e32624cf\product_detail_cotton_tshirt_top_1772306261944.png)
 
@@ -34,7 +34,7 @@
 
 ### Product Page Experience
 
-| Feature | Etsy ✅ | Kvastram | Gap |
+| Feature | Etsy ✅ | Odhvica | Gap |
 |---|---|---|---|
 | **Size Variants (S, M, L, XL, 2X, 3X)** | ✅ Dropdown with price change | ❌ No size selector | 🔴 CRITICAL |
 | **Multiple Product Images** | ✅ 5-10 photos per product | ⚠️ Only 1 image | 🔴 CRITICAL |
@@ -56,7 +56,7 @@
 
 ### Shop/Store Experience
 
-| Feature | Etsy ✅ | Kvastram | Gap |
+| Feature | Etsy ✅ | Odhvica | Gap |
 |---|---|---|---|
 | **Category Filtering** | ✅ Robes, PJ Set, Kaftan, Bags | ⚠️ Categories exist but basic | 🟢 LOW |
 | **Search** | ✅ Within shop | ✅ Working | ✅ |
@@ -68,7 +68,7 @@
 
 ### Checkout Experience
 
-| Feature | Etsy ✅ | Kvastram | Gap |
+| Feature | Etsy ✅ | Odhvica | Gap |
 |---|---|---|---|
 | **Cart** | ✅ | ✅ Working | ✅ |
 | **Shipping Address Form** | ✅ | ✅ Working | ✅ |

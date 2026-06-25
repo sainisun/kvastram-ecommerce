@@ -22,17 +22,17 @@ const SESSION_KEY = 'kv_promobar_dismissed';
 const SOCIAL_LINKS = [
   {
     label: 'Instagram',
-    href: 'https://instagram.com/kvastram',
+    href: 'https://instagram.com/odhvica',
     icon: Instagram,
   },
   {
     label: 'WhatsApp',
-    href: buildWhatsAppHref('Hi, I need help from Kvastram'),
+    href: buildWhatsAppHref('Hi, I need help from Odhvica'),
     icon: MessageCircle,
   },
   {
     label: 'Facebook',
-    href: 'https://facebook.com/kvastram',
+    href: 'https://facebook.com/odhvica',
     icon: Facebook,
   },
 ];

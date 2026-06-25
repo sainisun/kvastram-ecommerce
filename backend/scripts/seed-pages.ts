@@ -9,17 +9,17 @@ const standardPages = [
         title: "Contact Us",
         slug: "contact",
         content: `
-<h1>Contact Kvastram</h1>
+<h1>Contact Odhvica</h1>
 <p>We'd love to hear from you. For inquiries about our products, orders, or wholesale opportunities, please reach out.</p>
 <ul>
-    <li>Email: support@kvastram.com</li>
+    <li>Email: support@odhvica.com</li>
     <li>Phone: +91 98765 43210</li>
     <li>Address: 123 Artisan Lane, Jaipur, Rajasthan, India</li>
 </ul>
         `,
         is_visible: true,
-        seo_title: "Contact Kvastram | Customer Support",
-        seo_description: "Contact Kvastram for any queries regarding our artisanal products."
+        seo_title: "Contact Odhvica | Customer Support",
+        seo_description: "Contact Odhvica for any queries regarding our artisanal products."
     },
     {
         title: "Shipping & Returns",

@@ -4,11 +4,11 @@ import type { ReactNode } from 'react';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildNoindexPageMetadata({
-  title: 'Track Order | Kvastram',
+  title: 'Track Order | Odhvica',
   description:
-    'Track an existing Kvastram order and reach support quickly if you need payment or delivery help.',
+    'Track an existing Odhvica order and reach support quickly if you need payment or delivery help.',
   path: '/track',
-  keywords: ['Kvastram track order'],
+  keywords: ['Odhvica track order'],
 });
 
 export default function TrackLayout({

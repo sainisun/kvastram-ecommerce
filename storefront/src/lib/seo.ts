@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 
 import type { Product } from '@/types';
 
-export const SITE_NAME = 'Kvastram';
+export const SITE_NAME = 'Odhvica';
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://kvastram.com';
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://odhvica.com';
 export const DEFAULT_OG_IMAGE = '/images/home/hero-main.jpg';
 
 export function getProductPath(product: Pick<Product, 'handle' | 'id'>): string {
@@ -378,7 +378,7 @@ export function buildProductImageAlt(
         ? 'detail view'
         : `view ${index + 1}`;
 
-  return [color, material, category, 'for Women', 'Kvastram', view]
+  return [color, material, category, 'for Women', 'Odhvica', view]
     .filter(Boolean)
     .join(' ')
     .replace(/\s+/g, ' ')
@@ -552,9 +552,9 @@ export function createMetadata({
 
 export function buildHomepageMetadata(): Metadata {
   return createMetadata({
-    title: 'Handmade Kantha Quilts, Bags & Clothing from India | Kvastram',
+    title: 'Handmade Kantha Quilts, Bags & Clothing from India | Odhvica',
     description:
-      'Kvastram — handmade kantha quilts, block-print clothing and artisan bags made by skilled women in Jaipur, India. Ships to USA, UK, EU, Australia and 50+ countries.',
+      'Odhvica — handmade kantha quilts, block-print clothing and artisan bags made by skilled women in Jaipur, India. Ships to USA, UK, EU, Australia and 50+ countries.',
     path: '/',
     image: DEFAULT_OG_IMAGE,
     keywords: [
@@ -568,7 +568,7 @@ export function buildHomepageMetadata(): Metadata {
 
 export function buildCatalogMetadata(): Metadata {
   return createMetadata({
-    title: 'Shop Handmade Kantha Quilts, Bags & Clothing | Kvastram',
+    title: 'Shop Handmade Kantha Quilts, Bags & Clothing | Odhvica',
     description:
       'Browse handmade kantha quilts, block-print clothing, artisan bags and scarves — each piece hand-stitched by skilled women in Jaipur, India. Ships worldwide.',
     path: '/products',
@@ -704,14 +704,14 @@ export function buildOrganizationJsonLd() {
     url: SITE_URL,
     logo: toAbsoluteUrl('/favicon.ico'),
     sameAs: [
-      'https://instagram.com/kvastram',
-      'https://facebook.com/kvastram',
+      'https://instagram.com/odhvica',
+      'https://facebook.com/odhvica',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
       availableLanguage: ['English', 'Hindi'],
-      email: 'support@kvastram.com',
+      email: 'support@odhvica.com',
     },
   };
 }
@@ -890,7 +890,7 @@ export function buildSizeChartJsonLd() {
     name: `${SITE_NAME} Size Guide`,
     url: toAbsoluteUrl('/size-guide'),
     description:
-      'Kvastram size guide for handcrafted clothing, jackets, and accessories with US, UK, EU, and India-friendly measurement references.',
+      'Odhvica size guide for handcrafted clothing, jackets, and accessories with US, UK, EU, and India-friendly measurement references.',
   };
 }
 
@@ -951,7 +951,7 @@ export function buildProductFaqJsonLd(product: Product) {
         name: `How is this ${category.toLowerCase()} crafted?`,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `This piece is connected to ${craft} and Kvastram's Jaipur artisan-made fashion positioning.`,
+          text: `This piece is connected to ${craft} and Odhvica's Jaipur artisan-made fashion positioning.`,
         },
       },
       {

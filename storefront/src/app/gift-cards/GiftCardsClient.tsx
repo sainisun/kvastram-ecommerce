@@ -88,7 +88,7 @@ export function GiftCardsClient() {
               Gift Cards
             </p>
             <h1 className="font-display text-display-lg text-[var(--ds-text-primary)]">
-              Send a Kvastram gift request
+              Send a Odhvica gift request
             </h1>
             <p className="max-w-xl text-body-md leading-token-relaxed text-[var(--ds-text-secondary)]">
               Choose an amount, add recipient details, and our buyer care team will help you complete the gift.
@@ -102,7 +102,7 @@ export function GiftCardsClient() {
               The buyer care team confirms availability, payment, and delivery.
             </div>
             <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
-              The recipient can redeem against eligible Kvastram pieces.
+              The recipient can redeem against eligible Odhvica pieces.
             </div>
           </div>
         </section>

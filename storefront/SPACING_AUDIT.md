@@ -91,7 +91,7 @@
 - **page.tsx** — 17 violations
   - `<div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">`
   - `<div className="mb-12">`
-  - `<h1 className="search-title mb-4">{hasQuery ? 'Search Results' : 'Search Kvastram'}</h1>`
+  - `<h1 className="search-title mb-4">{hasQuery ? 'Search Results' : 'Search Odhvica'}</h1>`
 - **Reviews.tsx** — 16 violations
   - `<div className="kv-page-container mx-auto max-w-[1440px] px-6 md:px-12 lg:px-20">`
   - `<div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">`

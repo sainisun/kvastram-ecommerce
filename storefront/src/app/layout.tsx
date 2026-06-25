@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: `Indian Ethnic Wear | ${SITE_NAME}`,
   description:
-    'Shop handcrafted kurtis, shawls, sarees, wraps and artisanal ethnic wear for women at Kvastram.',
+    'Shop handcrafted kurtis, shawls, sarees, wraps and artisanal ethnic wear for women at Odhvica.',
   openGraph: {
     type: 'website',
     locale: 'en_IN',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `Indian Ethnic Wear | ${SITE_NAME}`,
     description:
-      'Shop handcrafted kurtis, shawls, sarees, wraps and artisanal ethnic wear for women at Kvastram.',
+      'Shop handcrafted kurtis, shawls, sarees, wraps and artisanal ethnic wear for women at Odhvica.',
     images: [
       {
         url: DEFAULT_OG_IMAGE,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: `Indian Ethnic Wear | ${SITE_NAME}`,
     description:
-      'Shop handcrafted kurtis, shawls, sarees, wraps and artisanal ethnic wear for women at Kvastram.',
+      'Shop handcrafted kurtis, shawls, sarees, wraps and artisanal ethnic wear for women at Odhvica.',
     images: [DEFAULT_OG_IMAGE],
   },
 };

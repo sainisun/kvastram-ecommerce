@@ -28,7 +28,7 @@ export default function ShareButtons({
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(
-    description || 'Check out this product from Kvastram'
+    description || 'Check out this product from Odhvica'
   );
 
   const shareLinks = {
@@ -48,7 +48,7 @@ export default function ShareButtons({
       try {
         await navigator.share({
           title,
-          text: description || 'Check out this product from Kvastram',
+          text: description || 'Check out this product from Odhvica',
           url: shareUrl,
         });
       } catch {

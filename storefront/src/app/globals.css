@@ -2,8 +2,8 @@
 @import 'tailwindcss';
 @import '../styles/tokens.css';
 
-/* KVASTRAM PREMIUM DESIGN SYSTEM
-   Reference: kvastram-premium.html */
+/* ODHVICA PREMIUM DESIGN SYSTEM
+   Reference: odhvica-premium.html */
 
 :root {
   --font-display: var(--ds-font-display);
@@ -70,7 +70,7 @@
     var(--kv-desktop-container-max)
   );
 
-  /* Kvastram Header Design Tokens (kv-*) */
+  /* Odhvica Header Design Tokens (kv-*) */
   --kv-ink:          var(--ds-text-primary);
   --kv-ink-2:        var(--ds-text-secondary);
   --kv-ink-3:        var(--ds-text-muted);

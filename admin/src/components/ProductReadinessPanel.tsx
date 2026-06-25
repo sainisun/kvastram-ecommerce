@@ -32,7 +32,7 @@ export default function ProductReadinessPanel({
           </h2>
           <p className="mt-1 text-xs leading-relaxed text-gray-600">
             Public products must pass this gate before they can look premium on
-            kvastram.com.
+            odhvica.com.
           </p>
         </div>
         <span

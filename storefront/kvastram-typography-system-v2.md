@@ -1,10 +1,10 @@
-# Kvastram Typography System — v2 (Complete)
+# Odhvica Typography System — v2 (Complete)
 ## Claude Code Implementation Guide
 
 > **Status:** Superseded. Use `docs/design-system/storefront-design-system-v1.md` for the active storefront typography system. The active direction is Mulmul-inspired restrained sans commerce, with TERRACOTTA as the final accent token.
 
 > Paste this file as context to Claude Code and say:
-> "Implement the Kvastram Typography System v2 across the entire codebase."
+> "Implement the Odhvica Typography System v2 across the entire codebase."
 
 ---
 
@@ -119,7 +119,7 @@ Replace or merge into your `:root`. Every single value in the codebase must come
   --color-text-muted     : #888888;  /* Meta text, counts, timestamps */
   --color-text-disabled  : #bbbbbb;  /* Placeholder, inactive states */
   --color-text-inverse   : #ffffff;  /* Text on dark backgrounds */
-  --color-text-accent    : #8b4513;  /* Brand accent (Kvastram terracotta) */
+  --color-text-accent    : #8b4513;  /* Brand accent (Odhvica terracotta) */
   --color-text-error     : #c0392b;  /* Form errors, out-of-stock */
   --color-text-success   : #27ae60;  /* In-stock, confirmations */
   --color-text-price     : #1a1a1a;  /* Current price — always primary */
@@ -297,7 +297,7 @@ Replace or merge into your `:root`. Every single value in the codebase must come
 
 ```css
 .product-card-brand {
-  /* "KVASTRAM" above the product name */
+  /* "ODHVICA" above the product name */
   font-family    : var(--font-body);
   font-size      : var(--text-body-xs);      /* 12px */
   font-weight    : var(--weight-regular);
@@ -362,7 +362,7 @@ Replace or merge into your `:root`. Every single value in the codebase must come
 
 ```css
 .pdp-collection-label {
-  /* "KVASTRAM COLLECTION" */
+  /* "ODHVICA COLLECTION" */
   font-family    : var(--font-body);
   font-size      : var(--text-body-xs);
   font-weight    : var(--weight-medium);
@@ -548,7 +548,7 @@ Replace or merge into your `:root`. Every single value in the codebase must come
 }
 
 .shop-page-subheading {
-  /* "Browse real Kvastram products..." */
+  /* "Browse real Odhvica products..." */
   font-family    : var(--font-body);
   font-size      : var(--text-body-lg);
   font-weight    : var(--weight-regular);
@@ -754,7 +754,7 @@ Replace or merge into your `:root`. Every single value in the codebase must come
 
 ```css
 .footer-watermark {
-  /* Large decorative "Kvastram" background text */
+  /* Large decorative "Odhvica" background text */
   font-family    : var(--font-display);
   font-size      : clamp(5rem, 15vw, 14rem); /* Fluid — 80px → 224px */
   font-weight    : var(--weight-bold);
@@ -799,7 +799,7 @@ Replace or merge into your `:root`. Every single value in the codebase must come
 }
 
 .footer-legal {
-  /* "© 2026 Kvastram. All rights reserved." */
+  /* "© 2026 Odhvica. All rights reserved." */
   font-family    : var(--font-body);
   font-size      : var(--text-body-xs);
   font-weight    : var(--weight-regular);
@@ -930,7 +930,7 @@ Section h3                       Cormorant   22→28px (display-sm) 400       --
 Section body paragraph           DM Sans     16px (lg)            400       --color-text-secondary none    normal  max-width:65ch
 
 PRODUCT CARDS
-Brand label ("KVASTRAM")         DM Sans     12px (xs)            400       --color-text-muted    UPPER    wider
+Brand label ("ODHVICA")         DM Sans     12px (xs)            400       --color-text-muted    UPPER    wider
 Product name                     DM Sans     15px (md)            500       --color-text-primary  none     normal  max-width:45ch, 2-line clamp
 Current price                    DM Sans     14px (sm)            600       --color-text-price    none     normal
 Original price                   DM Sans     12px (xs)            400       --color-text-price-old none    normal  line-through

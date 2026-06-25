@@ -31,7 +31,7 @@ type CollectionSummary = {
 export const metadata: Metadata = buildBasicPageMetadata({
   title: 'Collections | Handcrafted Ethnic Wear for Women',
   description:
-    'Explore Kvastram collections for handcrafted kurtis, shawls, wraps, sarees and premium ethnic wear for women.',
+    'Explore Odhvica collections for handcrafted kurtis, shawls, wraps, sarees and premium ethnic wear for women.',
   path: '/collections',
   image: '/images/home/collection-bridal.jpg',
   keywords: [
@@ -60,7 +60,7 @@ function CollectionCard({
         <div className="relative aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]">
           <OptimizedImage
             src={image}
-            alt={`${collection.title} collection - Kvastram`}
+            alt={`${collection.title} collection - Odhvica`}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
@@ -115,7 +115,7 @@ export default async function CollectionsPage({
 
   const schema = [
     buildCollectionPageJsonLd({
-      name: 'Kvastram Collections',
+      name: 'Odhvica Collections',
       path: '/collections',
       description:
         'Explore handcrafted ethnic wear collections, from festive kurtis to artisanal shawls and occasion-ready silhouettes.',

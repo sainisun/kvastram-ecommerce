@@ -15,7 +15,7 @@ interface TopHeaderProps {
 }
 
 const PAGE_TITLES: Record<string, string> = {
-  '/dashboard': 'Kvastram',
+  '/dashboard': 'Odhvica',
   '/dashboard/orders': 'Orders',
   '/dashboard/products': 'Products',
   '/dashboard/customers': 'Customers',
@@ -41,7 +41,7 @@ function getPageTitle(pathname: string) {
     }
   }
 
-  return mode === 'wholesale' ? 'Wholesale' : 'Kvastram';
+  return mode === 'wholesale' ? 'Wholesale' : 'Odhvica';
 }
 
 export default function TopHeader({
@@ -117,7 +117,7 @@ export default function TopHeader({
                 {user?.first_name || 'Admin'}
               </p>
               <p className="mt-1 text-[11px] text-[var(--on-surface-variant)]">
-                {user?.email || 'admin@kvastram.com'}
+                {user?.email || 'admin@odhvica.com'}
               </p>
             </div>
 

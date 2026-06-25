@@ -29,7 +29,7 @@ export function NewsletterSection({
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Unable to subscribe');
       setStatus('success');
-      setMessage(data.message || 'Welcome to the Kvastram Circle.');
+      setMessage(data.message || 'Welcome to the Odhvica Circle.');
       setEmail('');
     } catch (error) {
       setStatus('error');

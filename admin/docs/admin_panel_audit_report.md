@@ -1,4 +1,4 @@
-# QA Audit Report: Kvastram Admin Panel Upgrade
+# QA Audit Report: Odhvica Admin Panel Upgrade
 
 **Date:** March 2026
 

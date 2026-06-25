@@ -173,7 +173,7 @@ export function ProductCard({
       </div>
 
       <div className="product-info">
-        <p className="product-cat">{categoryLabel || product.collection?.title || product.subtitle || 'Kvastram'}</p>
+        <p className="product-cat">{categoryLabel || product.collection?.title || product.subtitle || 'Odhvica'}</p>
         <Link href={href}>
           <h3 className="product-name" title={displayTitle}>
             {displayTitle}

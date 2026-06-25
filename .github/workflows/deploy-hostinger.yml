@@ -10,7 +10,7 @@ on:
   workflow_dispatch: # Allow manual trigger from GitHub Actions UI
 
 concurrency:
-  group: kvastram-production
+  group: odhvica-production
   cancel-in-progress: false
 
 jobs:
@@ -79,7 +79,7 @@ jobs:
             set -e
             set -x
             echo "=== Pulling latest code ==="
-            cd /root/kvastram-ecommerce
+            cd /root/odhvica-ecommerce
             
             # Hard reset to match GitHub exactly (prevents divergence errors)
             git fetch origin main
@@ -89,10 +89,10 @@ jobs:
             if [ ! -f deploy/hostinger/.env ]; then
               echo "=== Creating compose env defaults ==="
               mkdir -p deploy/hostinger
-              printf 'NEXT_PUBLIC_API_URL=https://api.kvastram.com\n' > deploy/hostinger/.env
+              printf 'NEXT_PUBLIC_API_URL=https://api.odhvica.com\n' > deploy/hostinger/.env
             fi
             
-            KVASTRAM_PRODUCTION_DEPLOY=1 bash deploy/hostinger/deploy.sh
+            ODHVICA_PRODUCTION_DEPLOY=1 bash deploy/hostinger/deploy.sh
             
       - name: Run Database Seeder via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -105,11 +105,11 @@ jobs:
             set +e
             set -x
             echo "=== Seeding Live Database Automatically ==="
-            cd /root/kvastram-ecommerce/deploy/hostinger
+            cd /root/odhvica-ecommerce/deploy/hostinger
             
             # Source the production environment file to get the exact DATABASE_URL
             set -a
-            source /root/kvastram-ecommerce/backend/.env.production
+            source /root/odhvica-ecommerce/backend/.env.production
             set +a
             
             echo "--- DEBUG: Environment Variables inside Exec ---"

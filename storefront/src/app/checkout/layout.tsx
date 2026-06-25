@@ -4,11 +4,11 @@ import type { ReactNode } from 'react';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildNoindexPageMetadata({
-  title: 'Checkout | Kvastram',
+  title: 'Checkout | Odhvica',
   description:
-    'Complete secure checkout for your Kvastram order with region-appropriate payment methods.',
+    'Complete secure checkout for your Odhvica order with region-appropriate payment methods.',
   path: '/checkout',
-  keywords: ['Kvastram checkout', 'Razorpay checkout'],
+  keywords: ['Odhvica checkout', 'Razorpay checkout'],
 });
 
 export default function CheckoutLayout({

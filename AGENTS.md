@@ -1,11 +1,11 @@
-# Kvastram Engineering Rules
+# Odhvica Engineering Rules
 
 These rules apply to humans and AI agents working in this repository.
 
 ## Canonical Sources
 
 - GitHub source of truth: `origin/main`
-- Production checkout: `/root/kvastram-ecommerce`
+- Production checkout: `/root/odhvica-ecommerce`
 - Storefront tokens: `storefront/src/styles/tokens.css`
 - Storefront design-system specification: `docs/design-system/storefront-design-system-v1.md`
 - Production deployment workflow: `.github/workflows/deploy-hostinger.yml`
@@ -44,13 +44,13 @@ Run Playwright desktop/mobile smoke tests for visual or layout changes.
 ## Publishing
 
 - Do not deploy with a manual `docker compose up` command.
-- Do not deploy from any path except `/root/kvastram-ecommerce`.
+- Do not deploy from any path except `/root/odhvica-ecommerce`.
 - Production deploys only through `.github/workflows/deploy-hostinger.yml`.
 - Verify the deployed Git SHA through `/health` after deployment.
 
 ## Prohibited
 
 - Resetting or deleting unrelated user work
-- Deploying from `/root/kvastram-platform` or any alternate checkout
+- Deploying from `/root/odhvica-platform` or any alternate checkout
 - Running multiple Compose projects against the same production ports
 - Silently changing the design-system typography or accent contract

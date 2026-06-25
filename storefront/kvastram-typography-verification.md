@@ -1,9 +1,9 @@
-# Kvastram Typography System — Verification Prompt
+# Odhvica Typography System — Verification Prompt
 ## Claude Code ke liye — paste karo aur run karwao
 
 ---
 
-You are a code auditor. Your job is to verify that the Kvastram Typography System v2 has been correctly implemented across the codebase. Do NOT fix anything yet — only audit and report.
+You are a code auditor. Your job is to verify that the Odhvica Typography System v2 has been correctly implemented across the codebase. Do NOT fix anything yet — only audit and report.
 
 Go through each check below one by one. For every check, search the actual codebase files and report:
 - ✅ PASS — if correctly implemented
@@ -124,7 +124,7 @@ For each component, find the file and verify the rules:
 67. Original price: has `text-decoration: line-through`?
 68. Badge: text-transform = uppercase?
 69. Badge: letter-spacing = `var(--tracking-wide)` or `tracking-wide`?
-70. Brand label ("KVASTRAM"): color = `var(--color-text-muted)` or `text-text-muted`?
+70. Brand label ("ODHVICA"): color = `var(--color-text-muted)` or `text-text-muted`?
 
 **Product Detail Page (PDP):**
 71. Product title: font-family = `var(--font-display)` or `font-display`?
@@ -198,7 +198,7 @@ For each component, find the file and verify the rules:
 After running all checks, output a report in this exact format:
 
 ```
-KVASTRAM TYPOGRAPHY VERIFICATION REPORT
+ODHVICA TYPOGRAPHY VERIFICATION REPORT
 ========================================
 
 BLOCK 1 — Font Import          [X/7 passed]

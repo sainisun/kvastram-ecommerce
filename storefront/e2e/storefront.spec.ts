@@ -7,7 +7,7 @@ test.describe('Storefront visual contract', () => {
   test('homepage exposes the primary shopping experience', async ({ page }, testInfo) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    await expect(page).toHaveTitle(/Kvastram|Kantha/i);
+    await expect(page).toHaveTitle(/Odhvica|Kantha/i);
     await expect(page.locator('main')).toBeVisible();
     if (testInfo.project.name === 'mobile-chromium') {
       await expect(page.getByRole('button', { name: 'Open navigation' })).toBeVisible();

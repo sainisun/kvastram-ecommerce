@@ -74,7 +74,7 @@ function formatCompactNumber(value: number) {
 
 function getSavedReels(): Set<string> {
   try {
-    const raw = localStorage.getItem('kvastram_saved_reels');
+    const raw = localStorage.getItem('odhvica_saved_reels');
     return new Set(raw ? JSON.parse(raw) : []);
   } catch {
     return new Set();
@@ -89,7 +89,7 @@ function toggleSavedReel(id: string): boolean {
     saved.add(id);
   }
   try {
-    localStorage.setItem('kvastram_saved_reels', JSON.stringify([...saved]));
+    localStorage.setItem('odhvica_saved_reels', JSON.stringify([...saved]));
   } catch {}
   return saved.has(id);
 }
@@ -106,8 +106,8 @@ function createFallbackCollections(reels: TrendingReelItem[]): ReelCollectionIte
 
   const groups = [
     {
-      handle: 'kvastram-reels-edit',
-      title: 'Kvastram reels edit',
+      handle: 'odhvica-reels-edit',
+      title: 'Odhvica reels edit',
       subtitle: 'A curated reel rail for fabric movement, handwork details, scale, and quick product discovery.',
       reels,
     },
@@ -158,13 +158,13 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 
   function setGrid(cols: 2 | 3) {
     setGridCols(cols);
-    try { localStorage.setItem('kvastram_reels_grid', String(cols)); } catch {}
+    try { localStorage.setItem('odhvica_reels_grid', String(cols)); } catch {}
   }
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       try {
-        setGridCols(localStorage.getItem('kvastram_reels_grid') === '2' ? 2 : 3);
+        setGridCols(localStorage.getItem('odhvica_reels_grid') === '2' ? 2 : 3);
       } catch {
         setGridCols(3);
       }
@@ -380,7 +380,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           <>
             <div className="reels-hero-copy">
               <p className="reels-hero-kicker">Watch &amp; Buy</p>
-              <h1 id="reels-hero-title" className="font-display text-display-lg text-[var(--ds-text-primary)]">Kvastram reels edit</h1>
+              <h1 id="reels-hero-title" className="font-display text-display-lg text-[var(--ds-text-primary)]">Odhvica reels edit</h1>
               <p>See fabric movement, handwork detail, scale, and styling before you choose your piece.</p>
               <div className="reels-hero-actions">
                 <Link href="/products" className="reels-action-link">
@@ -541,7 +541,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                     <div className="reel-grid-gradient" />
                     <div className="reel-grid-overlay">
                       <span className="reel-grid-copy">
-                        <span className="reel-grid-kicker">{reel.category || 'Kvastram look'}</span>
+                        <span className="reel-grid-kicker">{reel.category || 'Odhvica look'}</span>
                         <span className="reel-grid-title">{reel.product_name}</span>
                         <span className="reel-grid-price">{formatPrice(reel.price)}</span>
                       </span>

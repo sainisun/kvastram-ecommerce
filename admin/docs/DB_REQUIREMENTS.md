@@ -1,4 +1,4 @@
-# Database Requirements — Kvastram Admin Panel Upgrade
+# Database Requirements — Odhvica Admin Panel Upgrade
 
 ---
 

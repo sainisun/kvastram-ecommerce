@@ -1042,7 +1042,7 @@ class OrderService {
           data.notify_buyer !== false ? new Date().toISOString() : null,
       }
     );
-    const autoNotificationSubject = `Your Kvastram order #${
+    const autoNotificationSubject = `Your Odhvica order #${
       existingOrder.order_number ?? id.slice(0, 8)
     } has shipped`;
     const autoNotificationMessage =
@@ -1153,7 +1153,7 @@ class OrderService {
           data.notify_buyer !== false ? new Date().toISOString() : null,
       }
     );
-    const addPackageSubject = `Package update for your Kvastram order #${
+    const addPackageSubject = `Package update for your Odhvica order #${
       existingOrder.order_number ?? id.slice(0, 8)
     }`;
     const addPackageMessage =
@@ -1308,8 +1308,8 @@ class OrderService {
         : existingOrder.status;
     const updateSubject =
       updateStatus === 'delivered'
-        ? `Your Kvastram order #${existingOrder.order_number ?? id.slice(0, 8)} was marked delivered`
-        : `Shipping details updated for your Kvastram order #${existingOrder.order_number ?? id.slice(0, 8)}`;
+        ? `Your Odhvica order #${existingOrder.order_number ?? id.slice(0, 8)} was marked delivered`
+        : `Shipping details updated for your Odhvica order #${existingOrder.order_number ?? id.slice(0, 8)}`;
     const updateMessage =
       updateStatus === 'delivered'
         ? 'Your order has been marked as delivered.'

@@ -185,7 +185,7 @@ router.post('/:id/messages', verifyAdmin, async (c) => {
       .values({
         inquiry_id: id,
         sender_type: 'admin',
-        sender_name: parsed.data.sender_name || 'Kvastram Studio',
+        sender_name: parsed.data.sender_name || 'Odhvica Studio',
         message: parsed.data.message,
       })
       .returning({
@@ -226,7 +226,7 @@ router.post('/:id/messages', verifyAdmin, async (c) => {
     });
 
     if (existing.email && existing.conversation_token) {
-      const productPath = existing.product_url || `${process.env.STOREFRONT_URL || process.env.FRONTEND_URL || 'https://kvastram.com'}/products/${existing.product_handle || id}`;
+      const productPath = existing.product_url || `${process.env.STOREFRONT_URL || process.env.FRONTEND_URL || 'https://odhvica.com'}/products/${existing.product_handle || id}`;
       const separator = productPath.includes('?') ? '&' : '?';
       const conversationUrl = `${productPath}${separator}chat=${encodeURIComponent(id)}&token=${encodeURIComponent(existing.conversation_token)}`;
       import('../../services/email-service')

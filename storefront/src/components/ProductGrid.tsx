@@ -206,7 +206,7 @@ function ProductGrid({
           index={index}
           added={addedId === product.id}
           currency={currentRegion?.currency_code?.toUpperCase() || 'USD'}
-          categoryLabel={product.collection?.title || 'Kvastram'}
+          categoryLabel={product.collection?.title || 'Odhvica'}
           actionLabel={cardActionLabel}
           onAddToCart={handleAddToCart}
           onQuickView={setQuickViewProduct}

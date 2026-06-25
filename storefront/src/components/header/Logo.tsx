@@ -14,7 +14,7 @@ export function Logo({ size = 'desktop', isTransparent = false }: LogoProps) {
   const textColor = isTransparent ? 'text-[var(--ds-text-inverse)]' : 'text-[var(--ds-text-primary)]';
 
   return (
-    <Link href="/" aria-label="Kvastram — Home" className={`${cls} ${textColor}`}>
+    <Link href="/" aria-label="Odhvica — Home" className={`${cls} ${textColor}`}>
       Kva<span className="text-[var(--ds-accent-primary)]">s</span>tram
     </Link>
   );

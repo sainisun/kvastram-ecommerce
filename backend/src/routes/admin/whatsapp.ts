@@ -113,7 +113,7 @@ whatsappRouter.post('/test', verifyAdmin, async (c) => {
           to: admin_phone,
           type: 'text',
           text: {
-            body: 'Test notification from Kvastram Admin!',
+            body: 'Test notification from Odhvica Admin!',
           },
         }),
         signal: AbortSignal.timeout(10000),

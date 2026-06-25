@@ -4,11 +4,11 @@ import type { ReactNode } from 'react';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildNoindexPageMetadata({
-  title: 'Cart | Kvastram',
+  title: 'Cart | Odhvica',
   description:
-    'Review your Kvastram cart, shipping guidance, and payment help before checkout.',
+    'Review your Odhvica cart, shipping guidance, and payment help before checkout.',
   path: '/cart',
-  keywords: ['Kvastram cart'],
+  keywords: ['Odhvica cart'],
 });
 
 export default function CartLayout({

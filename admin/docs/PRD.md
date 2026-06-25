@@ -1,4 +1,4 @@
-# Product Requirements Document — Kvastram Admin Panel
+# Product Requirements Document — Odhvica Admin Panel
 
 ---
 
@@ -6,7 +6,7 @@
 
 ### What This Admin Panel Does
 
-The Kvastram Admin Panel is a full-featured e-commerce back-office for managing:
+The Odhvica Admin Panel is a full-featured e-commerce back-office for managing:
 
 - Product catalog (products, variants, collections, categories, tags)
 - Order processing and fulfillment

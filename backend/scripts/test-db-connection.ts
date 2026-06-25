@@ -1,17 +1,17 @@
 import postgres from "postgres";
 
 const connStrings = [
-  "postgresql://postgres@localhost:5432/kvastram",
-  "postgresql://postgres@localhost:5432/kvastram_dev",
-  "postgresql://postgres:admin@localhost:5432/kvastram",
-  "postgresql://postgres:admin@localhost:5432/kvastram_dev",
-  "postgresql://postgres:password@localhost:5432/kvastram",
-  "postgresql://postgres:password@localhost:5432/kvastram_dev",
-  "postgresql://kvastram:kvastram@localhost:5432/kvastram",
-  "postgresql://postgres:123456@localhost:5432/kvastram",
-  "postgresql://postgres:123456@localhost:5432/kvastram_dev",
-  "postgresql://postgres:root@localhost:5432/kvastram",
-  "postgresql://postgres:root@localhost:5432/kvastram_dev",
+  "postgresql://postgres@localhost:5432/odhvica",
+  "postgresql://postgres@localhost:5432/odhvica_dev",
+  "postgresql://postgres:admin@localhost:5432/odhvica",
+  "postgresql://postgres:admin@localhost:5432/odhvica_dev",
+  "postgresql://postgres:password@localhost:5432/odhvica",
+  "postgresql://postgres:password@localhost:5432/odhvica_dev",
+  "postgresql://odhvica:odhvica@localhost:5432/odhvica",
+  "postgresql://postgres:123456@localhost:5432/odhvica",
+  "postgresql://postgres:123456@localhost:5432/odhvica_dev",
+  "postgresql://postgres:root@localhost:5432/odhvica",
+  "postgresql://postgres:root@localhost:5432/odhvica_dev",
 ];
 
 async function test() {

@@ -1,4 +1,4 @@
-# Kvastram Design System Audit Report V2
+# Odhvica Design System Audit Report V2
 **Date:** 2026-06-24
 **Status:** Post-Migration (Phase 6 Complete)
 

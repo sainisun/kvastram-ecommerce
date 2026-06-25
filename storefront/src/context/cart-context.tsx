@@ -65,7 +65,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Load cart from localStorage on mount
   useEffect(() => {
     const stored = sanitizeCartItems(
-      storage.get<CartItem[]>('kvastram_cart', [])
+      storage.get<CartItem[]>('odhvica_cart', [])
     );
     const timer = setTimeout(() => {
       if (stored && stored.length > 0) {
@@ -79,7 +79,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     if (isLoaded) {
-      storage.set('kvastram_cart', items);
+      storage.set('odhvica_cart', items);
     }
   }, [items, isLoaded]);
 

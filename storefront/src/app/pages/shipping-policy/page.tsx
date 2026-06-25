@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Shipping Policy | Kvastram - Domestic & International Delivery',
+  title: 'Shipping Policy | Odhvica - Domestic & International Delivery',
   description:
-    'Read Kvastram shipping charges, dispatch timelines, delivery estimates, tracking process, and customs guidance before placing an order.',
+    'Read Odhvica shipping charges, dispatch timelines, delivery estimates, tracking process, and customs guidance before placing an order.',
 };
 
 const domesticShipping = [
@@ -83,8 +83,8 @@ export default function ShippingPolicyPage() {
           Shipping Policy
         </h1>
         <p className="mt-4 text-body-lg leading-[var(--ds-leading-relaxed)] text-[var(--ds-text-secondary)]">
-          This Shipping Policy explains how Kvastram dispatches domestic and
-          international orders placed on kvastram.com.
+          This Shipping Policy explains how Odhvica dispatches domestic and
+          international orders placed on odhvica.com.
         </p>
         <p className="mt-3 text-body-sm text-[var(--ds-text-muted)]">Effective Date: 7 June 2026</p>
 
@@ -97,7 +97,7 @@ export default function ShippingPolicyPage() {
             Business address: 44C, Vijaypura, Sumel, Jaipur, Rajasthan 302031,
             India
             <br />
-            Support email: support@kvastram.com
+            Support email: support@odhvica.com
             <br />
             WhatsApp: +91-9588078064
           </address>
@@ -163,7 +163,7 @@ export default function ShippingPolicyPage() {
           <p>
             Once your order is dispatched, we send a shipping confirmation email
             with tracking details. You can also track your order at
-            kvastram.com/track using your order reference and purchase email.
+            odhvica.com/track using your order reference and purchase email.
           </p>
         </PolicySection>
 
@@ -176,7 +176,7 @@ export default function ShippingPolicyPage() {
             stated at checkout.
           </p>
           <p>
-            Kvastram declares shipment values accurately and does not mark
+            Odhvica declares shipment values accurately and does not mark
             commercial parcels as gifts.
           </p>
         </PolicySection>
@@ -204,7 +204,7 @@ export default function ShippingPolicyPage() {
 
         <PolicySection title="9. Support">
           <p>
-            Email: support@kvastram.com
+            Email: support@odhvica.com
             <br />
             WhatsApp: +91-9588078064
             <br />

@@ -123,7 +123,7 @@ reviewsRouter.post('/upload', generalLimiter, verifyAuth, async (c) => {
       }
 
       const upload = await uploadImageToCloudinary(file, {
-        folder: 'kvastram/reviews',
+        folder: 'odhvica/reviews',
       });
       uploadedUrls.push(upload.secureUrl);
     }

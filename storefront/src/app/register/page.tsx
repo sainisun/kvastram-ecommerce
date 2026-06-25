@@ -76,7 +76,7 @@ export default function RegisterPage() {
     <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-display-lg font-display text-[var(--ds-text-primary)]">Join Kvastram</h1>
+          <h1 className="text-display-lg font-display text-[var(--ds-text-primary)]">Join Odhvica</h1>
           <p className="mt-2 text-[var(--ds-text-muted)] type-light">
             Create an account to track orders and more
           </p>

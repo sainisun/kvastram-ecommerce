@@ -80,7 +80,7 @@ export default function AccountMessagesPage() {
               Account
             </Link>
             <h1 className="account-page-title mt-2">Messages</h1>
-            <p className="account-muted mt-2">Your product conversations with Kvastram Studio.</p>
+            <p className="account-muted mt-2">Your product conversations with Odhvica Studio.</p>
             <StatusBanner
               tone={live.isConnected ? 'success' : 'info'}
               className="mt-4 max-w-sm px-3 py-2 text-body-xs"

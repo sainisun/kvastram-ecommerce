@@ -15,7 +15,7 @@ export function PageLoader() {
 
   return (
     <div id="page-loader" className={done ? 'done' : ''} aria-hidden="true">
-      <p className="loader-logo">Kvastram</p>
+      <p className="loader-logo">Odhvica</p>
       <div className="loader-bar-wrap">
         <div className="loader-bar" />
       </div>

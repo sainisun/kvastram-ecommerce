@@ -1,9 +1,9 @@
-# Kvastram Storefront — Claude Code Rules
+# Odhvica Storefront — Claude Code Rules
 # This file is auto-read by Claude Code at every session start.
 # Claude Code reads CLAUDE.md automatically — no need to reference it.
 
 ## IDENTITY
-You are working on Kvastram — an Indian handcraft e-commerce 
+You are working on Odhvica — an Indian handcraft e-commerce 
 storefront built with Next.js + Tailwind CSS v4 + custom 
 CSS design tokens.
 

@@ -107,7 +107,7 @@ app.post('/', async (c) => {
     }
 
     const upload = await uploadImageToCloudinary(imageFile, {
-      folder: 'kvastram/homepage-banners',
+      folder: 'odhvica/homepage-banners',
     });
 
     const [banner] = await db
@@ -162,7 +162,7 @@ app.put('/:id', async (c) => {
       }
 
       const upload = await uploadImageToCloudinary(imageFile, {
-        folder: 'kvastram/homepage-banners',
+        folder: 'odhvica/homepage-banners',
       });
       imageUrl = upload.secureUrl;
     }

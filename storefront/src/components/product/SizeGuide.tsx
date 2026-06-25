@@ -233,7 +233,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               Our garments are cut for a relaxed, contemporary fit. If you are
               between sizes, we recommend sizing down for a closer fit or sizing
               up for a more oversized silhouette. For detailed measurements of a
-              specific item, please contact support@kvastram.com or use the
+              specific item, please contact support@odhvica.com or use the
               chat widget.
             </p>
           </div>

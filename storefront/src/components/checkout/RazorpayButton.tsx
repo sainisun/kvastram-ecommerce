@@ -131,7 +131,7 @@ export default function RazorpayButton({
         key: key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: rzpAmount,
         currency,
-        name: 'Kvastram',
+        name: 'Odhvica',
         description: `Order #${orderId.slice(0, 8)}`,
         image: '/logo.png',
         order_id: razorpay_order_id,

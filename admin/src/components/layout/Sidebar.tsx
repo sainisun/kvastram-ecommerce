@@ -97,7 +97,7 @@ function SidebarContent({
           </div>
           <div>
             <span className="block font-['Inter'] uppercase tracking-widest text-[0.6875rem] font-bold text-white leading-none">
-              {mode === 'wholesale' ? 'Kvastram Wholesale' : 'Kvastram Admin'}
+              {mode === 'wholesale' ? 'Odhvica Wholesale' : 'Odhvica Admin'}
             </span>
             <span className="block text-[10px] text-slate-400 font-medium mt-0.5 capitalize">
               {user?.role || 'Super User'}

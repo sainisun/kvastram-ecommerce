@@ -7,7 +7,7 @@ import 'dotenv/config';
 async function seed() {
   console.log('🌱 Starting Seed...');
 
-  const email = 'admin@kvastram.com';
+  const email = 'admin@odhvica.com';
   const password = process.env.ADMIN_PASSWORD;
 
   if (!password) {

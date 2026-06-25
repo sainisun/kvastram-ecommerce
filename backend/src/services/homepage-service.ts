@@ -640,7 +640,7 @@ function productHandleFromHref(value: string | null) {
   try {
     const url = value.startsWith('http')
       ? new URL(value)
-      : new URL(value, 'https://kvastram.com');
+      : new URL(value, 'https://odhvica.com');
     const segments = url.pathname.split('/').filter(Boolean);
     const productIndex = segments.indexOf('products');
     return productIndex >= 0 ? segments[productIndex + 1] || null : null;
@@ -696,7 +696,7 @@ export class HomepageService {
       heroResult.status === 'fulfilled'
         ? heroResult.value.filter((item) => isCloudinaryUrl(item.image_url)).map((item) => ({
             ...item,
-            title: item.title?.trim() || 'Kvastram',
+            title: item.title?.trim() || 'Odhvica',
             button_text: item.button_text?.trim() || 'Shop Now',
             button_link: isStorefrontHref(item.button_link) ? item.button_link : '/products',
             mobile_image_url: isCloudinaryUrl(item.mobile_image_url)
@@ -804,7 +804,7 @@ export class HomepageService {
               content:
                 brandStoryContent ||
                 settingValue(settingsMap.hero_subtitle) ||
-                'Kvastram brings Jaipur-rooted textile craft into modern wardrobes through considered silhouettes, handmade details, and small-batch edits.',
+                'Odhvica brings Jaipur-rooted textile craft into modern wardrobes through considered silhouettes, handmade details, and small-batch edits.',
               image_url: fallbackBrandStoryImage,
             }
         : null;
@@ -814,7 +814,7 @@ export class HomepageService {
         : statusFor(brandStory ? [brandStory] : []);
 
     const newsletter = {
-      title: settingValue(settingsMap.newsletter_title) || 'Join The Kvastram Circle',
+      title: settingValue(settingsMap.newsletter_title) || 'Join The Odhvica Circle',
       subtitle:
         settingValue(settingsMap.newsletter_subtitle) ||
         'Craft stories, considered launches, and notes from Jaipur.',
@@ -836,7 +836,7 @@ export class HomepageService {
       social = watchShop.slice(0, 8).map((reel, index) => ({
         id: `watch-social-${reel.id}`,
         image_url: reel.thumbnail_url,
-        alt_text: `${reel.product.title} on Kvastram`,
+        alt_text: `${reel.product.title} on Odhvica`,
         caption: reel.caption || reel.product.title,
         destination_url: reel.link_url || '/reels',
         is_active: true,

@@ -12,11 +12,11 @@ import { storefrontTrust } from '@/config/storefront-trust';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildNoindexPageMetadata({
-  title: 'Help Center | Kvastram',
+  title: 'Help Center | Odhvica',
   description:
-    'Use the Kvastram Help Center to track orders, resolve payment issues, understand returns, and reach support quickly.',
+    'Use the Odhvica Help Center to track orders, resolve payment issues, understand returns, and reach support quickly.',
   path: '/help',
-  keywords: ['Kvastram help center', 'order support', 'payment help'],
+  keywords: ['Odhvica help center', 'order support', 'payment help'],
 });
 
 const helpCards = [
@@ -59,7 +59,7 @@ export default function HelpPage() {
     <>
       <PageHero
         eyebrow="Support Hub"
-        title="Kvastram Help Center"
+        title="Odhvica Help Center"
         intro="Start here for order tracking, payment recovery, return guidance, and direct support without bouncing between policy pages."
         breadcrumbs={[
           { label: 'Home', href: '/' },

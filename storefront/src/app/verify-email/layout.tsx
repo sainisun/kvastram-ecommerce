@@ -4,10 +4,10 @@ import type { ReactNode } from 'react';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildNoindexPageMetadata({
-  title: 'Verify Email | Kvastram',
-  description: 'Verify your email address to activate your Kvastram account.',
+  title: 'Verify Email | Odhvica',
+  description: 'Verify your email address to activate your Odhvica account.',
   path: '/verify-email',
-  keywords: ['Kvastram verify email'],
+  keywords: ['Odhvica verify email'],
 });
 
 export default function VerifyEmailLayout({

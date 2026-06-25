@@ -1,5 +1,5 @@
 export const storefrontTrust = {
-  supportEmail: 'support@kvastram.com',
+  supportEmail: 'support@odhvica.com',
   supportPhone: '+91-9588078064',
   supportHours: 'Monday-Friday, 9 AM - 6 PM IST',
   supportResponseSla: '',
@@ -59,7 +59,7 @@ export const storefrontFaqs = [
   {
     question: 'How can I contact support?',
     answer:
-      'You can contact support at support@kvastram.com or on WhatsApp at +91-9588078064 during business hours: Monday-Friday, 9 AM - 6 PM IST.',
+      'You can contact support at support@odhvica.com or on WhatsApp at +91-9588078064 during business hours: Monday-Friday, 9 AM - 6 PM IST.',
   },
   {
     question: 'How do I track my order after purchase?',

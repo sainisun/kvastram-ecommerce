@@ -37,7 +37,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'api.kvastram.com',
+        hostname: 'api.odhvica.com',
         pathname: '/uploads/**',
       },
       {

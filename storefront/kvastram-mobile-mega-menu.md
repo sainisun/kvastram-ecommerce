@@ -1,4 +1,4 @@
-# Kvastram — Mobile Mega Menu Redesign
+# Odhvica — Mobile Mega Menu Redesign
 **Component:** Mobile navigation drawer · **Stack:** Shopify Liquid + Vanilla JS
 
 ---
@@ -11,7 +11,7 @@
 ┌─────────────────────────────────┐  390px wide
 │████████████ NOTCH ██████████████│
 ├─────────────────────────────────┤
-│ ☰   Kvastram        🔍 ♡ 🛒²  │  [1] HEADER BAR
+│ ☰   Odhvica        🔍 ♡ 🛒²  │  [1] HEADER BAR
 │                                 │      hamburger · logo · icons
 ├─────────────────────────────────┤
 │                                 │
@@ -28,7 +28,7 @@
 ┌─────────────────────────────────┐
 │████████████ NOTCH ██████████████│
 ├─────────────────────────────────┤
-│ ✕            Kvastram    ♡ 🛒² │  [1] HEADER — hamburger → X
+│ ✕            Odhvica    ♡ 🛒² │  [1] HEADER — hamburger → X
 ├─────────────────────────────────┤
 │ 🔍  Search quilts, bags…       │  [2] SEARCH BAR (auto-focused)
 ├─────────────────────────────────┤
@@ -58,7 +58,7 @@
 │ 📦 Track my order               │  [6] FOOTER UTILITY LINKS
 │ 💬 Chat on WhatsApp             │      secondary bg, reduces support
 │ 👤 My account                   │
-│ ℹ️  About Kvastram               │
+│ ℹ️  About Odhvica               │
 └─────────────────────────────────┘
 ```
 
@@ -123,7 +123,7 @@
 Paste this into Claude Code to build the component:
 
 ```
-You are building the mobile navigation mega menu for Kvastram (kvastram.com),
+You are building the mobile navigation mega menu for Odhvica (odhvica.com),
 a handmade artisan fashion brand from Jaipur, India. Stack: Shopify Liquid.
 
 The menu is a full-height drawer that slides in from the LEFT on hamburger tap.
@@ -158,7 +158,7 @@ background: var(--warm-white), border-bottom: 1px solid var(--border)
 
 Layout (3 zones):
 - Left: hamburger icon button (24px, aria-label="Open menu")
-- Center: "Kvastram" in Cormorant Garamond, 20px, letter-spacing 0.04em
+- Center: "Odhvica" in Cormorant Garamond, 20px, letter-spacing 0.04em
 - Right: search icon + wishlist icon + cart icon with count badge
   - Cart badge: background var(--terracotta), color white, 14px circle,
     font-size 9px, position absolute top-right of cart icon
@@ -279,7 +279,7 @@ FOUR LINKS:
 1. ti-package icon · "Track my order" → /pages/track-order
 2. ti-brand-whatsapp icon · "Chat on WhatsApp" → wa.me/91XXXXXXXXXX
 3. ti-user icon · "My account" → /account
-4. ti-info-circle icon · "About Kvastram" → /pages/about
+4. ti-info-circle icon · "About Odhvica" → /pages/about
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ZONE 7 — SUBMENU HEADER (State 3)

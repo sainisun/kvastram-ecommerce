@@ -5,11 +5,11 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
-EXPECTED_PRODUCTION_ROOT="${EXPECTED_PRODUCTION_ROOT:-/root/kvastram-ecommerce}"
+EXPECTED_PRODUCTION_ROOT="${EXPECTED_PRODUCTION_ROOT:-/root/odhvica-ecommerce}"
 
 cd "$PROJECT_ROOT"
 
-if [[ "${KVASTRAM_PRODUCTION_DEPLOY:-0}" == "1" && "$PROJECT_ROOT" != "$EXPECTED_PRODUCTION_ROOT" ]]; then
+if [[ "${ODHVICA_PRODUCTION_DEPLOY:-0}" == "1" && "$PROJECT_ROOT" != "$EXPECTED_PRODUCTION_ROOT" ]]; then
   echo "Refusing production deploy from $PROJECT_ROOT"
   echo "Expected canonical checkout: $EXPECTED_PRODUCTION_ROOT"
   exit 1
@@ -126,7 +126,7 @@ wait_for_service_health storefront 180
 wait_for_service_health admin 180
 
 log "Building and starting MCP (best effort)"
-if [[ -d "$PROJECT_ROOT/kvastram-mcp-server" && -f /root/kvastram-secrets/mcp.env ]]; then
+if [[ -d "$PROJECT_ROOT/odhvica-mcp-server" && -f /root/odhvica-secrets/mcp.env ]]; then
   docker compose -f "$COMPOSE_FILE" --profile mcp up -d --build mcp || {
     echo "MCP deploy failed; continuing because storefront/admin/backend are healthy."
   }

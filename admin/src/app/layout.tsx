@@ -10,13 +10,13 @@ import './globals.css';
 // TODO: Re-enable next/font/google after Turbopack fix
 
 export const metadata: Metadata = {
-  title: 'Kvastram Admin',
-  description: 'Kvastram Platform Administration',
+  title: 'Odhvica Admin',
+  description: 'Odhvica Platform Administration',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Kvastram Admin',
+    title: 'Odhvica Admin',
   },
   icons: {
     icon: '/favicon.ico',
@@ -35,7 +35,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Kvastram" />
+        <meta name="apple-mobile-web-app-title" content="Odhvica" />
       </head>
       <body
         suppressHydrationWarning

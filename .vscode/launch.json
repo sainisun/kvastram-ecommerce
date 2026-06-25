@@ -7,7 +7,7 @@
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "cwd": "${workspaceFolder}/kvastram-platform/backend",
+      "cwd": "${workspaceFolder}/odhvica-platform/backend",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "env": {
@@ -25,7 +25,7 @@
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "cwd": "${workspaceFolder}/kvastram-platform/admin",
+      "cwd": "${workspaceFolder}/odhvica-platform/admin",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -35,7 +35,7 @@
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "cwd": "${workspaceFolder}/kvastram-platform/storefront",
+      "cwd": "${workspaceFolder}/odhvica-platform/storefront",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     }

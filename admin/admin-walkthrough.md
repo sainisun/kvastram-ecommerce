@@ -1,4 +1,4 @@
-# Kvastram Admin Panel — Full Testing Report
+# Odhvica Admin Panel — Full Testing Report
 **India Boutique Clothing Store (International Sales)**
 **Date:** March 1, 2026
 

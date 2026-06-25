@@ -8,11 +8,11 @@ app.doc('/doc', {
   openapi: '3.0.0',
   info: {
     version: '1.0.0',
-    title: 'Kvastram API',
+    title: 'Odhvica API',
     description: `
-# Kvastram E-Commerce Platform API
+# Odhvica E-Commerce Platform API
 
-Welcome to the Kvastram API documentation. This API provides endpoints for managing products, categories, orders, customers, and more.
+Welcome to the Odhvica API documentation. This API provides endpoints for managing products, categories, orders, customers, and more.
 
 ## Authentication
 
@@ -58,7 +58,7 @@ Errors return a consistent format:
       description: 'Local Server',
     },
     {
-      url: 'https://api.kvastram.com',
+      url: 'https://api.odhvica.com',
       description: 'Production Server',
     },
   ],
@@ -71,7 +71,7 @@ app.get(
     spec: {
       url: '/docs/doc',
     },
-    pageTitle: 'Kvastram API Documentation',
+    pageTitle: 'Odhvica API Documentation',
   })
 );
 
@@ -107,12 +107,12 @@ export function getOpenAPISpec() {
     openapi: '3.0.0',
     info: {
       version: '1.0.0',
-      title: 'Kvastram API',
+      title: 'Odhvica API',
       description: 'E-commerce Platform API Documentation',
     },
     servers: [
       { url: 'http://localhost:4000', description: 'Local Server' },
-      { url: 'https://api.kvastram.com', description: 'Production Server' },
+      { url: 'https://api.odhvica.com', description: 'Production Server' },
     ],
     paths: {
       '/health-check': {

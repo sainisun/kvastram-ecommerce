@@ -38,8 +38,8 @@ export const generateInvoice = async (
     .fontSize(20)
     .text('INVOICE', 50, 57)
     .fontSize(10)
-    .text('Kvastram', 200, 65, { align: 'right' })
-    .text('support@kvastram.com', 200, 80, { align: 'right' })
+    .text('Odhvica', 200, 65, { align: 'right' })
+    .text('support@odhvica.com', 200, 80, { align: 'right' })
     .moveDown();
 
   // -- Order Info --
