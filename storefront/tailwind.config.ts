@@ -225,11 +225,11 @@ const config: Config = {
           disabled: 'var(--ds-text-disabled)',
           inverse: 'var(--ds-text-inverse)',
           accent: 'var(--ds-accent-primary)',
-          error: 'var(--ds-danger-text, #dc2626)',
+          error: 'var(--ds-danger)',
           success: 'var(--ds-success-text)',
           price: 'var(--ds-text-price)',
           'price-old': 'var(--ds-text-price-old)',
-          sale: 'var(--ds-danger-text, #dc2626)',
+          sale: 'var(--ds-danger)',
         },
         brand: {
           terracotta: 'var(--ds-accent-primary)',
@@ -268,16 +268,16 @@ const config: Config = {
         'body-xs': ['var(--ds-text-body-xs)', { lineHeight: 'var(--ds-leading-normal)', letterSpacing: 'var(--ds-type-body-tracking)' }],
       },
       maxWidth: {
-        prose: 'var(--prose-width)',
-        heading: 'var(--heading-width)',
-        caption: 'var(--caption-width)',
-        content: 'var(--content-width)',
-        narrow: 'var(--narrow-width)',
+        prose: 'var(--ds-prose-width)',
+        heading: 'var(--ds-heading-width)',
+        caption: 'var(--ds-caption-width)',
+        content: 'var(--ds-content-width)',
+        narrow: 'var(--ds-narrow-width)',
       },
       borderRadius: {
-        sm: 'var(--radius-sm)', // 4px — buttons, badges
-        md: 'var(--radius-md)', // 8px — inputs, chips
-        lg: 'var(--radius-lg)', // 12px — cards, modals
+        sm: 'var(--ds-radius-sm)', // 4px — buttons, badges
+        md: 'var(--ds-radius-md)', // 8px — inputs, chips
+        lg: 'var(--ds-radius-lg)', // 12px — cards, modals
       },
     },
   },

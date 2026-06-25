@@ -166,6 +166,7 @@
   --ds-footer-highlight:  var(--ds-accent-gold);
 
   /* Semantic states */
+  --ds-danger:        #dc2626;
   --ds-danger-bg:     #fcebeb;
   --ds-danger-border: color-mix(in srgb, #dc2626 40%, transparent);
   --ds-success-bg:    #f0fdf4;
