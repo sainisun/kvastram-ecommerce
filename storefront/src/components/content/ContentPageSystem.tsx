@@ -429,7 +429,7 @@ export function PolicyMarkdown({ content }: { content: string }) {
         components={{
           h2: ({ children }) => <h2 id={headingId(children)}>{children}</h2>,
           h3: ({ children }) => <h3 id={headingId(children)}>{children}</h3>,
-          h4: ({ children }) => <h4>{children}</h4>,
+          h4: ({ children }) => <h4 className="font-display text-display-sm text-[var(--ds-text-primary)]">{children}</h4>,
           table: ({ children }) => (
             <PolicyTable>
               <table>{children}</table>

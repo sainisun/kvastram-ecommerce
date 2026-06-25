@@ -11,7 +11,7 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
         <div className="homepage-section-head homepage-section-head-centered">
           <div>
             <p className="homepage-eyebrow">Follow Our Journey</p>
-            <h2>From our circle</h2>
+            <h2 className="font-display text-heading-lg text-[var(--ds-text-primary)]">From our circle</h2>
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-[6px]">

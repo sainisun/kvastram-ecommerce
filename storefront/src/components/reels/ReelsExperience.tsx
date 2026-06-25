@@ -318,7 +318,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
             </div>
             <div className="reels-hero-copy">
               <p className="reels-hero-kicker">Watch &amp; Buy</p>
-              <h1 id="reels-hero-title">{activeHeroCollection.title}</h1>
+              <h1 id="reels-hero-title" className="font-display text-heading-xl text-[var(--ds-text-primary)]">{activeHeroCollection.title}</h1>
               <p>
                 {activeHeroCollection.subtitle ||
                   activeHeroCollection.description ||
@@ -380,7 +380,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           <>
             <div className="reels-hero-copy">
               <p className="reels-hero-kicker">Watch &amp; Buy</p>
-              <h1 id="reels-hero-title">Kvastram reels edit</h1>
+              <h1 id="reels-hero-title" className="font-display text-heading-xl text-[var(--ds-text-primary)]">Kvastram reels edit</h1>
               <p>See fabric movement, handwork detail, scale, and styling before you choose your piece.</p>
               <div className="reels-hero-actions">
                 <Link href="/products" className="reels-action-link">

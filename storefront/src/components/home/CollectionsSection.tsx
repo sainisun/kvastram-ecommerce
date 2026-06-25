@@ -15,7 +15,7 @@ export function CollectionsSection({
         <div className="homepage-section-head">
           <div>
             <p className="homepage-eyebrow">Curated Collections</p>
-            <h2>Stories in cloth</h2>
+            <h2 className="font-display text-heading-lg text-[var(--ds-text-primary)]">Stories in cloth</h2>
           </div>
           <Link href="/collections">View all collections</Link>
         </div>
