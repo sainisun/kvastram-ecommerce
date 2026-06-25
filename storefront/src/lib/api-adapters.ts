@@ -22,8 +22,19 @@ type AdaptProductOptions = {
   includeRelated?: boolean;
 };
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.odhvica.com';
+
 function normalizeMediaUrl<T extends string | null | undefined>(url: T): T {
-  return (typeof url === 'string' ? optimizeCloudinaryUrl(url) : url) as T;
+  if (typeof url !== 'string' || url.trim() === '') return url;
+  // Already absolute URL — just optimize if Cloudinary
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return optimizeCloudinaryUrl(url) as T;
+  }
+  // Relative URL — prepend API base URL
+  if (url.startsWith('/')) {
+    return `${API_BASE_URL}${url}` as T;
+  }
+  return url;
 }
 
 function normalizeImageMetadata(metadata: unknown): ProductMediaMetadata | null | undefined {
