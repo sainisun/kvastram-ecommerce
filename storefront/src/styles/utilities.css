@@ -247,3 +247,18 @@
 
 
 
+.kv-section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2xs);
+  font-family: var(--ds-font-ui);
+  font-size: var(--ds-text-body-sm);
+  font-weight: var(--ds-type-label-weight);
+  letter-spacing: var(--ds-type-label-tracking);
+  color: var(--ds-text-primary);
+  text-decoration: none;
+  transition: color var(--ds-transition-fast);
+}
+.kv-section-link:hover {
+  color: var(--ds-accent-primary);
+}

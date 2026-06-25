@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ButtonLink } from '@/components/ui/Button';
 import { ArrowUpRight } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
@@ -40,7 +41,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
         <div className="kv-section-head">
           <div className="kv-tag">Style Story</div>
           <Link href="/products" className="kv-section-link">
-            View All
+            View All →
           </Link>
         </div>
 
@@ -95,9 +96,14 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
             Curated pieces styled as complete festive edits, so every print,
             layer, and accessory feels intentional.
           </p>
-          <Link href="/products" className="w-fit inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--ds-radius-sm)] px-6 font-ui text-body-xs font-[var(--ds-type-ui-weight)] tracking-[var(--ds-type-button-tracking)] leading-[var(--ds-leading-tight)] [text-transform:var(--ds-type-button-transform)] transition-colors duration-150 no-underline border border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:border-[var(--ds-accent-hover)] hover:bg-[var(--ds-accent-hover)] hover:text-[var(--ds-text-inverse)] focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-2">
-            Shop The Edit
-          </Link>
+          <ButtonLink 
+            href="/products" 
+            variant="outline" 
+            size="lg"
+            className="mt-[var(--ds-space-lg)] w-full"
+          >
+            Shop All
+          </ButtonLink>
         </div>
       </div>
     </section>

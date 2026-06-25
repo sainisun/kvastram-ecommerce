@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ButtonLink } from '@/components/ui/Button';
+import Link from 'next/link';
 import type { MoneyAmount, Product } from '@/types';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
@@ -132,13 +132,9 @@ export function BestSellers({
             <p className="homepage-eyebrow text-body-xs uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-gold)]">Chosen For You</p>
             <h2 className="text-display-sm font-display font-medium text-[var(--ds-text-primary)]">Best Sellers</h2>
           </div>
-          <ButtonLink 
-            href="/collections/best-sellers" 
-            variant="primary" 
-            size="md"
-          >
-            View All Best Sellers
-          </ButtonLink>
+          <Link href="/collections/best-sellers" className="kv-section-link">
+            View All Best Sellers →
+          </Link>
         </div>
         
         <div className="[&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-media]:aspect-[2/3] [&_.product-info]:py-2 overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">

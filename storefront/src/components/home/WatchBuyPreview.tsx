@@ -21,8 +21,8 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
             <p className="homepage-eyebrow text-body-xs uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-gold)]">Trending Reels</p>
             <h2 className="text-display-sm font-display font-medium text-[var(--ds-text-primary)]">See the craft in motion</h2>
           </div>
-          <Link href="/reels" className="text-body-sm type-medium tracking-[var(--ds-type-body-tracking)] border-b border-[var(--ds-text-primary)] pb-0.5 hover:text-[var(--ds-accent-primary)] hover:border-[var(--ds-accent-primary)] transition-colors">
-            View all
+          <Link href="/reels" className="kv-section-link">
+            View All →
           </Link>
         </div>
 

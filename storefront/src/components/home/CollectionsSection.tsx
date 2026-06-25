@@ -17,7 +17,9 @@ export function CollectionsSection({
             <p className="homepage-eyebrow">Curated Collections</p>
             <h2 className="font-display text-display-md text-[var(--ds-text-primary)]">Stories in cloth</h2>
           </div>
-          <Link href="/collections">View all collections</Link>
+          <Link href="/collections" className="kv-section-link">
+            View all collections →
+          </Link>
         </div>
         <div className="grid gap-[var(--ds-home-section-space-mobile)] md:grid-cols-2">
           {collections.slice(0, 4).map((collection) => (
