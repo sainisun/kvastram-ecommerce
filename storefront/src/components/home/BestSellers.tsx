@@ -125,7 +125,7 @@ export function BestSellers({
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full py-[var(--ds-space-md)] md:py-[var(--ds-space-xl)]" data-home-section="5-best-sellers">
+    <section className="w-full py-home-section-mobile md:py-home-section" data-home-section="5-best-sellers">
       <div className="homepage-container">
         <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)] md:mb-[var(--ds-space-md)]">
           <div>
@@ -141,7 +141,7 @@ export function BestSellers({
           {products.map((product) => {
             const priceInfo = getPrice(product);
             return (
-              <div key={product.id} className="flex-shrink-0 w-[280px] md:w-[316px] animate-fade-in">
+              <div key={product.id} className="flex-shrink-0 w-72 md:w-[316px] animate-fade-in">
                 <ProductCard
                   product={product}
                   price={{

@@ -19,6 +19,19 @@ const config: Config = {
         '24': '96px',
         '32': '128px',
         '40': '160px',
+        '2xs': 'var(--ds-space-2xs)',
+        'xs': 'var(--ds-space-xs)',
+        'sm': 'var(--ds-space-sm)',
+        'md': 'var(--ds-space-md)',
+        'lg': 'var(--ds-space-lg)',
+        'xl': 'var(--ds-space-xl)',
+        '2xl': 'var(--ds-space-2xl)',
+        '3xl': 'var(--ds-space-3xl)',
+        'home-section': 'var(--ds-home-section-space-desktop)',
+        'home-section-mobile': 'var(--ds-home-section-space-mobile)',
+        'home-gutter': 'var(--ds-home-gutter-desktop)',
+        'home-gutter-mobile': 'var(--ds-home-gutter-mobile)',
+        'home-gutter-tablet': 'var(--ds-home-gutter-tablet)',
       },
       colors: {
         white: 'var(--ds-surface-paper)',
@@ -273,6 +286,7 @@ const config: Config = {
         caption: 'var(--ds-caption-width)',
         content: 'var(--ds-content-width)',
         narrow: 'var(--ds-narrow-width)',
+        'home-content': 'var(--ds-home-content-width)',
       },
       borderRadius: {
         sm: 'var(--ds-radius-sm)', // 4px — buttons, badges

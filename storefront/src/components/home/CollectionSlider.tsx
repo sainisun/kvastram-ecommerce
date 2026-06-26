@@ -8,7 +8,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
 
   return (
     <section
-      className="w-full py-[var(--ds-space-md)] md:py-[var(--ds-space-xl)]"
+      className="w-full py-home-section-mobile md:py-home-section"
       aria-label="Collection Slider"
       data-home-section="4-collection-slider"
     >

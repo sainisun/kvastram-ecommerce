@@ -132,7 +132,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
   }, [parsedStats]);
 
   return (
-    <section ref={sectionRef} className="kv-page-gutter px-[var(--ds-space-md)] py-[var(--ds-space-xl)] md:px-[var(--ds-space-lg)] md:py-[var(--ds-space-2xl)] lg:px-[var(--ds-space-xl)] lg:py-[var(--ds-space-3xl)]">
+    <section ref={sectionRef} className="kv-page-gutter px-[var(--ds-space-md)] py-home-section-mobile md:px-[var(--ds-space-lg)] md:py-[var(--ds-space-2xl)] lg:px-[var(--ds-space-xl)] lg:py-home-section">
       <div className="stats-row-prem">
         {statsData.map((stat, index) => (
           <article key={stat.label} className="stat-entry-prem">
