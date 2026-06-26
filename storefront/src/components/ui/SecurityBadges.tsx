@@ -10,7 +10,7 @@ export default function SecurityBadges({
   className = '',
 }: SecurityBadgesProps) {
   return (
-    <div className={`flex items-center justify-center gap-6 py-4 ${className}`}>
+    <div className={`flex items-center justify-center gap-[var(--ds-space-md)] py-[var(--ds-space-sm)] ${className}`}>
       {/* SSL Secure */}
       <div className="flex items-center gap-2 text-[var(--ds-text-muted)]">
         <Lock size={16} className="text-[var(--ds-success)]" />
@@ -35,7 +35,7 @@ export default function SecurityBadges({
 // Payment Icons Component
 export function PaymentIcons({ className = '' }: { className?: string }) {
   return (
-    <div className={`flex items-center justify-center gap-3 ${className}`}>
+    <div className={`flex items-center justify-center gap-[var(--ds-space-xs)] ${className}`}>
       {/* Visa */}
       <div className="flex h-8 w-12 items-center justify-center rounded border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
         <span className="text-body-xs text-[var(--ds-info-text)] type-bold italic">
@@ -72,4 +72,5 @@ export function PaymentIcons({ className = '' }: { className?: string }) {
     </div>
   );
 }
+
 

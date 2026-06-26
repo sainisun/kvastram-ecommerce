@@ -41,9 +41,9 @@ export function CookieConsent() {
       aria-label="Cookie consent"
       aria-live="polite"
     >
-      <Card className="cookie-consent-card flex flex-col gap-3 rounded-[var(--radius-sm)] p-3 shadow-xl md:gap-4 md:p-5 md:shadow-2xl">
+      <Card className="cookie-consent-card flex flex-col gap-[var(--ds-space-xs)] rounded-[var(--radius-sm)] p-[var(--ds-space-xs)] shadow-xl md:gap-4 md:p-5 md:shadow-2xl">
         {/* Header */}
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-[var(--ds-space-xs)]">
           <div className="flex min-w-0 items-start gap-2.5">
             <Cookie
               size={20}
@@ -76,7 +76,7 @@ export function CookieConsent() {
         </div>
 
         {/* Actions */}
-        <div className="cookie-consent-actions grid grid-cols-2 gap-2 sm:flex sm:items-center">
+        <div className="cookie-consent-actions grid grid-cols-2 gap-[var(--ds-space-xs)] sm:flex sm:items-center">
           <Button
             onClick={handleAcceptAll}
             variant="secondary"
@@ -104,3 +104,4 @@ export function CookieConsent() {
     </div>
   );
 }
+
