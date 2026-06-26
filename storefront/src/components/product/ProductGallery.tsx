@@ -268,7 +268,7 @@ export default function ProductGallery({
 
         {items.length > 1 && (
           <div className="mt-4 space-y-4">
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-center gap-[var(--ds-space-xs)]">
               {items.map((item, index) => (
                 <UnstyledButton
                   key={`${item.id}-dot`}
@@ -282,7 +282,7 @@ export default function ProductGallery({
               ))}
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex gap-[var(--ds-space-xs)] overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {items.map((item, index) => (
                 <UnstyledButton
                   key={`${item.id}-thumb`}
@@ -412,13 +412,13 @@ export default function ProductGallery({
 
           {items.length > 1 && (
             <div className="space-y-3">
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-[var(--ds-space-xs)]">
                 {items.map((item, index) => (
                   <UnstyledButton
                     key={`${item.id}-desktop-dot`}
                     type="button"
                     onClick={() => goToIndex(index)}
-                    className={`h-2 rounded-full transition-all ${
+                    className={`h-2 rounded-[var(--ds-radius-pill)] transition-all ${
                       activeIndex === index ? 'w-8 bg-[var(--ds-text-primary)]' : 'w-2 bg-[var(--ds-border-strong)]'
                     }`}
                     aria-label={`Go to media ${index + 1}`}
@@ -426,7 +426,7 @@ export default function ProductGallery({
                 ))}
               </div>
 
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-[var(--ds-space-xs)]">
                 {items.map((item, index) => (
                   <UnstyledButton
                     key={`${item.id}-desktop-thumb`}
@@ -483,7 +483,7 @@ export default function ProductGallery({
         isOpen={lightboxOpen && activeItem.type === 'image'}
         onClose={() => setLightboxOpen(false)}
         showHeader={false}
-        rootClassName="z-[120] p-4"
+        rootClassName="z-[120] p-[var(--ds-space-sm)]"
         className="h-full max-h-none max-w-5xl border-0 bg-transparent shadow-none"
         bodyClassName="relative h-full p-0"
       >
