@@ -48,10 +48,10 @@ export function CartRecovery() {
       onClose={handleDismiss}
       title="Welcome Back!"
       className="max-w-md"
-      bodyClassName="p-8"
+      bodyClassName="p-[var(--ds-space-lg)]"
     >
-        <div className="mb-6 flex items-start gap-3">
-          <div className="flex items-center gap-3">
+        <div className="mb-[var(--ds-space-md)] flex items-start gap-[var(--ds-space-xs)]">
+          <div className="flex items-center gap-[var(--ds-space-xs)]">
             <div className="w-12 h-12 bg-[var(--ds-surface-soft)] rounded-full flex items-center justify-center">
               <ShoppingCart className="w-6 h-6 text-[var(--ds-text-secondary)]" />
             </div>
@@ -82,7 +82,7 @@ export function CartRecovery() {
           </div>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex gap-[var(--ds-space-xs)]">
           <Button
             type="button"
             onClick={handleDismiss}

@@ -28,7 +28,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
         {/* Cart Items */}
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+            <div className="flex flex-col items-center justify-center h-full px-[var(--ds-space-md)] text-center">
               <p className="text-[var(--ds-text-muted)] mb-4">Your cart is empty</p>
               <Link
                 href="/products"
@@ -41,7 +41,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
           ) : (
             <ul className="divide-y divide-[var(--ds-border-subtle)]">
               {items.map((item) => (
-                <li key={item.variantId} className="flex gap-4 p-4">
+                <li key={item.variantId} className="flex gap-[var(--ds-space-sm)] p-[var(--ds-space-sm)]">
                   {/* Image */}
                   <div className="relative h-20 w-20 flex-shrink-0 bg-[var(--ds-surface-soft)] overflow-hidden">
                     {item.thumbnail ? (
@@ -81,7 +81,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
 
                     {/* Quantity Controls */}
                     <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-[var(--ds-space-xs)]">
                         <UnstyledButton
                           onClick={() =>
                             updateQuantity(item.variantId, item.quantity - 1)

@@ -494,7 +494,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
               Product videos will appear here once they are published from the admin.
               Until then, continue with the live catalog and curated collections.
             </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-3">
+            <div className="mt-[var(--ds-space-md)] flex flex-wrap justify-center gap-[var(--ds-space-xs)]">
               <Link href="/products" className="reels-action-link">
                 Browse Products
               </Link>
@@ -556,7 +556,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
             </div>
 
             {reels.length > 12 && !showAll && (
-              <div className="mt-10 text-center">
+              <div className="mt-[var(--ds-space-xl)] text-center">
                 <Button type="button" variant="outline" onClick={() => setShowAll(true)}>
                   Load More
                 </Button>
@@ -587,7 +587,7 @@ function ReelsGridSkeleton() {
     <div className="min-h-screen bg-[var(--cream)]">
       <div className="sticky top-0 z-40 h-12 border-b border-[var(--line)] bg-[var(--ds-surface-paper)]/95" />
       <div className="kv-container pt-6 pb-8">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-[var(--ds-space-xs)]">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-[var(--ds-surface-soft)]" />
           ))}
@@ -892,7 +892,7 @@ function ReelPlayerModal({
         </div>
 
         {/* Bottom product overlay */}
-        <div className="relative z-10 mt-auto px-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="relative z-10 mt-auto px-[var(--ds-space-xs)] pb-[max(1rem,env(safe-area-inset-bottom))]">
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}

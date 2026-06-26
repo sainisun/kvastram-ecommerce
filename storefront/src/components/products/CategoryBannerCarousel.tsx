@@ -54,7 +54,7 @@ export default function CategoryBannerCarousel({ banners }: Props) {
               />
               {(banner.headline || banner.button_label) && (
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.60)] via-[rgba(var(--ds-black-rgb),0.10)] to-transparent">
-                  <div className="absolute inset-x-0 bottom-0 flex justify-center px-5 pb-8 pt-20 text-center">
+                  <div className="absolute inset-x-0 bottom-0 flex justify-center px-[var(--ds-space-md)] pb-[var(--ds-space-lg)] pt-20 text-center">
                     <div className="max-w-[18rem] text-[var(--ds-text-inverse)]">
                       {banner.headline ? (
                         <h2 className="category-banner-title">
@@ -101,13 +101,13 @@ export default function CategoryBannerCarousel({ banners }: Props) {
       </div>
 
       {banners.length > 1 ? (
-        <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center gap-2">
+        <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center gap-[var(--ds-space-xs)]">
           {banners.map((banner, index) => (
             <UnstyledButton
               key={banner.id}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className={`h-2.5 rounded-full transition-all ${
+              className={`h-2.5 rounded-[var(--ds-radius-pill)] transition-all ${
                 index === safeActiveIndex
                   ? 'w-7 bg-[var(--ds-surface-paper)]'
                   : 'w-2.5 bg-[var(--ds-surface-paper)]/55'
