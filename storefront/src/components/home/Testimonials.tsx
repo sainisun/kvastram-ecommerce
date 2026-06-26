@@ -26,7 +26,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
           <div className="kv-tag">Love shared by customers</div>
         </div>
 
-        <div className="grid gap-[var(--ds-space-md)] md:grid-cols-3 lg:gap-[var(--ds-space-md)]">
+        <div className="grid gap-[var(--ds-space-md)] md:grid-cols-3 lg:gap-8">
           {displayed.map((testimonial) => (
             <article key={testimonial.id} className="rounded-[var(--ds-radius-lg)] bg-[var(--ds-surface-soft)] p-8 text-center sm:p-10 border border-[var(--ds-border-subtle)]/30">
               <div className="flex items-center justify-center gap-1 text-body-sm">
