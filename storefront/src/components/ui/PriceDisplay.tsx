@@ -16,7 +16,7 @@ interface PriceDisplayProps extends HTMLAttributes<HTMLElement> {
 const rootClasses: Record<PriceDisplayVariant, string> = {
   'product-card': 'inline-flex items-baseline gap-1.5',
   compact: 'inline-flex items-baseline gap-1.5',
-  pdp: 'inline-flex flex-wrap items-baseline gap-3',
+  pdp: 'inline-flex flex-wrap items-baseline gap-[var(--ds-space-xs)]',
   inline: 'inline-flex items-baseline gap-1.5',
 };
 
@@ -68,3 +68,4 @@ export function PriceDisplay({
     </Component>
   );
 }
+

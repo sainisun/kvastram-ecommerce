@@ -262,7 +262,7 @@ export default function CatalogClient({
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-end gap-3">
+            <div className="flex flex-wrap items-center justify-end gap-[var(--ds-space-xs)]">
               <UnstyledButton
                 ref={filterButtonRef}
                 type="button"
@@ -336,7 +336,7 @@ export default function CatalogClient({
           </div>
 
           {activeFilterCount > 0 ? (
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+            <div className="mt-[var(--ds-space-sm)] flex flex-wrap items-center gap-[var(--ds-space-xs)]">
               {activeCategory ? (
                 <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
                   {activeCategory.name}
@@ -424,7 +424,7 @@ export default function CatalogClient({
             </div>
           ) : null}
 
-          <main className="mt-6 min-w-0">
+          <main className="mt-[var(--ds-space-md)] min-w-0">
             <ProductGrid
               initialProducts={products}
               loading={loading}
@@ -433,7 +433,7 @@ export default function CatalogClient({
             />
 
             {totalPages > 1 ? (
-              <div className="mt-16 flex items-center justify-center gap-2">
+              <div className="mt-[var(--ds-space-2xl)] flex items-center justify-center gap-[var(--ds-space-xs)]">
                 <UnstyledButton
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page === 1 || loading}
@@ -460,7 +460,7 @@ export default function CatalogClient({
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
                       disabled={loading}
-                      className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
+                      className={`catalog-page-button h-10 w-10 rounded-[var(--ds-radius-md)] transition-colors ${
                         page === pageNum
                           ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
                           : 'text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]'
@@ -494,7 +494,7 @@ export default function CatalogClient({
         title="Filters"
         side="bottom"
         className="max-h-[90vh] sm:inset-y-0 sm:left-0 sm:right-auto sm:h-full sm:max-h-none sm:w-[360px] sm:max-w-[92vw]"
-        bodyClassName="p-4 sm:px-5 sm:py-0"
+        bodyClassName="p-[var(--ds-space-sm)] sm:px-[var(--ds-space-md)] sm:py-0"
       >
         <FilterSidebar
           categories={categories}

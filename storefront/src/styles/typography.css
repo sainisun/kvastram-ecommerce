@@ -44,7 +44,7 @@
   min-height: 34px;
   align-items: center;
   border: 1px solid var(--ds-border-subtle);
-  border-radius: 999px;
+  border-radius: var(--ds-radius-pill);
   padding: 0.45rem 0.85rem;
   background: var(--ds-surface-paper);
   color: var(--color-text-secondary);
@@ -67,7 +67,7 @@
   align-items: center;
     gap: var(--ds-space-xs);
   border: 1px solid var(--ds-border-subtle);
-  border-radius: 999px;
+  border-radius: var(--ds-radius-pill);
   background: var(--ds-surface-paper);
   color: var(--color-text-secondary);
   transition:
@@ -1026,6 +1026,7 @@ b,
   line-height: var(--ds-leading-tight);
   text-transform: none;
 }
+
 
 
 

@@ -32,7 +32,7 @@ export function StatusBanner({
   return (
     <div
       className={cn(
-        'flex gap-3 border px-4 py-3 font-body text-body-sm leading-token-relaxed',
+        'flex gap-[var(--ds-space-xs)] border px-[var(--ds-space-sm)] py-[var(--ds-space-xs)] font-body text-body-sm leading-token-relaxed',
         toneClasses[tone],
         className
       )}

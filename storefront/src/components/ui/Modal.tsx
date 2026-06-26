@@ -122,7 +122,7 @@ export function Modal({
             </IconButton>
           </div>
         ) : null}
-        <div className={cn('p-5', bodyClassName)}>{children}</div>
+        <div className={cn('p-[var(--ds-space-md)]', bodyClassName)}>{children}</div>
       </div>
     </div>,
     document.body

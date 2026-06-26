@@ -49,7 +49,7 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
           transition={{ duration: 0.18 }}
           className="overflow-hidden border-t border-[var(--ds-border-strong)] bg-[var(--ds-surface-parchment)]"
         >
-          <form onSubmit={handleSubmit} className="h-[44px] flex items-center px-8 gap-3 max-w-screen-xl mx-auto">
+          <form onSubmit={handleSubmit} className="h-[44px] flex items-center px-[var(--ds-space-lg)] gap-[var(--ds-space-xs)] max-w-screen-xl mx-auto">
             <Search size={16} className="text-[var(--ds-text-disabled)] shrink-0" />
             <Input
               ref={inputRef}

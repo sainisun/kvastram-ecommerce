@@ -130,7 +130,7 @@ export function ChatWidget() {
             )}
           >
             <div className="flex items-center justify-between bg-[var(--ds-text-primary)] p-4 text-[var(--ds-text-inverse)]">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-[var(--ds-space-xs)]">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(var(--ds-cream-rgb),0.2)]">
                   <MessageCircle size={16} />
                 </div>
@@ -173,7 +173,7 @@ export function ChatWidget() {
                         className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-[85%] rounded-lg px-4 py-3 text-body-sm ${
+                          className={`max-w-[85%] rounded-lg px-[var(--ds-space-sm)] py-[var(--ds-space-xs)] text-body-sm ${
                             message.role === 'user'
                               ? 'rounded-tr-sm bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'
                               : 'rounded-tl-sm border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-secondary)]'
@@ -184,7 +184,7 @@ export function ChatWidget() {
                       </div>
                     ))}
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-[var(--ds-space-xs)]">
                       {quickReplies.map((reply) => (
                         <UnstyledButton
                           key={reply.label}
@@ -201,7 +201,7 @@ export function ChatWidget() {
 
                 <div className="border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
                   <form
-                    className="flex gap-2"
+                    className="flex gap-[var(--ds-space-xs)]"
                     onSubmit={(event) => {
                       event.preventDefault();
                       handleSendMessage();
@@ -213,13 +213,13 @@ export function ChatWidget() {
                       value={inputText}
                       onChange={(event) => setInputText(event.target.value)}
                       containerClassName="flex-1"
-                      className="h-10 rounded-full"
+                      className="h-10 rounded-[var(--ds-radius-pill)]"
                     />
                     <IconButton
                       type="submit"
                       variant="secondary"
                       size="md"
-                      className="rounded-full"
+                      className="rounded-[var(--ds-radius-pill)]"
                       aria-label="Send message"
                     >
                       <Send size={16} />
@@ -248,4 +248,5 @@ export function ChatWidget() {
     </>
   );
 }
+
 

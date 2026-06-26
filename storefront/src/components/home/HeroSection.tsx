@@ -108,8 +108,8 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               <ChevronRight aria-hidden="true" />
             </IconButton>
           </div>
-          <div className="absolute right-[var(--homepage-gutter)] bottom-6 z-[2] flex items-center gap-4">
-            <div className="flex gap-2">
+          <div className="absolute right-[var(--homepage-gutter)] bottom-6 z-[2] flex items-center gap-[var(--ds-space-sm)]">
+            <div className="flex gap-[var(--ds-space-xs)]">
               {slides.map((slide, index) => (
                 <UnstyledButton
                   key={slide.id}

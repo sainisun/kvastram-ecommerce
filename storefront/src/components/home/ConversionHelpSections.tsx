@@ -53,7 +53,7 @@ export function CraftEducationStrip() {
   return (
     <section className="kv-section bg-[var(--ds-surface-paper)]">
       <div className="kv-container">
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-[var(--ds-space-xs)] md:grid-cols-3">
           {craftCards.map(({ icon: Icon, title, copy, href }) => (
             <Link key={title} href={href} className="grid gap-[10px] grid-cols-[auto_1fr] border border-[var(--ds-border-subtle)] rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-[var(--ds-text-primary)] no-underline">
               <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-[var(--ds-accent-primary)]" />
@@ -76,7 +76,7 @@ export function FitScaleHelp() {
         <div>
           <div className="kv-tag">Fit &amp; scale help</div>
           <h2 className="kv-title">Unsure about fit or size?</h2>
-          <p className="kv-sub mt-3">
+          <p className="kv-sub mt-[var(--ds-space-xs)]">
             See pieces in motion, check measurements, or ask for extra photos before checkout.
           </p>
         </div>
@@ -138,7 +138,7 @@ export function ShippingReturnsMiniFAQ() {
             Returns Help
           </Link>
         </div>
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-[var(--ds-space-xs)] md:grid-cols-4">
           {faqItems.map(({ icon: Icon, title, copy }) => (
             <article key={title} className="grid content-start gap-[10px] border border-[var(--ds-border-subtle)] rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-[var(--ds-text-primary)] no-underline">
               <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-[var(--ds-accent-primary)]" />

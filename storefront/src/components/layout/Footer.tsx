@@ -166,14 +166,14 @@ export function Footer() {
   return (
     <footer data-home-section="11-footer" className="odhvica-footer border-t border-[var(--ds-footer-border)]">
       <div
-        className="footer-watermark-prem overflow-hidden px-6 pt-8 sm:px-8 md:px-12 md:pt-10 select-none"
+        className="footer-watermark-prem overflow-hidden px-[var(--ds-space-md)] pt-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:pt-[var(--ds-space-md)] select-none"
         aria-hidden="true"
       >
         Odhvica
       </div>
 
-      <div className="kv-page-container mx-auto max-w-[1440px] px-6 pb-10 pt-10 sm:px-8 md:px-12 md:pb-12 md:pt-12 lg:px-20 lg:pt-24">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-12">
+      <div className="kv-page-container mx-auto max-w-[1440px] px-[var(--ds-space-md)] pb-[var(--ds-space-md)] pt-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:pb-[var(--ds-space-lg)] md:pt-12 lg:px-20 lg:pt-24">
+        <div className="grid grid-cols-2 gap-x-[var(--ds-space-md)] gap-y-[var(--ds-space-md)] sm:grid-cols-2 lg:grid-cols-5 lg:gap-[var(--ds-space-lg)]">
           {/* Brand Column */}
           <div className="space-y-5 col-span-2 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
@@ -191,7 +191,7 @@ export function Footer() {
               <p>{storefrontTrust.supportHours}</p>
               <p>{storefrontTrust.locationLabel}</p>
             </div>
-            <div className="flex flex-wrap gap-3 pt-2">
+            <div className="flex flex-wrap gap-[var(--ds-space-xs)] pt-[var(--ds-space-xs)]">
               {socialLinks.map(({ label, href, icon: Icon, color }) => (
                 <a
                   key={label}
@@ -285,11 +285,11 @@ export function Footer() {
       </div>
 
       <div className="kf-border border-t">
-        <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-8 sm:px-8 md:px-12 md:py-12 lg:px-20">
+        <div className="kv-page-container mx-auto max-w-[1440px] px-[var(--ds-space-md)] py-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:py-[var(--ds-space-lg)] lg:px-20">
           <PaymentIcons className="mb-4" />
-          <div className="kf-legal font-body flex flex-col items-center justify-between gap-4 text-center text-body-xs sm:flex-row sm:text-left">
+          <div className="kf-legal font-body flex flex-col items-center justify-between gap-[var(--ds-space-sm)] text-center text-body-xs sm:flex-row sm:text-left">
             <p>Copyright {new Date().getFullYear()} Odhvica. All rights reserved.</p>
-            <div className="flex gap-6">
+            <div className="flex gap-[var(--ds-space-md)]">
               <Link
                 href={storefrontTrust.policyRoutes.privacy}
                 className="kf-legal-link font-body transition-colors"

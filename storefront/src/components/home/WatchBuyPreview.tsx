@@ -14,9 +14,9 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
   if (reels.length === 0) return null;
 
   return (
-    <section className="w-full py-6 md:py-10" data-home-section="7-watch-shop">
+    <section className="w-full py-[var(--ds-space-md)] md:py-[var(--ds-space-xl)]" data-home-section="7-watch-shop">
       <div className="homepage-container">
-        <div className="homepage-section-head flex justify-between items-end mb-6">
+        <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)]">
           <div>
             <p className="homepage-eyebrow text-body-xs uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-gold)]">Trending Reels</p>
             <h2 className="text-display-sm font-display font-medium text-[var(--ds-text-primary)]">See the craft in motion</h2>
@@ -26,7 +26,7 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
           </Link>
         </div>
 
-        <div className="overflow-x-auto no-scrollbar flex gap-4 scroll-smooth">
+        <div className="overflow-x-auto no-scrollbar flex gap-[var(--ds-space-sm)] scroll-smooth">
           {reels.map((reel) => {
             const prices = reel.product.variants?.[0]?.prices || [];
             const amount =
@@ -52,7 +52,7 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
                   </div>
                 </Link>
 
-                <div className="mt-3 text-left">
+                <div className="mt-[var(--ds-space-xs)] text-left">
                   <h3 className="text-body-sm type-medium text-[var(--ds-text-primary)] line-clamp-1 group-hover:text-[var(--ds-accent-primary)] transition-colors" title={reel.product.title}>
                     {reel.product.title}
                   </h3>

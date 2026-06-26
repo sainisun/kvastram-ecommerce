@@ -183,12 +183,12 @@ export function Reviews({ productId }: ReviewsProps) {
   return (
     <div className="border-t border-[var(--ds-border-subtle)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]" id="reviews">
       <div className="kv-page-container mx-auto max-w-[1440px]">
-        <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-[var(--ds-space-md)]">
           <div>
             <h2 className="review-heading mb-2">
               Client Reviews
             </h2>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-[var(--ds-space-xs)]">
               <StarRating rating={Number(averageRating)} size={18} />
               <span className="review-rating-count">
                 {averageRating} ({reviews.length} Reviews)
@@ -271,7 +271,7 @@ export function Reviews({ productId }: ReviewsProps) {
 
               {/* Selected Images Preview */}
               {imagePreviewUrls.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
+                <div className="flex flex-wrap gap-[var(--ds-space-xs)] mb-3">
                   {imagePreviewUrls.map((url, index) => (
                     <div key={index} className="relative">
                       <div className="w-20 h-20 relative rounded overflow-hidden border border-[var(--ds-border-subtle)]">
@@ -299,7 +299,7 @@ export function Reviews({ productId }: ReviewsProps) {
 
               {/* Upload Button */}
               {selectedImages.length < 5 && (
-                <label className="flex items-center gap-2 cursor-pointer w-fit">
+                <label className="flex items-center gap-[var(--ds-space-xs)] cursor-pointer w-fit">
                   <input
                     type="file"
                     accept="image/*"
@@ -359,7 +359,7 @@ export function Reviews({ productId }: ReviewsProps) {
             No reviews yet. Be the first to review this product.
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-[var(--ds-space-md)]">
             {reviews.map((review) => (
               <div key={review.id} className="bg-[var(--ds-surface-soft)] p-8 relative group">
                 <div className="flex justify-between items-start mb-4">
@@ -381,7 +381,7 @@ export function Reviews({ productId }: ReviewsProps) {
 
                 {/* Review Images */}
                 {review.images && review.images.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-[var(--ds-space-xs)] mb-4">
                     {review.images.map((imageUrl, imgIndex) => (
                       <div
                         key={imgIndex}

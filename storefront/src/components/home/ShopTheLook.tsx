@@ -45,7 +45,7 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
           </Link>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3 md:gap-4">
+        <div className="grid gap-[var(--ds-space-xs)] sm:grid-cols-3 md:gap-[var(--ds-space-sm)]">
           {items.map((item, index) => {
             const price = item.product.variants?.[0]?.prices?.[0];
             const href = `/products/${item.product.handle || item.product.id}`;

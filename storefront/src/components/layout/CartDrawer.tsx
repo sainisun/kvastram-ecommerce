@@ -45,7 +45,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <span className="flex items-center gap-3">
+        <span className="flex items-center gap-[var(--ds-space-xs)]">
             <ShoppingBag size={18} className="color-ink" />
             <span className="text-body-sm type-bold  tracking-token-wider color-ink">
               Your Bag
@@ -63,7 +63,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
         {/* Free Shipping Progress Bar */}
         {items.length > 0 && (
-          <div className="px-6 py-3 bg-[var(--cream)] border-b border-[var(--soft)]">
+          <div className="px-[var(--ds-space-md)] py-[var(--ds-space-xs)] bg-[var(--cream)] border-b border-[var(--soft)]">
             {hasFreeShipping ? (
               <div className="flex items-center gap-2 text-body-xs text-[var(--ds-success-text)] type-medium">
                 <Truck size={14} />
@@ -95,8 +95,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             /* Empty State */
-            <div className="flex flex-col items-center justify-center h-full px-8 text-center">
-              <div className="w-20 h-20 rounded-full bg-[var(--cream)] flex items-center justify-center mb-5">
+            <div className="flex flex-col items-center justify-center h-full px-[var(--ds-space-md)] text-center">
+              <div className="w-20 h-20 rounded-[var(--ds-radius-pill)] bg-[var(--cream)] flex items-center justify-center mb-5">
                 <ShoppingBag className="w-8 h-8 color-muted" />
               </div>
               <p className="text-body-md font-display color-ink mb-2">
@@ -118,7 +118,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               {items.map((item, index) => (
                 <li
                   key={item.variantId}
-                  className="flex gap-4 px-6 py-4 group/item animate-fade-in"
+                  className="flex gap-[var(--ds-space-sm)] px-[var(--ds-space-md)] py-[var(--ds-space-sm)] group/item animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* Product Image */}
@@ -210,7 +210,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         {items.length > 0 && (
           <div className="border-t border-[var(--soft)] bg-[var(--ds-surface-paper)]">
             {/* Subtotal */}
-            <div className="px-6 py-4 space-y-2">
+            <div className="px-[var(--ds-space-md)] py-[var(--ds-space-sm)] space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-body-xs color-muted  tracking-token-wider">
                   Subtotal
@@ -234,7 +234,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
 
             {/* Checkout Button */}
-            <div className="px-6 pb-4 space-y-3">
+            <div className="px-[var(--ds-space-md)] pb-[var(--ds-space-sm)] space-y-3">
               <Link
                 href="/checkout"
                 onClick={onClose}
@@ -245,14 +245,14 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <Link
                 href="/cart"
                 onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full border border-[var(--line)] color-ink py-3 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--cream)] transition-colors"
+                className="flex items-center justify-center gap-[var(--ds-space-xs)] w-full border border-[var(--line)] color-ink py-3 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--cream)] transition-colors"
               >
                 View Full Cart
               </Link>
             </div>
 
             {/* Secure Checkout Badge */}
-            <div className="flex items-center justify-center gap-2 pb-4 text-body-xs color-muted">
+            <div className="flex items-center justify-center gap-[var(--ds-space-xs)] pb-[var(--ds-space-sm)] text-body-xs color-muted">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"

@@ -62,7 +62,7 @@ export function CircularCategoriesClient({
       </h2>
       <div
         ref={rowRef}
-        className="homepage-container flex gap-6 overflow-x-auto py-6 [scroll-padding-inline:var(--homepage-gutter)] snap-x snap-mandatory no-scrollbar [&::-webkit-scrollbar]:hidden min-[1100px]:justify-center min-[1100px]:gap-8"
+        className="homepage-container flex gap-[var(--ds-space-md)] overflow-x-auto py-[var(--ds-space-md)] [scroll-padding-inline:var(--homepage-gutter)] snap-x snap-mandatory no-scrollbar [&::-webkit-scrollbar]:hidden min-[1100px]:justify-center min-[1100px]:gap-[var(--ds-space-md)]"
       >
         {circles.map((circle, index) => (
           <Link

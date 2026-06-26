@@ -125,9 +125,9 @@ export function BestSellers({
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full py-6 md:py-10" data-home-section="5-best-sellers">
+    <section className="w-full py-[var(--ds-space-md)] md:py-[var(--ds-space-xl)]" data-home-section="5-best-sellers">
       <div className="homepage-container">
-        <div className="homepage-section-head flex justify-between items-end mb-6 md:mb-8">
+        <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)] md:mb-[var(--ds-space-md)]">
           <div>
             <p className="homepage-eyebrow text-body-xs uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-gold)]">Chosen For You</p>
             <h2 className="text-display-sm font-display font-medium text-[var(--ds-text-primary)]">Best Sellers</h2>
@@ -137,7 +137,7 @@ export function BestSellers({
           </Link>
         </div>
         
-        <div className="[&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-media]:aspect-[2/3] [&_.product-info]:py-2 overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">
+        <div className="[&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-media]:aspect-[2/3] [&_.product-info]:py-[var(--ds-space-xs)] overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">
           {products.map((product) => {
             const priceInfo = getPrice(product);
             return (

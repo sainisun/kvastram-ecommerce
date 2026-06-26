@@ -8,8 +8,8 @@ export function WholesaleHeader() {
       {/* Top Bar */}
       <div className="bg-[var(--ds-warning)] text-[var(--ds-text-primary)] py-2">
         <div className="kv-page-container mx-auto flex max-w-[1440px] items-center justify-between text-body-xs type-bold">
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2">
+          <div className="flex items-center gap-[var(--ds-space-md)]">
+            <span className="flex items-center gap-[var(--ds-space-xs)]">
               <Building2 size={14} />
               B2B WHOLESALE PORTAL
             </span>
@@ -17,7 +17,7 @@ export function WholesaleHeader() {
               Volume Discounts up to 40% OFF
             </span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-[var(--ds-space-sm)]">
             <a
               href="mailto:wholesale@odhvica.com"
               className="hover:text-[var(--ds-text-inverse)] flex items-center gap-1"
@@ -39,7 +39,7 @@ export function WholesaleHeader() {
       {/* Main Header */}
       <div className="kv-page-container mx-auto flex h-16 max-w-[1440px] items-center justify-between lg:h-20">
         {/* Logo */}
-        <Link href="/wholesale" className="flex items-center gap-3">
+        <Link href="/wholesale" className="flex items-center gap-[var(--ds-space-xs)]">
           <div className="text-display-md type-bold tracking-token-tight">ODHVICA</div>
           <div className="h-8 w-px bg-[var(--ds-text-secondary)]"></div>
           <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
@@ -48,7 +48,7 @@ export function WholesaleHeader() {
         </Link>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-8 text-body-sm type-medium">
+        <nav className="hidden md:flex items-center gap-[var(--ds-space-md)] text-body-sm type-medium">
           <Link
             href="/wholesale#benefits"
             className="hover:text-[var(--ds-accent-gold)] transition-colors"
@@ -82,7 +82,7 @@ export function WholesaleHeader() {
         </nav>
 
         {/* CTA */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-[var(--ds-space-sm)]">
           <a
             href="#inquiry"
             className="hidden lg:block bg-[var(--ds-warning)] text-[var(--ds-text-primary)] px-6 py-2.5 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--ds-accent-gold)] transition-colors"
@@ -103,3 +103,4 @@ export function WholesaleHeader() {
     </header>
   );
 }
+

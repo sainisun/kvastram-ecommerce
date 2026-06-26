@@ -97,7 +97,7 @@ export function BottomNav() {
               <a
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center py-2 px-2 min-w-[52px] transition-colors relative ${
+                className={`flex flex-col items-center justify-center py-[var(--ds-space-xs)] px-[var(--ds-space-xs)] min-w-[52px] transition-colors relative ${
                   isActive
                     ? 'text-[var(--ds-text-primary)]'
                     : 'text-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]'

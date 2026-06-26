@@ -83,10 +83,11 @@ export function Drawer({
             </IconButton>
           </div>
         ) : null}
-        <div className={cn('min-h-0 flex-1 overflow-y-auto p-5', bodyClassName)}>
+        <div className={cn('min-h-0 flex-1 overflow-y-auto p-[var(--ds-space-md)]', bodyClassName)}>
           {children}
         </div>
       </aside>
     </div>
   );
 }
+
