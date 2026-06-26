@@ -9,7 +9,15 @@
 }
 .footer-grid {
   display: grid;
-    gap: var(--ds-space-md);
+  grid-template-columns: 1fr;
+  gap: var(--ds-space-md);
+}
+
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    gap: var(--ds-space-lg);
+  }
 }
 .footer h3,
 .footer h4 {
