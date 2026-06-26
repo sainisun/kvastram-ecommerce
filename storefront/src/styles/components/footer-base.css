@@ -5,7 +5,7 @@
 .footer {
   background: var(--ds-text-primary);
   color: rgba(var(--ds-surface-paper-rgb), 0.7);
-  padding: 42px 0 28px;
+  padding: var(--ds-space-lg) 0 var(--ds-space-md);
 }
 .footer-grid {
   display: grid;

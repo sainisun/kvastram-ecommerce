@@ -37,7 +37,7 @@
   background: var(--ds-surface-paper);
   border: 1px solid var(--ds-border-subtle);
   border-radius: var(--ds-radius-lg);
-  padding: 20px;
+  padding: var(--ds-space-sm);
 }
 .soft-card h3 { margin-top: 0; }
 
