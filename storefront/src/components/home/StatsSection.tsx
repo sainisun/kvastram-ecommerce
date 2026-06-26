@@ -132,7 +132,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
   }, [parsedStats]);
 
   return (
-    <section ref={sectionRef} className="kv-page-gutter px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <section ref={sectionRef} className="kv-page-gutter px-[var(--ds-space-md)] py-[var(--ds-space-xl)] md:px-[var(--ds-space-lg)] md:py-[var(--ds-space-2xl)] lg:px-[var(--ds-space-xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="stats-row-prem">
         {statsData.map((stat, index) => (
           <article key={stat.label} className="stat-entry-prem">

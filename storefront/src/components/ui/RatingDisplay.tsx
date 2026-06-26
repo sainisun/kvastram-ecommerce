@@ -30,7 +30,7 @@ export function RatingDisplay({
     );
 
     return (
-      <div className={cn('inline-flex items-center gap-2', className)} {...props}>
+      <div className={cn('inline-flex items-center gap-[var(--ds-space-xs)]', className)} {...props}>
         {href ? (
           <a href={href} className="transition-colors hover:text-[var(--ds-text-primary)]">
             {emptyContent}
@@ -72,7 +72,7 @@ export function RatingDisplay({
 
   return (
     <div
-      className={cn('inline-flex items-center gap-2', className)}
+      className={cn('inline-flex items-center gap-[var(--ds-space-xs)]', className)}
       role={href ? undefined : 'img'}
       aria-label={label}
       {...props}

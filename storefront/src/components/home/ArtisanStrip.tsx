@@ -40,7 +40,7 @@ export function ArtisanStrip() {
   return (
     <section className="kv-section bg-[var(--ds-surface-page)]">
       <div className="kv-container">
-        <div className="kv-section-head mb-8 md:mb-12">
+        <div className="kv-section-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
           <div>
             <div className="kv-tag">The hands behind every piece</div>
             <h2 className="kv-title">Meet our <em className="italic">artisans</em></h2>
@@ -50,11 +50,11 @@ export function ArtisanStrip() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 md:gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 gap-[var(--ds-space-sm)] sm:grid-cols-4 md:gap-[var(--ds-space-md)] lg:gap-[var(--ds-space-md)]">
           {ARTISANS.map((artisan) => (
             <Card
               key={artisan.name}
-              className="group relative overflow-hidden p-6 transition-shadow hover:shadow-md"
+              className="group relative overflow-hidden p-[var(--ds-space-md)] transition-shadow hover:shadow-md"
             >
               <div
                 className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full ${artisan.color} text-body-sm type-semibold text-[var(--ds-text-primary)]`}
