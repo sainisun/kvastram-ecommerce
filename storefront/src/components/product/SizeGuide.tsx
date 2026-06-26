@@ -26,25 +26,25 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
         <table className="size-guide-table">
           <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
             <tr>
-              <th className="size-guide-table-heading py-3">Size</th>
+              <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Size</th>
               {guide.measurements[0]?.chest && (
-                <th className="size-guide-table-heading py-3">Chest</th>
+                <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Chest</th>
               )}
               {guide.measurements[0]?.waist && (
-                <th className="size-guide-table-heading py-3">Waist</th>
+                <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Waist</th>
               )}
               {guide.measurements[0]?.hips && (
-                <th className="size-guide-table-heading py-3">Hips</th>
+                <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Hips</th>
               )}
               {guide.measurements[0]?.length && (
-                <th className="size-guide-table-heading py-3">Length</th>
+                <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Length</th>
               )}
             </tr>
           </thead>
           <tbody className="size-guide-table-body divide-y divide-[var(--ds-border-subtle)]">
             {guide.measurements.map((m: SizeMeasurement, i: number) => (
               <tr key={i}>
-                <td className="size-guide-table-heading py-3">{m.size}</td>
+                <td className="size-guide-table-heading py-[var(--ds-space-xs)]">{m.size}</td>
                 {m.chest && <td>{m.chest}</td>}
                 {m.waist && <td>{m.waist}</td>}
                 {m.hips && <td>{m.hips}</td>}
@@ -92,17 +92,17 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
             <table className="size-guide-table">
               <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
                 <tr>
-                  <th className="size-guide-table-heading py-3">Size</th>
-                  <th className="size-guide-table-heading py-3">US</th>
-                  <th className="size-guide-table-heading py-3">UK</th>
-                  <th className="size-guide-table-heading py-3">IT</th>
-                  <th className="size-guide-table-heading py-3">Bust (in)</th>
-                  <th className="size-guide-table-heading py-3">Waist (in)</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Size</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">US</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">UK</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">IT</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Bust (in)</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Waist (in)</th>
                 </tr>
               </thead>
               <tbody className="size-guide-table-body divide-y divide-[var(--ds-border-subtle)]">
                 <tr>
-                  <td className="size-guide-table-heading py-3">XS</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">XS</td>
                   <td>0-2</td>
                   <td>4-6</td>
                   <td>36-38</td>
@@ -110,7 +110,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <td>24-25</td>
                 </tr>
                 <tr>
-                  <td className="size-guide-table-heading py-3">S</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">S</td>
                   <td>4-6</td>
                   <td>8-10</td>
                   <td>40-42</td>
@@ -118,7 +118,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <td>26-27</td>
                 </tr>
                 <tr>
-                  <td className="size-guide-table-heading py-3">M</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">M</td>
                   <td>8-10</td>
                   <td>12-14</td>
                   <td>44-46</td>
@@ -126,7 +126,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <td>28-29</td>
                 </tr>
                 <tr>
-                  <td className="size-guide-table-heading py-3">L</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">L</td>
                   <td>12-14</td>
                   <td>16-18</td>
                   <td>48-50</td>
@@ -134,7 +134,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <td>30-32</td>
                 </tr>
                 <tr>
-                  <td className="size-guide-table-heading py-3">XL</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">XL</td>
                   <td>16-18</td>
                   <td>20-22</td>
                   <td>52-54</td>
@@ -153,17 +153,17 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
             <table className="size-guide-table">
               <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
                 <tr>
-                  <th className="size-guide-table-heading py-3">Size</th>
-                  <th className="size-guide-table-heading py-3">US</th>
-                  <th className="size-guide-table-heading py-3">UK</th>
-                  <th className="size-guide-table-heading py-3">IT</th>
-                  <th className="size-guide-table-heading py-3">Chest (in)</th>
-                  <th className="size-guide-table-heading py-3">Waist (in)</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Size</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">US</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">UK</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">IT</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Chest (in)</th>
+                  <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Waist (in)</th>
                 </tr>
               </thead>
               <tbody className="size-guide-table-body divide-y divide-[var(--ds-border-subtle)]">
                 <tr>
-                  <td className="size-guide-table-heading py-3">S</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">S</td>
                   <td>34-36</td>
                   <td>34-36</td>
                   <td>44-46</td>
@@ -171,7 +171,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <td>28-30</td>
                 </tr>
                 <tr>
-                  <td className="size-guide-table-heading py-3">M</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">M</td>
                   <td>38-40</td>
                   <td>38-40</td>
                   <td>48-50</td>
@@ -179,7 +179,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <td>32-34</td>
                 </tr>
                 <tr>
-                  <td className="size-guide-table-heading py-3">L</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">L</td>
                   <td>42-44</td>
                   <td>42-44</td>
                   <td>52-54</td>
@@ -187,7 +187,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
                   <td>36-38</td>
                 </tr>
                 <tr>
-                  <td className="size-guide-table-heading py-3">XL</td>
+                  <td className="size-guide-table-heading py-[var(--ds-space-xs)]">XL</td>
                   <td>46-48</td>
                   <td>46-48</td>
                   <td>56-58</td>
@@ -201,7 +201,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
           {/* How to Measure */}
           <div className="bg-[var(--ds-surface-parchment)] p-6">
             <h3 className="size-guide-info-title mb-4">How to Measure</h3>
-            <div className="size-guide-copy grid gap-4 md:grid-cols-3">
+            <div className="size-guide-copy grid gap-[var(--ds-space-sm)] md:grid-cols-3">
               <div>
                 <p className="size-guide-measure-title mb-1">Bust</p>
                 <p>
