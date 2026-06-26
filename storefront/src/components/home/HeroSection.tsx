@@ -91,7 +91,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               type="button"
               variant="ghost"
               size="md"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-black-rgb),0.28)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
+              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
               onClick={() => emblaApi?.scrollPrev()}
               aria-label="Previous hero slide"
             >
@@ -101,7 +101,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               type="button"
               variant="ghost"
               size="md"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-black-rgb),0.28)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
+              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
               onClick={() => emblaApi?.scrollNext()}
               aria-label="Next hero slide"
             >
@@ -125,7 +125,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               type="button"
               variant="ghost"
               size="sm"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-black-rgb),0.28)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
+              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
               onClick={toggleAutoplay}
               aria-label={paused ? 'Play hero slideshow' : 'Pause hero slideshow'}
             >

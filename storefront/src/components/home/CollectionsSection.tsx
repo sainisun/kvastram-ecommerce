@@ -38,7 +38,7 @@ export function CollectionsSection({
                 <span className="homepage-campaign-scrim" />
                 <span className="absolute inset-x-8 bottom-8 z-[1] grid gap-2 text-[var(--ds-text-inverse)]">
                   <strong className="font-display text-display-md font-[var(--ds-type-heading-weight)]">{collection.title}</strong>
-                  {collection.description ? <small className="max-w-[42ch] text-body-sm">{collection.description}</small> : null}
+                  {collection.description ? <small className="max-w-[var(--ds-caption-width)] text-body-sm">{collection.description}</small> : null}
                 </span>
               </Link>
               <div className="grid grid-cols-3 gap-[var(--ds-space-sm)]" aria-label={`${collection.title} preview`}>

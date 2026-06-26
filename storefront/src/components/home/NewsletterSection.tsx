@@ -41,7 +41,7 @@ export function NewsletterSection({
     <section className="py-[clamp(80px,8vw,100px)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)]" data-home-section="10-newsletter">
       <div className="homepage-container max-w-[720px] text-center">
         <p className="homepage-eyebrow text-[var(--ds-text-inverse)]">Newsletter</p>
-        <h2 className="m-0 font-display text-display-lg font-[var(--ds-type-heading-weight)] leading-[var(--ds-leading-tight)] text-[var(--ds-text-inverse)]">{settings.title}</h2>
+        <h2 className="m-0 font-display text-display-lg font-[var(--ds-type-heading-weight)] leading-token-tight text-[var(--ds-text-inverse)]">{settings.title}</h2>
         <p className="mt-[var(--ds-space-sm)] mx-auto text-[rgba(var(--ds-white-rgb),0.82)]">{settings.subtitle}</p>
         <form onSubmit={submit} className="grid gap-[var(--ds-space-sm)] mt-[var(--ds-space-lg)] md:grid-cols-[minmax(0,1fr)_auto]">
           <Input

@@ -14,7 +14,7 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
             <h2 className="font-display text-display-md text-[var(--ds-text-primary)]">From our circle</h2>
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-[6px]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-[var(--ds-space-2xs)]">
           {posts.slice(0, 8).map((post) => (
             <a
               key={post.id}
@@ -30,7 +30,7 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
                 sizes="(max-width: 767px) 50vw, 25vw"
                 className="object-cover"
               />
-              <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--ds-space-sm)] p-[var(--ds-space-md)] bg-[rgba(var(--ds-black-rgb),0.6)] text-[var(--ds-text-inverse)] opacity-0 text-center transition-opacity duration-[180ms] ease-[ease] group-hover:opacity-100 group-focus-visible:opacity-100">
+              <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--ds-space-sm)] p-[var(--ds-space-md)] bg-[rgba(var(--ds-ink-rgb),0.6)] text-[var(--ds-text-inverse)] opacity-0 text-center transition-opacity duration-[180ms] ease-[ease] group-hover:opacity-100 group-focus-visible:opacity-100">
                 <Instagram aria-hidden="true" />
                 {post.caption ? <span className="line-clamp-3 overflow-hidden text-[var(--ds-text-body-xs)]">{post.caption}</span> : null}
               </span>
