@@ -19,7 +19,7 @@ function SectionHead({
   action?: { label: string; href: string };
 }) {
   return (
-    <div className="kv-section-head mb-8 md:mb-12">
+    <div className="kv-section-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
       <div className="kv-tag">{eyebrow}</div>
       {action ? (
         <Link href={action.href} className="kv-section-link">
@@ -72,7 +72,7 @@ function MerchSlotCard({
       ) : null}
 
       {isCategoryOverlay ? (
-        <div className="absolute inset-x-0 bottom-6 z-[2] w-full px-6 text-center">
+        <div className="absolute inset-x-0 bottom-6 z-[2] w-full px-[var(--ds-space-md)] text-center">
           <h3 className="inline-block max-w-full m-0 px-2 pb-2 border-b-2 border-[rgba(var(--ds-surface-paper-rgb),0.85)] text-[var(--ds-text-inverse)] font-display text-display-sm font-[var(--ds-type-body-weight)] [overflow-wrap:anywhere]">{slot.title}</h3>
         </div>
       ) : (
@@ -82,7 +82,7 @@ function MerchSlotCard({
             <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-inverse)]/75">
               {slot.eyebrow || 'Odhvica Edit'}
             </div>
-            <h3 className="mt-3 font-display text-display-md leading-token-tight">
+            <h3 className="mt-[var(--ds-space-xs)] font-display text-display-md leading-token-tight">
               {slot.title}
             </h3>
             {slot.copy ? (
@@ -120,7 +120,7 @@ export function HomeMerchandisingSections({
               eyebrow="Limited editions"
               action={{ label: 'View All', href: '/products' }}
             />
-            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {seasonalSlots.map((slot) => (
                 <MerchSlotCard key={slot.id} slot={slot} />
               ))}
@@ -138,7 +138,7 @@ export function HomeMerchandisingSections({
               eyebrow="Craft &amp; material"
               action={{ label: 'View All', href: '/products' }}
             />
-            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {fabricSlots.map((slot) => (
                 <MerchSlotCard
                   key={slot.id}
@@ -158,7 +158,7 @@ export function HomeMerchandisingSections({
               eyebrow="Dress for the moment"
               action={{ label: 'View All', href: '/collections' }}
             />
-            <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {occasionSlots.map((slot) => (
                 <MerchSlotCard
                   key={slot.id}

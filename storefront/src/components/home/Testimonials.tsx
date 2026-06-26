@@ -22,11 +22,11 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
   return (
     <section className="kv-section bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-subtle)]">
       <div className="kv-container">
-        <div className="kv-section-head mb-8 md:mb-12">
+        <div className="kv-section-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
           <div className="kv-tag">Love shared by customers</div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
+        <div className="grid gap-[var(--ds-space-md)] md:grid-cols-3 lg:gap-[var(--ds-space-md)]">
           {displayed.map((testimonial) => (
             <article key={testimonial.id} className="rounded-[var(--ds-radius-lg)] bg-[var(--ds-surface-soft)] p-8 text-center sm:p-10 border border-[var(--ds-border-subtle)]/30">
               <div className="flex items-center justify-center gap-1 text-body-sm">
@@ -37,7 +37,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
                 &ldquo;{testimonial.content}&rdquo;
               </p>
 
-              <div className="mt-6 flex items-center justify-center gap-3">
+              <div className="mt-[var(--ds-space-md)] flex items-center justify-center gap-[var(--ds-space-xs)]">
                 {testimonial.avatar_url ? (
                   <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[var(--ds-surface-soft)]">
                     <OptimizedImage

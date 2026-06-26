@@ -23,7 +23,7 @@ export function CollectionsSection({
         </div>
         <div className="grid gap-[var(--ds-home-section-space-mobile)] md:grid-cols-2">
           {collections.slice(0, 4).map((collection) => (
-            <article className="grid gap-6" key={collection.id}>
+            <article className="grid gap-[var(--ds-space-md)]" key={collection.id}>
               <Link
                 href={`/collections/${collection.handle}`}
                 className="relative block aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)]"
@@ -41,7 +41,7 @@ export function CollectionsSection({
                   {collection.description ? <small className="max-w-[42ch] text-body-sm">{collection.description}</small> : null}
                 </span>
               </Link>
-              <div className="grid grid-cols-3 gap-4" aria-label={`${collection.title} preview`}>
+              <div className="grid grid-cols-3 gap-[var(--ds-space-sm)]" aria-label={`${collection.title} preview`}>
                 {collection.products.map((product) => (
                   <Link
                     key={product.id}

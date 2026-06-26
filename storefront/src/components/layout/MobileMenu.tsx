@@ -44,7 +44,7 @@ export default function MobileMenu({
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose} side="left" title="Menu" showHeader={true} bodyClassName="p-0">
-      <nav className="flex flex-col py-2">
+      <nav className="flex flex-col py-[var(--ds-space-xs)]">
         {STOREFRONT_NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
 
@@ -65,7 +65,7 @@ export default function MobileMenu({
           );
         })}
         
-        <div className="mt-8 px-5">
+        <div className="mt-[var(--ds-space-md)] px-[var(--ds-space-md)]">
           <Link
             href="/contact"
             onClick={onClose}
