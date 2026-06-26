@@ -36,7 +36,7 @@ export function ProductCardSkeleton() {
 // Product grid skeleton
 export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[var(--ds-space-sm)] md:gap-[var(--ds-space-md)]">
       {Array.from({ length: count }).map((_, i) => (
         <ProductCardSkeleton key={i} />
       ))}
@@ -52,7 +52,7 @@ export function ProductDetailSkeleton() {
         {/* Breadcrumb skeleton */}
         <Skeleton className="h-4 w-64 mb-8" />
 
-        <div className="grid gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
+        <div className="grid gap-[var(--ds-space-md)] md:grid-cols-2 md:gap-[var(--ds-space-lg)] lg:gap-[var(--ds-space-lg)]">
           {/* Left: Image Gallery skeleton */}
           <div className="aspect-square bg-[var(--ds-surface-soft)]">
             <Skeleton className="w-full h-full" />
@@ -79,7 +79,7 @@ export function ProductDetailSkeleton() {
             {/* Variant selector */}
             <div className="pt-4 space-y-3">
               <Skeleton className="h-3 w-24" />
-              <div className="flex gap-2">
+              <div className="flex gap-[var(--ds-space-xs)]">
                 <Skeleton className="h-10 w-20" />
                 <Skeleton className="h-10 w-20" />
                 <Skeleton className="h-10 w-20" />
@@ -87,7 +87,7 @@ export function ProductDetailSkeleton() {
             </div>
 
             {/* Add to cart */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-[var(--ds-space-sm)] pt-[var(--ds-space-sm)]">
               <Skeleton className="h-12 w-32" />
               <Skeleton className="h-12 flex-1" />
             </div>
@@ -111,7 +111,7 @@ export function CartSkeleton() {
       <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
-        <div className="grid lg:grid-cols-12 gap-8">
+        <div className="grid lg:grid-cols-12 gap-[var(--ds-space-md)]">
           {/* Cart items */}
           <div className="lg:col-span-7 space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -148,17 +148,17 @@ export function CheckoutSkeleton() {
       <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-16">
+        <div className="grid gap-[var(--ds-space-md)] lg:grid-cols-2 lg:gap-[var(--ds-space-lg)]">
           {/* Shipping form */}
           <div className="space-y-6">
             <Skeleton className="h-6 w-48" />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-[var(--ds-space-sm)]">
               <Skeleton className="h-12" />
               <Skeleton className="h-12" />
             </div>
             <Skeleton className="h-12" />
             <Skeleton className="h-12" />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-[var(--ds-space-sm)]">
               <Skeleton className="h-12" />
               <Skeleton className="h-12" />
             </div>
@@ -169,7 +169,7 @@ export function CheckoutSkeleton() {
           <div className="space-y-4 bg-[var(--ds-surface-paper)] p-6">
             <Skeleton className="h-6 w-32" />
             {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="flex gap-4">
+              <div key={i} className="flex gap-[var(--ds-space-sm)]">
                 <Skeleton className="w-16 h-16 shrink-0" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-3/4" />
@@ -195,11 +195,11 @@ export function AccountSkeleton() {
       <div className="kv-page-container mx-auto max-w-[1440px]">
         <Skeleton className="h-10 w-64 mb-8" />
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-[var(--ds-space-md)]">
           {/* Sidebar */}
           <div className="lg:w-64 shrink-0">
             <div className="space-y-4 bg-[var(--ds-surface-paper)] p-6">
-              <Skeleton className="w-16 h-16 rounded-full mx-auto" />
+              <Skeleton className="w-16 h-16 rounded-[var(--ds-radius-pill)] mx-auto" />
               <Skeleton className="h-4 w-3/4 mx-auto" />
               <Skeleton className="h-3 w-1/2 mx-auto" />
               <Skeleton className="h-px w-full my-4" />
@@ -212,7 +212,7 @@ export function AccountSkeleton() {
           {/* Main content */}
           <div className="flex-1 space-y-6">
             {/* Stats */}
-            <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-3 gap-[var(--ds-space-sm)]">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="space-y-2 bg-[var(--ds-surface-paper)] p-6">
                   <Skeleton className="h-4 w-24" />
@@ -225,7 +225,7 @@ export function AccountSkeleton() {
             <div className="bg-[var(--ds-surface-paper)] p-6">
               <Skeleton className="h-6 w-32 mb-4" />
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex justify-between py-4 border-b">
+                <div key={i} className="flex justify-between py-[var(--ds-space-sm)] border-b">
                   <Skeleton className="h-4 w-32" />
                   <Skeleton className="h-4 w-24" />
                 </div>
@@ -249,7 +249,7 @@ export function OrdersListSkeleton() {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between p-6 border-b"
+              className="flex items-center justify-between p-[var(--ds-space-md)] border-b"
             >
               <div className="space-y-2">
                 <Skeleton className="h-5 w-32" />
