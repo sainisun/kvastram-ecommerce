@@ -170,6 +170,12 @@
   background: var(--ds-text-primary);
 }
 
+.pd-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
 .pdp-buy-box {
   padding: var(--ds-space-sm) 0 0;
 }
@@ -694,7 +700,7 @@
   }
 
   .pdp-title {
-    font-size: var(--ds-text-body-lg);
+    font-size: var(--ds-text-display-sm);
   }
 
   .pdp-summary-description {
