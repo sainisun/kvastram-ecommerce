@@ -14,7 +14,7 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
   if (reels.length === 0) return null;
 
   return (
-    <section className="w-full py-home-section-mobile md:py-home-section" data-home-section="7-watch-shop">
+    <section className="w-full py-[var(--ds-home-section-space-mobile)] md:py-[var(--ds-home-section-space-desktop)]" data-home-section="7-watch-shop">
       <div className="homepage-container">
         <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)]">
           <div>

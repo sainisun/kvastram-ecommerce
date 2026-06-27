@@ -9,7 +9,7 @@ export function CategoryCarousel({ categories }: { categories: HomepageCategoryC
 
   return (
     <section
-      className="w-full py-home-section-mobile md:py-home-section"
+      className="w-full py-[var(--ds-home-section-space-mobile)] md:py-[var(--ds-home-section-space-desktop)]"
       aria-label="Category Carousel"
       data-home-section="3-category-carousel"
     >

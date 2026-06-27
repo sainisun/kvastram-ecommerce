@@ -35,29 +35,29 @@ interface ButtonAnchorProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'border-brand-line bg-brand-accent text-text-inverse hover:bg-brand-hover hover:border-brand-hover',
+    'border-[var(--ds-border-subtle)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
   secondary:
-    'bg-brand-soft text-text-primary border-brand-line hover:bg-brand-line hover:border-brand-line',
+    'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-border-subtle)] hover:border-[var(--ds-border-subtle)]',
   outline:
-    'border-brand-line bg-brand-cream text-text-primary hover:bg-text-primary hover:text-text-inverse',
+    'border-[var(--ds-border-subtle)] bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]',
   ghost:
-    'border-transparent bg-transparent text-text-primary hover:bg-brand-soft',
+    'border-transparent bg-transparent text-[var(--ds-text-primary)] hover:bg-[var(--ds-surface-soft)]',
   danger:
-    'border-text-error bg-text-error text-text-inverse hover:brightness-95',
+    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-text-inverse)] hover:brightness-95',
   accent:
-    'bg-brand-gold text-text-primary border-brand-gold hover:bg-brand-hover hover:border-brand-hover',
+    'bg-[var(--ds-accent-gold)] text-[var(--ds-text-primary)] border-[var(--ds-accent-gold)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
   pdp:
-    'bg-brand-accent text-text-inverse border-brand-accent hover:bg-brand-hover hover:border-brand-hover w-full',
+    'bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] border-[var(--ds-accent-primary)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)] w-full',
   success:
-    'bg-text-success text-text-inverse border-text-success hover:brightness-95 hover:brightness-95',
+    'bg-[var(--ds-success-bg)] text-[var(--ds-text-inverse)] border-[var(--ds-success)] hover:brightness-95 hover:brightness-95',
   compact:
-    'bg-brand-soft text-text-primary border-brand-line hover:bg-brand-line hover:border-brand-line text-body-xs py-1 px-3',
+    'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-border-subtle)] hover:border-[var(--ds-border-subtle)] text-body-xs py-1 px-3',
   inline:
-    'bg-transparent text-text-accent border-transparent hover:text-brand-hover underline underline-offset-2 p-0 h-auto',
+    'bg-transparent text-[var(--ds-accent-primary)] border-transparent hover:text-[var(--ds-accent-hover)] underline underline-offset-2 p-0 h-auto',
   categoryOverlay:
-    'bg-[rgba(var(--ds-white-rgb),0.15)] text-text-inverse border-[rgba(var(--ds-white-rgb),0.3)] hover:bg-[rgba(var(--ds-white-rgb),0.25)] backdrop-blur-sm',
+    'bg-[rgba(var(--ds-white-rgb),0.15)] text-[var(--ds-text-inverse)] border-[rgba(var(--ds-white-rgb),0.3)] hover:bg-[rgba(var(--ds-white-rgb),0.25)] backdrop-blur-sm',
   'product-card':
-    'bg-brand-cream text-text-primary border-brand-line hover:bg-brand-soft hover:border-brand-line text-body-xs',
+    'bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-surface-soft)] hover:border-[var(--ds-border-subtle)] text-body-xs',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

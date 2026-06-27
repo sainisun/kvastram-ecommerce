@@ -125,7 +125,7 @@ export function BestSellers({
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full py-home-section-mobile md:py-home-section" data-home-section="5-best-sellers">
+    <section className="w-full py-[var(--ds-home-section-space-mobile)] md:py-[var(--ds-home-section-space-desktop)]" data-home-section="5-best-sellers">
       <div className="homepage-container">
         <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)] md:mb-[var(--ds-space-md)]">
           <div>
