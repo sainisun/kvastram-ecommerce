@@ -1,4 +1,3 @@
-@config '../../tailwind.config.ts';
 @import 'tailwindcss';
 @import '../styles/tokens.css';
 
@@ -125,7 +124,45 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--ds-font-body);
-  --font-display: var(--font-display);
+  --font-display: var(--ds-font-display);
+  --font-body: var(--ds-font-body);
+  --font-ui: var(--ds-font-ui);
+
+  --color-brand-terracotta: var(--ds-accent-primary);
+  --color-brand-accent: var(--ds-accent-primary);
+  --color-brand-hover: var(--ds-accent-hover);
+  --color-brand-soft: var(--ds-surface-soft);
+  --color-brand-cream: var(--ds-surface-page);
+  --color-brand-paper: var(--ds-surface-paper);
+  --color-brand-ink: var(--ds-text-primary);
+  --color-brand-muted: var(--ds-text-muted);
+  --color-brand-line: var(--ds-border-subtle);
+  --color-brand-gold: var(--ds-accent-gold);
+
+  --color-text-primary: var(--ds-text-primary);
+  --color-text-secondary: var(--ds-text-secondary);
+  --color-text-muted: var(--ds-text-muted);
+  --color-text-inverse: var(--ds-text-inverse);
+  --color-text-accent: var(--ds-accent-primary);
+  --color-text-error: var(--ds-danger);
+  --color-text-success: var(--ds-success-text);
+
+  --text-display-xl: var(--ds-text-display-xl);
+  --text-display-lg: var(--ds-text-display-lg);
+  --text-display-md: var(--ds-text-display-md);
+  --text-display-sm: var(--ds-text-display-sm);
+  --text-body-xl: var(--ds-text-body-xl);
+  --text-body-lg: var(--ds-text-body-lg);
+  --text-body-md: var(--ds-text-body-md);
+  --text-body-sm: var(--ds-text-body-sm);
+  --text-body-xs: var(--ds-text-body-xs);
+
+  --container-prose: var(--ds-prose-width);
+  --container-heading: var(--ds-heading-width);
+  --container-caption: var(--ds-caption-width);
+  --container-content: var(--ds-content-width);
+  --container-narrow: var(--ds-narrow-width);
+  --container-home-content: var(--ds-home-content-width);
 }
 
 

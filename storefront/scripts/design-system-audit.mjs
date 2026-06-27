@@ -8,7 +8,6 @@ const storefrontRoot = path.resolve(scriptDir, '..');
 const workspaceRoot = path.resolve(storefrontRoot, '..');
 const roots = [path.join(storefrontRoot, 'src')];
 const extraFiles = [
-  path.join(storefrontRoot, 'tailwind.config.ts'),
   path.join(workspaceRoot, 'docs/design-system/storefront-design-system-v1.md'),
   path.join(storefrontRoot, 'KVASTRAM_HEADER_DESIGN_SYSTEM.md'),
 ];
