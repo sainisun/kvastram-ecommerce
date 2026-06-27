@@ -9,8 +9,9 @@ CSS design tokens.
 ## MANDATORY FIRST STEPS (every session)
 1. Read src/styles/tokens.css — know all available tokens
 2. Read DESIGN_SYSTEM.md — understand the system
-3. Read the component file you are about to change
-4. THEN make changes
+3. Note from previous session: The token system is already 100% clean. Several legacy CSS files were dead code that had already been migrated to Tailwind but not deleted. ALWAYS verify real .tsx consumers via grep before assuming a file needs migration or new tokens.
+4. Read the component file you are about to change
+5. THEN make changes
 
 ## THE ONE RULE
 Every visual value MUST come from tokens.css via --ds-* tokens.

@@ -1,24 +1,22 @@
 @import './base.css';
 @import './effects.css';
-@import './components/premium-sections.css';
-@import './components/category-sections.css';
-@import './components/newsletter.css';
-@import './components/pdp-premium.css';
+
+
+
+
 @import './animations.css';
 @import './mobile-overrides.css';
 @import './theme-overrides.css';
 @import './utilities.css';
 @import './components/product-card.css';
-@import './components/collections.css';
+
 @import './components/reels.css';
-@import './components/content-pages.css';
-@import './components/home-sections.css';
-@import './components/pdp-gallery.css';
-@import './components/footer-base.css';
-@import './components/ugc.css';
+
+
+
 @import './responsive.css';
-@import './components/quick-view.css';
-@import './components/footer.css';
+
+
 @import './components/pdp.css';
 @import './typography.css';
 

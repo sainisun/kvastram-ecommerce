@@ -122,7 +122,6 @@
   font-weight: var(--ds-type-ui-weight);
 }
 
-.pdp-trust-desktop,
 .pdp-desktop-breadcrumb {
   display: none;
 }
@@ -615,30 +614,6 @@
   font-size: var(--ds-text-body-xs);
 }
 
-.pdp-review-meter {
-  display: grid;
-  grid-template-columns: 28px 1fr 38px;
-  align-items: center;
-  gap: var(--ds-space-xs);
-  margin: var(--ds-space-xs) 0;
-  color: var(--ds-text-muted);
-  font-size: var(--ds-text-body-xs);
-  font-weight: var(--ds-type-label-weight);
-}
-
-.pdp-review-meter i {
-  height: 8px;
-  overflow: hidden;
-  border-radius: var(--ds-radius-pill);
-  background: var(--ds-surface-soft);
-}
-
-.pdp-review-meter b {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--ds-accent-gold);
-}
 
 .pdp-verified-card svg {
   color: var(--ds-success);
@@ -729,7 +704,6 @@
     display: none;
   }
 
-  .pdp-trust-desktop,
   .pdp-desktop-breadcrumb {
     display: flex;
   }

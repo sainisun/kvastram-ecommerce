@@ -210,6 +210,8 @@ function ProductGrid({
           actionLabel={cardActionLabel}
           onAddToCart={handleAddToCart}
           onQuickView={setQuickViewProduct}
+          surface="minimal"
+          layout={density === 'compact' ? 'compact' : 'vertical'}
         />
       </motion.div>
     );

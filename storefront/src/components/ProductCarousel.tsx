@@ -122,6 +122,7 @@ function ProductCarousel({
           categoryLabel={product.subtitle || product.collection?.title || 'Odhvica'}
           showQuickView={false}
           onAddToCart={handleAddToCart}
+          surface="minimal"
         />
       ))}
     </div>

@@ -287,6 +287,13 @@ const config: Config = {
         content: 'var(--ds-content-width)',
         narrow: 'var(--ds-narrow-width)',
         'home-content': 'var(--ds-home-content-width)',
+        xs: '20rem',
+        sm: '24rem',
+        md: '28rem',
+        lg: '32rem',
+        xl: '36rem',
+        '2xl': '42rem',
+        '3xl': '48rem',
       },
       borderRadius: {
         sm: 'var(--ds-radius-sm)', // 4px — buttons, badges

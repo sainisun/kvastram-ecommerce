@@ -8,14 +8,6 @@
 .products-grid.compact {
   grid-template-columns: 1fr;
 }
-.products-grid.compact .product-card {
-  display: grid;
-  grid-template-columns: 116px 1fr;
-}
-.products-grid.compact .product-media {
-  aspect-ratio: 1;
-  min-height: 100%;
-}
 .product-card {
   position: relative;
   background: var(--ds-surface-paper);
@@ -851,23 +843,3 @@
     transform: translateY(0);
   }
 }
-
-/* Oh Polly Style Product Card overrides in homepage slider and products grids */
-.homepage-best-seller-slider .product-card,
-.products-grid .product-card {
-  border-radius: 0px;
-  border: none;
-  box-shadow: none;
-  background: transparent;
-}
-.homepage-best-seller-slider .product-card .product-media,
-.products-grid .product-card .product-media {
-  aspect-ratio: 2 / 3;
-}
-.homepage-best-seller-slider .product-card .product-info,
-.products-grid .product-card .product-info {
-  padding: var(--ds-space-xs) 0;
-}
-
-
-

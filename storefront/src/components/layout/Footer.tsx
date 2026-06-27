@@ -53,7 +53,7 @@ const socialLinks = [
         <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
       </svg>
     ),
-    color: 'kf-social-instagram',
+    color: 'hover:text-[var(--ds-footer-highlight)]',
   },
   {
     label: 'TikTok',
@@ -63,13 +63,13 @@ const socialLinks = [
         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.7a4.85 4.85 0 0 1-1.01-.01z" />
       </svg>
     ),
-    color: 'kf-social-tiktok',
+    color: 'hover:text-[var(--ds-footer-highlight)]',
   },
   {
     label: 'WhatsApp',
     href: buildWhatsAppHref('Hi, I need help from Odhvica'),
     icon: MessageCircle,
-    color: 'kf-social-whatsapp',
+    color: 'hover:text-[var(--ds-success)]',
   },
   {
     label: 'YouTube',
@@ -88,7 +88,7 @@ const socialLinks = [
         <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
       </svg>
     ),
-    color: 'kf-social-youtube',
+    color: 'hover:text-[var(--ds-danger)]',
   },
   {
     label: 'Facebook',
@@ -106,7 +106,7 @@ const socialLinks = [
         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
       </svg>
     ),
-    color: 'kf-social-facebook',
+    color: 'hover:text-[var(--ds-info)]',
   },
   {
     label: 'Twitter / X',
@@ -125,7 +125,7 @@ const socialLinks = [
         <path d="M4 20l6.768-6.768m2.46-2.46L20 4" />
       </svg>
     ),
-    color: 'kf-social-twitter',
+    color: 'hover:text-[var(--ds-footer-highlight)]',
   },
 ];
 
@@ -166,26 +166,26 @@ export function Footer() {
   return (
     <footer data-home-section="11-footer" className="odhvica-footer border-t border-[var(--ds-footer-border)]">
       <div
-        className="footer-watermark-prem overflow-hidden px-[var(--ds-space-md)] pt-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:pt-[var(--ds-space-md)] select-none"
+        className="font-display text-[clamp(4rem,4rem,8.75rem)] font-[var(--ds-type-light-weight)] tracking-[var(--ds-type-heading-tracking)] text-[rgba(var(--ds-text-primary-rgb),0.04)] leading-[var(--ds-leading-tight)] mb-[calc(var(--ds-space-sm)*-1)] overflow-hidden px-[var(--ds-space-md)] pt-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:pt-[var(--ds-space-md)] select-none"
         aria-hidden="true"
       >
         Odhvica
       </div>
 
       <div className="kv-page-container mx-auto max-w-[1440px] px-[var(--ds-space-md)] pb-[var(--ds-space-md)] pt-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:pb-[var(--ds-space-lg)] md:pt-12 lg:px-20 lg:pt-24">
-        <div className="grid grid-cols-2 gap-x-[var(--ds-space-md)] gap-y-[var(--ds-space-md)] sm:grid-cols-2 lg:grid-cols-5 lg:gap-[var(--ds-space-lg)]">
+        <div className="grid grid-cols-2 gap-x-[var(--ds-space-md)] gap-y-[var(--ds-space-md)] md:grid-cols-2 lg:grid-cols-5 lg:gap-[var(--ds-space-lg)]">
           {/* Brand Column */}
           <div className="space-y-5 col-span-2 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
-              <span className="kf-logo font-body text-display-sm type-semibold tracking-token-wider">
+              <span className="text-[var(--ds-footer-heading)] font-body text-display-sm type-semibold tracking-token-wider">
                 ODHVICA
               </span>
             </Link>
-            <p className="kf-link font-body text-body-md type-light leading-token-relaxed">
+            <p className="text-[var(--ds-footer-link)] hover:text-[var(--ds-footer-hover)] transition-colors font-body text-body-md type-light leading-token-relaxed">
               Handcrafted luxury fashion connecting global citizens with the
               finest artisanal craftsmanship from India and beyond.
             </p>
-            <div className="kf-muted font-body space-y-3 text-body-xs type-light">
+            <div className="text-[var(--ds-footer-muted)] font-body space-y-3 text-body-xs type-light">
               <p>{storefrontTrust.supportEmail}</p>
               <p>{storefrontTrust.supportPhone}</p>
               <p>{storefrontTrust.supportHours}</p>
@@ -199,7 +199,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className={`kf-social transition-colors duration-200 ${color}`}
+                  className={`text-[var(--ds-footer-link)] transition-colors transition-colors duration-200 ${color}`}
                 >
                   <Icon size={18} />
                 </a>
@@ -209,7 +209,7 @@ export function Footer() {
 
           {/* Shop Column */}
           <div className="col-span-1">
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
+            <h4 className="text-[var(--ds-footer-heading)] font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -217,7 +217,7 @@ export function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="kf-link font-body text-body-md type-light transition-colors block"
+                    className="text-[var(--ds-footer-link)] hover:text-[var(--ds-footer-hover)] transition-colors font-body text-body-md type-light transition-colors block"
                   >
                     {label}
                   </Link>
@@ -228,7 +228,7 @@ export function Footer() {
 
           {/* Support Column */}
           <div className="col-span-1">
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
+            <h4 className="text-[var(--ds-footer-heading)] font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Support
             </h4>
             <ul className="space-y-3">
@@ -236,7 +236,7 @@ export function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="kf-link font-body text-body-md type-light transition-colors block"
+                    className="text-[var(--ds-footer-link)] hover:text-[var(--ds-footer-hover)] transition-colors font-body text-body-md type-light transition-colors block"
                   >
                     {label}
                   </Link>
@@ -247,7 +247,7 @@ export function Footer() {
 
           {/* Company Column */}
           <div className="col-span-1">
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
+            <h4 className="text-[var(--ds-footer-heading)] font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Company
             </h4>
             <ul className="space-y-3">
@@ -257,8 +257,8 @@ export function Footer() {
                     href={href}
                     className={`font-body text-body-md transition-colors block ${
                       highlight
-                        ? 'kf-highlight type-medium'
-                        : 'kf-link type-light'
+                        ? 'text-[var(--ds-footer-highlight)] hover:text-[var(--ds-footer-highlight-hover)] transition-colors type-medium'
+                        : 'text-[var(--ds-footer-link)] hover:text-[var(--ds-footer-hover)] transition-colors type-light'
                     }`}
                   >
                     {label}
@@ -270,41 +270,41 @@ export function Footer() {
 
           {/* Stay Updated Column */}
           <div className="col-span-2 sm:col-span-2 lg:col-span-1">
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
+            <h4 className="text-[var(--ds-footer-heading)] font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
               Stay Updated
             </h4>
-            <p className="kf-muted font-body mb-4 text-body-md type-light leading-token-relaxed">
+            <p className="text-[var(--ds-footer-muted)] font-body mb-4 text-body-md type-light leading-token-relaxed">
               Get 10% off your first order plus early access to new collections.
             </p>
             <NewsletterForm minimal />
-            <div className="kf-dim font-body mt-4 text-body-xs">
+            <div className="text-[var(--ds-footer-dim)] font-body mt-4 text-body-xs">
               No spam. Unsubscribe anytime.
             </div>
           </div>
         </div>
       </div>
 
-      <div className="kf-border border-t">
+      <div className="border-[var(--ds-footer-border)] border-t">
         <div className="kv-page-container mx-auto max-w-[1440px] px-[var(--ds-space-md)] py-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:py-[var(--ds-space-lg)] lg:px-20">
           <PaymentIcons className="mb-4" />
-          <div className="kf-legal font-body flex flex-col items-center justify-between gap-[var(--ds-space-sm)] text-center text-body-xs sm:flex-row sm:text-left">
+          <div className="text-[var(--ds-footer-muted)] font-body flex flex-col items-center justify-between gap-[var(--ds-space-sm)] text-center text-body-xs sm:flex-row sm:text-left">
             <p>Copyright {new Date().getFullYear()} Odhvica. All rights reserved.</p>
             <div className="flex gap-[var(--ds-space-md)]">
               <Link
                 href={storefrontTrust.policyRoutes.privacy}
-                className="kf-legal-link font-body transition-colors"
+                className="text-[var(--ds-footer-muted)] hover:text-[var(--ds-footer-hover)] transition-colors font-body transition-colors"
               >
                 Privacy
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.terms}
-                className="kf-legal-link font-body transition-colors"
+                className="text-[var(--ds-footer-muted)] hover:text-[var(--ds-footer-hover)] transition-colors font-body transition-colors"
               >
                 Terms
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.cookies}
-                className="kf-legal-link font-body transition-colors"
+                className="text-[var(--ds-footer-muted)] hover:text-[var(--ds-footer-hover)] transition-colors font-body transition-colors"
               >
                 Cookies
               </Link>
