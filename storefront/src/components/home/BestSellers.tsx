@@ -137,7 +137,7 @@ export function BestSellers({
           </Link>
         </div>
         
-        <div className="overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">
+        <div className="[&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-info]:py-[var(--ds-space-xs)] overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">
           {products.map((product) => {
             const priceInfo = getPrice(product);
             return (
@@ -152,7 +152,6 @@ export function BestSellers({
                   onAddToCart={handleAddToCart}
                   added={addedId === product.id}
                   showQuickView={false}
-                  surface="minimal"
                 />
               </div>
             );

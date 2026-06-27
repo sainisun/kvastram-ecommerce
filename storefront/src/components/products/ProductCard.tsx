@@ -30,8 +30,6 @@ interface ProductCardProps {
   actionLabel?: string;
   onAddToCart: (event: React.MouseEvent<HTMLButtonElement>, product: Product) => void;
   onQuickView?: (product: Product) => void;
-  surface?: "default" | "minimal";
-  layout?: "vertical" | "compact";
 }
 
 const SWATCH_CLASS_BY_SLUG: Record<string, string> = {
@@ -69,8 +67,6 @@ export function ProductCard({
   actionLabel,
   onAddToCart,
   onQuickView,
-  surface = 'default',
-  layout = 'vertical',
 }: ProductCardProps) {
   const displayTitle = getProductDisplayTitle(product.title);
   const href = `/products/${product.handle || product.id}`;
@@ -97,19 +93,8 @@ export function ProductCard({
     null;
 
   return (
-    <article className={cn(
-      "product-card group",
-      surface === "minimal" && "border-none bg-transparent shadow-none rounded-none",
-      layout === "compact" && "grid grid-cols-[116px_1fr]"
-    )}>
-      <div className={cn(
-        "product-media",
-        layout === "compact"
-          ? "min-h-full aspect-square"
-          : surface === "minimal"
-            ? "aspect-[2/3]"
-            : ""
-      )}>
+    <article className="product-card group">
+      <div className="product-media">
         <Link
           href={href}
           className="relative block h-full w-full"
@@ -187,10 +172,7 @@ export function ProductCard({
         />
       </div>
 
-      <div className={cn(
-        "product-info",
-        surface === "minimal" && "px-0 py-[var(--ds-space-xs)]"
-      )}>
+      <div className="product-info">
         <p className="product-cat">{categoryLabel || product.collection?.title || product.subtitle || 'Odhvica'}</p>
         <Link href={href}>
           <h3 className="product-name" title={displayTitle}>

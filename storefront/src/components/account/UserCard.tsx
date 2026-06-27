@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { User } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/Card';
 
 interface UserCardProps {
   firstName: string;
@@ -15,8 +14,8 @@ export function UserCard({ firstName, lastName, email }: UserCardProps) {
     `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
 
   return (
-    <Card>
-      <CardContent className="flex items-center gap-4 p-6">
+    <div className="bg-[var(--ds-surface-paper)] p-6 border-b border-[var(--ds-border-subtle)]">
+      <div className="flex items-center gap-4">
         <div className="w-14 h-14 bg-[var(--ds-surface-soft)] rounded-full flex items-center justify-center shrink-0">
           {initials ? (
             <span className="text-body-xl type-medium text-[var(--ds-text-secondary)]">
@@ -52,8 +51,8 @@ export function UserCard({ firstName, lastName, email }: UserCardProps) {
             <path d="m15 5 4 4" />
           </svg>
         </Link>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
