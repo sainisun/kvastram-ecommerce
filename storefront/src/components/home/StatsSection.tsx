@@ -151,7 +151,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           margin: 0 auto;
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: var(--space-10) var(--space-8);
+          gap: var(--ds-space-2xl) var(--ds-space-lg);
         }
 
         .stat-entry-prem {
@@ -184,8 +184,8 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         }
 
         .stat-symbol-prem {
-          margin-bottom: var(--space-4);
-          font-size: var(--text-body-lg);
+          margin-bottom: var(--ds-space-sm);
+          font-size: var(--ds-text-body-lg);
           line-height: var(--ds-leading-tight);
           color: var(--ds-accent-gold);
           text-shadow: 0 0 18px rgba(var(--ds-accent-gold-rgb), 0.14);
@@ -193,29 +193,29 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         }
 
         .stat-num-prem {
-          font-family: var(--font-display);
-          font-size: var(--text-display-lg);
-          font-weight: var(--type-heading-weight);
+          font-family: var(--ds-font-display);
+          font-size: var(--ds-text-display-lg);
+          font-weight: var(--ds-type-heading-weight);
           line-height: var(--ds-leading-tight);
-          letter-spacing: var(--type-heading-tracking);
+          letter-spacing: var(--ds-type-heading-tracking);
           color: var(--ds-text-primary);
           white-space: nowrap;
         }
 
         .stat-label-prem {
-          margin-top: var(--space-4);
-          font-size: var(--text-body-xs);
-          font-weight: var(--type-label-weight);
+          margin-top: var(--ds-space-sm);
+          font-size: var(--ds-text-body-xs);
+          font-weight: var(--ds-type-label-weight);
           line-height: var(--ds-leading-relaxed);
-          letter-spacing: var(--type-label-tracking);
-          text-transform: var(--type-label-transform);
+          letter-spacing: var(--ds-type-label-tracking);
+          text-transform: var(--ds-type-label-transform);
           color: rgba(var(--ds-text-secondary-rgb), 0.72);
         }
 
         @media (min-width: 768px) {
           .stats-row-prem {
             grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: var(--space-6);
+            gap: var(--ds-space-md);
           }
 
           .stat-entry-prem::after {
@@ -228,13 +228,13 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           }
 
           .stat-symbol-prem {
-            margin-bottom: var(--space-5);
+            margin-bottom: var(--ds-space-md);
           }
         }
 
         @media (max-width: 767px) {
           .stat-num-prem {
-            font-size: var(--text-display-md);
+            font-size: var(--ds-text-display-md);
             white-space: normal;
           }
         }

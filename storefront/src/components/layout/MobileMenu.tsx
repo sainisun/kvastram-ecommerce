@@ -57,7 +57,7 @@ export default function MobileMenu({
                 isActive ? 'text-[var(--ds-accent-primary)] bg-[var(--ds-surface-subtle)]' : 'text-[var(--ds-text-primary)]'
               }`}
             >
-              <span className="font-ui text-body-base type-medium tracking-token-wide uppercase">
+              <span className="font-ui text-body-md type-medium tracking-token-wide uppercase">
                 {item.label}
               </span>
               <ChevronRight size={18} className="text-[var(--ds-text-disabled)]" />
