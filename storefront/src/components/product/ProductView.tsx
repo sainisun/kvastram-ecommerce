@@ -540,7 +540,7 @@ export default function ProductView({ product }: { product: Product }) {
                     type="button"
                     onClick={handleAddToCart}
                     disabled={!selectedVariant || addedToCart || outOfStock}
-                    variant="secondary"
+                    variant="primary"
                     size="lg"
                     fullWidth
                     className={`pdp-primary-cta${addedToCart ? ' is-added' : outOfStock ? ' is-disabled' : ''}`}
@@ -701,7 +701,7 @@ export default function ProductView({ product }: { product: Product }) {
             type="button"
             onClick={handleAddToCart}
             disabled={!selectedVariant || addedToCart || outOfStock}
-            variant="secondary"
+            variant="primary"
             size="md"
             className={`pdp-sticky-cta${outOfStock ? ' is-disabled' : addedToCart ? ' is-added' : ''}`}
           >
