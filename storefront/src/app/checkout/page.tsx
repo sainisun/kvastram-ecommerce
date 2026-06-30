@@ -24,6 +24,7 @@ import {
   ExpressCheckoutElement,
 } from '@stripe/react-stripe-js';
 import CountrySelect from '@/components/ui/CountrySelect';
+import { getCountryName } from '@/config/countries';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
@@ -181,7 +182,7 @@ function ExpressCheckoutForm({
 export default function CheckoutPage() {
   const { customer, loading: authLoading } = useAuth();
   const { items, cartTotal, clearCart } = useCart();
-  const { currentRegion, settings } = useShop();
+  const { currentRegion, regions, setRegion, settings } = useShop();
   const { formatPrice } = useCurrency();
 
   // Initialize all hooks FIRST - before any conditionals
@@ -259,6 +260,19 @@ export default function CheckoutPage() {
       }));
     }
   }, [customer]);
+
+  // Sync global region state whenever country_code changes
+  useEffect(() => {
+    if (formData.country_code && regions && regions.length > 0) {
+      const countryName = getCountryName(formData.country_code);
+      const matchedRegion = regions.find(
+        (r) => r.name.toLowerCase() === countryName.toLowerCase()
+      );
+      if (matchedRegion && matchedRegion.id !== currentRegion?.id) {
+        setRegion(matchedRegion);
+      }
+    }
+  }, [formData.country_code, regions, currentRegion?.id, setRegion]);
 
   // PHASE 1.3: Fetch shipping options when country changes
   useEffect(() => {
@@ -465,7 +479,13 @@ export default function CheckoutPage() {
     setError(null);
 
     try {
-      if (!currentRegion) throw new Error('No region selected');
+      if (!currentRegion) {
+        throw new Error(
+          formData.country_code 
+            ? `Shipping is not available for ${getCountryName(formData.country_code)} at this time.`
+            : 'No shipping region selected.'
+        );
+      }
 
       // PHASE 1.5: Validate terms acceptance
       if (!acceptTerms) {
