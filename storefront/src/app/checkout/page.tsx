@@ -187,9 +187,17 @@ export default function CheckoutPage() {
 
   // Initialize all hooks FIRST - before any conditionals
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<'shipping' | 'payment' | 'success'>(
-    'shipping'
+  const [step, setStep] = useState<'auth' | 'shipping' | 'payment' | 'success'>(
+    'auth'
   );
+  
+  // Auth state for Step 0
+  const [authEmail, setAuthEmail] = useState(customer?.email || '');
+  const [authOtp, setAuthOtp] = useState('');
+  const [authStage, setAuthStage] = useState<'email' | 'otp'>('email');
+  const [authLoadingStep, setAuthLoadingStep] = useState(false);
+  const [authError, setAuthError] = useState('');
+
   const [orderId, setOrderId] = useState('');         // display_id for UI
   const [orderUUID, setOrderUUID] = useState('');      // UUID for payment APIs
   const [checkoutPaymentToken, setCheckoutPaymentToken] = useState('');
@@ -258,8 +266,18 @@ export default function CheckoutPage() {
         last_name: customer.last_name || prev.last_name,
         phone: customer.phone || prev.phone,
       }));
+      setAuthEmail(customer.email);
     }
   }, [customer]);
+
+  // Skip auth step if user is already logged in
+  useEffect(() => {
+    if (!authLoading && step === 'auth') {
+      if (customer) {
+        setStep('shipping');
+      }
+    }
+  }, [customer, authLoading, step]);
 
   // Sync global region state whenever country_code changes
   useEffect(() => {
@@ -738,7 +756,107 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {step === 'shipping' ? (
+            {step === 'auth' ? (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                    {authStage === 'email' ? 'Enter Email' : 'Verify OTP'}
+                  </h3>
+                  
+                  {authError && (
+                    <div className="bg-[var(--ds-danger-bg)] text-[var(--ds-danger)] p-3 text-body-sm mb-4">
+                      {authError}
+                    </div>
+                  )}
+
+                  {authStage === 'email' ? (
+                    <div className="space-y-4">
+                      <p className="text-body-sm color-muted">Please enter your email to proceed with checkout.</p>
+                      <Input
+                        id="auth_email"
+                        type="email"
+                        name="auth_email"
+                        label="Email Address"
+                        required
+                        value={authEmail}
+                        onChange={(e) => setAuthEmail(e.target.value)}
+                        autoComplete="email"
+                      />
+                      <Button
+                        onClick={async () => {
+                          if (!authEmail) return;
+                          setAuthLoadingStep(true);
+                          setAuthError('');
+                          try {
+                            await api.sendCheckoutOtp(authEmail);
+                            setAuthStage('otp');
+                          } catch (err: unknown) {
+                            const error = err as Error;
+                            setAuthError(error.message || 'Failed to send OTP');
+                          } finally {
+                            setAuthLoadingStep(false);
+                          }
+                        }}
+                        disabled={authLoadingStep}
+                        className="w-full mt-4"
+                        variant="primary"
+                      >
+                        Send OTP
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <p className="text-body-sm color-muted">Enter the 6-digit code sent to {authEmail}</p>
+                      <Input
+                        id="auth_otp"
+                        type="text"
+                        name="auth_otp"
+                        label="6-Digit OTP"
+                        required
+                        value={authOtp}
+                        onChange={(e) => setAuthOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      />
+                      <Button
+                        onClick={async () => {
+                          if (authOtp.length !== 6) return;
+                          setAuthLoadingStep(true);
+                          setAuthError('');
+                          try {
+                            const res = await api.verifyCheckoutOtp(authEmail, authOtp);
+                            // Pre-fill form data
+                            setFormData(prev => ({
+                              ...prev,
+                              email: res.customer.email || prev.email,
+                              first_name: res.customer.first_name || prev.first_name,
+                              last_name: res.customer.last_name || prev.last_name,
+                              phone: res.customer.phone || prev.phone,
+                            }));
+                            setStep('shipping');
+                          } catch (err: unknown) {
+                            const error = err as Error;
+                            setAuthError(error.message || 'Invalid OTP');
+                          } finally {
+                            setAuthLoadingStep(false);
+                          }
+                        }}
+                        disabled={authLoadingStep || authOtp.length !== 6}
+                        className="w-full mt-4"
+                        variant="primary"
+                      >
+                        Verify OTP
+                      </Button>
+                      <button
+                        onClick={() => setAuthStage('email')}
+                        className="text-body-xs underline color-muted mt-2 inline-block w-full text-center"
+                        type="button"
+                      >
+                        Change Email
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : step === 'shipping' ? (
               <form onSubmit={handleShippingSubmit} className="space-y-8">
                 <div>
                   <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">

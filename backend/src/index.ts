@@ -57,6 +57,7 @@ import artisansRoutes from './routes/artisans';
 import analyticsRoutes from './routes/analytics';
 import auth2faRoutes from './routes/auth-2fa';
 import storeAuthRoutes from './routes/store/auth';
+import { checkoutAuthRouter } from './routes/store/checkout-auth';
 import storeCustomersRouter from './routes/store/customers';
 import storeOrdersRouter from './routes/store/orders';
 import checkoutRoutes from './routes/store/checkout';
@@ -459,6 +460,7 @@ app.route('/newsletter', newsletterRoutes);
 
 // Store Routes (Customer-facing)
 app.route('/store/auth', storeAuthRoutes);
+app.route('/store/checkout/auth', checkoutAuthRouter);
 app.route('/store/customers', storeCustomersRouter);
 app.route('/store/orders', storeOrdersRouter);
 app.route('/store/checkout', checkoutRoutes);

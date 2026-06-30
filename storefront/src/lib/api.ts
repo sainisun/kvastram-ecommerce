@@ -237,6 +237,27 @@ export const api = {
     }
     return res.json();
   },
+  async sendCheckoutOtp(email: string) {
+    const res = await fetchWithTrace(`${API_URL}/store/checkout/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
+    return data;
+  },
+  async verifyCheckoutOtp(email: string, otp: string) {
+    const res = await fetchWithTrace(`${API_URL}/store/checkout/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp }),
+      credentials: 'include',
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to verify OTP');
+    return data;
+  },
   // Generic methods for untyped calls (fixes compilation errors and enables tracing)
   async get(endpoint: string) {
     const res = await fetchWithTrace(`${API_URL}${endpoint}`, {
