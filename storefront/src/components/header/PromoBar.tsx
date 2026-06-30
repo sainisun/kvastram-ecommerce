@@ -4,12 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
-  Facebook,
   Instagram,
-  MessageCircle,
   X,
 } from 'lucide-react';
-import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
 import { IconButton } from '@/components/ui/Button';
 
 const MESSAGES = [
@@ -22,18 +19,8 @@ const SESSION_KEY = 'kv_promobar_dismissed';
 const SOCIAL_LINKS = [
   {
     label: 'Instagram',
-    href: 'https://instagram.com/odhvica',
+    href: 'https://www.instagram.com/odhvica.store/',
     icon: Instagram,
-  },
-  {
-    label: 'WhatsApp',
-    href: buildWhatsAppHref('Hi, I need help from Odhvica'),
-    icon: MessageCircle,
-  },
-  {
-    label: 'Facebook',
-    href: 'https://facebook.com/odhvica',
-    icon: Facebook,
   },
 ];
 
