@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { StatusBanner } from '@/components/ui/StatusBanner';
 
 export default function VerifyOtpPage() {
-  const { setUser, setSessionHint } = useAuth();
+  const { setUser } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
@@ -98,7 +98,7 @@ export default function VerifyOtpPage() {
       const res = await api.verifyOtp({ email, otp: otpValue });
       if (res.customer) {
         setUser(res.customer);
-        setSessionHint(true);
+        try { window.localStorage.setItem('kv_customer_session', '1'); } catch {}
         router.push(redirect);
       }
     } catch (err: unknown) {
