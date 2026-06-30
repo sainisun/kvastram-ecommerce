@@ -159,7 +159,7 @@ export default function NewProductPage() {
       // Save price only for fixed-price products. Region is mandatory.
       const formattedPrices = priceType === 'fixed'
         ? [{
-            region_id: inrRegion.id,
+            region_id: inrRegion!.id,
             currency_code: 'inr',
             amount: Math.round(parsedInrPrice * 100),
           }]
