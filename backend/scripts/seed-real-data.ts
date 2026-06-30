@@ -18,6 +18,7 @@ import {
   homepage_social_posts,
   homepage_categories,
   featured_products,
+  regions,
 } from '../src/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import crypto from 'crypto';
@@ -47,6 +48,10 @@ async function seed() {
   await db.execute(sql`TRUNCATE TABLE featured_products CASCADE`);
 
   console.log('Cleared existing catalog data.');
+
+  // Fetch India region ID
+  const indiaRegionQuery = await db.select({ id: regions.id }).from(regions).where(eq(regions.currency_code, 'inr')).limit(1);
+  const indiaRegionId = indiaRegionQuery[0]?.id || null;
 
   const categoriesData = require('./seed-data.json');
 
@@ -198,7 +203,8 @@ async function seed() {
           prices: [
             {
               amount: 500000, // 5000 INR
-              currency_code: 'inr'
+              currency_code: 'inr',
+              region_id: indiaRegionId
             }
           ],
           images: [
