@@ -27,6 +27,7 @@ import {
   product_media_seo,
   product_embeddings,
   back_in_stock_subscriptions,
+  regions,
 } from '../../db/schema';
 import { eq, inArray, and } from 'drizzle-orm';
 import { emailService } from '../email-service';
@@ -193,9 +194,21 @@ export class ProductMutationService {
   private async assignPricesToVariant(tx: any, variantId: string, prices: any[] | undefined) {
     if (!prices || prices.length === 0) return;
     for (const price of prices) {
+      let regionId = price.region_id;
+
+      // SAFETY: Fallback lookup if region_id is silently null/undefined
+      if (!regionId && price.currency_code === 'inr') {
+        const inrRegion = await tx.select({ id: regions.id }).from(regions).where(eq(regions.currency_code, 'inr')).limit(1);
+        if (inrRegion.length > 0) {
+          regionId = inrRegion[0].id;
+        } else {
+          throw new ValidationError('INR Region missing in database. Cannot assign price without region_id.', []);
+        }
+      }
+
       await tx.insert(money_amounts).values({
         variant_id: variantId,
-        region_id: price.region_id ?? null,
+        region_id: regionId,
         currency_code: price.currency_code,
         amount: price.amount,
         min_quantity: 1,

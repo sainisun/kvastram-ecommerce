@@ -152,11 +152,14 @@ export default function NewProductPage() {
         }
       }
 
-      // Save price only for fixed-price products. Region is optional because storefront pricing
-      // only needs currency_code + amount, and some installs may not have an INR region yet.
+      if (priceType === 'fixed' && !inrRegion) {
+        throw new Error('Region data (INR) load nahi hua, please refresh karke dobara try karein.');
+      }
+
+      // Save price only for fixed-price products. Region is mandatory.
       const formattedPrices = priceType === 'fixed'
         ? [{
-            region_id: inrRegion?.id,
+            region_id: inrRegion.id,
             currency_code: 'inr',
             amount: Math.round(parsedInrPrice * 100),
           }]
