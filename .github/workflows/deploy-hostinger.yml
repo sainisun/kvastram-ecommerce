@@ -160,6 +160,9 @@ jobs:
             docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-categories.js || echo "Failed to seed categories"
             docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-wholesale-tiers.js || echo "Failed to seed wholesale tiers"
             
+            echo "--- RUNNING PRODUCTION DATABASE FIX & VERIFICATION ---"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/fix-region-id.js || echo "Failed to run fix-region-id.js"
+            
             # Capture output to print exact errors, explicitly passing the environment variable
             OUTPUT=$(docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-real-data.js 2>&1)
             EXIT_CODE=$?
