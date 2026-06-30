@@ -149,6 +149,9 @@ jobs:
             echo "--- RUNNING MATERIAL FIX SCRIPT ---"
             docker compose exec -T backend node dist/fix-materials.js || echo "Failed to fix materials"
             
+            echo "--- RUNNING REGION SEEDER ---"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-global-regions.js || echo "Failed to seed regions"
+            
             # Capture output to print exact errors, explicitly passing the environment variable
             OUTPUT=$(docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-real-data.js 2>&1)
             EXIT_CODE=$?
