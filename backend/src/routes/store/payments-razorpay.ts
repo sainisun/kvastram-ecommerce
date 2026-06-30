@@ -525,6 +525,7 @@ razorpayRouter.post('/webhook', async (c) => {
             await db
               .update(orders)
               .set({
+                status: 'failed',
                 payment_status: 'failed',
                 metadata: {
                   ...((existingOrder.metadata as Record<string, any>) || {}),
