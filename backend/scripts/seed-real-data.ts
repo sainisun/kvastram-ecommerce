@@ -35,19 +35,22 @@ function toHandle(text: string) {
 async function seed() {
   console.log('--- Seeding Kanthaprint Catalog & Homepage ---');
 
-  // Truncate safely
-  await db.execute(sql`TRUNCATE TABLE products CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE product_collections CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE categories CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE tags CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE category_circles CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE homepage_merchandising_slots CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE hero_banners CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE homepage_social_posts CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE homepage_categories CASCADE`);
-  await db.execute(sql`TRUNCATE TABLE featured_products CASCADE`);
-
-  console.log('Cleared existing catalog data.');
+  // Truncate safely only if explicitly requested
+  if (process.env.RUN_SEED_TRUNCATE === 'true') {
+    await db.execute(sql`TRUNCATE TABLE products CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE product_collections CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE categories CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE tags CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE category_circles CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE homepage_merchandising_slots CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE hero_banners CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE homepage_social_posts CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE homepage_categories CASCADE`);
+    await db.execute(sql`TRUNCATE TABLE featured_products CASCADE`);
+    console.log('Cleared existing catalog data.');
+  } else {
+    console.log('Skipping data truncation (RUN_SEED_TRUNCATE is not true).');
+  }
 
   // Fetch India region ID
   const indiaRegionQuery = await db.select({ id: regions.id }).from(regions).where(eq(regions.currency_code, 'inr')).limit(1);
@@ -190,6 +193,13 @@ async function seed() {
       const imgPath = `/uploads/real_products/${prod.image}`;
 
       try {
+        // Check if product already exists (idempotency)
+        const existing = await db.select({ id: products.id }).from(products).where(eq(products.handle, handle)).limit(1);
+        if (existing.length > 0) {
+          console.log(`Skipped product (already exists): ${prod.title}`);
+          continue;
+        }
+
         const createdProduct = await mutationService.create({
           title: prod.title,
           handle: handle,
