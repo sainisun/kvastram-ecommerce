@@ -3,11 +3,11 @@ import nodemailer from 'nodemailer';
 // PHASE-2 FIX: HTML escape utility to prevent XSS in email templates
 function escapeHtml(str: string): string {
   return str
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 // Helper to safely escape strings for HTML with fallback
