@@ -71,13 +71,13 @@
      ═══════════════════════════════════════════════ */
 
   /* Terracotta — Jaipur ki mitti, Amber Fort walls */
-  --ds-terracotta-50:  #FDF3EF;
-  --ds-terracotta-100: #FADDD3;
-  --ds-terracotta-200: #F4B8A4;
-  --ds-terracotta-400: #D97F5E;
-  --ds-terracotta-600: #C4603A;
-  --ds-terracotta-800: #8F3D1F;
-  --ds-terracotta-950: #5C2210;
+  --ds-terracotta-50:  #F5F5F5;
+  --ds-terracotta-100: #E5E5E5;
+  --ds-terracotta-200: #D4D4D4;
+  --ds-terracotta-400: #737373;
+  --ds-terracotta-600: #000000;
+  --ds-terracotta-800: #000000;
+  --ds-terracotta-950: #000000;
 
   /* Gold — artisan gold thread, Kantha embroidery */
   --ds-gold-50:  #FAF5E9;
@@ -87,17 +87,17 @@
   --ds-gold-800: #7A6335;
 
   /* Parchment — aged paper, handmade feel */
-  --ds-parchment-50:  #FDFAF6;
-  --ds-parchment-100: #F5EFE6;
-  --ds-parchment-200: #EDE8E0;
-  --ds-parchment-300: #D9D0C4;
+  --ds-parchment-50:  #FFFFFF;
+  --ds-parchment-100: #F7F7F7;
+  --ds-parchment-200: #E5E5E5;
+  --ds-parchment-300: #D4D4D4;
 
   /* Ink — warm charcoal, not cold black */
-  --ds-ink-50:  #9C8B7E;
-  --ds-ink-100: #6B5E52;
-  --ds-ink-200: #3D3530;
-  --ds-ink-600: #1C1410;
-  --ds-ink-900: #0E0A07;
+  --ds-ink-50:  #666666;
+  --ds-ink-100: #333333;
+  --ds-ink-200: #1A1A1A;
+  --ds-ink-600: #000000;
+  --ds-ink-900: #000000;
 
   /* ═══════════════════════════════════════════════
      SEMANTIC TOKENS — What components use
@@ -105,9 +105,10 @@
      ═══════════════════════════════════════════════ */
 
   /* Surfaces */
-  --ds-surface-page:      var(--ds-parchment-50);
+  --ds-surface-page:      #FFFFFF;
   --ds-surface-paper:     #FFFFFF;
   --ds-surface-soft:      var(--ds-parchment-100);
+  --ds-surface-subtle:    var(--ds-parchment-100);
   --ds-surface-warm:      var(--ds-parchment-200);
   --ds-surface-parchment: var(--ds-parchment-100);
   --ds-surface-parchment-2: var(--ds-parchment-200);
@@ -115,23 +116,23 @@
   --ds-surface-darkest:   var(--ds-ink-900);
 
   /* Text */
-  --ds-text-primary:      var(--ds-ink-600);
+  --ds-text-primary:      #000000;
   --ds-text-secondary:    var(--ds-ink-100);
   --ds-text-muted:        var(--ds-ink-50);
   --ds-text-disabled:     var(--ds-parchment-300);
-  --ds-text-inverse:      var(--ds-parchment-50);
-  --ds-text-on-dark:      var(--ds-parchment-50);
+  --ds-text-inverse:      #FFFFFF;
+  --ds-text-on-dark:      #FFFFFF;
   --ds-text-on-accent:    #FFFFFF;
   --ds-text-price:        var(--ds-ink-600);
   --ds-text-price-old:    var(--ds-ink-50);
 
   /* Accent — Primary CTA (Terracotta) */
-  --ds-accent-primary:    var(--ds-terracotta-600);
-  --ds-accent-hover:      var(--ds-terracotta-800);
+  --ds-accent-primary:    #000000;
+  --ds-accent-hover:      #000000;
   --ds-accent-subtle:     var(--ds-terracotta-100);
   --ds-accent-focus:      var(--ds-terracotta-400);
   --ds-accent-soft:       var(--ds-terracotta-50);
-  --ds-accent-rgb:        196, 96, 58;
+  --ds-accent-rgb:        0, 0, 0;
 
   /* Accent — Gold (secondary, eyebrows, badges) */
   --ds-accent-gold:       var(--ds-gold-600);
@@ -145,14 +146,14 @@
   --ds-border-dark:       var(--ds-ink-200);
 
   /* RGB values for rgba() usage */
-  --ds-ink-rgb:               28, 20, 16;
-  --ds-text-primary-rgb:      28, 20, 16;
-  --ds-text-secondary-rgb:    107, 94, 82;
-  --ds-cream-rgb:             253, 250, 246;
-  --ds-surface-page-rgb:      253, 250, 246;
+  --ds-ink-rgb:               0, 0, 0;
+  --ds-text-primary-rgb:      0, 0, 0;
+  --ds-text-secondary-rgb:    51, 51, 51;
+  --ds-cream-rgb:             255, 255, 255;
+  --ds-surface-page-rgb:      255, 255, 255;
   --ds-surface-paper-rgb:     255, 255, 255;
-  --ds-surface-soft-rgb:      245, 239, 230;
-  --ds-surface-parchment-rgb: 245, 239, 230;
+  --ds-surface-soft-rgb:      247, 247, 247;
+  --ds-surface-parchment-rgb: 247, 247, 247;
   --ds-white-rgb:             255, 255, 255;
   --ds-black-rgb:             0, 0, 0;
 
@@ -164,31 +165,59 @@
   --ds-footer-dim:        var(--ds-gold-400);
   --ds-footer-border:     var(--ds-ink-200);
   --ds-footer-highlight:  var(--ds-accent-gold);
+  --ds-footer-surface:    var(--ds-surface-darkest);
+  --ds-footer-muted:      var(--ds-footer-dim);
+  --ds-footer-hover:      var(--ds-footer-heading);
+  --ds-footer-highlight-hover: var(--ds-gold-100);
 
   /* Semantic states */
-  --ds-danger:        #dc2626;
+  --ds-danger:        #b91c1c;
   --ds-danger-bg:     #fcebeb;
-  --ds-danger-border: color-mix(in srgb, #dc2626 40%, transparent);
+  --ds-danger-border: color-mix(in srgb, var(--ds-danger) 40%, transparent);
+  --ds-danger-dot:    var(--ds-danger);
+  --ds-success:       #3e8a5f;
   --ds-success-bg:    #f0fdf4;
   --ds-success-text:  #166534;
+  --ds-success-dark:  #14532d;
   --ds-success-rgb:   62, 138, 95;
   --ds-success-border: color-mix(in srgb, #16a34a 40%, transparent);
+  --ds-warning:       #ba7517;
   --ds-warning-bg:    #faeeda;
   --ds-warning-text:  #633806;
   --ds-warning-rgb:   186, 117, 23;
   --ds-warning-border: color-mix(in srgb, #d97706 40%, transparent);
+  --ds-info:          #2563eb;
   --ds-info-bg:       #e6f1fb;
   --ds-info-text:     #124779;
   --ds-info-border:   color-mix(in srgb, #2563eb 40%, transparent);
+  --ds-whatsapp:      #128c7e;
   --ds-whatsapp-bg:   #e1f5ee;
+  --ds-online:        var(--ds-success);
 
-  /* Swatch tokens */
-  --ds-swatch-cream:  #fdfbf7;
-  --ds-swatch-pink:   #f4a6b7;
-  --ds-swatch-grey:   #6b7280;
+  /* Product swatch tokens */
+  --ds-swatch-cream:     #fdfbf7;
+  --ds-swatch-off-white: #f8f3ea;
+  --ds-swatch-pink:      #f4a6b7;
+  --ds-swatch-grey:      #6b7280;
+  --ds-swatch-navy:      #1f2a44;
+  --ds-swatch-blue:      #3b82b8;
+  --ds-swatch-olive:     #7a7f45;
+  --ds-swatch-green:     #3e8a5f;
+  --ds-swatch-red:       #b63d2f;
+  --ds-swatch-orange:    var(--ds-terracotta-600);
+  --ds-swatch-yellow:    var(--ds-gold-400);
+  --ds-swatch-beige:     var(--ds-parchment-200);
+  --ds-swatch-brown:     #7a4d32;
+  --ds-swatch-purple:    #7c5a83;
+  --ds-swatch-fallback:  var(--ds-surface-soft);
+
+  /* Social brand accents */
+  --ds-social-facebook: #1877f2;
+  --ds-social-twitter:  #1d9bf0;
 
   /* Shadow */
   --ds-shadow: 0 10px 34px rgba(var(--ds-ink-rgb), 0.12);
+  --ds-shadow-sm: 0 4px 16px rgba(var(--ds-ink-rgb), 0.1);
 
   /* ── Spacing scale (8pt base grid) ── */
   --ds-space-2xs: 0.25rem;    /* 4px  — icon gaps, micro spacing */

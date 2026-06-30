@@ -51,6 +51,8 @@ const allowedInlineStylePatterns = [
 ];
 
 const findings = [];
+const definedDesignTokens = new Set();
+const usedDesignTokens = new Map();
 const tokenSource = readFileSync(path.join(storefrontRoot, 'src/styles/tokens.css'), 'utf8');
 const designSystemDoc = readFileSync(
   path.join(workspaceRoot, 'docs/design-system/storefront-design-system-v1.md'),
@@ -84,6 +86,14 @@ function auditFile(fullPath) {
   const ext = path.extname(rel);
   const text = readFileSync(fullPath, 'utf8');
   const lines = text.split(/\r?\n/);
+
+  for (const match of text.matchAll(/(--ds-[a-z0-9-]+)\s*:/gi)) {
+    definedDesignTokens.add(match[1]);
+  }
+  for (const match of text.matchAll(/var\(\s*(--ds-[a-z0-9-]+)/gi)) {
+    if (!usedDesignTokens.has(match[1])) usedDesignTokens.set(match[1], []);
+    usedDesignTokens.get(match[1]).push(rel);
+  }
 
   lines.forEach((line, index) => {
     const location = `${rel}:${index + 1}`;
@@ -151,6 +161,13 @@ function auditFile(fullPath) {
 
 for (const root of roots) walk(root);
 for (const file of extraFiles) auditFile(file);
+
+for (const [token, rels] of usedDesignTokens) {
+  if (!definedDesignTokens.has(token)) {
+    const locations = Array.from(new Set(rels)).slice(0, 3).join(', ');
+    findings.push(`${token} is referenced but not defined in the active design-system sources (${locations})`);
+  }
+}
 
 const metrics = collectDesignSystemMetrics();
 

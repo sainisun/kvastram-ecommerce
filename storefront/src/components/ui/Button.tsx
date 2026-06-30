@@ -35,21 +35,21 @@ interface ButtonAnchorProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'border-[var(--ds-border-subtle)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
+    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
   secondary:
-    'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-border-subtle)] hover:border-[var(--ds-border-subtle)]',
+    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
   outline:
     'border-[var(--ds-border-subtle)] bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]',
   ghost:
     'border-transparent bg-transparent text-[var(--ds-text-primary)] hover:bg-[var(--ds-surface-soft)]',
   danger:
-    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-text-inverse)] hover:brightness-95',
+    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)] hover:bg-[var(--ds-surface-paper)]',
   accent:
-    'bg-[var(--ds-accent-gold)] text-[var(--ds-text-primary)] border-[var(--ds-accent-gold)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
+    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
   pdp:
     'bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] border-[var(--ds-accent-primary)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)] w-full',
   success:
-    'bg-[var(--ds-success-bg)] text-[var(--ds-text-inverse)] border-[var(--ds-success)] hover:brightness-95 hover:brightness-95',
+    'bg-[var(--ds-success-bg)] text-[var(--ds-success-text)] border-[var(--ds-success)] hover:bg-[var(--ds-surface-paper)]',
   compact:
     'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-border-subtle)] hover:border-[var(--ds-border-subtle)] text-body-xs py-1 px-3',
   inline:
