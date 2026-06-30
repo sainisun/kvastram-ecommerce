@@ -100,6 +100,20 @@ async function requirePaymentOwnership(
     };
   }
 
+  // 1. First try to authorize with checkout session token
+  // (This handles both guests and logged-in users during active checkout)
+  if (
+    checkoutToken &&
+    isValidCheckoutPaymentToken(
+      order.metadata as Record<string, any> | null,
+      checkoutToken
+    )
+  ) {
+    return { ok: true };
+  }
+
+  // 2. Fallback to auth token if checkout session token is missing/invalid
+  // (e.g., user returns later to pay via an email link)
   if (order.customer_id && customer?.has_account) {
     const token = getCookie(c, 'auth_token');
     if (!token) return { ok: false, response: c.json({ error: 'Unauthorized' }, 401) };
@@ -116,15 +130,6 @@ async function requirePaymentOwnership(
     } catch {
       return { ok: false, response: c.json({ error: 'Unauthorized' }, 401) };
     }
-  }
-
-  if (
-    isValidCheckoutPaymentToken(
-      order.metadata as Record<string, any> | null,
-      checkoutToken
-    )
-  ) {
-    return { ok: true };
   }
 
   return { ok: false, response: c.json({ error: 'Invalid checkout session' }, 401) };
