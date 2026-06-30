@@ -132,7 +132,7 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="kv-page-container mx-auto max-w-[1440px]">
+      <div className="kv-page-container mx-auto max-w-page">
         {/* Header */}
         <div className="mb-12">
           <Link

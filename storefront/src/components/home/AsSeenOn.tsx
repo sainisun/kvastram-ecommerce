@@ -14,7 +14,7 @@ export function AsSeenOn({ items }: AsSeenOnProps) {
 
   return (
     <section className="border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] py-6">
-      <div className="kv-page-container mx-auto max-w-[1440px]">
+      <div className="kv-page-container mx-auto max-w-page">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-12 lg:gap-x-16">
           {items.map((item) => (
             <div key={item.id} className="flex flex-col items-center text-center">

@@ -182,7 +182,7 @@ export function Reviews({ productId }: ReviewsProps) {
 
   return (
     <div className="border-t border-[var(--ds-border-subtle)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]" id="reviews">
-      <div className="kv-page-container mx-auto max-w-[1440px]">
+      <div className="kv-page-container mx-auto max-w-page">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-[var(--ds-space-md)]">
           <div>
             <h2 className="review-heading mb-2">

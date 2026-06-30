@@ -97,7 +97,7 @@ export default function SalePage() {
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
       <section className="kv-page-gutter border-b border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-6 py-14 md:px-12 md:py-20 lg:px-20">
-        <div className="kv-page-frame mx-auto max-w-[1440px] space-y-6 text-center">
+        <div className="kv-page-frame mx-auto max-w-page space-y-6 text-center">
           <span className="text-body-xs type-bold tracking-token-wider text-[var(--ds-accent-primary)]">
             {activeCampaign ? 'Limited Time' : 'Current Markdowns'}
           </span>
@@ -139,7 +139,7 @@ export default function SalePage() {
         </div>
       </section>
 
-      <div id="saleGrid" className="kv-page-container mx-auto max-w-[1440px] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div id="saleGrid" className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         {products.length > 0 || loading ? (
           <ProductGrid
             initialProducts={products}

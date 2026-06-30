@@ -163,6 +163,7 @@
   --container-content: var(--ds-content-width);
   --container-narrow: var(--ds-narrow-width);
   --container-home-content: var(--ds-home-content-width);
+  --width-page: var(--ds-page-width);
 
   /* Restored default palette mappings from old tailwind.config.ts */
   --color-gray-50: var(--ds-surface-page);

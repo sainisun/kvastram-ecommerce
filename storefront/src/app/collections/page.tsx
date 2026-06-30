@@ -134,7 +134,7 @@ export default async function CollectionsPage({
   if (collections.length === 0) {
     return (
       <div className="min-h-screen bg-[var(--ds-surface-paper)]">
-        <div className="kv-page-container mx-auto max-w-[1440px] px-6 py-10 md:px-12 md:py-14 lg:px-20">
+        <div className="kv-page-container mx-auto max-w-page px-6 py-10 md:px-12 md:py-14 lg:px-20">
           <nav
             aria-label="Breadcrumb"
             className="listing-breadcrumb mb-8 flex items-center gap-2"
@@ -154,7 +154,7 @@ export default async function CollectionsPage({
             </h1>
           </section>
         </div>
-        <div className="kv-page-container mx-auto max-w-[1440px] px-6 pb-12 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
+        <div className="kv-page-container mx-auto max-w-page px-6 pb-12 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
           <EmptyState
             title="No collections found."
             description="Check back soon for new curated series."
@@ -200,7 +200,7 @@ export default async function CollectionsPage({
         </div>
         </section>
       ) : (
-        <section className="kv-page-container mx-auto max-w-[1440px] px-6 pt-10 md:px-12 md:pt-14 lg:px-20">
+        <section className="kv-page-container mx-auto max-w-page px-6 pt-10 md:px-12 md:pt-14 lg:px-20">
           <div className="border-y border-[var(--ds-border-subtle)] py-10 md:py-14">
             <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-secondary)]">
               Curated Series
@@ -216,7 +216,7 @@ export default async function CollectionsPage({
         </section>
       )}
 
-      <div className="kv-page-container mx-auto max-w-[1440px] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <nav
           aria-label="Breadcrumb"
           className="listing-breadcrumb mb-10 flex items-center gap-2"

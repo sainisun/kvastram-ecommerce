@@ -85,7 +85,7 @@ export function Footer() {
         Odhvica
       </div>
 
-      <div className="kv-page-container mx-auto max-w-[1440px] px-[var(--ds-space-md)] pb-[var(--ds-space-md)] pt-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:pb-[var(--ds-space-lg)] md:pt-12 lg:px-20 lg:pt-24">
+      <div className="kv-page-container mx-auto max-w-page px-[var(--ds-space-md)] pb-[var(--ds-space-md)] pt-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:pb-[var(--ds-space-lg)] md:pt-12 lg:px-20 lg:pt-24">
         <div className="grid grid-cols-2 gap-x-[var(--ds-space-md)] gap-y-[var(--ds-space-md)] sm:grid-cols-2 lg:grid-cols-5 lg:gap-[var(--ds-space-lg)]">
           {/* Brand Column */}
           <div className="space-y-5 col-span-2 sm:col-span-2 lg:col-span-1">
@@ -198,7 +198,7 @@ export function Footer() {
       </div>
 
       <div className="kf-border border-t">
-        <div className="kv-page-container mx-auto max-w-[1440px] px-[var(--ds-space-md)] py-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:py-[var(--ds-space-lg)] lg:px-20">
+        <div className="kv-page-container mx-auto max-w-page px-[var(--ds-space-md)] py-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:py-[var(--ds-space-lg)] lg:px-20">
           <PaymentIcons className="mb-4" />
           <div className="kf-legal font-body flex flex-col items-center justify-between gap-[var(--ds-space-sm)] text-center text-body-xs sm:flex-row sm:text-left">
             <p>Copyright {new Date().getFullYear()} Odhvica. All rights reserved.</p>

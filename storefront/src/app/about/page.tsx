@@ -70,7 +70,7 @@ export default function AboutPage() {
       </div>
 
       {/* The Story */}
-      <div className="kv-page-container mx-auto max-w-[1440px] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="grid items-start gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
@@ -120,7 +120,7 @@ export default function AboutPage() {
 
       {/* How we work */}
       <div className="kv-page-gutter border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-        <div className="kv-page-frame mx-auto max-w-[1440px]">
+        <div className="kv-page-frame mx-auto max-w-page">
           <div className="text-body-xs  tracking-token-wider text-[var(--ds-warning-text)]">
             How Odhvica works
           </div>
@@ -160,7 +160,7 @@ export default function AboutPage() {
 
       {/* Artisans */}
       <div id="artisans" className="kv-page-gutter py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-        <div className="kv-page-frame mx-auto max-w-[1440px]">
+        <div className="kv-page-frame mx-auto max-w-page">
           <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
             The people behind every piece
           </div>
@@ -198,7 +198,7 @@ export default function AboutPage() {
 
       {/* Sustainability */}
       <div id="sustainability" className="kv-page-gutter bg-[var(--ds-surface-soft)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-        <div className="kv-page-frame mx-auto max-w-[1440px]">
+        <div className="kv-page-frame mx-auto max-w-page">
           <div className="grid items-center gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
             <div>
               <div className="text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">

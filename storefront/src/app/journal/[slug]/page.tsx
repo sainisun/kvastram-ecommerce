@@ -97,7 +97,7 @@ export default async function ArticlePage({ params }: Props) {
           <div className="absolute inset-0 bg-[var(--ds-text-primary)]" />
         )}
 
-        <div className="kv-page-container absolute inset-0 mx-auto flex w-full max-w-[1440px] flex-col justify-between p-6 md:p-12 lg:px-20">
+        <div className="kv-page-container absolute inset-0 mx-auto flex w-full max-w-page flex-col justify-between p-6 md:p-12 lg:px-20">
           <Link
             href="/journal"
             className="flex w-fit items-center gap-2 text-body-sm type-bold  tracking-token-wider hover:text-[var(--ds-text-disabled)]"

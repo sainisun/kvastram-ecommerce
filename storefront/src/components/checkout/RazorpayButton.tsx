@@ -178,6 +178,7 @@ export default function RazorpayButton({
         },
         modal: {
           ondismiss: () => {
+            onError('Payment was cancelled. You can try again when ready.');
             setIsProcessing(false);
           },
         },

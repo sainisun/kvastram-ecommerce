@@ -236,6 +236,7 @@
   --ds-content-width: 1280px;
   --ds-narrow-width: 860px;
   --ds-home-content-width: 1520px;
+  --ds-page-width: 1440px;
   /* ── Page gutters ── */
   --ds-home-gutter-mobile:  1.25rem;   /* 20px — premium mobile feel */
   --ds-home-gutter-tablet:  2rem;      /* 32px */

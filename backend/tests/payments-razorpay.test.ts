@@ -81,6 +81,8 @@ describe('Razorpay payment routes', () => {
 
   beforeAll(async () => {
     process.env.JWT_SECRET = 'test-secret';
+    process.env.RAZORPAY_KEY_ID = 'rzp_test_123';
+    process.env.RAZORPAY_KEY_SECRET = 'rzp_secret_123';
     process.env.RAZORPAY_ID = 'rzp_test_123';
     process.env.RAZORPAY_SECRET = 'rzp_secret_123';
     process.env.RAZORPAY_WEBHOOK_SECRET = 'webhook_secret_123';
@@ -108,6 +110,80 @@ describe('Razorpay payment routes', () => {
     expect(mocks.ordersCreate).not.toHaveBeenCalled();
   });
 
+  it('creates a Razorpay order from the server-owned order total', async () => {
+    mocks.ordersCreate.mockResolvedValue({ id: 'order_new_123' });
+
+    const response = await router.request('/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id: order.id,
+        checkout_token: checkoutToken,
+      }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(mocks.ordersCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: order.total,
+        currency: 'INR',
+        receipt: order.id,
+      })
+    );
+    expect(await response.json()).toEqual(
+      expect.objectContaining({
+        razorpay_order_id: 'order_new_123',
+        amount: order.total,
+        currency: 'INR',
+      })
+    );
+  });
+
+  it('rejects an order below the 100 paise minimum', async () => {
+    mocks.selectRows = [
+      {
+        orders: { ...order, total: 99 },
+        customers: { has_account: false },
+      },
+    ];
+
+    const response = await router.request('/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id: order.id,
+        checkout_token: checkoutToken,
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: 'Order total must be at least 100 paise',
+    });
+    expect(mocks.ordersCreate).not.toHaveBeenCalled();
+  });
+
+  it('returns 401 when Razorpay rejects the API credentials', async () => {
+    mocks.ordersCreate.mockRejectedValue({
+      statusCode: 401,
+      error: { description: 'Authentication failed' },
+    });
+
+    const response = await router.request('/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id: order.id,
+        checkout_token: checkoutToken,
+      }),
+    });
+
+    expect(response.status).toBe(401);
+    expect(await response.json()).toEqual({
+      error: 'Razorpay authentication failed',
+    });
+  });
+
   it('rejects verify when the client Razorpay order id differs from stored metadata', async () => {
     const response = await router.request('/verify', {
       method: 'POST',
@@ -122,6 +198,26 @@ describe('Razorpay payment routes', () => {
     });
 
     expect(response.status).toBe(400);
+    expect(mocks.paymentsFetch).not.toHaveBeenCalled();
+  });
+
+  it('rejects an invalid payment signature without fetching the payment', async () => {
+    const response = await router.request('/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id: order.id,
+        razorpay_order_id: order.metadata.razorpay_order_id,
+        razorpay_payment_id: 'pay_123',
+        razorpay_signature: '0'.repeat(64),
+        checkout_token: checkoutToken,
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: 'Invalid payment signature',
+    });
     expect(mocks.paymentsFetch).not.toHaveBeenCalled();
   });
 

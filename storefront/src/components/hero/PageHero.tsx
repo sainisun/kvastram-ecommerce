@@ -38,7 +38,7 @@ export default function PageHero({
       <div className="absolute inset-0 bg-[var(--ds-text-primary)]/40" />
 
       {/* Content */}
-      <div className="kv-page-container relative z-10 mx-auto max-w-[1440px] space-y-4 px-6 text-center md:px-12 lg:px-20">
+      <div className="kv-page-container relative z-10 mx-auto max-w-page space-y-4 px-6 text-center md:px-12 lg:px-20">
         {subtitle && (
           <span className="font-body block text-body-sm type-medium  tracking-token-wide text-[var(--ds-text-inverse)]/80">
             {subtitle}

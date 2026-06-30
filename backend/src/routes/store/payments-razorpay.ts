@@ -32,8 +32,9 @@ import {
 import { claimWebhookEvent } from '../../utils/webhook-events';
 import { finalizeCapturedPayment } from '../../utils/payment-capture';
 
-const rzpKeyId = process.env.RAZORPAY_ID;
-const rzpKeySecret = process.env.RAZORPAY_SECRET;
+const rzpKeyId = process.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_ID;
+const rzpKeySecret =
+  process.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_SECRET;
 
 const razorpay =
   rzpKeyId && rzpKeySecret
@@ -51,11 +52,27 @@ const CreateRazorpayOrderSchema = z.object({
 
 const VerifyPaymentSchema = z.object({
   order_id: z.string().uuid(),
-  razorpay_order_id: z.string(),
-  razorpay_payment_id: z.string(),
-  razorpay_signature: z.string(),
+  razorpay_order_id: z.string().min(1),
+  razorpay_payment_id: z.string().min(1),
+  razorpay_signature: z.string().min(1),
   checkout_token: z.string().min(16).optional(),
 });
+
+const MIN_RAZORPAY_AMOUNT = 100;
+
+function getRazorpayErrorResponse(error: any, fallback: string) {
+  const providerStatus = Number(error?.statusCode ?? error?.status);
+  const status = providerStatus === 401 ? 401 : 500;
+  const providerMessage = error?.error?.description || error?.message;
+
+  return {
+    status,
+    message:
+      status === 401
+        ? 'Razorpay authentication failed'
+        : providerMessage || fallback,
+  } as const;
+}
 
 async function getOrderWithCustomer(orderId: string) {
   const [row] = await db
@@ -219,6 +236,13 @@ razorpayRouter.post(
       // Our DB stores amounts in paise already (cents-equivalent)
       const amountInPaise = Math.round(Number(order.total));
 
+      if (!Number.isSafeInteger(amountInPaise) || amountInPaise < MIN_RAZORPAY_AMOUNT) {
+        return c.json(
+          { error: 'Order total must be at least 100 paise' },
+          400
+        );
+      }
+
       const rzpOrder = await razorpay.orders.create({
         amount: amountInPaise,
         currency: (order.currency_code || 'INR').toUpperCase(),
@@ -249,7 +273,11 @@ razorpayRouter.post(
       });
     } catch (error: any) {
       logError('Razorpay order creation failed', error);
-      return c.json({ error: error.message }, 500);
+      const response = getRazorpayErrorResponse(
+        error,
+        'Failed to initialize Razorpay payment'
+      );
+      return c.json({ error: response.message }, response.status);
     }
   }
 );
@@ -403,7 +431,11 @@ razorpayRouter.post(
       return c.json({ success: true });
     } catch (error: any) {
       logError('Razorpay verify failed', error);
-      return c.json({ error: error.message }, 500);
+      const response = getRazorpayErrorResponse(
+        error,
+        'Failed to verify Razorpay payment'
+      );
+      return c.json({ error: response.message }, response.status);
     }
   }
 );

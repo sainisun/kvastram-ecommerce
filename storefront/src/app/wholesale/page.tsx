@@ -129,7 +129,7 @@ export default function WholesalePage() {
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-[var(--ds-text-primary)] via-[var(--ds-text-secondary)] to-[var(--ds-warning-text)] py-16 pt-32 text-[var(--ds-text-inverse)] md:py-20 lg:py-32">
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
-          <div className="kv-page-container relative z-10 mx-auto max-w-[1440px]">
+          <div className="kv-page-container relative z-10 mx-auto max-w-page">
             <div className="max-w-3xl">
               <span className="text-[var(--ds-accent-gold)] text-body-xs type-bold  tracking-token-wider block mb-4">
                 B2B Partnership
@@ -163,7 +163,7 @@ export default function WholesalePage() {
 
         {/* Benefits Section */}
         <section id="benefits" className="bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-          <div className="kv-page-container mx-auto max-w-[1440px]">
+          <div className="kv-page-container mx-auto max-w-page">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
                 Why Partner With Odhvica?
@@ -232,7 +232,7 @@ export default function WholesalePage() {
 
         {/* Pricing Tiers */}
         <section className="bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-          <div className="kv-page-container mx-auto max-w-[1440px]">
+          <div className="kv-page-container mx-auto max-w-page">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
                 Wholesale Pricing Tiers
@@ -322,7 +322,7 @@ export default function WholesalePage() {
 
         {/* Process Section */}
         <section className="bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-          <div className="kv-page-container mx-auto max-w-[1440px]">
+          <div className="kv-page-container mx-auto max-w-page">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-4">
                 How It Works
@@ -546,7 +546,7 @@ export default function WholesalePage() {
 
         {/* Contact CTA */}
         <section className="py-16 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]">
-          <div className="kv-page-container mx-auto max-w-[1440px]">
+          <div className="kv-page-container mx-auto max-w-page">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <Mail size={32} className="mx-auto mb-4 text-[var(--ds-accent-gold)]" />

@@ -186,7 +186,7 @@ export default async function BestsellersPage({
           />
         ) : null}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.3),rgba(var(--ds-black-rgb),0.5))]" />
-        <div className="kv-page-container relative z-10 mx-auto flex h-full max-w-[1440px] flex-col items-center justify-center px-6 text-center text-[var(--ds-text-inverse)] md:px-12 lg:px-20">
+        <div className="kv-page-container relative z-10 mx-auto flex h-full max-w-page flex-col items-center justify-center px-6 text-center text-[var(--ds-text-inverse)] md:px-12 lg:px-20">
           <h1 className="font-display text-display-xl type-regular leading-token-tight tracking-token-tight text-[var(--ds-text-inverse)]">
             Most <em className="italic">Loved</em>
           </h1>
@@ -196,7 +196,7 @@ export default async function BestsellersPage({
         </div>
       </section>
 
-      <div className="kv-page-container mx-auto max-w-[1440px] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 flex items-center gap-2 text-body-xs type-medium  tracking-token-wide text-[var(--ds-text-muted)]"

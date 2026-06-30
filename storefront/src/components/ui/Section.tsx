@@ -6,7 +6,7 @@ interface SectionProps extends HTMLAttributes<HTMLElement> {
 }
 
 const widthClasses = {
-  default: 'max-w-[1440px]',
+  default: 'max-w-page',
   wide: 'max-w-[1600px]',
   narrow: 'max-w-[var(--ds-narrow-width)]',
 };

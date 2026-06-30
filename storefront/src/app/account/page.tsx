@@ -95,7 +95,7 @@ export default function AccountPage() {
 
       {/* Desktop Layout */}
       <div className="hidden pb-16 pt-16 md:block lg:pb-24 lg:pt-24">
-        <div className="kv-page-container mx-auto max-w-[1440px]">
+        <div className="kv-page-container mx-auto max-w-page">
           <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
             {/* Sidebar */}
             <div className="lg:w-64 shrink-0">

@@ -12,7 +12,7 @@ export function RecentlyViewedSection() {
 
   return (
     <section className="border-t border-[var(--ds-border-subtle)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="kv-page-container mx-auto max-w-[1440px]">
+      <div className="kv-page-container mx-auto max-w-page">
         <h2 className="recently-section-heading mb-6 lg:mb-8">
           Recently Viewed
         </h2>

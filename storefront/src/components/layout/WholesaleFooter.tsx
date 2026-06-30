@@ -41,7 +41,7 @@ export function WholesaleFooter() {
     <footer className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]">
       {/* Main Footer */}
       <div className="border-t border-[var(--ds-text-secondary)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-        <div className="kv-page-container mx-auto max-w-[1440px]">
+        <div className="kv-page-container mx-auto max-w-page">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[var(--ds-space-lg)]">
             {/* Company Info */}
             <div className="space-y-4">
@@ -275,7 +275,7 @@ export function WholesaleFooter() {
 
       {/* Bottom Bar */}
       <div className="bg-[var(--ds-text-primary)] py-6">
-        <div className="kv-page-container mx-auto max-w-[1440px]">
+        <div className="kv-page-container mx-auto max-w-page">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-body-xs text-[var(--ds-text-muted)]">
             <div className="flex items-center gap-[var(--ds-space-md)]">
               <span>
@@ -304,7 +304,7 @@ export function WholesaleFooter() {
 
       {/* Trust Badges */}
       <div className="bg-[var(--ds-text-primary)] py-8 border-t border-[var(--ds-text-primary)]">
-        <div className="kv-page-container mx-auto max-w-[1440px]">
+        <div className="kv-page-container mx-auto max-w-page">
           <div className="flex flex-wrap items-center justify-center gap-8 text-[var(--ds-text-secondary)] text-body-xs">
             <div className="flex items-center gap-[var(--ds-space-xs)]">
               <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">

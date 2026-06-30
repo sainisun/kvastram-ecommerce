@@ -7,7 +7,7 @@ export function WholesaleHeader() {
     <header className="sticky top-0 z-50 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] border-b border-[var(--ds-text-secondary)]">
       {/* Top Bar */}
       <div className="bg-[var(--ds-warning)] text-[var(--ds-text-primary)] py-2">
-        <div className="kv-page-container mx-auto flex max-w-[1440px] items-center justify-between text-body-xs type-bold">
+        <div className="kv-page-container mx-auto flex max-w-page items-center justify-between text-body-xs type-bold">
           <div className="flex items-center gap-[var(--ds-space-md)]">
             <span className="flex items-center gap-[var(--ds-space-xs)]">
               <Building2 size={14} />
@@ -37,7 +37,7 @@ export function WholesaleHeader() {
       </div>
 
       {/* Main Header */}
-      <div className="kv-page-container mx-auto flex h-16 max-w-[1440px] items-center justify-between lg:h-20">
+      <div className="kv-page-container mx-auto flex h-16 max-w-page items-center justify-between lg:h-20">
         {/* Logo */}
         <Link href="/wholesale" className="flex items-center gap-[var(--ds-space-xs)]">
           <div className="text-display-md type-bold tracking-token-tight">ODHVICA</div>
