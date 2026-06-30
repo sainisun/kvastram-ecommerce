@@ -141,22 +141,6 @@ export function ProductCard({
           </div>
         </Link>
 
-        {showQuickView && onQuickView ? (
-          <Button
-            type="button"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              onQuickView(product);
-            }}
-            variant="secondary"
-            size="sm"
-            className="product-card-quick-view"
-            aria-label={`Quick view ${displayTitle}`}
-          >
-            Quick View
-          </Button>
-        ) : null}
       </div>
 
       <div className="product-wish">
