@@ -34,20 +34,29 @@ Odhvica storefront typography uses an editorial serif display face with a restra
 - New storefront UI should use `font-display`, `font-body`, `type-*`, and `tracking-token-*` utilities.
 - Components must consume typography roles instead of declaring page-local font families.
 
-## Accent
+## Color
 
-The final accent is GOLD.
+The storefront color contract is black and white by default:
+
+- Primary text uses pure black via `--ds-text-primary`.
+- Primary page background uses pure white via `--ds-surface-page`.
+- Primary CTA/button background uses pure black via `--ds-accent-primary`.
+- Primary CTA/button text uses pure white via `--ds-text-inverse`.
+- Supporting surfaces may use neutral off-white/gray tokens for borders, muted states, and hierarchy.
 
 Use:
 
 ```text
+--ds-text-primary
+--ds-surface-page
+--ds-surface-paper
 --ds-accent-primary
 --ds-accent-hover
 --ds-accent-soft
 --ds-accent-rgb
 ```
 
-Public gold/accent bridges are available only where a non-`--ds-*` bridge is unavoidable:
+Public accent bridges are available only where a non-`--ds-*` bridge is unavoidable:
 
 ```text
 --terracotta
