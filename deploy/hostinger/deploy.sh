@@ -119,8 +119,13 @@ upsert_env_value storefront/.env.production NEXT_PUBLIC_SITE_URL https://odhvica
 upsert_env_value storefront/.env.production NEXT_PUBLIC_STORE_URL https://odhvica.com
 upsert_env_value storefront/.env.production NEXT_PUBLIC_API_URL https://api.odhvica.com
 upsert_env_value admin/.env.production NEXT_PUBLIC_API_URL https://api.odhvica.com
+upsert_env_value admin/.env.production NEXT_PUBLIC_ADMIN_URL https://admin.odhvica.com
 upsert_env_value backend/.env.production STOREFRONT_URL https://odhvica.com
 upsert_env_value backend/.env.production FRONTEND_URL https://odhvica.com
+upsert_env_value backend/.env.production ADMIN_URL https://admin.odhvica.com
+upsert_env_value backend/.env.production ALLOWED_ORIGINS "https://odhvica.com,https://www.odhvica.com,https://api.odhvica.com,https://admin.odhvica.com"
+upsert_env_value backend/.env.production SMTP_FROM contact@odhvica.com
+upsert_env_value backend/.env.production SMTP_USER contact@odhvica.com
 upsert_env_value deploy/hostinger/.env NEXT_PUBLIC_API_URL https://api.odhvica.com
 
 log "Validating compose configuration"

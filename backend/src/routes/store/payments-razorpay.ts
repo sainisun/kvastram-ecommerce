@@ -371,6 +371,30 @@ razorpayRouter.post(
       }
 
       logInfo(`Razorpay payment verified for order ${order_id}`);
+
+      // Send order confirmation email AFTER successful payment
+      try {
+        const { emailService } = await import('../../services/email-service');
+        const finalOrder = await db
+          .select()
+          .from(orders)
+          .where(eq(orders.id, order_id))
+          .limit(1)
+          .then((r) => r[0]);
+        if (finalOrder?.display_id) {
+          await emailService.sendOrderConfirmation(
+            {
+              ...finalOrder,
+              order_number: finalOrder.display_id.toString(),
+            },
+            finalOrder.email
+          );
+          logInfo(`Order confirmation email sent for order #${finalOrder.display_id}`);
+        }
+      } catch (emailError: unknown) {
+        logError('Failed to send order confirmation email after payment', emailError);
+      }
+
       return c.json({ success: true });
     } catch (error: any) {
       logError('Razorpay verify failed', error);

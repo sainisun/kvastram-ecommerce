@@ -960,24 +960,10 @@ checkoutRouter.post(
         throw new Error('Failed to create order');
       }
 
-      // 5. Send order confirmation email
-      try {
-        const { emailService } = await import('../../services/email-service');
-        if (newOrder.display_id) {
-          await emailService.sendOrderConfirmation(
-            {
-              ...newOrder,
-              order_number: newOrder.display_id.toString(),
-            },
-            newOrder.email
-          );
-          console.log(
-            `Order Confirmation sent for order #${newOrder.display_id}`
-          );
-        }
-      } catch (emailError: unknown) {
-        console.error('Failed to send order confirmation email:', emailError);
-      }
+      // 5. Order confirmation email — NOT sent here.
+      // Email is sent only after successful payment verification
+      // (see finalizeCapturedPayment flow in payments-razorpay.ts / payments-paypal.ts)
+      // This prevents customers receiving "Order Confirmed" emails before payment.
 
       // 6. Send WhatsApp notification to admin
       try {

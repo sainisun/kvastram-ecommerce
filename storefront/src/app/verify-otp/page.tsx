@@ -160,7 +160,7 @@ export default function VerifyOtpPage() {
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                className="w-14 h-16 md:w-16 md:h-18 text-center text-2xl font-semibold bg-[var(--ds-surface-sunken)] border border-[var(--ds-border-subtle)] focus:border-[var(--ds-border-strong)] focus:ring-1 focus:ring-[var(--ds-border-strong)] rounded-md outline-none transition-all"
+                className="w-14 h-16 md:w-16 md:h-18 text-center text-2xl font-semibold bg-[var(--ds-surface-soft)] border border-[var(--ds-border-subtle)] focus:border-[var(--ds-border-strong)] focus:ring-1 focus:ring-[var(--ds-border-strong)] rounded-md outline-none transition-all"
                 autoFocus={index === 0}
               />
             ))}
