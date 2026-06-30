@@ -180,7 +180,7 @@ export default function VerifyOtpPage() {
 
         <div className="text-center pt-4 border-t border-[var(--ds-border-subtle)]">
           <p className="text-body-sm text-[var(--ds-text-muted)] mb-3">
-            Didn't receive the code?
+            Didn&apos;t receive the code?
           </p>
           <Button
             type="button"
