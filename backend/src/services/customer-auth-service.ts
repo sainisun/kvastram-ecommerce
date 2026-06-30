@@ -14,7 +14,7 @@ import {
 const JWT_SECRET = config.jwt.secret;
 
 // 🔒 FIX-011: Email verification constants
-const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
+const VERIFICATION_TOKEN_EXPIRY_MINUTES = 10;
 
 // 🔒 Q9: Account Lockout Configuration (shared constants)
 import {
@@ -28,7 +28,7 @@ import {
  * Generate a secure verification token
  */
 export function generateVerificationToken(): string {
-  return crypto.randomBytes(32).toString('hex');
+  return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
 /**
@@ -36,7 +36,7 @@ export function generateVerificationToken(): string {
  */
 export function getVerificationExpiry(): Date {
   const expiry = new Date();
-  expiry.setHours(expiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS);
+  expiry.setMinutes(expiry.getMinutes() + VERIFICATION_TOKEN_EXPIRY_MINUTES);
   return expiry;
 }
 
@@ -215,8 +215,9 @@ export const customerAuthService = {
       }
 
       // Upgrade guest to account
-      const verificationToken = generateVerificationToken();
+      const plaintextOtp = generateVerificationToken();
       const verificationExpires = getVerificationExpiry();
+      const hashedOtp = await bcrypt.hash(plaintextOtp, 10);
 
       const updated = await db
         .update(customers)
@@ -229,7 +230,7 @@ export const customerAuthService = {
           updated_at: new Date(),
           failed_login_attempts: 0,
           locked_until: null,
-          verification_token: verificationToken,
+          verification_token: hashedOtp,
           verification_expires_at: verificationExpires,
           email_verified: false,
         })
@@ -244,8 +245,13 @@ export const customerAuthService = {
         emailService.sendVerificationEmail({
           email: newCustomer.email,
           first_name: newCustomer.first_name!,
-          token: verificationToken,
+          token: plaintextOtp,
         }).catch(emailError => console.error('Failed to send email:', emailError));
+        
+        if (newCustomer.phone) {
+          const { smsService } = await import('./sms-service');
+          smsService.sendOtp(newCustomer.phone, plaintextOtp);
+        }
       } catch (err) {
         console.error('Failed to load email service:', err);
       }
@@ -253,8 +259,9 @@ export const customerAuthService = {
       return newCustomer;
     } else {
       // Create new customer
-      const verificationToken = generateVerificationToken();
+      const plaintextOtp = generateVerificationToken();
       const verificationExpires = getVerificationExpiry();
+      const hashedOtp = await bcrypt.hash(plaintextOtp, 10);
 
       const created = await db
         .insert(customers)
@@ -265,7 +272,7 @@ export const customerAuthService = {
           last_name: data.last_name,
           phone: data.phone,
           has_account: true,
-          verification_token: verificationToken,
+          verification_token: hashedOtp,
           verification_expires_at: verificationExpires,
           email_verified: false,
           failed_login_attempts: 0,
@@ -281,8 +288,13 @@ export const customerAuthService = {
         emailService.sendVerificationEmail({
           email: newCustomer.email,
           first_name: newCustomer.first_name!,
-          token: verificationToken,
+          token: plaintextOtp,
         }).catch(emailError => console.error('Failed to send verification email:', emailError));
+        
+        if (newCustomer.phone) {
+          const { smsService } = await import('./sms-service');
+          smsService.sendOtp(newCustomer.phone, plaintextOtp);
+        }
       } catch (emailError: unknown) {
         console.error('Failed to load email service:', emailError);
       }
@@ -417,14 +429,15 @@ export const customerAuthService = {
     }
 
     // Generate new verification token
-    const verificationToken = generateVerificationToken();
+    const plaintextOtp = generateVerificationToken();
     const verificationExpires = getVerificationExpiry();
+    const hashedOtp = await bcrypt.hash(plaintextOtp, 10);
 
     // Update customer with new token
     await db
       .update(customers)
       .set({
-        verification_token: verificationToken,
+        verification_token: hashedOtp,
         verification_expires_at: verificationExpires,
         updated_at: new Date(),
       })
@@ -435,10 +448,65 @@ export const customerAuthService = {
     emailService.sendVerificationEmail({
       email: customer.email,
       first_name: customer.first_name!,
-      token: verificationToken,
+      token: plaintextOtp,
     }).catch(emailError => console.error('Failed to send verification email:', emailError));
 
+    if (customer.phone) {
+      const { smsService } = await import('./sms-service');
+      smsService.sendOtp(customer.phone, plaintextOtp);
+    }
+
     return genericResponse;
+  },
+
+  async verifyOtp(email: string, otp: string) {
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(eq(customers.email, email.toLowerCase()))
+      .limit(1);
+
+    if (!customer) {
+      throw new Error('Invalid or expired OTP');
+    }
+
+    if (customer.email_verified) {
+      throw new Error('Email is already verified');
+    }
+
+    if (!customer.verification_token || !customer.verification_expires_at) {
+      throw new Error('No pending verification found');
+    }
+
+    if (new Date() > customer.verification_expires_at) {
+      throw new Error('OTP has expired');
+    }
+
+    const isValid = await bcrypt.compare(otp, customer.verification_token);
+    if (!isValid) {
+      throw new Error('Invalid OTP');
+    }
+
+    // Update to verified
+    const [updated] = await db
+      .update(customers)
+      .set({
+        email_verified: true,
+        verification_token: null,
+        verification_expires_at: null,
+        updated_at: new Date(),
+      })
+      .where(eq(customers.id, customer.id))
+      .returning();
+
+    // Generate login token
+    const token = await sign(
+      { sub: updated.id, email: updated.email, role: 'customer', exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 },
+      config.jwt.secret
+    );
+
+    const { password_hash, ...customerInfo } = updated;
+    return { customer: customerInfo, token };
   },
 
   async getVerificationStatus(email: string) {

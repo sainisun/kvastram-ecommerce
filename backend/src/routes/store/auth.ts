@@ -59,8 +59,9 @@ function clearAuthCookie(c: Context) {
 }
 
 // Validation schemas for verification routes
-const VerifyEmailSchema = z.object({
-  token: z.string().min(1, 'Verification token is required'),
+const VerifyOtpSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().length(4),
 });
 
 const ResendVerificationSchema = z.object({
@@ -210,18 +211,21 @@ storeAuthRouter.get('/legal', async (c) => {
 
 // 🔒 FIX-011: Email verification routes
 
-// POST /store/auth/verify-email - Verify email with token
+// POST /store/auth/verify-otp - Verify email with OTP
 storeAuthRouter.post(
-  '/verify-email',
-  zValidator('json', VerifyEmailSchema),
+  '/verify-otp',
+  zValidator('json', VerifyOtpSchema),
   async (c) => {
-    const { token } = c.req.valid('json');
+    const { email, otp } = c.req.valid('json');
 
     try {
-      const customer = await customerAuthService.verifyEmail(token);
+      const { customer, token } = await customerAuthService.verifyOtp(email, otp);
+      setAuthCookie(c, token);
+      
       return c.json({
         success: true,
-        message: 'Email verified successfully',
+        message: 'Email verified and logged in successfully',
+        customer,
       });
     } catch (error: any) {
       return c.json({ error: error.message }, 400);

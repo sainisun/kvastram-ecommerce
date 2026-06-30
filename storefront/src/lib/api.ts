@@ -869,6 +869,34 @@ export const api = {
     return res.json();
   },
 
+  // --- Verify OTP ---
+  async verifyOtp(data: { email: string; otp: string }) {
+    const csrfHeader = await getCsrfHeader();
+    const res = await fetchWithTrace(
+      `${API_URL}/store/auth/verify-otp`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...csrfHeader,
+        },
+        body: JSON.stringify(data),
+        credentials: 'include',
+      }
+    );
+    if (!res.ok) {
+      let errorMessage = 'Verification failed';
+      try {
+        const error = await res.json();
+        errorMessage = error.error || error.message || errorMessage;
+      } catch {
+        // Keep default error message
+      }
+      throw new Error(errorMessage);
+    }
+    return res.json();
+  },
+
   async login(data: LoginData) {
     const url = `${API_URL}/store/auth/login`;
     const res = await fetchWithTrace(url, {

@@ -338,22 +338,17 @@ class EmailService {
     first_name: string;
     token: string;
   }) {
-    const verificationUrl = `${this.getStorefrontUrl()}/verify-email?token=${encodeURIComponent(data.token)}`;
-    const subject = 'Verify Your Email Address';
-    const text = `Hi ${data.first_name},\n\nWelcome to Odhvica! Please verify your email address by clicking the link below:\n\n${verificationUrl}\n\nThis link will expire in 24 hours.\n\nBest regards,\nOdhvica Team`;
+    const subject = 'Your Odhvica Verification Code';
+    const text = `Hi ${data.first_name},\n\nWelcome to Odhvica! Your verification code is: ${data.token}\n\nThis code will expire in 10 minutes.\n\nBest regards,\nOdhvica Team`;
     const html = `
-            <div style="font-family: Arial, sans-serif; color: #333;">
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; text-align: center;">
                 <h1>Welcome to Odhvica!</h1>
                 <p>Hi ${safeString(data.first_name)},</p>
-                <p>Thank you for creating an account with us. Please verify your email address to get started.</p>
-                <p style="text-align: center; margin: 30px 0;">
-                    <a href="${verificationUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
-                        Verify Email Address
-                    </a>
-                </p>
-                <p>Or copy this link to your browser:<br>
-                <small>${verificationUrl}</small></p>
-                <p style="color: #666; font-size: 12px;">This link will expire in 24 hours. If you didn't create an account with Odhvica, please ignore this email.</p>
+                <p>Thank you for creating an account with us. Please use the following 4-digit code to verify your email address:</p>
+                <div style="background-color: #f4f4f4; border-radius: 8px; padding: 20px; margin: 30px auto; width: fit-content;">
+                    <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1c1917;">${data.token}</span>
+                </div>
+                <p style="color: #666; font-size: 14px;">This code will expire in 10 minutes. If you didn't create an account with Odhvica, please ignore this email.</p>
                 <p>Best regards,<br>Odhvica Team</p>
             </div>
         `;
@@ -362,7 +357,7 @@ class EmailService {
     if (process.env.NODE_ENV !== 'production') {
       console.log('\n📧 EMAIL VERIFICATION (DEV MODE)');
       console.log('   To:', data.email);
-      console.log('   Verification URL:', verificationUrl);
+      console.log('   OTP Code:', data.token);
       console.log('');
     }
 

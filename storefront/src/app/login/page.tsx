@@ -239,13 +239,22 @@ function LoginContent() {
           'Login failed. Please try again.';
       }
 
-      setError(errorMessage);
-
-      // Show resend verification option
+      // Redirect to OTP verification
       if (errorMessage.includes('verify your email')) {
-        setShowResend(true);
+        const verifyUrl = new URL('/verify-otp', window.location.origin);
+        verifyUrl.searchParams.set('email', formData.email);
+        if (redirect !== '/account') {
+          verifyUrl.searchParams.set('redirect', redirect);
+        }
+        
+        // Auto-send a new OTP so they don't have to wait or click resend
+        api.resendVerification(formData.email).catch(() => {});
+        
+        router.push(verifyUrl.pathname + verifyUrl.search);
+        return;
       }
 
+      setError(errorMessage);
       setLoading(false);
     }
   };

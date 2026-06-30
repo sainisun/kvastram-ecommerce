@@ -56,9 +56,16 @@ export default function RegisterPage() {
       await register(formData);
       setSuccess(true);
       const redirect = typeof globalThis.window === 'undefined' ? null : new URLSearchParams(globalThis.window.location.search).get('redirect');
+      
+      const verifyUrl = new URL('/verify-otp', window.location.origin);
+      verifyUrl.searchParams.set('email', formData.email);
+      if (redirect) {
+        verifyUrl.searchParams.set('redirect', redirect);
+      }
+      
       setTimeout(() => {
-        router.push(redirect || '/login');
-      }, 2000);
+        router.push(verifyUrl.pathname + verifyUrl.search);
+      }, 1500);
     } catch (err: unknown) {
       console.error('Registration error:', err);
       let errorMessage = 'Registration failed';
@@ -85,7 +92,7 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {success && (
             <StatusBanner tone="success">
-              Registration successful! Please check your email to verify your account.
+              Registration successful! Redirecting to verify your email...
             </StatusBanner>
           )}
           {error && (
