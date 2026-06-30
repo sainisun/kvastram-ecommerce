@@ -552,11 +552,15 @@ export default function CheckoutPage() {
 
       if (!hasRazorpay && !hasPayPal) {
         // Fallback: use Stripe
+        // [STRIPE HIDDEN] - Disabled Stripe initialization to prevent crash with dummy keys
+        /*
         const paymentRes = await api.createPaymentIntent(
           newOrderUUID,
           res.checkout_payment_token
         );
         setClientSecret(paymentRes.client_secret);
+        */
+        console.warn('No active payment gateway found for this currency (Stripe disabled).');
       }
 
       // Move to payment step
@@ -1114,6 +1118,7 @@ export default function CheckoutPage() {
                   )}
 
                 {/* Stripe Express (Apple Pay / Google Pay) — shown when Stripe is the active provider */}
+                {/* [STRIPE HIDDEN] - Disabled Stripe UI elements completely
                 {clientSecret && (
                   <>
                     <div className="relative my-6">
@@ -1159,6 +1164,7 @@ export default function CheckoutPage() {
                     </ErrorBoundary>
                   </>
                 )}
+                */}
 
                 <Button
                   type="button"

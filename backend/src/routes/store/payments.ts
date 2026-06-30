@@ -38,9 +38,19 @@ import { finalizeCapturedPayment } from '../../utils/payment-capture';
 // Only create Stripe instance if key is available
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 
-const stripe = stripeKey ? new Stripe(stripeKey, {
-  apiVersion: '2025-02-05.acacia' as any,
-}) : null;
+let stripeInstance: Stripe | null = null;
+function getStripe() {
+  if (stripeInstance) return stripeInstance;
+  if (!stripeKey || stripeKey.includes('replace_before_launch')) return null;
+  try {
+    stripeInstance = new Stripe(stripeKey, {
+      apiVersion: '2025-02-05.acacia' as any,
+    });
+    return stripeInstance;
+  } catch (error) {
+    return null;
+  }
+}
 
 const paymentRouter = new Hono();
 
@@ -92,6 +102,7 @@ paymentRouter.post(
   async (c) => {
     try {
       // Fail fast if Stripe is not configured
+      const stripe = getStripe();
       if (!stripe) {
         return c.json({ error: 'Payment processing not configured' }, 503);
       }
@@ -228,6 +239,8 @@ paymentRouter.post('/webhook', async (c) => {
       return c.json({ error: 'Webhook processing not configured' }, 500);
     }
 
+    const stripe = getStripe();
+    if (!stripe) return c.json({ error: 'Stripe disabled' }, 503);
     event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
   } catch (err: any) {
     logError('Webhook signature verification failed', err);
