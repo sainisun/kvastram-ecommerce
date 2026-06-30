@@ -3,10 +3,10 @@
 set -eu
 
 while read -r local_ref local_sha remote_ref remote_sha; do
-  if [ "$remote_ref" = "refs/heads/main" ] && [ "${KVASTRAM_ALLOW_DIRECT_MAIN_PUSH:-0}" != "1" ]; then
-    echo "Direct pushes to main are blocked by the Kvastram repository guard."
+  if [ "$remote_ref" = "refs/heads/main" ] && [ "${ODHVICA_ALLOW_DIRECT_MAIN_PUSH:-0}" != "1" ]; then
+    echo "Direct pushes to main are blocked by the Odhvica repository guard."
     echo "Push a feature branch and merge it through a pull request."
-    echo "Emergency override: KVASTRAM_ALLOW_DIRECT_MAIN_PUSH=1 git push ..."
+    echo "Emergency override: ODHVICA_ALLOW_DIRECT_MAIN_PUSH=1 git push ..."
     exit 1
   fi
 done

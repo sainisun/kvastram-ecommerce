@@ -37,6 +37,18 @@ require_file() {
   fi
 }
 
+upsert_env_value() {
+  local file="$1"
+  local key="$2"
+  local value="$3"
+
+  if grep -q "^${key}=" "$file"; then
+    sed -i "s|^${key}=.*|${key}=${value}|g" "$file"
+  else
+    printf '%s=%s\n' "$key" "$value" >> "$file"
+  fi
+}
+
 compose_up_with_retry() {
   local retry_label="$1"
   shift
@@ -101,6 +113,15 @@ for file in \
 do
   require_file "$file"
 done
+
+log "Enforcing official Odhvica production domains"
+upsert_env_value storefront/.env.production NEXT_PUBLIC_SITE_URL https://odhvica.com
+upsert_env_value storefront/.env.production NEXT_PUBLIC_STORE_URL https://odhvica.com
+upsert_env_value storefront/.env.production NEXT_PUBLIC_API_URL https://api.odhvica.com
+upsert_env_value admin/.env.production NEXT_PUBLIC_API_URL https://api.odhvica.com
+upsert_env_value backend/.env.production STOREFRONT_URL https://odhvica.com
+upsert_env_value backend/.env.production FRONTEND_URL https://odhvica.com
+upsert_env_value deploy/hostinger/.env NEXT_PUBLIC_API_URL https://api.odhvica.com
 
 log "Validating compose configuration"
 docker compose -f "$COMPOSE_FILE" config >/dev/null

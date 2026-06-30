@@ -19,7 +19,7 @@ function product(id, title) {
         prices: [{ amount: 599900, currency_code: 'inr' }],
       },
     ],
-    collection: { id: 'collection-1', title: 'Kvastram Edit', handle: 'edit' },
+    collection: { id: 'collection-1', title: 'Odhvica Edit', handle: 'edit' },
   };
 }
 
@@ -142,19 +142,19 @@ const homepage = {
   ],
   brand_story: {
     title: 'Preserving craft, one thread at a time',
-    content: 'Kvastram connects Jaipur-rooted workmanship with considered modern wardrobes.',
+    content: 'Odhvica connects Jaipur-rooted workmanship with considered modern wardrobes.',
     image_url: image,
   },
   social: Array.from({ length: 8 }, (_, index) => ({
     id: `social-${index + 1}`,
     image_url: image,
-    alt_text: `Kvastram community look ${index + 1}`,
+    alt_text: `Odhvica community look ${index + 1}`,
     caption: 'Handmade textiles in everyday life.',
-    destination_url: 'https://instagram.com/kvastram',
+    destination_url: 'https://instagram.com/odhvica',
     sort_order: index,
   })),
   newsletter: {
-    title: 'Join The Kvastram Circle',
+    title: 'Join The Odhvica Circle',
     subtitle: 'Craft stories, considered launches, and notes from Jaipur.',
   },
 };

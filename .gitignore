@@ -71,7 +71,7 @@ start-*.out
 *_audit_report_*.md
 *_db_state_report_*.md
 *_design_system_*.md
-kvastram-storefront-complete-audit-report.md
+odhvica-storefront-complete-audit-report.md
 quick_view_audit_report_*.md
 reels_instagram_execution_plan.md
 trending_reels_execution_plan.md
@@ -82,7 +82,7 @@ docs/*-artifacts/
 # Misc
 *.pem
 *.log
-kvastram-platform/
+odhvica-platform/
 tmp/
 =
 
@@ -93,5 +93,4 @@ Redesign doc/
 docs/content-reverify*/
 
 # SEO plan extracts
-docs/kvastram-seo-fix-plan-extract/
-
+docs/odhvica-seo-fix-plan-extract/
