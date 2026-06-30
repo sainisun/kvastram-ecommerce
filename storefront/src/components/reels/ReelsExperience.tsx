@@ -318,7 +318,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
             </div>
             <div className="reels-hero-copy">
               <p className="reels-hero-kicker">Watch &amp; Buy</p>
-              <h1 id="reels-hero-title" className="font-display text-display-lg text-[var(--ds-text-primary)]">{activeHeroCollection.title}</h1>
+              <h1 id="reels-hero-title" className="font-display text-display-lg text-primary">{activeHeroCollection.title}</h1>
               <p>
                 {activeHeroCollection.subtitle ||
                   activeHeroCollection.description ||
@@ -380,7 +380,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           <>
             <div className="reels-hero-copy">
               <p className="reels-hero-kicker">Watch &amp; Buy</p>
-              <h1 id="reels-hero-title" className="font-display text-display-lg text-[var(--ds-text-primary)]">Odhvica reels edit</h1>
+              <h1 id="reels-hero-title" className="font-display text-display-lg text-primary">Odhvica reels edit</h1>
               <p>See fabric movement, handwork detail, scale, and styling before you choose your piece.</p>
               <div className="reels-hero-actions">
                 <Link href="/products" className="reels-action-link">
@@ -490,7 +490,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
           <div className="reels-empty-state">
             <p className="kv-tag">Watch &amp; Buy</p>
             <h2 className="mt-2 kv-title text-display-md">Reels are being curated</h2>
-            <p className="mx-auto mt-3 max-w-md text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+            <p className="mx-auto mt-3 max-w-md text-body-sm leading-token-relaxed text-secondary">
               Product videos will appear here once they are published from the admin.
               Until then, continue with the live catalog and curated collections.
             </p>
@@ -536,7 +536,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-[var(--soft)]" />
+                      <div className="absolute inset-0 bg-surface-soft" />
                     )}
                     <div className="reel-grid-gradient" />
                     <div className="reel-grid-overlay">
@@ -584,12 +584,12 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 // ─────────────────────────────────────────────────────────
 function ReelsGridSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--cream)]">
-      <div className="sticky top-0 z-40 h-12 border-b border-[var(--line)] bg-[var(--ds-surface-paper)]/95" />
+    <div className="min-h-screen bg-surface">
+      <div className="sticky top-0 z-40 h-12 border-b border-border-subtle bg-[var(--ds-surface-paper)]/95" />
       <div className="kv-container pt-6 pb-8">
         <div className="grid grid-cols-2 gap-[var(--ds-space-xs)]">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-[var(--ds-surface-soft)]" />
+            <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-surface-soft" />
           ))}
         </div>
       </div>
@@ -742,7 +742,7 @@ function ReelPlayerModal({
         disabled={currentIndex === 0}
         variant="ghost"
         size="lg"
-        className="reel-player-nav reel-player-nav-prev absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-[var(--ds-text-inverse)] backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
+        className="reel-player-nav reel-player-nav-prev absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-inverse backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
         aria-label="Previous reel"
       >
         <ChevronLeft size={24} />
@@ -753,7 +753,7 @@ function ReelPlayerModal({
         disabled={currentIndex === localReels.length - 1}
         variant="ghost"
         size="lg"
-        className="reel-player-nav reel-player-nav-next absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-[var(--ds-text-inverse)] backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
+        className="reel-player-nav reel-player-nav-next absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-inverse backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
         aria-label="Next reel"
       >
         <ChevronRight size={24} />
@@ -799,29 +799,29 @@ function ReelPlayerModal({
         <div className="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.95)] via-[rgba(var(--ds-black-rgb),0.50)] to-transparent" />
 
         {/* Top bar */}
-        <div className="reel-player-topbar relative z-10 flex items-center gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))] text-[var(--ds-text-inverse)]">
+        <div className="reel-player-topbar relative z-10 flex items-center gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))] text-inverse">
           <IconButton
             type="button"
             onClick={onClose}
             variant="ghost"
             size="sm"
-            className="h-9 w-9 rounded-full border-transparent bg-[var(--ds-text-primary)]/40 text-[var(--ds-text-inverse)] backdrop-blur-sm hover:bg-[var(--ds-text-primary)]/60"
+            className="h-9 w-9 rounded-full border-transparent bg-[var(--ds-text-primary)]/40 text-inverse backdrop-blur-sm hover:bg-[var(--ds-text-primary)]/60"
             aria-label="Close reel player"
           >
             <ArrowLeft size={18} />
           </IconButton>
           <div className="min-w-0 flex-1">
-            <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)]/65">
+            <p className="text-body-xs font-bold  tracking-token-wider text-inverse/65">
               {currentIndex + 1} / {localReels.length}
             </p>
-            <p className="mt-0.5 line-clamp-1 text-body-sm type-semibold text-[var(--ds-text-inverse)]">
+            <p className="mt-0.5 line-clamp-1 text-body-sm font-semibold text-inverse">
               {current.product_name}
             </p>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="reel-player-actions absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5 text-[var(--ds-text-inverse)]">
+        <div className="reel-player-actions absolute bottom-32 right-4 z-20 flex flex-col items-center gap-5 text-inverse">
           {/* Like */}
           <Button
             type="button"
@@ -833,7 +833,7 @@ function ReelPlayerModal({
             }}
             variant="ghost"
             size="sm"
-            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-[var(--ds-text-inverse)] hover:bg-transparent"
+            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-inverse hover:bg-transparent"
             aria-label={liked ? 'Unlike reel' : 'Like reel'}
           >
             <Heart
@@ -842,7 +842,7 @@ function ReelPlayerModal({
               color="var(--ds-text-inverse)"
               className="drop-shadow transition-transform active:scale-125"
             />
-            <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">
+            <span className="text-body-xs font-semibold text-inverse drop-shadow">
               {likeCount > 0 ? likeCount : ''}
             </span>
           </Button>
@@ -853,11 +853,11 @@ function ReelPlayerModal({
             onClick={handleShare}
             variant="ghost"
             size="sm"
-            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-[var(--ds-text-inverse)] hover:bg-transparent"
+            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-inverse hover:bg-transparent"
             aria-label="Share reel"
           >
-            <Share2 size={26} className="text-[var(--ds-text-inverse)] drop-shadow" />
-            <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">Share</span>
+            <Share2 size={26} className="text-inverse drop-shadow" />
+            <span className="text-body-xs font-semibold text-inverse drop-shadow">Share</span>
           </Button>
 
           {/* Save */}
@@ -866,26 +866,26 @@ function ReelPlayerModal({
             onClick={() => setSaved(toggleSavedReel(current.id))}
             variant="ghost"
             size="sm"
-            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-[var(--ds-text-inverse)] hover:bg-transparent"
+            className="flex min-h-0 flex-col items-center gap-0.5 border-transparent px-0 text-inverse hover:bg-transparent"
             aria-label={saved ? 'Remove saved reel' : 'Save reel'}
           >
             <Bookmark
               size={26}
               fill={saved ? 'var(--ds-text-inverse)' : 'transparent'}
-              className="text-[var(--ds-text-inverse)] drop-shadow transition-transform active:scale-125"
+              className="text-inverse drop-shadow transition-transform active:scale-125"
             />
-            <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">
+            <span className="text-body-xs font-semibold text-inverse drop-shadow">
               {saved ? 'Saved' : 'Save'}
             </span>
           </Button>
 
           {/* Views */}
           <div
-            className="flex flex-col items-center gap-0.5 text-[var(--ds-text-inverse)]"
+            className="flex flex-col items-center gap-0.5 text-inverse"
             aria-label={`${current.view_count || 0} views`}
           >
-            <Eye size={24} className="text-[var(--ds-text-inverse)] drop-shadow" />
-            <span className="text-body-xs type-semibold text-[var(--ds-text-inverse)] drop-shadow">
+            <Eye size={24} className="text-inverse drop-shadow" />
+            <span className="text-body-xs font-semibold text-inverse drop-shadow">
               {current.view_count || 0}
             </span>
           </div>
@@ -908,17 +908,17 @@ function ReelPlayerModal({
               />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-body-sm type-semibold leading-token-snug color-ink">
+              <p className="line-clamp-2 text-body-sm font-semibold leading-token-snug color-ink">
                 {current.product_name}
               </p>
-              <p className="mt-1 text-body-sm type-bold color-accent">
+              <p className="mt-1 text-body-sm font-bold color-accent">
                 {formatPrice(current.price)}
               </p>
-              <p className="mt-0.5 hidden text-body-xs text-[var(--ds-text-muted)] sm:block">
+              <p className="mt-0.5 hidden text-body-xs text-muted sm:block">
                 View details, fabric, care, and shipping
               </p>
             </div>
-            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--ds-accent-primary)] px-3.5 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] shadow-lg">
+            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--ds-accent-primary)] px-3.5 py-2 text-body-xs font-bold  tracking-token-wider text-inverse shadow-lg">
               <ShoppingBag size={14} aria-hidden="true" />
               Shop
             </span>
@@ -928,7 +928,7 @@ function ReelPlayerModal({
         {/* Swipe hint on first reel */}
         {localReels.length > 1 && currentIndex === 0 && (
           <div className="pointer-events-none absolute inset-x-0 bottom-44 z-10 flex justify-center lg:hidden">
-            <span className="rounded-full bg-[var(--ds-text-primary)]/40 px-4 py-1.5 text-body-xs text-[var(--ds-text-inverse)]/70 backdrop-blur-sm">
+            <span className="rounded-full bg-[var(--ds-text-primary)]/40 px-4 py-1.5 text-body-xs text-inverse/70 backdrop-blur-sm">
               Swipe up for next
             </span>
           </div>

@@ -21,7 +21,7 @@ export default async function ArtisansPage() {
       </p>
       <div className="mt-10 grid gap-4 md:grid-cols-3">
         {artisans.map((artisan: { id: string; name: string; slug: string; craft_specialty?: string }) => (
-          <Link key={artisan.id} href={`/artisans/${artisan.slug}`} className="border border-[var(--ds-border-subtle)] p-5 transition-colors hover:border-[var(--ds-text-primary)]">
+          <Link key={artisan.id} href={`/artisans/${artisan.slug}`} className="border border-border-subtle p-5 transition-colors hover:border-[var(--ds-text-primary)]">
             <p className="collection-card-product-title">{artisan.name}</p>
             <p className="collection-detail-copy mt-2">{artisan.craft_specialty || 'Textile artisan'}</p>
           </Link>

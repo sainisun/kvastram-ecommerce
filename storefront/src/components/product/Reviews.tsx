@@ -181,7 +181,7 @@ export function Reviews({ productId }: ReviewsProps) {
   };
 
   return (
-    <div className="border-t border-[var(--ds-border-subtle)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]" id="reviews">
+    <div className="border-t border-border-subtle py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]" id="reviews">
       <div className="kv-page-container mx-auto max-w-page">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-[var(--ds-space-md)]">
           <div>
@@ -212,7 +212,7 @@ export function Reviews({ productId }: ReviewsProps) {
         {showForm && !submitted && (
           <form
             onSubmit={handleSubmit}
-            className="max-w-xl bg-[var(--ds-surface-soft)] p-8 mb-12 rounded-lg space-y-4"
+            className="max-w-xl bg-surface-soft p-8 mb-12 rounded-lg space-y-4"
           >
             <h3 className="review-form-heading mb-4">Share Your Experience</h3>
 
@@ -274,7 +274,7 @@ export function Reviews({ productId }: ReviewsProps) {
                 <div className="flex flex-wrap gap-[var(--ds-space-xs)] mb-3">
                   {imagePreviewUrls.map((url, index) => (
                     <div key={index} className="relative">
-                      <div className="w-20 h-20 relative rounded overflow-hidden border border-[var(--ds-border-subtle)]">
+                      <div className="w-20 h-20 relative rounded overflow-hidden border border-border-subtle">
                         <OptimizedImage
                           src={url}
                           alt={`Preview ${index + 1}`}
@@ -287,7 +287,7 @@ export function Reviews({ productId }: ReviewsProps) {
                         onClick={() => removeImage(index)}
                         variant="primary"
                         size="sm"
-                        className="absolute -right-1 -top-1 h-6 w-6 border-[var(--ds-danger)] bg-[var(--ds-danger)] text-[var(--ds-text-inverse)] hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger)]"
+                        className="absolute -right-1 -top-1 h-6 w-6 border-[var(--ds-danger)] bg-[var(--ds-danger)] text-inverse hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger)]"
                         aria-label={`Remove image ${index + 1}`}
                       >
                         <X size={12} />
@@ -307,7 +307,7 @@ export function Reviews({ productId }: ReviewsProps) {
                     onChange={handleImageSelect}
                     className="hidden"
                   />
-                  <div className="review-upload-action flex items-center gap-2 rounded border border-[var(--ds-border-subtle)] px-4 py-2 transition-colors hover:bg-[var(--ds-surface-soft)]">
+                  <div className="review-upload-action flex items-center gap-2 rounded border border-border-subtle px-4 py-2 transition-colors hover:bg-surface-soft">
                     <Upload size={16} />
                     <span>Upload Images</span>
                   </div>
@@ -347,27 +347,27 @@ export function Reviews({ productId }: ReviewsProps) {
 
         {/* Reviews List */}
         {loading ? (
-          <div className="text-center py-12 text-[var(--ds-text-muted)]">
+          <div className="text-center py-12 text-muted">
             Loading reviews...
           </div>
         ) : loadError ? (
-          <div className="text-center py-12 bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]">
+          <div className="text-center py-12 bg-[var(--ds-danger-bg)] text-error">
             {loadError}
           </div>
         ) : reviews.length === 0 ? (
-          <div className="text-center py-12 bg-[var(--ds-surface-soft)] text-[var(--ds-text-secondary)] italic">
+          <div className="text-center py-12 bg-surface-soft text-secondary italic">
             No reviews yet. Be the first to review this product.
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-[var(--ds-space-md)]">
             {reviews.map((review) => (
-              <div key={review.id} className="bg-[var(--ds-surface-soft)] p-8 relative group">
+              <div key={review.id} className="bg-surface-soft p-8 relative group">
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <div className="mb-2">
                       <StarRating rating={review.rating} size={14} />
                     </div>
-                    <h3 className="review-title inline-block border-b border-transparent pb-1 transition-colors group-hover:border-[var(--ds-border-subtle)]">
+                    <h3 className="review-title inline-block border-b border-transparent pb-1 transition-colors group-hover:border-border-subtle">
                       {review.title}
                     </h3>
                   </div>
@@ -385,7 +385,7 @@ export function Reviews({ productId }: ReviewsProps) {
                     {review.images.map((imageUrl, imgIndex) => (
                       <div
                         key={imgIndex}
-                        className="w-20 h-20 relative rounded overflow-hidden border border-[var(--ds-border-subtle)]"
+                        className="w-20 h-20 relative rounded overflow-hidden border border-border-subtle"
                       >
                         <OptimizedImage
                           src={imageUrl}
@@ -398,7 +398,7 @@ export function Reviews({ productId }: ReviewsProps) {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between border-t border-[var(--ds-border-subtle)] pt-4">
+                <div className="flex items-center justify-between border-t border-border-subtle pt-4">
                   <div className="review-rating-count">
                     <span className="review-author">
                       {review.author_name}

@@ -203,7 +203,7 @@ export function ContactClient() {
 
           <Card className="p-6 shadow-[0_24px_80px_rgba(var(--ds-text-primary-rgb),0.06)] md:p-10">
             {orderReference || reason ? (
-              <div className="mb-6 border border-[var(--line)] bg-[var(--ds-surface-parchment)] px-4 py-3 text-body-sm text-[var(--ds-text-secondary)]">
+              <div className="mb-6 border border-border-subtle bg-parchment px-4 py-3 text-body-sm text-secondary">
                 {reason ? (
                   <span>{reasonLabels[reason] || 'Support Request'}</span>
                 ) : null}
@@ -284,7 +284,7 @@ export function ContactClient() {
                   error={touched.message ? errors.message : undefined}
                 />
 
-                <div className="border border-[var(--line)] bg-[var(--ds-surface-parchment)] px-4 py-4 text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+                <div className="border border-border-subtle bg-parchment px-4 py-4 text-body-sm leading-token-relaxed text-secondary">
                   For payment or return questions, the guided help pages may
                   answer faster than a general message.
                   <div className="mt-3 flex flex-wrap gap-3">

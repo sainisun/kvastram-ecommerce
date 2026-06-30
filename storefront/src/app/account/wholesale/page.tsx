@@ -70,7 +70,7 @@ export default function WholesaleDashboardPage() {
 
   if (!wholesaleInfo?.hasWholesaleAccess) {
     return (
-      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-parchment px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <EmptyState
           icon={<Building2 size={48} />}
           title="No Wholesale Access"
@@ -88,21 +88,21 @@ export default function WholesaleDashboardPage() {
 
   const tierColors: Record<string, string> = {
     starter: 'border-[var(--ds-info)] bg-[var(--ds-info-bg)] text-[var(--ds-info-text)]',
-    growth: 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]',
+    growth: 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success',
     enterprise: 'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-soft)] text-[var(--ds-accent-hover)]',
   };
 
   const tierColor =
     tierColors[wholesaleInfo.tier || ''] ||
-    'bg-[var(--ds-surface-parchment)] text-[var(--ds-text-secondary)] border-[var(--ds-border-subtle)]';
+    'bg-parchment text-secondary border-border-subtle';
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
+    <div className="min-h-screen bg-parchment">
       <div className="mx-auto max-w-4xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-6">
           <Link
             href="/account"
-            className="account-muted inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
+            className="account-muted inline-flex items-center gap-2 transition-colors hover:text-primary"
           >
             <ArrowLeft size={16} /> Back to Account
           </Link>
@@ -115,7 +115,7 @@ export default function WholesaleDashboardPage() {
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-3">
-              <Tag size={20} className="text-[var(--ds-text-muted)]" />
+              <Tag size={20} className="text-muted" />
               <span className="account-form-label">
                 Your Tier
               </span>
@@ -131,7 +131,7 @@ export default function WholesaleDashboardPage() {
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-3">
-              <TrendingUp size={20} className="text-[var(--ds-text-muted)]" />
+              <TrendingUp size={20} className="text-muted" />
               <span className="account-form-label">
                 Discount
               </span>
@@ -144,7 +144,7 @@ export default function WholesaleDashboardPage() {
 
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-3">
-              <Building2 size={20} className="text-[var(--ds-text-muted)]" />
+              <Building2 size={20} className="text-muted" />
               <span className="account-form-label">
                 Company
               </span>
@@ -156,14 +156,14 @@ export default function WholesaleDashboardPage() {
         </div>
 
         <Card className="overflow-hidden">
-          <div className="p-6 border-b border-[var(--ds-border-subtle)]">
+          <div className="p-6 border-b border-border-subtle">
             <div className="flex items-center justify-between">
               <h2 className="account-kicker flex items-center gap-2">
                 <Package size={16} /> Recent Orders
               </h2>
               <Link
                 href="/account/orders"
-                className="account-caption  transition-colors hover:text-[var(--ds-text-primary)]"
+                className="account-caption  transition-colors hover:text-primary"
               >
                 View All
               </Link>
@@ -193,7 +193,7 @@ export default function WholesaleDashboardPage() {
                 <Link
                   key={order.id}
                   href={`/account/orders/${order.id}`}
-                  className="flex items-center justify-between p-4 hover:bg-[var(--ds-surface-parchment)] transition-colors"
+                  className="flex items-center justify-between p-4 hover:bg-parchment transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div>
@@ -201,7 +201,7 @@ export default function WholesaleDashboardPage() {
                         Order #{order.display_id || order.id.slice(0, 8)}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Clock size={12} className="text-[var(--ds-text-muted)]" />
+                        <Clock size={12} className="text-muted" />
                         <span className="account-caption">
                           {new Date(order.created_at).toLocaleDateString()}
                         </span>
@@ -223,9 +223,9 @@ export default function WholesaleDashboardPage() {
                     <Badge
                       className={`account-caption  ${
                         order.status === 'completed'
-                          ? 'text-[var(--ds-success-text)]'
+                          ? 'text-success'
                           : order.status === 'canceled'
-                            ? 'text-[var(--ds-danger)]'
+                            ? 'text-error'
                             : 'text-[var(--ds-warning-text)]'
                       }`}
                     >

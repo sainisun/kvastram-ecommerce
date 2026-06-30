@@ -76,13 +76,13 @@ export default function EditsPage() {
     <div className="min-h-screen bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         <div className="mx-auto max-w-3xl text-center">
-          <span className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+          <span className="text-body-xs font-bold  tracking-token-wider text-muted">
             Guided Discovery
           </span>
-          <h1 className="mt-4 font-display text-display-xl text-[var(--ds-text-primary)]">
+          <h1 className="mt-4 font-display text-display-xl text-primary">
             Curated Edits
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-body-lg text-[var(--ds-text-secondary)]">
+          <p className="mx-auto mt-4 max-w-2xl text-body-lg text-secondary">
             Use curated routes when you want a faster way into the storefront
             than broad search, generic filters, or starting from every product
             at once.
@@ -96,18 +96,18 @@ export default function EditsPage() {
               href={href}
               className={cn(
                 cardClasses,
-                'group block overflow-hidden transition-colors hover:border-[var(--ds-border-strong)]'
+                'group block overflow-hidden transition-colors hover:border-border'
               )}
             >
-              <div className={`bg-gradient-to-br ${accent} p-6 text-[var(--ds-text-inverse)]`}>
+              <div className={`bg-gradient-to-br ${accent} p-6 text-inverse`}>
                 <Icon size={28} />
                 <h2 className="mt-12 text-display-sm font-display">{title}</h2>
               </div>
               <div className="p-6">
-                <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+                <p className="text-body-sm leading-token-relaxed text-secondary">
                   {copy}
                 </p>
-                <span className="mt-5 inline-flex items-center gap-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)]">
+                <span className="mt-5 inline-flex items-center gap-2 text-body-xs font-bold  tracking-token-wider text-primary">
                   Open Edit <ArrowRight size={14} />
                 </span>
               </div>
@@ -118,19 +118,19 @@ export default function EditsPage() {
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           <Link
             href="/products"
-            className="border border-[var(--ds-border-strong)] px-6 py-4 text-center text-body-sm type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-border px-6 py-4 text-center text-body-sm font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
           >
             Shop All
           </Link>
           <Link
             href={storefrontTrust.policyRoutes.help}
-            className="border border-[var(--ds-border-strong)] px-6 py-4 text-center text-body-sm type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-border px-6 py-4 text-center text-body-sm font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
           >
             Help Center
           </Link>
           <Link
             href={storefrontTrust.policyRoutes.contact}
-            className="bg-[var(--ds-text-primary)] px-6 py-4 text-center text-body-sm type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+            className="bg-[var(--ds-text-primary)] px-6 py-4 text-center text-body-sm font-bold  tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
           >
             Contact Concierge
           </Link>

@@ -27,23 +27,23 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
     // Fallback to original static content
     return (
       <section className="relative h-[90vh]">
-        <div className="absolute inset-0 bg-[var(--ds-surface-soft)]">
+        <div className="absolute inset-0 bg-surface-soft">
           <div className="w-full h-full bg-[url('/hero-boutique.jpg')] bg-cover bg-center brightness-[0.85] grayscale-[20%]">
             <div className="w-full h-full bg-gradient-to-br from-[var(--ds-text-muted)] to-[var(--ds-text-secondary)] opacity-50 mix-blend-multiply"></div>
           </div>
         </div>
         <div className="absolute inset-0 flex items-center justify-center text-center">
-          <div className="max-w-4xl px-6 space-y-8 text-[var(--ds-text-inverse)]">
+          <div className="max-w-4xl px-6 space-y-8 text-inverse">
             <h1 className="text-display-xl md:text-display-xl font-display tracking-token-tight leading-token-tight drop-shadow-lg">
               ODHVICA
             </h1>
-            <p className="text-body-xl md:text-display-md type-light tracking-token-wide max-w-2xl mx-auto drop-shadow-md">
+            <p className="text-body-xl md:text-display-md font-light tracking-token-wide max-w-2xl mx-auto drop-shadow-md">
               Bridging Heritage & Avant-Garde
             </p>
             <div className="pt-8">
               <Link
                 href="/products"
-                className="inline-block bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-12 py-4 text-body-sm  tracking-token-wider type-semibold hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)] transition-all duration-300"
+                className="inline-block bg-[var(--ds-surface-paper)] text-primary px-12 py-4 text-body-sm  tracking-token-wider font-semibold hover:bg-[var(--ds-text-primary)] hover:text-inverse transition-all duration-300"
               >
                 Shop The Collection
               </Link>
@@ -68,7 +68,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
           key={banner.id}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
         >
-          <div className="absolute inset-0 bg-[var(--ds-surface-soft)]">
+          <div className="absolute inset-0 bg-surface-soft">
             <OptimizedImage
               src={banner.image_url}
               alt={banner.title}
@@ -81,7 +81,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
           </div>
 
           <div className="absolute inset-0 flex items-center justify-center text-center">
-            <div className="max-w-4xl px-6 space-y-8 text-[var(--ds-text-inverse)] animate-in fade-in zoom-in duration-1000">
+            <div className="max-w-4xl px-6 space-y-8 text-inverse animate-in fade-in zoom-in duration-1000">
               <h1 className="text-display-xl md:text-display-xl font-display tracking-token-tight leading-token-tight drop-shadow-lg">
                 {banner.title}
               </h1>
@@ -90,7 +90,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
                 <div className="pt-8">
                   <Link
                     href={banner.link}
-                    className="inline-block bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] px-12 py-4 text-body-sm  tracking-token-wider type-semibold hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)] transition-all duration-300"
+                    className="inline-block bg-[var(--ds-surface-paper)] text-primary px-12 py-4 text-body-sm  tracking-token-wider font-semibold hover:bg-[var(--ds-text-primary)] hover:text-inverse transition-all duration-300"
                   >
                     {banner.button_text || 'Shop Now'}
                   </Link>
@@ -108,7 +108,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
             onClick={prevSlide}
             variant="ghost"
             size="lg"
-            className="absolute left-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:text-[var(--ds-text-inverse)]"
+            className="absolute left-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:text-inverse"
             aria-label="Previous slide"
           >
             <ChevronLeft size={48} />
@@ -118,7 +118,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
             onClick={nextSlide}
             variant="ghost"
             size="lg"
-            className="absolute right-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:text-[var(--ds-text-inverse)]"
+            className="absolute right-4 top-1/2 z-20 min-h-11 min-w-11 -translate-y-1/2 text-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:text-inverse"
             aria-label="Next slide"
           >
             <ChevronRight size={48} />

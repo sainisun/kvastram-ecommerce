@@ -21,26 +21,26 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-6 py-12 text-center md:px-10 md:py-16',
+        'border border-border-subtle bg-[var(--ds-surface-paper)] px-6 py-12 text-center md:px-10 md:py-16',
         className
       )}
       {...props}
     >
       {icon ? (
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center text-[var(--ds-text-muted)]">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center text-muted">
           {icon}
         </div>
       ) : null}
       {eyebrow ? (
-        <p className="mb-3 font-body text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
+        <p className="mb-3 font-body text-body-xs font-semibold  tracking-token-wider text-muted">
           {eyebrow}
         </p>
       ) : null}
-      <h2 className="font-display text-display-sm type-semibold leading-token-tight text-[var(--ds-text-primary)]">
+      <h2 className="font-display text-display-sm font-semibold leading-token-tight text-primary">
         {title}
       </h2>
       {description ? (
-        <p className="mx-auto mt-3 max-w-xl font-body text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+        <p className="mx-auto mt-3 max-w-xl font-body text-body-sm leading-token-relaxed text-secondary">
           {description}
         </p>
       ) : null}

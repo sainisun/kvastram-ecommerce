@@ -39,7 +39,7 @@ export default function SizeGuidePage() {
       />
       <ContentContainer>
         <SectionBlock title="Measurement Chart">
-          <div className="overflow-x-auto border border-[var(--ds-border-subtle)]">
+          <div className="overflow-x-auto border border-border-subtle">
             <table className="size-guide-table">
               <thead className="size-guide-table-head">
                 <tr>

@@ -68,15 +68,15 @@ export default function AccountMessagesPage() {
   });
 
   if (loading || !customer) {
-    return <div className="kv-page-gutter min-h-screen bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 lg:px-20" />;
+    return <div className="kv-page-gutter min-h-screen bg-parchment px-6 py-12 md:px-12 lg:px-20" />;
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
+    <div className="min-h-screen bg-parchment">
       <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <Link href="/account" className="account-muted hover:text-[var(--ds-text-primary)]">
+            <Link href="/account" className="account-muted hover:text-primary">
               Account
             </Link>
             <h1 className="account-page-title mt-2">Messages</h1>
@@ -92,7 +92,7 @@ export default function AccountMessagesPage() {
         </div>
 
         {loadingMessages ? (
-          <div className="flex h-48 items-center justify-center text-[var(--ds-text-muted)]">
+          <div className="flex h-48 items-center justify-center text-muted">
             <RefreshCw className="mr-2 animate-spin" size={20} />
             Loading messages...
           </div>
@@ -115,7 +115,7 @@ export default function AccountMessagesPage() {
                 href={`/account/messages/${message.id}`}
                 className={cn(
                   cardClasses,
-                  'block p-5 transition hover:border-[var(--ds-border-strong)]'
+                  'block p-5 transition hover:border-border'
                 )}
               >
                 <div className="flex items-start justify-between gap-4">

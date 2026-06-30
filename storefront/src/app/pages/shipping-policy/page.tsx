@@ -32,9 +32,9 @@ function PolicySection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-[var(--ds-border-subtle)] py-8">
-      <h2 className="text-display-sm font-display font-[var(--ds-type-heading-weight)] text-[var(--ds-text-primary)]">{title}</h2>
-      <div className="mt-4 space-y-4 text-body-md leading-[var(--ds-leading-relaxed)] text-[var(--ds-text-secondary)]">
+    <section className="border-t border-border-subtle py-8">
+      <h2 className="text-display-sm font-display font-[var(--ds-type-heading-weight)] text-primary">{title}</h2>
+      <div className="mt-4 space-y-4 text-body-md leading-[var(--ds-leading-relaxed)] text-secondary">
         {children}
       </div>
     </section>
@@ -51,9 +51,9 @@ function PolicyTable({
   secondHeader: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-[var(--ds-border-subtle)]">
+    <div className="overflow-x-auto rounded-lg border border-border-subtle">
       <table className="min-w-full divide-y divide-[var(--ds-border-subtle)] text-left text-body-sm">
-        <thead className="bg-[var(--ds-surface-soft)] text-[var(--ds-text-secondary)]">
+        <thead className="bg-surface-soft text-secondary">
           <tr>
             <th className="px-4 py-3 font-[var(--ds-type-heading-weight)]">{firstHeader}</th>
             <th className="px-4 py-3 font-[var(--ds-type-heading-weight)]">{secondHeader}</th>
@@ -62,8 +62,8 @@ function PolicyTable({
         <tbody className="divide-y divide-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
           {rows.map(([first, second]) => (
             <tr key={first}>
-              <td className="px-4 py-3 text-[var(--ds-text-primary)]">{first}</td>
-              <td className="px-4 py-3 text-[var(--ds-text-secondary)]">{second}</td>
+              <td className="px-4 py-3 text-primary">{first}</td>
+              <td className="px-4 py-3 text-secondary">{second}</td>
             </tr>
           ))}
         </tbody>
@@ -74,19 +74,19 @@ function PolicyTable({
 
 export default function ShippingPolicyPage() {
   return (
-    <main className="bg-[var(--ds-surface-page)]">
+    <main className="bg-surface">
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        <p className="text-body-xs font-ui uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-text-muted)]">
+        <p className="text-body-xs font-ui uppercase tracking-[var(--ds-type-label-tracking)] text-muted">
           Policies
         </p>
-        <h1 className="mt-3 text-display-md font-display font-[var(--ds-type-heading-weight)] text-[var(--ds-text-primary)]">
+        <h1 className="mt-3 text-display-md font-display font-[var(--ds-type-heading-weight)] text-primary">
           Shipping Policy
         </h1>
-        <p className="mt-4 text-body-lg leading-[var(--ds-leading-relaxed)] text-[var(--ds-text-secondary)]">
+        <p className="mt-4 text-body-lg leading-[var(--ds-leading-relaxed)] text-secondary">
           This Shipping Policy explains how Odhvica dispatches domestic and
           international orders placed on odhvica.com.
         </p>
-        <p className="mt-3 text-body-sm text-[var(--ds-text-muted)]">Effective Date: 7 June 2026</p>
+        <p className="mt-3 text-body-sm text-muted">Effective Date: 7 June 2026</p>
 
         <PolicySection title="1. Dispatch Location">
           <p>

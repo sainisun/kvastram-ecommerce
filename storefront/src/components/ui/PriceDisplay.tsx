@@ -22,24 +22,24 @@ const rootClasses: Record<PriceDisplayVariant, string> = {
 
 const priceClasses: Record<PriceDisplayVariant, string> = {
   'product-card':
-    'font-body text-body-sm type-semibold tracking-token-normal text-[var(--ds-text-price)]',
+    'font-body text-body-sm font-semibold tracking-token-normal text-[var(--ds-text-price)]',
   compact:
-    'font-body text-body-sm type-regular tracking-token-normal text-[var(--ds-text-muted)]',
+    'font-body text-body-sm font-normal tracking-token-normal text-muted',
   pdp:
-    'font-body text-display-sm type-bold tracking-token-normal text-[var(--ds-text-price)]',
+    'font-body text-display-sm font-bold tracking-token-normal text-[var(--ds-text-price)]',
   inline:
-    'font-body text-body-sm type-semibold tracking-token-normal text-[var(--ds-text-price)]',
+    'font-body text-body-sm font-semibold tracking-token-normal text-[var(--ds-text-price)]',
 };
 
 const compareAtClasses: Record<PriceDisplayVariant, string> = {
   'product-card':
-    'font-body text-body-xs type-regular tracking-token-normal text-[var(--ds-text-price-old)] line-through',
+    'font-body text-body-xs font-normal tracking-token-normal text-[var(--ds-text-price-old)] line-through',
   compact:
-    'font-body text-body-xs type-regular tracking-token-normal text-[var(--ds-text-price-old)] line-through',
+    'font-body text-body-xs font-normal tracking-token-normal text-[var(--ds-text-price-old)] line-through',
   pdp:
-    'font-body text-body-sm type-regular tracking-token-normal text-[var(--ds-text-price-old)] line-through',
+    'font-body text-body-sm font-normal tracking-token-normal text-[var(--ds-text-price-old)] line-through',
   inline:
-    'font-body text-body-xs type-regular tracking-token-normal text-[var(--ds-text-price-old)] line-through',
+    'font-body text-body-xs font-normal tracking-token-normal text-[var(--ds-text-price-old)] line-through',
 };
 
 export function PriceDisplay({

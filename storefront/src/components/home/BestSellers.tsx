@@ -130,7 +130,7 @@ export function BestSellers({
         <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)] md:mb-[var(--ds-space-md)]">
           <div>
             <p className="homepage-eyebrow text-body-xs uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-gold)]">Chosen For You</p>
-            <h2 className="text-display-sm font-display font-medium text-[var(--ds-text-primary)]">Best Sellers</h2>
+            <h2 className="text-display-sm font-display font-medium text-primary">Best Sellers</h2>
           </div>
           <Link href="/collections/best-sellers" className="kv-section-link">
             View All Best Sellers →

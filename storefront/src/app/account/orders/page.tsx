@@ -25,11 +25,11 @@ type CustomerReturn = {
 function getReturnStatusClasses(status: string) {
   switch (status) {
     case 'approved':
-      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]';
+      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success';
     case 'refunded':
       return 'kv-status-subtle';
     case 'rejected':
-      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]';
+      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error';
     default:
       return 'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]';
   }
@@ -98,13 +98,13 @@ export default function OrdersListPage() {
   if (loading || !customer) return <OrdersListSkeleton />;
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="mx-auto max-w-4xl px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link
             href="/account"
-            className="account-muted flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
+            className="account-muted flex items-center gap-2 transition-colors hover:text-primary"
           >
             <ChevronLeft size={20} />
             <span>Back to Account</span>
@@ -116,19 +116,19 @@ export default function OrdersListPage() {
         <div className="mb-6 flex flex-wrap gap-3">
           <Link
             href="/help"
-            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-border bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
           >
             Help Center
           </Link>
           <Link
             href="/payment-help"
-            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-border bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
           >
             Payment Help
           </Link>
           <Link
             href="/returns"
-            className="border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+            className="border border-border bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
           >
             View Returns Hub
           </Link>
@@ -141,10 +141,10 @@ export default function OrdersListPage() {
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="flex items-center justify-between p-6">
                   <div className="space-y-2">
-                    <div className="h-5 w-32 bg-[var(--ds-surface-warm)] animate-pulse rounded" />
-                    <div className="h-3 w-24 bg-[var(--ds-surface-warm)] animate-pulse rounded" />
+                    <div className="h-5 w-32 bg-surface-warm animate-pulse rounded" />
+                    <div className="h-3 w-24 bg-surface-warm animate-pulse rounded" />
                   </div>
-                  <div className="h-8 w-24 bg-[var(--ds-surface-warm)] animate-pulse rounded" />
+                  <div className="h-8 w-24 bg-surface-warm animate-pulse rounded" />
                 </div>
               ))}
             </div>
@@ -165,12 +165,12 @@ export default function OrdersListPage() {
                 {paginatedOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="flex items-center justify-between p-6 transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                    className="flex items-center justify-between p-6 transition-colors hover:bg-parchment"
                   >
                     <div>
                       <Link
                         href={`/account/orders/${order.id}`}
-                        className="account-name hover:text-[var(--ds-text-secondary)]"
+                        className="account-name hover:text-secondary"
                       >
                         Order #{order.display_id}
                       </Link>
@@ -189,7 +189,7 @@ export default function OrdersListPage() {
                       </p>
                       {returnsByOrderId[order.id] ? (
                         <Badge
-                          className={`mt-3 inline-flex rounded-full border px-3 py-1 text-body-xs type-semibold tracking-token-wide ${getReturnStatusClasses(
+                          className={`mt-3 inline-flex rounded-full border px-3 py-1 text-body-xs font-semibold tracking-token-wide ${getReturnStatusClasses(
                             returnsByOrderId[order.id].status
                           )}`}
                         >
@@ -216,7 +216,7 @@ export default function OrdersListPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-[var(--ds-border-subtle)] flex items-center justify-between">
+                <div className="px-6 py-4 border-t border-border-subtle flex items-center justify-between">
                   <p className="account-muted">
                     Showing {startIndex + 1}-
                     {Math.min(startIndex + ORDERS_PER_PAGE, orders.length)} of{' '}
@@ -226,7 +226,7 @@ export default function OrdersListPage() {
                     <UnstyledButton
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="p-2 border border-[var(--ds-border-subtle)] text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-parchment)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="p-2 border border-border-subtle text-secondary hover:bg-parchment disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       aria-label="Previous page"
                     >
                       <ChevronLeft size={16} />
@@ -239,8 +239,8 @@ export default function OrdersListPage() {
                           onClick={() => handlePageChange(page)}
                           className={`account-page-button h-10 w-10 transition-colors ${
                             currentPage === page
-                              ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
-                              : 'border border-[var(--ds-border-subtle)] text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-parchment)]'
+                              ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                              : 'border border-border-subtle text-secondary hover:bg-parchment'
                           }`}
                         >
                           {page}
@@ -251,7 +251,7 @@ export default function OrdersListPage() {
                     <UnstyledButton
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="p-2 border border-[var(--ds-border-subtle)] text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-parchment)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="p-2 border border-border-subtle text-secondary hover:bg-parchment disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       aria-label="Next page"
                     >
                       <ChevronRight size={16} />

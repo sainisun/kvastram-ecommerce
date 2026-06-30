@@ -97,11 +97,11 @@ type CustomerReturn = {
 function getReturnStatusClasses(status: string) {
   switch (status) {
     case 'approved':
-      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]';
+      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success';
     case 'refunded':
       return 'kv-status-subtle';
     case 'rejected':
-      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]';
+      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error';
     default:
       return 'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]';
   }
@@ -357,17 +357,17 @@ export default function OrderDetailsPage() {
     order.status === 'delivered' || order.raw_status === 'completed';
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="mx-auto max-w-4xl px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]">
         <Link
           href="/account"
-          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
+          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-primary"
         >
           <ArrowLeft size={16} /> Back to Orders
         </Link>
 
         <Card className="overflow-hidden shadow-sm">
-          <div className="p-6 md:p-8 border-b border-[var(--ds-border-subtle)] flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-6 md:p-8 border-b border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="account-detail-title mb-1">
                 Order #{order.display_id}
@@ -387,18 +387,18 @@ export default function OrderDetailsPage() {
             </Badge>
           </div>
 
-          <div className="bg-[var(--ds-surface-parchment)] p-6 border-b border-[var(--ds-border-subtle)]">
+          <div className="bg-parchment p-6 border-b border-border-subtle">
             <div className="account-progress-labels flex items-center justify-between">
               {workflowTimeline.map((step, index) => (
                 <span
                   key={step.key}
-                  className={step.completed || step.current || index === 0 ? 'text-[var(--ds-text-primary)]' : ''}
+                  className={step.completed || step.current || index === 0 ? 'text-primary' : ''}
                 >
                   {step.label}
                 </span>
               ))}
             </div>
-            <div className="mt-3 h-1 bg-[var(--ds-surface-warm)] rounded-full relative">
+            <div className="mt-3 h-1 bg-surface-warm rounded-full relative">
               <div
                 className="absolute left-0 top-0 h-full bg-[var(--ds-text-primary)] rounded-full transition-all duration-500"
                 style={{ width: workflowIndex >= 0 ? workflowProgressWidth : '25%' }}
@@ -414,7 +414,7 @@ export default function OrderDetailsPage() {
               <div className="space-y-6">
                 {(order.items || []).map((item) => (
                   <div key={item.id} className="flex gap-4">
-                    <div className="relative w-16 h-20 bg-[var(--ds-surface-soft)] border border-[var(--ds-border-subtle)] shrink-0">
+                    <div className="relative w-16 h-20 bg-surface-soft border border-border-subtle shrink-0">
                       {item.thumbnail ? (
                         <OptimizedImage
                           src={item.thumbnail}
@@ -455,7 +455,7 @@ export default function OrderDetailsPage() {
                 ))}
               </div>
 
-              <div className="mt-8 pt-6 border-t border-[var(--ds-border-subtle)] space-y-2">
+              <div className="mt-8 pt-6 border-t border-border-subtle space-y-2">
                 <div className="account-muted flex justify-between">
                   <span>Subtotal</span>
                   <span>
@@ -476,7 +476,7 @@ export default function OrderDetailsPage() {
                       : 'Free'}
                   </span>
                 </div>
-                <div className="account-total-row mt-4 flex justify-between border-t border-[var(--ds-border-subtle)] pt-4">
+                <div className="account-total-row mt-4 flex justify-between border-t border-border-subtle pt-4">
                   <span>Total</span>
                   <span>
                     {new Intl.NumberFormat(undefined, {
@@ -488,7 +488,7 @@ export default function OrderDetailsPage() {
               </div>
             </div>
 
-            <div className="p-6 md:p-8 bg-[var(--ds-surface-parchment)]/50 space-y-8">
+            <div className="p-6 md:p-8 bg-parchment/50 space-y-8">
               <div>
                 <p className="account-form-label mb-3 flex items-center gap-2">
                   <Package size={16} /> Shipping Address
@@ -553,7 +553,7 @@ export default function OrderDetailsPage() {
                     {(order.workflow?.packages || []).map((pkg) => (
                       <div
                         key={pkg.id}
-                        className="rounded border border-[var(--ds-border-subtle)] px-4 py-3 text-body-sm text-[var(--ds-text-secondary)]"
+                        className="rounded border border-border-subtle px-4 py-3 text-body-sm text-secondary"
                       >
                         <p className="account-mono-caption">
                           Package #{pkg.sequence}
@@ -563,12 +563,12 @@ export default function OrderDetailsPage() {
                             ? 'No tracking attached'
                             : pkg.tracking_number || 'Tracking pending'}
                         </p>
-                        <p className="mt-1 text-[var(--ds-text-muted)]">
+                        <p className="mt-1 text-muted">
                           {[pkg.carrier, pkg.service].filter(Boolean).join(' / ') ||
                             'Carrier details pending'}
                         </p>
                         {pkg.no_tracking_reason ? (
-                          <p className="mt-1 text-[var(--ds-text-muted)]">
+                          <p className="mt-1 text-muted">
                             Reason: {pkg.no_tracking_reason}
                           </p>
                         ) : null}
@@ -578,7 +578,7 @@ export default function OrderDetailsPage() {
                 </div>
               )}
 
-              <div className="pt-8 border-t border-[var(--ds-border-subtle)] space-y-3">
+              <div className="pt-8 border-t border-border-subtle space-y-3">
                 {reorderError && (
                   <StatusBanner tone="danger" className="account-alert">
                     {reorderError}
@@ -594,20 +594,20 @@ export default function OrderDetailsPage() {
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <p className="account-form-label">Return request</p>
                       <Badge
-                        className={`rounded-full border px-3 py-1 text-body-xs type-semibold tracking-token-wide ${getReturnStatusClasses(existingReturn.status)}`}
+                        className={`rounded-full border px-3 py-1 text-body-xs font-semibold tracking-token-wide ${getReturnStatusClasses(existingReturn.status)}`}
                       >
                         {existingReturn.status}
                       </Badge>
                     </div>
-                    <p className="mt-3 text-body-sm text-[var(--ds-text-secondary)]">
+                    <p className="mt-3 text-body-sm text-secondary">
                       {existingReturn.reason}
                     </p>
-                    <p className="mt-2 text-body-xs text-[var(--ds-text-muted)]">
+                    <p className="mt-2 text-body-xs text-muted">
                       Submitted{' '}
                       {new Date(existingReturn.created_at).toLocaleDateString()}
                     </p>
                     {existingReturn.admin_notes ? (
-                      <p className="mt-2 text-body-sm text-[var(--ds-text-muted)]">
+                      <p className="mt-2 text-body-sm text-muted">
                         Team note: {existingReturn.admin_notes}
                       </p>
                     ) : null}
@@ -670,7 +670,7 @@ export default function OrderDetailsPage() {
                     variant="outline"
                     size="md"
                     fullWidth
-                    className="hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger-bg)] hover:text-[var(--ds-danger)]"
+                    className="hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger-bg)] hover:text-error"
                   >
                     <RotateCcw size={14} /> Request Return
                   </Button>
@@ -739,7 +739,7 @@ export default function OrderDetailsPage() {
                   {(order.items || []).map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between py-2 border-b border-[var(--ds-border-subtle)]"
+                      className="flex items-center justify-between py-2 border-b border-border-subtle"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="account-name truncate">
@@ -791,7 +791,7 @@ export default function OrderDetailsPage() {
                 </StatusBanner>
               )}
             </div>
-            <div className="mt-6 flex gap-3 border-t border-[var(--ds-border-subtle)] pt-5">
+            <div className="mt-6 flex gap-3 border-t border-border-subtle pt-5">
               <Button
                 type="button"
                 onClick={() => setShowReturnModal(false)}

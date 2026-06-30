@@ -170,24 +170,24 @@ export default function ListingPageClient({
     <section className="bg-[var(--ds-surface-paper)]">
       <div className="kv-page-container py-8 md:py-12 lg:py-16">
         {intro ? (
-          <p className="mb-6 max-w-3xl text-body-md leading-token-relaxed text-[var(--ds-text-secondary)]">
+          <p className="mb-6 max-w-3xl text-body-md leading-token-relaxed text-secondary">
             {intro}
           </p>
         ) : null}
 
-        <div className="sticky top-[72px] z-30 -mx-4 border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]/95 px-4 py-3 backdrop-blur md:static md:mx-0 md:border-x-0 md:px-0 md:backdrop-blur-0">
+        <div className="sticky top-[72px] z-30 -mx-4 border-y border-border-subtle bg-[var(--ds-surface-paper)]/95 px-4 py-3 backdrop-blur md:static md:mx-0 md:border-x-0 md:px-0 md:backdrop-blur-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <UnstyledButton
               ref={filterButtonRef}
               type="button"
               onClick={() => setFilterDrawerOpen(true)}
-              className="inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs type-bold tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+              className="inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs font-bold tracking-token-wider text-primary transition-colors hover:bg-[var(--ds-text-primary)] hover:text-inverse"
               aria-label="Open filters"
             >
               <SlidersHorizontal size={14} />
               Filter
               {activeFilterCount > 0 ? (
-                <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-[var(--ds-text-primary)] px-1.5 text-[var(--ds-text-inverse)]">
+                <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-[var(--ds-text-primary)] px-1.5 text-inverse">
                   {activeFilterCount}
                 </span>
               ) : null}
@@ -197,8 +197,8 @@ export default function ListingPageClient({
               <div className="catalog-count">
                 {total > 0 ? `${startItem}-${endItem} of ${total}` : '0 products'}
               </div>
-              <div className="flex h-10 items-center gap-2 border border-[var(--ds-border-subtle)] px-3">
-                <ArrowUpDown size={14} className="text-[var(--ds-text-muted)]" />
+              <div className="flex h-10 items-center gap-2 border border-border-subtle px-3">
+                <ArrowUpDown size={14} className="text-muted" />
                 <Select
                   aria-label="Sort products"
                   value={currentSort}
@@ -219,12 +219,12 @@ export default function ListingPageClient({
         {activeFilterCount > 0 ? (
           <div className="mt-4 flex flex-wrap items-center gap-2">
             {activeTag ? (
-              <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
+              <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
                 {activeTag.name}
                 <UnstyledButton
                   onClick={() => clearFilter('tag_id')}
                   aria-label="Remove tag filter"
-                  className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+                  className="text-muted transition-colors hover:text-primary"
                 >
                   <X size={12} />
                 </UnstyledButton>
@@ -232,7 +232,7 @@ export default function ListingPageClient({
             ) : null}
 
             {currentMinPrice || currentMaxPrice ? (
-              <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
+              <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
                 Price filter
                 <UnstyledButton
                   onClick={() =>
@@ -242,7 +242,7 @@ export default function ListingPageClient({
                     })
                   }
                   aria-label="Remove price filter"
-                  className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+                  className="text-muted transition-colors hover:text-primary"
                 >
                   <X size={12} />
                 </UnstyledButton>
@@ -265,7 +265,7 @@ export default function ListingPageClient({
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
+                className="rounded-full border border-border-subtle px-4 py-2 text-body-sm text-secondary transition-colors hover:border-[var(--ds-text-primary)] hover:text-primary"
               >
                 {link.label}
               </Link>
@@ -278,7 +278,7 @@ export default function ListingPageClient({
             <UnstyledButton
               onClick={() => handlePageChange(page - 1)}
               disabled={page === 1 || loading}
-              className="rounded-md border border-[var(--ds-border-subtle)] p-2 text-[var(--ds-text-secondary)] transition-colors hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-md border border-border-subtle p-2 text-secondary transition-colors hover:bg-parchment hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Previous page"
             >
               <ChevronLeft size={20} />
@@ -293,8 +293,8 @@ export default function ListingPageClient({
                   disabled={loading}
                   className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
                     page === pageNum
-                      ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
-                      : 'text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]'
+                      ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                      : 'text-secondary hover:bg-parchment hover:text-primary'
                   }`}
                   aria-label={`Page ${pageNum}`}
                   aria-current={page === pageNum ? 'page' : undefined}
@@ -307,7 +307,7 @@ export default function ListingPageClient({
             <UnstyledButton
               onClick={() => handlePageChange(page + 1)}
               disabled={page === totalPages || loading}
-              className="rounded-md border border-[var(--ds-border-subtle)] p-2 text-[var(--ds-text-secondary)] transition-colors hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-md border border-border-subtle p-2 text-secondary transition-colors hover:bg-parchment hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Next page"
             >
               <ChevronRight size={20} />

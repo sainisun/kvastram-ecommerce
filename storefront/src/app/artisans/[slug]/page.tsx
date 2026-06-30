@@ -40,7 +40,7 @@ export default async function ArtisanPage({ params }: Props) {
       <p className="collection-detail-copy mt-4 max-w-3xl">
         {artisan.bio || artisan.craft_specialty || 'Textile artisan connected to Odhvica handmade craft.'}
       </p>
-      <div className="mt-6 grid gap-3 text-body-sm text-[var(--ds-text-secondary)] md:grid-cols-2">
+      <div className="mt-6 grid gap-3 text-body-sm text-secondary md:grid-cols-2">
         <p><strong>Craft:</strong> {artisan.craft_specialty || 'Textile craft'}</p>
         <p><strong>Location:</strong> {artisan.location || 'India'}</p>
       </div>
@@ -49,7 +49,7 @@ export default async function ArtisanPage({ params }: Props) {
           <h2 className="collection-section-title">Pieces by this artisan</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {products.map((product: { id: string; title: string; handle: string }) => (
-              <Link key={product.id} href={`/products/${product.handle}`} className="border border-[var(--ds-border-subtle)] p-5 transition-colors hover:border-[var(--ds-text-primary)]">
+              <Link key={product.id} href={`/products/${product.handle}`} className="border border-border-subtle p-5 transition-colors hover:border-[var(--ds-text-primary)]">
                 <p className="collection-card-product-title">{product.title}</p>
               </Link>
             ))}

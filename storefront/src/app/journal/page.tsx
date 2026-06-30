@@ -24,13 +24,13 @@ export default async function JournalPage() {
   return (
     <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="mb-12 space-y-4 text-center md:mb-16">
-        <span className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+        <span className="text-body-xs font-bold  tracking-token-wider text-muted">
           The Journal
         </span>
-        <h1 className="text-display-xl font-display text-[var(--ds-text-primary)] italic">
+        <h1 className="text-display-xl font-display text-primary italic">
           Stories from the Atelier
         </h1>
-        <p className="text-[var(--ds-text-secondary)] type-light max-w-2xl mx-auto">
+        <p className="text-secondary font-light max-w-2xl mx-auto">
           Exploring the intersection of heritage craftsmanship, sustainable
           luxury, and modern design.
         </p>
@@ -43,7 +43,7 @@ export default async function JournalPage() {
             href={`/journal/${post.slug}`}
             className="group block space-y-4"
           >
-            <div className="aspect-[4/5] bg-[var(--ds-surface-warm)] overflow-hidden relative">
+            <div className="aspect-[4/5] bg-surface-warm overflow-hidden relative">
               {post.cover_image ? (
                 <OptimizedImage
                   src={post.cover_image}
@@ -54,22 +54,22 @@ export default async function JournalPage() {
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full bg-[var(--ds-surface-soft)] flex items-center justify-center text-[var(--ds-text-disabled)] italic font-display">
+                <div className="w-full h-full bg-surface-soft flex items-center justify-center text-[var(--ds-text-disabled)] italic font-display">
                   Odhvica Journal
                 </div>
               )}
             </div>
             <div className="space-y-2">
-              <div className="text-body-xs text-[var(--ds-text-muted)] type-bold  tracking-token-wider">
+              <div className="text-body-xs text-muted font-bold  tracking-token-wider">
                 {new Date(post.published_at || new Date()).toLocaleDateString()}
               </div>
-              <h2 className="text-display-md font-display text-[var(--ds-text-primary)] group-hover:text-[var(--ds-text-secondary)] transition-colors">
+              <h2 className="text-display-md font-display text-primary group-hover:text-secondary transition-colors">
                 {post.title}
               </h2>
-              <p className="text-[var(--ds-text-secondary)] type-light line-clamp-3">
+              <p className="text-secondary font-light line-clamp-3">
                 {post.excerpt || post.content.substring(0, 150) + '...'}
               </p>
-              <span className="inline-block text-body-xs type-bold border-b border-[var(--ds-text-primary)] pb-1 mt-2">
+              <span className="inline-block text-body-xs font-bold border-b border-[var(--ds-text-primary)] pb-1 mt-2">
                 Read Story
               </span>
             </div>

@@ -15,11 +15,11 @@ export default function CheckoutError({
   reset: () => void;
 }) {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         <Link
           href="/cart"
-          className="inline-flex items-center gap-2 text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] mb-8 text-body-sm transition-colors"
+          className="inline-flex items-center gap-2 text-muted hover:text-primary mb-8 text-body-sm transition-colors"
         >
           <ArrowLeft size={16} /> Back to Cart
         </Link>

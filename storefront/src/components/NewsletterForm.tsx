@@ -75,7 +75,7 @@ export default function NewsletterForm({
           required
           disabled={status === 'loading'}
           containerClassName="flex-1"
-          className={minimal ? 'bg-[var(--ds-footer-surface)] text-[var(--ds-text-inverse)]' : 'bg-[rgba(var(--ds-surface-paper-rgb),0.05)] text-[var(--ds-text-inverse)]'}
+          className={minimal ? 'bg-[var(--ds-footer-surface)] text-inverse' : 'bg-[rgba(var(--ds-surface-paper-rgb),0.05)] text-inverse'}
           aria-label="Email address"
           aria-required="true"
         />
@@ -101,7 +101,7 @@ export default function NewsletterForm({
         </Button>
       </form>
       {status === 'error' && (
-        <p className={`text-body-sm mt-2 text-[var(--ds-danger)]`} role="alert">
+        <p className={`text-body-sm mt-2 text-error`} role="alert">
           {message}
         </p>
       )}

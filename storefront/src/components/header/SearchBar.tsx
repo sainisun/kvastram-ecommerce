@@ -47,7 +47,7 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
           animate={{ opacity: 1, height: 44 }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.18 }}
-          className="overflow-hidden border-t border-[var(--ds-border-strong)] bg-[var(--ds-surface-parchment)]"
+          className="overflow-hidden border-t border-border bg-parchment"
         >
           <form onSubmit={handleSubmit} className="h-[44px] flex items-center px-[var(--ds-space-lg)] gap-[var(--ds-space-xs)] max-w-screen-xl mx-auto">
             <Search size={16} className="text-[var(--ds-text-disabled)] shrink-0" />

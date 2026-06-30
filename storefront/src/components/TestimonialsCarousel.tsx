@@ -55,7 +55,7 @@ export default function TestimonialsCarousel({
             onClick={handlePrev}
             variant="ghost"
             size="md"
-            className="absolute left-0 top-1/2 z-10 h-10 w-10 -translate-x-4 -translate-y-1/2 rounded-full bg-[rgba(var(--ds-surface-paper-rgb),0.1)] text-[var(--ds-text-inverse)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.2)] md:-translate-x-16"
+            className="absolute left-0 top-1/2 z-10 h-10 w-10 -translate-x-4 -translate-y-1/2 rounded-full bg-[rgba(var(--ds-surface-paper-rgb),0.1)] text-inverse hover:bg-[rgba(var(--ds-surface-paper-rgb),0.2)] md:-translate-x-16"
             aria-label="Previous testimonial"
           >
             <ChevronLeft size={20} />
@@ -65,7 +65,7 @@ export default function TestimonialsCarousel({
             onClick={handleNext}
             variant="ghost"
             size="md"
-            className="absolute right-0 top-1/2 z-10 h-10 w-10 translate-x-4 -translate-y-1/2 rounded-full bg-[rgba(var(--ds-surface-paper-rgb),0.1)] text-[var(--ds-text-inverse)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.2)] md:translate-x-16"
+            className="absolute right-0 top-1/2 z-10 h-10 w-10 translate-x-4 -translate-y-1/2 rounded-full bg-[rgba(var(--ds-surface-paper-rgb),0.1)] text-inverse hover:bg-[rgba(var(--ds-surface-paper-rgb),0.2)] md:translate-x-16"
             aria-label="Next testimonial"
           >
             <ChevronRight size={20} />
@@ -82,7 +82,7 @@ export default function TestimonialsCarousel({
               key={i}
               size={24}
               fill={i < rating ? 'currentColor' : 'none'}
-              className={i < rating ? 'text-[var(--ds-accent-gold)]' : 'text-[var(--ds-text-secondary)]'}
+              className={i < rating ? 'text-[var(--ds-accent-gold)]' : 'text-secondary'}
             />
           ))}
         </div>
@@ -94,7 +94,7 @@ export default function TestimonialsCarousel({
 
         {/* Author */}
         <div className="flex flex-col items-center gap-2">
-          <div className="w-16 h-16 bg-[rgba(var(--ds-text-secondary-rgb),0.5)] backdrop-blur-sm rounded-full mb-2 overflow-hidden relative flex items-center justify-center border border-[var(--ds-border-strong)]">
+          <div className="w-16 h-16 bg-[rgba(var(--ds-text-secondary-rgb),0.5)] backdrop-blur-sm rounded-full mb-2 overflow-hidden relative flex items-center justify-center border border-border">
             {currentTestimonial.avatar_url ? (
               <OptimizedImage
                 src={currentTestimonial.avatar_url}
@@ -104,16 +104,16 @@ export default function TestimonialsCarousel({
                 className="object-cover"
               />
             ) : (
-              <span className="text-[var(--ds-text-muted)] font-display text-display-sm italic">
+              <span className="text-muted font-display text-display-sm italic">
                 {initials}
               </span>
             )}
           </div>
-          <p className="type-bold text-body-sm tracking-token-wider ">
+          <p className="font-bold text-body-sm tracking-token-wider ">
             {currentTestimonial.name}
           </p>
           {currentTestimonial.location && (
-            <p className="text-[var(--ds-text-muted)] text-body-sm font-display italic">
+            <p className="text-muted text-body-sm font-display italic">
               {currentTestimonial.location}
             </p>
           )}

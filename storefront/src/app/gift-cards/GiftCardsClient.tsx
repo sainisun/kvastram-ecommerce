@@ -70,38 +70,38 @@ export function GiftCardsClient() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] px-4 py-12 md:px-8 md:py-20">
+    <div className="min-h-screen bg-parchment px-4 py-12 md:px-8 md:py-20">
       <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <section className="space-y-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-body-sm text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+            className="inline-flex items-center gap-2 text-body-sm text-muted transition-colors hover:text-primary"
           >
             <ArrowLeft size={14} />
             Back to Home
           </Link>
           <div className="space-y-4">
-            <div className="inline-flex h-12 w-12 items-center justify-center border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
+            <div className="inline-flex h-12 w-12 items-center justify-center border border-border-subtle bg-[var(--ds-surface-paper)]">
               <Gift size={22} />
             </div>
-            <p className="text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-muted)]">
+            <p className="text-body-xs font-semibold tracking-token-wider text-muted">
               Gift Cards
             </p>
-            <h1 className="font-display text-display-lg text-[var(--ds-text-primary)]">
+            <h1 className="font-display text-display-lg text-primary">
               Send a Odhvica gift request
             </h1>
-            <p className="max-w-xl text-body-md leading-token-relaxed text-[var(--ds-text-secondary)]">
+            <p className="max-w-xl text-body-md leading-token-relaxed text-secondary">
               Choose an amount, add recipient details, and our buyer care team will help you complete the gift.
             </p>
           </div>
-          <div className="grid gap-3 text-body-sm text-[var(--ds-text-secondary)]">
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
+          <div className="grid gap-3 text-body-sm text-secondary">
+            <div className="border border-border-subtle bg-[var(--ds-surface-paper)] p-4">
               Choose an amount and send the request to the team.
             </div>
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
+            <div className="border border-border-subtle bg-[var(--ds-surface-paper)] p-4">
               The buyer care team confirms availability, payment, and delivery.
             </div>
-            <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4">
+            <div className="border border-border-subtle bg-[var(--ds-surface-paper)] p-4">
               The recipient can redeem against eligible Odhvica pieces.
             </div>
           </div>
@@ -109,13 +109,13 @@ export function GiftCardsClient() {
 
         <Card className="p-5 shadow-sm md:p-7">
           {status === 'success' ? (
-            <div className="mb-5 flex gap-3 border border-[var(--ds-success)] bg-[var(--ds-success-bg)] p-4 text-body-sm text-[var(--ds-success-text)]" role="status">
+            <div className="mb-5 flex gap-3 border border-[var(--ds-success)] bg-[var(--ds-success-bg)] p-4 text-body-sm text-success" role="status">
               <CheckCircle className="mt-0.5 shrink-0" size={18} />
               <p>{message}</p>
             </div>
           ) : null}
           {status === 'error' ? (
-            <div className="mb-5 border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] p-4 text-body-sm text-[var(--ds-danger)]" role="alert">
+            <div className="mb-5 border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] p-4 text-body-sm text-error" role="alert">
               {message}
             </div>
           ) : null}
@@ -146,13 +146,13 @@ export function GiftCardsClient() {
               required
             />
             <label className="block">
-              <span className="mb-2 block text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-muted)]">
+              <span className="mb-2 block text-body-xs font-semibold tracking-token-wider text-muted">
                 Gift Amount
               </span>
               <select
                 value={form.amount}
                 onChange={(event) => setForm((current) => ({ ...current, amount: event.target.value }))}
-                className="h-12 w-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-3 text-body-sm text-[var(--ds-text-primary)] outline-none focus:border-[var(--ds-accent-primary)]"
+                className="h-12 w-full border border-border-subtle bg-[var(--ds-surface-paper)] px-3 text-body-sm text-primary outline-none focus:border-[var(--ds-accent-primary)]"
               >
                 <option value="1000">Rs. 1,000</option>
                 <option value="2500">Rs. 2,500</option>

@@ -20,10 +20,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="form-label-typography  text-[var(--ds-text-muted)]"
+            className="form-label-typography  text-muted"
           >
             {label}
-            {rest.required && <span className="ml-1 text-[var(--ds-danger)]">*</span>}
+            {rest.required && <span className="ml-1 text-error">*</span>}
           </label>
         )}
 
@@ -36,9 +36,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-describedby={error ? errorId : rest['aria-describedby']}
             placeholder={rest.placeholder}
             className={cn(
-              'form-control-typography h-12 w-full border bg-[var(--ds-surface-paper)] px-3 text-[var(--ds-text-primary)] outline-none transition-colors placeholder:text-[var(--ds-text-muted)] focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:h-11',
+              'form-control-typography h-12 w-full border bg-[var(--ds-surface-paper)] px-3 text-primary outline-none transition-colors placeholder:text-muted focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:h-11',
               suffix && 'pr-11',
-              error ? 'border-[var(--ds-danger)]' : 'border-[var(--ds-border-subtle)]',
+              error ? 'border-[var(--ds-danger)]' : 'border-border-subtle',
               className
             )}
           />
@@ -53,7 +53,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <p
             id={errorId}
             role="alert"
-            className="input-error-message mt-0.5 text-[var(--ds-danger)]"
+            className="input-error-message mt-0.5 text-error"
           >
             {error}
           </p>

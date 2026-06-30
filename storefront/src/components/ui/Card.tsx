@@ -2,7 +2,7 @@ import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 export const cardClasses =
-  'rounded-[var(--radius-md)] border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]';
+  'rounded-[var(--radius-md)] border border-border-subtle bg-[var(--ds-surface-paper)] text-primary';
 
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
@@ -17,7 +17,7 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
 }
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('border-b border-[var(--ds-border-subtle)] p-5', className)} {...props} />;
+  return <div className={cn('border-b border-border-subtle p-5', className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -25,5 +25,5 @@ export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivEleme
 }
 
 export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('border-t border-[var(--ds-border-subtle)] p-5', className)} {...props} />;
+  return <div className={cn('border-t border-border-subtle p-5', className)} {...props} />;
 }

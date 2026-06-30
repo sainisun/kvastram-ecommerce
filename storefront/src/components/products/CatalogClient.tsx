@@ -247,7 +247,7 @@ export default function CatalogClient({
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
       <div className="bg-[var(--ds-surface-paper)]">
         <div className="kv-container pb-12 pt-6 md:pb-16 md:pt-8 lg:pb-24">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-4">
             <div className="min-w-0">
               <h1 className="catalog-page-heading">Products</h1>
               <p className="catalog-page-subcopy">
@@ -267,13 +267,13 @@ export default function CatalogClient({
                 ref={filterButtonRef}
                 type="button"
                 onClick={() => setFilterDrawerOpen(true)}
-                className="group inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]"
+                className="group inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-[var(--ds-text-primary)] hover:text-inverse"
                 aria-label="Open filters"
               >
                 <SlidersHorizontal size={14} />
                 Filter
                 {activeFilterCount > 0 ? (
-                  <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-[var(--ds-text-primary)] px-1.5 text-[var(--ds-text-inverse)] group-hover:bg-[var(--ds-surface-paper)] group-hover:text-[var(--ds-text-primary)]">
+                  <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-[var(--ds-text-primary)] px-1.5 text-inverse group-hover:bg-[var(--ds-surface-paper)] group-hover:text-primary">
                     {activeFilterCount}
                   </span>
                 ) : null}
@@ -286,7 +286,7 @@ export default function CatalogClient({
               </div>
 
               <div
-                className="hidden items-center overflow-hidden border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] sm:flex"
+                className="hidden items-center overflow-hidden border border-border-subtle bg-[var(--ds-surface-paper)] sm:flex"
                 aria-label="Product grid density"
               >
                 <UnstyledButton
@@ -294,8 +294,8 @@ export default function CatalogClient({
                   onClick={() => setGridDensity('grid')}
                   className={`flex h-10 w-10 items-center justify-center border transition-colors ${
                     gridDensity === 'grid'
-                      ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
-                      : 'border-transparent text-[var(--ds-text-muted)] hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]'
+                      ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                      : 'border-transparent text-muted hover:bg-parchment hover:text-primary'
                   }`}
                   aria-label="Grid view"
                   title="Grid view"
@@ -307,8 +307,8 @@ export default function CatalogClient({
                   onClick={() => setGridDensity('compact')}
                   className={`flex h-10 w-10 items-center justify-center border transition-colors ${
                     gridDensity === 'compact'
-                      ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
-                      : 'border-transparent text-[var(--ds-text-muted)] hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]'
+                      ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                      : 'border-transparent text-muted hover:bg-parchment hover:text-primary'
                   }`}
                   aria-label="Compact view"
                   title="Compact view"
@@ -317,8 +317,8 @@ export default function CatalogClient({
                 </UnstyledButton>
               </div>
 
-              <div className="flex h-10 items-center gap-2 border border-[var(--ds-border-subtle)] px-3">
-                <ArrowUpDown size={14} className="text-[var(--ds-text-muted)]" />
+              <div className="flex h-10 items-center gap-2 border border-border-subtle px-3">
+                <ArrowUpDown size={14} className="text-muted" />
                 <Select
                   aria-label="Sort products"
                   value={currentSort}
@@ -338,12 +338,12 @@ export default function CatalogClient({
           {activeFilterCount > 0 ? (
             <div className="mt-[var(--ds-space-sm)] flex flex-wrap items-center gap-[var(--ds-space-xs)]">
               {activeCategory ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
                   {activeCategory.name}
                   <UnstyledButton
                     onClick={() => clearFilter('category_id')}
                     aria-label="Remove category filter"
-                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+                    className="text-muted transition-colors hover:text-primary"
                   >
                     <X size={12} />
                   </UnstyledButton>
@@ -351,12 +351,12 @@ export default function CatalogClient({
               ) : null}
 
               {activeTag ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
                   {activeTag.name}
                   <UnstyledButton
                     onClick={() => clearFilter('tag_id')}
                     aria-label="Remove tag filter"
-                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+                    className="text-muted transition-colors hover:text-primary"
                   >
                     <X size={12} />
                   </UnstyledButton>
@@ -364,12 +364,12 @@ export default function CatalogClient({
               ) : null}
 
               {activeCollection ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
                   {activeCollection.title}
                   <UnstyledButton
                     onClick={() => clearFilter('collection_id')}
                     aria-label="Remove collection filter"
-                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+                    className="text-muted transition-colors hover:text-primary"
                   >
                     <X size={12} />
                   </UnstyledButton>
@@ -377,7 +377,7 @@ export default function CatalogClient({
               ) : null}
 
               {currentAttributeCode && currentAttributeValue ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
                   Attribute filter
                   <UnstyledButton
                     onClick={() =>
@@ -387,7 +387,7 @@ export default function CatalogClient({
                       })
                     }
                     aria-label="Remove attribute filter"
-                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+                    className="text-muted transition-colors hover:text-primary"
                   >
                     <X size={12} />
                   </UnstyledButton>
@@ -395,7 +395,7 @@ export default function CatalogClient({
               ) : null}
 
               {(currentMinPrice || currentMaxPrice) ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-3 py-1">
+                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
                   Price:{' '}
                   {[
                     currentMinPrice
@@ -415,7 +415,7 @@ export default function CatalogClient({
                       })
                     }
                     aria-label="Remove price filter"
-                    className="text-[var(--ds-text-muted)] transition-colors hover:text-[var(--ds-text-primary)]"
+                    className="text-muted transition-colors hover:text-primary"
                   >
                     <X size={12} />
                   </UnstyledButton>
@@ -437,7 +437,7 @@ export default function CatalogClient({
                 <UnstyledButton
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page === 1 || loading}
-                  className="rounded-md border border-[var(--ds-border-subtle)] p-2 text-[var(--ds-text-secondary)] transition-colors hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-border-subtle p-2 text-secondary transition-colors hover:bg-parchment hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Previous page"
                 >
                   <ChevronLeft size={20} />
@@ -462,8 +462,8 @@ export default function CatalogClient({
                       disabled={loading}
                       className={`catalog-page-button h-10 w-10 rounded-[var(--ds-radius-md)] transition-colors ${
                         page === pageNum
-                          ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
-                          : 'text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]'
+                          ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                          : 'text-secondary hover:bg-parchment hover:text-primary'
                       }`}
                       aria-label={`Page ${pageNum}`}
                       aria-current={page === pageNum ? 'page' : undefined}
@@ -476,7 +476,7 @@ export default function CatalogClient({
                 <UnstyledButton
                   onClick={() => handlePageChange(page + 1)}
                   disabled={page === totalPages || loading}
-                  className="rounded-md border border-[var(--ds-border-subtle)] p-2 text-[var(--ds-text-secondary)] transition-colors hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-border-subtle p-2 text-secondary transition-colors hover:bg-parchment hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Next page"
                 >
                   <ChevronRight size={20} />

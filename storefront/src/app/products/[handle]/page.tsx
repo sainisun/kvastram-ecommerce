@@ -80,7 +80,7 @@ export default async function ProductPage({ params }: Props) {
 
       <ProductView product={product} />
 
-      <div className="kv-container border-t border-[var(--line)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="kv-container border-t border-border-subtle py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <p className="kv-tag">Keep Browsing</p>
           <h2 className="related-products-title">

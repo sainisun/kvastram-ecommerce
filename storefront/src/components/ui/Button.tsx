@@ -35,29 +35,29 @@ interface ButtonAnchorProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
+    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
   secondary:
-    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
+    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
   outline:
-    'border-[var(--ds-border-subtle)] bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)] hover:bg-[var(--ds-text-primary)] hover:text-[var(--ds-text-inverse)]',
+    'border-border-subtle bg-surface text-primary hover:bg-[var(--ds-text-primary)] hover:text-inverse',
   ghost:
-    'border-transparent bg-transparent text-[var(--ds-text-primary)] hover:bg-[var(--ds-surface-soft)]',
+    'border-transparent bg-transparent text-primary hover:bg-surface-soft',
   danger:
-    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)] hover:bg-[var(--ds-surface-paper)]',
+    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error hover:bg-[var(--ds-surface-paper)]',
   accent:
-    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
+    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
   pdp:
-    'bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] border-[var(--ds-accent-primary)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)] w-full',
+    'bg-[var(--ds-accent-primary)] text-inverse border-[var(--ds-accent-primary)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)] w-full',
   success:
-    'bg-[var(--ds-success-bg)] text-[var(--ds-success-text)] border-[var(--ds-success)] hover:bg-[var(--ds-surface-paper)]',
+    'bg-[var(--ds-success-bg)] text-success border-[var(--ds-success)] hover:bg-[var(--ds-surface-paper)]',
   compact:
-    'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-border-subtle)] hover:border-[var(--ds-border-subtle)] text-body-xs py-1 px-3',
+    'bg-surface-soft text-primary border-border-subtle hover:bg-[var(--ds-border-subtle)] hover:border-border-subtle text-body-xs py-1 px-3',
   inline:
-    'bg-transparent text-[var(--ds-accent-primary)] border-transparent hover:text-[var(--ds-accent-hover)] underline underline-offset-2 p-0 h-auto',
+    'bg-transparent text-accent border-transparent hover:text-[var(--ds-accent-hover)] underline underline-offset-2 p-0 h-auto',
   categoryOverlay:
-    'bg-[rgba(var(--ds-white-rgb),0.15)] text-[var(--ds-text-inverse)] border-[rgba(var(--ds-white-rgb),0.3)] hover:bg-[rgba(var(--ds-white-rgb),0.25)] backdrop-blur-sm',
+    'bg-[rgba(var(--ds-white-rgb),0.15)] text-inverse border-[rgba(var(--ds-white-rgb),0.3)] hover:bg-[rgba(var(--ds-white-rgb),0.25)] backdrop-blur-sm',
   'product-card':
-    'bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)] border-[var(--ds-border-subtle)] hover:bg-[var(--ds-surface-soft)] hover:border-[var(--ds-border-subtle)] text-body-xs',
+    'bg-surface text-primary border-border-subtle hover:bg-surface-soft hover:border-border-subtle text-body-xs',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -85,7 +85,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       type={type}
       className={cn(
-        'inline-flex items-center justify-center gap-2 border font-ui type-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50',
+        'inline-flex items-center justify-center gap-2 border font-ui font-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',
@@ -115,7 +115,7 @@ export function ButtonLink({
   return (
     <Link
       className={cn(
-        'inline-flex items-center justify-center gap-2 border font-ui type-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
+        'inline-flex items-center justify-center gap-2 border font-ui font-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',
@@ -143,7 +143,7 @@ export function ButtonAnchor({
   return (
     <a
       className={cn(
-        'inline-flex items-center justify-center gap-2 border font-ui type-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
+        'inline-flex items-center justify-center gap-2 border font-ui font-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] aria-disabled:pointer-events-none aria-disabled:opacity-50',
         variantClasses[variant],
         sizeClasses[size],
         fullWidth && 'w-full',

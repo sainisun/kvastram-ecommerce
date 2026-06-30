@@ -180,7 +180,7 @@ export default function FilterSidebar({
     <div className={`flex min-h-full flex-col bg-[var(--ds-surface-paper)] ${className}`}>
       <div className="flex-1 sm:hidden">
         <div className="space-y-7">
-          <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
+          <div className="flex items-center justify-between gap-4 border-b border-border-subtle pb-4">
             <h3 className="filter-sidebar-title">Filters</h3>
             {hasActiveFilters ? (
               <Button
@@ -234,7 +234,7 @@ export default function FilterSidebar({
                     </div>
 
                     {cat.children?.length && isExpanded ? (
-                      <div className="ml-3 mt-2 space-y-1 border-l border-[var(--line)] pl-3">
+                      <div className="ml-3 mt-2 space-y-1 border-l border-border-subtle pl-3">
                         {cat.children.map((sub) => (
                           <MobileFilterButton
                             key={sub.id}
@@ -320,8 +320,8 @@ export default function FilterSidebar({
                       size="sm"
                       className={`filter-tag-button min-h-9 rounded-full border px-3 py-2 ${
                         isActive
-                          ? 'border-[var(--ds-text-primary)] bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'
-                          : 'filter-tag-button-inactive border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] hover:border-[var(--ds-text-primary)]'
+                          ? 'border-[var(--ds-text-primary)] bg-[var(--ds-text-primary)] text-inverse'
+                          : 'filter-tag-button-inactive border-border-subtle bg-[var(--ds-surface-paper)] hover:border-[var(--ds-text-primary)]'
                       }`}
                     >
                       {tag.name}
@@ -379,7 +379,7 @@ export default function FilterSidebar({
                   </div>
 
                   {cat.children?.length && isExpanded ? (
-                    <div className="ml-4 mt-1 space-y-1 border-l border-[var(--ds-border-subtle)] pl-3">
+                    <div className="ml-4 mt-1 space-y-1 border-l border-border-subtle pl-3">
                       {cat.children.map((sub) => (
                         <FilterButton
                           key={sub.id}
@@ -490,7 +490,7 @@ export default function FilterSidebar({
         ) : null}
       </div>
 
-      <div className="sticky bottom-0 -mx-4 mt-8 grid gap-3 border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-4 sm:hidden sm:-mx-0 sm:grid-cols-2">
+      <div className="sticky bottom-0 -mx-4 mt-8 grid gap-3 border-t border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-4 sm:hidden sm:-mx-0 sm:grid-cols-2">
         <Button
           type="button"
           onClick={applyFilters}
@@ -511,7 +511,7 @@ export default function FilterSidebar({
         </Button>
       </div>
 
-      <div className="sticky bottom-0 -mx-4 mt-8 hidden grid-cols-2 gap-3 border-t border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-4 shadow-[0_-10px_24px_rgba(var(--ds-black-rgb),0.04)] sm:-mx-5 sm:grid sm:px-5">
+      <div className="sticky bottom-0 -mx-4 mt-8 hidden grid-cols-2 gap-3 border-t border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-4 shadow-[0_-10px_24px_rgba(var(--ds-black-rgb),0.04)] sm:-mx-5 sm:grid sm:px-5">
         <Button
           type="button"
           onClick={clearAllFilters}
@@ -567,7 +567,7 @@ function FilterGroup({
   const panelId = `filter-panel-${id}`;
 
   return (
-    <section className="border-b border-[var(--ds-border-subtle)]">
+    <section className="border-b border-border-subtle">
       <Button
         type="button"
         onClick={onToggle}
@@ -580,7 +580,7 @@ function FilterGroup({
         <span className="filter-group-label">{label}</span>
         <ChevronDown
           size={16}
-          className={`text-[var(--ds-text-secondary)] transition-transform ${
+          className={`text-secondary transition-transform ${
             isOpen ? 'rotate-180' : ''
           }`}
           aria-hidden="true"
@@ -616,8 +616,8 @@ function MobileFilterButton({
         small ? 'filter-option-small' : 'filter-option-regular'
       } ${
         active
-          ? 'filter-option-active bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'
-          : 'filter-option-inactive hover:bg-[var(--ds-surface-soft)]'
+          ? 'filter-option-active bg-[var(--ds-text-primary)] text-inverse'
+          : 'filter-option-inactive hover:bg-surface-soft'
       }`}
     >
       <span className="line-clamp-1">{children}</span>
@@ -648,15 +648,15 @@ function FilterButton({
         small ? 'filter-option-small' : 'filter-option-regular'
       } ${
         active
-          ? 'filter-option-active border-[var(--ds-border-subtle)] bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)]'
-          : 'filter-option-inactive border-transparent bg-[var(--ds-surface-paper)] text-[var(--ds-text-secondary)] hover:border-[var(--ds-border-subtle)] hover:bg-[var(--ds-surface-soft)] hover:text-[var(--ds-text-primary)]'
+          ? 'filter-option-active border-border-subtle bg-surface-soft text-primary'
+          : 'filter-option-inactive border-transparent bg-[var(--ds-surface-paper)] text-secondary hover:border-border-subtle hover:bg-surface-soft hover:text-primary'
       }`}
     >
       <span
         className={`flex h-4 w-4 shrink-0 items-center justify-center border transition-colors ${
           active
-            ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)]'
-            : 'border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)]'
+            ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+            : 'border-border bg-[var(--ds-surface-paper)]'
         }`}
         aria-hidden="true"
       >

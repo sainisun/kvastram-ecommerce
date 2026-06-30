@@ -147,6 +147,19 @@
   --color-text-error: var(--ds-danger);
   --color-text-success: var(--ds-success-text);
 
+  /* Clean Semantic Colors for utility usage (text-primary, bg-surface, etc.) */
+  --color-primary: var(--ds-text-primary);
+  --color-secondary: var(--ds-text-secondary);
+  --color-muted: var(--ds-text-muted);
+  --color-inverse: var(--ds-text-inverse);
+  --color-accent: var(--ds-accent-primary);
+  --color-surface: var(--ds-surface-page);
+  --color-surface-soft: var(--ds-surface-soft);
+  --color-surface-warm: var(--ds-surface-warm);
+  --color-parchment: var(--ds-surface-parchment);
+  --color-border: var(--ds-border-strong);
+  --color-border-subtle: var(--ds-border-subtle);
+
   --text-display-xl: var(--ds-text-display-xl);
   --text-display-lg: var(--ds-text-display-lg);
   --text-display-md: var(--ds-text-display-md);
@@ -156,6 +169,24 @@
   --text-body-md: var(--ds-text-body-md);
   --text-body-sm: var(--ds-text-body-sm);
   --text-body-xs: var(--ds-text-body-xs);
+
+  /* Override default Tailwind text sizes to use Design System */
+  --text-xs: var(--ds-text-body-xs);
+  --text-sm: var(--ds-text-body-sm);
+  --text-base: var(--ds-text-body-md);
+  --text-lg: var(--ds-text-body-lg);
+  --text-xl: var(--ds-text-body-xl);
+  --text-2xl: var(--ds-text-display-sm);
+  --text-3xl: var(--ds-text-display-md);
+  --text-4xl: var(--ds-text-display-lg);
+  --text-5xl: var(--ds-text-display-xl);
+
+  /* Override default Tailwind font weights to use Design System */
+  --font-weight-light: var(--ds-weight-light);
+  --font-weight-normal: var(--ds-weight-regular);
+  --font-weight-medium: var(--ds-weight-medium);
+  --font-weight-semibold: var(--ds-weight-semibold);
+  --font-weight-bold: var(--ds-weight-bold);
 
   --container-prose: var(--ds-prose-width);
   --container-heading: var(--ds-heading-width);
@@ -367,6 +398,22 @@
   --text-body-sm--line-height: var(--ds-leading-normal);
   --text-body-xs--line-height: var(--ds-leading-normal);
   --text-body-xs--letter-spacing: var(--ds-type-body-tracking);
+
+  /* Map default tailwind text sizes to the same line heights */
+  --text-xs--line-height: var(--ds-leading-normal);
+  --text-xs--letter-spacing: var(--ds-type-body-tracking);
+  --text-sm--line-height: var(--ds-leading-normal);
+  --text-base--line-height: var(--ds-leading-normal);
+  --text-lg--line-height: var(--ds-leading-normal);
+  --text-xl--line-height: var(--ds-leading-relaxed);
+  --text-2xl--line-height: var(--ds-leading-snug);
+  --text-2xl--letter-spacing: var(--ds-type-heading-tracking);
+  --text-3xl--line-height: var(--ds-leading-tight);
+  --text-3xl--letter-spacing: var(--ds-type-heading-tracking);
+  --text-4xl--line-height: var(--ds-leading-tight);
+  --text-4xl--letter-spacing: var(--ds-type-heading-tracking);
+  --text-5xl--line-height: var(--ds-leading-tight);
+  --text-5xl--letter-spacing: var(--ds-type-heading-tracking);
 
   /* Restored border radius */
   --radius-sm: var(--ds-radius-sm);

@@ -9,7 +9,7 @@ interface SkeletonProps {
 export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
-      className={cn('animate-pulse rounded bg-[var(--ds-surface-warm)]', className)}
+      className={cn('animate-pulse rounded bg-surface-warm', className)}
     />
   );
 }
@@ -19,7 +19,7 @@ export function ProductCardSkeleton() {
   return (
     <div className="bg-[var(--ds-surface-paper)]">
       {/* Image skeleton */}
-      <div className="relative mb-4 aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]">
+      <div className="relative mb-4 aspect-[3/4] overflow-hidden bg-surface-soft">
         <Skeleton className="absolute inset-0" />
       </div>
 
@@ -54,7 +54,7 @@ export function ProductDetailSkeleton() {
 
         <div className="grid gap-[var(--ds-space-md)] md:grid-cols-2 md:gap-[var(--ds-space-lg)] lg:gap-[var(--ds-space-lg)]">
           {/* Left: Image Gallery skeleton */}
-          <div className="aspect-square bg-[var(--ds-surface-soft)]">
+          <div className="aspect-square bg-surface-soft">
             <Skeleton className="w-full h-full" />
           </div>
 
@@ -107,7 +107,7 @@ export function ProductDetailSkeleton() {
 // Cart page skeleton
 export function CartSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-page)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-surface py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         <Skeleton className="h-10 w-64 mb-8" />
 
@@ -144,7 +144,7 @@ export function CartSkeleton() {
 // Checkout page skeleton
 export function CheckoutSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-page)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-surface py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         <Skeleton className="h-10 w-64 mb-8" />
 
@@ -191,7 +191,7 @@ export function CheckoutSkeleton() {
 // Account page skeleton
 export function AccountSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-page)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-surface py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         <Skeleton className="h-10 w-64 mb-8" />
 
@@ -241,7 +241,7 @@ export function AccountSkeleton() {
 // Orders list skeleton
 export function OrdersListSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-page)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-surface py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="mx-auto max-w-4xl">
         <Skeleton className="h-10 w-64 mb-8" />
 
@@ -287,7 +287,7 @@ export function TextSkeleton({
 // Hero section skeleton
 export function HeroSkeleton() {
   return (
-    <div className="relative flex min-h-[70vh] items-center bg-[var(--ds-surface-soft)]">
+    <div className="relative flex min-h-[70vh] items-center bg-surface-soft">
       <div className="kv-page-container mx-auto w-full max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="max-w-2xl space-y-6">
           <Skeleton className="h-12 w-3/4" />
@@ -303,7 +303,7 @@ export function HeroSkeleton() {
 // Collection card skeleton
 export function CollectionCardSkeleton() {
   return (
-    <div className="relative aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)]">
+    <div className="relative aspect-[4/5] overflow-hidden bg-surface-soft">
       <Skeleton className="absolute inset-0" />
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.60)] to-transparent">
         <Skeleton className="h-6 w-3/4 bg-[rgba(var(--ds-cream-rgb),0.5)]" />

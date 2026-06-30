@@ -32,7 +32,7 @@ function SuccessView() {
         actions={
         <Link
           href="/login"
-          className="inline-block bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-8 py-3 type-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
+          className="inline-block bg-[var(--ds-text-primary)] text-inverse px-8 py-3 font-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
         >
           Go to Login
         </Link>
@@ -52,7 +52,7 @@ function PasswordRequirement({
 }) {
   return (
     <div
-      className={`flex items-center gap-1 ${isValid ? 'text-[var(--ds-success-text)]' : 'text-[var(--ds-text-muted)]'}`}
+      className={`flex items-center gap-1 ${isValid ? 'text-success' : 'text-muted'}`}
     >
       {isValid ? <Check size={12} /> : <X size={12} />}
       {label}
@@ -133,13 +133,13 @@ function ResetPasswordContent() {
         <div className="text-center">
           <Link
             href="/forgot-password"
-            className="inline-flex items-center text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] mb-4"
+            className="inline-flex items-center text-muted hover:text-primary mb-4"
           >
             <ArrowLeft size={16} className="mr-1" />
             Back
           </Link>
-          <h1 className="text-display-lg font-display text-[var(--ds-text-primary)]">Reset Password</h1>
-          <p className="mt-2 text-[var(--ds-text-muted)] type-light">
+          <h1 className="text-display-lg font-display text-primary">Reset Password</h1>
+          <p className="mt-2 text-muted font-light">
             Enter your new password below.
           </p>
         </div>
@@ -175,7 +175,7 @@ function ResetPasswordContent() {
 
             {/* Password requirements */}
             <div className="space-y-1 mt-2">
-              <p className="text-body-xs text-[var(--ds-text-muted)] mb-2">
+              <p className="text-body-xs text-muted mb-2">
                 Password must contain:
               </p>
               <div className="grid grid-cols-2 gap-1 text-body-xs">

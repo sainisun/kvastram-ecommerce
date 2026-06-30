@@ -8,11 +8,11 @@ function whatsappHref(message: string) {
 
 export function WhatsAppHelpStrip() {
   return (
-    <section className="border-y border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]" aria-label="Product help">
+    <section className="border-y border-border-subtle bg-[var(--ds-surface-paper)]" aria-label="Product help">
       <div className="kv-container grid gap-[14px] items-center py-[18px] md:grid-cols-[1fr_auto]">
         <div>
-          <span className="block text-[var(--ds-text-primary)] font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)] [text-transform:var(--type-label-transform)]">Need size, fabric, or more photos?</span>
-          <p className="mt-[5px] text-[var(--ds-text-muted)] text-body-sm">Ask before you buy. It is especially useful for jackets, kimonos, bags, and gifts.</p>
+          <span className="block text-primary font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)] [text-transform:var(--type-label-transform)]">Need size, fabric, or more photos?</span>
+          <p className="mt-[5px] text-muted text-body-sm">Ask before you buy. It is especially useful for jackets, kimonos, bags, and gifts.</p>
         </div>
         <ButtonLink
           href={whatsappHref('Hi, I need help choosing a Odhvica piece')}
@@ -55,11 +55,11 @@ export function CraftEducationStrip() {
       <div className="kv-container">
         <div className="grid gap-[var(--ds-space-xs)] md:grid-cols-3">
           {craftCards.map(({ icon: Icon, title, copy, href }) => (
-            <Link key={title} href={href} className="grid gap-[10px] grid-cols-[auto_1fr] border border-[var(--ds-border-subtle)] rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-[var(--ds-text-primary)] no-underline">
-              <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-[var(--ds-accent-primary)]" />
+            <Link key={title} href={href} className="grid gap-[10px] grid-cols-[auto_1fr] border border-border-subtle rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-primary no-underline">
+              <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-accent" />
               <div>
-                <h3 className="m-0 text-[var(--ds-text-primary)] font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)]">{title}</h3>
-                <p className="mt-1.5 text-[var(--ds-text-muted)] text-body-sm">{copy}</p>
+                <h3 className="m-0 text-primary font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)]">{title}</h3>
+                <p className="mt-1.5 text-muted text-body-sm">{copy}</p>
               </div>
             </Link>
           ))}
@@ -71,7 +71,7 @@ export function CraftEducationStrip() {
 
 export function FitScaleHelp() {
   return (
-    <section className="kv-section bg-[var(--ds-surface-parchment)]">
+    <section className="kv-section bg-parchment">
       <div className="kv-container grid gap-[22px] items-center md:grid-cols-[1fr_auto]">
         <div>
           <div className="kv-tag">Fit &amp; scale help</div>
@@ -140,10 +140,10 @@ export function ShippingReturnsMiniFAQ() {
         </div>
         <div className="grid gap-[var(--ds-space-xs)] md:grid-cols-4">
           {faqItems.map(({ icon: Icon, title, copy }) => (
-            <article key={title} className="grid content-start gap-[10px] border border-[var(--ds-border-subtle)] rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-[var(--ds-text-primary)] no-underline">
-              <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-[var(--ds-accent-primary)]" />
-              <h3 className="m-0 text-[var(--ds-text-primary)] font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)]">{title}</h3>
-              <p className="mt-1.5 text-[var(--ds-text-muted)] text-body-sm">{copy}</p>
+            <article key={title} className="grid content-start gap-[10px] border border-border-subtle rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-primary no-underline">
+              <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-accent" />
+              <h3 className="m-0 text-primary font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)]">{title}</h3>
+              <p className="mt-1.5 text-muted text-body-sm">{copy}</p>
             </article>
           ))}
         </div>

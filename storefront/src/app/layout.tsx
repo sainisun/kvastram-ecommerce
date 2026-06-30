@@ -90,7 +90,7 @@ export default async function RootLayout({
         />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-[var(--ds-text-primary)] focus:px-4 focus:py-2 focus:text-body-sm focus:text-[var(--ds-text-inverse)]"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-[var(--ds-text-primary)] focus:px-4 focus:py-2 focus:text-body-sm focus:text-inverse"
         >
           Skip to main content
         </a>

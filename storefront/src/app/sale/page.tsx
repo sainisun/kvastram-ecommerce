@@ -96,15 +96,15 @@ export default function SalePage() {
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
-      <section className="kv-page-gutter border-b border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] px-6 py-14 md:px-12 md:py-20 lg:px-20">
+      <section className="kv-page-gutter border-b border-border-subtle bg-parchment px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="kv-page-frame mx-auto max-w-page space-y-6 text-center">
-          <span className="text-body-xs type-bold tracking-token-wider text-[var(--ds-accent-primary)]">
+          <span className="text-body-xs font-bold tracking-token-wider text-accent">
             {activeCampaign ? 'Limited Time' : 'Current Markdowns'}
           </span>
-          <h1 className="font-display text-display-xl type-medium leading-token-tight tracking-token-normal text-[var(--ds-text-primary)]">
+          <h1 className="font-display text-display-xl font-medium leading-token-tight tracking-token-normal text-primary">
             {activeCampaign?.name || 'Sale'}
           </h1>
-          <p className="mx-auto max-w-xl text-body-lg leading-token-relaxed text-[var(--ds-text-secondary)]">
+          <p className="mx-auto max-w-xl text-body-lg leading-token-relaxed text-secondary">
             {activeCampaign?.description ||
               'Selected artisan pieces at special prices, powered by real product markdowns.'}
           </p>
@@ -118,12 +118,12 @@ export default function SalePage() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-4"
+                  className="border border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-4"
                 >
-                  <span className="block font-display text-display-md leading-token-tight text-[var(--ds-text-primary)]">
+                  <span className="block font-display text-display-md leading-token-tight text-primary">
                     {String(value).padStart(2, '0')}
                   </span>
-                  <span className="mt-2 block text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-muted)]">
+                  <span className="mt-2 block text-body-xs font-semibold tracking-token-wider text-muted">
                     {label}
                   </span>
                 </div>
@@ -132,7 +132,7 @@ export default function SalePage() {
           ) : null}
           <a
             href="#saleGrid"
-            className="inline-flex items-center justify-center rounded-sm bg-[var(--ds-text-primary)] px-8 py-4 text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+            className="inline-flex items-center justify-center rounded-sm bg-[var(--ds-text-primary)] px-8 py-4 text-body-xs font-semibold tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
           >
             Shop Sale
           </a>
@@ -151,7 +151,7 @@ export default function SalePage() {
             <EmptyState
               title="No live markdowns right now."
               description="Fresh arrivals and curated collections are still available while the next campaign is prepared."
-              className="rounded-lg bg-[var(--ds-surface-soft)]"
+              className="rounded-lg bg-surface-soft"
               actions={
                 <>
                   <ButtonLink href="/products?sort=newest" variant="secondary" size="md">
@@ -165,7 +165,7 @@ export default function SalePage() {
             />
             {catalogFallback.length > 0 ? (
               <div>
-                <h2 className="mb-5 font-display text-display-sm type-semibold text-[var(--ds-text-primary)]">
+                <h2 className="mb-5 font-display text-display-sm font-semibold text-primary">
                   Fresh catalog picks
                 </h2>
                 <ProductGrid initialProducts={catalogFallback} />

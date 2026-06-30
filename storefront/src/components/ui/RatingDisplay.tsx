@@ -24,7 +24,7 @@ export function RatingDisplay({
   if (!hasRating) {
     if (!emptyLabel) return null;
     const emptyContent = (
-      <span className="font-body text-body-xs type-semibold text-[var(--ds-text-muted)]">
+      <span className="font-body text-body-xs font-semibold text-muted">
         {emptyLabel}
       </span>
     );
@@ -32,7 +32,7 @@ export function RatingDisplay({
     return (
       <div className={cn('inline-flex items-center gap-[var(--ds-space-xs)]', className)} {...props}>
         {href ? (
-          <a href={href} className="transition-colors hover:text-[var(--ds-text-primary)]">
+          <a href={href} className="transition-colors hover:text-primary">
             {emptyContent}
           </a>
         ) : (
@@ -64,7 +64,7 @@ export function RatingDisplay({
           />
         ))}
       </span>
-      <span className="font-body text-body-xs type-semibold text-[var(--ds-text-muted)]">
+      <span className="font-body text-body-xs font-semibold text-muted">
         {text}
       </span>
     </>
@@ -80,7 +80,7 @@ export function RatingDisplay({
       {href ? (
         <a
           href={href}
-          className="inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
+          className="inline-flex items-center gap-2 transition-colors hover:text-primary"
         >
           {content}
         </a>

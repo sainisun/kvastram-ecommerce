@@ -85,13 +85,13 @@ function SetPasswordContent() {
 
   if (!token) {
     return (
-      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <Card className="w-full max-w-md p-8 shadow-lg">
           <div className="text-center">
-            <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-4">
+            <h1 className="text-display-md font-bold text-primary mb-4">
               Invalid Link
             </h1>
-            <p className="text-[var(--ds-text-secondary)] mb-6">
+            <p className="text-secondary mb-6">
               This password setup link is invalid or has expired.
             </p>
             <Link href="/wholesale" className="text-[var(--ds-info)] hover:underline">
@@ -105,16 +105,16 @@ function SetPasswordContent() {
 
   if (success) {
     return (
-      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+      <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <Card className="w-full max-w-md p-8 shadow-lg">
           <div className="text-center">
             <div className="w-16 h-16 bg-[var(--ds-success-bg)] rounded-full flex items-center justify-center mx-auto mb-4">
               <Check className="w-8 h-8 text-[var(--ds-success)]" />
             </div>
-            <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-2">
+            <h1 className="text-display-md font-bold text-primary mb-2">
               Password Set!
             </h1>
-            <p className="text-[var(--ds-text-secondary)] mb-6">
+            <p className="text-secondary mb-6">
               Your wholesale account has been created successfully. Redirecting
               to wholesale...
             </p>
@@ -128,13 +128,13 @@ function SetPasswordContent() {
   }
 
   return (
-    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <Card className="w-full max-w-md p-8 shadow-lg">
         <div className="text-center mb-8">
-          <h1 className="text-display-md type-bold text-[var(--ds-text-primary)]">
+          <h1 className="text-display-md font-bold text-primary">
             Set Up Your Password
           </h1>
-          <p className="text-[var(--ds-text-secondary)] mt-2">
+          <p className="text-secondary mt-2">
             Create a password to access your wholesale account
           </p>
         </div>
@@ -172,8 +172,8 @@ function SetPasswordContent() {
             required
           />
 
-          <div className="bg-[var(--ds-surface-page)] rounded-lg p-4">
-            <p className="text-body-sm type-medium text-[var(--ds-text-secondary)] mb-2">
+          <div className="bg-surface rounded-lg p-4">
+            <p className="text-body-sm font-medium text-secondary mb-2">
               Password Requirements:
             </p>
             <ul className="space-y-1">
@@ -185,7 +185,7 @@ function SetPasswordContent() {
                     <X className="w-4 h-4 text-[var(--ds-text-disabled)] mr-2" />
                   )}
                   <span
-                    className={req.valid ? 'text-[var(--ds-success-text)]' : 'text-[var(--ds-text-muted)]'}
+                    className={req.valid ? 'text-success' : 'text-muted'}
                   >
                     {req.label}
                   </span>
@@ -195,7 +195,7 @@ function SetPasswordContent() {
           </div>
 
           {error && (
-            <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] px-4 py-3 rounded-lg">
+            <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
@@ -215,7 +215,7 @@ function SetPasswordContent() {
         <div className="mt-6 text-center">
           <Link
             href="/wholesale"
-            className="text-body-sm text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
+            className="text-body-sm text-secondary hover:text-primary"
           >
             Back to Wholesale
           </Link>

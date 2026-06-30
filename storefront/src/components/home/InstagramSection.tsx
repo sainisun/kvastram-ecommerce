@@ -11,7 +11,7 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
         <div className="homepage-section-head homepage-section-head-centered">
           <div>
             <p className="homepage-eyebrow">Follow Our Journey</p>
-            <h2 className="font-display text-display-md text-[var(--ds-text-primary)]">From our circle</h2>
+            <h2 className="font-display text-display-md text-primary">From our circle</h2>
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-[var(--ds-space-2xs)]">
@@ -21,7 +21,7 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
               href={post.destination_url}
               target={post.destination_url.startsWith('https://') ? '_blank' : undefined}
               rel={post.destination_url.startsWith('https://') ? 'noopener noreferrer' : undefined}
-              className="relative aspect-square overflow-hidden bg-[var(--ds-surface-soft)] group block"
+              className="relative aspect-square overflow-hidden bg-surface-soft group block"
             >
               <OptimizedImage
                 src={post.image_url}
@@ -30,7 +30,7 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
                 sizes="(max-width: 767px) 50vw, 25vw"
                 className="object-cover"
               />
-              <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--ds-space-sm)] p-[var(--ds-space-md)] bg-[rgba(var(--ds-ink-rgb),0.6)] text-[var(--ds-text-inverse)] opacity-0 text-center transition-opacity duration-[180ms] ease-[ease] group-hover:opacity-100 group-focus-visible:opacity-100">
+              <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--ds-space-sm)] p-[var(--ds-space-md)] bg-[rgba(var(--ds-ink-rgb),0.6)] text-inverse opacity-0 text-center transition-opacity duration-[180ms] ease-[ease] group-hover:opacity-100 group-focus-visible:opacity-100">
                 <Instagram aria-hidden="true" />
                 {post.caption ? <span className="line-clamp-3 overflow-hidden text-[var(--ds-text-body-xs)]">{post.caption}</span> : null}
               </span>

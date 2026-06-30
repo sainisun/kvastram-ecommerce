@@ -40,7 +40,7 @@ export default function AccountPage() {
 
   if (!customer) {
     return (
-      <div className="min-h-screen bg-[var(--ds-surface-parchment)] px-6 py-16 md:px-12 md:py-24">
+      <div className="min-h-screen bg-parchment px-6 py-16 md:px-12 md:py-24">
         <div className="mx-auto max-w-2xl">
           <EmptyState
             icon={<User size={42} />}
@@ -64,11 +64,11 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
+    <div className="min-h-screen bg-parchment">
       {/* Mobile Layout */}
       <div className="md:hidden">
         {/* Header */}
-        <div className="bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-subtle)] sticky top-0 z-10">
+        <div className="bg-[var(--ds-surface-paper)] border-b border-border-subtle sticky top-0 z-10">
           <div className="px-4 h-14 flex items-center justify-center">
             <h1 className="account-mobile-title">Profile</h1>
           </div>
@@ -100,9 +100,9 @@ export default function AccountPage() {
             {/* Sidebar */}
             <div className="lg:w-64 shrink-0">
               <Card className="sticky top-24 overflow-hidden shadow-sm">
-                <div className="p-6 border-b border-[var(--ds-border-subtle)]">
-                  <div className="w-16 h-16 bg-[var(--ds-surface-soft)] rounded-full flex items-center justify-center mb-4">
-                    <User size={24} className="text-[var(--ds-text-muted)]" />
+                <div className="p-6 border-b border-border-subtle">
+                  <div className="w-16 h-16 bg-surface-soft rounded-full flex items-center justify-center mb-4">
+                    <User size={24} className="text-muted" />
                   </div>
                   <p className="account-name">
                     {customer.first_name} {customer.last_name}
@@ -112,31 +112,31 @@ export default function AccountPage() {
                 <nav className="p-4">
                   <Link
                     href="/account"
-                    className="account-nav-link block bg-[var(--ds-surface-parchment)] px-4 py-2 mb-1"
+                    className="account-nav-link block bg-parchment px-4 py-2 mb-1"
                   >
                     Overview
                   </Link>
                   <Link
                     href="/account/orders"
-                    className="account-nav-link block px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] mb-1"
+                    className="account-nav-link block px-4 py-2 hover:bg-parchment hover:text-primary mb-1"
                   >
                     Orders
                   </Link>
                   <Link
                     href="/account/profile"
-                    className="account-nav-link block px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)] mb-1"
+                    className="account-nav-link block px-4 py-2 hover:bg-parchment hover:text-primary mb-1"
                   >
                     Profile
                   </Link>
                   <Link
                     href="/account/addresses"
-                    className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]"
+                    className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-parchment hover:text-primary"
                   >
                     <MapPin size={14} /> Addresses
                   </Link>
                   <Link
                     href="/account/notifications"
-                    className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-[var(--ds-surface-parchment)] hover:text-[var(--ds-text-primary)]"
+                    className="account-nav-link mb-1 flex items-center gap-2 px-4 py-2 hover:bg-parchment hover:text-primary"
                   >
                     <Bell size={14} /> Notifications
                   </Link>
@@ -164,7 +164,7 @@ export default function AccountPage() {
               <div className="grid sm:grid-cols-3 gap-4 mb-8">
                 <Card className="p-6">
                   <div className="flex items-center gap-3 mb-2">
-                    <Package size={20} className="text-[var(--ds-text-muted)]" />
+                    <Package size={20} className="text-muted" />
                     <p className="account-kicker">
                       Total Orders
                     </p>
@@ -175,7 +175,7 @@ export default function AccountPage() {
                 </Card>
                 <Card className="p-6">
                   <div className="flex items-center gap-3 mb-2">
-                    <User size={20} className="text-[var(--ds-text-muted)]" />
+                    <User size={20} className="text-muted" />
                     <p className="account-kicker">
                       Member Since
                     </p>
@@ -193,13 +193,13 @@ export default function AccountPage() {
 
               {/* Recent Orders */}
               <Card className="overflow-hidden shadow-sm">
-                <div className="p-6 border-b border-[var(--ds-border-subtle)] flex items-center justify-between">
+                <div className="p-6 border-b border-border-subtle flex items-center justify-between">
                   <h2 className="account-section-title">
                     Recent Orders
                   </h2>
                   <Link
                     href="/account/orders"
-                    className="account-muted hover:text-[var(--ds-text-primary)]"
+                    className="account-muted hover:text-primary"
                   >
                     View All
                   </Link>
@@ -225,12 +225,12 @@ export default function AccountPage() {
                     {orders.slice(0, 5).map((order) => (
                       <div
                         key={order.id}
-                        className="p-6 flex items-center justify-between hover:bg-[var(--ds-surface-parchment)] transition-colors"
+                        className="p-6 flex items-center justify-between hover:bg-parchment transition-colors"
                       >
                         <div>
                           <Link
                             href={`/account/orders/${order.id}`}
-                            className="account-name hover:text-[var(--ds-text-secondary)]"
+                            className="account-name hover:text-secondary"
                           >
                             Order #{order.display_id}
                           </Link>

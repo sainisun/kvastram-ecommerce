@@ -26,7 +26,7 @@ const promises = [
 
 export function CraftPromise() {
   return (
-    <section className="kv-section bg-[var(--ds-surface-parchment)] border-y border-[var(--ds-border-subtle)]">
+    <section className="kv-section bg-parchment border-y border-border-subtle">
       <div className="kv-container grid gap-[28px] items-start md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div className="max-w-[620px]">
           <div className="kv-tag">Why Odhvica</div>
@@ -45,13 +45,13 @@ export function CraftPromise() {
           </div>
         </div>
 
-        <div className="grid gap-[1px] overflow-hidden border border-[var(--ds-border-subtle)] bg-[var(--ds-border-subtle)] md:grid-cols-2" aria-label="Odhvica commerce promises">
+        <div className="grid gap-[1px] overflow-hidden border border-border-subtle bg-[var(--ds-border-subtle)] md:grid-cols-2" aria-label="Odhvica commerce promises">
           {promises.map(({ icon: Icon, title, copy }) => (
             <div key={title} className="grid grid-cols-[auto_1fr] gap-[12px] p-[18px] bg-[var(--ds-surface-paper)]">
-              <Icon size={18} strokeWidth={1.7} aria-hidden="true" className="mt-[2px] text-[var(--ds-accent-primary)]" />
+              <Icon size={18} strokeWidth={1.7} aria-hidden="true" className="mt-[2px] text-accent" />
               <div>
-                <strong className="block text-[var(--ds-text-primary)] font-label text-body-sm font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-label-tracking)]">{title}</strong>
-                <p className="mt-[6px] text-[var(--ds-text-muted)] font-body text-body-sm leading-[var(--ds-leading-normal)]">{copy}</p>
+                <strong className="block text-primary font-label text-body-sm font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-label-tracking)]">{title}</strong>
+                <p className="mt-[6px] text-muted font-body text-body-sm leading-[var(--ds-leading-normal)]">{copy}</p>
               </div>
             </div>
           ))}

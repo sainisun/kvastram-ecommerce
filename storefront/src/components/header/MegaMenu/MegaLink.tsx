@@ -13,7 +13,7 @@ export function MegaLink({ label, href, isNew, onClick }: MegaLinkProps) {
     <Link href={href} className={styles.mmLink} onClick={onClick}>
       {label}
       {isNew && (
-        <span className="kv-count-badge text-[var(--ds-text-inverse)] bg-[var(--ds-accent-primary)] px-1.5 py-px rounded-sm leading-token-tight">
+        <span className="kv-count-badge text-inverse bg-[var(--ds-accent-primary)] px-1.5 py-px rounded-sm leading-token-tight">
           New
         </span>
       )}

@@ -79,7 +79,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--ds-accent-hover)] transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-[var(--ds-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--ds-accent-hover)] transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]"
           >
             <Icon size={15} strokeWidth={1.7} />
           </a>
@@ -94,7 +94,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             aria-label="Previous announcement"
             variant="ghost"
             size="sm"
-            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-[var(--ds-text-primary)]"
+            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary"
           >
             <ChevronLeft size={16} strokeWidth={1.8} />
           </IconButton>
@@ -104,14 +104,14 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             aria-label="Next announcement"
             variant="ghost"
             size="sm"
-            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-[var(--ds-text-primary)]"
+            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary"
           >
             <ChevronRight size={16} strokeWidth={1.8} />
           </IconButton>
         </div>
       )}
 
-      <p className="text-body-xs type-medium tracking-token-wide text-[var(--ds-text-disabled)] select-none md:max-w-[60%] md:text-center md:text-[var(--ds-accent-hover)]">
+      <p className="text-body-xs font-medium tracking-token-wide text-[var(--ds-text-disabled)] select-none md:max-w-[60%] md:text-center md:text-[var(--ds-accent-hover)]">
         {MESSAGES.map((msg, i) => (
           <span
             key={msg}
@@ -120,7 +120,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             }`}
           >
             {i > 0 && i === msgIdx && (
-              <span className="mx-4 text-[var(--ds-text-secondary)] md:hidden">.</span>
+              <span className="mx-4 text-secondary md:hidden">.</span>
             )}
             {msg}
           </span>
@@ -131,7 +131,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
         onClick={dismiss}
         variant="ghost"
         size="sm"
-        className="absolute right-3 top-1/2 h-7 w-7 -translate-y-1/2 text-[var(--ds-text-muted)] hover:text-[var(--ds-text-disabled)] md:hidden"
+        className="absolute right-3 top-1/2 h-7 w-7 -translate-y-1/2 text-muted hover:text-[var(--ds-text-disabled)] md:hidden"
         aria-label="Dismiss"
       >
         <X size={13} strokeWidth={2} />

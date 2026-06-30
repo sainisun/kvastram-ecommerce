@@ -18,20 +18,20 @@ export function TrustBadge({
   return (
     <div
       className={cn(
-        'flex items-start gap-3 border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4 text-[var(--ds-text-primary)]',
+        'flex items-start gap-3 border border-border-subtle bg-[var(--ds-surface-paper)] p-4 text-primary',
         className
       )}
       {...props}
     >
-      <span className="grid h-8 w-8 shrink-0 place-items-center bg-[var(--ds-accent-soft)] text-[var(--ds-accent-primary)]">
+      <span className="grid h-8 w-8 shrink-0 place-items-center bg-[var(--ds-accent-soft)] text-accent">
         <Icon size={16} />
       </span>
       <span className="min-w-0">
-        <strong className="block font-body text-body-sm type-semibold leading-token-snug">
+        <strong className="block font-body text-body-sm font-semibold leading-token-snug">
           {label}
         </strong>
         {description ? (
-          <span className="mt-1 block text-body-xs leading-token-normal text-[var(--ds-text-muted)]">
+          <span className="mt-1 block text-body-xs leading-token-normal text-muted">
             {description}
           </span>
         ) : null}

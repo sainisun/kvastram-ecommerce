@@ -39,7 +39,7 @@ export default function CategoryBannerCarousel({ banners }: Props) {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-[var(--ds-surface-soft)] md:hidden">
+    <section className="relative w-full overflow-hidden bg-surface-soft md:hidden">
       <div className="relative aspect-[4/5] w-full">
         {banners.map((banner, index) => {
           const content = (
@@ -55,14 +55,14 @@ export default function CategoryBannerCarousel({ banners }: Props) {
               {(banner.headline || banner.button_label) && (
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.60)] via-[rgba(var(--ds-black-rgb),0.10)] to-transparent">
                   <div className="absolute inset-x-0 bottom-0 flex justify-center px-[var(--ds-space-md)] pb-[var(--ds-space-lg)] pt-20 text-center">
-                    <div className="max-w-[18rem] text-[var(--ds-text-inverse)]">
+                    <div className="max-w-[18rem] text-inverse">
                       {banner.headline ? (
                         <h2 className="category-banner-title">
                           {banner.headline}
                         </h2>
                       ) : null}
                       {banner.button_label ? (
-                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full border border-[var(--ds-surface-paper)]/70 bg-transparent px-5 py-2.5 text-[var(--ds-text-inverse)]">
+                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full border border-[var(--ds-surface-paper)]/70 bg-transparent px-5 py-2.5 text-inverse">
                           {banner.button_label}
                         </span>
                       ) : null}

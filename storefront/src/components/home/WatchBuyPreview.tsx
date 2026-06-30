@@ -19,7 +19,7 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
         <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)]">
           <div>
             <p className="homepage-eyebrow text-body-xs uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-gold)]">Trending Reels</p>
-            <h2 className="text-display-sm font-display font-medium text-[var(--ds-text-primary)]">See the craft in motion</h2>
+            <h2 className="text-display-sm font-display font-medium text-primary">See the craft in motion</h2>
           </div>
           <Link href="/reels" className="kv-section-link">
             View All →
@@ -37,7 +37,7 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
 
             return (
               <div key={reel.id} className="flex-shrink-0 w-[180px] md:w-[230px] animate-fade-in group">
-                <Link href={`/reels?id=${reel.id}`} className="relative block aspect-[9/16] overflow-hidden rounded-[8px] bg-[var(--ds-surface-soft)]">
+                <Link href={`/reels?id=${reel.id}`} className="relative block aspect-[9/16] overflow-hidden rounded-[8px] bg-surface-soft">
                   <OptimizedImage
                     src={reel.thumbnail_url}
                     alt={reel.caption || reel.product.title}
@@ -46,19 +46,19 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
                     className="object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-[var(--ds-transition)] motion-safe:group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-[rgba(var(--ds-black-rgb),0.25)] flex items-center justify-center transition-colors group-hover:bg-[rgba(var(--ds-black-rgb),0.35)]">
-                    <span className="w-12 h-12 rounded-full bg-[rgba(var(--ds-white-rgb),0.95)] flex items-center justify-center text-[var(--ds-text-primary)] shadow-md transition-transform duration-300 group-hover:scale-110">
+                    <span className="w-12 h-12 rounded-full bg-[rgba(var(--ds-white-rgb),0.95)] flex items-center justify-center text-primary shadow-md transition-transform duration-300 group-hover:scale-110">
                       <Play size={20} fill="currentColor" className="ml-1" />
                     </span>
                   </div>
                 </Link>
 
                 <div className="mt-[var(--ds-space-xs)] text-left">
-                  <h3 className="text-body-sm type-medium text-[var(--ds-text-primary)] line-clamp-1 group-hover:text-[var(--ds-accent-primary)] transition-colors" title={reel.product.title}>
+                  <h3 className="text-body-sm font-medium text-primary line-clamp-1 group-hover:text-accent transition-colors" title={reel.product.title}>
                     {reel.product.title}
                   </h3>
                   <div className="flex items-center justify-between mt-1">
                     {price ? <PriceDisplay price={price} variant="inline" /> : <span />}
-                    <Link href={productHref} className="text-body-xs font-ui font-semibold text-[var(--ds-accent-gold)] hover:text-[var(--ds-text-primary)] transition-colors uppercase tracking-wider">
+                    <Link href={productHref} className="text-body-xs font-ui font-semibold text-[var(--ds-accent-gold)] hover:text-primary transition-colors uppercase tracking-wider">
                       Shop
                     </Link>
                   </div>

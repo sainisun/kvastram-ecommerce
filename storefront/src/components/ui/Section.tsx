@@ -46,15 +46,15 @@ export function SectionHeader({
     >
       <div className="min-w-0">
         {eyebrow ? (
-          <p className="mb-3 font-body text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
+          <p className="mb-3 font-body text-body-xs font-semibold  tracking-token-wider text-muted">
             {eyebrow}
           </p>
         ) : null}
-        <h2 className="max-w-heading font-display text-display-md type-semibold leading-token-tight text-[var(--ds-text-primary)]">
+        <h2 className="max-w-heading font-display text-display-md font-semibold leading-token-tight text-primary">
           {heading}
         </h2>
         {description ? (
-          <p className="mt-4 max-w-prose font-body text-body-lg leading-token-relaxed text-[var(--ds-text-secondary)]">
+          <p className="mt-4 max-w-prose font-body text-body-lg leading-token-relaxed text-secondary">
             {description}
           </p>
         ) : null}

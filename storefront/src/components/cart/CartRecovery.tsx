@@ -52,32 +52,32 @@ export function CartRecovery() {
     >
         <div className="mb-[var(--ds-space-md)] flex items-start gap-[var(--ds-space-xs)]">
           <div className="flex items-center gap-[var(--ds-space-xs)]">
-            <div className="w-12 h-12 bg-[var(--ds-surface-soft)] rounded-full flex items-center justify-center">
-              <ShoppingCart className="w-6 h-6 text-[var(--ds-text-secondary)]" />
+            <div className="w-12 h-12 bg-surface-soft rounded-full flex items-center justify-center">
+              <ShoppingCart className="w-6 h-6 text-secondary" />
             </div>
             <div>
-              <p className="text-body-sm text-[var(--ds-text-muted)]">
+              <p className="text-body-sm text-muted">
                 You have items in your saved cart
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-[var(--ds-surface-parchment)] p-4 rounded-lg mb-6">
-          <p className="text-[var(--ds-text-secondary)] text-body-sm">
+        <div className="bg-parchment p-4 rounded-lg mb-6">
+          <p className="text-secondary text-body-sm">
             You have{' '}
-            <span className="type-semibold text-[var(--ds-text-primary)]">
+            <span className="font-semibold text-primary">
               {savedCartCount} item{savedCartCount > 1 ? 's' : ''}
             </span>{' '}
             in your cart from your last visit.
           </p>
-          <p className="text-[var(--ds-text-muted)] text-body-xs mt-2">
+          <p className="text-muted text-body-xs mt-2">
             Would you like to restore them?
           </p>
         </div>
 
         {recoverError && (
-          <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] px-4 py-2 rounded text-body-sm mb-4">
+          <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error px-4 py-2 rounded text-body-sm mb-4">
             {recoverError}
           </div>
         )}

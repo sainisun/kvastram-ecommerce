@@ -39,10 +39,10 @@ function ToggleRow({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] py-4 last:border-b-0">
+    <label className="flex cursor-pointer items-center justify-between gap-4 border-b border-border-subtle py-4 last:border-b-0">
       <span>
-        <span className="block text-body-sm type-semibold text-[var(--ds-text-primary)]">{title}</span>
-        <span className="mt-1 block text-body-xs leading-token-relaxed text-[var(--ds-text-muted)]">
+        <span className="block text-body-sm font-semibold text-primary">{title}</span>
+        <span className="mt-1 block text-body-xs leading-token-relaxed text-muted">
           {description}
         </span>
       </span>
@@ -113,19 +113,19 @@ export default function AccountNotificationsPage() {
   if (loading || !customer) return <AccountSkeleton />;
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] px-4 py-10 md:px-8 md:py-16">
+    <div className="min-h-screen bg-parchment px-4 py-10 md:px-8 md:py-16">
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="space-y-3">
-          <div className="inline-flex h-11 w-11 items-center justify-center border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
+          <div className="inline-flex h-11 w-11 items-center justify-center border border-border-subtle bg-[var(--ds-surface-paper)]">
             <Bell size={20} />
           </div>
-          <p className="text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-muted)]">
+          <p className="text-body-xs font-semibold tracking-token-wider text-muted">
             Account
           </p>
-          <h1 className="font-display text-display-md text-[var(--ds-text-primary)]">
+          <h1 className="font-display text-display-md text-primary">
             Notification Preferences
           </h1>
-          <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+          <p className="text-body-sm leading-token-relaxed text-secondary">
             Choose how Odhvica should keep you posted about orders, launches, and product availability.
           </p>
         </div>

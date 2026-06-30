@@ -40,13 +40,13 @@ const orderStatusConfig: Partial<Record<OrderStatus, StatusConfig>> = {
   },
   completed: {
     label: 'Completed',
-    className: 'text-[var(--ds-success-text)]',
+    className: 'text-success',
     bgClass: 'bg-[var(--ds-success-bg)]',
     borderClass: 'border-[var(--ds-success)]',
   },
   canceled: {
     label: 'Canceled',
-    className: 'text-[var(--ds-danger)]',
+    className: 'text-error',
     bgClass: 'bg-[var(--ds-danger-bg)]',
     borderClass: 'border-[var(--ds-danger)]',
   },
@@ -70,13 +70,13 @@ const orderStatusConfig: Partial<Record<OrderStatus, StatusConfig>> = {
   },
   delivered: {
     label: 'Delivered',
-    className: 'text-[var(--ds-success-text)]',
+    className: 'text-success',
     bgClass: 'bg-[var(--ds-success-bg)]',
     borderClass: 'border-[var(--ds-success)]',
   },
   cancelled: {
     label: 'Cancelled',
-    className: 'text-[var(--ds-danger)]',
+    className: 'text-error',
     bgClass: 'bg-[var(--ds-danger-bg)]',
     borderClass: 'border-[var(--ds-danger)]',
   },
@@ -91,7 +91,7 @@ const paymentStatusConfig: Partial<Record<PaymentStatus, StatusConfig>> = {
   },
   paid: {
     label: 'Paid',
-    className: 'text-[var(--ds-success-text)]',
+    className: 'text-success',
     bgClass: 'bg-[var(--ds-success-bg)]',
     borderClass: 'border-[var(--ds-success)]',
   },
@@ -103,7 +103,7 @@ const paymentStatusConfig: Partial<Record<PaymentStatus, StatusConfig>> = {
   },
   captured: {
     label: 'Paid',
-    className: 'text-[var(--ds-success-text)]',
+    className: 'text-success',
     bgClass: 'bg-[var(--ds-success-bg)]',
     borderClass: 'border-[var(--ds-success)]',
   },
@@ -115,7 +115,7 @@ const paymentStatusConfig: Partial<Record<PaymentStatus, StatusConfig>> = {
   },
   failed: {
     label: 'Failed',
-    className: 'text-[var(--ds-danger)]',
+    className: 'text-error',
     bgClass: 'bg-[var(--ds-danger-bg)]',
     borderClass: 'border-[var(--ds-danger)]',
   },
@@ -130,7 +130,7 @@ const fulfillmentStatusConfig: Partial<Record<FulfillmentStatus, StatusConfig>> 
   },
   fulfilled: {
     label: 'Fulfilled',
-    className: 'text-[var(--ds-success-text)]',
+    className: 'text-success',
     bgClass: 'bg-[var(--ds-success-bg)]',
     borderClass: 'border-[var(--ds-success)]',
   },
@@ -154,7 +154,7 @@ const fulfillmentStatusConfig: Partial<Record<FulfillmentStatus, StatusConfig>> 
   },
   returned: {
     label: 'Returned',
-    className: 'text-[var(--ds-danger)]',
+    className: 'text-error',
     bgClass: 'bg-[var(--ds-danger-bg)]',
     borderClass: 'border-[var(--ds-danger)]',
   },
@@ -162,9 +162,9 @@ const fulfillmentStatusConfig: Partial<Record<FulfillmentStatus, StatusConfig>> 
 
 const DEFAULT_STATUS_CONFIG: StatusConfig = {
   label: 'Unknown',
-  className: 'text-[var(--ds-text-secondary)]',
-  bgClass: 'bg-[var(--ds-surface-parchment)]',
-  borderClass: 'border-[var(--ds-border-subtle)]',
+  className: 'text-secondary',
+  bgClass: 'bg-parchment',
+  borderClass: 'border-border-subtle',
 };
 
 export function getOrderStatusConfig(status: string): StatusConfig {

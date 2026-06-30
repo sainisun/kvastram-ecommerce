@@ -15,7 +15,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
       <div className="homepage-container">
         <h2
           id="homepage-collection-slider-title"
-          className="mb-[var(--ds-space-md)] font-display text-display-md text-[var(--ds-text-primary)]"
+          className="mb-[var(--ds-space-md)] font-display text-display-md text-primary"
         >
           our collection
         </h2>
@@ -37,11 +37,11 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
               <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.5)] to-transparent" />
 
               <div className="absolute bottom-0 left-0 p-[20px] w-full text-left">
-                <h3 className="text-[var(--ds-text-inverse)] text-[18px] md:text-[22px] font-display font-medium tracking-wide">
+                <h3 className="text-inverse text-[18px] md:text-[22px] font-display font-medium tracking-wide">
                   {collection.title}
                 </h3>
                 {collection.description && (
-                  <p className="text-[rgba(var(--ds-white-rgb),0.85)] text-body-xs type-regular mt-1 line-clamp-1">
+                  <p className="text-[rgba(var(--ds-white-rgb),0.85)] text-body-xs font-normal mt-1 line-clamp-1">
                     {collection.description}
                   </p>
                 )}

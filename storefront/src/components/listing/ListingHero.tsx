@@ -35,12 +35,12 @@ export default function ListingHero({
         className={
           hasCollectionImage
             ? 'kv-page-container grid gap-6 pb-8 pt-6 md:grid-cols-[0.92fr_1fr] md:items-center md:gap-10 md:pb-12 md:pt-10 lg:gap-16'
-            : 'relative overflow-hidden border-b border-[var(--ds-border-subtle)] bg-[var(--ds-surface-soft)]'
+            : 'relative overflow-hidden border-b border-border-subtle bg-surface-soft'
         }
       >
         {hasCollectionImage ? (
           <>
-            <div className="relative aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)] md:aspect-[5/4]">
+            <div className="relative aspect-[4/5] overflow-hidden bg-surface-soft md:aspect-[5/4]">
               <OptimizedImage
                 src={image || ''}
                 alt={title}
@@ -98,16 +98,16 @@ export default function ListingHero({
 
       <nav
         aria-label="Breadcrumb"
-        className="listing-breadcrumb kv-page-container flex items-center gap-2 border-b border-[var(--ds-border-subtle)] py-4"
+        className="listing-breadcrumb kv-page-container flex items-center gap-2 border-b border-border-subtle py-4"
       >
         {breadcrumbs.map((item, index) => (
           <span key={`${item.label}-${index}`} className="inline-flex items-center gap-2">
             {item.href ? (
-              <Link href={item.href} className="transition-colors hover:text-[var(--ds-text-primary)]">
+              <Link href={item.href} className="transition-colors hover:text-primary">
                 {item.label}
               </Link>
             ) : (
-              <span className="text-[var(--ds-text-secondary)]">{item.label}</span>
+              <span className="text-secondary">{item.label}</span>
             )}
             {index < breadcrumbs.length - 1 ? <span aria-hidden="true">/</span> : null}
           </span>
@@ -131,19 +131,19 @@ function HeroCopy({
   light: boolean;
 }) {
   return (
-    <div className={light ? 'max-w-3xl text-[var(--ds-text-inverse)]' : 'max-w-3xl text-[var(--ds-text-primary)]'}>
-      <p className={light ? 'content-eyebrow text-[var(--ds-text-inverse)]/80' : 'content-eyebrow'}>
+    <div className={light ? 'max-w-3xl text-inverse' : 'max-w-3xl text-primary'}>
+      <p className={light ? 'content-eyebrow text-inverse/80' : 'content-eyebrow'}>
         {eyebrow}
       </p>
-      <h1 className="mt-3 font-display text-display-lg type-regular leading-token-tight md:text-display-xl">
+      <h1 className="mt-3 font-display text-display-lg font-normal leading-token-tight md:text-display-xl">
         {title}
       </h1>
       {description ? (
         <p
           className={
             light
-              ? 'mt-4 max-w-2xl text-body-md leading-token-relaxed text-[var(--ds-text-inverse)]/88 md:text-body-lg'
-              : 'mt-4 max-w-2xl text-body-md leading-token-relaxed text-[var(--ds-text-secondary)] md:text-body-lg'
+              ? 'mt-4 max-w-2xl text-body-md leading-token-relaxed text-inverse/88 md:text-body-lg'
+              : 'mt-4 max-w-2xl text-body-md leading-token-relaxed text-secondary md:text-body-lg'
           }
         >
           {description}
@@ -153,8 +153,8 @@ function HeroCopy({
         <p
           className={
             light
-              ? 'mt-5 text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-inverse)]/82'
-              : 'mt-5 text-body-xs type-semibold tracking-token-wider text-[var(--ds-text-muted)]'
+              ? 'mt-5 text-body-xs font-semibold tracking-token-wider text-inverse/82'
+              : 'mt-5 text-body-xs font-semibold tracking-token-wider text-muted'
           }
         >
           {count} {count === 1 ? 'product' : 'products'}

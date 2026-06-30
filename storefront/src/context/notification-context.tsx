@@ -56,7 +56,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`rounded px-4 py-3 text-body-sm type-medium text-[var(--ds-text-inverse)] shadow-lg animate-fade-in
+            className={`rounded px-4 py-3 text-body-sm font-medium text-inverse shadow-lg animate-fade-in
                             ${notification.type === 'success' ? 'bg-[var(--ds-success)]' : ''}
                             ${notification.type === 'error' ? 'bg-[var(--ds-danger)]' : ''}
                             ${notification.type === 'info' ? 'bg-[var(--ds-info)]' : ''}
@@ -67,7 +67,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
               <span>{notification.message}</span>
               <UnstyledButton
                 onClick={() => removeNotification(notification.id)}
-                className="ml-2 text-[var(--ds-text-inverse)] opacity-80 transition-opacity hover:opacity-100"
+                className="ml-2 text-inverse opacity-80 transition-opacity hover:opacity-100"
                 aria-label="Dismiss notification"
               >
                 <span aria-hidden="true">x</span>

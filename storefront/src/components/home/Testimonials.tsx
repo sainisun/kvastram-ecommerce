@@ -8,7 +8,7 @@ interface TestimonialsProps {
 function renderStars(rating?: number) {
   const filled = Math.max(0, Math.min(5, Math.round(rating || 5)));
   return Array.from({ length: 5 }, (_, index) => (
-    <span key={index} className={index < filled ? 'text-[var(--ds-accent-gold)]' : 'text-[var(--ds-text-muted)]'}>
+    <span key={index} className={index < filled ? 'text-[var(--ds-accent-gold)]' : 'text-muted'}>
       ★
     </span>
   ));
@@ -20,7 +20,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
   if (displayed.length === 0) return null;
 
   return (
-    <section className="kv-section bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-subtle)]">
+    <section className="kv-section bg-[var(--ds-surface-paper)] border-b border-border-subtle">
       <div className="kv-container">
         <div className="kv-section-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
           <div className="kv-tag">Love shared by customers</div>
@@ -28,18 +28,18 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
 
         <div className="grid gap-[var(--ds-space-md)] md:grid-cols-3 lg:gap-8">
           {displayed.map((testimonial) => (
-            <article key={testimonial.id} className="rounded-[var(--ds-radius-lg)] bg-[var(--ds-surface-soft)] p-8 text-center sm:p-10 border border-[var(--ds-border-subtle)]/30">
+            <article key={testimonial.id} className="rounded-[var(--ds-radius-lg)] bg-surface-soft p-8 text-center sm:p-10 border border-border-subtle/30">
               <div className="flex items-center justify-center gap-1 text-body-sm">
                 {renderStars(testimonial.rating)}
               </div>
 
-              <p className="font-body mt-6 min-h-[108px] text-body-lg italic leading-relaxed text-[var(--ds-text-primary)]">
+              <p className="font-body mt-6 min-h-[108px] text-body-lg italic leading-relaxed text-primary">
                 &ldquo;{testimonial.content}&rdquo;
               </p>
 
               <div className="mt-[var(--ds-space-md)] flex items-center justify-center gap-[var(--ds-space-xs)]">
                 {testimonial.avatar_url ? (
-                  <div className="relative h-11 w-11 overflow-hidden rounded-full bg-[var(--ds-surface-soft)]">
+                  <div className="relative h-11 w-11 overflow-hidden rounded-full bg-surface-soft">
                     <OptimizedImage
                       src={testimonial.avatar_url}
                       alt={testimonial.name}
@@ -50,11 +50,11 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
                   </div>
                 ) : null}
                 <div className="text-left">
-                  <p className="font-body text-body-sm font-semibold tracking-token-wide text-[var(--ds-text-primary)]">
+                  <p className="font-body text-body-sm font-semibold tracking-token-wide text-primary">
                     {testimonial.name}
                   </p>
                   {testimonial.location ? (
-                    <p className="font-body text-body-xs tracking-token-wider text-[var(--ds-text-muted)]">
+                    <p className="font-body text-body-xs tracking-token-wider text-muted">
                       {testimonial.location}
                     </p>
                   ) : null}

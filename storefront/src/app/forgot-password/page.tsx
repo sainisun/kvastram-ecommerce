@@ -22,13 +22,13 @@ function SuccessView({ email }: { readonly email: string }) {
         }
         actions={
           <>
-        <p className="basis-full text-body-sm text-[var(--ds-text-muted)]">
+        <p className="basis-full text-body-sm text-muted">
           Check your spam folder if you don&apos;t receive the email within a
           few minutes.
         </p>
         <Link
           href="/login"
-          className="inline-block text-[var(--ds-text-primary)] type-medium underline"
+          className="inline-block text-primary font-medium underline"
         >
           Back to Login
         </Link>
@@ -84,15 +84,15 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <Link
             href="/login"
-            className="inline-flex items-center text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] mb-4"
+            className="inline-flex items-center text-muted hover:text-primary mb-4"
           >
             <ArrowLeft size={16} className="mr-1" />
             Back to Login
           </Link>
-          <h1 className="text-display-lg font-display text-[var(--ds-text-primary)]">
+          <h1 className="text-display-lg font-display text-primary">
             Forgot Password?
           </h1>
-          <p className="mt-2 text-[var(--ds-text-muted)] type-light">
+          <p className="mt-2 text-muted font-light">
             Enter your email address and we&apos;ll send you a link to reset
             your password.
           </p>

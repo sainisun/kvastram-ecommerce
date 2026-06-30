@@ -186,11 +186,11 @@ export default async function BestsellersPage({
           />
         ) : null}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.3),rgba(var(--ds-black-rgb),0.5))]" />
-        <div className="kv-page-container relative z-10 mx-auto flex h-full max-w-page flex-col items-center justify-center px-6 text-center text-[var(--ds-text-inverse)] md:px-12 lg:px-20">
-          <h1 className="font-display text-display-xl type-regular leading-token-tight tracking-token-tight text-[var(--ds-text-inverse)]">
+        <div className="kv-page-container relative z-10 mx-auto flex h-full max-w-page flex-col items-center justify-center px-6 text-center text-inverse md:px-12 lg:px-20">
+          <h1 className="font-display text-display-xl font-normal leading-token-tight tracking-token-tight text-inverse">
             Most <em className="italic">Loved</em>
           </h1>
-          <p className="mt-4 max-w-[600px] font-display text-display-sm type-regular italic leading-token-relaxed text-[var(--ds-text-inverse)]/90">
+          <p className="mt-4 max-w-[600px] font-display text-display-sm font-normal italic leading-token-relaxed text-inverse/90">
             These are the pieces the Kavastram community can&apos;t stop talking about. Curated from thousands of orders and five-star reviews.
           </p>
         </div>
@@ -199,26 +199,26 @@ export default async function BestsellersPage({
       <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <nav
           aria-label="Breadcrumb"
-          className="mb-10 flex items-center gap-2 text-body-xs type-medium  tracking-token-wide text-[var(--ds-text-muted)]"
+          className="mb-10 flex items-center gap-2 text-body-xs font-medium  tracking-token-wide text-muted"
         >
-          <Link href="/" className="transition-colors hover:text-[var(--ds-text-primary)]">
+          <Link href="/" className="transition-colors hover:text-primary">
             Home
           </Link>
           <span>/</span>
-          <span className="text-[var(--ds-text-secondary)]">Bestsellers</span>
+          <span className="text-secondary">Bestsellers</span>
         </nav>
 
         {stats.length > 0 ? (
-          <section className="grid gap-0 border-b border-[var(--ds-border-subtle)] py-10 sm:grid-cols-2 xl:grid-cols-4">
+          <section className="grid gap-0 border-b border-border-subtle py-10 sm:grid-cols-2 xl:grid-cols-4">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="border-r border-[var(--ds-border-subtle)] px-4 py-4 text-center last:border-r-0 sm:border-b sm:border-r xl:border-b-0"
+                className="border-r border-border-subtle px-4 py-4 text-center last:border-r-0 sm:border-b sm:border-r xl:border-b-0"
               >
-                <div className="font-display text-display-xl leading-token-tight text-[var(--ds-text-primary)]">
+                <div className="font-display text-display-xl leading-token-tight text-primary">
                   {stat.value}
                 </div>
-                <div className="mt-2 text-body-xs  tracking-token-wider text-[var(--ds-text-muted)]">
+                <div className="mt-2 text-body-xs  tracking-token-wider text-muted">
                   {stat.label}
                 </div>
               </div>
@@ -230,7 +230,7 @@ export default async function BestsellersPage({
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
               href="/bestsellers"
-              className={`kv-text-chip px-4 py-2 text-body-xs type-medium  tracking-token-wider ${
+              className={`kv-text-chip px-4 py-2 text-body-xs font-medium  tracking-token-wider ${
                 selectedSize === 'all' ? 'kv-text-chip--selected' : ''
               }`}
             >
@@ -240,7 +240,7 @@ export default async function BestsellersPage({
               <Link
               key={size}
               href={`/bestsellers?size=${encodeURIComponent(size)}`}
-              className={`kv-text-chip px-4 py-2 text-body-xs type-medium  tracking-token-wider ${
+              className={`kv-text-chip px-4 py-2 text-body-xs font-medium  tracking-token-wider ${
                 selectedSize === size ? 'kv-text-chip--selected' : ''
               }`}
             >
@@ -264,7 +264,7 @@ export default async function BestsellersPage({
                     className="group block"
                   >
                     <div className="relative">
-                      <div className="relative aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]">
+                      <div className="relative aspect-[3/4] overflow-hidden bg-surface-soft">
                         {getProductPrimaryImage(product) ? (
                           <OptimizedImage
                             src={getProductPrimaryImage(product) || ''}
@@ -275,12 +275,12 @@ export default async function BestsellersPage({
                           />
                         ) : null}
 
-                        <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-text-primary)] font-display text-display-sm type-medium text-[var(--ds-text-inverse)]">
+                        <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-text-primary)] font-display text-display-sm font-medium text-inverse">
                           {index + 1}
                         </span>
                       </div>
 
-                      <h2 className="mt-3 font-display text-display-sm type-medium leading-token-tight text-[var(--ds-text-primary)]">
+                      <h2 className="mt-3 font-display text-display-sm font-medium leading-token-tight text-primary">
                         {product.title}
                       </h2>
                       <PriceDisplay

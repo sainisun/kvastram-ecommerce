@@ -49,7 +49,7 @@ export function BackInStock({
   if (subscribed) {
     return (
       <div className="bg-[var(--ds-success-bg)] border border-[var(--ds-success)] p-4 rounded-sm">
-        <div className="flex items-center gap-3 text-[var(--ds-success-text)]">
+        <div className="flex items-center gap-3 text-success">
           <CheckCircle size={20} />
           <div>
             <p className="back-in-stock-title">You&apos;re on the list!</p>
@@ -64,7 +64,7 @@ export function BackInStock({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 text-[var(--ds-text-secondary)]">
+      <div className="flex items-center gap-2 text-secondary">
         <Bell size={18} />
         <span className="back-in-stock-title">Notify me when available</span>
       </div>
@@ -79,7 +79,7 @@ export function BackInStock({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              suffix={<Mail size={16} className="text-[var(--ds-text-muted)]" />}
+              suffix={<Mail size={16} className="text-muted" />}
             />
           </div>
           <Button

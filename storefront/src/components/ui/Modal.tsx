@@ -106,14 +106,14 @@ export function Modal({
         aria-label={typeof title === 'string' ? title : undefined}
         tabIndex={-1}
         className={cn(
-          'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-primary)] shadow-[var(--ds-shadow)]',
+          'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto border border-border-subtle bg-[var(--ds-surface-paper)] text-primary shadow-[var(--ds-shadow)]',
           className
         )}
       >
         {showHeader ? (
-          <div className="flex items-center justify-between gap-4 border-b border-[var(--ds-border-subtle)] p-5">
+          <div className="flex items-center justify-between gap-4 border-b border-border-subtle p-5">
             {title ? (
-              <h2 className="font-display text-display-sm type-semibold leading-token-tight">
+              <h2 className="font-display text-display-sm font-semibold leading-token-tight">
                 {title}
               </h2>
             ) : <span />}

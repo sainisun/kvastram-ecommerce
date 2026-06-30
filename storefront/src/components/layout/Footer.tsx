@@ -90,15 +90,15 @@ export function Footer() {
           {/* Brand Column */}
           <div className="space-y-5 col-span-2 sm:col-span-2 lg:col-span-1">
             <Link href="/" className="block">
-              <span className="kf-logo font-body text-display-sm type-semibold tracking-token-wider">
+              <span className="kf-logo font-body text-display-sm font-semibold tracking-token-wider">
                 ODHVICA
               </span>
             </Link>
-            <p className="kf-link font-body text-body-md type-light leading-token-relaxed">
+            <p className="kf-link font-body text-body-md font-light leading-token-relaxed">
               Handcrafted luxury fashion connecting global citizens with the
               finest artisanal craftsmanship from India and beyond.
             </p>
-            <div className="kf-muted font-body space-y-3 text-body-xs type-light">
+            <div className="kf-muted font-body space-y-3 text-body-xs font-light">
               <p>{storefrontTrust.supportEmail}</p>
               <p>{storefrontTrust.supportPhone}</p>
               <p>{storefrontTrust.supportHours}</p>
@@ -122,7 +122,7 @@ export function Footer() {
 
           {/* Shop Column */}
           <div className="col-span-1">
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
+            <h4 className="kf-heading font-body mb-6 text-body-xs font-semibold tracking-token-wide uppercase">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -130,7 +130,7 @@ export function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="kf-link font-body text-body-md type-light transition-colors block"
+                    className="kf-link font-body text-body-md font-light transition-colors block"
                   >
                     {label}
                   </Link>
@@ -141,7 +141,7 @@ export function Footer() {
 
           {/* Support Column */}
           <div className="col-span-1">
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
+            <h4 className="kf-heading font-body mb-6 text-body-xs font-semibold tracking-token-wide uppercase">
               Support
             </h4>
             <ul className="space-y-3">
@@ -149,7 +149,7 @@ export function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
-                    className="kf-link font-body text-body-md type-light transition-colors block"
+                    className="kf-link font-body text-body-md font-light transition-colors block"
                   >
                     {label}
                   </Link>
@@ -160,7 +160,7 @@ export function Footer() {
 
           {/* Company Column */}
           <div className="col-span-1">
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
+            <h4 className="kf-heading font-body mb-6 text-body-xs font-semibold tracking-token-wide uppercase">
               Company
             </h4>
             <ul className="space-y-3">
@@ -170,8 +170,8 @@ export function Footer() {
                     href={href}
                     className={`font-body text-body-md transition-colors block ${
                       highlight
-                        ? 'kf-highlight type-medium'
-                        : 'kf-link type-light'
+                        ? 'kf-highlight font-medium'
+                        : 'kf-link font-light'
                     }`}
                   >
                     {label}
@@ -183,10 +183,10 @@ export function Footer() {
 
           {/* Stay Updated Column */}
           <div className="col-span-2 sm:col-span-2 lg:col-span-1">
-            <h4 className="kf-heading font-body mb-6 text-body-xs type-semibold tracking-token-wide uppercase">
+            <h4 className="kf-heading font-body mb-6 text-body-xs font-semibold tracking-token-wide uppercase">
               Stay Updated
             </h4>
-            <p className="kf-muted font-body mb-4 text-body-md type-light leading-token-relaxed">
+            <p className="kf-muted font-body mb-4 text-body-md font-light leading-token-relaxed">
               Get 10% off your first order plus early access to new collections.
             </p>
             <NewsletterForm minimal />

@@ -93,7 +93,7 @@ function ProductCarousel({
       <div className="products-grid">
         {[1, 2, 3, 4].map((item) => (
           <div key={item} className="product-card animate-pulse">
-            <div className="product-media bg-[var(--ds-surface-soft)]" />
+            <div className="product-media bg-surface-soft" />
             <div className="product-info">
               <div className="skeleton-line skeleton-line-brand" />
               <div className="skeleton-line skeleton-line-name" />

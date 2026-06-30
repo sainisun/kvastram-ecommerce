@@ -15,7 +15,7 @@ export function CollectionsSection({
         <div className="homepage-section-head">
           <div>
             <p className="homepage-eyebrow">Curated Collections</p>
-            <h2 className="font-display text-display-md text-[var(--ds-text-primary)]">Stories in cloth</h2>
+            <h2 className="font-display text-display-md text-primary">Stories in cloth</h2>
           </div>
           <Link href="/collections" className="kv-section-link">
             View all collections →
@@ -26,7 +26,7 @@ export function CollectionsSection({
             <article className="grid gap-[var(--ds-space-md)]" key={collection.id}>
               <Link
                 href={`/collections/${collection.handle}`}
-                className="relative block aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)]"
+                className="relative block aspect-[4/5] overflow-hidden bg-surface-soft"
               >
                 <OptimizedImage
                   src={collection.image}
@@ -36,7 +36,7 @@ export function CollectionsSection({
                   className="object-cover"
                 />
                 <span className="homepage-campaign-scrim" />
-                <span className="absolute inset-x-8 bottom-8 z-[1] grid gap-2 text-[var(--ds-text-inverse)]">
+                <span className="absolute inset-x-8 bottom-8 z-[1] grid gap-2 text-inverse">
                   <strong className="font-display text-display-md font-[var(--ds-type-heading-weight)]">{collection.title}</strong>
                   {collection.description ? <small className="max-w-[var(--ds-caption-width)] text-body-sm">{collection.description}</small> : null}
                 </span>
@@ -47,9 +47,9 @@ export function CollectionsSection({
                     key={product.id}
                     href={`/products/${product.handle || product.id}`}
                     data-campaign-product-id={product.id}
-                    className="grid gap-2 text-[var(--ds-text-primary)] text-body-xs no-underline"
+                    className="grid gap-2 text-primary text-body-xs no-underline"
                   >
-                    <span className="relative aspect-[4/5] overflow-hidden bg-[var(--ds-surface-soft)]">
+                    <span className="relative aspect-[4/5] overflow-hidden bg-surface-soft">
                       <OptimizedImage
                         src={product.thumbnail || product.images?.[0]?.url || ''}
                         alt={product.title}

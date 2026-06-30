@@ -16,7 +16,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-parchment px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <EmptyState
         eyebrow={error.digest ? `Error ID: ${error.digest}` : 'Oops'}
         title="Something went wrong"

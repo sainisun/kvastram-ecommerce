@@ -53,7 +53,7 @@ function ScrollToTop() {
     <UnstyledButton
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       aria-label="Scroll to top"
-      className="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-50 w-10 h-10 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center shadow-lg hover:bg-[var(--ds-text-secondary)] transition-all duration-300 hover:-translate-y-1 animate-scale-in"
+      className="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-50 w-10 h-10 bg-[var(--ds-text-primary)] text-inverse rounded-full flex items-center justify-center shadow-lg hover:bg-[var(--ds-text-secondary)] transition-all duration-300 hover:-translate-y-1 animate-scale-in"
     >
       <ArrowUp size={18} />
     </UnstyledButton>

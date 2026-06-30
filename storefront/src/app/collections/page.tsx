@@ -54,10 +54,10 @@ function CollectionCard({
   return (
     <Link
       href={`/collections/${collection.handle}`}
-      className="group block border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] transition-colors hover:border-[var(--ds-text-primary)]"
+      className="group block border border-border-subtle bg-[var(--ds-surface-paper)] transition-colors hover:border-[var(--ds-text-primary)]"
     >
       {image ? (
-        <div className="relative aspect-[3/4] overflow-hidden bg-[var(--ds-surface-soft)]">
+        <div className="relative aspect-[3/4] overflow-hidden bg-surface-soft">
           <OptimizedImage
             src={image}
             alt={`${collection.title} collection - Odhvica`}
@@ -139,17 +139,17 @@ export default async function CollectionsPage({
             aria-label="Breadcrumb"
             className="listing-breadcrumb mb-8 flex items-center gap-2"
           >
-            <Link href="/" className="transition-colors hover:text-[var(--ds-text-primary)]">
+            <Link href="/" className="transition-colors hover:text-primary">
               Home
             </Link>
             <span>/</span>
-            <span className="text-[var(--ds-text-secondary)]">Collections</span>
+            <span className="text-secondary">Collections</span>
           </nav>
-          <section className="border-y border-[var(--ds-border-subtle)] py-10 md:py-14">
-            <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-secondary)]">
+          <section className="border-y border-border-subtle py-10 md:py-14">
+            <div className="text-body-xs font-semibold uppercase tracking-token-wider text-secondary">
               Curated Series
             </div>
-            <h1 className="mt-4 font-display text-display-lg type-regular leading-token-tight text-[var(--ds-text-primary)] md:text-display-xl">
+            <h1 className="mt-4 font-display text-display-lg font-normal leading-token-tight text-primary md:text-display-xl">
               Collections
             </h1>
           </section>
@@ -174,7 +174,7 @@ export default async function CollectionsPage({
       />
 
       {heroImage?.cover_image_url || heroImage?.image ? (
-        <section className="relative h-[360px] overflow-hidden bg-[var(--ds-surface-soft)] sm:h-[420px]">
+        <section className="relative h-[360px] overflow-hidden bg-surface-soft sm:h-[420px]">
           <OptimizedImage
             src={heroImage.cover_image_url || heroImage.image || ''}
             alt="Collections"
@@ -201,14 +201,14 @@ export default async function CollectionsPage({
         </section>
       ) : (
         <section className="kv-page-container mx-auto max-w-page px-6 pt-10 md:px-12 md:pt-14 lg:px-20">
-          <div className="border-y border-[var(--ds-border-subtle)] py-10 md:py-14">
-            <div className="text-body-xs type-semibold uppercase tracking-token-wider text-[var(--ds-text-secondary)]">
+          <div className="border-y border-border-subtle py-10 md:py-14">
+            <div className="text-body-xs font-semibold uppercase tracking-token-wider text-secondary">
               Curated Series
             </div>
-            <h1 className="mt-4 font-display text-display-lg type-regular leading-token-tight text-[var(--ds-text-primary)] md:text-display-xl">
+            <h1 className="mt-4 font-display text-display-lg font-normal leading-token-tight text-primary md:text-display-xl">
               Our <em className="italic">Collections</em>
             </h1>
-            <p className="mt-4 max-w-2xl font-display text-display-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+            <p className="mt-4 max-w-2xl font-display text-display-sm leading-token-relaxed text-secondary">
               From everyday kurta sets to handcrafted bridal lehengas, every
               edit tells a story.
             </p>
@@ -221,11 +221,11 @@ export default async function CollectionsPage({
           aria-label="Breadcrumb"
           className="listing-breadcrumb mb-10 flex items-center gap-2"
         >
-          <Link href="/" className="transition-colors hover:text-[var(--ds-text-primary)]">
+          <Link href="/" className="transition-colors hover:text-primary">
             Home
           </Link>
           <span>/</span>
-          <span className="text-[var(--ds-text-secondary)]">Collections</span>
+          <span className="text-secondary">Collections</span>
         </nav>
 
         <section className="grid gap-x-4 gap-y-8 sm:grid-cols-3 md:gap-x-6 md:gap-y-12 lg:gap-x-8 lg:gap-y-16">
@@ -233,7 +233,7 @@ export default async function CollectionsPage({
             <Link
               key={collection.id}
               href={`/collections/${collection.handle}`}
-              className="group relative overflow-hidden bg-[var(--ds-surface-soft)]"
+              className="group relative overflow-hidden bg-surface-soft"
             >
               <div className="relative aspect-[3/4]">
                 {collection.cover_image_url || collection.image ? (
@@ -246,7 +246,7 @@ export default async function CollectionsPage({
                   />
                 ) : null}
                 <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.08),rgba(var(--ds-black-rgb),0.45))]" />
-                <div className="absolute inset-x-0 bottom-0 p-5 text-[var(--ds-text-inverse)]">
+                <div className="absolute inset-x-0 bottom-0 p-5 text-inverse">
                   <h2 className="collection-feature-title">
                     {collection.title}
                   </h2>
@@ -279,7 +279,7 @@ export default async function CollectionsPage({
           <div className="mt-14 text-center">
             <Link
               href="/collections?show=all"
-              className="inline-flex items-center gap-2 border-b border-[var(--ds-text-primary)] pb-1 text-[var(--ds-text-primary)] transition-colors hover:border-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]"
+              className="inline-flex items-center gap-2 border-b border-[var(--ds-text-primary)] pb-1 text-primary transition-colors hover:border-[var(--ds-text-muted)] hover:text-secondary"
             >
               Load More Collections
               <ArrowRight size={16} />
@@ -289,7 +289,7 @@ export default async function CollectionsPage({
           <div className="mt-14 text-center">
             <Link
               href="/collections"
-              className="inline-flex items-center gap-2 border-b border-[var(--ds-text-primary)] pb-1 text-[var(--ds-text-primary)] transition-colors hover:border-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]"
+              className="inline-flex items-center gap-2 border-b border-[var(--ds-text-primary)] pb-1 text-primary transition-colors hover:border-[var(--ds-text-muted)] hover:text-secondary"
             >
               View Fewer Collections
               <ArrowRight size={16} />

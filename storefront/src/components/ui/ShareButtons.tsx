@@ -106,22 +106,22 @@ export default function ShareButtons({
             <div className="py-1">
               <UnstyledButton
                 onClick={() => handleShare('facebook')}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-soft)] transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-secondary hover:bg-surface-soft transition-colors"
               >
                 <Facebook size={18} className="color-facebook" />
                 Facebook
               </UnstyledButton>
               <UnstyledButton
                 onClick={() => handleShare('twitter')}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-soft)] transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-secondary hover:bg-surface-soft transition-colors"
               >
                 <Twitter size={18} className="color-twitter" />
                 Twitter
               </UnstyledButton>
-              <hr className="my-1 border-[var(--ds-border-subtle)]" />
+              <hr className="my-1 border-border-subtle" />
               <UnstyledButton
                 onClick={() => handleShare('whatsapp')}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-soft)] transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-secondary hover:bg-surface-soft transition-colors"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -134,7 +134,7 @@ export default function ShareButtons({
               </UnstyledButton>
               <UnstyledButton
                 onClick={() => handleShare('email')}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-[var(--ds-text-secondary)] hover:bg-[var(--ds-surface-soft)] transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-body-sm text-secondary hover:bg-surface-soft transition-colors"
               >
                 <svg
                   className="w-[18px] h-[18px]"

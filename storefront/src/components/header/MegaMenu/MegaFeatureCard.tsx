@@ -31,13 +31,13 @@ export function MegaFeatureCard({
         />
       ) : null}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.10),rgba(var(--ds-black-rgb),0.64))]" />
-      <p className="relative z-10 mb-2 font-label text-body-xs tracking-token-wide text-[var(--ds-text-inverse)]/70">
+      <p className="relative z-10 mb-2 font-label text-body-xs tracking-token-wide text-inverse/70">
         Featured this season
       </p>
-      <h3 className="relative z-10 mb-3 font-display text-display-sm italic type-regular leading-token-tight text-[var(--ds-text-inverse)]">
+      <h3 className="relative z-10 mb-3 font-display text-display-sm italic font-normal leading-token-tight text-inverse">
         {name}
       </h3>
-      <span className="relative z-10 inline-block border-b border-[var(--ds-surface-paper)]/25 pb-0.5 font-ui text-body-xs tracking-token-wide text-[var(--ds-text-inverse)]/80 transition-colors group-hover:text-[var(--ds-text-inverse)]">
+      <span className="relative z-10 inline-block border-b border-[var(--ds-surface-paper)]/25 pb-0.5 font-ui text-body-xs tracking-token-wide text-inverse/80 transition-colors group-hover:text-inverse">
         Shop the edit
       </span>
     </Link>

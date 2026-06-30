@@ -73,8 +73,8 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
                 />
               </picture>
               <div className="homepage-hero-scrim" />
-              <div className="homepage-container relative z-10 flex min-h-[inherit] flex-col items-start justify-end gap-6 pb-[clamp(76px,10vw,132px)] text-[var(--ds-text-inverse)]">
-                <h1 className="max-w-[15ch] m-0 text-[var(--ds-text-inverse)] font-display text-display-xl font-normal">{slide.title}</h1>
+              <div className="homepage-container relative z-10 flex min-h-[inherit] flex-col items-start justify-end gap-6 pb-[clamp(76px,10vw,132px)] text-inverse">
+                <h1 className="max-w-[15ch] m-0 text-inverse font-display text-display-xl font-normal">{slide.title}</h1>
                 <ButtonLink href={slide.button_link} variant="secondary" size="lg">
                   {slide.button_text}
                 </ButtonLink>
@@ -91,7 +91,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               type="button"
               variant="ghost"
               size="md"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
+              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md pointer-events-auto"
               onClick={() => emblaApi?.scrollPrev()}
               aria-label="Previous hero slide"
             >
@@ -101,7 +101,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               type="button"
               variant="ghost"
               size="md"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
+              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md pointer-events-auto"
               onClick={() => emblaApi?.scrollNext()}
               aria-label="Next hero slide"
             >
@@ -125,7 +125,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               type="button"
               variant="ghost"
               size="sm"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-[var(--ds-text-inverse)] backdrop-blur-md pointer-events-auto"
+              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md pointer-events-auto"
               onClick={toggleAutoplay}
               aria-label={paused ? 'Play hero slideshow' : 'Pause hero slideshow'}
             >

@@ -79,24 +79,24 @@ export default function CountrySelect({
       <UnstyledButton
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="form-control-typography flex h-12 w-full items-center justify-between border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-3 text-left text-[var(--ds-text-primary)] outline-none transition-colors focus:border-[var(--ds-accent-primary)] sm:h-11"
+        className="form-control-typography flex h-12 w-full items-center justify-between border border-border-subtle bg-[var(--ds-surface-paper)] px-3 text-left text-primary outline-none transition-colors focus:border-[var(--ds-accent-primary)] sm:h-11"
         aria-label={required ? `${name}, required` : name}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className={displayValue ? 'text-[var(--ds-text-primary)]' : 'text-[var(--ds-text-muted)]'}>
+        <span className={displayValue ? 'text-primary' : 'text-muted'}>
           {displayValue || `Select ${name}`}
         </span>
         <ChevronDown
           size={18}
-          className={`text-[var(--ds-text-muted)] transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </UnstyledButton>
 
       {isOpen && (
         <PopoverPanel align="left" className="max-h-80 w-full">
           {/* Search Input */}
-          <div className="border-b border-[var(--ds-border-subtle)] p-2">
+          <div className="border-b border-border-subtle p-2">
             <Input
               ref={searchRef}
               type="text"
@@ -113,7 +113,7 @@ export default function CountrySelect({
             {/* Common Countries */}
             {common.length > 0 && (
               <>
-                <div className="bg-[var(--ds-surface-soft)] px-3 py-1.5 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+                <div className="bg-surface-soft px-3 py-1.5 text-body-xs font-bold  tracking-token-wider text-muted">
                   Popular
                 </div>
                 {common.map((country) => (
@@ -121,15 +121,15 @@ export default function CountrySelect({
                     key={country.code}
                     type="button"
                     onClick={() => handleSelect(country.code)}
-                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-[var(--ds-surface-soft)] ${
+                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-surface-soft ${
                       value === country.code
-                        ? 'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] type-medium'
-                        : 'text-[var(--ds-text-secondary)]'
+                        ? 'bg-surface-soft text-primary font-medium'
+                        : 'text-secondary'
                     }`}
                   >
                     <span>{country.name}</span>
                     {value === country.code && (
-                      <Check size={16} className="text-[var(--ds-text-primary)]" />
+                      <Check size={16} className="text-primary" />
                     )}
                   </UnstyledButton>
                 ))}
@@ -139,7 +139,7 @@ export default function CountrySelect({
             {/* All Countries */}
             {others.length > 0 && (
               <>
-                <div className="bg-[var(--ds-surface-soft)] px-3 py-1.5 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+                <div className="bg-surface-soft px-3 py-1.5 text-body-xs font-bold  tracking-token-wider text-muted">
                   {common.length > 0 ? 'All Countries' : 'Countries'}
                 </div>
                 {others.map((country) => (
@@ -147,15 +147,15 @@ export default function CountrySelect({
                     key={country.code}
                     type="button"
                     onClick={() => handleSelect(country.code)}
-                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-[var(--ds-surface-soft)] ${
+                    className={`w-full px-4 py-2.5 text-left text-body-sm flex items-center justify-between hover:bg-surface-soft ${
                       value === country.code
-                        ? 'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)] type-medium'
-                        : 'text-[var(--ds-text-secondary)]'
+                        ? 'bg-surface-soft text-primary font-medium'
+                        : 'text-secondary'
                     }`}
                   >
                     <span>{country.name}</span>
                     {value === country.code && (
-                      <Check size={16} className="text-[var(--ds-text-primary)]" />
+                      <Check size={16} className="text-primary" />
                     )}
                   </UnstyledButton>
                 ))}
@@ -163,7 +163,7 @@ export default function CountrySelect({
             )}
 
             {filteredCountries.length === 0 && (
-              <div className="px-4 py-6 text-center text-body-sm text-[var(--ds-text-muted)]">
+              <div className="px-4 py-6 text-center text-body-sm text-muted">
                 No countries found
               </div>
             )}

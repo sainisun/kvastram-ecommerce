@@ -13,11 +13,11 @@ export default function ProductsError({
   reset: () => void;
 }) {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         <Link
           href="/"
-          className="error-back-link mb-8 inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
+          className="error-back-link mb-8 inline-flex items-center gap-2 transition-colors hover:text-primary"
         >
           <ArrowLeft size={16} /> Back to Home
         </Link>

@@ -47,12 +47,12 @@ export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave, isTransparent
             <Link
               href={item.href}
               className={[
-                'font-ui text-body-sm type-medium tracking-token-wide pb-1 transition-colors',
+                'font-ui text-body-sm font-medium tracking-token-wide pb-1 transition-colors',
                 isActive || isMegaOpen
-                  ? 'text-[var(--ds-accent-primary)] border-b border-[var(--ds-accent-primary)]'
+                  ? 'text-accent border-b border-[var(--ds-accent-primary)]'
                   : isTransparent
-                    ? 'text-[var(--ds-text-inverse)] hover:text-[var(--ds-text-inverse)] hover:border-b hover:border-[var(--ds-text-inverse)]'
-                    : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] hover:border-b hover:border-[var(--ds-text-disabled)]',
+                    ? 'text-inverse hover:text-inverse hover:border-b hover:border-[var(--ds-text-inverse)]'
+                    : 'text-secondary hover:text-primary hover:border-b hover:border-[var(--ds-text-disabled)]',
               ].join(' ')}
               aria-haspopup={item.hasMega ? 'true' : undefined}
               aria-expanded={item.hasMega ? isMegaOpen : undefined}

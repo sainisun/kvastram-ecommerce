@@ -109,7 +109,7 @@ export function ProductCard({
               className="object-cover"
             />
           ) : (
-            <div className="product-no-image flex h-full w-full items-center justify-center bg-[var(--ds-surface-soft)]">
+            <div className="product-no-image flex h-full w-full items-center justify-center bg-surface-soft">
               <ShoppingBag aria-hidden="true" size={28} strokeWidth={1.4} />
             </div>
           )}
@@ -245,7 +245,7 @@ export function CompactProductCard({
     <Link href={href} onClick={onClick} className={cn('group block', className)}>
       <div
         className={cn(
-          'relative mb-3 aspect-[3/4] overflow-hidden rounded-sm bg-[var(--ds-surface-soft)]',
+          'relative mb-3 aspect-[3/4] overflow-hidden rounded-sm bg-surface-soft',
           imageClassName
         )}
       >

@@ -29,11 +29,11 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full px-[var(--ds-space-md)] text-center">
-              <p className="text-[var(--ds-text-muted)] mb-4">Your cart is empty</p>
+              <p className="text-muted mb-4">Your cart is empty</p>
               <Link
                 href="/products"
                 onClick={onClose}
-                className="text-body-sm type-medium text-[var(--ds-text-primary)] underline"
+                className="text-body-sm font-medium text-primary underline"
               >
                 Continue Shopping
               </Link>
@@ -43,7 +43,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
               {items.map((item) => (
                 <li key={item.variantId} className="flex gap-[var(--ds-space-sm)] p-[var(--ds-space-sm)]">
                   {/* Image */}
-                  <div className="relative h-20 w-20 flex-shrink-0 bg-[var(--ds-surface-soft)] overflow-hidden">
+                  <div className="relative h-20 w-20 flex-shrink-0 bg-surface-soft overflow-hidden">
                     {item.thumbnail ? (
                       <OptimizedImage
                         src={item.thumbnail}
@@ -52,7 +52,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center text-[var(--ds-text-muted)]">
+                      <div className="h-full w-full flex items-center justify-center text-muted">
                         <span className="text-body-xs">No Image</span>
                       </div>
                     )}
@@ -60,7 +60,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-body-sm type-medium text-[var(--ds-text-primary)] truncate">
+                    <h3 className="text-body-sm font-medium text-primary truncate">
                       <Link
                         href={`/products/${item.handle || item.id}`}
                         onClick={onClose}
@@ -68,11 +68,11 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                         {item.title}
                       </Link>
                     </h3>
-                    <p className="text-body-sm text-[var(--ds-text-muted)] mt-1">
+                    <p className="text-body-sm text-muted mt-1">
                       {formatPrice(item.price)}
                     </p>
                     {(item.material || item.origin) && (
-                      <div className="mt-1 text-body-xs text-[var(--ds-text-muted)]">
+                      <div className="mt-1 text-body-xs text-muted">
                         {item.material && <span>{item.material}</span>}
                         {item.material && item.origin && <span> · </span>}
                         {item.origin && <span>{item.origin}</span>}
@@ -87,7 +87,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                             updateQuantity(item.variantId, item.quantity - 1)
                           }
                           disabled={item.quantity <= 1}
-                          className="p-1 min-h-[44px] min-w-[44px] text-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)] disabled:opacity-30 flex items-center justify-center"
+                          className="p-1 min-h-[44px] min-w-[44px] text-muted hover:text-secondary disabled:opacity-30 flex items-center justify-center"
                           aria-label={`Decrease quantity of ${item.title}`}
                         >
                           <Minus size={14} />
@@ -99,7 +99,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                           onClick={() =>
                             updateQuantity(item.variantId, item.quantity + 1)
                           }
-                          className="p-1 min-h-[44px] min-w-[44px] text-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)] flex items-center justify-center"
+                          className="p-1 min-h-[44px] min-w-[44px] text-muted hover:text-secondary flex items-center justify-center"
                           aria-label={`Increase quantity of ${item.title}`}
                         >
                           <Plus size={14} />
@@ -108,7 +108,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
 
                       <UnstyledButton
                         onClick={() => removeItem(item.variantId)}
-                        className="p-1 min-h-[44px] min-w-[44px] text-[var(--ds-text-muted)] hover:text-[var(--ds-danger)] flex items-center justify-center"
+                        className="p-1 min-h-[44px] min-w-[44px] text-muted hover:text-error flex items-center justify-center"
                         aria-label="Remove item"
                       >
                         <Trash2 size={16} />
@@ -117,7 +117,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                   </div>
 
                   {/* Item Total */}
-                  <div className="text-body-sm type-medium text-[var(--ds-text-primary)]">
+                  <div className="text-body-sm font-medium text-primary">
                     {formatPrice(item.price * item.quantity)}
                   </div>
                 </li>
@@ -128,15 +128,15 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t border-[var(--ds-border-subtle)] px-6 py-4 space-y-4">
+          <div className="border-t border-border-subtle px-6 py-4 space-y-4">
             {/* Subtotal */}
             <div className="flex items-center justify-between">
-              <span className="text-[var(--ds-text-secondary)]">Subtotal</span>
-              <span className="text-body-xl type-medium text-[var(--ds-text-primary)]">
+              <span className="text-secondary">Subtotal</span>
+              <span className="text-body-xl font-medium text-primary">
                 {formatPrice(cartTotal)}
               </span>
             </div>
-            <p className="text-body-xs text-[var(--ds-text-muted)]">
+            <p className="text-body-xs text-muted">
               Shipping and taxes calculated at checkout
             </p>
 
@@ -145,14 +145,14 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
               <Link
                 href="/cart"
                 onClick={onClose}
-                className="block w-full text-center py-3 border border-[var(--ds-border-strong)] text-[var(--ds-text-primary)] text-body-sm type-medium hover:bg-[var(--ds-surface-parchment)] transition-colors"
+                className="block w-full text-center py-3 border border-border text-primary text-body-sm font-medium hover:bg-parchment transition-colors"
               >
                 View Cart
               </Link>
               <Link
                 href="/checkout"
                 onClick={onClose}
-                className="block w-full text-center py-3 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] text-body-sm type-medium hover:bg-[var(--ds-text-secondary)] transition-colors"
+                className="block w-full text-center py-3 bg-[var(--ds-text-primary)] text-inverse text-body-sm font-medium hover:bg-[var(--ds-text-secondary)] transition-colors"
               >
                 Checkout
               </Link>

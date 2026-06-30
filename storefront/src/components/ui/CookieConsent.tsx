@@ -50,14 +50,14 @@ export function CookieConsent() {
               className="mt-0.5 shrink-0 text-[var(--ds-accent-gold)]"
             />
             <div className="min-w-0">
-              <p className="text-body-sm text-[var(--ds-text-primary)] type-semibold">
+              <p className="text-body-sm text-primary font-semibold">
                 We value your privacy
               </p>
-              <p className="mt-0.5 text-body-xs leading-token-relaxed text-[var(--ds-text-muted)] type-light">
+              <p className="mt-0.5 text-body-xs leading-token-relaxed text-muted font-light">
                 Choose which categories of cookies & tracking you allow.{' '}
                 <Link
                   href="/pages/privacy-policy"
-                  className="text-[var(--ds-text-primary)] underline underline-offset-2 transition-colors hover:text-[var(--ds-accent-primary)]"
+                  className="text-primary underline underline-offset-2 transition-colors hover:text-accent"
                 >
                   Learn more
                 </Link>
@@ -69,7 +69,7 @@ export function CookieConsent() {
             aria-label="Dismiss"
             size="sm"
             variant="ghost"
-            className="-mr-1 -mt-1 shrink-0 text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)]"
+            className="-mr-1 -mt-1 shrink-0 text-muted hover:text-primary"
           >
             <X size={16} />
           </IconButton>
@@ -81,7 +81,7 @@ export function CookieConsent() {
             onClick={handleAcceptAll}
             variant="secondary"
             size="sm"
-            className="min-h-10 flex-1 whitespace-nowrap bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]"
+            className="min-h-10 flex-1 whitespace-nowrap bg-[var(--ds-text-primary)] text-inverse"
           >
             Accept All
           </Button>
@@ -95,7 +95,7 @@ export function CookieConsent() {
           </Button>
           <Link
             href="/cookie-settings"
-            className="col-span-2 flex min-h-9 flex-1 items-center justify-center text-center text-body-xs tracking-token-wider text-[var(--ds-text-primary)] underline transition-colors type-bold hover:text-[var(--ds-accent-primary)] sm:col-span-1"
+            className="col-span-2 flex min-h-9 flex-1 items-center justify-center text-center text-body-xs tracking-token-wider text-primary underline transition-colors font-bold hover:text-accent sm:col-span-1"
           >
             Customize
           </Link>

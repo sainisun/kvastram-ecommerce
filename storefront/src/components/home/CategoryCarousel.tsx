@@ -16,7 +16,7 @@ export function CategoryCarousel({ categories }: { categories: HomepageCategoryC
       <div className="homepage-container">
         <h2
           id="homepage-category-carousel-title"
-          className="mb-[var(--ds-space-md)] font-display text-display-md text-[var(--ds-text-primary)]"
+          className="mb-[var(--ds-space-md)] font-display text-display-md text-primary"
         >
           shop by category
         </h2>
@@ -38,7 +38,7 @@ export function CategoryCarousel({ categories }: { categories: HomepageCategoryC
               <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.4)] to-transparent" />
 
               <div className="absolute bottom-[10px] left-1/2 -translate-x-1/2 text-center w-full px-[10px]">
-                <span className="inline-block text-[var(--ds-text-inverse)] text-[14px] font-ui font-medium uppercase tracking-[var(--ds-type-label-tracking)]">
+                <span className="inline-block text-inverse text-[14px] font-ui font-medium uppercase tracking-[var(--ds-type-label-tracking)]">
                   {category.name}
                 </span>
               </div>

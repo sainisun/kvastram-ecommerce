@@ -262,19 +262,19 @@ export default function CartPage() {
         <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           {/* Hero empty message */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[var(--soft)] mb-6">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-surface-soft mb-6">
               <ShoppingBag className="h-10 w-10 color-muted" />
             </div>
             <h1 className="text-display-xl font-display color-ink mb-3">
               Your Bag Is Empty
             </h1>
-            <p className="color-muted type-light text-body-xl mb-8">
+            <p className="color-muted font-light text-body-xl mb-8">
               Looks like you haven&apos;t added anything yet. Let us inspire
               you.
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-[var(--ink)] text-[var(--ds-text-inverse)] px-10 py-4 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--ink)] transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--ink)] text-inverse px-10 py-4 text-body-xs font-bold  tracking-token-wider hover:bg-[var(--ink)] transition-colors"
             >
               Explore Collection <ArrowRight size={16} />
             </Link>
@@ -285,7 +285,7 @@ export default function CartPage() {
             <div>
               <div className="flex items-center gap-3 mb-8">
                 <Sparkles size={18} className="text-[var(--ds-warning)]" />
-                <p className="text-body-sm type-bold  tracking-token-wider color-ink">
+                <p className="text-body-sm font-bold  tracking-token-wider color-ink">
                   You Might Love
                 </p>
               </div>
@@ -303,7 +303,7 @@ export default function CartPage() {
                     <div key={product.id} className="group flex flex-col">
                       <Link
                         href={`/products/${product.handle || product.id}`}
-                        className="block relative aspect-[3/4] bg-[var(--soft)] overflow-hidden mb-4 rounded-sm"
+                        className="block relative aspect-[3/4] bg-surface-soft overflow-hidden mb-4 rounded-sm"
                       >
                         {imageUrl ? (
                           <OptimizedImage
@@ -322,14 +322,14 @@ export default function CartPage() {
                         href={`/products/${product.handle || product.id}`}
                         className="space-y-1 mb-3"
                       >
-                        <p className="text-body-xs color-muted type-bold tracking-token-wider ">
+                        <p className="text-body-xs color-muted font-bold tracking-token-wider ">
                           {product.collection?.title || 'Odhvica'}
                         </p>
                         <p className="font-display text-body-md color-ink leading-token-tight group-hover:color-muted transition-colors">
                           {product.title}
                         </p>
                         {price && (
-                          <p className="text-body-sm type-medium color-ink">
+                          <p className="text-body-sm font-medium color-ink">
                             {price}
                           </p>
                         )}
@@ -337,10 +337,10 @@ export default function CartPage() {
                       <UnstyledButton
                         onClick={() => handleAddRecommendation(product)}
                         disabled={addingRec === product.id || !variant}
-                        className={`w-full py-2.5 text-body-xs type-bold  tracking-token-wider border transition-all ${
+                        className={`w-full py-2.5 text-body-xs font-bold  tracking-token-wider border transition-all ${
                           addingRec === product.id
-                            ? 'bg-[var(--ds-success)] text-[var(--ds-text-inverse)] border-[var(--ds-success)]'
-                            : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--ds-text-inverse)]'
+                            ? 'bg-[var(--ds-success)] text-inverse border-[var(--ds-success)]'
+                            : 'border-border-subtle color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-inverse'
                         }`}
                       >
                         {addingRec === product.id ? '✓ Added!' : 'Quick Add'}
@@ -357,7 +357,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--cream)]">
+    <div className="min-h-screen bg-surface">
       <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
@@ -378,12 +378,12 @@ export default function CartPage() {
         <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-16">
           {/* Cart Items */}
           <div className="lg:col-span-7">
-            <ul className="divide-y divide-[var(--line)] border-t border-b border-[var(--line)]">
+            <ul className="divide-y divide-[var(--line)] border-t border-b border-border-subtle">
               {items.map((item) => (
                 <li key={item.variantId} className="flex py-6 sm:py-10">
                   {/* Product Image */}
                   <div className="flex-shrink-0">
-                    <div className="relative h-24 w-24 sm:h-32 sm:w-32 bg-[var(--soft)] overflow-hidden">
+                    <div className="relative h-24 w-24 sm:h-32 sm:w-32 bg-surface-soft overflow-hidden">
                       {item.thumbnail ? (
                         <OptimizedImage
                           src={item.thumbnail}
@@ -404,7 +404,7 @@ export default function CartPage() {
                     <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
                       <div>
                         <div className="flex justify-between">
-                          <p className="text-body-sm type-medium color-ink">
+                          <p className="text-body-sm font-medium color-ink">
                             {item.handle ? (
                               <Link
                                 href={`/products/${item.handle}`}
@@ -470,7 +470,7 @@ export default function CartPage() {
                         <div className="absolute right-0 top-0">
                           <UnstyledButton
                             onClick={() => removeItem(item.variantId)}
-                            className="p-2 min-h-[44px] min-w-[44px] color-muted hover:text-[var(--ds-danger)] transition-colors flex items-center justify-center"
+                            className="p-2 min-h-[44px] min-w-[44px] color-muted hover:text-error transition-colors flex items-center justify-center"
                             aria-label="Remove item"
                           >
                             <Trash2 size={18} />
@@ -480,7 +480,7 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex items-end justify-between pt-4">
-                      <p className="text-body-md type-medium color-ink">
+                      <p className="text-body-md font-medium color-ink">
                         Subtotal: {formatCartPrice(item.price * item.quantity)}
                       </p>
                     </div>
@@ -501,14 +501,14 @@ export default function CartPage() {
             </div>
 
             {recommendations.length > 0 ? (
-              <section className="mt-12 rounded-lg border border-[var(--line)] bg-[var(--ds-surface-paper)] p-6">
+              <section className="mt-12 rounded-lg border border-border-subtle bg-[var(--ds-surface-paper)] p-6">
                 <div className="mb-6 flex items-center gap-3">
                   <Sparkles size={18} className="text-[var(--ds-warning)]" />
                   <div>
-                    <p className="text-body-xs type-bold  tracking-token-wider color-muted">
+                    <p className="text-body-xs font-bold  tracking-token-wider color-muted">
                       Pair With Your Bag
                     </p>
-                    <p className="mt-1 text-body-xl type-medium color-ink">
+                    <p className="mt-1 text-body-xl font-medium color-ink">
                       Complete the look before checkout
                     </p>
                   </div>
@@ -528,7 +528,7 @@ export default function CartPage() {
                       <div key={product.id} className="group flex flex-col">
                         <Link
                           href={`/products/${product.handle || product.id}`}
-                          className="relative mb-4 block aspect-[3/4] overflow-hidden rounded-sm bg-[var(--soft)]"
+                          className="relative mb-4 block aspect-[3/4] overflow-hidden rounded-sm bg-surface-soft"
                         >
                           {imageUrl ? (
                             <OptimizedImage
@@ -547,14 +547,14 @@ export default function CartPage() {
                           href={`/products/${product.handle || product.id}`}
                           className="mb-3 space-y-1"
                         >
-                          <p className="text-body-xs color-muted type-bold tracking-token-wider ">
+                          <p className="text-body-xs color-muted font-bold tracking-token-wider ">
                             {product.collection?.title || 'Odhvica'}
                           </p>
                           <p className="font-display text-body-md color-ink leading-token-tight transition-colors group-hover:color-muted">
                             {product.title}
                           </p>
                           {price ? (
-                            <p className="text-body-sm type-medium color-ink">
+                            <p className="text-body-sm font-medium color-ink">
                               {price}
                             </p>
                           ) : null}
@@ -562,10 +562,10 @@ export default function CartPage() {
                         <UnstyledButton
                           onClick={() => handleAddRecommendation(product)}
                           disabled={addingRec === product.id || !variant}
-                          className={`w-full border py-2.5 text-body-xs type-bold  tracking-token-wider transition-all ${
+                          className={`w-full border py-2.5 text-body-xs font-bold  tracking-token-wider transition-all ${
                             addingRec === product.id
-                              ? 'border-[var(--ds-success)] bg-[var(--ds-success)] text-[var(--ds-text-inverse)]'
-                              : 'border-[var(--line)] color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--ds-text-inverse)]'
+                              ? 'border-[var(--ds-success)] bg-[var(--ds-success)] text-inverse'
+                              : 'border-border-subtle color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-inverse'
                           }`}
                         >
                           {addingRec === product.id ? 'Added' : 'Quick Add'}
@@ -581,7 +581,7 @@ export default function CartPage() {
           {/* Order Summary */}
           <div className="mt-16 lg:col-span-5 lg:mt-0">
             <Card className="p-6">
-              <p className="text-body-xl type-medium color-ink mb-6">
+              <p className="text-body-xl font-medium color-ink mb-6">
                 Order Summary
               </p>
 
@@ -590,7 +590,7 @@ export default function CartPage() {
                 {discount ? (
                   <div className="flex items-center justify-between bg-[var(--ds-success-bg)] border border-[var(--ds-success)] rounded-md p-3">
                     <div>
-                      <span className="text-body-sm type-medium text-[var(--ds-success-text)]">
+                      <span className="text-body-sm font-medium text-success">
                         {discount.code}
                       </span>
                       <span className="text-body-xs text-[var(--ds-success)] ml-2">
@@ -712,7 +712,7 @@ export default function CartPage() {
                 {/* Shipping Options Radio Group */}
                 {_shippingOptions.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <label className="block text-body-xs type-medium color-muted mb-2">
+                    <label className="block text-body-xs font-medium color-muted mb-2">
                       Select shipping method
                     </label>
                     {_shippingOptions.map((option) => (
@@ -720,8 +720,8 @@ export default function CartPage() {
                         key={option.id}
                         className={`flex items-center justify-between p-3 border rounded-md cursor-pointer transition-colors ${
                           selectedShippingOption === option.id
-                            ? 'border-[var(--ink)] bg-[var(--cream)]'
-                            : 'border-[var(--line)] hover:border-[var(--muted)]'
+                            ? 'border-[var(--ink)] bg-surface'
+                            : 'border-border-subtle hover:border-[var(--muted)]'
                         }`}
                       >
                         <div className="flex items-center">
@@ -736,7 +736,7 @@ export default function CartPage() {
                             className="h-4 w-4 color-ink focus:ring-[var(--ink)]"
                           />
                           <div className="ml-3">
-                            <p className="text-body-sm type-medium color-ink">
+                            <p className="text-body-sm font-medium color-ink">
                               {option.name}
                             </p>
                             <p className="text-body-xs color-muted">
@@ -748,7 +748,7 @@ export default function CartPage() {
                             </p>
                           </div>
                         </div>
-                        <span className="text-body-sm type-medium color-ink">
+                        <span className="text-body-sm font-medium color-ink">
                           {subtotal >= freeShippingThreshold
                             ? 'Free'
                             : formatCartPrice(option.price)}
@@ -764,14 +764,14 @@ export default function CartPage() {
                 <dl className="-my-4 divide-y divide-[var(--soft)]">
                   <div className="flex items-center justify-between py-4">
                     <dt className="color-muted">Subtotal</dt>
-                    <dd className="type-medium color-ink">
+                    <dd className="font-medium color-ink">
                       {formatCartPrice(subtotal)}
                     </dd>
                   </div>
                   {discountAmount > 0 && (
                     <div className="flex items-center justify-between py-4">
                       <dt className="color-muted">Discount</dt>
-                      <dd className="type-medium text-[var(--ds-success)]">
+                      <dd className="font-medium text-[var(--ds-success)]">
                         -{formatCartPrice(discountAmount)}
                       </dd>
                     </div>
@@ -786,7 +786,7 @@ export default function CartPage() {
                           </span>
                         )}
                     </dt>
-                    <dd className="type-medium color-ink">
+                    <dd className="font-medium color-ink">
                       {!countryCode ? (
                         <span className="color-muted text-body-sm">
                           Calculated at checkout
@@ -807,10 +807,10 @@ export default function CartPage() {
                     </dd>
                   </div>
                   <div className="flex items-center justify-between py-4">
-                    <dt className="text-body-md type-medium color-ink">
+                    <dt className="text-body-md font-medium color-ink">
                       Total
                     </dt>
-                    <dd className="text-display-sm type-medium color-ink">
+                    <dd className="text-display-sm font-medium color-ink">
                       {formatCartPrice(total)}
                     </dd>
                   </div>
@@ -820,7 +820,7 @@ export default function CartPage() {
               {/* Free Shipping Notice */}
               {(shippingCost === null || shippingCost > 0) &&
                 subtotal < freeShippingThreshold && (
-                  <div className="mt-4 flex items-center gap-2 text-body-sm color-muted bg-[var(--cream)] p-3 rounded-md">
+                  <div className="mt-4 flex items-center gap-2 text-body-sm color-muted bg-surface p-3 rounded-md">
                     <AlertCircle size={16} />
                     <span>
                       Add {formatCartPrice(freeShippingThreshold - subtotal)}{' '}
@@ -832,7 +832,7 @@ export default function CartPage() {
               {/* Checkout Button */}
               <Link
                 href="/checkout"
-                className="mt-6 block w-full bg-[var(--ink)] text-[var(--ds-text-inverse)] text-center py-4 text-body-sm type-bold  tracking-token-wider hover:bg-[var(--ink)] transition-colors"
+                className="mt-6 block w-full bg-[var(--ink)] text-inverse text-center py-4 text-body-sm font-bold  tracking-token-wider hover:bg-[var(--ink)] transition-colors"
               >
                 Proceed to Checkout
               </Link>
@@ -855,8 +855,8 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <div className="mt-4 rounded-md border border-[var(--line)] bg-[var(--cream)] p-4 text-body-xs color-muted">
-                <p className="type-medium color-ink">Before you pay</p>
+              <div className="mt-4 rounded-md border border-border-subtle bg-surface p-4 text-body-xs color-muted">
+                <p className="font-medium color-ink">Before you pay</p>
                 <p className="mt-2">{storefrontTrust.shippingSummary}</p>
                 <p className="mt-2">{storefrontTrust.returnSummary}</p>
                 <div className="mt-3 flex flex-wrap gap-3">

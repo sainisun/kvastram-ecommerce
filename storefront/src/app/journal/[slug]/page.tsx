@@ -80,7 +80,7 @@ export default async function ArticlePage({ params }: Props) {
         }}
       />
 
-      <div className="relative h-[60vh] text-[var(--ds-text-inverse)]">
+      <div className="relative h-[60vh] text-inverse">
         {post.cover_image ? (
           <div className="absolute inset-0">
             <OptimizedImage
@@ -100,19 +100,19 @@ export default async function ArticlePage({ params }: Props) {
         <div className="kv-page-container absolute inset-0 mx-auto flex w-full max-w-page flex-col justify-between p-6 md:p-12 lg:px-20">
           <Link
             href="/journal"
-            className="flex w-fit items-center gap-2 text-body-sm type-bold  tracking-token-wider hover:text-[var(--ds-text-disabled)]"
+            className="flex w-fit items-center gap-2 text-body-sm font-bold  tracking-token-wider hover:text-[var(--ds-text-disabled)]"
           >
             <ArrowLeft size={16} />
             Back to Journal
           </Link>
 
           <div className="max-w-4xl space-y-4">
-            <div className="flex items-center gap-4 text-body-xs type-bold  tracking-token-wider opacity-80">
+            <div className="flex items-center gap-4 text-body-xs font-bold  tracking-token-wider opacity-80">
               <span>{new Date(post.published_at).toLocaleDateString()}</span>
               <span>&bull;</span>
               <span>Odhvica Editorial</span>
             </div>
-            <h1 className="font-display text-display-xl type-semibold  tracking-token-wide md:text-display-xl">
+            <h1 className="font-display text-display-xl font-semibold  tracking-token-wide md:text-display-xl">
               {post.title}
             </h1>
           </div>
@@ -121,12 +121,12 @@ export default async function ArticlePage({ params }: Props) {
 
       <div className="mx-auto max-w-3xl px-6 py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         {post.excerpt && (
-          <p className="mb-12 border-l-4 border-[var(--ds-text-primary)] pl-6 font-display text-display-md type-medium leading-token-relaxed text-[var(--ds-text-secondary)]">
+          <p className="mb-12 border-l-4 border-[var(--ds-text-primary)] pl-6 font-display text-display-md font-medium leading-token-relaxed text-secondary">
             {post.excerpt}
           </p>
         )}
 
-        <div className="prose prose-lg max-w-none whitespace-pre-wrap type-light text-[var(--ds-text-primary)]">
+        <div className="prose prose-lg max-w-none whitespace-pre-wrap font-light text-primary">
           {post.content}
         </div>
       </div>

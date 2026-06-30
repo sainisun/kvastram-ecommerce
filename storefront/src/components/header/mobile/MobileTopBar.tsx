@@ -27,13 +27,13 @@ export function MobileTopBar({
 
   const wrapperCls = isTransparent
     ? 'flex md:hidden items-center justify-between h-[54px] px-4 bg-transparent border-b border-transparent transition-all duration-300'
-    : 'flex md:hidden items-center justify-between h-[54px] px-4 bg-[rgba(var(--ds-surface-paper-rgb),0.9)] backdrop-blur-md border-b border-[var(--ds-border-subtle)] transition-all duration-300';
+    : 'flex md:hidden items-center justify-between h-[54px] px-4 bg-[rgba(var(--ds-surface-paper-rgb),0.9)] backdrop-blur-md border-b border-border-subtle transition-all duration-300';
 
   const iconCls = isTransparent
-    ? 'text-[var(--ds-text-inverse)] transition-colors'
-    : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] transition-colors';
+    ? 'text-inverse transition-colors'
+    : 'text-secondary hover:text-primary transition-colors';
 
-  const menuIconColor = isTransparent ? 'text-[var(--ds-text-inverse)]' : 'text-[var(--ds-text-secondary)]';
+  const menuIconColor = isTransparent ? 'text-inverse' : 'text-secondary';
   const ringCls = isTransparent ? 'ring-[var(--ds-surface-page)]' : 'ring-[var(--ds-surface-paper)]';
 
   return (
@@ -47,7 +47,7 @@ export function MobileTopBar({
         aria-label={isDrawerOpen ? 'Close navigation' : 'Open navigation'}
       >
         {isDrawerOpen ? (
-          <X size={20} strokeWidth={1.8} className="text-[var(--ds-accent-primary)]" />
+          <X size={20} strokeWidth={1.8} className="text-accent" />
         ) : (
           <Menu size={20} strokeWidth={1.8} className={menuIconColor} />
         )}
@@ -73,7 +73,7 @@ export function MobileTopBar({
         >
           <Heart size={20} strokeWidth={1.4} />
           {wishlistCount > 0 && (
-            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
+            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-inverse rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
               {wishlistCount > 9 ? '9+' : wishlistCount}
             </span>
           )}
@@ -88,7 +88,7 @@ export function MobileTopBar({
         >
           <ShoppingBag size={20} strokeWidth={1.4} />
           {totalItems > 0 && (
-            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)] rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
+            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-inverse rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
               {totalItems > 9 ? '9+' : totalItems}
             </span>
           )}

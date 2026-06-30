@@ -59,29 +59,29 @@ export function SettingsList() {
   return (
     <div className="bg-[var(--ds-surface-paper)]">
       <div className="p-4">
-        <h2 className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)] mb-3">
+        <h2 className="text-body-xs font-bold  tracking-token-wider text-muted mb-3">
           Account Settings
         </h2>
       </div>
 
-      <div className="border-t border-[var(--ds-border-subtle)]">
+      <div className="border-t border-border-subtle">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const content = (
             <div
               key={item.label}
-              className={`flex items-center justify-between p-4 border-b border-[var(--ds-border-subtle)] last:border-b-0 ${
-                item.active ? 'bg-[var(--ds-surface-parchment)]' : 'hover:bg-[var(--ds-surface-parchment)]'
+              className={`flex items-center justify-between p-4 border-b border-border-subtle last:border-b-0 ${
+                item.active ? 'bg-parchment' : 'hover:bg-parchment'
               } transition-colors cursor-pointer`}
             >
               <div className="flex items-center gap-3">
-                <Icon size={18} className="text-[var(--ds-text-muted)]" />
-                <span className="text-body-sm type-medium text-[var(--ds-text-secondary)]">
+                <Icon size={18} className="text-muted" />
+                <span className="text-body-sm font-medium text-secondary">
                   {item.label}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <ChevronRight size={16} className="text-[var(--ds-text-muted)]" />
+                <ChevronRight size={16} className="text-muted" />
               </div>
             </div>
           );
@@ -112,10 +112,10 @@ export function SettingsList() {
           className="justify-between border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] p-4 normal-case hover:bg-[var(--ds-danger-bg)]"
         >
           <div className="flex items-center gap-3">
-            <LogOut size={18} className="text-[var(--ds-danger)]" />
-            <span className="text-body-sm type-medium text-[var(--ds-danger)]">Sign Out</span>
+            <LogOut size={18} className="text-error" />
+            <span className="text-body-sm font-medium text-error">Sign Out</span>
           </div>
-          <ChevronRight size={16} className="text-[var(--ds-danger)]" />
+          <ChevronRight size={16} className="text-error" />
         </Button>
       </div>
     </div>

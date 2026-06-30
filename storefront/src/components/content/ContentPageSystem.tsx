@@ -192,7 +192,7 @@ export function PageHero({
           </nav>
         ) : null}
         <p className="content-eyebrow">{eyebrow}</p>
-        <h1 className="font-display text-display-lg text-[var(--ds-text-primary)] leading-token-tight">{title}</h1>
+        <h1 className="font-display text-display-lg text-primary leading-token-tight">{title}</h1>
         {intro ? <p className="content-hero__intro">{intro}</p> : null}
         {meta ? <p className="content-hero__meta">{meta}</p> : null}
       </div>
@@ -253,7 +253,7 @@ export function SectionBlock({
   return (
     <section className={cn('section-block', className)}>
       {eyebrow ? <p className="content-eyebrow">{eyebrow}</p> : null}
-      {title ? <h2 className="font-display text-display-sm text-[var(--ds-text-primary)] leading-token-tight mt-8">{title}</h2> : null}
+      {title ? <h2 className="font-display text-display-sm text-primary leading-token-tight mt-8">{title}</h2> : null}
       {intro ? <p className="section-block__intro">{intro}</p> : null}
       {children}
     </section>
@@ -272,7 +272,7 @@ export function InfoCard({ eyebrow, title, children, href, cta }: InfoCardProps)
   const body = (
     <>
       {eyebrow ? <p className="info-card__eyebrow">{eyebrow}</p> : null}
-      <h3 className="font-display text-display-xs text-[var(--ds-text-primary)] leading-token-tight mt-6">{title}</h3>
+      <h3 className="font-display text-display-xs text-primary leading-token-tight mt-6">{title}</h3>
       <div className="info-card__body">{children}</div>
       {href && cta ? <span className="info-card__cta">{cta}</span> : null}
     </>
@@ -302,7 +302,7 @@ export function HighlightBox({
 }) {
   return (
     <aside className="highlight-box">
-      {title ? <h3 className="font-display text-display-xs text-[var(--ds-text-primary)] leading-token-tight mt-6">{title}</h3> : null}
+      {title ? <h3 className="font-display text-display-xs text-primary leading-token-tight mt-6">{title}</h3> : null}
       <div>{children}</div>
     </aside>
   );
@@ -313,7 +313,7 @@ export function InlineCTA({ title, body, links }: InlineCTAProps) {
     <aside className="inline-cta">
       <div>
         <p className="content-eyebrow">Need help?</p>
-        <h2 className="font-display text-display-sm text-[var(--ds-text-primary)] leading-token-tight mt-8">{title}</h2>
+        <h2 className="font-display text-display-sm text-primary leading-token-tight mt-8">{title}</h2>
         {body ? <p>{body}</p> : null}
       </div>
       <div className="inline-cta__links">
@@ -387,7 +387,7 @@ export function ImageTextSplit({
       </div>
       <div className="image-text-split__content">
         {eyebrow ? <p className="content-eyebrow">{eyebrow}</p> : null}
-        <h2 className="font-display text-display-sm text-[var(--ds-text-primary)] leading-token-tight mt-8">{title}</h2>
+        <h2 className="font-display text-display-sm text-primary leading-token-tight mt-8">{title}</h2>
         <div className="editorial-text">{body}</div>
       </div>
     </section>
@@ -406,7 +406,7 @@ export function CraftStorySection({
   return (
     <section className="craft-story-section">
       <p className="content-eyebrow">{eyebrow}</p>
-      <h2 className="font-display text-display-sm text-[var(--ds-text-primary)] leading-token-tight mt-8">{title}</h2>
+      <h2 className="font-display text-display-sm text-primary leading-token-tight mt-8">{title}</h2>
       <div className="editorial-text">{children}</div>
     </section>
   );
@@ -429,7 +429,7 @@ export function PolicyMarkdown({ content }: { content: string }) {
         components={{
           h2: ({ children }) => <h2 id={headingId(children)}>{children}</h2>,
           h3: ({ children }) => <h3 id={headingId(children)}>{children}</h3>,
-          h4: ({ children }) => <h4 className="font-display text-display-sm text-[var(--ds-text-primary)]">{children}</h4>,
+          h4: ({ children }) => <h4 className="font-display text-display-sm text-primary">{children}</h4>,
           table: ({ children }) => (
             <PolicyTable>
               <table>{children}</table>

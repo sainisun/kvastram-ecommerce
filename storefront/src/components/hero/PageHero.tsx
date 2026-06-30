@@ -40,15 +40,15 @@ export default function PageHero({
       {/* Content */}
       <div className="kv-page-container relative z-10 mx-auto max-w-page space-y-4 px-6 text-center md:px-12 lg:px-20">
         {subtitle && (
-          <span className="font-body block text-body-sm type-medium  tracking-token-wide text-[var(--ds-text-inverse)]/80">
+          <span className="font-body block text-body-sm font-medium  tracking-token-wide text-inverse/80">
             {subtitle}
           </span>
         )}
-        <h1 className="font-display text-display-xl type-regular tracking-token-tight text-[var(--ds-text-inverse)] leading-token-tight">
+        <h1 className="font-display text-display-xl font-normal tracking-token-tight text-inverse leading-token-tight">
           {title}
         </h1>
         {description && (
-          <p className="font-body mx-auto max-w-xl text-body-md type-light leading-token-relaxed text-[var(--ds-text-inverse)]/80 md:text-body-xl">
+          <p className="font-body mx-auto max-w-xl text-body-md font-light leading-token-relaxed text-inverse/80 md:text-body-xl">
             {description}
           </p>
         )}

@@ -137,9 +137,9 @@ export default function VerifyOtpPage() {
     <div className="kv-page-gutter flex min-h-screen flex-col items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-display-lg font-display text-[var(--ds-text-primary)]">Verify Your Email</h1>
-          <p className="mt-2 text-[var(--ds-text-muted)] type-light">
-            We sent a 4-digit code to <span className="font-medium text-[var(--ds-text-primary)]">{email}</span>
+          <h1 className="text-display-lg font-display text-primary">Verify Your Email</h1>
+          <p className="mt-2 text-muted font-light">
+            We sent a 4-digit code to <span className="font-medium text-primary">{email}</span>
           </p>
         </div>
 
@@ -160,7 +160,7 @@ export default function VerifyOtpPage() {
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                className="w-14 h-16 md:w-16 md:h-18 text-center text-2xl font-semibold bg-[var(--ds-surface-soft)] border border-[var(--ds-border-subtle)] focus:border-[var(--ds-border-strong)] focus:ring-1 focus:ring-[var(--ds-border-strong)] rounded-md outline-none transition-all"
+                className="w-14 h-16 md:w-16 md:h-18 text-center text-2xl font-semibold bg-surface-soft border border-border-subtle focus:border-border focus:ring-1 focus:ring-[var(--ds-border-strong)] rounded-md outline-none transition-all"
                 autoFocus={index === 0}
               />
             ))}
@@ -178,8 +178,8 @@ export default function VerifyOtpPage() {
           </Button>
         </form>
 
-        <div className="text-center pt-4 border-t border-[var(--ds-border-subtle)]">
-          <p className="text-body-sm text-[var(--ds-text-muted)] mb-3">
+        <div className="text-center pt-4 border-t border-border-subtle">
+          <p className="text-body-sm text-muted mb-3">
             Didn&apos;t receive the code?
           </p>
           <Button

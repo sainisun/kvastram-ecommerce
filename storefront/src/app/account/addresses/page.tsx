@@ -194,18 +194,18 @@ export default function AddressesPage() {
 
   if (loading || !customer) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--ds-surface-parchment)]">
+      <div className="flex min-h-screen items-center justify-center bg-parchment">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--ds-text-primary)]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="mx-auto max-w-4xl px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]">
         <Link
           href="/account"
-          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-[var(--ds-text-primary)]"
+          className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-primary"
         >
           <ArrowLeft size={16} /> Back to Account
         </Link>
@@ -498,7 +498,7 @@ export default function AddressesPage() {
                     disabled={deletingId === address.id}
                     variant="outline"
                     size="sm"
-                    className="hover:border-[var(--ds-danger)] hover:text-[var(--ds-danger)]"
+                    className="hover:border-[var(--ds-danger)] hover:text-error"
                     aria-label={`Delete address ${address.id}`}
                   >
                     <Trash2 size={16} />

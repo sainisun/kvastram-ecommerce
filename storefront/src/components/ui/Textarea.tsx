@@ -18,10 +18,10 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="form-label-typography  text-[var(--ds-text-muted)]"
+            className="form-label-typography  text-muted"
           >
             {label}
-            {rest.required && <span className="ml-1 text-[var(--ds-danger)]">*</span>}
+            {rest.required && <span className="ml-1 text-error">*</span>}
           </label>
         )}
 
@@ -32,8 +32,8 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : rest['aria-describedby']}
           className={cn(
-            'form-control-typography min-h-[120px] w-full resize-y border bg-[var(--ds-surface-paper)] p-3 text-[var(--ds-text-primary)] outline-none transition-colors placeholder:text-[var(--ds-text-muted)] focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50',
-            error ? 'border-[var(--ds-danger)]' : 'border-[var(--ds-border-subtle)]',
+            'form-control-typography min-h-[120px] w-full resize-y border bg-[var(--ds-surface-paper)] p-3 text-primary outline-none transition-colors placeholder:text-muted focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50',
+            error ? 'border-[var(--ds-danger)]' : 'border-border-subtle',
             className
           )}
         />
@@ -42,7 +42,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           <p
             id={errorId}
             role="alert"
-            className="input-error-message mt-0.5 text-[var(--ds-danger)]"
+            className="input-error-message mt-0.5 text-error"
           >
             {error}
           </p>

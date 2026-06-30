@@ -42,11 +42,11 @@ export default function WholesaleLoginPage() {
   };
 
   return (
-    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-page)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <Card className="w-full max-w-md p-8 shadow-lg">
         <div className="text-center mb-8">
-          <h1 className="text-display-md type-bold text-[var(--ds-text-primary)]">Wholesale Login</h1>
-          <p className="text-[var(--ds-text-secondary)] mt-2">
+          <h1 className="text-display-md font-bold text-primary">Wholesale Login</h1>
+          <p className="text-secondary mt-2">
             Sign in to access your wholesale account
           </p>
         </div>
@@ -89,7 +89,7 @@ export default function WholesaleLoginPage() {
           />
 
           {error && (
-            <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] px-4 py-3 rounded-lg">
+            <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
@@ -107,11 +107,11 @@ export default function WholesaleLoginPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-body-sm text-[var(--ds-text-secondary)]">
+          <p className="text-body-sm text-secondary">
             New to Odhvica Wholesale?{' '}
             <Link
               href="/wholesale"
-              className="text-[var(--ds-info)] hover:underline type-medium"
+              className="text-[var(--ds-info)] hover:underline font-medium"
             >
               Apply Now
             </Link>
@@ -121,7 +121,7 @@ export default function WholesaleLoginPage() {
         <div className="mt-4 text-center">
           <Link
             href="/wholesale"
-            className="text-body-sm text-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]"
+            className="text-body-sm text-muted hover:text-secondary"
           >
             Back to Wholesale
           </Link>

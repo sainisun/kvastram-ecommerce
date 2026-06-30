@@ -53,7 +53,7 @@ export function CircularCategoriesClient({
 
   return (
     <section
-      className="overflow-hidden border-b border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]"
+      className="overflow-hidden border-b border-border-subtle bg-[var(--ds-surface-paper)]"
       aria-labelledby="homepage-circles-title"
       data-home-section="1-circle-categories"
     >
@@ -71,10 +71,10 @@ export function CircularCategoriesClient({
               linksRef.current[index] = element;
             }}
             href={circle.link_url.replace('/categories/', '/collections/')}
-            className="homepage-circle-link grid flex-[0_0_88px] md:basis-[108px] gap-2 text-[var(--ds-text-primary)] text-body-xs text-center no-underline snap-center focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-4"
+            className="homepage-circle-link grid flex-[0_0_88px] md:basis-[108px] gap-2 text-primary text-body-xs text-center no-underline snap-center focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-4"
             data-circle-index={index}
           >
-            <span className="relative block aspect-square overflow-hidden border border-[var(--ds-border-subtle)] rounded-full bg-[var(--ds-surface-soft)]">
+            <span className="relative block aspect-square overflow-hidden border border-border-subtle rounded-full bg-surface-soft">
               <OptimizedImage
                 src={circle.image_url || ''}
                 alt=""

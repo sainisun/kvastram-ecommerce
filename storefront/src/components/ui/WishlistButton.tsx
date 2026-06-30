@@ -82,8 +82,8 @@ export default function WishlistButton({
         size={buttonSizes[size]}
         className={cn(
           isWishlisted
-            ? 'text-[var(--ds-danger)] hover:brightness-95'
-            : 'text-[var(--ds-text-secondary)] hover:text-[var(--ds-danger)]',
+            ? 'text-error hover:brightness-95'
+            : 'text-secondary hover:text-error',
           className
         )}
         aria-label={label}
@@ -113,8 +113,8 @@ export default function WishlistButton({
       className={cn(
         'rounded-full transition-all duration-200',
         isWishlisted
-          ? 'bg-[var(--ds-danger-bg)] text-[var(--ds-danger)] hover:brightness-95'
-          : 'bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-muted)] hover:bg-[var(--ds-surface-paper)] hover:text-[var(--ds-danger)]',
+          ? 'bg-[var(--ds-danger-bg)] text-error hover:brightness-95'
+          : 'bg-[var(--ds-surface-paper)]/90 text-muted hover:bg-[var(--ds-surface-paper)] hover:text-error',
         sizeClasses[size],
         className
       )}

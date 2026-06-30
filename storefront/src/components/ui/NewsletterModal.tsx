@@ -68,14 +68,14 @@ export function NewsletterModal() {
       className="max-w-[520px]"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
+        <div className="text-body-xs font-semibold  tracking-token-wider text-muted">
           Welcome gift
         </div>
-        <p className="text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+        <p className="text-body-sm leading-token-relaxed text-secondary">
           Subscribe for artisan stories, launches, and the active welcome offer.
         </p>
         {status === 'success' ? (
-          <div className="flex gap-3 border border-[var(--ds-success)] bg-[var(--ds-success-bg)] p-4 text-body-sm text-[var(--ds-success-text)]" role="status">
+          <div className="flex gap-3 border border-[var(--ds-success)] bg-[var(--ds-success-bg)] p-4 text-body-sm text-success" role="status">
             <CheckCircle className="mt-0.5 shrink-0" size={18} />
             <p>{message}</p>
           </div>
@@ -97,7 +97,7 @@ export function NewsletterModal() {
           disabled={status === 'loading' || status === 'success'}
         />
         {status === 'error' ? (
-          <p className="text-body-sm text-[var(--ds-danger)]" role="alert">
+          <p className="text-body-sm text-error" role="alert">
             {message}
           </p>
         ) : null}
@@ -120,7 +120,7 @@ export function NewsletterModal() {
         <Link
           href="/products"
           onClick={() => setOpen(false)}
-          className="block w-full border border-[var(--ds-border-subtle)] px-6 py-4 text-center text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:border-[var(--ds-text-primary)]"
+          className="block w-full border border-border-subtle px-6 py-4 text-center text-body-xs font-semibold  tracking-token-wider text-primary transition-colors hover:border-[var(--ds-text-primary)]"
         >
           No Thanks
         </Link>

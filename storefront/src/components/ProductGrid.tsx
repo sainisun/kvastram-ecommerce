@@ -162,7 +162,7 @@ function ProductGrid({
       <div className={gridClassName}>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
           <div key={item} className="product-card">
-            <div className="product-media animate-pulse bg-[var(--ds-surface-soft)]" />
+            <div className="product-media animate-pulse bg-surface-soft" />
             <div className="product-info">
               <div className="skeleton-line skeleton-line-brand" />
               <div className="skeleton-line skeleton-line-name" />
@@ -228,7 +228,7 @@ function ProductGrid({
             href={`/products/${spotlightProduct.handle || spotlightProduct.id}`}
             className="product-spotlight md:hidden"
           >
-            <div className="relative aspect-[16/10] overflow-hidden bg-[var(--ds-surface-soft)]">
+            <div className="relative aspect-[16/10] overflow-hidden bg-surface-soft">
               {spotlight.custom_image_url || spotlightProduct.thumbnail ? (
                 <OptimizedImage
                   src={spotlight.custom_image_url || spotlightProduct.thumbnail || ''}
@@ -245,7 +245,7 @@ function ProductGrid({
                 </Badge>
               ) : null}
             </div>
-            <div className="space-y-3 bg-[var(--ds-surface-parchment)] px-4 py-5">
+            <div className="space-y-3 bg-parchment px-4 py-5">
               <div>
                 <p className="spotlight-eyebrow">Spotlight Pick</p>
                 <h3 className="spotlight-title mt-2">{spotlightProduct.title}</h3>

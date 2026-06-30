@@ -155,14 +155,14 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     >
           <div ref={modalRef}>
             {/* Search Input Header */}
-            <div className="p-6 border-b border-[var(--ds-border-subtle)] flex items-center gap-4">
-              <Search className="text-[var(--ds-text-muted)]" size={24} aria-hidden="true" />
+            <div className="p-6 border-b border-border-subtle flex items-center gap-4">
+              <Search className="text-muted" size={24} aria-hidden="true" />
               <form onSubmit={handleSearch} className="flex-1">
                 <Input
                   ref={inputRef}
                   type="text"
                   placeholder="Search products, collections, and more..."
-                  className="h-auto border-0 px-0 py-0 text-display-sm type-medium focus:border-transparent"
+                  className="h-auto border-0 px-0 py-0 text-display-sm font-medium focus:border-transparent"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => {
@@ -177,7 +177,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               </form>
               {loading && (
                 <Loader2
-                  className="animate-spin text-[var(--ds-text-muted)]"
+                  className="animate-spin text-muted"
                   size={20}
                   aria-label="Loading results"
                 />
@@ -206,7 +206,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {recentSearches.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider">
+                        <h3 className="text-body-xs font-bold text-muted  tracking-token-wider">
                           Recent Searches
                         </h3>
                         <Button
@@ -214,7 +214,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           onClick={clearRecentSearches}
                           variant="ghost"
                           size="sm"
-                          className="min-h-8 px-0 text-[var(--ds-text-muted)] hover:text-[var(--ds-danger)]"
+                          className="min-h-8 px-0 text-muted hover:text-error"
                         >
                           Clear All
                         </Button>
@@ -239,7 +239,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
                   {/* Trending Now */}
                   <div>
-                    <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-4 flex items-center gap-2">
+                    <h3 className="text-body-xs font-bold text-muted  tracking-token-wider mb-4 flex items-center gap-2">
                       <Sparkles size={12} /> Trending Now
                     </h3>
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
@@ -275,12 +275,12 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           }}
                           variant="outline"
                           size="sm"
-                          className="group flex min-h-24 flex-col items-center gap-2 border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4 text-[var(--ds-text-secondary)] hover:border-[var(--ds-border-strong)] hover:bg-[var(--ds-surface-soft)] hover:text-[var(--ds-text-primary)]"
+                          className="group flex min-h-24 flex-col items-center gap-2 border-border-subtle bg-[var(--ds-surface-paper)] p-4 text-secondary hover:border-border hover:bg-surface-soft hover:text-primary"
                         >
                           <span className="text-display-md group-hover:scale-110 transition-transform">
                             {label.charAt(0)}
                           </span>
-                          <span className="text-body-xs type-medium">{label}</span>
+                          <span className="text-body-xs font-medium">{label}</span>
                         </Button>
                       ))}
                     </div>
@@ -288,7 +288,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
 
                   {/* Popular Searches */}
                   <div>
-                    <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-3">
+                    <h3 className="text-body-xs font-bold text-muted  tracking-token-wider mb-3">
                       Popular Searches
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -319,7 +319,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               {query && (
                 <div className="max-w-5xl mx-auto">
                   {results.length === 0 && !loading && (
-                    <div className="text-center py-12 text-[var(--ds-text-secondary)]">
+                    <div className="text-center py-12 text-secondary">
                       No results found for &quot;{query}&quot;
                     </div>
                   )}
@@ -327,7 +327,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {/* Suggestions List */}
                   {suggestions.length > 0 && (
                     <div className="mb-8">
-                      <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-3">
+                      <h3 className="text-body-xs font-bold text-muted  tracking-token-wider mb-3">
                         Suggestions
                       </h3>
                       <ul className="space-y-2">
@@ -341,11 +341,11 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                               }}
                               variant="ghost"
                               size="sm"
-                              className="group flex w-full justify-start gap-3 px-0 text-left normal-case text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)]"
+                              className="group flex w-full justify-start gap-3 px-0 text-left normal-case text-secondary hover:text-primary"
                             >
                               <Search
                                 size={14}
-                                className="text-[var(--ds-text-muted)] group-hover:text-[var(--ds-text-primary)]"
+                                className="text-muted group-hover:text-primary"
                               />
                               {s.title}
                             </Button>
@@ -358,7 +358,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                   {/* Product Grid Preview */}
                   {results.length > 0 && (
                     <div>
-                      <h3 className="text-body-xs type-bold text-[var(--ds-text-muted)]  tracking-token-wider mb-6">
+                      <h3 className="text-body-xs font-bold text-muted  tracking-token-wider mb-6">
                         Products
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -373,15 +373,15 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                               thumbnail={product.thumbnail}
                               priceLabel={price !== undefined ? `from ${formatPrice(price)}` : undefined}
                               imageClassName="rounded-lg"
-                              titleClassName="text-body-sm type-medium text-[var(--ds-text-primary)] group-hover:underline decoration-1 underline-offset-4"
-                              priceClassName="text-body-sm text-[var(--ds-text-secondary)]"
+                              titleClassName="text-body-sm font-medium text-primary group-hover:underline decoration-1 underline-offset-4"
+                              priceClassName="text-body-sm text-secondary"
                               onClick={onClose}
                             />
                           );
                         })}
                       </div>
 
-                      <div className="mt-8 text-center border-t border-[var(--ds-border-subtle)] pt-6">
+                      <div className="mt-8 text-center border-t border-border-subtle pt-6">
                         <Button
                           type="button"
                           onClick={() => handleSearch()}
@@ -400,16 +400,16 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             </div>
 
             {/* Footer */}
-            <div className="bg-[var(--ds-surface-soft)] px-8 py-3.5 text-body-xs text-[var(--ds-text-muted)] flex justify-between items-center border-t border-[var(--ds-border-subtle)]">
+            <div className="bg-surface-soft px-8 py-3.5 text-body-xs text-muted flex justify-between items-center border-t border-border-subtle">
               <span>
                 Press{' '}
-                <kbd className="px-1.5 py-0.5 bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] rounded text-body-xs font-mono">
+                <kbd className="px-1.5 py-0.5 bg-[var(--ds-surface-paper)] border border-border-subtle rounded text-body-xs font-mono">
                   Enter
                 </kbd>{' '}
                 to search
               </span>
               <span className="hidden md:flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] rounded text-body-xs font-mono">
+                <kbd className="px-1.5 py-0.5 bg-[var(--ds-surface-paper)] border border-border-subtle rounded text-body-xs font-mono">
                   Esc
                 </kbd>{' '}
                 to close

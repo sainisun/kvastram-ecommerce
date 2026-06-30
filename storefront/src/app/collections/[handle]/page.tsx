@@ -438,7 +438,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       />
 
       {landing.kind === 'category' && landing.children && landing.children.length > 0 ? (
-        <section className="kv-page-container border-b border-[var(--ds-border-subtle)] py-5">
+        <section className="kv-page-container border-b border-border-subtle py-5">
           <div className="flex flex-wrap gap-3">
             {landing.children
               .filter((child) => child.is_active !== false && (child.slug || child.handle))
@@ -446,7 +446,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
                 <Link
                   key={child.id}
                   href={`/collections/${child.slug || child.handle}`}
-                  className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
+                  className="rounded-full border border-border-subtle px-4 py-2 text-body-sm text-secondary transition-colors hover:border-[var(--ds-text-primary)] hover:text-primary"
                 >
                   {child.name || titleFromHandle(child.slug || child.handle || '')}
                 </Link>
@@ -491,14 +491,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       />
 
       {landing.kind === 'collection' && relatedCollections.length > 0 ? (
-        <section className="kv-page-container border-t border-[var(--ds-border-subtle)] py-10 md:py-14">
+        <section className="kv-page-container border-t border-border-subtle py-10 md:py-14">
           <h2 className="collection-section-title mb-6">Related collections</h2>
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
             {relatedCollections.map((collection) => (
               <Link
                 key={collection.id}
                 href={`/collections/${collection.handle}`}
-                className="border border-[var(--ds-border-subtle)] p-5 transition-colors hover:border-[var(--ds-text-primary)]"
+                className="border border-border-subtle p-5 transition-colors hover:border-[var(--ds-text-primary)]"
               >
                 <p className="collection-card-kicker">More in this edit</p>
                 <p className="collection-card-product-title mt-2">
@@ -511,7 +511,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       ) : null}
 
       {landing.kind === 'seo_landing' && landing.outro_content ? (
-        <section className="kv-page-container border-t border-[var(--ds-border-subtle)] py-10">
+        <section className="kv-page-container border-t border-border-subtle py-10">
           <p className="collection-detail-copy mx-auto max-w-3xl text-center">
             {landing.outro_content}
           </p>
@@ -519,12 +519,12 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       ) : null}
 
       {landing.kind === 'collection' && landing.faq_items && landing.faq_items.length > 0 ? (
-        <section className="kv-page-container border-t border-[var(--ds-border-subtle)] py-10">
+        <section className="kv-page-container border-t border-border-subtle py-10">
           <div className="mx-auto max-w-3xl space-y-6">
             {landing.faq_items.map((item) => (
               <details
                 key={item.question}
-                className="border-b border-[var(--ds-border-subtle)] pb-4"
+                className="border-b border-border-subtle pb-4"
               >
                 <summary className="cursor-pointer collection-sidebar-heading">
                   {item.question}

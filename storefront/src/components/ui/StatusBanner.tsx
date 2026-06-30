@@ -14,11 +14,11 @@ const toneClasses: Record<StatusBannerTone, string> = {
   info:
     'border-[var(--ds-info)] bg-[var(--ds-info-bg)] text-[var(--ds-info-text)]',
   success:
-    'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]',
+    'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success',
   warning:
     'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]',
   danger:
-    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]',
+    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error',
 };
 
 export function StatusBanner({
@@ -42,7 +42,7 @@ export function StatusBanner({
       {icon ? <span className="mt-0.5 shrink-0">{icon}</span> : null}
       <div className="min-w-0">
         {title ? (
-          <p className="mb-1 type-semibold text-[var(--ds-text-primary)]">{title}</p>
+          <p className="mb-1 font-semibold text-primary">{title}</p>
         ) : null}
         <div>{children}</div>
       </div>

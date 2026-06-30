@@ -163,7 +163,7 @@ export default function ProductGallery({
 
   if (items.length === 0) {
     return (
-      <div className="flex aspect-[4/5] items-center justify-center rounded-[var(--radius-lg)] bg-[var(--ds-surface-soft)] text-[var(--ds-text-muted)]">
+      <div className="flex aspect-[4/5] items-center justify-center rounded-[var(--radius-lg)] bg-surface-soft text-muted">
         No media
       </div>
     );
@@ -200,7 +200,7 @@ export default function ProductGallery({
                 slideRefs.current[index] = node;
               }}
               data-index={index}
-              className="relative w-full shrink-0 snap-center bg-[var(--ds-surface-soft)]"
+              className="relative w-full shrink-0 snap-center bg-surface-soft"
             >
               <div className="pdp-gallery-frame relative overflow-hidden">
                 {item.type === 'video' ? (
@@ -220,7 +220,7 @@ export default function ProductGallery({
                     <UnstyledButton
                       type="button"
                       onClick={() => setIsMuted((current) => !current)}
-                      className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/40 text-[var(--ds-text-inverse)] backdrop-blur-sm"
+                      className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/40 text-inverse backdrop-blur-sm"
                       aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                     >
                       {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -288,7 +288,7 @@ export default function ProductGallery({
                   key={`${item.id}-thumb`}
                   type="button"
                   onClick={() => scrollToIndex(index)}
-                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-[var(--radius-md)] border bg-[var(--ds-surface-soft)] ${
+                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-[var(--radius-md)] border bg-surface-soft ${
                     activeIndex === index
                       ? 'border-[var(--ds-text-primary)]'
                       : 'border-transparent opacity-70'
@@ -306,12 +306,12 @@ export default function ProductGallery({
                           sizes="64px"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-[var(--ds-surface-warm)] text-[var(--ds-text-muted)]">
+                        <div className="flex h-full w-full items-center justify-center bg-surface-warm text-muted">
                           <Play size={14} />
                         </div>
                       )}
                       <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-text-primary)]/10">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/60 text-[var(--ds-text-inverse)]">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/60 text-inverse">
                           <Play size={12} fill="currentColor" />
                         </div>
                       </div>
@@ -334,7 +334,7 @@ export default function ProductGallery({
 
       <div className="hidden lg:block">
         <div className="space-y-4">
-          <div className="pdp-gallery-frame pdp-gallery-frame-desktop relative overflow-hidden bg-[var(--ds-surface-soft)]">
+          <div className="pdp-gallery-frame pdp-gallery-frame-desktop relative overflow-hidden bg-surface-soft">
             {activeItem.type === 'video' ? (
               <>
                 <video
@@ -352,7 +352,7 @@ export default function ProductGallery({
                 <UnstyledButton
                   type="button"
                   onClick={() => setIsMuted((current) => !current)}
-                  className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/40 text-[var(--ds-text-inverse)] backdrop-blur-sm"
+                  className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/40 text-inverse backdrop-blur-sm"
                   aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                 >
                   {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -385,7 +385,7 @@ export default function ProductGallery({
                 <UnstyledButton
                   type="button"
                   onClick={() => showPrev()}
-                  className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-primary)] shadow-sm"
+                  className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/90 text-primary shadow-sm"
                   aria-label="Previous media"
                 >
                   <ChevronLeft size={20} />
@@ -393,7 +393,7 @@ export default function ProductGallery({
                 <UnstyledButton
                   type="button"
                   onClick={() => showNext()}
-                  className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-primary)] shadow-sm"
+                  className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/90 text-primary shadow-sm"
                   aria-label="Next media"
                 >
                   <ChevronRight size={20} />
@@ -452,12 +452,12 @@ export default function ProductGallery({
                             sizes="120px"
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-[var(--ds-surface-warm)] text-[var(--ds-text-muted)]">
+                          <div className="flex h-full w-full items-center justify-center bg-surface-warm text-muted">
                             <Play size={16} />
                           </div>
                         )}
                         <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-text-primary)]/10">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/60 text-[var(--ds-text-inverse)]">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/60 text-inverse">
                             <Play size={12} fill="currentColor" />
                           </div>
                         </div>
@@ -490,7 +490,7 @@ export default function ProductGallery({
           <UnstyledButton
             type="button"
             onClick={() => setLightboxOpen(false)}
-            className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-[var(--ds-text-inverse)]"
+            className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-inverse"
             aria-label="Close fullscreen image"
           >
             <X size={22} />
@@ -504,7 +504,7 @@ export default function ProductGallery({
                   event.stopPropagation();
                   showPrev();
                 }}
-                className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-[var(--ds-text-inverse)]"
+                className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-inverse"
                 aria-label="Previous image"
               >
                 <ChevronLeft size={22} />
@@ -515,7 +515,7 @@ export default function ProductGallery({
                   event.stopPropagation();
                   showNext();
                 }}
-                className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-[var(--ds-text-inverse)]"
+                className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-inverse"
                 aria-label="Next image"
               >
                 <ChevronRight size={22} />

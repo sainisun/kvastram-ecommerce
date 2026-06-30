@@ -137,7 +137,7 @@ function SearchContent() {
         <div className="mb-12">
           <Link
             href="/"
-            className="search-back-link mb-6 inline-flex items-center gap-2 pl-1 hover:text-[var(--ds-text-primary)]"
+            className="search-back-link mb-6 inline-flex items-center gap-2 pl-1 hover:text-primary"
           >
             <ArrowLeft size={14} /> Back to Home
           </Link>
@@ -157,7 +157,7 @@ function SearchContent() {
               />
             </div>
           </form>
-          <p className="text-[var(--ds-text-muted)]">
+          <p className="text-muted">
             {!hasQuery ? (
               <span>Search by product, fabric, color, occasion, or browse a guided route below.</span>
             ) : loading ? (
@@ -176,17 +176,17 @@ function SearchContent() {
 
         {/* Filters Toolbar */}
         {hasQuery ? (
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-y border-[var(--ds-border-subtle)] py-4 mb-12 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-y border-border-subtle py-4 mb-12 gap-4">
           <div className="relative">
             <UnstyledButton
               onClick={() => setShowFilters(!showFilters)}
-              className="search-toolbar-button flex items-center gap-2 hover:text-[var(--ds-text-secondary)]"
+              className="search-toolbar-button flex items-center gap-2 hover:text-secondary"
             >
               <Filter size={16} /> Filters
             </UnstyledButton>
 
             {showFilters && (
-              <div className="absolute top-full left-0 mt-4 w-64 bg-[var(--ds-surface-paper)] shadow-xl z-20 border border-[var(--ds-border-subtle)] p-6">
+              <div className="absolute top-full left-0 mt-4 w-64 bg-[var(--ds-surface-paper)] shadow-xl z-20 border border-border-subtle p-6">
                 <h4 className="search-filter-title mb-4">Price Range</h4>
                 <div className="flex items-center gap-2 mb-4">
                   <Input
@@ -216,7 +216,7 @@ function SearchContent() {
           <div className="relative">
             <UnstyledButton
               onClick={() => setShowSortMenu(!showSortMenu)}
-              className="search-toolbar-button flex items-center gap-2 hover:text-[var(--ds-text-secondary)]"
+              className="search-toolbar-button flex items-center gap-2 hover:text-secondary"
             >
               Sort by:{' '}
               {sort === 'relevance'
@@ -229,13 +229,13 @@ function SearchContent() {
             </UnstyledButton>
 
             {showSortMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--ds-surface-paper)] shadow-xl z-20 border border-[var(--ds-border-subtle)] rounded-sm overflow-hidden py-1">
+              <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--ds-surface-paper)] shadow-xl z-20 border border-border-subtle rounded-sm overflow-hidden py-1">
                 <UnstyledButton
                   onClick={() => {
                     setSort('relevance');
                     setShowSortMenu(false);
                   }}
-                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-[var(--ds-surface-parchment)]"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-parchment"
                 >
                   Featured
                 </UnstyledButton>
@@ -244,7 +244,7 @@ function SearchContent() {
                     setSort('newest');
                     setShowSortMenu(false);
                   }}
-                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-[var(--ds-surface-parchment)]"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-parchment"
                 >
                   Newest Arrivals
                 </UnstyledButton>
@@ -253,7 +253,7 @@ function SearchContent() {
                     setSort('price_asc');
                     setShowSortMenu(false);
                   }}
-                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-[var(--ds-surface-parchment)]"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-parchment"
                 >
                   Price: Low to High
                 </UnstyledButton>
@@ -262,7 +262,7 @@ function SearchContent() {
                     setSort('price_desc');
                     setShowSortMenu(false);
                   }}
-                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-[var(--ds-surface-parchment)]"
+                  className="search-sort-option w-full px-4 py-2 text-left hover:bg-parchment"
                 >
                   Price: High to Low
                 </UnstyledButton>
@@ -298,14 +298,14 @@ function SearchContent() {
         ) : null}
 
         <div className="mb-10 grid gap-4 lg:grid-cols-[1.15fr,0.85fr]">
-          <Card className="bg-[var(--ds-surface-parchment)] p-6">
-            <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+          <Card className="bg-parchment p-6">
+            <p className="text-body-xs font-bold  tracking-token-wider text-muted">
               Guided Discovery
             </p>
-            <h2 className="mt-3 text-body-xl font-display text-[var(--ds-text-primary)]">
+            <h2 className="mt-3 text-body-xl font-display text-primary">
               Browse beyond one keyword
             </h2>
-            <p className="mt-3 max-w-2xl text-body-sm text-[var(--ds-text-secondary)]">
+            <p className="mt-3 max-w-2xl text-body-sm text-secondary">
               If your query is broad, jump into occasion, material, and color
               routes to keep momentum instead of bouncing.
             </p>
@@ -314,7 +314,7 @@ function SearchContent() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
+                  className="rounded-full border border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-2 text-body-sm text-secondary transition-colors hover:border-[var(--ds-text-primary)] hover:text-primary"
                 >
                   {item.label}
                 </Link>
@@ -323,32 +323,32 @@ function SearchContent() {
           </Card>
 
           <Card className="p-6">
-            <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+            <p className="text-body-xs font-bold  tracking-token-wider text-muted">
               Purchase Help
             </p>
-            <h2 className="mt-3 text-body-xl font-display text-[var(--ds-text-primary)]">
+            <h2 className="mt-3 text-body-xl font-display text-primary">
               Need confidence before checkout?
             </h2>
-            <p className="mt-3 text-body-sm text-[var(--ds-text-secondary)]">
+            <p className="mt-3 text-body-sm text-secondary">
               Shipping, returns, and payment guidance are available before you
               place the order.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
                 href={storefrontTrust.policyRoutes.shipping}
-                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                className="rounded-full border border-border-subtle px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
               >
                 Shipping
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.returns}
-                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                className="rounded-full border border-border-subtle px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
               >
                 Returns
               </Link>
               <Link
                 href={storefrontTrust.policyRoutes.paymentHelp}
-                className="rounded-full border border-[var(--ds-border-subtle)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                className="rounded-full border border-border-subtle px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
               >
                 Payment Help
               </Link>
@@ -357,10 +357,10 @@ function SearchContent() {
         </div>
 
         {hasActiveFilters ? (
-          <div className="mb-8 flex flex-wrap items-center gap-3 rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-4">
-            <span className="text-body-sm text-[var(--ds-text-secondary)]">Active filters:</span>
+          <div className="mb-8 flex flex-wrap items-center gap-3 rounded-lg border border-border-subtle bg-parchment p-4">
+            <span className="text-body-sm text-secondary">Active filters:</span>
             {appliedFilters.attributeCode && appliedFilters.attributeValue ? (
-              <span className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-3 py-1 text-body-xs text-[var(--ds-text-secondary)]">
+              <span className="rounded-full border border-border-subtle bg-[var(--ds-surface-paper)] px-3 py-1 text-body-xs text-secondary">
                 {storefrontAttributeFilters.find(
                   (group) => group.code === appliedFilters.attributeCode
                 )?.label || 'Filter'}
@@ -373,7 +373,7 @@ function SearchContent() {
               </span>
             ) : null}
             {appliedFilters.min || appliedFilters.max ? (
-              <span className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-3 py-1 text-body-xs text-[var(--ds-text-secondary)]">
+              <span className="rounded-full border border-border-subtle bg-[var(--ds-surface-paper)] px-3 py-1 text-body-xs text-secondary">
                 Price:{' '}
                 {[
                   appliedFilters.min ? `${appliedFilters.min}+` : null,
@@ -400,7 +400,7 @@ function SearchContent() {
           <EmptyState
             title="Start with a search or pick a route."
             description="Try a product name, fabric, color, or occasion, or continue through the curated catalog."
-            className="rounded-lg bg-[var(--ds-surface-soft)]"
+            className="rounded-lg bg-surface-soft"
             actions={
               <>
                 <ButtonLink href="/products" variant="secondary" size="md">
@@ -420,16 +420,16 @@ function SearchContent() {
           <>
             <ProductGrid initialProducts={products} />
 
-            <Card className="mt-12 bg-[var(--ds-surface-parchment)] p-6">
+            <Card className="mt-12 bg-parchment p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                  <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+                  <p className="text-body-xs font-bold  tracking-token-wider text-muted">
                     Still Deciding?
                   </p>
-                  <h2 className="mt-2 text-body-xl font-display text-[var(--ds-text-primary)]">
+                  <h2 className="mt-2 text-body-xl font-display text-primary">
                     Keep browsing with curated storefront routes
                   </h2>
-                  <p className="mt-3 max-w-2xl text-body-sm text-[var(--ds-text-secondary)]">
+                  <p className="mt-3 max-w-2xl text-body-sm text-secondary">
                     Switch from search into broader discovery if you want faster
                     comparison and lower checkout hesitation.
                   </p>
@@ -437,13 +437,13 @@ function SearchContent() {
                 <div className="flex flex-wrap gap-3">
                   <Link
                     href="/products"
-                    className="rounded-full bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+                    className="rounded-full bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs font-bold  tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
                   >
                     Shop All
                   </Link>
                   <Link
                     href="/collections"
-                    className="rounded-full border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-paper)]"
+                    className="rounded-full border border-border px-5 py-3 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-[var(--ds-surface-paper)]"
                   >
                     Explore Collections
                   </Link>
@@ -455,14 +455,14 @@ function SearchContent() {
           <EmptyState
             title="No products found matching your search."
             description="Try removing filters, using a broader keyword, or jump into one of our curated discovery routes below."
-            className="rounded-lg bg-[var(--ds-surface-soft)]"
+            className="rounded-lg bg-surface-soft"
             actions={
               <>
               {storefrontDiscoveryQuickLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-full border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] px-4 py-2 text-body-sm text-[var(--ds-text-secondary)] transition-colors hover:border-[var(--ds-text-primary)] hover:text-[var(--ds-text-primary)]"
+                  className="rounded-full border border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-2 text-body-sm text-secondary transition-colors hover:border-[var(--ds-text-primary)] hover:text-primary"
                 >
                   {item.label}
                 </Link>

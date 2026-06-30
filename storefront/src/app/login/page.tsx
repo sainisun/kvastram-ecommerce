@@ -288,8 +288,8 @@ function LoginContent() {
     <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-display-lg font-display text-[var(--ds-text-primary)]">Welcome Back</h1>
-          <p className="mt-2 text-[var(--ds-text-muted)] type-light">
+          <h1 className="text-display-lg font-display text-primary">Welcome Back</h1>
+          <p className="mt-2 text-muted font-light">
             Sign in to access your account
           </p>
         </div>
@@ -341,7 +341,7 @@ function LoginContent() {
           <div className="flex justify-end">
             <Link
               href="/forgot-password"
-              className="text-body-sm text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] transition-colors"
+              className="text-body-sm text-muted hover:text-primary transition-colors"
             >
               Forgot password?
             </Link>
@@ -375,14 +375,14 @@ function LoginContent() {
           {/* Social Login */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[var(--ds-border-subtle)]"></div>
+              <div className="w-full border-t border-border-subtle"></div>
             </div>
 
             {/* Only show divider and OAuth section if at least one provider is configured */}
             {(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_FACEBOOK_APP_ID) && (
               <>
                 <div className="relative flex justify-center text-body-sm">
-                  <span className="px-4 bg-[var(--ds-surface-paper)] text-[var(--ds-text-muted)]">
+                  <span className="px-4 bg-[var(--ds-surface-paper)] text-muted">
                     or continue with
                   </span>
                 </div>
@@ -396,11 +396,11 @@ function LoginContent() {
           </div>
           </form>
 
-        <div className="text-center text-body-sm text-[var(--ds-text-muted)]">
+        <div className="text-center text-body-sm text-muted">
           Don&apos;t have an account?{' '}
           <Link
             href={`/register?redirect=${redirect}`}
-            className="text-[var(--ds-text-primary)] type-medium underline"
+            className="text-primary font-medium underline"
           >
             Create one
           </Link>

@@ -113,9 +113,9 @@ export default function TrackOrderPage() {
       case 'confirmed':
         return <Package className="text-[var(--ds-warning)]" size={24} />;
       case 'cancelled':
-        return <XCircle className="text-[var(--ds-danger)]" size={24} />;
+        return <XCircle className="text-error" size={24} />;
       default:
-        return <Clock className="text-[var(--ds-text-muted)]" size={24} />;
+        return <Clock className="text-muted" size={24} />;
     }
   };
 
@@ -134,16 +134,16 @@ export default function TrackOrderPage() {
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
-      <section className="kv-page-gutter bg-[var(--ds-surface-soft)] px-6 py-14 md:px-12 md:py-20 lg:px-20">
+      <section className="kv-page-gutter bg-surface-soft px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="mx-auto max-w-[860px]">
           <Card className="p-6 shadow-[0_20px_60px_rgba(var(--ds-black-rgb),0.05)] md:p-10">
-            <div className="text-body-xs type-semibold  tracking-token-wider text-[var(--ds-text-muted)]">
+            <div className="text-body-xs font-semibold  tracking-token-wider text-muted">
               Order tracking
             </div>
-            <h1 className="mt-3 font-display text-display-xl type-medium leading-token-tight tracking-token-tight text-[var(--ds-text-primary)]">
+            <h1 className="mt-3 font-display text-display-xl font-medium leading-token-tight tracking-token-tight text-primary">
               Track your order
             </h1>
-            <p className="mt-4 max-w-2xl text-body-md leading-token-relaxed text-[var(--ds-text-secondary)]">
+            <p className="mt-4 max-w-2xl text-body-md leading-token-relaxed text-secondary">
               Enter your order ID to load real shipment details and see the visual delivery timeline.
             </p>
 
@@ -184,7 +184,7 @@ export default function TrackOrderPage() {
 
         {error && (
           <div className="mt-6 space-y-4">
-            <div className="border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] p-4 text-center text-[var(--ds-danger)]">
+            <div className="border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] p-4 text-center text-error">
               {error}
             </div>
             <div className="grid gap-3 md:grid-cols-3">
@@ -216,14 +216,14 @@ export default function TrackOrderPage() {
         <div className="mt-8 overflow-x-auto">
           <div className="grid w-full min-w-0 grid-cols-5 gap-2">
             {getStatusSteps(order).map((step, index) => (
-              <div key={step.key} className={`text-center text-body-xs ${step.completed || step.current ? 'text-[var(--ds-text-primary)]' : 'text-[var(--ds-text-muted)]'}`}>
+              <div key={step.key} className={`text-center text-body-xs ${step.completed || step.current ? 'text-primary' : 'text-muted'}`}>
                 <div
                   className={`mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full border-2 ${
                     step.completed
-                      ? 'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-[var(--ds-text-inverse)]'
+                      ? 'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse'
                       : step.current
                         ? 'border-[var(--ds-accent-primary)] bg-[var(--ds-surface-paper)] color-accent shadow-[0_0_0_4px_rgba(var(--ds-accent-rgb),0.12)]'
-                        : 'border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-[var(--ds-text-muted)]'
+                        : 'border-border-subtle bg-[var(--ds-surface-paper)] text-muted'
                   }`}
                 >
                   {step.completed ? <CheckCircle size={18} /> : index + 1}
@@ -237,38 +237,38 @@ export default function TrackOrderPage() {
         {order ? (
           <div className="mt-8 space-y-6">
             {/* Order Info */}
-            <Card className="bg-[var(--ds-surface-parchment)] p-6">
+            <Card className="bg-parchment p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+                  <p className="text-body-xs font-bold  tracking-token-wider text-muted">
                     Order ID
                   </p>
-                  <p className="text-body-xl type-medium text-[var(--ds-text-primary)]">
+                  <p className="text-body-xl font-medium text-primary">
                     #{order.display_id || order.id}
                   </p>
                 </div>
                 <div className="text-right">
                   <div className="mb-2 flex justify-end">{getStatusIcon(order.status)}</div>
-                  <p className="text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-muted)]">
+                  <p className="text-body-xs font-bold  tracking-token-wider text-muted">
                     Status
                   </p>
-                  <p className="text-body-xl type-medium text-[var(--ds-text-primary)] capitalize">
+                  <p className="text-body-xl font-medium text-primary capitalize">
                     {order.workflow?.status_label || order.status}
                   </p>
                 </div>
               </div>
 
               {(order.workflow?.primary_package?.tracking_number || order.tracking_number) && (
-                <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                  <p className="text-body-xs type-bold  text-[var(--ds-text-muted)] mb-1">
+                <div className="pt-4 border-t border-border-subtle">
+                  <p className="text-body-xs font-bold  text-muted mb-1">
                     Tracking
                   </p>
                   {(order.workflow?.primary_package?.tracking_url || order.tracking_link) ? (
-                    <a href={order.workflow?.primary_package?.tracking_url || order.tracking_link} target="_blank" rel="noreferrer" className="text-[var(--ds-text-secondary)] underline">
+                    <a href={order.workflow?.primary_package?.tracking_url || order.tracking_link} target="_blank" rel="noreferrer" className="text-secondary underline">
                       {order.workflow?.primary_package?.carrier || order.shipping_carrier}: {order.workflow?.primary_package?.tracking_number || order.tracking_number}
                     </a>
                   ) : (
-                    <p className="text-[var(--ds-text-secondary)]">
+                    <p className="text-secondary">
                       {order.workflow?.primary_package?.carrier || order.shipping_carrier}: {order.workflow?.primary_package?.tracking_number || order.tracking_number}
                     </p>
                   )}
@@ -276,14 +276,14 @@ export default function TrackOrderPage() {
               )}
 
               {(order.workflow?.packages || []).length > 0 && (
-                <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                  <p className="text-body-xs type-bold  text-[var(--ds-text-muted)] mb-3">
+                <div className="pt-4 border-t border-border-subtle">
+                  <p className="text-body-xs font-bold  text-muted mb-3">
                     Shipment packages
                   </p>
                   <div className="space-y-3">
                     {(order.workflow?.packages || []).map((pkg) => (
-                      <div key={pkg.id} className="rounded border border-[var(--ds-border-subtle)] px-4 py-3 text-body-sm text-[var(--ds-text-secondary)]">
-                        <p className="text-body-xs type-bold  text-[var(--ds-text-muted)]">
+                      <div key={pkg.id} className="rounded border border-border-subtle px-4 py-3 text-body-sm text-secondary">
+                        <p className="text-body-xs font-bold  text-muted">
                           Package #{pkg.sequence}
                         </p>
                         <p className="mt-1">
@@ -291,12 +291,12 @@ export default function TrackOrderPage() {
                             ? 'No tracking attached'
                             : pkg.tracking_number || 'Tracking pending'}
                         </p>
-                        <p className="mt-1 text-[var(--ds-text-muted)]">
+                        <p className="mt-1 text-muted">
                           {[pkg.carrier, pkg.service].filter(Boolean).join(' / ') ||
                             'Carrier details pending'}
                         </p>
                         {pkg.no_tracking_reason ? (
-                          <p className="mt-1 text-[var(--ds-text-muted)]">
+                          <p className="mt-1 text-muted">
                             Reason: {pkg.no_tracking_reason}
                           </p>
                         ) : null}
@@ -307,11 +307,11 @@ export default function TrackOrderPage() {
               )}
 
               {(order.workflow?.estimated_delivery_start || order.workflow?.estimated_delivery_end) && (
-                <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                  <p className="text-body-xs type-bold  text-[var(--ds-text-muted)] mb-1">
+                <div className="pt-4 border-t border-border-subtle">
+                  <p className="text-body-xs font-bold  text-muted mb-1">
                     Estimated delivery
                   </p>
-                  <p className="text-[var(--ds-text-secondary)]">
+                  <p className="text-secondary">
                     {order.workflow?.estimated_delivery_start || 'TBD'}
                     {order.workflow?.estimated_delivery_end
                       ? ` - ${order.workflow.estimated_delivery_end}`
@@ -321,15 +321,15 @@ export default function TrackOrderPage() {
               )}
 
               {order.workflow?.customer_note && (
-                <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
-                  <p className="text-body-xs type-bold  text-[var(--ds-text-muted)] mb-1">
+                <div className="pt-4 border-t border-border-subtle">
+                  <p className="text-body-xs font-bold  text-muted mb-1">
                     Update from Odhvica
                   </p>
-                  <p className="text-[var(--ds-text-secondary)]">{order.workflow.customer_note}</p>
+                  <p className="text-secondary">{order.workflow.customer_note}</p>
                 </div>
               )}
 
-              <div className="pt-4 border-t border-[var(--ds-border-subtle)]">
+              <div className="pt-4 border-t border-border-subtle">
                 <ButtonLink
                   href={`/contact?order=${order.display_id || order.id}&email=${encodeURIComponent(email)}`}
                   variant="outline"
@@ -342,10 +342,10 @@ export default function TrackOrderPage() {
 
             {/* Shipping Address */}
             <Card className="p-5">
-              <h3 className="mb-4 font-display text-display-sm text-[var(--ds-text-primary)]">
+              <h3 className="mb-4 font-display text-display-sm text-primary">
                 Shipping Address
               </h3>
-              <div className="flex items-start gap-3 text-[var(--ds-text-secondary)]">
+              <div className="flex items-start gap-3 text-secondary">
                 <MapPin size={20} className="flex-shrink-0 mt-0.5" />
                 <div>
                   <p>
@@ -364,22 +364,22 @@ export default function TrackOrderPage() {
 
             {/* Order Items */}
             <Card className="p-5">
-              <h3 className="mb-4 font-display text-display-sm text-[var(--ds-text-primary)]">
+              <h3 className="mb-4 font-display text-display-sm text-primary">
                 Order Items
               </h3>
               <div className="space-y-3">
                 {(order.items || []).map((item, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-center py-3 border-b border-[var(--ds-border-subtle)]"
+                    className="flex justify-between items-center py-3 border-b border-border-subtle"
                   >
                     <div>
-                      <p className="type-medium text-[var(--ds-text-primary)]">{item.title}</p>
-                      <p className="text-body-sm text-[var(--ds-text-muted)]">
+                      <p className="font-medium text-primary">{item.title}</p>
+                      <p className="text-body-sm text-muted">
                         Qty: {item.quantity}
                       </p>
                     </div>
-                    <p className="type-medium text-[var(--ds-text-primary)]">
+                    <p className="font-medium text-primary">
                       ${(item.price / 100).toFixed(2)}
                     </p>
                   </div>
@@ -387,8 +387,8 @@ export default function TrackOrderPage() {
               </div>
             </Card>
 
-            <Card className="bg-[var(--ds-surface-parchment)] p-5">
-              <h3 className="mb-4 font-display text-display-sm text-[var(--ds-text-primary)]">
+            <Card className="bg-parchment p-5">
+              <h3 className="mb-4 font-display text-display-sm text-primary">
                 More help for this order
               </h3>
               <div className="grid gap-3 md:grid-cols-3">
@@ -418,15 +418,15 @@ export default function TrackOrderPage() {
           </div>
         ) : (
           <div className="mt-6 grid gap-3">
-            <Card className="bg-[var(--ds-surface-parchment)] p-5">
-              <strong className="text-[var(--ds-text-primary)]">Out for Delivery</strong>
-              <p className="mt-1 text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+            <Card className="bg-parchment p-5">
+              <strong className="text-primary">Out for Delivery</strong>
+              <p className="mt-1 text-body-sm leading-token-relaxed text-secondary">
                 Your live package status will appear here after a successful lookup.
               </p>
             </Card>
-            <Card className="bg-[var(--ds-surface-parchment)] p-5">
-              <strong className="text-[var(--ds-text-primary)]">Arrived at Jaipur Hub</strong>
-              <p className="mt-1 text-body-sm leading-token-relaxed text-[var(--ds-text-secondary)]">
+            <Card className="bg-parchment p-5">
+              <strong className="text-primary">Arrived at Jaipur Hub</strong>
+              <p className="mt-1 text-body-sm leading-token-relaxed text-secondary">
                 Prototype-style milestone cards stay visible as a helpful empty state.
               </p>
             </Card>

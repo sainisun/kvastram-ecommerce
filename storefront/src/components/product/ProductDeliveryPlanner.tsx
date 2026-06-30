@@ -141,20 +141,20 @@ export default function ProductDeliveryPlanner() {
           {shippingOptions.slice(0, 3).map((option) => (
             <div
               key={option.id}
-              className="rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] p-4"
+              className="rounded-lg border border-border-subtle bg-[var(--ds-surface-paper)] p-4"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-body-sm type-medium text-[var(--ds-text-primary)]">
+                  <p className="text-body-sm font-medium text-primary">
                     {option.name}
                   </p>
                   {option.description ? (
-                    <p className="mt-1 text-body-xs text-[var(--ds-text-muted)]">
+                    <p className="mt-1 text-body-xs text-muted">
                       {option.description}
                     </p>
                   ) : null}
                 </div>
-                <p className="text-body-sm type-medium text-[var(--ds-text-primary)]">
+                <p className="text-body-sm font-medium text-primary">
                   {option.price === 0
                     ? 'Free'
                     : formatShippingPrice(option.price, option.currency_code)}

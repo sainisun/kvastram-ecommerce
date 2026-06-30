@@ -53,11 +53,11 @@ export default function MobileMenu({
               key={item.label}
               href={item.href}
               onClick={onClose}
-              className={`flex items-center justify-between border-b border-[var(--ds-border-subtle)] px-5 py-4 transition-colors ${
-                isActive ? 'text-[var(--ds-accent-primary)] bg-[var(--ds-surface-subtle)]' : 'text-[var(--ds-text-primary)]'
+              className={`flex items-center justify-between border-b border-border-subtle px-5 py-4 transition-colors ${
+                isActive ? 'text-accent bg-[var(--ds-surface-subtle)]' : 'text-primary'
               }`}
             >
-              <span className="font-ui text-body-md type-medium tracking-token-wide uppercase">
+              <span className="font-ui text-body-md font-medium tracking-token-wide uppercase">
                 {item.label}
               </span>
               <ChevronRight size={18} className="text-[var(--ds-text-disabled)]" />
@@ -69,14 +69,14 @@ export default function MobileMenu({
           <Link
             href="/contact"
             onClick={onClose}
-            className="block text-[var(--ds-text-secondary)] font-ui text-body-sm type-medium py-2"
+            className="block text-secondary font-ui text-body-sm font-medium py-2"
           >
             Contact Us
           </Link>
           <Link
             href="/track-order"
             onClick={onClose}
-            className="block text-[var(--ds-text-secondary)] font-ui text-body-sm type-medium py-2"
+            className="block text-secondary font-ui text-body-sm font-medium py-2"
           >
             Track Order
           </Link>

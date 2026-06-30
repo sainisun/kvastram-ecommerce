@@ -38,11 +38,11 @@ type CustomerOrder = {
 function getReturnStatusClasses(status: string) {
   switch (status) {
     case 'approved':
-      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-[var(--ds-success-text)]';
+      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success';
     case 'refunded':
       return 'kv-status-subtle';
     case 'rejected':
-      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-[var(--ds-danger)]';
+      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error';
     default:
       return 'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]';
   }
@@ -92,7 +92,7 @@ export default function ReturnsPage() {
       <div className="content-page-band">
       <div className="content-shell max-w-4xl py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <StatusBanner tone="info" className="mb-8">
-          <p className="type-semibold">
+          <p className="font-semibold">
             Refunds are processed within 3–7 business days to the original payment method after return approval.
           </p>
           <p className="mt-1 text-body-sm">
@@ -116,11 +116,11 @@ export default function ReturnsPage() {
           </InfoCard>
         </div>
 
-        <div className="mt-12 border border-[var(--ds-border-subtle)] p-8">
-          <h2 className="text-display-sm font-display text-[var(--ds-text-primary)]">
+        <div className="mt-12 border border-border-subtle p-8">
+          <h2 className="text-display-sm font-display text-primary">
             How to start a request
           </h2>
-          <ol className="mt-6 list-decimal space-y-3 pl-5 text-body-md text-[var(--ds-text-secondary)]">
+          <ol className="mt-6 list-decimal space-y-3 pl-5 text-body-md text-secondary">
             <li>Keep your order number ready.</li>
             <li>Review the refund policy before opening a request.</li>
             <li>Contact support with your order details and product issue.</li>
@@ -128,17 +128,17 @@ export default function ReturnsPage() {
           </ol>
         </div>
 
-        <div className="mt-12 border border-[var(--ds-border-subtle)] p-8">
-          <h2 className="text-display-sm font-display text-[var(--ds-text-primary)]">
+        <div className="mt-12 border border-border-subtle p-8">
+          <h2 className="text-display-sm font-display text-primary">
             Self-serve returns
           </h2>
-          <p className="mt-3 text-body-md text-[var(--ds-text-secondary)]">
+          <p className="mt-3 text-body-md text-secondary">
             Signed-in customers can track existing return requests and open an
             eligible delivered order to request a new return.
           </p>
 
           {loading ? (
-            <p className="mt-6 text-body-sm text-[var(--ds-text-muted)]">
+            <p className="mt-6 text-body-sm text-muted">
               Loading your return activity...
             </p>
           ) : !customer ? (
@@ -150,13 +150,13 @@ export default function ReturnsPage() {
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
                   href="/login"
-                  className="bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+                  className="bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs font-bold  tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/account/orders"
-                  className="border border-[var(--ds-border-strong)] px-5 py-3 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                  className="border border-border px-5 py-3 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
                 >
                   My Orders
                 </Link>
@@ -165,7 +165,7 @@ export default function ReturnsPage() {
           ) : (
             <div className="mt-6 space-y-8">
               <div>
-                <h3 className="text-body-lg type-semibold text-[var(--ds-text-primary)]">
+                <h3 className="text-body-lg font-semibold text-primary">
                   Your return requests
                 </h3>
                 {returns.length > 0 ? (
@@ -176,42 +176,42 @@ export default function ReturnsPage() {
                       .map((item) => (
                         <div
                           key={item.id}
-                          className="rounded-lg border border-[var(--ds-border-subtle)] p-5"
+                          className="rounded-lg border border-border-subtle p-5"
                         >
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div>
-                              <p className="text-body-sm type-semibold text-[var(--ds-text-primary)]">
+                              <p className="text-body-sm font-semibold text-primary">
                                 Return for order #{item.order_id.slice(0, 8)}
                               </p>
-                              <p className="mt-1 text-body-xs text-[var(--ds-text-muted)]">
+                              <p className="mt-1 text-body-xs text-muted">
                                 Submitted{' '}
                                 {new Date(item.created_at).toLocaleDateString()}
                               </p>
                             </div>
                             <Badge
-                              className={`rounded-full border px-3 py-1 text-body-xs type-bold  tracking-token-wider ${getReturnStatusClasses(item.status)}`}
+                              className={`rounded-full border px-3 py-1 text-body-xs font-bold  tracking-token-wider ${getReturnStatusClasses(item.status)}`}
                             >
                               {item.status}
                             </Badge>
                           </div>
-                          <p className="mt-3 text-body-sm text-[var(--ds-text-secondary)]">
+                          <p className="mt-3 text-body-sm text-secondary">
                             {item.reason}
                           </p>
                           {item.admin_notes ? (
-                            <p className="mt-2 text-body-sm text-[var(--ds-text-muted)]">
+                            <p className="mt-2 text-body-sm text-muted">
                               Team note: {item.admin_notes}
                             </p>
                           ) : null}
                           <div className="mt-4 flex flex-wrap gap-3">
                             <Link
                               href={`/account/orders/${item.order_id}`}
-                              className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                              className="border border-border px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
                             >
                               View Order
                             </Link>
                             <Link
                               href={`${storefrontTrust.policyRoutes.contact}?reason=returns&order=${item.order_id}`}
-                              className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-parchment)]"
+                              className="border border-border px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
                             >
                               Contact Support
                             </Link>
@@ -228,7 +228,7 @@ export default function ReturnsPage() {
               </div>
 
               <div>
-                <h3 className="text-body-lg type-semibold text-[var(--ds-text-primary)]">
+                <h3 className="text-body-lg font-semibold text-primary">
                   Eligible delivered orders
                 </h3>
                 {eligibleOrders.length > 0 ? (
@@ -236,25 +236,25 @@ export default function ReturnsPage() {
                     {eligibleOrders.slice(0, 4).map((order) => (
                       <div
                         key={order.id}
-                        className="rounded-lg border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-parchment)] p-5"
+                        className="rounded-lg border border-border-subtle bg-parchment p-5"
                       >
-                        <p className="text-body-sm type-semibold text-[var(--ds-text-primary)]">
+                        <p className="text-body-sm font-semibold text-primary">
                           Order #{order.display_id}
                         </p>
-                        <p className="mt-1 text-body-xs text-[var(--ds-text-muted)]">
+                        <p className="mt-1 text-body-xs text-muted">
                           Delivered order placed{' '}
                           {new Date(order.created_at).toLocaleDateString()}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-3">
                           <Link
                             href={`/account/orders/${order.id}`}
-                            className="bg-[var(--ds-text-primary)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-inverse)] transition-colors hover:bg-[var(--ds-text-secondary)]"
+                            className="bg-[var(--ds-text-primary)] px-4 py-2 text-body-xs font-bold  tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
                           >
                             Open Order
                           </Link>
                           <Link
                             href={storefrontTrust.policyRoutes.refundPolicy}
-                            className="border border-[var(--ds-border-strong)] px-4 py-2 text-body-xs type-bold  tracking-token-wider text-[var(--ds-text-primary)] transition-colors hover:bg-[var(--ds-surface-paper)]"
+                            className="border border-border px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-[var(--ds-surface-paper)]"
                           >
                             Review Policy
                           </Link>

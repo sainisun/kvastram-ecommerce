@@ -22,10 +22,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label ? (
           <label
             htmlFor={selectId}
-            className="form-label-typography  text-[var(--ds-text-muted)]"
+            className="form-label-typography  text-muted"
           >
             {label}
-            {required ? <span className="ml-1 text-[var(--ds-danger)]">*</span> : null}
+            {required ? <span className="ml-1 text-error">*</span> : null}
           </label>
         ) : null}
 
@@ -36,8 +36,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : helperText ? helpId : undefined}
           className={cn(
-            'form-control-typography h-12 w-full border bg-[var(--ds-surface-paper)] px-3 text-[var(--ds-text-primary)] outline-none transition-colors focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:h-11',
-            error ? 'border-[var(--ds-danger)]' : 'border-[var(--ds-border-subtle)]',
+            'form-control-typography h-12 w-full border bg-[var(--ds-surface-paper)] px-3 text-primary outline-none transition-colors focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:h-11',
+            error ? 'border-[var(--ds-danger)]' : 'border-border-subtle',
             className
           )}
           {...props}
@@ -46,13 +46,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         </select>
 
         {helperText && !error ? (
-          <p id={helpId} className="text-body-xs text-[var(--ds-text-muted)]">
+          <p id={helpId} className="text-body-xs text-muted">
             {helperText}
           </p>
         ) : null}
 
         {error ? (
-          <p id={errorId} role="alert" className="input-error-message mt-0.5 text-[var(--ds-danger)]">
+          <p id={errorId} role="alert" className="input-error-message mt-0.5 text-error">
             {error}
           </p>
         ) : null}

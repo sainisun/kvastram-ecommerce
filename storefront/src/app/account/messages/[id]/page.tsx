@@ -104,19 +104,19 @@ export default function AccountMessageDetailPage() {
   }, []);
 
   if (loading || !customer) {
-    return <div className="kv-page-gutter min-h-screen bg-[var(--ds-surface-parchment)] px-6 py-12 md:px-12 lg:px-20" />;
+    return <div className="kv-page-gutter min-h-screen bg-parchment px-6 py-12 md:px-12 lg:px-20" />;
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)]">
+    <div className="min-h-screen bg-parchment">
       <div className="mx-auto max-w-4xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
-            <Link href="/account/messages" className="account-muted hover:text-[var(--ds-text-primary)]">
+            <Link href="/account/messages" className="account-muted hover:text-primary">
               Messages
             </Link>
             <h1 className="account-page-title mt-2">{inquiry?.product_title || 'Studio Chat'}</h1>
-            <p className={`account-caption mt-2 ${liveConnected ? 'text-[var(--ds-success-text)]' : 'text-[var(--ds-text-muted)]'}`}>
+            <p className={`account-caption mt-2 ${liveConnected ? 'text-success' : 'text-muted'}`}>
               {liveConnected ? 'Live chat connected' : 'Connecting live chat...'}
             </p>
             {inquiry?.product_url && (
@@ -125,14 +125,14 @@ export default function AccountMessageDetailPage() {
               </a>
             )}
           </div>
-          <UnstyledButton type="button" onClick={() => void loadConversation()} className="text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)]" aria-label="Refresh messages">
+          <UnstyledButton type="button" onClick={() => void loadConversation()} className="text-muted hover:text-primary" aria-label="Refresh messages">
             <RefreshCw size={20} />
           </UnstyledButton>
         </div>
 
-        <div className="border border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
+        <div className="border border-border-subtle bg-[var(--ds-surface-paper)]">
           {isLoading ? (
-            <div className="flex h-64 items-center justify-center text-[var(--ds-text-muted)]">
+            <div className="flex h-64 items-center justify-center text-muted">
               <RefreshCw className="mr-2 animate-spin" size={20} />
               Loading conversation...
             </div>
@@ -142,8 +142,8 @@ export default function AccountMessageDetailPage() {
                 const isAdmin = message.sender_type === 'admin';
                 return (
                   <div key={message.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-[var(--ds-surface-soft)] text-[var(--ds-text-primary)]' : 'bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]'}`}>
-                      <p className={`account-message-meta mb-1 ${isAdmin ? 'text-[var(--ds-text-muted)]' : 'text-[var(--ds-text-disabled)]'}`}>
+                    <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-surface-soft text-primary' : 'bg-[var(--ds-text-primary)] text-inverse'}`}>
+                      <p className={`account-message-meta mb-1 ${isAdmin ? 'text-muted' : 'text-[var(--ds-text-disabled)]'}`}>
                         {isAdmin ? message.sender_name || 'Odhvica Studio' : 'You'}
                       </p>
                       <p className="account-message-body whitespace-pre-wrap">{message.message}</p>
@@ -153,7 +153,7 @@ export default function AccountMessageDetailPage() {
               })}
               {studioTyping && (
                 <div className="flex justify-start">
-                  <div className="account-muted rounded-lg bg-[var(--ds-surface-soft)] px-4 py-3">
+                  <div className="account-muted rounded-lg bg-surface-soft px-4 py-3">
                     Studio is typing...
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export default function AccountMessageDetailPage() {
             </div>
           )}
 
-          <form onSubmit={sendReply} className="border-t border-[var(--ds-border-subtle)] p-5">
+          <form onSubmit={sendReply} className="border-t border-border-subtle p-5">
             <Textarea
               required
               rows={4}

@@ -134,24 +134,24 @@ export default function WholesaleCheckoutPage() {
 
   if (orderPlaced) {
     return (
-      <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-20">
+      <div className="min-h-screen bg-parchment py-20">
         <div className="max-w-2xl mx-auto px-4">
           <Card className="p-8 text-center shadow-lg">
             <div className="w-20 h-20 bg-[var(--ds-success-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-[var(--ds-success)]" />
             </div>
-            <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-4">
+            <h1 className="text-display-md font-bold text-primary mb-4">
               Order Submitted Successfully!
             </h1>
-            <p className="text-[var(--ds-text-secondary)] mb-2">
+            <p className="text-secondary mb-2">
               Your wholesale order has been received.
             </p>
-            <p className="text-[var(--ds-text-muted)] mb-6">
+            <p className="text-muted mb-6">
               Order ID: <span className="font-mono">{orderId}</span>
             </p>
 
-            <div className="bg-[var(--ds-surface-parchment)] p-4 rounded-lg mb-6">
-              <p className="text-body-sm text-[var(--ds-text-secondary)]">
+            <div className="bg-parchment p-4 rounded-lg mb-6">
+              <p className="text-body-sm text-secondary">
                 Payment terms:{' '}
                 <strong>
                   {
@@ -161,7 +161,7 @@ export default function WholesaleCheckoutPage() {
                   }
                 </strong>
               </p>
-              <p className="text-body-sm text-[var(--ds-text-muted)] mt-1">
+              <p className="text-body-sm text-muted mt-1">
                 An invoice will be sent to your email shortly.
               </p>
             </div>
@@ -190,14 +190,14 @@ export default function WholesaleCheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-20">
+      <div className="min-h-screen bg-parchment py-20">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <h1 className="text-display-md type-bold text-[var(--ds-text-primary)] mb-4">
+          <h1 className="text-display-md font-bold text-primary mb-4">
             Your cart is empty
           </h1>
           <Link
             href="/products"
-            className="text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] underline"
+            className="text-secondary hover:text-primary underline"
           >
             Continue Shopping
           </Link>
@@ -207,24 +207,24 @@ export default function WholesaleCheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-parchment)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/cart"
-            className="flex items-center text-[var(--ds-text-secondary)] hover:text-[var(--ds-text-primary)] mb-4"
+            className="flex items-center text-secondary hover:text-primary mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Cart
           </Link>
           <div className="flex items-center gap-3">
-            <Building2 className="w-8 h-8 text-[var(--ds-text-secondary)]" />
+            <Building2 className="w-8 h-8 text-secondary" />
             <div>
-              <h1 className="text-display-md type-bold text-[var(--ds-text-primary)]">
+              <h1 className="text-display-md font-bold text-primary">
                 Wholesale Checkout
               </h1>
-              <p className="text-[var(--ds-text-secondary)] text-body-sm">
+              <p className="text-secondary text-body-sm">
                 {wholesaleInfo.companyName} - {wholesaleInfo.tier} tier
               </p>
             </div>
@@ -238,11 +238,11 @@ export default function WholesaleCheckoutPage() {
               {/* Validation Errors */}
               {validation.errors.length > 0 && (
                 <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-[var(--ds-danger)] mb-2">
+                  <div className="flex items-center gap-2 text-error mb-2">
                     <AlertCircle className="w-5 h-5" />
-                    <h3 className="type-bold">Cart Validation Errors</h3>
+                    <h3 className="font-bold">Cart Validation Errors</h3>
                   </div>
-                  <ul className="text-body-sm text-[var(--ds-danger)] space-y-1">
+                  <ul className="text-body-sm text-error space-y-1">
                     {validation.errors.map((error, idx) => (
                       <li key={idx}>{error.message}</li>
                     ))}
@@ -252,7 +252,7 @@ export default function WholesaleCheckoutPage() {
 
               {/* PO Number */}
               <Card className="p-6 shadow-sm">
-                <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4 flex items-center">
+                <h2 className="text-body-xl font-bold text-primary mb-4 flex items-center">
                   <FileText className="w-5 h-5 mr-2" />
                   Purchase Order
                 </h2>
@@ -271,7 +271,7 @@ export default function WholesaleCheckoutPage() {
 
               {/* Payment Terms */}
               <Card className="p-6 shadow-sm">
-                <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4 flex items-center">
+                <h2 className="text-body-xl font-bold text-primary mb-4 flex items-center">
                   <Calendar className="w-5 h-5 mr-2" />
                   Payment Terms
                 </h2>
@@ -281,8 +281,8 @@ export default function WholesaleCheckoutPage() {
                       key={term.value}
                       className={`flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${
                         formData.payment_terms === term.value
-                          ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-parchment)]'
-                          : 'border-[var(--ds-border-subtle)] hover:border-[var(--ds-border-strong)]'
+                          ? 'border-[var(--ds-text-primary)] bg-parchment'
+                          : 'border-border-subtle hover:border-border'
                       }`}
                     >
                       <input
@@ -296,13 +296,13 @@ export default function WholesaleCheckoutPage() {
                             payment_terms: e.target.value,
                           })
                         }
-                        className="w-4 h-4 text-[var(--ds-text-primary)] focus:ring-[var(--ds-text-muted)]"
+                        className="w-4 h-4 text-primary focus:ring-[var(--ds-text-muted)]"
                       />
                       <div className="ml-3">
-                        <p className="type-medium text-[var(--ds-text-primary)]">
+                        <p className="font-medium text-primary">
                           {term.label}
                         </p>
-                        <p className="text-body-sm text-[var(--ds-text-muted)]">
+                        <p className="text-body-sm text-muted">
                           {term.description}
                         </p>
                       </div>
@@ -313,7 +313,7 @@ export default function WholesaleCheckoutPage() {
 
               {/* Shipping Address */}
               <Card className="p-6 shadow-sm">
-                <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
+                <h2 className="text-body-xl font-bold text-primary mb-4">
                   Shipping Address
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -438,7 +438,7 @@ export default function WholesaleCheckoutPage() {
                     />
                   </div>
                   <div>
-                    <p className="form-label-typography mb-1.5  text-[var(--ds-text-muted)]">
+                    <p className="form-label-typography mb-1.5  text-muted">
                       Country
                     </p>
                     <CountrySelect
@@ -476,7 +476,7 @@ export default function WholesaleCheckoutPage() {
 
               {/* Order Notes */}
               <Card className="p-6 shadow-sm">
-                <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
+                <h2 className="text-body-xl font-bold text-primary mb-4">
                   Order Notes
                 </h2>
                 <Textarea
@@ -491,7 +491,7 @@ export default function WholesaleCheckoutPage() {
               </Card>
 
               {error && (
-                <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-[var(--ds-danger)] px-4 py-3 rounded-lg">
+                <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
@@ -511,7 +511,7 @@ export default function WholesaleCheckoutPage() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <Card className="sticky top-6 p-6 shadow-sm">
-              <h2 className="text-body-xl type-bold text-[var(--ds-text-primary)] mb-4">
+              <h2 className="text-body-xl font-bold text-primary mb-4">
                 Order Summary
               </h2>
 
@@ -529,11 +529,11 @@ export default function WholesaleCheckoutPage() {
                       </div>
                     )}
                     <div className="flex-1">
-                      <p className="type-medium text-[var(--ds-text-primary)] text-body-sm">
+                      <p className="font-medium text-primary text-body-sm">
                         {item.title}
                       </p>
-                      <p className="text-body-xs text-[var(--ds-text-muted)]">SKU: {item.sku}</p>
-                      <p className="text-body-xs text-[var(--ds-text-secondary)] mt-1">
+                      <p className="text-body-xs text-muted">SKU: {item.sku}</p>
+                      <p className="text-body-xs text-secondary mt-1">
                         Qty: {item.quantity} x $
                         {((item.finalPrice || item.price) / 100).toFixed(2)}
                       </p>
@@ -544,7 +544,7 @@ export default function WholesaleCheckoutPage() {
                       )}
                     </div>
                     <div className="text-right">
-                      <p className="type-medium text-[var(--ds-text-primary)]">
+                      <p className="font-medium text-primary">
                         $
                         {(
                           ((item.finalPrice || item.price) * item.quantity) /
@@ -566,10 +566,10 @@ export default function WholesaleCheckoutPage() {
                 ))}
               </div>
 
-              <div className="border-t border-[var(--ds-border-subtle)] pt-4 space-y-2">
+              <div className="border-t border-border-subtle pt-4 space-y-2">
                 <div className="flex justify-between text-body-sm">
-                  <span className="text-[var(--ds-text-secondary)]">Subtotal</span>
-                  <span className="type-medium">
+                  <span className="text-secondary">Subtotal</span>
+                  <span className="font-medium">
                     ${(cartSummary.subtotal / 100).toFixed(2)}
                   </span>
                 </div>
@@ -585,7 +585,7 @@ export default function WholesaleCheckoutPage() {
                     <span>-${(cartSummary.bulkDiscount / 100).toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-body-xl type-bold pt-2 border-t border-[var(--ds-border-subtle)]">
+                <div className="flex justify-between text-body-xl font-bold pt-2 border-t border-border-subtle">
                   <span>Total</span>
                   <span>${(cartSummary.total / 100).toFixed(2)}</span>
                 </div>
@@ -596,8 +596,8 @@ export default function WholesaleCheckoutPage() {
                 )}
               </div>
 
-              <div className="mt-6 p-4 bg-[var(--ds-surface-parchment)] rounded-lg">
-                <p className="text-body-xs text-[var(--ds-text-secondary)] text-center">
+              <div className="mt-6 p-4 bg-parchment rounded-lg">
+                <p className="text-body-xs text-secondary text-center">
                   Payment terms:{' '}
                   <strong>
                     {

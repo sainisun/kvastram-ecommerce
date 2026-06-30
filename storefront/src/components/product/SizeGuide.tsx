@@ -24,7 +24,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
           Size Chart
         </h3>
         <table className="size-guide-table">
-          <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
+          <thead className="size-guide-table-head bg-parchment border-b border-border-subtle">
             <tr>
               <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Size</th>
               {guide.measurements[0]?.chest && (
@@ -72,7 +72,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
         <div className="space-y-8">
           {/* Product-specific size chart — string or structured */}
           {sizeGuide && typeof sizeGuide === 'string' ? (
-            <div className="prose prose-sm max-w-none mb-6 border-b border-[var(--ds-border-subtle)] pb-6">
+            <div className="prose prose-sm max-w-none mb-6 border-b border-border-subtle pb-6">
               <h3 className="size-guide-heading mb-4">
                 Product Size Guide
               </h3>
@@ -90,7 +90,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               Womenswear
             </h3>
             <table className="size-guide-table">
-              <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
+              <thead className="size-guide-table-head bg-parchment border-b border-border-subtle">
                 <tr>
                   <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Size</th>
                   <th className="size-guide-table-heading py-[var(--ds-space-xs)]">US</th>
@@ -151,7 +151,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               Menswear
             </h3>
             <table className="size-guide-table">
-              <thead className="size-guide-table-head bg-[var(--ds-surface-parchment)] border-b border-[var(--ds-border-subtle)]">
+              <thead className="size-guide-table-head bg-parchment border-b border-border-subtle">
                 <tr>
                   <th className="size-guide-table-heading py-[var(--ds-space-xs)]">Size</th>
                   <th className="size-guide-table-heading py-[var(--ds-space-xs)]">US</th>
@@ -199,7 +199,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
           </div>
 
           {/* How to Measure */}
-          <div className="bg-[var(--ds-surface-parchment)] p-6">
+          <div className="bg-parchment p-6">
             <h3 className="size-guide-info-title mb-4">How to Measure</h3>
             <div className="size-guide-copy grid gap-[var(--ds-space-sm)] md:grid-cols-3">
               <div>
@@ -227,7 +227,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
           </div>
 
           {/* Fit Advice */}
-          <div className="bg-[var(--ds-surface-parchment)] p-6">
+          <div className="bg-parchment p-6">
             <h3 className="size-guide-info-title mb-2">Fit Advice</h3>
             <p className="size-guide-copy">
               Our garments are cut for a relaxed, contemporary fit. If you are

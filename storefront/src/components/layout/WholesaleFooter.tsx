@@ -38,7 +38,7 @@ export function WholesaleFooter() {
   }, []);
 
   return (
-    <footer className="bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)]">
+    <footer className="bg-[var(--ds-text-primary)] text-inverse">
       {/* Main Footer */}
       <div className="border-t border-[var(--ds-text-secondary)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="kv-page-container mx-auto max-w-page">
@@ -46,20 +46,20 @@ export function WholesaleFooter() {
             {/* Company Info */}
             <div className="space-y-4">
               <div className="flex items-center gap-[var(--ds-space-xs)] mb-[var(--ds-space-md)]">
-                <div className="text-display-md type-bold tracking-token-tight">
+                <div className="text-display-md font-bold tracking-token-tight">
                   ODHVICA
                 </div>
                 <div className="h-6 w-px bg-[var(--ds-text-secondary)]"></div>
-                <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] type-bold">
+                <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] font-bold">
                   Wholesale
                 </div>
               </div>
-              <p className="text-body-sm text-[var(--ds-text-muted)] leading-token-relaxed">
+              <p className="text-body-sm text-muted leading-token-relaxed">
                 Your trusted partner for authentic artisanal luxury products.
                 Serving retailers and distributors worldwide since 2020.
               </p>
               <div className="pt-4">
-                <div className="inline-flex items-center gap-2 text-body-xs text-[var(--ds-accent-gold)] type-bold  tracking-token-wider">
+                <div className="inline-flex items-center gap-2 text-body-xs text-[var(--ds-accent-gold)] font-bold  tracking-token-wider">
                   <Building2 size={16} />
                   B2B Division
                 </div>
@@ -68,14 +68,14 @@ export function WholesaleFooter() {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-body-sm type-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Quick Links
               </h4>
-              <ul className="space-y-3 text-body-sm text-[var(--ds-text-muted)]">
+              <ul className="space-y-3 text-body-sm text-muted">
                 <li>
                   <Link
                     href="/wholesale#benefits"
-                    className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                    className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                   >
                     <ArrowRight size={14} />
                     Why Partner With Us
@@ -84,7 +84,7 @@ export function WholesaleFooter() {
                 <li>
                   <Link
                     href="/wholesale#pricing"
-                    className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                    className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                   >
                     <ArrowRight size={14} />
                     Pricing Tiers
@@ -93,7 +93,7 @@ export function WholesaleFooter() {
                 <li>
                   <Link
                     href="/wholesale#process"
-                    className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                    className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                   >
                     <ArrowRight size={14} />
                     Ordering Process
@@ -102,7 +102,7 @@ export function WholesaleFooter() {
                 <li>
                   <Link
                     href="/wholesale#inquiry"
-                    className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                    className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                   >
                     <ArrowRight size={14} />
                     Request Quote
@@ -121,17 +121,17 @@ export function WholesaleFooter() {
 
             {/* Resources */}
             <div>
-              <h4 className="text-body-sm type-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Resources
               </h4>
-              <ul className="space-y-3 text-body-sm text-[var(--ds-text-muted)]">
+              <ul className="space-y-3 text-body-sm text-muted">
                 <li>
                   {footerSettings.wholesale_footer_catalog_link ? (
                     <a
                       href={footerSettings.wholesale_footer_catalog_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                      className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                     >
                       <Download size={14} />
                       Product Catalog (PDF)
@@ -149,7 +149,7 @@ export function WholesaleFooter() {
                       href={footerSettings.wholesale_footer_price_list_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                      className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                     >
                       <Download size={14} />
                       Price List
@@ -165,7 +165,7 @@ export function WholesaleFooter() {
                   {footerSettings.wholesale_footer_terms_link ? (
                     <a
                       href={footerSettings.wholesale_footer_terms_link}
-                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                      className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                     >
                       <FileText size={14} />
                       Terms & Conditions
@@ -181,7 +181,7 @@ export function WholesaleFooter() {
                   {footerSettings.wholesale_footer_shipping_link ? (
                     <a
                       href={footerSettings.wholesale_footer_shipping_link}
-                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                      className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                     >
                       <FileText size={14} />
                       Shipping Policy
@@ -197,7 +197,7 @@ export function WholesaleFooter() {
                   {footerSettings.wholesale_footer_return_link ? (
                     <a
                       href={footerSettings.wholesale_footer_return_link}
-                      className="hover:text-[var(--ds-text-inverse)] transition-colors flex items-center gap-[var(--ds-space-xs)]"
+                      className="hover:text-inverse transition-colors flex items-center gap-[var(--ds-space-xs)]"
                     >
                       <FileText size={14} />
                       Return Policy
@@ -214,20 +214,20 @@ export function WholesaleFooter() {
 
             {/* Contact */}
             <div>
-              <h4 className="text-body-sm type-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
                 Contact B2B Team
               </h4>
-              <ul className="space-y-4 text-body-sm text-[var(--ds-text-muted)]">
+              <ul className="space-y-4 text-body-sm text-muted">
                 <li className="flex items-start gap-[var(--ds-space-xs)]">
                   <Mail
                     size={16}
                     className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-[var(--ds-text-inverse)] type-medium mb-1">Email</div>
+                    <div className="text-inverse font-medium mb-1">Email</div>
                     <a
                       href="mailto:wholesale@odhvica.com"
-                      className="hover:text-[var(--ds-text-inverse)] transition-colors"
+                      className="hover:text-inverse transition-colors"
                     >
                       wholesale@odhvica.com
                     </a>
@@ -239,14 +239,14 @@ export function WholesaleFooter() {
                     className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-[var(--ds-text-inverse)] type-medium mb-1">Phone</div>
+                    <div className="text-inverse font-medium mb-1">Phone</div>
                     <a
                       href="tel:+1234567890"
-                      className="hover:text-[var(--ds-text-inverse)] transition-colors"
+                      className="hover:text-inverse transition-colors"
                     >
                       +1 (234) 567-890
                     </a>
-                    <div className="text-body-xs text-[var(--ds-text-muted)] mt-1">
+                    <div className="text-body-xs text-muted mt-1">
                       Mon-Fri, 9AM-6PM EST
                     </div>
                   </div>
@@ -257,8 +257,8 @@ export function WholesaleFooter() {
                     className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
                   />
                   <div>
-                    <div className="text-[var(--ds-text-inverse)] type-medium mb-1">Office</div>
-                    <div className="text-[var(--ds-text-muted)]">
+                    <div className="text-inverse font-medium mb-1">Office</div>
+                    <div className="text-muted">
                       123 Business District
                       <br />
                       New York, NY 10001
@@ -276,7 +276,7 @@ export function WholesaleFooter() {
       {/* Bottom Bar */}
       <div className="bg-[var(--ds-text-primary)] py-6">
         <div className="kv-page-container mx-auto max-w-page">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-body-xs text-[var(--ds-text-muted)]">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-body-xs text-muted">
             <div className="flex items-center gap-[var(--ds-space-md)]">
               <span>
                 &copy; {new Date().getFullYear()} Odhvica Wholesale. All rights
@@ -305,7 +305,7 @@ export function WholesaleFooter() {
       {/* Trust Badges */}
       <div className="bg-[var(--ds-text-primary)] py-8 border-t border-[var(--ds-text-primary)]">
         <div className="kv-page-container mx-auto max-w-page">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-[var(--ds-text-secondary)] text-body-xs">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-secondary text-body-xs">
             <div className="flex items-center gap-[var(--ds-space-xs)]">
               <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
                 <Building2 size={14} className="text-[var(--ds-warning)]" />

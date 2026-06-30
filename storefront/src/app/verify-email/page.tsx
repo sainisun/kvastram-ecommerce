@@ -59,7 +59,7 @@ function VerifyContent() {
         {status === 'loading' && (
           <>
             <Loader2 className="animate-spin mx-auto" size={48} />
-            <h1 className="text-display-md font-display text-[var(--ds-text-primary)]">
+            <h1 className="text-display-md font-display text-primary">
               Verifying your email...
             </h1>
           </>

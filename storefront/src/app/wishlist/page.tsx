@@ -49,7 +49,7 @@ export default function WishlistPage() {
             actions={
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] px-8 py-3 text-body-xs type-bold  tracking-token-wider hover:bg-[var(--ds-text-secondary)] transition-colors"
+              className="inline-flex items-center gap-2 bg-[var(--ds-text-primary)] text-inverse px-8 py-3 text-body-xs font-bold  tracking-token-wider hover:bg-[var(--ds-text-secondary)] transition-colors"
             >
               Start Shopping
               <ArrowRight size={16} />
@@ -66,10 +66,10 @@ export default function WishlistPage() {
       <div className="kv-page-container mx-auto max-w-page">
         <div className="flex items-center justify-between mb-12">
           <div>
-            <h1 className="text-display-lg font-display text-[var(--ds-text-primary)] mb-2">
+            <h1 className="text-display-lg font-display text-primary mb-2">
               My Wishlist
             </h1>
-            <p className="text-[var(--ds-text-muted)]">
+            <p className="text-muted">
               {items.length} saved item{items.length === 1 ? '' : 's'}
             </p>
           </div>
@@ -86,7 +86,7 @@ export default function WishlistPage() {
         <div className="grid gap-x-4 gap-y-8 sm:grid-cols-2 md:gap-x-6 md:gap-y-12 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16 xl:grid-cols-4">
           {items.map((item) => (
             <div key={item.id} className="group">
-              <div className="relative aspect-[3/4] bg-[var(--ds-surface-soft)] mb-4 overflow-hidden rounded-sm">
+              <div className="relative aspect-[3/4] bg-surface-soft mb-4 overflow-hidden rounded-sm">
                 <Link href={`/products/${item.handle}`}>
                   {item.thumbnail ? (
                     <OptimizedImage
@@ -96,7 +96,7 @@ export default function WishlistPage() {
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[var(--ds-text-muted)] italic">
+                    <div className="w-full h-full flex items-center justify-center text-muted italic">
                       No Image
                     </div>
                   )}
@@ -106,7 +106,7 @@ export default function WishlistPage() {
                 <IconButton
                   type="button"
                   onClick={() => handleRemove(item.productId)}
-                  className="absolute right-3 top-3 h-8 w-8 rounded-full border-0 bg-[var(--ds-surface-paper)]/90 text-[var(--ds-text-muted)] hover:text-[var(--ds-danger)]"
+                  className="absolute right-3 top-3 h-8 w-8 rounded-full border-0 bg-[var(--ds-surface-paper)]/90 text-muted hover:text-error"
                   aria-label="Remove from wishlist"
                 >
                   <Trash2 size={16} />
@@ -115,7 +115,7 @@ export default function WishlistPage() {
 
               <div className="space-y-2">
                 <Link href={`/products/${item.handle}`}>
-                  <h3 className="font-display text-[var(--ds-text-primary)] group-hover:text-[var(--ds-text-secondary)] transition-colors line-clamp-2">
+                  <h3 className="font-display text-primary group-hover:text-secondary transition-colors line-clamp-2">
                     {item.title}
                   </h3>
                 </Link>

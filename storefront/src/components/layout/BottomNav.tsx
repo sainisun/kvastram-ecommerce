@@ -83,7 +83,7 @@ export function BottomNav() {
 
       {/* Bottom Navigation Bar */}
       <nav
-        className={`fixed bottom-0 left-0 right-0 bg-[var(--ds-surface-paper)]/95 backdrop-blur-md border-t border-[var(--ds-border-subtle)] z-[45] pointer-events-auto transition-transform duration-300 md:hidden ${
+        className={`fixed bottom-0 left-0 right-0 bg-[var(--ds-surface-paper)]/95 backdrop-blur-md border-t border-border-subtle z-[45] pointer-events-auto transition-transform duration-300 md:hidden ${
           isVisible ? 'translate-y-0' : 'translate-y-full'
         }`}
         aria-label="Bottom navigation"
@@ -99,8 +99,8 @@ export function BottomNav() {
                 href={item.href}
                 className={`flex flex-col items-center justify-center py-[var(--ds-space-xs)] px-[var(--ds-space-xs)] min-w-[52px] transition-colors relative ${
                   isActive
-                    ? 'text-[var(--ds-text-primary)]'
-                    : 'text-[var(--ds-text-muted)] hover:text-[var(--ds-text-secondary)]'
+                    ? 'text-primary'
+                    : 'text-muted hover:text-secondary'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
               >
@@ -108,14 +108,14 @@ export function BottomNav() {
                   <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
                   {/* Badge */}
                   {item.badge > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[var(--ds-text-primary)] text-[var(--ds-text-inverse)] text-body-xs type-bold rounded-full flex items-center justify-center leading-token-tight">
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[var(--ds-text-primary)] text-inverse text-body-xs font-bold rounded-full flex items-center justify-center leading-token-tight">
                       {item.badge > 9 ? '9+' : item.badge}
                     </span>
                   )}
                 </div>
                 <span
-                  className={`text-body-xs mt-1 type-medium tracking-token-wide ${
-                    isActive ? 'text-[var(--ds-text-primary)]' : 'text-[var(--ds-text-muted)]'
+                  className={`text-body-xs mt-1 font-medium tracking-token-wide ${
+                    isActive ? 'text-primary' : 'text-muted'
                   }`}
                 >
                   {item.label}
