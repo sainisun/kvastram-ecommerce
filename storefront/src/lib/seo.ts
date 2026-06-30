@@ -704,8 +704,7 @@ export function buildOrganizationJsonLd() {
     url: SITE_URL,
     logo: toAbsoluteUrl('/favicon.ico'),
     sameAs: [
-      'https://instagram.com/odhvica',
-      'https://facebook.com/odhvica',
+      'https://www.instagram.com/odhvica.store/',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
