@@ -152,6 +152,14 @@ jobs:
             echo "--- RUNNING REGION SEEDER ---"
             docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-global-regions.js || echo "Failed to seed regions"
             
+            echo "--- RUNNING REMAINING MISSING SEEDERS ---"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-settings.js || echo "Failed to seed settings"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-default-tags.js || echo "Failed to seed tags"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-pages.js || echo "Failed to seed pages"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-legal-pages.js || echo "Failed to seed legal pages"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-categories.js || echo "Failed to seed categories"
+            docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-wholesale-tiers.js || echo "Failed to seed wholesale tiers"
+            
             # Capture output to print exact errors, explicitly passing the environment variable
             OUTPUT=$(docker compose exec -e DATABASE_URL="$DATABASE_URL" -T backend node dist/seed-real-data.js 2>&1)
             EXIT_CODE=$?
