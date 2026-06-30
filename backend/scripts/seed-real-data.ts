@@ -54,7 +54,18 @@ async function seed() {
 
   // Fetch India region ID
   const indiaRegionQuery = await db.select({ id: regions.id }).from(regions).where(eq(regions.currency_code, 'inr')).limit(1);
-  const indiaRegionId = indiaRegionQuery[0]?.id || null;
+  let indiaRegionId = indiaRegionQuery[0]?.id || null;
+
+  if (!indiaRegionId) {
+    console.log('India region (INR) not found. Seeding it automatically...');
+    const [newRegion] = await db.insert(regions).values({
+      name: 'India',
+      currency_code: 'inr',
+      tax_rate: '18',
+      tax_code: 'GST'
+    }).returning({ id: regions.id });
+    indiaRegionId = newRegion.id;
+  }
 
   const categoriesData = require('./seed-data.json');
 

@@ -443,7 +443,7 @@ export class ProductMutationService {
           images.map((image, index) => ({
             image_id: image.id,
             alt_text: image.alt_text || `${product.title} ${index === 0 ? 'product image' : `view ${index + 1}`}`,
-            cloudinary_public_id: image.metadata?.cloudinary_public_id || null,
+            cloudinary_public_id: (image.metadata as any)?.cloudinary_public_id || null,
             image_role: index === 0 ? 'primary' : 'gallery',
             view_type: index === 0 ? 'front' : null,
             color: null,
