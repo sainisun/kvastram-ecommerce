@@ -128,6 +128,12 @@ upsert_env_value backend/.env.production SMTP_FROM contact@odhvica.com
 upsert_env_value backend/.env.production SMTP_USER contact@odhvica.com
 upsert_env_value deploy/hostinger/.env NEXT_PUBLIC_API_URL https://api.odhvica.com
 
+# Add Razorpay key to build args env
+RZP_KEY=$(grep -h "^NEXT_PUBLIC_RAZORPAY_KEY_ID=" storefront/.env.production | cut -d '=' -f 2- || true)
+if [[ -n "$RZP_KEY" ]]; then
+  upsert_env_value deploy/hostinger/.env NEXT_PUBLIC_RAZORPAY_KEY_ID "$RZP_KEY"
+fi
+
 log "Validating compose configuration"
 docker compose -f "$COMPOSE_FILE" config >/dev/null
 
