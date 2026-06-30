@@ -82,32 +82,40 @@ async function seed() {
   const collectionIds: Record<string, string> = {};
   let collDisplayOrder = 1;
   for (const coll of collectionsToCreate) {
-    const id = uuidv4();
-    await db.insert(product_collections).values({
-      id,
-      title: coll.title,
-      handle: coll.handle,
-      status: 'active',
-      display_order: collDisplayOrder++,
-      cover_image_url: `/uploads/real_products/${coll.image}`,
-      image: `/uploads/real_products/${coll.image}`,
-      homepage_section: coll.homepage_section
-    });
-    collectionIds[coll.handle] = id;
-    console.log(`Created collection: ${coll.title}`);
+    const existing = await db.select({ id: product_collections.id }).from(product_collections).where(eq(product_collections.handle, coll.handle)).limit(1);
+    let id = existing[0]?.id;
 
-    // Create homepage merchandising slot for the collection
-    await db.insert(homepage_merchandising_slots).values({
-      id: uuidv4(),
-      slot_key: collDisplayOrder <= 3 ? 'collections' : 'collectionSlider',
-      linked_collection_id: id,
-      title: coll.title,
-      eyebrow: 'Curated',
-      image_url: `/uploads/real_products/${coll.image}`,
-      link_url: `/collections/${coll.handle}`,
-      sort_order: collDisplayOrder,
-      is_active: true
-    });
+    if (!id) {
+      id = uuidv4();
+      await db.insert(product_collections).values({
+        id,
+        title: coll.title,
+        handle: coll.handle,
+        status: 'active',
+        display_order: collDisplayOrder,
+        cover_image_url: `/uploads/real_products/${coll.image}`,
+        image: `/uploads/real_products/${coll.image}`,
+        homepage_section: coll.homepage_section
+      });
+      console.log(`Created collection: ${coll.title}`);
+
+      // Create homepage merchandising slot for the collection
+      await db.insert(homepage_merchandising_slots).values({
+        id: uuidv4(),
+        slot_key: collDisplayOrder <= 3 ? 'collections' : 'collectionSlider',
+        linked_collection_id: id,
+        title: coll.title,
+        eyebrow: 'Curated',
+        image_url: `/uploads/real_products/${coll.image}`,
+        link_url: `/collections/${coll.handle}`,
+        sort_order: collDisplayOrder,
+        is_active: true
+      });
+    } else {
+      console.log(`Skipped collection (already exists): ${coll.title}`);
+    }
+    
+    collectionIds[coll.handle] = id;
     collDisplayOrder++;
   }
 
@@ -124,46 +132,53 @@ async function seed() {
 
   let catDisplayOrder = 1;
   for (const catData of categoriesData) {
-    const id = uuidv4();
     const handle = toHandle(catData.name);
-    const catImage = catImages[catData.name] || catData.products[0]?.image;
-    const finalImageUrl = catImage.startsWith('category') ? `/uploads/real_products/${catImage}` : `/uploads/real_products/${catImage}`;
-    
-    await db.insert(categories).values({
-      id,
-      name: catData.name,
-      slug: handle,
-      is_active: true,
-      display_order: catDisplayOrder,
-      image: finalImageUrl,
-    });
-    categoryIds[catData.name] = id;
-    console.log(`Created category: ${catData.name}`);
+    const existing = await db.select({ id: categories.id }).from(categories).where(eq(categories.slug, handle)).limit(1);
+    let id = existing[0]?.id;
 
-    // Create Category Circle for homepage
-    await db.insert(category_circles).values({
-      id: uuidv4(),
-      category_id: id,
-      label: catData.name,
-      image_url: finalImageUrl,
-      link_url: `/categories/${handle}`,
-      sort_order: catDisplayOrder,
-      is_active: true
-    });
-    
-    // Create Featured Category for homepage (first 4)
-    if (catDisplayOrder <= 4) {
-      await db.insert(homepage_categories).values({
+    if (!id) {
+      id = uuidv4();
+      const catImage = catImages[catData.name] || catData.products[0]?.image;
+      const finalImageUrl = catImage.startsWith('category') ? `/uploads/real_products/${catImage}` : `/uploads/real_products/${catImage}`;
+      
+      await db.insert(categories).values({
+        id,
+        name: catData.name,
+        slug: handle,
+        is_active: true,
+        display_order: catDisplayOrder,
+        image: finalImageUrl,
+      });
+      console.log(`Created category: ${catData.name}`);
+
+      // Create Category Circle for homepage
+      await db.insert(category_circles).values({
         id: uuidv4(),
         category_id: id,
-        name: catData.name,
+        label: catData.name,
         image_url: finalImageUrl,
         link_url: `/categories/${handle}`,
         sort_order: catDisplayOrder,
         is_active: true
       });
+      
+      // Create Featured Category for homepage (first 4)
+      if (catDisplayOrder <= 4) {
+        await db.insert(homepage_categories).values({
+          id: uuidv4(),
+          category_id: id,
+          name: catData.name,
+          image_url: finalImageUrl,
+          link_url: `/categories/${handle}`,
+          sort_order: catDisplayOrder,
+          is_active: true
+        });
+      }
+    } else {
+      console.log(`Skipped category (already exists): ${catData.name}`);
     }
 
+    categoryIds[catData.name] = id;
     catDisplayOrder++;
   }
 
