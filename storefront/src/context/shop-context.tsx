@@ -12,13 +12,9 @@ import {
 import { api } from '@/lib/api';
 import { storage } from '@/lib/storage';
 import { detectUserCurrency } from '@/lib/currency';
+import { getSelectableRegions, StoreRegion } from '@/lib/regions';
 
-interface Region {
-  id: string;
-  name: string;
-  currency_code: string;
-  tax_rate: number;
-}
+export type Region = StoreRegion;
 
 interface TaxRate {
   country_code: string;
@@ -84,7 +80,7 @@ export function ShopProvider({ children }: Readonly<{ children: ReactNode }>) {
           api.getStoreSettings().catch(() => null), // Don't fail if settings not available
         ]);
 
-        const regionList = regionsData.regions || [];
+        const regionList = getSelectableRegions(regionsData.regions || []);
         setRegions(regionList);
 
         // Set settings if available - deep merge to preserve defaults

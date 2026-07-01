@@ -226,61 +226,36 @@ async function fetchLandingProductCount(landing: LandingData) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
+  const landing = await resolveLanding(handle);
 
-  try {
-    const landing = await resolveLanding(handle);
-
-    if (!landing) {
-      return {
-        title: 'Collection Not Found',
-        robots: { index: false, follow: false },
-      };
-    }
-
-    const productCount = await fetchLandingProductCount(landing);
-    const requestHeaders = await headers();
-    const robotsPolicy = landing.robots_policy || 'index,follow';
-    const noindex =
-      productCount === 0 ||
-      landing.is_indexable === false ||
-      (landing.kind === 'category' ? !landing.is_active : false) ||
-      robotsPolicy.startsWith('noindex');
-
-    return buildCollectionMetadata({
-      name: landing.title,
-      title: landing.seo_title,
-      path: `/collections/${landing.handle}`,
-      description: landing.seo_desc || landing.description,
-      image: landing.image,
-      kind: landing.kind === 'category' ? 'category' : 'collection',
-      noindex,
-      robotsFollow: !robotsPolicy.endsWith('nofollow'),
-      canonicalUrl: landing.canonical_url || undefined,
-      ogLocale: getOgLocaleForLocale(requestHeaders.get('x-odhvica-locale')),
-    });
-  } catch (error: unknown) {
-    const digest = (error as { digest?: string })?.digest;
-    const message = (error as { message?: string })?.message;
-    
-    if (
-      message === 'NEXT_REDIRECT' ||
-      digest === 'NEXT_NOT_FOUND' ||
-      message === 'NEXT_NOT_FOUND' ||
-      (error as { status?: number })?.status === 404
-    ) {
-      throw error;
-    }
-
-    const fallbackTitle = handle
-      .split('-')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ');
-
+  if (!landing) {
     return {
-      title: fallbackTitle,
-      robots: { index: true, follow: true },
+      title: 'Collection Not Found',
+      robots: { index: false, follow: false },
     };
   }
+
+  const productCount = await fetchLandingProductCount(landing);
+  const requestHeaders = await headers();
+  const robotsPolicy = landing.robots_policy || 'index,follow';
+  const noindex =
+    productCount === 0 ||
+    landing.is_indexable === false ||
+    (landing.kind === 'category' ? !landing.is_active : false) ||
+    robotsPolicy.startsWith('noindex');
+
+  return buildCollectionMetadata({
+    name: landing.title,
+    title: landing.seo_title,
+    path: `/collections/${landing.handle}`,
+    description: landing.seo_desc || landing.description,
+    image: landing.image,
+    kind: landing.kind === 'category' ? 'category' : 'collection',
+    noindex,
+    robotsFollow: !robotsPolicy.endsWith('nofollow'),
+    canonicalUrl: landing.canonical_url || undefined,
+    ogLocale: getOgLocaleForLocale(requestHeaders.get('x-odhvica-locale')),
+  });
 }
 
 function productParamsForLanding(landing: LandingData) {

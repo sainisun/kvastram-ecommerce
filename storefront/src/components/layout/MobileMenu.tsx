@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Drawer } from '@/components/ui/Drawer';
 import { STOREFRONT_NAV_ITEMS } from '@/config/storefront-navigation';
 import { ChevronRight } from 'lucide-react';
+import { RegionSelector } from '@/components/region/RegionSelector';
 
 // Kept for prop compatibility
 interface Category {
@@ -19,21 +20,11 @@ interface Collection {
   handle: string;
 }
 
-interface Region {
-  id: string;
-  name: string;
-  currency_code: string;
-  tax_rate: number;
-}
-
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
   collections?: Collection[];
-  regions?: Region[];
-  currentRegion?: Region | null;
-  onRegionChange?: (region: Region) => void;
 }
 
 export default function MobileMenu({
@@ -45,6 +36,10 @@ export default function MobileMenu({
   return (
     <Drawer isOpen={isOpen} onClose={onClose} side="left" title="Menu" showHeader={true} bodyClassName="p-0">
       <nav className="flex flex-col py-[var(--ds-space-xs)]">
+        <div className="border-b border-border-subtle px-5 py-4">
+          <RegionSelector onRegionChange={onClose} />
+        </div>
+
         {STOREFRONT_NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
 

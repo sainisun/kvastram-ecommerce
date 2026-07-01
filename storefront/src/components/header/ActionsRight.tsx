@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
 import { IconButton } from '@/components/ui/Button';
+import { RegionSelector } from '@/components/region/RegionSelector';
 
 interface ActionsRightProps {
   onSearchOpen: () => void;
@@ -24,6 +25,8 @@ export function ActionsRight({ onCartOpen, isTransparent = false }: ActionsRight
 
   return (
     <div className="flex items-center justify-end gap-1.5">
+      <RegionSelector compact isTransparent={isTransparent} className="mr-2" />
+
       <Link href="/search" className={iconCls} aria-label="Search">
         <Search size={20} strokeWidth={1.4} />
       </Link>

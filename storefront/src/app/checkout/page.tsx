@@ -36,6 +36,8 @@ import PayPalButton from '@/components/checkout/PayPalButton';
 import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { useCurrency } from '@/context/currency-context';
+import { formatMoney } from '@/lib/currency';
+import { resolveRegionForCountry } from '@/lib/regions';
 
 // Initialize Stripe
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -207,6 +209,7 @@ export default function CheckoutPage() {
     shipping_total: number;
     tax_total: number;
     gift_wrapping_total: number;
+    currency_code: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -279,16 +282,17 @@ export default function CheckoutPage() {
     }
   }, [customer, authLoading, step]);
 
-  // Sync global region state whenever country_code changes
+  // Shipping country is authoritative at checkout: exact country first,
+  // then the configured five-market mapping, then Rest of World.
   useEffect(() => {
-    if (formData.country_code && regions && regions.length > 0) {
-      const countryName = getCountryName(formData.country_code);
-      const matchedRegion = regions.find(
-        (r) => r.name.toLowerCase() === countryName.toLowerCase()
-      );
-      if (matchedRegion && matchedRegion.id !== currentRegion?.id) {
-        setRegion(matchedRegion);
-      }
+    if (!formData.country_code || regions.length === 0) return;
+
+    const matchedRegion = resolveRegionForCountry(
+      regions,
+      formData.country_code
+    );
+    if (matchedRegion && matchedRegion.id !== currentRegion?.id) {
+      setRegion(matchedRegion);
     }
   }, [formData.country_code, regions, currentRegion?.id, setRegion]);
 
@@ -517,6 +521,20 @@ export default function CheckoutPage() {
         throw new Error('Please select a shipping method');
       }
 
+      const currencyCode = currentRegion.currency_code.toLowerCase();
+      const hasRazorpay =
+        currencyCode === 'inr' &&
+        !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      const hasPayPal =
+        currencyCode !== 'inr' &&
+        !!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+
+      if (!hasRazorpay && !hasPayPal) {
+        throw new Error(
+          'Payment is not available for the region selected by your shipping country. Please contact support.'
+        );
+      }
+
       const payload = {
         region_id: currentRegion.id,
         email: formData.email,
@@ -555,31 +573,8 @@ export default function CheckoutPage() {
         gift_wrapping_total: Number(
           res.order.metadata?.gift_wrapping_total || 0
         ),
+        currency_code: res.order.currency_code || currentRegion.currency_code,
       });
-
-      const currencyCode = (currentRegion?.currency_code || 'usd').toLowerCase();
-
-      // For INR (Razorpay) and international PayPal — no Stripe intent needed.
-      // Only create a Stripe intent for currencies without a dedicated provider.
-      const hasRazorpay =
-        currencyCode === 'inr' &&
-        !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-      const hasPayPal =
-        currencyCode !== 'inr' &&
-        !!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-
-      if (!hasRazorpay && !hasPayPal) {
-        // Fallback: use Stripe
-        // [STRIPE HIDDEN] - Disabled Stripe initialization to prevent crash with dummy keys
-        /*
-        const paymentRes = await api.createPaymentIntent(
-          newOrderUUID,
-          res.checkout_payment_token
-        );
-        setClientSecret(paymentRes.client_secret);
-        */
-        console.warn('No active payment gateway found for this currency (Stripe disabled).');
-      }
 
       // Move to payment step
       setStep('payment');
@@ -629,11 +624,13 @@ export default function CheckoutPage() {
       displayedTaxAmount +
       giftWrappingCost);
 
-  // Payment currency can differ by selected region, but all local cart amounts
-  // are stored in INR paise and displayed through the currency provider.
+  // Local cart amounts are INR paise and need conversion. Confirmed order totals
+  // are already in the backend-selected regional currency and need formatting only.
   const currency =
     currentRegion?.currency_code || items[0]?.currency?.toUpperCase() || 'USD';
   const displayMoney = (amount: number) => formatPrice(amount);
+  const displayConfirmedMoney = (amount: number) =>
+    formatMoney(amount, confirmedOrderTotals?.currency_code || currency);
 
   return (
     <div className="min-h-screen bg-[var(--ds-surface-paper)]">
@@ -1452,7 +1449,9 @@ export default function CheckoutPage() {
                   <span className={shippingCost === 0 ? 'text-[var(--ds-success)]' : ''}>
                     {shippingCost === 0
                       ? 'FREE'
-                       : displayMoney(shippingCost)}
+                       : confirmedOrderTotals
+                         ? displayConfirmedMoney(shippingCost)
+                         : displayMoney(shippingCost)}
                   </span>
                 </div>
               ) : (
@@ -1469,7 +1468,9 @@ export default function CheckoutPage() {
                     {taxLoading ? (
                       <span className="color-muted">Calculating...</span>
                     ) : (
-                      displayMoney(displayedTaxAmount)
+                      confirmedOrderTotals
+                        ? displayConfirmedMoney(displayedTaxAmount)
+                        : displayMoney(displayedTaxAmount)
                     )}
                   </span>
                 </div>
@@ -1481,14 +1482,18 @@ export default function CheckoutPage() {
                     <span>🎁</span> Gift Wrapping
                   </span>
                   <span>
-                    {displayMoney(giftWrappingCost)}
+                    {confirmedOrderTotals
+                      ? displayConfirmedMoney(giftWrappingCost)
+                      : displayMoney(giftWrappingCost)}
                   </span>
                 </div>
               )}
               <div className="flex justify-between text-body-xl font-display color-ink pt-4 border-t border-border-subtle">
                 <span>Total</span>
                 <span>
-                  {displayMoney(finalTotal)}
+                  {confirmedOrderTotals
+                    ? displayConfirmedMoney(finalTotal)
+                    : displayMoney(finalTotal)}
                 </span>
               </div>
             </div>

@@ -58,10 +58,19 @@ export class SMSService {
         }
       });
 
-      const data = await response.json();
-      
-      if (data.type === 'error') {
-        console.error('MSG91 Error:', data.message);
+      const data: unknown = await response.json();
+
+      if (
+        typeof data === 'object' &&
+        data !== null &&
+        'type' in data &&
+        data.type === 'error'
+      ) {
+        const message =
+          'message' in data && typeof data.message === 'string'
+            ? data.message
+            : 'Unknown MSG91 error';
+        console.error('MSG91 Error:', message);
       }
     } catch (error) {
       console.error('Failed to send SMS via MSG91:', error);

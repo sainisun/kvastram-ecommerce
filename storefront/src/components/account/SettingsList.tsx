@@ -2,25 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, MapPin, Globe, Bell, LogOut, ChevronRight, MessageCircle } from 'lucide-react';
+import { User, MapPin, Bell, LogOut, ChevronRight, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { useShop } from '@/context/shop-context';
 import { Button } from '@/components/ui/Button';
+import { RegionSelector } from '@/components/region/RegionSelector';
 
 export function SettingsList() {
   const pathname = usePathname();
   const { logout } = useAuth();
-  const { currentRegion, setRegion, regions } = useShop();
-
-  const handleRegionClick = () => {
-    if (regions.length === 0) return;
-
-    const currentIndex = regions.findIndex((region) => region.id === currentRegion?.id);
-    const nextRegion = regions[(currentIndex + 1) % regions.length];
-    if (nextRegion) {
-      setRegion(nextRegion);
-    }
-  };
 
   const menuItems = [
     {
@@ -40,13 +29,6 @@ export function SettingsList() {
       icon: MessageCircle,
       label: 'Messages',
       active: pathname.startsWith('/account/messages'),
-    },
-    {
-      href: '#',
-      icon: Globe,
-      label: currentRegion ? `Region: ${currentRegion.name}` : 'Select Region',
-      active: false,
-      onClick: handleRegionClick,
     },
     {
       href: '/account/notifications',
@@ -86,20 +68,15 @@ export function SettingsList() {
             </div>
           );
 
-          if (item.href === '#') {
-            return (
-              <button key={item.label} type="button" onClick={item.onClick} className="block w-full text-left">
-                {content}
-              </button>
-            );
-          }
-
           return (
             <Link key={item.label} href={item.href}>
               {content}
             </Link>
           );
         })}
+        <div className="border-b border-border-subtle p-4">
+          <RegionSelector />
+        </div>
       </div>
 
       <div className="p-4 mt-2">
