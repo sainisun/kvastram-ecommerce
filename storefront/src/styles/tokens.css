@@ -11,13 +11,13 @@
   --ds-font-ui: var(--ds-font-body);
   --ds-font-label: var(--ds-font-ui);
 
-  --ds-text-display-xl: clamp(1.875rem, 3vw, 2.75rem); /* 30px → 44px */
-  --ds-text-display-lg: clamp(1.5rem, 2vw, 1.875rem); /* 24px → 30px */
-  --ds-text-display-md: clamp(1.25rem, 1.5vw, 1.5rem); /* 20px → 24px */
-  --ds-text-display-sm: clamp(1.125rem, 1.2vw, 1.25rem); /* 18px → 20px */
-  --ds-text-body-xl: clamp(1rem, 1vw, 1.125rem); /* 16px → 18px */
-  --ds-text-body-lg: 1rem; /* 16px */
-  --ds-text-body-md: 0.9375rem; /* 15px */
+  --ds-text-display-xl: clamp(2.5rem, 5vw, 4rem); /* 40px → 64px */
+  --ds-text-display-lg: clamp(2rem, 3.5vw, 3rem); /* 32px → 48px */
+  --ds-text-display-md: clamp(1.5rem, 2.5vw, 2.25rem); /* 24px → 36px */
+  --ds-text-display-sm: clamp(1.25rem, 1.5vw, 1.5rem); /* 20px → 24px */
+  --ds-text-body-xl: clamp(1.125rem, 1.5vw, 1.25rem); /* 18px → 20px */
+  --ds-text-body-lg: 1.125rem; /* 18px */
+  --ds-text-body-md: 1rem; /* 16px */
   --ds-text-body-sm: 0.875rem; /* 14px */
   --ds-text-body-xs: 0.75rem; /* 12px */
   --ds-text-count-xs: 0.625rem; /* 10px */

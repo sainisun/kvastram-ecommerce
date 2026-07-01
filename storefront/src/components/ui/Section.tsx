@@ -13,7 +13,7 @@ const widthClasses = {
 
 export function Section({ className, width = 'default', children, ...props }: SectionProps) {
   return (
-    <section className={cn('py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]', className)} {...props}>
+    <section className={cn('py-[var(--ds-space-lg)] md:py-[var(--ds-space-xl)] lg:py-[var(--ds-space-2xl)]', className)} {...props}>
       <div className={cn('mx-auto px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]', widthClasses[width])}>
         {children}
       </div>
@@ -45,11 +45,7 @@ export function SectionHeader({
       {...props}
     >
       <div className="min-w-0">
-        {eyebrow ? (
-          <p className="mb-3 font-body text-body-xs font-semibold  tracking-token-wider text-muted">
-            {eyebrow}
-          </p>
-        ) : null}
+        {/* eyebrow removed per user request */}
         <h2 className="max-w-heading font-display text-display-md font-semibold leading-token-tight text-primary">
           {heading}
         </h2>
