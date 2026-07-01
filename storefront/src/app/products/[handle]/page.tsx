@@ -47,10 +47,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return buildProductMetadata(product, {
       ogLocale: getOgLocaleForLocale(requestHeaders.get('x-odhvica-locale')),
     });
-  } catch {
+  } catch (error: unknown) {
+    const isNotFound =
+      (error as { digest?: string })?.digest === 'NEXT_NOT_FOUND' ||
+      (error as { message?: string })?.message === 'NEXT_NOT_FOUND' ||
+      (error as { status?: number })?.status === 404;
+
+    if (isNotFound) {
+      return {
+        title: 'Product Not Found',
+        robots: { index: false, follow: false },
+      };
+    }
+
+    // Temporary API failure — keep page indexable
+    const fallbackTitle = handle
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+
     return {
-      title: 'Product Not Found',
-      robots: { index: false, follow: false },
+      title: fallbackTitle,
+      robots: { index: true, follow: true },
     };
   }
 }

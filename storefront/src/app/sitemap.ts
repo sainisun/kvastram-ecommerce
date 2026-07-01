@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 
 import { api } from '@/lib/api';
 import { flattenCategories, getProductPath, SITE_URL } from '@/lib/seo';
-import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
+import { isIndexableProduct } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
 
 async function fetchAllProducts() {
@@ -18,7 +18,7 @@ async function fetchAllProducts() {
     offset += limit;
   } while (offset < total);
 
-  return filterStorefrontReadyProducts(products);
+  return products.filter(isIndexableProduct);
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

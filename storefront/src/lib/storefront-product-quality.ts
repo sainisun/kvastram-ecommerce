@@ -50,6 +50,17 @@ export function isStorefrontProductReady(
   );
 }
 
+export function isIndexableProduct(product: Product): boolean {
+  // Minimum bar for SEO indexing — less strict than isStorefrontProductReady
+  // Images and price NOT required — only identity and title matter
+  if (!product?.id) return false;
+  if (product.status !== 'published') return false;
+  if (!product.handle?.trim()) return false;
+  // Still block obvious placeholder/test content
+  if (!hasUsableTitle(product)) return false;
+  return true;
+}
+
 export function filterStorefrontReadyProducts(
   products: Product[] = [],
   options: { requireSellablePrice?: boolean } = {}
