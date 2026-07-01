@@ -62,7 +62,7 @@ BEGIN
         gen_random_uuid(),
         market.region_name,
         market.currency_code,
-        market.tax_rate,
+        market.tax_rate::numeric,
         market.tax_code,
         to_jsonb(market.country_codes),
         jsonb_build_object(
