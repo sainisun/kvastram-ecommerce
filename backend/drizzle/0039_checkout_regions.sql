@@ -97,9 +97,8 @@ END $$;
 -- Rest of World shares the United States USD price book.
 WITH market_ids AS (
   SELECT
-    MAX(id::text)::uuid FILTER (WHERE metadata->>'market_key' = 'us') AS us_id,
-    MAX(id::text)::uuid FILTER (WHERE metadata->>'market_key' = 'rest-of-world') AS row_id
-  FROM regions
+    (SELECT id FROM regions WHERE metadata->>'market_key' = 'us' LIMIT 1) AS us_id,
+    (SELECT id FROM regions WHERE metadata->>'market_key' = 'rest-of-world' LIMIT 1) AS row_id
 )
 INSERT INTO money_amounts (
   id,
