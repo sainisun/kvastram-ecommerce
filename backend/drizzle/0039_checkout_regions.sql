@@ -79,7 +79,7 @@ BEGIN
       SET
         name = market.region_name,
         currency_code = market.currency_code,
-        tax_rate = market.tax_rate,
+        tax_rate = market.tax_rate::numeric,
         tax_code = market.tax_code,
         countries = to_jsonb(market.country_codes),
         metadata = COALESCE(metadata, '{}'::jsonb) ||
