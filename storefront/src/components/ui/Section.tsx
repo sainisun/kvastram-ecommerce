@@ -22,18 +22,16 @@ export function Section({ className, width = 'default', children, ...props }: Se
 }
 
 interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
-  eyebrow?: ReactNode;
   heading: ReactNode;
   description?: ReactNode;
   action?: ReactNode;
 }
 
 export function SectionHeader({
-  className,
-  eyebrow,
   heading,
   description,
   action,
+  className,
   ...props
 }: SectionHeaderProps) {
   return (

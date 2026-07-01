@@ -14,8 +14,8 @@ export function CollectionsSection({
       <div className="homepage-container">
         <div className="homepage-section-head">
           <div>
-            <p className="homepage-eyebrow">Curated Collections</p>
-            <h2 className="font-display text-display-md text-primary">Stories in cloth</h2>
+            {/* eyebrow removed per user request */}
+            <h2 className="font-display text-display-lg text-primary">Stories in cloth</h2>
           </div>
           <Link href="/collections" className="kv-section-link">
             View all collections →

@@ -18,8 +18,8 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
       <div className="homepage-container">
         <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)]">
           <div>
-            <p className="homepage-eyebrow text-body-xs uppercase tracking-[var(--ds-type-label-tracking)] text-[var(--ds-accent-gold)]">Trending Reels</p>
-            <h2 className="text-display-sm font-display font-medium text-primary">See the craft in motion</h2>
+            {/* eyebrow removed per user request */}
+            <h2 className="text-display-lg font-display font-medium text-primary">See the craft in motion</h2>
           </div>
           <Link href="/reels" className="kv-section-link">
             View All →

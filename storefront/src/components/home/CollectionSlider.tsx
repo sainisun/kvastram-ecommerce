@@ -15,7 +15,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
       <div className="homepage-container">
         <h2
           id="homepage-collection-slider-title"
-          className="mb-[var(--ds-space-md)] font-display text-display-md text-primary"
+          className="mb-[var(--ds-space-md)] font-display text-display-lg text-primary"
         >
           our collection
         </h2>
