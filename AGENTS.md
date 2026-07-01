@@ -54,3 +54,29 @@ Run Playwright desktop/mobile smoke tests for visual or layout changes.
 - Deploying from `/root/odhvica-platform` or any alternate checkout
 - Running multiple Compose projects against the same production ports
 - Silently changing the design-system typography or accent contract
+
+## Deployment workflow — MANDATORY, no exceptions
+
+This project deploys via GitHub Actions CI/CD. The correct and ONLY workflow is:
+
+1. Make code changes locally.
+2. Test locally (and in a local Docker build if relevant).
+3. Commit and push to the `main` branch on GitHub.
+4. The GitHub Actions workflow automatically builds and deploys to the VPS.
+
+NEVER SSH directly into the VPS to:
+- Manually run `docker compose up --build`, `docker compose restart`, or any 
+  deployment command.
+- Manually edit files, environment variables, or configs on the server.
+- Manually tag/swap Docker images as a "fix."
+
+If production is broken and needs an emergency rollback, the correct action is to 
+revert the problematic commit(s) on GitHub and let the CI/CD pipeline redeploy the 
+reverted code — not to manually intervene on the VPS. Manual VPS changes create 
+drift between what's in GitHub and what's actually running, which is exactly what 
+caused confusion in this incident (the running production code no longer matched 
+any commit in git history).
+
+If manual VPS access is absolutely unavoidable (e.g. reading logs for debugging), 
+it must be read-only investigation only — no state-changing commands — and must be 
+reported back before any follow-up action is taken.
