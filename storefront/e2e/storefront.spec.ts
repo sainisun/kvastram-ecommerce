@@ -7,19 +7,27 @@ test.describe('Storefront visual contract', () => {
   test('homepage exposes the primary shopping experience', async ({ page }, testInfo) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    await expect(page).toHaveTitle(/Odhvica|Kantha/i);
-    await expect(page.locator('main')).toBeVisible();
-    if (testInfo.project.name === 'mobile-chromium') {
-      await expect(page.getByRole('button', { name: 'Open navigation' })).toBeVisible();
-    } else {
-      await expect(page.locator('nav').first()).toBeVisible();
-    }
-    await expect(page.locator('footer').first()).toBeVisible();
-    await expect(page.locator('body')).not.toContainText(publicAdminCopy);
+    try {
+      await expect(page).toHaveTitle(/Odhvica|Kantha/i);
+      await expect(page.locator('main')).toBeVisible();
+      if (testInfo.project.name === 'mobile-chromium') {
+        await expect(page.getByRole('button', { name: 'Open navigation' })).toBeVisible();
+      } else {
+        await expect(page.locator('nav').first()).toBeVisible();
+      }
+      await expect(page.locator('footer').first()).toBeVisible();
+      await expect(page.locator('body')).not.toContainText(publicAdminCopy);
 
-    const hero = page.locator('main section').first();
-    await expect(hero).toBeVisible();
-    await expect(hero.getByRole('link').first()).toBeVisible();
+      const hero = page.locator('main section').first();
+      await expect(hero).toBeVisible();
+      await expect(hero.getByRole('link').first()).toBeVisible();
+    } catch (error) {
+      console.log('--- TEST FAILED HTML DUMP ---');
+      const html = await page.locator('body').innerHTML();
+      console.log(html);
+      console.log('--- END HTML DUMP ---');
+      throw error;
+    }
   });
 
   test('homepage renders the exact 11-section contract in order', async ({ page }) => {

@@ -136,7 +136,7 @@ export function NewArrivals({
         </div>
       </div>
       
-      <div className="pl-[var(--kv-desktop-container-gutter)] md:pl-[calc(max(var(--kv-desktop-container-gutter),(100vw-1470px)/2))] [&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-info]:py-[var(--ds-space-sm)] overflow-x-auto no-scrollbar flex gap-4 md:gap-8 scroll-smooth pb-8 pr-[var(--kv-desktop-container-gutter)]">
+      <div className="pl-[var(--ds-home-gutter-desktop)] md:pl-[calc(max(var(--ds-home-gutter-desktop),(100vw-1470px)/2))] [&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-info]:py-[var(--ds-space-sm)] overflow-x-auto no-scrollbar flex gap-4 md:gap-8 scroll-smooth pb-8 pr-[var(--ds-home-gutter-desktop)]">
           {products.map((product) => {
             const priceInfo = getPrice(product);
             return (
