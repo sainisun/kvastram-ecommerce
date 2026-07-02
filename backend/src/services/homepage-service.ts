@@ -38,6 +38,7 @@ type HomepageSectionKey =
   | 'hero'
   | 'featuredCategories'
   | 'bestSellers'
+  | 'newArrivals'
   | 'collectionSlider'
   | 'collections'
   | 'watchShop'
@@ -160,6 +161,30 @@ async function loadBestSellers(limit = 4) {
       return product ? { ...product, units_sold: Number(row.units_sold || 0) } : null;
     })
     .filter((product): product is NonNullable<typeof product> => Boolean(product));
+}
+
+async function loadNewArrivals(limit = 12) {
+  const curatedProducts = await loadCuratedFeaturedProducts(['new_arrivals'], limit);
+  if (curatedProducts.length > 0) {
+    return curatedProducts;
+  }
+
+  const rows = await db
+    .select({
+      id: products.id,
+    })
+    .from(products)
+    .where(
+      and(
+        eq(products.status, 'published'),
+        eq(products.is_wholesale_only, false)
+      )
+    )
+    .orderBy(desc(products.created_at))
+    .limit(limit);
+
+  const enriched = await productService.retrieveMany(rows.map((row) => row.id));
+  return enriched.filter((product) => isHomepageProductReady(product, { requirePrice: false }));
 }
 
 async function loadCuratedFeaturedProducts(sectionKeys: string[], limit = 4) {
@@ -748,6 +773,15 @@ export class HomepageService {
       statuses.bestSellers = { status: 'error', count: 0 };
     }
 
+    let newArrivals: Awaited<ReturnType<typeof loadNewArrivals>> = [];
+    try {
+      newArrivals = await loadNewArrivals();
+      statuses.newArrivals = statusFor(newArrivals);
+    } catch (error) {
+      console.error('[Homepage] new arrivals failed:', error);
+      statuses.newArrivals = { status: 'error', count: 0 };
+    }
+
     let collections: Awaited<ReturnType<typeof loadCollections>> = [];
     try {
       collections = await loadCollections(new Set(bestSellers.map((product) => product.id)));
@@ -857,6 +891,7 @@ export class HomepageService {
       hero,
       featured_categories: featuredCategories,
       best_sellers: bestSellers,
+      new_arrivals: newArrivals,
       collection_slider: collectionSlider,
       collections,
       watch_shop: watchShop,

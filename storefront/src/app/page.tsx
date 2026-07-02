@@ -10,7 +10,7 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { CategoryCarousel } from '@/components/home/CategoryCarousel';
 import { CollectionSlider } from '@/components/home/CollectionSlider';
 import { BestSellers } from '@/components/home/BestSellers';
-import { CollectionsSection } from '@/components/home/CollectionsSection';
+import { NewArrivals } from '@/components/home/NewArrivals';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { BrandStory } from '@/components/home/BrandStory';
 import { InstagramSection } from '@/components/home/InstagramSection';
@@ -27,6 +27,7 @@ const EMPTY_HOMEPAGE: HomepagePayload = {
     hero: { status: 'error', count: 0 },
     featuredCategories: { status: 'error', count: 0 },
     bestSellers: { status: 'error', count: 0 },
+    newArrivals: { status: 'error', count: 0 },
     collectionSlider: { status: 'error', count: 0 },
     collections: { status: 'error', count: 0 },
     watchShop: { status: 'error', count: 0 },
@@ -38,6 +39,7 @@ const EMPTY_HOMEPAGE: HomepagePayload = {
   hero: [],
   featured_categories: [],
   best_sellers: [],
+  new_arrivals: [],
   collection_slider: [],
   collections: [],
   watch_shop: [],
@@ -77,8 +79,8 @@ export default async function Home() {
       {/* 5. Chosen For You / Best Seller Product Slider */}
       <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
 
-      {/* 6. Editorial Collection / Campaign Section */}
-      <CollectionsSection collections={homepage.collections} />
+      {/* 6. New Arrivals Product Carousel */}
+      <NewArrivals products={homepage.new_arrivals} />
       
       {/* 7. Watch & Buy / Trending Now Section */}
       <WatchBuyPreview reels={homepage.watch_shop} />

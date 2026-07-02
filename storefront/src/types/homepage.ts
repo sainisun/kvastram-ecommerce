@@ -83,6 +83,7 @@ export interface HomepagePayload {
     | 'watchShop'
     | 'brandStory'
     | 'social'
+    | 'newArrivals'
     | 'newsletter',
     HomepageSectionState
   >;
@@ -90,6 +91,7 @@ export interface HomepagePayload {
   hero: HomepageHeroSlide[];
   featured_categories: HomepageCategoryCard[];
   best_sellers: Product[];
+  new_arrivals: Product[];
   collection_slider: HomepageCollection[];
   collections: HomepageCollection[];
   watch_shop: HomepageTrendingReel[];

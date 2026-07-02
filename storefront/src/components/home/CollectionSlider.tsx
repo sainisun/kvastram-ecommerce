@@ -13,12 +13,17 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
       data-home-section="4-collection-slider"
     >
       <div className="homepage-container">
-        <h2
-          id="homepage-collection-slider-title"
-          className="mb-[var(--ds-space-md)] font-display text-display-lg text-primary"
-        >
-          our collection
-        </h2>
+        <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)]">
+          <h2
+            id="homepage-collection-slider-title"
+            className="font-display text-display-lg text-primary"
+          >
+            our collection
+          </h2>
+          <Link href="/collections" className="kv-section-link">
+            View all collections →
+          </Link>
+        </div>
         <div className="overflow-x-auto no-scrollbar flex gap-[10px] scroll-smooth">
           {collections.map((collection) => (
             <Link

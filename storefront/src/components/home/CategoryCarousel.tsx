@@ -16,7 +16,7 @@ export function CategoryCarousel({ categories }: { categories: HomepageCategoryC
       <div className="homepage-container">
         <h2
           id="homepage-category-carousel-title"
-          className="mb-[var(--ds-space-md)] font-display text-display-lg text-primary"
+          className="mb-[var(--ds-space-md)] font-display text-display-lg text-primary text-center"
         >
           shop by category
         </h2>
