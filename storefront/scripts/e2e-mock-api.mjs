@@ -38,6 +38,7 @@ const homepage = {
       'hero',
       'featuredCategories',
       'bestSellers',
+      'newArrivals',
       'collectionSlider',
       'collections',
       'watchShop',
@@ -71,6 +72,7 @@ const homepage = {
     sort_order: index,
   })),
   best_sellers: bestSellers,
+  new_arrivals: bestSellers,
   collection_slider: [
     {
       id: 'slider-1',
