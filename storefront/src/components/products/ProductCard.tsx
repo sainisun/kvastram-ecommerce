@@ -106,7 +106,7 @@ export function ProductCard({
               alt={buildProductImageAlt(product, 0)}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
-              className="object-cover"
+              className="object-cover motion-safe:transition-transform duration-[2000ms] ease-out group-hover:scale-[1.05]"
             />
           ) : (
             <div className="product-no-image flex h-full w-full items-center justify-center bg-surface-soft">
@@ -157,7 +157,7 @@ export function ProductCard({
       </div>
 
       <div className="product-info">
-        <p className="product-cat">{categoryLabel || product.collection?.title || product.subtitle || 'Odhvica'}</p>
+        <p className="product-cat italic font-light font-display text-muted">{categoryLabel || product.collection?.title || product.subtitle || 'Odhvica'}</p>
         <Link href={href}>
           <h3 className="product-name" title={displayTitle}>
             {displayTitle}

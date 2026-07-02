@@ -111,8 +111,8 @@
   --radius-md: var(--ds-radius-md);
   --radius-lg: var(--ds-radius-lg);
 
-  --background: var(--cream);
-  --foreground: var(--ink);
+  --background: var(--ds-surface-parchment);
+  --foreground: var(--ds-text-primary);
 
   /* RGB channels for rgba() usage */
   --ink-rgb: var(--ds-ink-rgb);

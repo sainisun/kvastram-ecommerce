@@ -127,17 +127,17 @@ export function BestSellers({
   return (
     <section className="w-full py-[var(--ds-home-section-space-mobile)] md:py-[var(--ds-home-section-space-desktop)]" data-home-section="5-best-sellers">
       <div className="homepage-container">
-        <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)] md:mb-[var(--ds-space-md)]">
+        <div className="homepage-section-head flex flex-col md:flex-row justify-between items-start md:items-end mb-[var(--ds-space-12)] md:mb-[var(--ds-space-20)]">
           <div>
-            {/* eyebrow removed per user request */}
-            <h2 className="text-display-lg font-display font-medium text-primary">Best Sellers</h2>
+            <h2 className="text-display-lg font-display font-light italic tracking-wide text-primary">Best Sellers</h2>
           </div>
-          <Link href="/collections/best-sellers" className="kv-section-link">
-            View All Best Sellers →
+          <Link href="/collections/best-sellers" className="mt-4 md:mt-0 text-body-sm font-medium tracking-[0.1em] uppercase text-secondary hover:text-primary transition-colors border-b border-transparent hover:border-primary pb-1">
+            View All Best Sellers
           </Link>
         </div>
-        
-        <div className="[&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-info]:py-[var(--ds-space-xs)] overflow-x-auto no-scrollbar flex gap-[1px] scroll-smooth">
+      </div>
+      
+      <div className="pl-[var(--kv-desktop-container-gutter)] md:pl-[calc(max(var(--kv-desktop-container-gutter),(100vw-1470px)/2))] [&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-info]:py-[var(--ds-space-sm)] overflow-x-auto no-scrollbar flex gap-4 md:gap-8 scroll-smooth pb-8 pr-[var(--kv-desktop-container-gutter)]">
           {products.map((product) => {
             const priceInfo = getPrice(product);
             return (
@@ -157,7 +157,6 @@ export function BestSellers({
             );
           })}
         </div>
-      </div>
     </section>
   );
 }
