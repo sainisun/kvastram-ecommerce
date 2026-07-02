@@ -243,8 +243,8 @@
   --ds-home-gutter-desktop: 3rem;      /* 48px — editorial breathing room */
 
   /* ── Section spacing (homepage) ── */
-  --ds-home-section-space-mobile: 80px;
-  --ds-home-section-space-desktop: 160px;
+  --ds-home-section-space-mobile: 48px;
+  --ds-home-section-space-desktop: 80px;
 
   /* ── Component spacing rules ── */
   --ds-btn-padding-y:    0.875rem;  /* 14px — 52px total height with line-height */

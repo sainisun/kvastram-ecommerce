@@ -11,6 +11,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
   // We will feature the first one prominently, and stack the next 2.
   const featured = collections[0];
   const secondary = collections.slice(1, 3);
+  const remaining = collections.slice(3);
 
   return (
     <section
@@ -19,19 +20,21 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
       data-home-section="4-collection-slider"
     >
       <div className="homepage-container">
-        <div className="homepage-section-head flex flex-col items-center justify-center text-center mb-[var(--ds-space-3xl)]">
+        <div className="homepage-section-head relative flex items-end justify-center mb-[var(--ds-space-2xl)]">
           <h2
             id="homepage-collection-slider-title"
-            className="font-display text-display-lg text-primary italic font-light tracking-wide"
+            className="font-display text-display-lg text-primary italic font-light tracking-wide text-center"
           >
             Curated Collections
           </h2>
-          <Link
-            href="/collections"
-            className="mt-4 text-body-sm font-medium tracking-[0.1em] uppercase text-secondary hover:text-primary transition-colors border-b border-transparent hover:border-primary pb-1"
-          >
-            View all collections
-          </Link>
+          <div className="absolute right-0 bottom-2 hidden sm:block">
+            <Link
+              href="/collections"
+              className="text-body-sm font-medium tracking-[0.1em] uppercase text-secondary hover:text-primary transition-colors border-b border-transparent hover:border-primary pb-1"
+            >
+              View all
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
@@ -90,6 +93,33 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
             </div>
           )}
         </div>
+
+        {remaining.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mt-4 lg:mt-6">
+            {remaining.map((collection) => (
+              <Link
+                key={collection.id}
+                href={`/collections/${collection.handle}`}
+                className="relative aspect-square lg:aspect-[4/5] overflow-hidden group block"
+              >
+                <OptimizedImage
+                  src={collection.image}
+                  alt={collection.title}
+                  fill
+                  sizes="(max-width: 1023px) 100vw, 33vw"
+                  className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.5)] via-[rgba(var(--ds-black-rgb),0.1)] to-transparent opacity-80" />
+                
+                <div className="absolute inset-x-0 bottom-0 p-6 text-center lg:text-left">
+                  <h3 className="text-inverse text-display-sm font-display font-light tracking-wide">
+                    {collection.title}
+                  </h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
