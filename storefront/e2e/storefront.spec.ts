@@ -37,7 +37,7 @@ test.describe('Storefront visual contract', () => {
       '3-category-carousel',
       '4-collection-slider',
       '5-best-sellers',
-      '6-collections',
+      '6-new-arrivals',
       '7-watch-shop',
       '8-brand-story',
       '9-social',
