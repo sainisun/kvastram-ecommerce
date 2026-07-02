@@ -19,7 +19,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
       data-home-section="4-collection-slider"
     >
       <div className="homepage-container">
-        <div className="homepage-section-head flex flex-col items-center justify-center text-center mb-[var(--ds-space-20)]">
+        <div className="homepage-section-head flex flex-col items-center justify-center text-center mb-[var(--ds-space-3xl)]">
           <h2
             id="homepage-collection-slider-title"
             className="font-display text-display-lg text-primary italic font-light tracking-wide"
@@ -48,7 +48,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
               className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
             />
             {/* Subtle Gradient Scrim */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-80" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.6)] via-[rgba(var(--ds-black-rgb),0.1)] to-transparent opacity-80" />
             
             <div className="absolute inset-x-0 bottom-0 p-8 lg:p-12 text-center lg:text-left flex flex-col justify-end">
               <h3 className="text-inverse text-display-md font-display font-light tracking-wide mb-2">
@@ -78,7 +78,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
                     sizes="(max-width: 1023px) 100vw, 40vw"
                     className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.5)] via-transparent to-transparent opacity-80" />
                   
                   <div className="absolute inset-x-0 bottom-0 p-6 text-center lg:text-left">
                     <h3 className="text-inverse text-display-sm font-display font-light tracking-wide">

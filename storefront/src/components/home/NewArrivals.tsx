@@ -126,7 +126,7 @@ export function NewArrivals({
   return (
     <section className="w-full py-[var(--ds-home-section-space-mobile)] md:py-[var(--ds-home-section-space-desktop)]" data-home-section="6-new-arrivals">
       <div className="homepage-container">
-        <div className="homepage-section-head flex flex-col md:flex-row justify-between items-start md:items-end mb-[var(--ds-space-12)] md:mb-[var(--ds-space-20)]">
+        <div className="homepage-section-head flex flex-col md:flex-row justify-between items-start md:items-end mb-[var(--ds-space-lg)] md:mb-[var(--ds-space-3xl)]">
           <div>
             <h2 className="text-display-lg font-display font-light italic tracking-wide text-primary">New Arrivals</h2>
           </div>
