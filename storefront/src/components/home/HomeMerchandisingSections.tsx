@@ -19,10 +19,10 @@ function SectionHead({
   action?: { label: string; href: string };
 }) {
   return (
-    <div className="kv-section-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
+    <div className="max-md:py-[var(--ds-space-md)]-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
       <div className="kv-tag">{eyebrow}</div>
       {action ? (
-        <Link href={action.href} className="kv-section-link">
+        <Link href={action.href} className="max-md:py-[var(--ds-space-md)]-link">
           {action.label}
         </Link>
       ) : null}
@@ -114,7 +114,7 @@ export function HomeMerchandisingSections({
   return (
     <>
       {seasonalSlots.length > 0 ? (
-        <section className="kv-section bg-surface">
+        <section className="max-md:py-[var(--ds-space-md)] bg-surface">
           <div className="kv-container">
             <SectionHead
               eyebrow="Limited editions"
@@ -132,7 +132,7 @@ export function HomeMerchandisingSections({
       {children}
 
       {fabricSlots.length > 0 ? (
-        <section className="kv-section bg-surface">
+        <section className="max-md:py-[var(--ds-space-md)] bg-surface">
           <div className="kv-container">
             <SectionHead
               eyebrow="Craft &amp; material"
@@ -152,7 +152,7 @@ export function HomeMerchandisingSections({
       ) : null}
 
       {occasionSlots.length > 0 ? (
-        <section className="kv-section bg-surface">
+        <section className="max-md:py-[var(--ds-space-md)] bg-surface">
           <div className="kv-container">
             <SectionHead
               eyebrow="Dress for the moment"

@@ -55,6 +55,31 @@
   .kv-page-frame {
     padding-inline: var(--ds-home-gutter-desktop);
   }
+
+  .kv-container,
+  .kv-page-container,
+  .content-shell,
+  .content-layout {
+    width: var(--kv-desktop-container-width);
+    max-width: none;
+    margin-inline: auto;
+  }
+
+  .kv-page-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .kv-page-frame {
+    width: var(--kv-desktop-container-width);
+    max-width: none;
+    margin-inline: auto;
+  }
+
+  .kv-page-gutter {
+    padding-left: var(--kv-desktop-container-gutter);
+    padding-right: var(--kv-desktop-container-gutter);
+  }
 }
 
 .kv-section {

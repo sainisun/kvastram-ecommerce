@@ -38,9 +38,9 @@ const ARTISANS = [
 
 export function ArtisanStrip() {
   return (
-    <section className="kv-section bg-surface">
+    <section className="max-md:py-[var(--ds-space-md)] bg-surface">
       <div className="kv-container">
-        <div className="kv-section-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
+        <div className="max-md:py-[var(--ds-space-md)]-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
           <div>
             <div className="kv-tag">The hands behind every piece</div>
             <h2 className="kv-title">Meet our <em className="italic">artisans</em></h2>

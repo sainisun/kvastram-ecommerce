@@ -12,6 +12,7 @@ function cssFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) return cssFiles(fullPath);
+    if (entry.name.endsWith('.module.css')) return [];
     return entry.name.endsWith('.css') ? [fullPath] : [];
   });
 }

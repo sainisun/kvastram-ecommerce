@@ -59,7 +59,7 @@ export default async function Home() {
   const homepageSchema = [buildBreadcrumbJsonLd([{ name: 'Home', path: '/' }])];
 
   return (
-    <div className="homepage-shell" data-homepage-generated-at={homepage.generated_at || undefined}>
+    <div className="bg-[var(--ds-surface-page)] text-primary" style={{ '--homepage-gutter': 'var(--ds-home-gutter-mobile)' } as React.CSSProperties} data-homepage-generated-at={homepage.generated_at || undefined}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}

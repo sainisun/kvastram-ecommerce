@@ -13,7 +13,7 @@ export function CategoryCarousel({ categories }: { categories: HomepageCategoryC
       aria-labelledby="homepage-category-carousel-title"
       data-home-section="3-category-carousel"
     >
-      <div className="homepage-container">
+      <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto">
         <h2
           id="homepage-category-carousel-title"
           className="mb-[var(--ds-space-md)] font-display text-display-lg text-primary text-center"

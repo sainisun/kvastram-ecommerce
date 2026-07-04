@@ -18,7 +18,7 @@
   background: var(--ds-surface-page);
   color: var(--ds-text-primary);
   font-family: var(--ds-font-body);
-  padding-bottom: 96px;
+  padding-bottom: var(--ds-space-2xl);
 }
 
 .pdp-page .pdp-title,
@@ -468,7 +468,11 @@
 .pdp-detail-grid {
   display: grid;
   gap: var(--ds-space-md);
-  margin-top: 48px;
+  margin-top: var(--ds-space-xl);
+}
+
+.pdp-sticky-cta {
+  margin-top: var(--ds-space-xl);
 }
 
 .pdp-accordion-shell,
@@ -744,30 +748,6 @@
 }
 
 @media (min-width: 1024px) {
-  .kv-container,
-  .kv-page-container,
-  .content-shell,
-  .content-layout {
-    width: var(--kv-desktop-container-width);
-    max-width: none;
-    margin-inline: auto;
-  }
-
-  .kv-page-container {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .kv-page-frame {
-    width: var(--kv-desktop-container-width);
-    max-width: none;
-    margin-inline: auto;
-  }
-
-  .kv-page-gutter {
-    padding-left: var(--kv-desktop-container-gutter);
-    padding-right: var(--kv-desktop-container-gutter);
-  }
 
   .pdp-buy-box {
     position: sticky;
@@ -778,7 +758,7 @@
 
   .pd-layout {
     grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
-    gap: 48px;
+    gap: var(--ds-space-xl);
   }
 
   .pdp-gallery-frame-desktop {
@@ -793,9 +773,9 @@
 
   .pdp-detail-grid {
     grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.85fr);
-    gap: 44px;
+    gap: var(--ds-space-lg);
     align-items: start;
-    margin-top: 56px;
+    margin-top: var(--ds-space-xl);
   }
 
   .pdp-review-sidebar {

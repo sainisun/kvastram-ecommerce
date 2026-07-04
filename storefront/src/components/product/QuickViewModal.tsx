@@ -12,6 +12,7 @@ import { Modal } from '@/components/ui/Modal';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { RatingDisplay } from '@/components/ui/RatingDisplay';
 import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
 
 interface QuickViewProduct {
   id: string;
@@ -135,10 +136,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
     >
         <div>
           {/* Two-col on md+, single col on mobile. */}
-          <div className="quickview-layout">
+          <div className="grid gap-[var(--ds-space-sm)] sm:grid-cols-2">
 
             {/* Aspect-ratio box so height is always defined. */}
-            <div className="quickview-img p-0">
+            <div className="min-h-[280px] sm:min-h-[360px] rounded-[var(--ds-radius-lg)] grid place-items-center text-display-xl font-display bg-surface-soft overflow-hidden relative p-0">
               {images.length > 0 ? (
                 <>
                   <div className="relative aspect-[4/5] w-full">
@@ -159,7 +160,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                         aria-label="Show previous product image"
                         variant="outline"
                         size="sm"
-                        className="quickview-image-button absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full"
+                        className="bg-[color-mix(in_srgb,var(--ds-surface-paper)_86%,transparent)] shadow-md absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full"
                       >
                         <ChevronLeft size={16} />
                       </IconButton>
@@ -172,7 +173,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                         aria-label="Show next product image"
                         variant="outline"
                         size="sm"
-                        className="quickview-image-button absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full"
+                        className="bg-[color-mix(in_srgb,var(--ds-surface-paper)_86%,transparent)] shadow-md absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full"
                       >
                         <ChevronRight size={16} />
                       </IconButton>
@@ -224,17 +225,25 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
               {/* Variants */}
               {product.variants && product.variants.length > 1 && (
                 <div>
-                  <strong className="quickview-variant-label">Variant</strong>
-                  <div className="option-row">
-                    {product.variants.map((v) => (
-                      <UnstyledButton
-                        key={v.id}
-                        onClick={() => setSelectedVariant(v)}
-                        className={`quickview-option-button${selectedVariant?.id === v.id ? ' active' : ''}`}
-                      >
-                        {v.title}
-                      </UnstyledButton>
-                    ))}
+                  <strong className="font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-product-meta-tracking)] uppercase text-muted block mb-1">Variant</strong>
+                  <div className="flex flex-wrap gap-[var(--ds-space-xs)] my-[var(--ds-space-xs)] mb-[var(--ds-space-sm)]">
+                    {product.variants.map((v) => {
+                      const isActive = selectedVariant?.id === v.id;
+                      return (
+                        <UnstyledButton
+                          key={v.id}
+                          onClick={() => setSelectedVariant(v)}
+                          className={cn(
+                            'min-h-[36px] px-[var(--ds-space-sm)] border-[1.5px] rounded-[var(--ds-radius-sm)] text-body-sm font-[var(--ds-type-strong-weight)] transition-[150ms_ease] hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]',
+                            isActive 
+                              ? 'border-primary bg-primary text-inverse' 
+                              : 'border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-primary'
+                          )}
+                        >
+                          {v.title}
+                        </UnstyledButton>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -248,10 +257,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 <Button
                   onClick={handleAddToCart}
                   disabled={adding}
-                  variant="secondary"
+                  variant={added ? "success" : "secondary"}
                   size="lg"
                   fullWidth
-                  className={added ? 'quickview-add-button is-added' : 'quickview-add-button'}
+                  className={added ? '!bg-[var(--ds-success)] !border-[var(--ds-success)] !text-[var(--ds-text-inverse)]' : ''}
                   leadingIcon={
                     added ? <Check size={15} /> : adding ? undefined : <ShoppingBag size={15} />
                   }
@@ -261,7 +270,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 <Link
                   href={`/products/${product.handle || product.id}`}
                   onClick={onClose}
-                  className="quickview-link-button"
+                  className="inline-flex min-h-[48px] w-full items-center justify-center gap-[var(--ds-space-xs)] border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-[var(--ds-space-md)] text-primary font-body text-body-sm font-[var(--ds-type-strong-weight)] tracking-[var(--ds-type-button-tracking)] uppercase transition-[160ms_ease] hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]"
                 >
                   Full Details
                 </Link>

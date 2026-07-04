@@ -8,6 +8,8 @@ import Input from '@/components/ui/Input';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 import { useShop } from '@/context/shop-context';
+import styles from './pdp.module.css';
+
 
 type ShippingOption = {
   id: string;
@@ -98,8 +100,8 @@ export default function ProductDeliveryPlanner() {
 
   return (
     <div className="soft-card mt-4">
-      <strong className="pdp-trust-label">Delivery planning</strong>
-      <p className="pdp-trust-sublabel mt-2">
+      <strong className={styles['pdp-trust-label']}>Delivery planning</strong>
+      <p className={[styles['pdp-trust-sublabel'], 'mt-2'].filter(Boolean).join(' ')}>
         Preview country-level shipping methods before checkout. Final courier
         availability, delivery timing, and charges are confirmed after full
         address entry.
@@ -109,7 +111,7 @@ export default function ProductDeliveryPlanner() {
         className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"
       >
         <div>
-          <p className="pdp-trust-sublabel mb-2">
+          <p className={[styles['pdp-trust-sublabel'], 'mb-2'].filter(Boolean).join(' ')}>
             Delivery country
           </p>
           <CountrySelect
@@ -130,7 +132,7 @@ export default function ProductDeliveryPlanner() {
         </div>
       </div>
 
-      <p className="pdp-trust-sublabel mt-3">
+      <p className={[styles['pdp-trust-sublabel'], 'mt-3'].filter(Boolean).join(' ')}>
         {serviceabilityMessage || plannerSummary}
       </p>
 
@@ -165,11 +167,11 @@ export default function ProductDeliveryPlanner() {
         </div>
       ) : null}
 
-      <div className="option-row mt-3">
-        <Link href={storefrontTrust.policyRoutes.shipping} className="pdp-link-button">
+      <div className={[styles['option-row'], 'mt-3'].filter(Boolean).join(' ')}>
+        <Link href={storefrontTrust.policyRoutes.shipping} className={styles['pdp-link-button']}>
           Shipping Policy
         </Link>
-        <Link href="/checkout" className="pdp-link-button">
+        <Link href="/checkout" className={styles['pdp-link-button']}>
           Continue to Checkout
         </Link>
       </div>

@@ -51,7 +51,7 @@ const craftCards = [
 
 export function CraftEducationStrip() {
   return (
-    <section className="kv-section bg-[var(--ds-surface-paper)]">
+    <section className="max-md:py-[var(--ds-space-md)] bg-[var(--ds-surface-paper)]">
       <div className="kv-container">
         <div className="grid gap-[var(--ds-space-xs)] md:grid-cols-3">
           {craftCards.map(({ icon: Icon, title, copy, href }) => (
@@ -71,7 +71,7 @@ export function CraftEducationStrip() {
 
 export function FitScaleHelp() {
   return (
-    <section className="kv-section bg-parchment">
+    <section className="max-md:py-[var(--ds-space-md)] bg-parchment">
       <div className="kv-container grid gap-[22px] items-center md:grid-cols-[1fr_auto]">
         <div>
           <div className="kv-tag">Fit &amp; scale help</div>
@@ -127,14 +127,14 @@ const faqItems = [
 
 export function ShippingReturnsMiniFAQ() {
   return (
-    <section className="kv-section bg-[var(--ds-surface-paper)]">
+    <section className="max-md:py-[var(--ds-space-md)] bg-[var(--ds-surface-paper)]">
       <div className="kv-container">
-        <div className="kv-section-head">
+        <div className="max-md:py-[var(--ds-space-md)]-head">
           <div>
             <div className="kv-tag">Before checkout</div>
             <h2 className="kv-title">Shipping and support, answered quickly</h2>
           </div>
-          <Link href="/returns" className="kv-section-link">
+          <Link href="/returns" className="max-md:py-[var(--ds-space-md)]-link">
             Returns Help
           </Link>
         </div>

@@ -72,8 +72,8 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
                   className="object-cover"
                 />
               </picture>
-              <div className="homepage-hero-scrim" />
-              <div className="homepage-container relative z-10 flex min-h-[inherit] flex-col items-start justify-end gap-6 pb-[clamp(76px,10vw,132px)] text-inverse">
+              <div className="absolute inset-0 bg-gradient-to-r from-[rgba(var(--ds-black-rgb),0.68)] to-[rgba(var(--ds-black-rgb),0.08)_70%]" />
+              <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto relative z-10 flex min-h-[inherit] flex-col items-start justify-end gap-6 pb-[clamp(76px,10vw,132px)] text-inverse">
                 <h1 className="max-w-[15ch] m-0 text-inverse font-display text-display-xl font-normal">{slide.title}</h1>
                 <ButtonLink href={slide.button_link} variant="secondary" size="lg">
                   {slide.button_text}

@@ -48,6 +48,7 @@ const allowedInlineStylePatterns = [
   /shape:\s*'rect'/,
   /label:\s*'pay'/,
   /height:\s*48/,
+  /style=\{\{\s*'--homepage-gutter':/,
 ];
 
 const findings = [];

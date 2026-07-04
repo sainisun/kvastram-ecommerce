@@ -10,14 +10,14 @@ export function CollectionsSection({
   if (collections.length === 0) return null;
 
   return (
-    <section className="homepage-section" data-home-section="6-collections">
-      <div className="homepage-container">
-        <div className="homepage-section-head">
+    <section className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]" data-home-section="6-collections">
+      <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto">
+        <div className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]-head">
           <div>
             {/* eyebrow removed per user request */}
             <h2 className="font-display text-display-lg text-primary">Stories in cloth</h2>
           </div>
-          <Link href="/collections" className="kv-section-link">
+          <Link href="/collections" className="max-md:py-[var(--ds-space-md)]-link">
             View all collections →
           </Link>
         </div>
@@ -35,7 +35,7 @@ export function CollectionsSection({
                   sizes="(max-width: 900px) 100vw, 50vw"
                   className="object-cover"
                 />
-                <span className="homepage-campaign-scrim" />
+                <span className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.64)] to-transparent_50%" />
                 <span className="absolute inset-x-8 bottom-8 z-[1] grid gap-2 text-inverse">
                   <strong className="font-display text-display-md font-[var(--ds-type-heading-weight)]">{collection.title}</strong>
                   {collection.description ? <small className="max-w-[var(--ds-caption-width)] text-body-sm">{collection.description}</small> : null}

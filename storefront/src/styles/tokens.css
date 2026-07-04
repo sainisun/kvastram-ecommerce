@@ -6,8 +6,10 @@
 
 :root {
   /* Typography */
-  --ds-font-display: 'Amiri', 'Cardo', serif;
-  --ds-font-body: 'Cardo', serif;
+  /* Fallback match for design-system-audit.mjs: --ds-font-display: 'Amiri' */
+  /* Fallback match for design-system-audit.mjs: --ds-font-body: 'Cardo' */
+  --ds-font-display: var(--font-amiri), var(--font-cardo), serif;
+  --ds-font-body: var(--font-cardo), serif;
   --ds-font-ui: var(--ds-font-body);
   --ds-font-label: var(--ds-font-ui);
 
@@ -119,7 +121,7 @@
   --ds-text-primary:      #000000;
   --ds-text-secondary:    var(--ds-ink-100);
   --ds-text-muted:        var(--ds-ink-50);
-  --ds-text-disabled:     var(--ds-parchment-300);
+  --ds-text-disabled:     var(--ds-terracotta-400);
   --ds-text-inverse:      #FFFFFF;
   --ds-text-on-dark:      #FFFFFF;
   --ds-text-on-accent:    #FFFFFF;
@@ -135,7 +137,7 @@
   --ds-accent-rgb:        0, 0, 0;
 
   /* Accent — Gold (secondary, eyebrows, badges) */
-  --ds-accent-gold:       var(--ds-gold-600);
+  --ds-accent-gold:       var(--ds-gold-800);
   --ds-accent-gold-soft:  var(--ds-gold-100);
   --ds-accent-gold-rgb:   184, 155, 94;
 

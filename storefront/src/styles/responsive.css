@@ -8,7 +8,7 @@
   .slider-row { grid-auto-columns: minmax(42%, 1fr); }
 }
 
-@media (min-width: 760px) {
+@media (min-width: 768px) {
   .header-inner {
     min-height: 68px;
     padding-inline: 28px;

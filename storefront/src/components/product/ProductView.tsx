@@ -39,6 +39,8 @@ import { getProductDisplayTitle } from '@/lib/product-title';
 import { getProductPrimaryImage } from '@/lib/storefront-product-quality';
 import type { MoneyAmount, Product, ProductImage, ProductOption, ProductVariant } from '@/types';
 import { storefrontTrust } from '@/config/storefront-trust';
+import styles from './pdp.module.css';
+
 
 function getColorHex(colorName: string) {
   const map: Record<string, string> = {
@@ -279,7 +281,7 @@ export default function ProductView({ product }: { product: Product }) {
       icon: <ClipboardList size={18} />,
       content: product.description ? (
         <div 
-          className="pdp-description prose prose-sm max-w-none text-[var(--kv-muted)]"
+          className={[styles['pdp-description'], 'prose', 'prose-sm', 'max-w-none', 'text-[var(--kv-muted)]'].filter(Boolean).join(' ')}
           dangerouslySetInnerHTML={{ __html: product.description }} 
         />
       ) : (
@@ -325,28 +327,28 @@ export default function ProductView({ product }: { product: Product }) {
   };
 
   return (
-    <div className="pdp-page">
-      <div className="pdp-mobile-nav">
-        <Link href={primaryCategoryPath || '/products'} aria-label="Back to collection" className="pdp-nav-icon">
+    <div className={styles['pdp-page']}>
+      <div className={styles['pdp-mobile-nav']}>
+        <Link href={primaryCategoryPath || '/products'} aria-label="Back to collection" className={styles['pdp-nav-icon']}>
           <ArrowLeft size={18} />
         </Link>
         <p>{displayTitle}</p>
-        <div className="pdp-mobile-nav-actions">
+        <div className={styles['pdp-mobile-nav-actions']}>
           <ShareButtons
             title={displayTitle}
             description={product.description?.slice(0, 100)}
             image={productPrimaryImage || undefined}
-            className="pdp-nav-share"
+            className={styles['pdp-nav-share']}
           />
-          <Link href="/cart" className="pdp-cart-icon" aria-label="Open cart">
+          <Link href="/cart" className={styles['pdp-cart-icon']} aria-label="Open cart">
             <ShoppingBag size={18} />
             {totalItems > 0 ? <span>{totalItems}</span> : null}
           </Link>
         </div>
       </div>
 
-      <div className="kv-container pdp-container">
-        <nav aria-label="Breadcrumb" className="breadcrumb pdp-desktop-breadcrumb">
+      <div className={['kv-container', styles['pdp-container']].filter(Boolean).join(' ')}>
+        <nav aria-label="Breadcrumb" className={[styles['breadcrumb'], styles['pdp-desktop-breadcrumb']].filter(Boolean).join(' ')}>
           <Link href="/">Home</Link>
           <span className="breadcrumb-separator">/</span>
           {primaryCategoryPath && primaryCategory ? (
@@ -358,8 +360,8 @@ export default function ProductView({ product }: { product: Product }) {
           <span className="breadcrumb-current">{displayTitle}</span>
         </nav>
 
-        <div className="pd-layout">
-          <div className="pdp-gallery-col">
+        <div className={styles['pd-layout']}>
+          <div className={styles['pdp-gallery-col']}>
             <ProductGallery
               media={galleryMedia}
               title={displayTitle}
@@ -374,31 +376,31 @@ export default function ProductView({ product }: { product: Product }) {
                   handle={product.handle || product.id}
                   variantId={selectedVariant?.id}
                   size="sm"
-                  className="pdp-gallery-heart"
+                  className={styles['pdp-gallery-heart']}
                 />
               )}
             />
           </div>
 
-          <div className="pdp-buy-box">
-            {scarcityLabel ? <div className="pdp-stock-label">{scarcityLabel}</div> : null}
-            <h1 className="pdp-title">{displayTitle}</h1>
+          <div className={styles['pdp-buy-box']}>
+            {scarcityLabel ? <div className={styles['pdp-stock-label']}>{scarcityLabel}</div> : null}
+            <h1 className={styles['pdp-title']}>{displayTitle}</h1>
 
             {hasReviews && reviewRating && reviewCount ? (
-              <div className="pdp-rating-row">
+              <div className={styles['pdp-rating-row']}>
                 <RatingDisplay rating={reviewRating} count={reviewCount} href="#reviews" />
               </div>
             ) : (
-              <div className="pdp-rating-row">
+              <div className={styles['pdp-rating-row']}>
                 <RatingDisplay emptyLabel="Be the first to review" href="#reviews" />
               </div>
             )}
 
-            {product.subtitle && <p className="kv-sub pdp-subtitle">{product.subtitle}</p>}
+            {product.subtitle && <p className={['kv-sub', styles['pdp-subtitle']].filter(Boolean).join(' ')}>{product.subtitle}</p>}
 
-            <div className="pdp-price-row">
+            <div className={styles['pdp-price-row']}>
               {isOnRequest ? (
-                <span className="pdp-enquire-label">Enquire for price</span>
+                <span className={styles['pdp-enquire-label']}>Enquire for price</span>
               ) : (
                 <>
                   <PriceDisplay
@@ -408,7 +410,7 @@ export default function ProductView({ product }: { product: Product }) {
                     priceClassName="pd-price"
                   />
                   {formattedSavings ? (
-                    <Badge variant="success" className="pdp-save-badge normal-case">
+                    <Badge variant="success" className={[styles['pdp-save-badge'], 'normal-case'].filter(Boolean).join(' ')}>
                       Save {formattedSavings}
                     </Badge>
                   ) : null}
@@ -417,7 +419,7 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             {!isOnRequest && selectedVariant && currentInventory > 0 && !scarcityLabel ? (
-              <p className="pdp-availability-note">
+              <p className={styles['pdp-availability-note']}>
                 {isConnected ? 'Live stock confirmed' : 'Ready to ship'}
               </p>
             ) : null}
@@ -425,16 +427,16 @@ export default function ProductView({ product }: { product: Product }) {
             {hasStructuredOptions && product.options?.map((option: ProductOption, optionIndex) => {
               const isColor = option.title.toLowerCase() === 'color' || option.title.toLowerCase() === 'colour';
               return (
-                <div key={option.title} className="pdp-option-block pdp-variant-block">
-                  <div className="pdp-option-head">
-                    <strong className="pdp-option-label">{option.title}</strong>
-                    <span className="pdp-option-selected">- {selectedOptions[option.title]}</span>
+                <div key={option.title} className={[styles['pdp-option-block'], styles['pdp-variant-block']].filter(Boolean).join(' ')}>
+                  <div className={styles['pdp-option-head']}>
+                    <strong className={styles['pdp-option-label']}>{option.title}</strong>
+                    <span className={styles['pdp-option-selected']}>- {selectedOptions[option.title]}</span>
                     {!isColor && option.title.toLowerCase().includes('size') && (
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="pdp-size-guide normal-case"
+                        className={[styles['pdp-size-guide'], 'normal-case'].filter(Boolean).join(' ')}
                         leadingIcon={<Ruler size={13} />}
                         onClick={() => setShowSizeGuide(true)}
                       >
@@ -442,7 +444,7 @@ export default function ProductView({ product }: { product: Product }) {
                       </Button>
                     )}
                   </div>
-                  <div className="option-row">
+                  <div className={styles['option-row']}>
                     {option.values.map((value) => {
                       const isSelected = selectedOptions[option.title] === value.value;
                       const unavailable = isOptionValueUnavailable(optionIndex, value.value);
@@ -452,7 +454,7 @@ export default function ProductView({ product }: { product: Product }) {
                           key={value.value}
                           type="button"
                           onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))}
-                          className={`pdp-color-swatch${isSelected ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
+                          className={`${styles['pdp-color-swatch']}${isSelected ? ` ${styles.active}` : ''}${unavailable ? ` ${styles.unavailable}` : ''}`}
                           style={{ background: getColorHex(value.value) }}
                           aria-label={value.value}
                           title={value.value}
@@ -463,7 +465,7 @@ export default function ProductView({ product }: { product: Product }) {
                           key={value.value}
                           type="button"
                           onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))}
-                          className={`pdp-option-button pdp-size-pill${isSelected ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
+                          className={`${styles['pdp-option-button']} ${styles['pdp-size-pill']}${isSelected ? ` ${styles.active}` : ''}${unavailable ? ` ${styles.unavailable}` : ''}`}
                           disabled={unavailable}
                         >
                           {value.value}
@@ -476,9 +478,9 @@ export default function ProductView({ product }: { product: Product }) {
             })}
 
             {!hasStructuredOptions && product.variants && product.variants.length > 1 && (
-              <div className="pdp-option-block pdp-variant-block">
-                <strong className="pdp-option-label">Option</strong>
-                <div className="option-row">
+              <div className={[styles['pdp-option-block'], styles['pdp-variant-block']].filter(Boolean).join(' ')}>
+                <strong className={styles['pdp-option-label']}>Option</strong>
+                <div className={styles['option-row']}>
                   {product.variants.map((variant: ProductVariant) => {
                     const unavailable = (realTimeInventory[variant.id] ?? variant.inventory_quantity) <= 0;
                     return (
@@ -486,7 +488,7 @@ export default function ProductView({ product }: { product: Product }) {
                         key={variant.id}
                         type="button"
                         onClick={() => setSelectedVariantId(variant.id)}
-                        className={`pdp-option-button pdp-size-pill${selectedVariant?.id === variant.id ? ' active' : ''}${unavailable ? ' unavailable' : ''}`}
+                        className={`${styles['pdp-option-button']} ${styles['pdp-size-pill']}${selectedVariant?.id === variant.id ? ` ${styles.active}` : ''}${unavailable ? ` ${styles.unavailable}` : ''}`}
                         disabled={unavailable}
                       >
                         {variant.title}
@@ -498,25 +500,25 @@ export default function ProductView({ product }: { product: Product }) {
             )}
 
             {!isOnRequest && (
-              <div className="pdp-option-block">
-                <strong className="pdp-option-label">Quantity</strong>
-                <div className="option-row">
+              <div className={styles['pdp-option-block']}>
+                <strong className={styles['pdp-option-label']}>Quantity</strong>
+                <div className={styles['option-row']}>
                   <IconButton
                     type="button"
                     variant="outline"
                     size="md"
-                    className="pdp-quantity-button"
+                    className={styles['pdp-quantity-button']}
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     aria-label="Decrease quantity"
                   >
                     <Minus size={14} />
                   </IconButton>
-                  <span className="pdp-quantity-value">{quantity}</span>
+                  <span className={styles['pdp-quantity-value']}>{quantity}</span>
                   <IconButton
                     type="button"
                     variant="outline"
                     size="md"
-                    className="pdp-quantity-button"
+                    className={styles['pdp-quantity-button']}
                     onClick={() => quantity < currentInventory && setQuantity(quantity + 1)}
                     disabled={currentInventory <= quantity}
                     aria-label="Increase quantity"
@@ -527,12 +529,12 @@ export default function ProductView({ product }: { product: Product }) {
               </div>
             )}
 
-            <div className="pdp-cta-grid">
+            <div className={styles['pdp-cta-grid']}>
               {isOnRequest ? (
                 <WhatsAppCTA
                   id="pdp-atc-btn"
                   message={whatsappMessage}
-                  className="pdp-link-button pdp-link-button--whatsapp pdp-whatsapp"
+                  className={[styles['pdp-link-button'], styles['pdp-link-button--whatsapp'], styles['pdp-whatsapp']].filter(Boolean).join(' ')}
                 >
                   <MessageCircle size={16} />
                   Enquire on WhatsApp
@@ -558,13 +560,13 @@ export default function ProductView({ product }: { product: Product }) {
                     variant="outline"
                     size="lg"
                     fullWidth
-                    className="pdp-buy-now"
+                    className={styles['pdp-buy-now']}
                   >
                     Buy now
                   </Button>
                   <WhatsAppCTA
                     message={whatsappMessage}
-                    className="pdp-link-button pdp-link-button--whatsapp pdp-whatsapp pdp-mobile-whatsapp"
+                    className={[styles['pdp-link-button'], styles['pdp-link-button--whatsapp'], styles['pdp-whatsapp'], styles['pdp-mobile-whatsapp']].filter(Boolean).join(' ')}
                   >
                     <MessageCircle size={16} />
                     Ask on WhatsApp
@@ -573,15 +575,15 @@ export default function ProductView({ product }: { product: Product }) {
               )}
             </div>
 
-            <div className="pdp-service-lines">
+            <div className={styles['pdp-service-lines']}>
               <span>Tax included. Shipping calculated at checkout.</span>
               <span>Free shipping above Rs. 2,000.</span>
               <span>7-day support on eligible returns.</span>
             </div>
 
-            <div className="pdp-buyer-confidence" aria-label="Buyer confidence">
+            <div className={styles['pdp-buyer-confidence']} aria-label="Buyer confidence">
               {buyerConfidenceItems.map((item) => (
-                <div key={item.label} className="pdp-buyer-confidence-item">
+                <div key={item.label} className={styles['pdp-buyer-confidence-item']}>
                   {item.icon}
                   <div>
                     <strong>{item.label}</strong>
@@ -593,44 +595,44 @@ export default function ProductView({ product }: { product: Product }) {
 
             {product.description ? (
               <div 
-                className="pdp-summary-description prose prose-sm max-w-none text-[var(--kv-muted)]"
+                className={[styles['pdp-summary-description'], 'prose', 'prose-sm', 'max-w-none', 'text-[var(--kv-muted)]'].filter(Boolean).join(' ')}
                 dangerouslySetInnerHTML={{ __html: product.description }} 
               />
             ) : null}
 
             {!isOnRequest && outOfStock && selectedVariant && (
-              <div className="pdp-back-in-stock">
+              <div className={styles['pdp-back-in-stock']}>
                 <BackInStock productId={product.id} variantId={selectedVariant.id} productTitle={displayTitle} />
               </div>
             )}
           </div>
         </div>
 
-        <div className="pdp-detail-grid">
-          <section className="pdp-accordion-shell" aria-labelledby="product-details-heading">
+        <div className={styles['pdp-detail-grid']}>
+          <section className={styles['pdp-accordion-shell']} aria-labelledby="product-details-heading">
             <p className="kv-tag" id="product-details-heading">Product details</p>
             {accordionItems.map((item) => {
               const isOpen = openAccordions.includes(item.key);
               return (
-                <div key={item.key} className="pdp-accordion-item">
+                <div key={item.key} className={styles['pdp-accordion-item']}>
                   <Button
                     type="button"
                     variant="ghost"
                     size="md"
-                    className="pdp-accordion-trigger"
+                    className={styles['pdp-accordion-trigger']}
                     onClick={() => toggleAccordion(item.key)}
                     aria-expanded={isOpen}
                     aria-controls={`pdp-section-${item.key}`}
                   >
-                    <span className="pdp-accordion-icon">{item.icon}</span>
-                    <span className="pdp-accordion-text">
+                    <span className={styles['pdp-accordion-icon']}>{item.icon}</span>
+                    <span className={styles['pdp-accordion-text']}>
                       <strong>{item.title}</strong>
                       <small>{item.hint}</small>
                     </span>
                     <ChevronDown className={isOpen ? 'is-open' : ''} size={18} />
                   </Button>
                   {isOpen ? (
-                    <div id={`pdp-section-${item.key}`} className="pdp-accordion-content">
+                    <div id={`pdp-section-${item.key}`} className={styles['pdp-accordion-content']}>
                       {item.content}
                     </div>
                   ) : null}
@@ -638,34 +640,34 @@ export default function ProductView({ product }: { product: Product }) {
               );
             })}
 
-            <div className="pdp-spec-card">
-              <strong className="pdp-trust-label">Quick specifications</strong>
-              <table className="pdp-spec-table">
+            <div className={styles['pdp-spec-card']}>
+              <strong className={styles['pdp-trust-label']}>Quick specifications</strong>
+              <table className={styles['pdp-spec-table']}>
                 <tbody>
-                  {product.material && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Material</td><td className="pdp-spec-cell">{product.material}</td></tr>}
+                  {product.material && <tr className={styles['pdp-spec-row']}><td className={[styles['pdp-spec-cell'], styles['pdp-spec-label-cell']].filter(Boolean).join(' ')}>Material</td><td className={styles['pdp-spec-cell']}>{product.material}</td></tr>}
                   {structuredAttributeRows.slice(0, 5).map((row) => (
-                    <tr key={`${row.label}-${row.value}`} className="pdp-spec-row">
-                      <td className="pdp-spec-cell pdp-spec-label-cell">{row.label}</td>
-                      <td className="pdp-spec-cell">{row.value}</td>
+                    <tr key={`${row.label}-${row.value}`} className={styles['pdp-spec-row']}>
+                      <td className={[styles['pdp-spec-cell'], styles['pdp-spec-label-cell']].filter(Boolean).join(' ')}>{row.label}</td>
+                      <td className={styles['pdp-spec-cell']}>{row.value}</td>
                     </tr>
                   ))}
-                  {product.origin_country && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">Origin</td><td className="pdp-spec-cell">{product.origin_country}</td></tr>}
-                  {selectedVariant?.sku && <tr className="pdp-spec-row"><td className="pdp-spec-cell pdp-spec-label-cell">SKU</td><td className="pdp-spec-cell">{selectedVariant.sku}</td></tr>}
+                  {product.origin_country && <tr className={styles['pdp-spec-row']}><td className={[styles['pdp-spec-cell'], styles['pdp-spec-label-cell']].filter(Boolean).join(' ')}>Origin</td><td className={styles['pdp-spec-cell']}>{product.origin_country}</td></tr>}
+                  {selectedVariant?.sku && <tr className={styles['pdp-spec-row']}><td className={[styles['pdp-spec-cell'], styles['pdp-spec-label-cell']].filter(Boolean).join(' ')}>SKU</td><td className={styles['pdp-spec-cell']}>{selectedVariant.sku}</td></tr>}
                 </tbody>
               </table>
             </div>
           </section>
 
-          <aside className="pdp-review-sidebar" id="reviews">
+          <aside className={styles['pdp-review-sidebar']} id="reviews">
             {hasReviews && reviewRating && reviewCount ? (
-              <div className="pdp-review-summary">
+              <div className={styles['pdp-review-summary']}>
                 <div>
                   <strong>{reviewRating.toFixed(1)}</strong>
                   <RatingDisplay rating={reviewRating} count={reviewCount} />
                 </div>
               </div>
             ) : null}
-            <div className="pdp-verified-card">
+            <div className={styles['pdp-verified-card']}>
               <PackageCheck size={16} />
               <p>Verified customer reviews will appear here after purchase.</p>
               <small>Reviews are collected from real orders.</small>
@@ -681,23 +683,23 @@ export default function ProductView({ product }: { product: Product }) {
         className={`pdp-sticky-bar${showStickyATC ? ' is-visible' : ''}`}
         aria-hidden={!showStickyATC}
       >
-        <div className="pdp-sticky-info">
-          <p className="pdp-sticky-title">{displayTitle}</p>
+        <div className={styles['pdp-sticky-info']}>
+          <p className={styles['pdp-sticky-title']}>{displayTitle}</p>
           {isOnRequest ? (
-            <p className="pdp-sticky-price pdp-enquire-label">Enquire for price</p>
+            <p className={[styles['pdp-sticky-price'], styles['pdp-enquire-label']].filter(Boolean).join(' ')}>Enquire for price</p>
           ) : (
             <PriceDisplay
               as="p"
               price={formattedPrice}
               variant="inline"
-              className="pdp-sticky-price"
+              className={styles['pdp-sticky-price']}
             />
           )}
         </div>
         {isOnRequest ? (
           <WhatsAppCTA
             message={whatsappMessage}
-            className="pdp-link-button pdp-link-button--whatsapp pdp-whatsapp"
+            className={[styles['pdp-link-button'], styles['pdp-link-button--whatsapp'], styles['pdp-whatsapp']].filter(Boolean).join(' ')}
           >
             Enquire
           </WhatsAppCTA>

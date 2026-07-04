@@ -20,9 +20,9 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
   if (displayed.length === 0) return null;
 
   return (
-    <section className="kv-section bg-[var(--ds-surface-paper)] border-b border-border-subtle">
+    <section className="max-md:py-[var(--ds-space-md)] bg-[var(--ds-surface-paper)] border-b border-border-subtle">
       <div className="kv-container">
-        <div className="kv-section-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
+        <div className="max-md:py-[var(--ds-space-md)]-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
           <div className="kv-tag">Love shared by customers</div>
         </div>
 

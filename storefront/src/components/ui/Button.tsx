@@ -33,19 +33,18 @@ interface ButtonAnchorProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   trailingIcon?: ReactNode;
 }
 
+const primaryVariantClass = 'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]';
+
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
-  secondary:
-    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
+  primary: primaryVariantClass,
+  secondary: primaryVariantClass,
   outline:
     'border-border-subtle bg-surface text-primary hover:bg-[var(--ds-text-primary)] hover:text-inverse',
   ghost:
     'border-transparent bg-transparent text-primary hover:bg-surface-soft',
   danger:
     'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error hover:bg-[var(--ds-surface-paper)]',
-  accent:
-    'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)]',
+  accent: primaryVariantClass,
   pdp:
     'bg-[var(--ds-accent-primary)] text-inverse border-[var(--ds-accent-primary)] hover:bg-[var(--ds-accent-hover)] hover:border-[var(--ds-accent-hover)] w-full',
   success:

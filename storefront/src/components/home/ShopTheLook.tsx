@@ -36,11 +36,11 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
   if (items.length === 0) return null;
 
   return (
-    <section className="kv-section bg-[var(--ds-surface-paper)]">
+    <section className="max-md:py-[var(--ds-space-md)] bg-[var(--ds-surface-paper)]">
       <div className="kv-container">
-        <div className="kv-section-head">
+        <div className="max-md:py-[var(--ds-space-md)]-head">
           <div className="kv-tag">Style Story</div>
-          <Link href="/products" className="kv-section-link">
+          <Link href="/products" className="max-md:py-[var(--ds-space-md)]-link">
             View All →
           </Link>
         </div>

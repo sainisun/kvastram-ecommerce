@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Cardo, Amiri } from 'next/font/google';
 
 import './globals.css';
 import '../styles/storefront.css';
@@ -53,6 +54,22 @@ export const metadata: Metadata = {
   },
 };
 
+const fontCardo = Cardo({
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-cardo',
+});
+
+const fontAmiri = Amiri({
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-amiri',
+});
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -66,9 +83,6 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
         <link
           rel="preconnect"
           href={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}
@@ -83,7 +97,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
       </head>
-      <body className="font-body antialiased">
+      <body className={`font-body antialiased ${fontCardo.variable} ${fontAmiri.variable}`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(globalSchema) }}

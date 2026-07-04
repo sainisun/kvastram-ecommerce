@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -33,20 +33,52 @@ export function Drawer({
   bodyClassName,
   showHeader = true,
 }: DrawerProps) {
+  const drawerRef = useRef<HTMLElement>(null);
+
   useEffect(() => {
     if (!isOpen) return;
 
+    const previousFocus = document.activeElement as HTMLElement;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
+    // Focus Trap setup
+    const focusableElements = drawerRef.current?.querySelectorAll<HTMLElement>(
+      'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements?.[0];
+    const lastElement = focusableElements?.[focusableElements.length - 1];
+
+    if (firstElement) {
+      firstElement.focus();
+    }
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      
+      if (event.key === 'Tab' && firstElement && lastElement) {
+        if (event.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            event.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            event.preventDefault();
+          }
+        }
+      }
     };
 
     window.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
+      previousFocus?.focus();
     };
   }, [isOpen, onClose]);
 
@@ -61,6 +93,7 @@ export function Drawer({
         onClick={onClose}
       />
       <aside
+        ref={drawerRef}
         role="dialog"
         aria-modal="true"
         aria-label={typeof title === 'string' ? title : undefined}

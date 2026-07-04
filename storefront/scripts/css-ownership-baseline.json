@@ -1,11 +1,8 @@
 {
-  "generatedAt": "2026-06-24T10:01:33.500Z",
+  "generatedAt": "2026-07-04T19:48:25.842Z",
   "duplicates": {
     "active": [
       "src/styles/components/pdp-gallery.css",
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css",
-      "src/styles/components/quick-view.css",
       "src/styles/components/reels.css",
       "src/styles/responsive.css",
       "src/styles/utilities.css"
@@ -22,10 +19,6 @@
     "announcement-dismiss": [
       "src/styles/base.css",
       "src/styles/utilities.css"
-    ],
-    "breadcrumb": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
     ],
     "cat-card-prem": [
       "src/styles/components/category-sections.css",
@@ -47,17 +40,9 @@
       "src/styles/components/collections.css",
       "src/styles/responsive.css"
     ],
-    "content-layout": [
-      "src/styles/components/content-pages.css",
-      "src/styles/components/pdp.css"
-    ],
     "content-rich": [
       "src/styles/components/content-pages.css",
       "src/styles/typography.css"
-    ],
-    "content-shell": [
-      "src/styles/components/content-pages.css",
-      "src/styles/components/pdp.css"
     ],
     "css": [
       "src/app/globals.css",
@@ -112,37 +97,15 @@
       "src/app/globals.css",
       "src/styles/utilities.css"
     ],
-    "is-added": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/quick-view.css"
-    ],
-    "is-visible": [
-      "src/styles/components/pdp.css",
-      "src/styles/mobile-overrides.css"
-    ],
-    "kv-container": [
-      "src/styles/components/pdp.css",
-      "src/styles/utilities.css"
-    ],
     "kv-label": [
       "src/styles/base.css",
       "src/styles/typography.css"
     ],
-    "kv-page-container": [
-      "src/styles/components/pdp.css",
-      "src/styles/utilities.css"
-    ],
-    "kv-page-frame": [
-      "src/styles/components/pdp.css",
-      "src/styles/utilities.css"
-    ],
     "kv-section": [
-      "src/styles/components/home-sections.css",
       "src/styles/responsive.css",
       "src/styles/utilities.css"
     ],
     "kv-section-head": [
-      "src/styles/components/home-sections.css",
       "src/styles/components/reels.css",
       "src/styles/responsive.css",
       "src/styles/utilities.css"
@@ -192,27 +155,6 @@
       "src/styles/animations.css",
       "src/styles/utilities.css"
     ],
-    "pd-layout": [
-      "src/styles/components/pdp-gallery.css",
-      "src/styles/components/pdp.css"
-    ],
-    "pd-price": [
-      "src/styles/components/pdp-gallery.css",
-      "src/styles/components/pdp.css"
-    ],
-    "pdp-cart-icon": [
-      "src/styles/components/pdp.css",
-      "src/styles/typography.css"
-    ],
-    "pdp-container": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-description": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
-    ],
     "pdp-gallery-prem": [
       "src/styles/components/pdp-premium.css",
       "src/styles/mobile-overrides.css"
@@ -225,111 +167,13 @@
       "src/styles/components/pdp-premium.css",
       "src/styles/mobile-overrides.css"
     ],
-    "pdp-mobile-nav": [
-      "src/styles/components/pdp.css",
-      "src/styles/typography.css"
-    ],
-    "pdp-option-head": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-option-label": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-page": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-price-row": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-quantity-value": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-rating-row": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-save-badge": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-size-guide": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-spec-cell": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-spec-label-cell": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-spec-row": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-spec-table": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-sticky-bar": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
-    "pdp-title": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
-    ],
-    "pdp-trust-label": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
-    ],
     "product-card-quick-view": [
-      "src/styles/components/product-card.css",
       "src/styles/responsive.css",
-      "src/styles/typography.css"
-    ],
-    "product-cat": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
-    ],
-    "product-discount": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
-    ],
-    "product-media": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
-    ],
-    "product-name": [
-      "src/styles/components/product-card.css",
       "src/styles/typography.css"
     ],
     "product-spotlight": [
       "src/styles/mobile-overrides.css",
       "src/styles/utilities.css"
-    ],
-    "products-grid": [
-      "src/styles/components/product-card.css",
-      "src/styles/responsive.css"
-    ],
-    "related-products-link": [
-      "src/styles/components/pdp.css",
-      "src/styles/typography.css"
-    ],
-    "related-products-title": [
-      "src/styles/components/pdp.css",
-      "src/styles/typography.css"
-    ],
-    "review-heading": [
-      "src/styles/components/pdp.css",
-      "src/styles/components/product-card.css"
     ],
     "section-prem": [
       "src/styles/components/premium-sections.css",
@@ -338,22 +182,6 @@
     "section-title": [
       "src/styles/typography.css",
       "src/styles/utilities.css"
-    ],
-    "spotlight-action": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
-    ],
-    "spotlight-badge": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
-    ],
-    "spotlight-eyebrow": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
-    ],
-    "spotlight-title": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
     ],
     "stat-item-prem": [
       "src/styles/components/premium-sections.css",
@@ -374,10 +202,6 @@
     "watch-buy-carousel": [
       "src/styles/components/content-pages.css",
       "src/styles/components/reels.css"
-    ],
-    "wholesale-price": [
-      "src/styles/components/product-card.css",
-      "src/styles/typography.css"
     ]
   }
 }

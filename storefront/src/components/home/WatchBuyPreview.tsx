@@ -15,13 +15,13 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
 
   return (
     <section className="w-full py-[var(--ds-home-section-space-mobile)] md:py-[var(--ds-home-section-space-desktop)]" data-home-section="7-watch-shop">
-      <div className="homepage-container">
-        <div className="homepage-section-head flex justify-between items-end mb-[var(--ds-space-md)]">
+      <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto">
+        <div className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]-head flex justify-between items-end mb-[var(--ds-space-md)]">
           <div>
             {/* eyebrow removed per user request */}
             <h2 className="text-display-lg font-display font-medium text-primary">See the craft in motion</h2>
           </div>
-          <Link href="/reels" className="kv-section-link">
+          <Link href="/reels" className="max-md:py-[var(--ds-space-md)]-link">
             View All →
           </Link>
         </div>

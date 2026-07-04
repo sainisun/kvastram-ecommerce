@@ -67,13 +67,13 @@ function CollectionCard({
         </div>
       ) : null}
       <div className="p-4">
-        <p className="collection-card-kicker">
+        <p className="font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-product-meta-tracking)] uppercase text-muted">
           {[collection.type || 'Curated edit', countLabel].filter(Boolean).join(' · ')}
         </p>
-        <h2 className="collection-card-title">
+        <h2 className="font-display text-display-sm font-[var(--ds-type-ui-weight)] text-primary">
           {collection.title}
         </h2>
-        <p className="collection-card-copy mt-1 line-clamp-2">
+        <p className="font-body text-body-sm font-body-weight leading-relaxed text-secondary mt-1 line-clamp-2">
           {collection.description || 'View collection'}
         </p>
       </div>

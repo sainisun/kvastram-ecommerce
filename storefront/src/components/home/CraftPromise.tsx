@@ -26,7 +26,7 @@ const promises = [
 
 export function CraftPromise() {
   return (
-    <section className="kv-section bg-parchment border-y border-border-subtle">
+    <section className="max-md:py-[var(--ds-space-md)] bg-parchment border-y border-border-subtle">
       <div className="kv-container grid gap-[28px] items-start md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div className="max-w-[620px]">
           <div className="kv-tag">Why Odhvica</div>

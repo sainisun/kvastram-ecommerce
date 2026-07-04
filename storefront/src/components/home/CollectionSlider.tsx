@@ -19,8 +19,8 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
       aria-labelledby="homepage-collection-slider-title"
       data-home-section="4-collection-slider"
     >
-      <div className="homepage-container">
-        <div className="homepage-section-head relative flex items-end justify-center mb-[var(--ds-space-2xl)]">
+      <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto">
+        <div className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]-head relative flex items-end justify-center mb-[var(--ds-space-2xl)]">
           <h2
             id="homepage-collection-slider-title"
             className="font-display text-display-lg text-primary italic font-light tracking-wide text-center"

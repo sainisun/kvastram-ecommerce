@@ -23,9 +23,9 @@ export function ShopByNeed({ collections }: ShopByNeedProps) {
   if (displayed.length === 0) return null;
 
   return (
-    <section className="kv-section shop-need-section bg-parchment">
+    <section className="max-md:py-[var(--ds-space-md)] shop-need-section bg-parchment">
       <div className="kv-container">
-        <div className="kv-section-head">
+        <div className="max-md:py-[var(--ds-space-md)]-head">
           <div>
             <div className="kv-tag">Curated paths</div>
             <h2 className="kv-title">Shop by moment, mood, or use</h2>

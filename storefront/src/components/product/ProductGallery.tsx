@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import type { ProductImage, ProductVideo } from '@/types';
 import { UnstyledButton } from '@/components/ui/Button';
+import styles from './pdp.module.css';
+
 
 interface ProductGalleryProps {
   media: ProductImage[];
@@ -202,7 +204,7 @@ export default function ProductGallery({
               data-index={index}
               className="relative w-full shrink-0 snap-center bg-surface-soft"
             >
-              <div className="pdp-gallery-frame relative overflow-hidden">
+              <div className={[styles['pdp-gallery-frame'], 'relative', 'overflow-hidden'].filter(Boolean).join(' ')}>
                 {item.type === 'video' ? (
                   <>
                     <video
@@ -254,12 +256,12 @@ export default function ProductGallery({
                   </div>
                 )}
                 {scarcityLabel && item.type !== 'video' ? (
-                  <Badge variant="accent" className="pdp-gallery-badge">
+                  <Badge variant="accent" className={styles['pdp-gallery-badge']}>
                     {scarcityLabel}
                   </Badge>
                 ) : null}
                 {wishlistButton ? (
-                  <div className="pdp-gallery-wishlist">{wishlistButton}</div>
+                  <div className={styles['pdp-gallery-wishlist']}>{wishlistButton}</div>
                 ) : null}
               </div>
             </div>
@@ -274,9 +276,7 @@ export default function ProductGallery({
                   key={`${item.id}-dot`}
                   type="button"
                   onClick={() => scrollToIndex(index)}
-                  className={`pdp-gallery-dot ${
-                    activeIndex === index ? 'active' : ''
-                  }`}
+                  className={[styles['pdp-gallery-dot'], activeIndex === index ? styles.active : ''].filter(Boolean).join(' ')}
                   aria-label={`View media ${index + 1}`}
                 />
               ))}
@@ -288,7 +288,7 @@ export default function ProductGallery({
                   key={`${item.id}-thumb`}
                   type="button"
                   onClick={() => scrollToIndex(index)}
-                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-[var(--radius-md)] border bg-surface-soft ${
+                  className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-[var(--ds-radius-sm)] border-2 transition-colors ${
                     activeIndex === index
                       ? 'border-[var(--ds-text-primary)]'
                       : 'border-transparent opacity-70'
@@ -334,7 +334,7 @@ export default function ProductGallery({
 
       <div className="hidden lg:block">
         <div className="space-y-4">
-          <div className="pdp-gallery-frame pdp-gallery-frame-desktop relative overflow-hidden bg-surface-soft">
+          <div className={[styles['pdp-gallery-frame'], styles['pdp-gallery-frame-desktop'], 'relative', 'overflow-hidden', 'bg-surface-soft'].filter(Boolean).join(' ')}>
             {activeItem.type === 'video' ? (
               <>
                 <video
@@ -401,12 +401,12 @@ export default function ProductGallery({
               </>
             )}
             {scarcityLabel && activeItem.type !== 'video' ? (
-              <Badge variant="accent" className="pdp-gallery-badge">
+              <Badge variant="accent" className={styles['pdp-gallery-badge']}>
                 {scarcityLabel}
               </Badge>
             ) : null}
             {wishlistButton ? (
-              <div className="pdp-gallery-wishlist">{wishlistButton}</div>
+              <div className={styles['pdp-gallery-wishlist']}>{wishlistButton}</div>
             ) : null}
           </div>
 

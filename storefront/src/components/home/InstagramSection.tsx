@@ -6,11 +6,11 @@ export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
   if (posts.length === 0) return null;
 
   return (
-    <section className="homepage-section" data-home-section="9-social">
-      <div className="homepage-container">
-        <div className="homepage-section-head homepage-section-head-centered">
+    <section className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]" data-home-section="9-social">
+      <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto">
+        <div className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]-head py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]-head-centered">
           <div>
-            <p className="homepage-eyebrow">Follow Our Journey</p>
+            <p className="m-0 mb-[var(--ds-space-xs)] text-[var(--ds-accent-primary)] font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-label-tracking)]">Follow Our Journey</p>
             <h2 className="font-display text-display-md text-primary">From our circle</h2>
           </div>
         </div>
