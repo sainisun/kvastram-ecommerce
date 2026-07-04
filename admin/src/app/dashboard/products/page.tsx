@@ -179,6 +179,7 @@ export default function ProductsPage() {
 
   const getProductPrice = (product: Product) => {
     if (Array.isArray(product.prices) && product.prices[0]?.amount) return product.prices[0].amount;
+    if (Array.isArray(product.variants) && product.variants[0]?.prices?.[0]?.amount) return product.variants[0].prices[0].amount;
     if (typeof product.price === 'number') return product.price;
     if (typeof product.price === 'object' && product.price?.amount) return product.price.amount;
     return null;
@@ -237,7 +238,7 @@ export default function ProductsPage() {
       setIsLoadingVariants(true);
       try {
         const data = await api.getProduct(id);
-        setVariantsCache(prev => ({ ...prev, [id]: data.variants || [] }));
+        setVariantsCache(prev => ({ ...prev, [id]: data.product?.variants || data.variants || [] }));
       } catch (error) {
         console.error(error);
       } finally {
@@ -251,7 +252,7 @@ export default function ProductsPage() {
     setQuickViewProduct(null); // show loading state
     try {
       const data = await api.getProduct(product.id);
-      setQuickViewProduct(data);
+      setQuickViewProduct(data.product || data);
     } catch (e) {
       console.error(e);
       setQuickViewProductId(null);
@@ -494,7 +495,17 @@ export default function ProductsPage() {
           No products match the current filters.
         </div>
       ) : viewMode === 'grid' ? (
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="space-y-4">
+          <div className="flex items-center justify-between px-2 text-sm text-[var(--on-surface-variant)]">
+            <label className="flex items-center gap-2 cursor-pointer hover:text-[var(--primary)] font-bold transition-colors">
+              <button type="button" onClick={handleSelectAll}>
+                {selectedIds.size === filteredProducts.length && filteredProducts.length > 0 ? <CheckSquare size={16} className="text-[var(--primary)]" /> : <Square size={16} />}
+              </button>
+              Select All
+            </label>
+            <span className="font-bold text-[10px] uppercase tracking-widest">{filteredProducts.length} Products</span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filteredProducts.map((product) => {
             const price = getProductPrice(product);
             const outOfStock = product.total_inventory === 0;
@@ -503,8 +514,8 @@ export default function ProductsPage() {
             const isSelected = selectedIds.has(product.id);
 
             return (
-              <div key={product.id} className={`bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] overflow-hidden transition-all ${isSelected ? 'ring-2 ring-[var(--primary)]' : ''}`}>
-                <div className="relative aspect-[4/3] bg-[var(--surface-container-low)] group">
+              <div key={product.id} className={`bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] transition-all ${isSelected ? 'ring-2 ring-[var(--primary)]' : ''}`}>
+                <div className="relative aspect-[4/3] bg-[var(--surface-container-low)] group rounded-t-2xl overflow-hidden">
                   <div className="absolute top-3 left-3 z-10">
                     <button onClick={() => handleSelect(product.id)} className="bg-white/80 backdrop-blur rounded p-1 shadow hover:bg-white transition-colors">
                       {isSelected ? <CheckSquare size={16} className="text-[var(--primary)]" /> : <Square size={16} className="text-[var(--on-surface-variant)]" />}
@@ -542,7 +553,7 @@ export default function ProductsPage() {
                         <MoreVertical size={16} className="text-[var(--on-surface-variant)]" />
                       </button>
                       {activeMenuId === product.id && (
-                        <div className="absolute right-0 top-full mt-1 w-36 bg-[var(--surface-container-lowest)] shadow-xl rounded-xl py-1 border border-[var(--outline-variant)] z-20">
+                        <div className="absolute right-0 top-full mt-1 w-36 bg-[var(--surface-container-lowest)] shadow-xl rounded-xl py-1 border border-[var(--outline-variant)] z-50">
                           <button onClick={() => { handleOpenQuickView(product); setActiveMenuId(null); }} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--surface-container-low)] w-full text-left">
                             <Eye size={12} /> Quick View
                           </button>
@@ -573,6 +584,7 @@ export default function ProductsPage() {
               </div>
             );
           })}
+                  </div>
         </section>
       ) : (
         /* List view */
