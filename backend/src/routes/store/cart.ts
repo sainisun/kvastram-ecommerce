@@ -20,6 +20,31 @@ const SaveCartSchema = z.object({
   items: z.array(CartItemSchema).max(100),
 });
 
+function mergeCartItems(customerItems: any[], guestItems: any[]): any[] {
+  const mergedMap = new Map<string, any>();
+
+  // Add customer items first
+  for (const item of customerItems) {
+    if (item && item.variant_id) {
+      mergedMap.set(item.variant_id, { ...item });
+    }
+  }
+
+  // Merge guest items
+  for (const item of guestItems) {
+    if (item && item.variant_id) {
+      const existing = mergedMap.get(item.variant_id);
+      if (existing) {
+        existing.quantity = Math.min(999, existing.quantity + (item.quantity || 1));
+      } else {
+        mergedMap.set(item.variant_id, { ...item });
+      }
+    }
+  }
+
+  return Array.from(mergedMap.values());
+}
+
 const cartRouter = new Hono();
 
 // Helper: Get customer ID from JWT cookie (optional auth — don't block guests)
@@ -40,12 +65,47 @@ cartRouter.get('/', async (c) => {
     const customerId = await getCustomerId(c);
 
     if (customerId) {
-      const [cart] = await db
+      const [customerCart] = await db
         .select()
         .from(saved_carts)
         .where(eq(saved_carts.customer_id, customerId))
         .limit(1);
-      return c.json({ items: cart?.items || [] });
+      
+      let items = (customerCart?.items as any[]) || [];
+
+      // If guest cart session exists, merge it
+      const sessionId = getCookie(c, 'cart_session_id');
+      if (sessionId) {
+        const [guestCart] = await db
+          .select()
+          .from(saved_carts)
+          .where(eq(saved_carts.session_id, sessionId))
+          .limit(1);
+
+        const guestItems = (guestCart?.items as any[]) || [];
+        if (guestItems.length > 0) {
+          items = mergeCartItems(items, guestItems);
+
+          // Update customer cart and purge guest cart
+          if (customerCart) {
+            await db
+              .update(saved_carts)
+              .set({ items, updated_at: new Date() })
+              .where(eq(saved_carts.customer_id, customerId));
+          } else {
+            await db.insert(saved_carts).values({
+              customer_id: customerId,
+              items,
+            });
+          }
+
+          await db
+            .delete(saved_carts)
+            .where(eq(saved_carts.session_id, sessionId));
+        }
+      }
+
+      return c.json({ items });
     }
 
     // Fallback: session-based cart for guests
