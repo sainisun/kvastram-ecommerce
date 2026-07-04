@@ -13,6 +13,7 @@ import ProductReadinessPanel from '@/components/ProductReadinessPanel';
 import { useNotification } from '@/context/notification-context';
 import { getAdminProductReadinessIssues } from '@/lib/product-readiness';
 import { RichTextEditor } from '@/components/ui/RichTextEditor';
+import GoogleSerpPreview from '@/components/seo/GoogleSerpPreview';
 
 interface Region {
   id: string;
@@ -69,6 +70,8 @@ export default function NewProductPage() {
   
   const [metadata, setMetadata] = useState<any>({});
   const [faqItems, setFaqItems] = useState<{question: string, answer: string}[]>([]);
+  const [seoNoIndex, setSeoNoIndex] = useState(false);
+  const [seoCanonicalUrl, setSeoCanonicalUrl] = useState('');
 
   const [mediaItems, setMediaItems] = useState<ProductMediaItem[]>([]);
   // Single INR price — storefront converts to buyer's local currency automatically
@@ -130,6 +133,7 @@ export default function NewProductPage() {
     material: formData.material,
     seoTitle: formData.seo_title,
     seoDescription: formData.seo_description,
+    mediaWithAltCount: mediaItems.filter(m => m.alt_text?.trim() !== '').length,
   };
 
   const handleSubmit = async (e: any) => {
@@ -196,8 +200,12 @@ export default function NewProductPage() {
           faq_items: faqItems,
         },
       };
-
       const created = await api.createProduct(payload);
+      await api.updateProductSeo(created.product.id, {
+        robots_index: !seoNoIndex,
+        canonical_url: seoCanonicalUrl || undefined
+      });
+      showNotification('success', 'Product created successfully');
       const productId = created?.product?.id || created?.id;
 
       showNotification('success', 'Product created with an automatic SEO baseline. Review SEO & Discovery before publishing broadly.');
@@ -318,19 +326,18 @@ export default function NewProductPage() {
               </div>
               <div>
                 <label htmlFor="size_guide" className={labelCls}>Size Guide</label>
-                <textarea
-                  id="size_guide" name="size_guide"
-                  value={formData.size_guide || ''} onChange={handleChange} rows={3}
-                  className={inputCls}
+                <RichTextEditor
+                  value={formData.size_guide || ''}
+                  onChange={(val) => setFormData(p => ({ ...p, size_guide: val }))}
                   placeholder="e.g. Model is 5'9 and wearing size M. Fits true to size."
                 />
               </div>
               <div>
                 <label htmlFor="care_instructions" className={labelCls}>Care Instructions</label>
-                <textarea
-                  id="care_instructions" name="care_instructions"
-                  value={formData.care_instructions || ''} onChange={handleChange} rows={3}
-                  className={inputCls} placeholder="e.g. Machine wash cold, dry flat."
+                <RichTextEditor
+                  value={formData.care_instructions || ''}
+                  onChange={(val) => setFormData(p => ({ ...p, care_instructions: val }))}
+                  placeholder="e.g. Machine wash cold, dry flat."
                 />
               </div>
             </div>
@@ -604,6 +611,45 @@ export default function NewProductPage() {
                   Recommended: 150–160 characters
                 </p>
               </div>
+
+              <GoogleSerpPreview 
+                title={formData.seo_title || formData.title} 
+                description={formData.seo_description || 'Compelling summary for search results…'} 
+                url={formData.handle} 
+              />
+              
+              <div className="pt-4 border-t border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-800 mb-3">Advanced Technical SEO</h3>
+                <div className="space-y-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <div className="flex items-center h-5">
+                      <input 
+                        type="checkbox" 
+                        checked={seoNoIndex} 
+                        onChange={(e) => setSeoNoIndex(e.target.checked)} 
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" 
+                      />
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium text-gray-700">Hide from search engines (noindex)</span>
+                      <p className="text-xs text-gray-500">Prevent Google from indexing this product page.</p>
+                    </div>
+                  </label>
+                  
+                  <div>
+                    <label htmlFor="canonical_url" className={labelCls}>Custom Canonical URL</label>
+                    <input
+                      id="canonical_url" type="url"
+                      value={seoCanonicalUrl}
+                      onChange={(e) => setSeoCanonicalUrl(e.target.value)}
+                      className={inputCls}
+                      placeholder="e.g. https://odhvica.com/products/original-shirt"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Leave blank to auto-generate.</p>
+                  </div>
+                </div>
+              </div>
+
 
               <div>
                 <label htmlFor="google_category" className={labelCls}>Google Product Category</label>

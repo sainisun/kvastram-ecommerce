@@ -1,7 +1,5 @@
 'use client';
 
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import type { SizeGuide as SizeGuideType, SizeMeasurement } from '@/types';
 import { Modal } from '@/components/ui/Modal';
 
@@ -72,13 +70,11 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
         <div className="space-y-8">
           {/* Product-specific size chart — string or structured */}
           {sizeGuide && typeof sizeGuide === 'string' ? (
-            <div className="prose prose-sm max-w-none mb-6 border-b border-border-subtle pb-6">
-              <h3 className="size-guide-heading mb-4">
+            <div className="prose prose-sm max-w-none mb-6 border-b border-border-subtle pb-6 text-[var(--kv-muted)]">
+              <h3 className="size-guide-heading mb-4 text-[var(--kv-text)]">
                 Product Size Guide
               </h3>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {sizeGuide}
-              </ReactMarkdown>
+              <div dangerouslySetInnerHTML={{ __html: sizeGuide }} />
             </div>
           ) : sizeGuide && typeof sizeGuide === 'object' ? (
             renderCustomSizeChart(sizeGuide)

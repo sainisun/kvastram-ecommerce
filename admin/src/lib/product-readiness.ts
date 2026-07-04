@@ -9,6 +9,7 @@ export type AdminProductReadinessInput = {
   material?: string;
   seoTitle?: string;
   seoDescription?: string;
+  mediaWithAltCount?: number;
 };
 
 export type AdminProductReadinessIssue = {
@@ -48,6 +49,11 @@ export function getAdminProductReadinessIssues(
     issues.push({
       field: 'media',
       message: 'Add at least one product image.',
+    });
+  } else if (input.mediaWithAltCount !== undefined && input.mediaWithAltCount < input.mediaCount) {
+    issues.push({
+      field: 'altText',
+      message: 'Add Alt Text to all images for better Image SEO.',
     });
   }
 

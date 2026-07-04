@@ -316,6 +316,19 @@ export const api = {
     return response.data;
   },
 
+  updateProductSeo: async (id: string, data: unknown) => {
+    const res = await fetchWithTimeout(`${API_BASE_URL}/products/${id}/seo`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) return handleApiError(res, 'Failed to update product SEO');
+    const response = await res.json();
+    return response.data;
+  },
+
   deleteProduct: async (id: string) => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/products/${id}`, {
       method: 'DELETE',

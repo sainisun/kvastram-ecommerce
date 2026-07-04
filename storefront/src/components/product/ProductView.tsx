@@ -289,11 +289,16 @@ export default function ProductView({ product }: { product: Product }) {
     {
       key: 'care',
       title: 'Fabric care rules',
-      hint: product.care_instructions || 'Machine wash cold · Gentle cycle',
+      hint: 'Machine wash cold · Gentle cycle',
       icon: <Leaf size={18} />,
-      content: (
+      content: product.care_instructions ? (
+        <div 
+          className="prose prose-sm max-w-none text-[var(--kv-muted)]" 
+          dangerouslySetInnerHTML={{ __html: product.care_instructions }} 
+        />
+      ) : (
         <p className="kv-sub">
-          {product.care_instructions || 'Machine wash cold on a gentle cycle. Dry in shade and avoid harsh bleach to preserve the hand-finished color.'}
+          Machine wash cold on a gentle cycle. Dry in shade and avoid harsh bleach to preserve the hand-finished color.
         </p>
       ),
     },
