@@ -24,12 +24,12 @@ export default function GoogleSerpPreview({ title, description, url }: GoogleSer
       <div className="max-w-[600px]">
         {/* URL and Breadcrumb */}
         <div className="flex items-center gap-2 mb-1">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 p-1">
+          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 p-1">
             <span className="text-xs font-bold text-gray-600">O</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[14px] text-[#202124] leading-tight font-medium">Odhvica</span>
-            <span className="text-[12px] text-[#4d5156] leading-tight truncate max-w-[280px] sm:max-w-[400px]">
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-[14px] text-[#202124] leading-tight font-medium truncate">Odhvica</span>
+            <span className="text-[12px] text-[#4d5156] leading-tight truncate">
               {formattedUrl}
             </span>
           </div>
