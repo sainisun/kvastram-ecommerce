@@ -88,3 +88,11 @@ reported back before any follow-up action is taken.
 - **Step-by-Step Verification:** Test each feature independently as it is built. Do not write monolithic features without validating the intermediate steps.
 - **Codebase Re-verification:** After finishing a task, re-verify the codebase functionality (by running tests, linters, or manual endpoints) rather than relying only on theoretical walkthroughs. Ensure the actual implementation holds up.
 
+## Project Features Guide Maintenance
+
+- **Preservation Mandatory**: The [Project Features Guide](file:///e:/Kvastram%20projects/docs/project_features_guide.md) must **NEVER** be deleted, moved, or truncated under any condition.
+- **Continuous Documentation**: Whenever a new feature (no matter how small or large) is introduced or modified in this codebase, the agent **MUST** update `docs/project_features_guide.md` with a detailed explanation containing:
+  - Technical functionality and flow
+  - User requirements, settings, credentials, DLT setups, or configurations
+  - Edge cases, dependencies, and operational commands.
+
