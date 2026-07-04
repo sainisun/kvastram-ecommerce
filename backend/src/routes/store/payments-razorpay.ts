@@ -461,7 +461,7 @@ razorpayRouter.post('/webhook', async (c) => {
     .update(payload)
     .digest('hex');
 
-  if (expectedSignature !== signature) {
+  if (!safeCompareHex(expectedSignature, signature)) {
     logError('Razorpay webhook signature mismatch');
     return c.json({ error: 'Invalid signature' }, 400);
   }

@@ -57,9 +57,7 @@
   }
 
   .kv-container,
-  .kv-page-container,
-  .content-shell,
-  .content-layout {
+  .kv-page-container {
     width: var(--kv-desktop-container-width);
     max-width: none;
     margin-inline: auto;

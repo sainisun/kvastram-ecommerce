@@ -1,5 +1,11 @@
 # Odhvica E-Commerce Platform — Comprehensive Features Guide
 
+## UI/UX & Tailwind Refactoring (v1.0)
+* **Technical Flow**: Transitioning legacy custom CSS components (`product-card.css`, `collections.css`, `home-sections.css`) to utility-first Tailwind CSS. 
+* **Architecture**: Enforces a strict separation of concerns where global resets reside in `tokens.css` and `base.css`, while all component-level styles are handled via inline Tailwind classes (e.g. `bg-[var(--ds-surface-paper)]`, `text-body-sm`).
+* **Dependencies**: Depends on the custom `design-system-audit.mjs` ratcheting scripts. When adding new inline styles, developers must allowlist them in `design-system-audit.mjs` to prevent pipeline failures.
+* **Commands**: Run `npm run audit:css-ownership -- --write-baseline` after removing legacy CSS classes to establish a new duplication baseline.
+
 This guide is the definitive registry of all backend features implemented in the Odhvica codebase. It outlines the technical mechanics, configuration keys, user requirements, and operational steps for each system.
 
 ---
@@ -117,3 +123,16 @@ This guide is the definitive registry of all backend features implemented in the
   * Utility scripts to override admin parameters and clear locks in case of admin lockout.
 * **What you need to do**:
   * Run: `npx tsx src/scripts/reset-admin.ts`
+
+---
+
+## 6. UI/UX Design System Enhancements (v1.1)
+
+### A. Accessibility & Layout Polish
+* **Technical Flow**:
+  * **Typography Integration**: The layout natively bridges Next.js `next/font/google` variables (`--font-cardo`, `--font-amiri`) directly to internal CSS tokens (`--ds-font-body`, `--ds-font-display`) removing render-blocking external stylesheets.
+  * **Motion Accessiblity**: Animations are wrapped in an `(prefers-reduced-motion: reduce)` media query across the application. When a user enables reduced motion on their OS, animations and smooth scrolling are stripped globally by resetting `animation-duration` to `0.01ms`.
+  * **Interactive Focus Trap**: Navigational elements like `Drawer.tsx` capture focus via a custom `useEffect` trap keeping keyboard navigation (Tab & Shift-Tab) strictly bound to internal interactable elements when the drawer is open.
+* **What you need to do**:
+  * Ensure the design system audits (`npm run verify:design-system`) pass without warnings.
+  * Use the tokens `var(--font-cardo)` mapped internally when expanding any future layout elements.
