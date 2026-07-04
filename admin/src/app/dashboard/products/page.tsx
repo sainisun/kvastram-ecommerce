@@ -11,6 +11,15 @@ import {
   RefreshCw,
   Search,
   Trash2,
+  MoreVertical,
+  Copy,
+  CheckSquare,
+  Square,
+  ChevronDown,
+  Edit2,
+  Eye,
+  Check,
+  X,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -30,6 +39,8 @@ interface Product {
   total_inventory: number;
   prices?: Array<{ amount: number; currency_code?: string }>;
   price?: number | { amount?: number; currency_code?: string };
+  sku?: string;
+  categories?: { name: string }[];
 }
 
 interface ProductStats {
@@ -103,6 +114,12 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [collections, setCollections] = useState<CollectionOption[]>([]);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkActionRunning, setIsBulkActionRunning] = useState(false);
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [inlineEditId, setInlineEditId] = useState<string | null>(null);
+  const [inlinePrice, setInlinePrice] = useState<string>('');
+  const [inlineStock, setInlineStock] = useState<string>('');
 
   useEffect(() => {
     const loadFilters = async () => {
@@ -200,6 +217,49 @@ export default function ProductsPage() {
     }
   };
 
+  const handleSelectAll = () => {
+    if (selectedIds.size === filteredProducts.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredProducts.map(p => p.id)));
+    }
+  };
+
+  const handleSelect = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setSelectedIds(newSet);
+  };
+
+  const handleBulkAction = async (action: 'status' | 'delete', status?: string) => {
+    if (selectedIds.size === 0) return;
+    if (action === 'delete' && !window.confirm(`Delete ${selectedIds.size} products?`)) return;
+    try {
+      setIsBulkActionRunning(true);
+      await api.bulkProductsAction(action, Array.from(selectedIds), status);
+      setSelectedIds(new Set());
+      await Promise.all([fetchProducts(), fetchStats()]);
+    } catch (error) {
+      console.error(error);
+      window.alert('Failed to perform bulk action');
+    } finally {
+      setIsBulkActionRunning(false);
+      setActiveMenuId(null);
+    }
+  };
+  
+  const handleDuplicate = async (id: string) => {
+    try {
+      await api.duplicateProduct(id);
+      await Promise.all([fetchProducts(), fetchStats()]);
+      setActiveMenuId(null);
+    } catch (error) {
+      console.error(error);
+      window.alert('Failed to duplicate product');
+    }
+  };
+
   /* ── Loading skeleton ── */
   if (loading && products.length === 0) {
     return (
@@ -214,6 +274,18 @@ export default function ProductsPage() {
     );
   }
 
+  const handleInlineSave = async (id: string) => {
+    try {
+      await api.updateProduct(id, {
+        inventory_quantity: parseInt(inlineStock, 10),
+      });
+      setInlineEditId(null);
+      await Promise.all([fetchProducts(), fetchStats()]);
+    } catch (e) {
+      alert('Failed to save inline edit');
+    }
+  };
+
   const FILTER_TABS: { label: string; value: ListingFilter }[] = [
     { label: 'All',          value: 'all' },
     { label: 'Active',       value: 'published' },
@@ -222,7 +294,7 @@ export default function ProductsPage() {
   ];
 
   return (
-    <div className="space-y-6 px-4 py-6 md:px-6">
+    <div className="space-y-6 px-4 py-6 md:px-6 relative">
 
       {/* ── Heading ── */}
       <section className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -251,6 +323,27 @@ export default function ProductsPage() {
         </div>
       </section>
 
+      {/* ── Sticky Bulk Action Bar ── */}
+      {selectedIds.size > 0 && (
+        <div className="sticky top-4 z-50 flex items-center justify-between rounded-2xl bg-[var(--surface-container-highest)] p-4 shadow-xl text-[var(--on-surface)] animate-in slide-in-from-top-4">
+          <div className="flex items-center gap-4">
+            <span className="font-bold text-sm bg-[var(--primary)] text-[var(--on-primary)] px-2 py-1 rounded-md">{selectedIds.size} Selected</span>
+            <button onClick={() => setSelectedIds(new Set())} className="text-xs font-bold hover:underline">Clear</button>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => handleBulkAction('status', 'published')} disabled={isBulkActionRunning} className="rounded-full bg-[var(--surface-container-lowest)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest hover:bg-[var(--surface-container-low)]">
+              Publish
+            </button>
+            <button onClick={() => handleBulkAction('status', 'draft')} disabled={isBulkActionRunning} className="rounded-full bg-[var(--surface-container-lowest)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest hover:bg-[var(--surface-container-low)]">
+              Pause
+            </button>
+            <button onClick={() => handleBulkAction('delete')} disabled={isBulkActionRunning} className="rounded-full bg-[var(--error-container)] text-[var(--on-error-container)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest hover:opacity-80">
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Stats bento ── */}
       <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
@@ -274,7 +367,6 @@ export default function ProductsPage() {
 
       {/* ── Filters ── */}
       <section className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] p-4 space-y-4">
-        {/* Filter tabs + view toggle */}
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap gap-2">
             {FILTER_TABS.map((tab) => (
@@ -367,10 +459,20 @@ export default function ProductsPage() {
             const outOfStock = product.total_inventory === 0;
             const lowStock = product.total_inventory > 0 && product.total_inventory < 5;
             const s = getStatusStyle(product.status);
+            const isSelected = selectedIds.has(product.id);
 
             return (
-              <div key={product.id} className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] overflow-hidden">
-                <div className="relative aspect-[4/3] bg-[var(--surface-container-low)]">
+              <div key={product.id} className={`bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] overflow-hidden transition-all ${isSelected ? 'ring-2 ring-[var(--primary)]' : ''}`}>
+                <div className="relative aspect-[4/3] bg-[var(--surface-container-low)] group">
+                  <div className="absolute top-3 left-3 z-10">
+                    <button onClick={() => handleSelect(product.id)} className="bg-white/80 backdrop-blur rounded p-1 shadow hover:bg-white transition-colors">
+                      {isSelected ? <CheckSquare size={16} className="text-[var(--primary)]" /> : <Square size={16} className="text-[var(--on-surface-variant)]" />}
+                    </button>
+                  </div>
+                  <span className={`absolute top-3 right-3 z-10 ${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase shadow-sm`}>
+                    {product.status}
+                  </span>
+                  
                   {product.thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={toDisplayUrl(product.thumbnail)} alt={product.title} className="h-full w-full object-cover"
@@ -382,39 +484,41 @@ export default function ProductsPage() {
                   )}
                 </div>
 
-                <div className="p-4 space-y-3">
+                <div className="p-4 space-y-3 relative">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-[var(--on-surface)] truncate">{product.title}</p>
-                      <p className="text-xs text-[var(--on-surface-variant)] mt-0.5">{formatCurrency(price)}</p>
+                      <p className="text-sm font-bold text-[var(--on-surface)] line-clamp-2 leading-tight" title={product.title}>{product.title}</p>
+                      <p className="text-sm font-black text-[var(--primary)] mt-1">{formatCurrency(price)}</p>
                     </div>
-                    <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase flex-shrink-0`}>
-                      {product.status}
-                    </span>
+                    
+                    <div className="relative">
+                      <button onClick={() => setActiveMenuId(activeMenuId === product.id ? null : product.id)} className="p-1.5 rounded-full hover:bg-[var(--surface-container-low)] transition-colors">
+                        <MoreVertical size={16} className="text-[var(--on-surface-variant)]" />
+                      </button>
+                      {activeMenuId === product.id && (
+                        <div className="absolute right-0 top-full mt-1 w-36 bg-[var(--surface-container-lowest)] shadow-xl rounded-xl py-1 border border-[var(--outline-variant)] z-20">
+                          <Link href={`/dashboard/products/${product.id}`} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--surface-container-low)] w-full text-left">
+                            <Edit2 size={12} /> Edit
+                          </Link>
+                          <button onClick={() => { handleToggleActive(product); setActiveMenuId(null); }} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--surface-container-low)] w-full text-left">
+                            {product.status === 'published' ? <X size={12}/> : <Check size={12}/>} {product.status === 'published' ? 'Pause' : 'Activate'}
+                          </button>
+                          <button onClick={() => handleDuplicate(product.id)} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--surface-container-low)] w-full text-left">
+                            <Copy size={12} /> Duplicate
+                          </button>
+                          <button onClick={() => { handleDelete(product.id); setActiveMenuId(null); }} className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--error)] hover:bg-[var(--error-container)] w-full text-left">
+                            <Trash2 size={12} /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between rounded-xl bg-[var(--surface-container-low)] px-3 py-2 text-xs">
-                    <span className="text-[var(--on-surface-variant)]">Stock</span>
+                    <span className="text-[var(--on-surface-variant)]">{product.categories?.[0]?.name || 'Uncategorized'}</span>
                     <span className={`font-bold ${outOfStock ? 'text-[var(--error)]' : lowStock ? 'text-[var(--secondary-container)]' : 'text-[var(--on-surface)]'}`}>
-                      {product.total_inventory}
+                      {outOfStock ? 'Out of stock' : `${product.total_inventory} in stock`}
                     </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-1.5">
-                    <button type="button" onClick={() => void handleToggleActive(product)}
-                      aria-label={`${product.status === 'published' ? 'Pause' : 'Activate'} ${product.title}`}
-                      className="rounded-full border border-[var(--outline-variant)] py-2 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors">
-                      {product.status === 'published' ? 'Pause' : 'Activate'}
-                    </button>
-                    <Link href={`/dashboard/products/${product.id}`}
-                      className="rounded-full border border-[var(--outline-variant)] py-2 text-center text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)] transition-colors">
-                      Edit
-                    </Link>
-                    <button type="button" onClick={() => void handleDelete(product.id)}
-                      aria-label={`Delete ${product.title}`}
-                      className="rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] py-2 text-[9px] font-bold uppercase tracking-widest text-[var(--on-error-container)] hover:opacity-80 transition-opacity">
-                      Delete
-                    </button>
                   </div>
                 </div>
               </div>
@@ -424,43 +528,98 @@ export default function ProductsPage() {
       ) : (
         /* List view */
         <section className="bg-[var(--surface-container-lowest)] rounded-2xl shadow-[0_4px_12px_rgba(25,28,30,0.04)] divide-y divide-[var(--surface-container-low)]">
+          <div className="flex items-center gap-4 p-4 font-bold text-[10px] uppercase tracking-widest text-[var(--on-surface-variant)]">
+            <button onClick={handleSelectAll} className="hover:text-[var(--primary)] transition-colors">
+              {selectedIds.size === filteredProducts.length && filteredProducts.length > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
+            </button>
+            <div className="w-14">Image</div>
+            <div className="flex-1">Product Details</div>
+            <div className="hidden md:block w-24">Price</div>
+            <div className="hidden md:block w-24">Stock</div>
+            <div className="w-20">Status</div>
+            <div className="w-12 text-right">Actions</div>
+          </div>
           {filteredProducts.map((product) => {
             const price = getProductPrice(product);
             const outOfStock = product.total_inventory === 0;
             const lowStock = product.total_inventory > 0 && product.total_inventory < 5;
             const s = getStatusStyle(product.status);
+            const isSelected = selectedIds.has(product.id);
+            const isInlineEditing = inlineEditId === product.id;
 
             return (
-              <div key={product.id} className={`flex items-center gap-4 p-4 border-l-4 ${s.border} hover:bg-[var(--surface-container-low)]/50 transition-colors first:rounded-t-2xl last:rounded-b-2xl`}>
+              <div key={product.id} className={`flex items-center gap-4 p-4 border-l-4 ${s.border} hover:bg-[var(--surface-container-low)]/50 transition-colors ${isSelected ? 'bg-[var(--primary)]/5' : ''}`}>
+                <button onClick={() => handleSelect(product.id)} className="text-[var(--on-surface-variant)] hover:text-[var(--primary)] transition-colors">
+                  {isSelected ? <CheckSquare size={16} className="text-[var(--primary)]" /> : <Square size={16} />}
+                </button>
+                
                 <div className="h-14 w-14 flex-shrink-0 rounded-xl overflow-hidden bg-[var(--surface-container-low)] flex items-center justify-center">
                   {product.thumbnail
                     ? <img src={toDisplayUrl(product.thumbnail)} alt={product.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> // eslint-disable-line @next/next/no-img-element
                     : <Package size={18} className="text-[var(--on-surface-variant)]" />}
                 </div>
+                
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-[var(--on-surface)] truncate">{product.title}</p>
-                  <p className="text-[10px] text-[var(--on-surface-variant)]">/products/{product.handle}</p>
+                  <p className="text-[10px] font-medium text-[var(--on-surface-variant)] mt-1 uppercase tracking-wide">
+                    {product.categories?.[0]?.name || product.sku || 'N/A'}
+                  </p>
                 </div>
-                <div className="hidden md:block text-xs font-bold text-[var(--on-surface)]">{formatCurrency(price)}</div>
-                <div className={`hidden md:block text-xs font-bold ${outOfStock ? 'text-[var(--error)]' : lowStock ? 'text-[var(--on-secondary-container)]' : 'text-[var(--on-surface)]'}`}>
-                  {product.total_inventory}
+                
+                <div className="hidden md:block w-24 text-sm font-black text-[var(--primary)]">
+                  {formatCurrency(price)}
                 </div>
-                <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{product.status}</span>
-                <div className="flex items-center gap-1.5">
-                  <button type="button" onClick={() => void handleToggleActive(product)}
-                    aria-label={`${product.status === 'published' ? 'Pause' : 'Activate'} ${product.title}`}
-                    className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
-                    {product.status === 'published' ? 'Pause' : 'Activate'}
+                
+                <div className={`hidden md:block w-24 text-xs font-bold ${outOfStock ? 'text-[var(--error)]' : lowStock ? 'text-[var(--on-secondary-container)]' : 'text-[var(--on-surface)]'}`}>
+                  {isInlineEditing ? (
+                    <input 
+                      type="number" 
+                      value={inlineStock} 
+                      onChange={e => setInlineStock(e.target.value)} 
+                      onKeyDown={e => e.key === 'Enter' && handleInlineSave(product.id)}
+                      className="w-16 p-1 text-xs border rounded bg-white text-black" 
+                      autoFocus 
+                    />
+                  ) : (
+                    <div className="cursor-pointer group relative inline-flex items-center gap-1" onClick={() => { 
+                      if(product.variant_count <= 1) { 
+                        setInlineEditId(product.id); 
+                        setInlineStock(product.total_inventory.toString()); 
+                      } else {
+                        // For multi-variant, ideally open variant dropdown, but for now just prevent inline edit
+                        alert('Inline edit is only for single-variant products. Please edit product.');
+                      }
+                    }}>
+                      {outOfStock ? 'Out of stock' : `${product.total_inventory} in stock`}
+                      {product.variant_count <= 1 && <Edit2 size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="w-20">
+                  <span className={`${s.badge} px-2 py-0.5 rounded-full text-[9px] font-bold uppercase`}>{product.status}</span>
+                </div>
+                
+                <div className="w-12 text-right relative">
+                  <button onClick={() => setActiveMenuId(activeMenuId === product.id ? null : product.id)} className="p-1.5 rounded-full hover:bg-[var(--surface-container-high)] transition-colors inline-flex">
+                    <MoreVertical size={16} className="text-[var(--on-surface-variant)]" />
                   </button>
-                  <Link href={`/dashboard/products/${product.id}`}
-                    className="rounded-full border border-[var(--outline-variant)] px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--on-surface)] hover:bg-[var(--surface-container-low)]">
-                    Edit
-                  </Link>
-                  <button type="button" onClick={() => void handleDelete(product.id)}
-                    aria-label={`Delete ${product.title}`}
-                    className="h-8 w-8 rounded-full border border-[var(--error)]/20 bg-[var(--error-container)] flex items-center justify-center text-[var(--on-error-container)] hover:opacity-80">
-                    <Trash2 size={13} />
-                  </button>
+                  {activeMenuId === product.id && (
+                    <div className="absolute right-0 top-full mt-1 w-36 bg-[var(--surface-container-lowest)] shadow-xl rounded-xl py-1 border border-[var(--outline-variant)] z-20">
+                      <Link href={`/dashboard/products/${product.id}`} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--surface-container-low)] w-full text-left">
+                        <Edit2 size={12} /> Edit
+                      </Link>
+                      <button onClick={() => { handleToggleActive(product); setActiveMenuId(null); }} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--surface-container-low)] w-full text-left">
+                        {product.status === 'published' ? <X size={12}/> : <Check size={12}/>} {product.status === 'published' ? 'Pause' : 'Activate'}
+                      </button>
+                      <button onClick={() => handleDuplicate(product.id)} className="flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--surface-container-low)] w-full text-left">
+                        <Copy size={12} /> Duplicate
+                      </button>
+                      <button onClick={() => { handleDelete(product.id); setActiveMenuId(null); }} className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--error)] hover:bg-[var(--error-container)] w-full text-left">
+                        <Trash2 size={12} /> Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );

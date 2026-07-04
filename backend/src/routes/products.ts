@@ -698,6 +698,104 @@ const createProductHandler = asyncHandler(async (c) => {
 productsRouter.post('', verifyAdminOrMcpService, createProductHandler);
 productsRouter.post('/', verifyAdminOrMcpService, createProductHandler);
 
+// POST /products/bulk - Bulk update or delete
+productsRouter.post(
+  '/bulk',
+  verifyAdminOrMcpService,
+  asyncHandler(async (c) => {
+    const body = await c.req.json();
+    const { action, productIds, status } = body;
+    
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      throw new ValidationError('productIds must be a non-empty array');
+    }
+
+    if (action === 'delete') {
+      for (const id of productIds) {
+        await productService.delete(id);
+      }
+      return successResponse(c, { deleted: productIds.length }, 'Products deleted successfully');
+    }
+
+    if (action === 'status' && status) {
+      for (const id of productIds) {
+        await productService.update(id, { status });
+        try {
+          const p = await productService.retrieve(id);
+          await triggerStorefrontRevalidation({
+            productId: p.id,
+            handle: p.handle,
+            paths: ['/', '/products'],
+            tags: ['products'],
+          });
+        } catch (e) {
+          console.warn(`Bulk revalidation failed for ${id}:`, e);
+        }
+      }
+      return successResponse(c, { updated: productIds.length }, 'Products status updated successfully');
+    }
+
+    throw new ValidationError('Invalid bulk action');
+  })
+);
+
+// POST /products/:id/duplicate - Duplicate a product
+productsRouter.post(
+  '/:id/duplicate',
+  verifyAdminOrMcpService,
+  asyncHandler(async (c) => {
+    const id = c.req.param('id');
+    const original = await productService.retrieve(id);
+    if (!original) throw new NotFoundError('Product not found');
+
+    const suffix = `-${Math.random().toString(36).substring(2, 7)}`;
+    
+    const duplicateData = {
+      title: `${original.title} (Copy)`,
+      handle: `${original.handle}${suffix}`,
+      status: 'draft' as const,
+      subtitle: original.subtitle || undefined,
+      description: original.description || undefined,
+      is_giftcard: original.is_giftcard,
+      discountable: original.discountable,
+      weight: original.weight || undefined,
+      length: original.length || undefined,
+      height: original.height || undefined,
+      width: original.width || undefined,
+      hs_code: original.hs_code || undefined,
+      origin_country: original.origin_country || undefined,
+      mid_code: original.mid_code || undefined,
+      material: original.material || undefined,
+      size_guide: original.size_guide || undefined,
+      care_instructions: original.care_instructions || undefined,
+      seo_title: original.seo_title || undefined,
+      seo_description: original.seo_description || undefined,
+      inventory_quantity: original.variants?.[0]?.inventory_quantity || 0,
+      thumbnail: original.thumbnail || undefined,
+      sku: original.variants?.[0]?.sku ? `${original.variants[0].sku}${suffix}` : undefined,
+      collection_id: original.collection_id || undefined,
+      category_ids: original.categories?.map((cat: any) => cat.id) || [],
+      tag_ids: original.tags?.map((tag: any) => tag.id) || [],
+      price_type: original.price_type,
+      prices: original.variants?.[0]?.prices?.map((p: any) => ({
+        amount: p.amount,
+        currency_code: p.currency_code,
+        region_id: p.region_id,
+      })) || [],
+      images: original.images?.map((img: any) => ({
+        url: img.url,
+        alt_text: img.alt_text,
+        is_thumbnail: img.is_thumbnail,
+        position: img.position,
+      })) || [],
+      options: original.options?.map((opt: any) => ({ title: opt.title })) || [],
+    };
+
+    const product = await productService.create(duplicateData);
+    return successResponse(c, { product }, 'Product duplicated successfully', HttpStatus.CREATED);
+  })
+);
+
 // PUT /products/:id - Update product (Protected)
 productsRouter.put(
   '/:id',
