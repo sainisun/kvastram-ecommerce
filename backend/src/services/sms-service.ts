@@ -1,4 +1,5 @@
 import twilio from 'twilio';
+import { eq } from 'drizzle-orm';
 
 export class SMSService {
   private get msg91AuthKey() {
@@ -115,6 +116,74 @@ export class SMSService {
       console.log(`[Twilio] Sent SMS to ${formattedPhone}`);
     } catch (error) {
       console.error('[Twilio] Failed to send SMS:', error);
+    }
+  }
+
+  /**
+   * Send WhatsApp Template Message using Meta Cloud API
+   */
+  async sendWhatsAppTemplate(to: string, templateName: string, params: string[]) {
+    try {
+      const { db } = await import('../db/client');
+      const { whatsapp_settings } = await import('../db/schema');
+
+      const configRows = await db
+        .select()
+        .from(whatsapp_settings)
+        .where(eq(whatsapp_settings.is_active, true))
+        .limit(1);
+
+      const config = configRows[0];
+
+      if (!config || !config.access_token || !config.phone_number_id) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.log(`[WhatsApp DEV] Skipped template ${templateName} to ${to} - Config inactive.`);
+        }
+        return;
+      }
+
+      let formattedPhone = to.replace(/\D/g, '');
+      if (formattedPhone.length === 10) {
+        formattedPhone = `91${formattedPhone}`;
+      }
+
+      const url = `https://graph.facebook.com/v19.0/${config.phone_number_id}/messages`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${config.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: formattedPhone,
+          type: 'template',
+          template: {
+            name: templateName,
+            language: {
+              code: 'en',
+            },
+            components: [
+              {
+                type: 'body',
+                parameters: params.map((p) => ({
+                  type: 'text',
+                  text: p,
+                })),
+              },
+            ],
+          },
+        }),
+      });
+
+      const data: any = await response.json();
+      if (data.error) {
+        console.error('[WhatsApp Error] Meta API returned:', data.error);
+      } else {
+        console.log(`[WhatsApp] Sent template ${templateName} to ${formattedPhone}`);
+      }
+    } catch (error) {
+      console.error('[WhatsApp Error] Failed to send WhatsApp message:', error);
     }
   }
 }

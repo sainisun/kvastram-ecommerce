@@ -653,7 +653,32 @@ productsRouter.get(
     try {
       const product = await productService.retrieve(id);
       if (!product) throw new NotFoundError('Product not found');
-      return successResponse(c, { product }, 'Product retrieved successfully');
+
+      // Generate dynamic JSON-LD Schema (Google Compliant)
+      const prices = (product.variants || [])
+        .flatMap((v: any) => v.prices || [])
+        .filter((p: any) => p && p.currency_code?.toLowerCase() === 'inr')
+        .map((p: any) => Number(p.amount) / 100);
+      const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
+      const hasStock = (product.variants || []).some((v: any) => (v.inventory_quantity || 0) > 0);
+
+      const schema = {
+        '@context': 'https://schema.org/',
+        '@type': 'Product',
+        'name': product.title,
+        'image': product.images?.map((img: any) => img.url) || [product.thumbnail],
+        'description': product.description || product.title,
+        'sku': product.variants?.[0]?.sku || undefined,
+        'offers': {
+          '@type': 'Offer',
+          'priceCurrency': 'INR',
+          'price': minPrice.toFixed(2),
+          'availability': hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          'url': `${process.env.STOREFRONT_URL || 'https://odhvica.com'}/products/${product.handle}`,
+        },
+      };
+
+      return successResponse(c, { product, schema }, 'Product retrieved successfully');
     } catch (error: unknown) {
       // Only throw NotFoundError if it's actually a "not found" error
       if (error instanceof Error && error.message.includes('not found')) {

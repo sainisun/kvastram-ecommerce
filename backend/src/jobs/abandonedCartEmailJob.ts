@@ -106,6 +106,18 @@ export async function sendAbandonedCartEmails() {
           if (smsBody) {
             await smsService.sendTwilioSms(cart.phone, smsBody);
           }
+
+          // Dynamic WhatsApp Template Notification
+          try {
+            const whatsappTemplate = process.env.WHATSAPP_TEMPLATE_AC || 'abandoned_cart';
+            await smsService.sendWhatsAppTemplate(
+              cart.phone,
+              whatsappTemplate,
+              [cart.firstName || 'there', cartUrl]
+            );
+          } catch (whatsappErr) {
+            console.error('[AbandonedCartJob] WhatsApp trigger failed:', whatsappErr);
+          }
         }
         
         currentMetadata.recovery_stage = targetStage;

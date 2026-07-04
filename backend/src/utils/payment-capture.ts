@@ -1,4 +1,5 @@
 import { and, eq, sql } from 'drizzle-orm';
+import { trackMetaServerEvent } from './meta-capi';
 
 import { db } from '../db';
 import { orders } from '../db/schema';
@@ -23,7 +24,13 @@ export async function finalizeCapturedPayment(
     )
     .returning({ id: orders.id });
 
-  if (captured) return true;
+  if (captured) {
+    // Fire-and-forget Meta Conversions API Purchase Event
+    triggerMetaPurchase(orderId).catch((err) =>
+      console.error('[Meta CAPI] Purchase tracking error:', err)
+    );
+    return true;
+  }
 
   await db
     .update(orders)
@@ -38,4 +45,33 @@ export async function finalizeCapturedPayment(
     .where(eq(orders.id, orderId));
 
   return false;
+}
+
+async function triggerMetaPurchase(orderId: string) {
+  try {
+    const orderDetails = (await db.query.orders.findFirst({
+      where: eq(orders.id, orderId),
+      with: {
+        customer: true,
+      },
+    } as any)) as any;
+
+    if (!orderDetails) return;
+
+    await trackMetaServerEvent(
+      'Purchase',
+      orderId,
+      {
+        email: orderDetails.customer?.email || orderDetails.email,
+        phone: orderDetails.customer?.phone,
+      },
+      {
+        value: Number(orderDetails.total) / 100,
+        currency: orderDetails.currency_code,
+        orderId: orderDetails.display_id?.toString() || orderId,
+      }
+    );
+  } catch (err) {
+    console.error('[Meta CAPI] Failed to trigger purchase event query:', err);
+  }
 }

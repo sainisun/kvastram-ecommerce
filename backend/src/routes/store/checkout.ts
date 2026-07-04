@@ -1000,6 +1000,27 @@ checkoutRouter.post(
         throw new Error('Failed to create order');
       }
 
+      // Trigger Meta Conversions API InitiateCheckout Event
+      try {
+        const { trackMetaServerEvent } = await import('../../utils/meta-capi');
+        trackMetaServerEvent(
+          'InitiateCheckout',
+          newOrder.id,
+          {
+            email: normalizedEmail,
+            phone: body.phone || undefined,
+            clientIp: c.req.header('x-forwarded-for') || undefined,
+            clientUserAgent: c.req.header('user-agent') || undefined,
+          },
+          {
+            value: total / 100,
+            currency: currencyCode,
+          }
+        ).catch((err) => console.error('[Meta CAPI] InitiateCheckout tracking error:', err));
+      } catch (capiErr) {
+        console.error('[Meta CAPI] InitiateCheckout error:', capiErr);
+      }
+
       // 5. Order confirmation email — NOT sent here.
       // Email is sent only after successful payment verification
       // (see finalizeCapturedPayment flow in payments-razorpay.ts / payments-paypal.ts)
