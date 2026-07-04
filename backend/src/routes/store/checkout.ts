@@ -27,6 +27,13 @@ import {
 } from '../../utils/payment-ownership';
 import { buildInventoryReservationMetadata } from '../../utils/inventory-reservation';
 
+const FALLBACK_RATES: Record<string, number> = {
+  INR: 1, USD: 0.012, EUR: 0.011, GBP: 0.0095, JPY: 1.79,
+  AUD: 0.018, CAD: 0.016, SGD: 0.016, AED: 0.044, CNY: 0.086,
+  KRW: 16.2, CHF: 0.011, SEK: 0.12, NOK: 0.13, DKK: 0.082,
+  BRL: 0.067, MXN: 0.23, ZAR: 0.22,
+};
+
 const checkoutRouter = new Hono();
 
 // --- SCHEMAS ---
@@ -620,7 +627,7 @@ checkoutRouter.post(
             money_amounts,
             and(
               eq(money_amounts.variant_id, product_variants.id),
-              eq(money_amounts.region_id, region_id)
+              eq(money_amounts.currency_code, 'inr')
             )
           )
           .leftJoin(products, eq(product_variants.product_id, products.id))
@@ -698,22 +705,55 @@ checkoutRouter.post(
       }
 
       // 3. Calculate Totals
-      const giftWrappingTotal = body.gift_wrapping
+      let giftWrappingTotal = body.gift_wrapping
         ? (Number.isFinite(Number(settingsMap['gift_wrapping_fee']))
             ? Number(settingsMap['gift_wrapping_fee'])
             : 299) * 100
         : 0;
-      const shippingTotal =
+      let shippingTotal =
         subtotal >= freeThreshold || discount?.type === 'free_shipping'
           ? 0
           : selectedShipping.price;
 
       // Tax is calculated on the discounted subtotal (post-discount), not gross subtotal
-      const taxableAmount = Math.max(0, subtotal - discountTotal);
-      const taxBreakdown: TaxBreakdown = calculateTax(taxableAmount, taxRate);
-      const taxTotal = taxBreakdown.total;
-      const total =
-        taxableAmount + shippingTotal + taxTotal + giftWrappingTotal;
+      let taxableAmount = Math.max(0, subtotal - discountTotal);
+      let taxBreakdown: TaxBreakdown = calculateTax(taxableAmount, taxRate);
+      let taxTotal = taxBreakdown.total;
+
+      if (currencyCode !== 'INR') {
+        let rate = 1;
+        try {
+          const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+          const res = await fetch(`${frontendUrl}/api/exchange-rates`);
+          if (!res.ok) throw new Error('API unreachable');
+          
+          const data = await res.json();
+          rate = data.rates[currencyCode];
+          if (!rate) throw new Error('Currency rate not found');
+        } catch (error: any) {
+          rate = FALLBACK_RATES[currencyCode];
+          if (!rate) {
+            return c.json({ error: `Currency ${currencyCode} is not supported.` }, 400);
+          }
+          console.warn(`[Checkout] Exchange rate API failed, used fallback for ${currencyCode}: ${rate}`);
+        }
+
+        // Convert raw totals independently using Math.round
+        subtotal = Math.round(subtotal * rate);
+        shippingTotal = Math.round(shippingTotal * rate);
+        giftWrappingTotal = Math.round(giftWrappingTotal * rate);
+        discountTotal = Math.round(discountTotal * rate);
+
+        // Recalculate taxableAmount from converted values
+        taxableAmount = Math.max(0, subtotal - discountTotal);
+        
+        // Recalculate tax breakdown on converted taxableAmount
+        taxBreakdown = calculateTax(taxableAmount, taxRate);
+        taxTotal = taxBreakdown.total;
+      }
+
+      // Total is strictly the sum of the independently rounded parts
+      const total = taxableAmount + shippingTotal + taxTotal + giftWrappingTotal;
 
       // 4. Create Order Transaction
       let newOrder: typeof orders.$inferSelect | undefined;

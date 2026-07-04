@@ -10,6 +10,7 @@ import { config } from '../../config';
 import { customerAuthService } from '../../services/customer-auth-service';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import { otpGenerationLimiter } from '../../middleware/rate-limiter';
 
 const checkoutAuthRouter = new Hono();
 
@@ -39,6 +40,7 @@ const SendOtpSchema = z.object({
 // POST /store/checkout/auth/send-otp
 checkoutAuthRouter.post(
   '/send-otp',
+  otpGenerationLimiter,
   zValidator('json', SendOtpSchema),
   async (c) => {
     const { email } = c.req.valid('json');
@@ -62,6 +64,7 @@ checkoutAuthRouter.post(
         .set({
           verification_token: hashedOtp,
           verification_expires_at: verificationExpires,
+          verification_attempts: 0,
           updated_at: new Date(),
         })
         .where(eq(customers.id, customer.id));
@@ -74,6 +77,7 @@ checkoutAuthRouter.post(
           has_account: false, // Default to guest
           verification_token: hashedOtp,
           verification_expires_at: verificationExpires,
+          verification_attempts: 0,
           email_verified: false,
         })
         .returning();
@@ -131,8 +135,32 @@ checkoutAuthRouter.post(
       return c.json({ error: 'OTP has expired' }, 400);
     }
 
+    if ((customer.verification_attempts || 0) >= 5) {
+      return c.json({ error: 'Too many attempts. Request a new OTP.' }, 429);
+    }
+
     const isValid = await bcrypt.compare(otp, customer.verification_token);
     if (!isValid) {
+      const newAttempts = (customer.verification_attempts || 0) + 1;
+      
+      if (newAttempts >= 5) {
+        await db
+          .update(customers)
+          .set({
+            verification_token: null,
+            verification_expires_at: null,
+            verification_attempts: 5,
+            updated_at: new Date(),
+          })
+          .where(eq(customers.id, customer.id));
+        return c.json({ error: 'Too many attempts. Request a new OTP.' }, 429);
+      }
+
+      await db
+        .update(customers)
+        .set({ verification_attempts: newAttempts })
+        .where(eq(customers.id, customer.id));
+
       return c.json({ error: 'Invalid OTP' }, 400);
     }
 
@@ -143,6 +171,7 @@ checkoutAuthRouter.post(
         email_verified: true,
         verification_token: null,
         verification_expires_at: null,
+        verification_attempts: 0,
         updated_at: new Date(),
       })
       .where(eq(customers.id, customer.id))

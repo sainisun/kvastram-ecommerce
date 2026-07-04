@@ -4,7 +4,8 @@ import { getClientIp } from '../utils/client-ip';
 import { logSecurityEvent } from '../utils/security-events';
 
 const isTest = process.env.NODE_ENV === 'test';
-const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+const isProd = process.env.NODE_ENV === 'production';
+const isDev = process.env.NODE_ENV === 'development' || (!isTest && !isProd);
 
 const createLimiter = (windowMs: number, limit: number, label: string) => {
   const effectiveWindowMs = isTest ? windowMs * 100 : windowMs;
@@ -49,6 +50,17 @@ export const checkoutLimiter = createLimiter(
   isDev ? 40 : 80,
   'checkout'
 );
+
+export const otpGenerationLimiter = rateLimiter({
+  windowMs: isTest ? 15 * 60 * 100 * 1000 : 15 * 60 * 1000,
+  limit: isTest ? 300 : isProd ? 3 : 10,
+  standardHeaders: 'draft-7',
+  keyGenerator: (c: Context) => getClientIp(c),
+  handler: (c: Context) => {
+    logSecurityEvent('warn', 'OTP generation limit exceeded', c, { limiter: 'otp_generation' });
+    return c.json({ error: 'Too many OTP requests. Try again later.' }, 429);
+  },
+});
 
 export const generalLimiter = createLimiter(
   60 * 1000,

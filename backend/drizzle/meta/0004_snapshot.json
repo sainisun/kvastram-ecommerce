@@ -1,10 +1,8 @@
 {
-  "id": "0a4f0ed7-2dbd-409f-a846-dd90948573f5",
-  "prevId": "46eebb2a-5372-45b0-8dc6-f9ad8d2aadd2",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "addresses": {
+    "public.addresses": {
       "name": "addresses",
       "schema": "",
       "columns": {
@@ -113,21 +111,24 @@
         "addresses_customer_id_customers_id_fk": {
           "name": "addresses_customer_id_customers_id_fk",
           "tableFrom": "addresses",
-          "tableTo": "customers",
           "columnsFrom": [
             "customer_id"
           ],
+          "tableTo": "customers",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "campaigns": {
+    "public.campaigns": {
       "name": "campaigns",
       "schema": "",
       "columns": {
@@ -240,9 +241,12 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "countries": {
+    "public.countries": {
       "name": "countries",
       "schema": "",
       "columns": {
@@ -314,29 +318,32 @@
         "countries_region_id_regions_id_fk": {
           "name": "countries_region_id_regions_id_fk",
           "tableFrom": "countries",
-          "tableTo": "regions",
           "columnsFrom": [
             "region_id"
           ],
+          "tableTo": "regions",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "countries_iso_2_unique": {
           "name": "countries_iso_2_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "iso_2"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "customers": {
+    "public.customers": {
       "name": "customers",
       "schema": "",
       "columns": {
@@ -411,14 +418,17 @@
       "uniqueConstraints": {
         "customers_email_unique": {
           "name": "customers_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "discounts": {
+    "public.discounts": {
       "name": "discounts",
       "schema": "",
       "columns": {
@@ -524,14 +534,17 @@
       "uniqueConstraints": {
         "discounts_code_unique": {
           "name": "discounts_code_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "code"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "line_items": {
+    "public.line_items": {
       "name": "line_items",
       "schema": "",
       "columns": {
@@ -622,34 +635,37 @@
         "line_items_order_id_orders_id_fk": {
           "name": "line_items_order_id_orders_id_fk",
           "tableFrom": "line_items",
-          "tableTo": "orders",
           "columnsFrom": [
             "order_id"
           ],
+          "tableTo": "orders",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "line_items_variant_id_product_variants_id_fk": {
           "name": "line_items_variant_id_product_variants_id_fk",
           "tableFrom": "line_items",
-          "tableTo": "product_variants",
           "columnsFrom": [
             "variant_id"
           ],
+          "tableTo": "product_variants",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "money_amounts": {
+    "public.money_amounts": {
       "name": "money_amounts",
       "schema": "",
       "columns": {
@@ -723,34 +739,37 @@
         "money_amounts_variant_id_product_variants_id_fk": {
           "name": "money_amounts_variant_id_product_variants_id_fk",
           "tableFrom": "money_amounts",
-          "tableTo": "product_variants",
           "columnsFrom": [
             "variant_id"
           ],
+          "tableTo": "product_variants",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "money_amounts_region_id_regions_id_fk": {
           "name": "money_amounts_region_id_regions_id_fk",
           "tableFrom": "money_amounts",
-          "tableTo": "regions",
           "columnsFrom": [
             "region_id"
           ],
+          "tableTo": "regions",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "orders": {
+    "public.orders": {
       "name": "orders",
       "schema": "",
       "columns": {
@@ -891,60 +910,63 @@
         "orders_customer_id_customers_id_fk": {
           "name": "orders_customer_id_customers_id_fk",
           "tableFrom": "orders",
-          "tableTo": "customers",
           "columnsFrom": [
             "customer_id"
           ],
+          "tableTo": "customers",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "orders_region_id_regions_id_fk": {
           "name": "orders_region_id_regions_id_fk",
           "tableFrom": "orders",
-          "tableTo": "regions",
           "columnsFrom": [
             "region_id"
           ],
+          "tableTo": "regions",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "orders_shipping_address_id_addresses_id_fk": {
           "name": "orders_shipping_address_id_addresses_id_fk",
           "tableFrom": "orders",
-          "tableTo": "addresses",
           "columnsFrom": [
             "shipping_address_id"
           ],
+          "tableTo": "addresses",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "orders_billing_address_id_addresses_id_fk": {
           "name": "orders_billing_address_id_addresses_id_fk",
           "tableFrom": "orders",
-          "tableTo": "addresses",
           "columnsFrom": [
             "billing_address_id"
           ],
+          "tableTo": "addresses",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "product_collections": {
+    "public.product_collections": {
       "name": "product_collections",
       "schema": "",
       "columns": {
@@ -1000,14 +1022,17 @@
       "uniqueConstraints": {
         "product_collections_handle_unique": {
           "name": "product_collections_handle_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "handle"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "product_option_values": {
+    "public.product_option_values": {
       "name": "product_option_values",
       "schema": "",
       "columns": {
@@ -1068,34 +1093,37 @@
         "product_option_values_variant_id_product_variants_id_fk": {
           "name": "product_option_values_variant_id_product_variants_id_fk",
           "tableFrom": "product_option_values",
-          "tableTo": "product_variants",
           "columnsFrom": [
             "variant_id"
           ],
+          "tableTo": "product_variants",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "product_option_values_option_id_product_options_id_fk": {
           "name": "product_option_values_option_id_product_options_id_fk",
           "tableFrom": "product_option_values",
-          "tableTo": "product_options",
           "columnsFrom": [
             "option_id"
           ],
+          "tableTo": "product_options",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "product_options": {
+    "public.product_options": {
       "name": "product_options",
       "schema": "",
       "columns": {
@@ -1150,21 +1178,24 @@
         "product_options_product_id_products_id_fk": {
           "name": "product_options_product_id_products_id_fk",
           "tableFrom": "product_options",
-          "tableTo": "products",
           "columnsFrom": [
             "product_id"
           ],
+          "tableTo": "products",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "product_variants": {
+    "public.product_variants": {
       "name": "product_variants",
       "schema": "",
       "columns": {
@@ -1312,21 +1343,24 @@
         "product_variants_product_id_products_id_fk": {
           "name": "product_variants_product_id_products_id_fk",
           "tableFrom": "product_variants",
-          "tableTo": "products",
           "columnsFrom": [
             "product_id"
           ],
+          "tableTo": "products",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "products": {
+    "public.products": {
       "name": "products",
       "schema": "",
       "columns": {
@@ -1481,14 +1515,17 @@
       "uniqueConstraints": {
         "products_handle_unique": {
           "name": "products_handle_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "handle"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "regions": {
+    "public.regions": {
       "name": "regions",
       "schema": "",
       "columns": {
@@ -1566,9 +1603,12 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "settings": {
+    "public.settings": {
       "name": "settings",
       "schema": "",
       "columns": {
@@ -1625,14 +1665,17 @@
       "uniqueConstraints": {
         "settings_key_unique": {
           "name": "settings_key_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "key"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "users": {
+    "public.users": {
       "name": "users",
       "schema": "",
       "columns": {
@@ -1714,19 +1757,28 @@
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     }
   },
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "0a4f0ed7-2dbd-409f-a846-dd90948573f5",
+  "prevId": "46eebb2a-5372-45b0-8dc6-f9ad8d2aadd2",
+  "sequences": {},
+  "policies": {},
+  "views": {},
+  "roles": {}
 }

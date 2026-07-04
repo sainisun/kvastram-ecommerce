@@ -762,6 +762,7 @@ export const customers = pgTable(
     email_verified: boolean('email_verified').default(false),
     verification_token: text('verification_token'),
     verification_expires_at: timestamp('verification_expires_at'),
+    verification_attempts: integer('verification_attempts').default(0),
     // 🔒 Q9: Account lockout fields
     failed_login_attempts: integer('failed_login_attempts').default(0),
     locked_until: timestamp('locked_until'),

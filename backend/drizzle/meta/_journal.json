@@ -281,6 +281,13 @@
       "when": 1782864000000,
       "tag": "0039_checkout_regions",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1783150791388,
+      "tag": "0040_safe_mandroid",
+      "breakpoints": true
     }
   ]
 }
