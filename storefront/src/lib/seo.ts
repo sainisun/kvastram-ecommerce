@@ -928,6 +928,7 @@ export function buildPersonJsonLd(artisan: {
 }
 
 export function buildProductFaqJsonLd(product: Product) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const customFaqs = (product as any).metadata?.faq_items as Array<{question: string, answer: string}> | undefined;
   
   if (customFaqs && Array.isArray(customFaqs) && customFaqs.length > 0) {

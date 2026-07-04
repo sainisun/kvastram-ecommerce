@@ -1,8 +1,6 @@
 'use client';
 
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import {
   ArrowLeft,
   ChevronDown,
