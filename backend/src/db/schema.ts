@@ -1597,6 +1597,7 @@ export const saved_carts = pgTable(
     }),
     session_id: text('session_id'), // Guest carts ke liye
     items: jsonb('items').notNull().default('[]'), // CartItem[] JSON array
+    metadata: jsonb('metadata'), // To track reminder stages, etc.
     recovery_sent: boolean('recovery_sent').default(false),
     recovery_sent_at: timestamp('recovery_sent_at'),
     ...createdUpdated,

@@ -31,6 +31,7 @@ import {
 } from '../../db/schema';
 import { eq, inArray, and } from 'drizzle-orm';
 import { emailService } from '../email-service';
+import { syncSingleProductToMeilisearch, deleteProduct } from '../search-service';
 import type {
   CreateProductInput,
   UpdateProductInput,
@@ -57,7 +58,7 @@ export class ProductMutationService {
       }
     }
 
-    return await db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const {
         prices,
         options,
@@ -101,6 +102,13 @@ export class ProductMutationService {
 
       return { ...newProduct, default_variant_id: newVariant.id };
     });
+
+    // Sync to Meilisearch in background (non-blocking)
+    syncSingleProductToMeilisearch(result.id).catch((err) =>
+      console.error('[SearchService] Sync after product create failed:', err.message)
+    );
+
+    return result;
   }
 
   private async validateForeignKeys(
@@ -566,6 +574,11 @@ export class ProductMutationService {
       );
     }
 
+    // Sync to Meilisearch in background (non-blocking)
+    syncSingleProductToMeilisearch(id).catch((err) =>
+      console.error('[SearchService] Sync after product update failed:', err.message)
+    );
+
     return result;
   }
 
@@ -862,7 +875,7 @@ export class ProductMutationService {
    * Delete a product and all its related data.
    */
   async delete(id: string) {
-    return await db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       // 1. Get variants for this product
       const variants = await tx
         .select({ id: product_variants.id })
@@ -907,8 +920,18 @@ export class ProductMutationService {
       // 8. Finally delete the product
       await tx.delete(products).where(eq(products.id, id));
 
+      // 10. Delete Drizzle product_embeddings (if any)
+      await tx.delete(product_embeddings).where(eq(product_embeddings.product_id, id));
+
       return { id, deleted: true };
     });
+
+    // Delete from Meilisearch in background (non-blocking)
+    deleteProduct(id).catch((err) =>
+      console.error('[SearchService] Deletion from Meilisearch failed:', err.message)
+    );
+
+    return result;
   }
 }
 

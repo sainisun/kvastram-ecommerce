@@ -764,7 +764,26 @@ export class ProductQueryService {
 
     // Text Search (Title, Description, Handle)
     if (query) {
-      const normalizedQuery = query.toLowerCase().trim();
+      let useSqlFallback = true;
+      if (process.env.MEILISEARCH_HOST && process.env.MEILISEARCH_API_KEY) {
+        try {
+          const { searchProducts } = await import('../../services/search-service');
+          const msResponse = await searchProducts(query, { limit: 100 });
+          const msIds = msResponse.hits.map((hit: any) => hit.id);
+          
+          if (msIds.length === 0) {
+            return []; // no results
+          }
+          
+          conditions.push(inArray(products.id, msIds));
+          useSqlFallback = false;
+        } catch (err) {
+          console.error('[ProductQueryService] Meilisearch failed, falling back to SQL search:', err);
+        }
+      }
+
+      if (useSqlFallback) {
+        const normalizedQuery = query.toLowerCase().trim();
       const synonymRows = await db
         .select()
         .from(search_synonyms)
@@ -791,8 +810,9 @@ export class ProductQueryService {
         ];
       });
 
-      // Combine with OR
-      conditions.push(or(...termConditions) as ReturnType<typeof eq>);
+        // Combine with OR
+        conditions.push(or(...termConditions) as ReturnType<typeof eq>);
+      }
     }
 
     // Filters

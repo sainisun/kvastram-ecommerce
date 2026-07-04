@@ -1,5 +1,7 @@
 import { generateEmbeddingsForProducts } from '../jobs/generateEmbeddings';
 import { sendReviewRequestEmails } from '../jobs/reviewEmailJob';
+import { sendAbandonedCartEmails } from '../jobs/abandonedCartEmailJob';
+import { syncAllProductsToMeilisearch } from '../jobs/syncMeilisearch';
 import { syncGSCPerformance } from '../jobs/syncGSC';
 import { releaseExpiredInventoryReservations } from '../utils/inventory-reservation';
 
@@ -32,6 +34,8 @@ export async function runSeoCronJobs() {
     runJob('generate_embeddings', () => generateEmbeddingsForProducts()),
     runJob('sync_gsc', () => syncGSCPerformance()),
     runJob('review_request_emails', () => sendReviewRequestEmails()),
+    runJob('abandoned_cart_emails', () => sendAbandonedCartEmails()),
+    runJob('sync_meilisearch', () => syncAllProductsToMeilisearch()),
   ]);
 }
 
@@ -62,7 +66,9 @@ export function startSeoCronScheduler() {
     releaseExpiredInventoryReservations()
   );
   scheduleJob('review_request_emails', 6 * hour, () => sendReviewRequestEmails());
+  scheduleJob('abandoned_cart_emails', 1 * hour, () => sendAbandonedCartEmails());
   scheduleJob('generate_embeddings', 24 * hour, () => generateEmbeddingsForProducts());
+  scheduleJob('sync_meilisearch', 12 * hour, () => syncAllProductsToMeilisearch());
   scheduleJob('sync_gsc', 7 * 24 * hour, () => syncGSCPerformance());
   console.log('[seo-cron] Scheduler started');
 }

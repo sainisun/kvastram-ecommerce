@@ -79,6 +79,21 @@ export const config = {
     webhookId: getEnvVar('PAYPAL_WEBHOOK_ID', false),
     sandbox: process.env.PAYPAL_SANDBOX === 'true',
   },
+  // Brevo API for transactional emails
+  brevo: {
+    apiKey: getEnvVar('BREVO_API_KEY', false),
+  },
+  // Meilisearch for search and filtering
+  meilisearch: {
+    host: getEnvVar('MEILISEARCH_HOST', false),
+    apiKey: getEnvVar('MEILISEARCH_API_KEY', false),
+  },
+  // Twilio for SMS
+  twilio: {
+    accountSid: getEnvVar('TWILIO_ACCOUNT_SID', false),
+    authToken: getEnvVar('TWILIO_AUTH_TOKEN', false),
+    phoneNumber: getEnvVar('TWILIO_PHONE_NUMBER', false),
+  },
 };
 
 // Validate configuration on load

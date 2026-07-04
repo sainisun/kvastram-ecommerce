@@ -84,7 +84,7 @@ async function recordFeedHealth(channel: string, productCount: number, errors: s
   }).catch(() => undefined);
 }
 
-async function buildGoogleMerchantItems() {
+async function buildGoogleMerchantItems(lang?: string) {
   const publishedProducts = await db.query.products.findMany({
     where: eq(products.status, 'published'),
     with: {
@@ -133,12 +133,24 @@ async function buildGoogleMerchantItems() {
       const currency = price.currency_code.toUpperCase();
       const link = absoluteUrl(`/products/${product.handle}`);
 
+      const metadata = (product.metadata as Record<string, any>) || {};
+      let translatedTitle = '';
+      let translatedDescription = '';
+
+      if (lang && metadata.translations && metadata.translations[lang]) {
+        translatedTitle = metadata.translations[lang].title || '';
+        translatedDescription = metadata.translations[lang].description || '';
+      }
+
+      const defaultTitle = seo?.seo_title || product.seo_title || product.title;
+      const defaultDescription = seo?.meta_description || product.seo_description || product.description || product.title;
+
       return [
         {
           id: variant.sku || variant.id,
           item_group_id: merchant?.item_group_id || product.id,
-          title: seo?.seo_title || product.seo_title || product.title,
-          description: seo?.meta_description || product.seo_description || product.description || product.title,
+          title: translatedTitle || defaultTitle,
+          description: translatedDescription || defaultDescription,
           link,
           image_link: optimizedImageUrl(image),
           availability: (variant.inventory_quantity || 0) > 0 ? 'in stock' : 'out of stock',
@@ -166,7 +178,8 @@ async function buildGoogleMerchantItems() {
 merchantRouter.get(
   '/google/products.json',
   asyncHandler(async (c) => {
-    const products = await buildGoogleMerchantItems();
+    const lang = c.req.query('lang');
+    const products = await buildGoogleMerchantItems(lang);
     await recordFeedHealth('google', products.length);
     return successResponse(c, { products }, 'Google Merchant products generated successfully');
   })
@@ -175,7 +188,8 @@ merchantRouter.get(
 merchantRouter.get(
   '/pinterest/products.json',
   asyncHandler(async (c) => {
-    const products = await buildGoogleMerchantItems();
+    const lang = c.req.query('lang');
+    const products = await buildGoogleMerchantItems(lang);
     await recordFeedHealth('pinterest', products.length);
     c.header('Content-Type', 'application/json; charset=utf-8');
     return c.json({
@@ -203,7 +217,8 @@ merchantRouter.get(
 merchantRouter.get(
   '/meta/products.json',
   asyncHandler(async (c) => {
-    const products = await buildGoogleMerchantItems();
+    const lang = c.req.query('lang');
+    const products = await buildGoogleMerchantItems(lang);
     await recordFeedHealth('meta', products.length);
     c.header('Content-Type', 'application/json; charset=utf-8');
     return c.json({
@@ -235,7 +250,8 @@ merchantRouter.get(
 merchantRouter.get(
   '/tiktok/products.json',
   asyncHandler(async (c) => {
-    const products = await buildGoogleMerchantItems();
+    const lang = c.req.query('lang');
+    const products = await buildGoogleMerchantItems(lang);
     await recordFeedHealth('tiktok', products.length);
     c.header('Content-Type', 'application/json; charset=utf-8');
     return c.json({
@@ -265,7 +281,8 @@ merchantRouter.get(
 merchantRouter.get(
   '/meta/products.csv',
   asyncHandler(async (c) => {
-    const products = await buildGoogleMerchantItems();
+    const lang = c.req.query('lang');
+    const products = await buildGoogleMerchantItems(lang);
     const rows = products.map((item) => ({
       id: item.id,
       title: item.title,
@@ -320,7 +337,8 @@ merchantRouter.get(
 merchantRouter.get(
   '/pinterest/products.csv',
   asyncHandler(async (c) => {
-    const products = await buildGoogleMerchantItems();
+    const lang = c.req.query('lang');
+    const products = await buildGoogleMerchantItems(lang);
     const rows = products.map((item) => ({
       id: item.id,
       title: item.title,
@@ -367,7 +385,8 @@ merchantRouter.get(
 merchantRouter.get(
   '/tiktok/products.csv',
   asyncHandler(async (c) => {
-    const products = await buildGoogleMerchantItems();
+    const lang = c.req.query('lang');
+    const products = await buildGoogleMerchantItems(lang);
     const rows = products.map((item) => ({
       sku_id: item.id,
       title: item.title,
@@ -475,7 +494,8 @@ merchantRouter.get(
 merchantRouter.get(
   '/google/products.xml',
   asyncHandler(async (c) => {
-    const items = await buildGoogleMerchantItems();
+    const lang = c.req.query('lang');
+    const items = await buildGoogleMerchantItems(lang);
     await recordFeedHealth('google_xml', items.length);
     const xmlItems = items
       .map(

@@ -1,3 +1,5 @@
+import twilio from 'twilio';
+
 export class SMSService {
   private get msg91AuthKey() {
     return process.env.MSG91_AUTH_KEY;
@@ -74,6 +76,45 @@ export class SMSService {
       }
     } catch (error) {
       console.error('Failed to send SMS via MSG91:', error);
+    }
+  }
+
+  /**
+   * Send SMS via Twilio (e.g. for abandoned checkout)
+   */
+  async sendTwilioSms(to: string, body: string) {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const from = process.env.TWILIO_PHONE_NUMBER;
+
+    if (!accountSid || !authToken || !from) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('\n📱 SMS (Twilio DEV MODE)');
+        console.log('   To Phone:', to);
+        console.log('   Body:', body);
+        console.log('   Note: Twilio credentials not set. SMS not actually sent.\n');
+      }
+      return;
+    }
+
+    try {
+      const client = twilio(accountSid, authToken);
+      let formattedPhone = to.replace(/\D/g, '');
+      // If it doesn't have a country code, prepend it (e.g. US +1 or India +91 depending on store focus, assuming India +91 for Odhvica if length is 10)
+      if (formattedPhone.length === 10) {
+        formattedPhone = `+91${formattedPhone}`;
+      } else if (!formattedPhone.startsWith('+')) {
+        formattedPhone = `+${formattedPhone}`;
+      }
+
+      await client.messages.create({
+        body,
+        from,
+        to: formattedPhone
+      });
+      console.log(`[Twilio] Sent SMS to ${formattedPhone}`);
+    } catch (error) {
+      console.error('[Twilio] Failed to send SMS:', error);
     }
   }
 }

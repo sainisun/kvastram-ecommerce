@@ -80,3 +80,11 @@ any commit in git history).
 If manual VPS access is absolutely unavoidable (e.g. reading logs for debugging), 
 it must be read-only investigation only — no state-changing commands — and must be 
 reported back before any follow-up action is taken.
+
+## Feature Development & Coding Standards
+
+- **Pre-Audit First:** Always pre-audit the codebase (via reading schemas, routes, and configs) where new code will be injected. Do not blindly append code without understanding the surrounding architecture.
+- **Clean Code & Professional Architecture:** Write clean, modular, and DRY (Don't Repeat Yourself) code. Avoid messy or dirty hacks. Follow the existing patterns used in the Hono/Drizzle backend or Next.js storefront.
+- **Step-by-Step Verification:** Test each feature independently as it is built. Do not write monolithic features without validating the intermediate steps.
+- **Codebase Re-verification:** After finishing a task, re-verify the codebase functionality (by running tests, linters, or manual endpoints) rather than relying only on theoretical walkthroughs. Ensure the actual implementation holds up.
+
