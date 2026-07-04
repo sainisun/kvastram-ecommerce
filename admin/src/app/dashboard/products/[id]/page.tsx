@@ -20,6 +20,7 @@ import ProductMediaUpload, {
 import ProductReadinessPanel from '@/components/ProductReadinessPanel';
 import { useNotification } from '@/context/notification-context';
 import { getAdminProductReadinessIssues } from '@/lib/product-readiness';
+import { RichTextEditor } from '@/components/ui/RichTextEditor';
 
 interface Region {
   id: string;
@@ -77,6 +78,9 @@ export default function EditProductPage() {
     hs_code: '', origin_country: '', material: '', thumbnail: '',
     size_guide: '', care_instructions: '', seo_title: '', seo_description: '',
   });
+
+  const [metadata, setMetadata] = useState<any>({});
+  const [faqItems, setFaqItems] = useState<{question: string, answer: string}[]>([]);
 
   const [mediaItems, setMediaItems] = useState<ProductMediaItem[]>([]);
   // Single INR price — storefront converts to buyer's local currency
@@ -143,6 +147,9 @@ export default function EditProductPage() {
         seo_title:          product.seo_title || '',
         seo_description:    product.seo_description || '',
       });
+
+      setMetadata(product.metadata || {});
+      setFaqItems(product.metadata?.faq_items || []);
 
       if (product.images && product.images.length > 0) {
         setMediaItems(
@@ -394,6 +401,11 @@ export default function EditProductPage() {
         category_ids: selectedCategoryIds,
         tag_ids:      selectedTagIds,
         collection_id: selectedCollectionId || null,
+        metadata: {
+          ...metadata,
+          google_product_category: metadata.google_product_category || undefined,
+          faq_items: faqItems,
+        },
       };
 
       await api.updateProduct(id, payload);
@@ -503,10 +515,10 @@ export default function EditProductPage() {
             <div className="space-y-5">
               <div>
                 <label htmlFor="description" className={labelCls}>Description</label>
-                <textarea
-                  id="description" name="description"
-                  value={formData.description} onChange={handleChange} rows={6}
-                  className={inputCls} placeholder="Detailed product description…"
+                <RichTextEditor
+                  value={formData.description}
+                  onChange={(val) => setFormData(p => ({ ...p, description: val }))}
+                  placeholder="Detailed product description…"
                 />
               </div>
               <div>
@@ -1016,6 +1028,39 @@ export default function EditProductPage() {
                 <p className="text-xs text-gray-400 mt-1">
                   Recommended: 150–160 characters
                 </p>
+              </div>
+              
+              <div>
+                <label htmlFor="google_category" className={labelCls}>Google Product Category</label>
+                <input
+                  id="google_category" type="text"
+                  value={metadata.google_product_category || ''}
+                  onChange={(e) => setMetadata((p: any) => ({ ...p, google_product_category: e.target.value }))}
+                  className={inputCls}
+                  placeholder="e.g. Apparel & Accessories > Clothing"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className={labelCls} style={{ marginBottom: 0 }}>Product FAQs (SEO)</label>
+                  <button type="button" onClick={() => setFaqItems(p => [...p, { question: '', answer: '' }])} className="text-xs text-blue-600 hover:underline flex items-center"><Plus size={12} className="mr-1"/> Add FAQ</button>
+                </div>
+                {faqItems.map((faq, idx) => (
+                  <div key={idx} className="mb-3 p-3 border border-gray-200 rounded-lg bg-gray-50 relative">
+                    <button type="button" onClick={() => setFaqItems(p => p.filter((_, i) => i !== idx))} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><Trash2 size={14}/></button>
+                    <input type="text" value={faq.question} onChange={e => {
+                      const newFaqs = [...faqItems];
+                      newFaqs[idx].question = e.target.value;
+                      setFaqItems(newFaqs);
+                    }} placeholder="Question?" className="w-full mb-2 px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-black" />
+                    <textarea value={faq.answer} onChange={e => {
+                      const newFaqs = [...faqItems];
+                      newFaqs[idx].answer = e.target.value;
+                      setFaqItems(newFaqs);
+                    }} placeholder="Answer..." rows={2} className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:border-black"></textarea>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

@@ -928,6 +928,23 @@ export function buildPersonJsonLd(artisan: {
 }
 
 export function buildProductFaqJsonLd(product: Product) {
+  const customFaqs = (product as any).metadata?.faq_items as Array<{question: string, answer: string}> | undefined;
+  
+  if (customFaqs && Array.isArray(customFaqs) && customFaqs.length > 0) {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: customFaqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    };
+  }
+
   const material = getProductMaterial(product);
   const category = getProductCategoryLabel(product);
   const craft = getProductAttribute(product, 'technique') || 'handcrafted artisan technique';

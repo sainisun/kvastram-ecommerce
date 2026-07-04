@@ -164,11 +164,13 @@ function SortableMediaCard({
   onRemove,
   onSetCover,
   onReplacePoster,
+  onUpdateAltText,
 }: {
   item: ProductMediaItem;
   onRemove: (id: string) => void;
   onSetCover: (id: string) => void;
   onReplacePoster: (id: string, file: File) => void;
+  onUpdateAltText: (id: string, altText: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
@@ -269,6 +271,17 @@ function SortableMediaCard({
         <p className="truncate text-xs text-gray-500">
           {item.url.split('/').pop() || item.url}
         </p>
+
+        <div className="pt-2 border-t border-gray-100">
+          <label className="text-xs font-semibold text-gray-700 block mb-1">Alt Text (SEO)</label>
+          <input
+            type="text"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-900 transition focus:border-black focus:ring-1 focus:ring-black focus:outline-none placeholder-gray-400"
+            placeholder="Describe this image for SEO..."
+            value={item.alt_text || ''}
+            onChange={(e) => onUpdateAltText(item.id, e.target.value)}
+          />
+        </div>
       </div>
     </div>
   );
@@ -657,6 +670,13 @@ export default function ProductMediaUpload({
                   onReplacePoster={(id, file) => {
                     void uploadPosterForVideo(id, file);
                   }}
+                  onUpdateAltText={(id, altText) =>
+                    onChange(
+                      items.map((item) =>
+                        item.id === id ? { ...item, alt_text: altText } : item
+                      )
+                    )
+                  }
                 />
               ))}
             </div>

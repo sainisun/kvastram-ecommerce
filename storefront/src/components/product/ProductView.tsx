@@ -280,9 +280,10 @@ export default function ProductView({ product }: { product: Product }) {
       hint: `${product.material || 'Handmade textile'} · Reversible · Artisan finished`,
       icon: <ClipboardList size={18} />,
       content: product.description ? (
-        <div className="pdp-description">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{product.description}</ReactMarkdown>
-        </div>
+        <div 
+          className="pdp-description prose prose-sm max-w-none text-[var(--kv-muted)]"
+          dangerouslySetInnerHTML={{ __html: product.description }} 
+        />
       ) : (
         <p className="kv-sub">Handmade in small batches with natural craft details.</p>
       ),
@@ -588,9 +589,10 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             {product.description ? (
-              <div className="pdp-summary-description">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{product.description}</ReactMarkdown>
-              </div>
+              <div 
+                className="pdp-summary-description prose prose-sm max-w-none text-[var(--kv-muted)]"
+                dangerouslySetInnerHTML={{ __html: product.description }} 
+              />
             ) : null}
 
             {!isOnRequest && outOfStock && selectedVariant && (
