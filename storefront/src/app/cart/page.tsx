@@ -263,18 +263,18 @@ export default function CartPage() {
           {/* Hero empty message */}
           <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-surface-soft mb-6">
-              <ShoppingBag className="h-10 w-10 color-muted" />
+              <ShoppingBag className="h-10 w-10 text-muted" />
             </div>
-            <h1 className="text-display-xl font-display color-ink mb-3">
+            <h1 className="mb-3 font-display text-display-xl text-primary">
               Your Bag Is Empty
             </h1>
-            <p className="color-muted font-light text-body-xl mb-8">
+            <p className="mb-8 text-body-xl font-light text-muted">
               Looks like you haven&apos;t added anything yet. Let us inspire
               you.
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-[var(--ink)] text-inverse px-10 py-4 text-body-xs font-bold  tracking-token-wider hover:bg-[var(--ink)] transition-colors"
+              className="inline-flex min-h-[var(--ds-control-md)] items-center gap-2 bg-primary px-10 py-4 text-body-xs font-bold tracking-token-wider text-inverse transition-colors hover:bg-primary"
             >
               Explore Collection <ArrowRight size={16} />
             </Link>
@@ -285,7 +285,7 @@ export default function CartPage() {
             <div>
               <div className="flex items-center gap-3 mb-8">
                 <Sparkles size={18} className="text-warning" />
-                <p className="text-body-sm font-bold  tracking-token-wider color-ink">
+                <p className="text-body-sm font-bold tracking-token-wider text-primary">
                   You Might Love
                 </p>
               </div>
@@ -313,7 +313,7 @@ export default function CartPage() {
                             className="object-cover group-hover:scale-105 transition-transform duration-700"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center color-muted">
+                          <div className="flex h-full w-full items-center justify-center text-muted">
                             <ShoppingBag size={32} />
                           </div>
                         )}
@@ -322,14 +322,14 @@ export default function CartPage() {
                         href={`/products/${product.handle || product.id}`}
                         className="space-y-1 mb-3"
                       >
-                        <p className="text-body-xs color-muted font-bold tracking-token-wider ">
+                        <p className="text-body-xs font-bold tracking-token-wider text-muted">
                           {product.collection?.title || 'Odhvica'}
                         </p>
-                        <p className="font-display text-body-md color-ink leading-token-tight group-hover:color-muted transition-colors">
+                        <p className="font-display text-body-md leading-token-tight text-primary transition-colors group-hover:text-muted">
                           {product.title}
                         </p>
                         {price && (
-                          <p className="text-body-sm font-medium color-ink">
+                          <p className="text-body-sm font-medium text-primary">
                             {price}
                           </p>
                         )}
@@ -340,7 +340,7 @@ export default function CartPage() {
                         className={`w-full py-2.5 text-body-xs font-bold  tracking-token-wider border transition-all ${
                           addingRec === product.id
                             ? 'bg-success text-inverse border-success'
-                            : 'border-border-subtle color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-inverse'
+                            : 'border-border-subtle text-primary hover:border-primary hover:bg-primary hover:text-inverse'
                         }`}
                       >
                         {addingRec === product.id ? '✓ Added!' : 'Quick Add'}
@@ -361,7 +361,7 @@ export default function CartPage() {
       <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-display-lg font-display color-ink">Shopping Cart</h1>
+          <h1 className="font-display text-display-lg text-primary">Shopping Cart</h1>
           <UnstyledButton
             onClick={() => {
               if (confirm('Are you sure you want to clear your cart?')) {
@@ -369,7 +369,7 @@ export default function CartPage() {
                 showNotification('success', 'Cart cleared');
               }
             }}
-            className="text-body-sm color-muted hover:color-ink underline"
+            className="text-body-sm text-muted underline hover:text-primary"
           >
             Clear Cart
           </UnstyledButton>
@@ -378,7 +378,7 @@ export default function CartPage() {
         <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-16">
           {/* Cart Items */}
           <div className="lg:col-span-7">
-            <ul className="divide-y divide-[var(--line)] border-t border-b border-border-subtle">
+            <ul className="divide-y divide-border-subtle border-b border-t border-border-subtle">
               {items.map((item) => (
                 <li key={item.variantId} className="flex py-6 sm:py-10">
                   {/* Product Image */}
@@ -392,7 +392,7 @@ export default function CartPage() {
                           className="object-cover object-center"
                         />
                       ) : (
-                        <div className="h-full w-full flex items-center justify-center color-muted">
+                        <div className="flex h-full w-full items-center justify-center text-muted">
                           <ShoppingBag size={32} />
                         </div>
                       )}
@@ -404,7 +404,7 @@ export default function CartPage() {
                     <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
                       <div>
                         <div className="flex justify-between">
-                          <p className="text-body-sm font-medium color-ink">
+                          <p className="text-body-sm font-medium text-primary">
                             {item.handle ? (
                               <Link
                                 href={`/products/${item.handle}`}
@@ -417,15 +417,15 @@ export default function CartPage() {
                             )}
                           </p>
                         </div>
-                        <p className="mt-1 text-body-sm color-muted">
+                        <p className="mt-1 text-body-sm text-muted">
                           {formatCartPrice(item.price)}
                         </p>
                         {(item.material || item.origin || item.sku) && (
-                          <div className="mt-2 space-y-1 text-body-xs color-muted">
+                          <div className="mt-2 space-y-1 text-body-xs text-muted">
                             {item.material && <p>Material: {item.material}</p>}
                             {item.origin && <p>Origin: {item.origin}</p>}
                             {item.sku && (
-                              <p className="color-muted">SKU: {item.sku}</p>
+                              <p className="text-muted">SKU: {item.sku}</p>
                             )}
                           </div>
                         )}
@@ -438,7 +438,7 @@ export default function CartPage() {
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity - 1)
                             }
-                            className="p-1 min-h-[44px] min-w-[44px] color-muted hover:color-muted flex items-center justify-center"
+                            className="flex min-h-[44px] min-w-[44px] items-center justify-center p-1 text-muted hover:text-primary"
                             aria-label="Decrease quantity"
                           >
                             <Minus size={16} />
@@ -459,7 +459,7 @@ export default function CartPage() {
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity + 1)
                             }
-                            className="p-1 min-h-[44px] min-w-[44px] color-muted hover:color-muted flex items-center justify-center"
+                            className="flex min-h-[44px] min-w-[44px] items-center justify-center p-1 text-muted hover:text-primary"
                             aria-label="Increase quantity"
                           >
                             <Plus size={16} />
@@ -470,7 +470,7 @@ export default function CartPage() {
                         <div className="absolute right-0 top-0">
                           <UnstyledButton
                             onClick={() => removeItem(item.variantId)}
-                            className="p-2 min-h-[44px] min-w-[44px] color-muted hover:text-error transition-colors flex items-center justify-center"
+                            className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-muted transition-colors hover:text-error"
                             aria-label="Remove item"
                           >
                             <Trash2 size={18} />
@@ -480,7 +480,7 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex items-end justify-between pt-4">
-                      <p className="text-body-md font-medium color-ink">
+                      <p className="text-body-md font-medium text-primary">
                         Subtotal: {formatCartPrice(item.price * item.quantity)}
                       </p>
                     </div>
@@ -493,7 +493,7 @@ export default function CartPage() {
             <div className="mt-6">
               <Link
                 href="/products"
-                className="text-body-sm color-muted hover:color-ink flex items-center gap-2"
+                className="flex items-center gap-2 text-body-sm text-muted hover:text-primary"
               >
                 <ArrowRight size={16} className="rotate-180" />
                 Continue Shopping
@@ -505,10 +505,10 @@ export default function CartPage() {
                 <div className="mb-6 flex items-center gap-3">
                   <Sparkles size={18} className="text-warning" />
                   <div>
-                    <p className="text-body-xs font-bold  tracking-token-wider color-muted">
+                    <p className="text-body-xs font-bold tracking-token-wider text-muted">
                       Pair With Your Bag
                     </p>
-                    <p className="mt-1 text-body-xl font-medium color-ink">
+                    <p className="mt-1 text-body-xl font-medium text-primary">
                       Complete the look before checkout
                     </p>
                   </div>
@@ -538,7 +538,7 @@ export default function CartPage() {
                               className="object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center color-muted">
+                            <div className="flex h-full w-full items-center justify-center text-muted">
                               <ShoppingBag size={32} />
                             </div>
                           )}
@@ -547,14 +547,14 @@ export default function CartPage() {
                           href={`/products/${product.handle || product.id}`}
                           className="mb-3 space-y-1"
                         >
-                          <p className="text-body-xs color-muted font-bold tracking-token-wider ">
+                          <p className="text-body-xs font-bold tracking-token-wider text-muted">
                             {product.collection?.title || 'Odhvica'}
                           </p>
-                          <p className="font-display text-body-md color-ink leading-token-tight transition-colors group-hover:color-muted">
+                          <p className="font-display text-body-md leading-token-tight text-primary transition-colors group-hover:text-muted">
                             {product.title}
                           </p>
                           {price ? (
-                            <p className="text-body-sm font-medium color-ink">
+                            <p className="text-body-sm font-medium text-primary">
                               {price}
                             </p>
                           ) : null}
@@ -565,7 +565,7 @@ export default function CartPage() {
                           className={`w-full border py-2.5 text-body-xs font-bold  tracking-token-wider transition-all ${
                             addingRec === product.id
                               ? 'border-success bg-success text-inverse'
-                              : 'border-border-subtle color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-inverse'
+                              : 'border-border-subtle text-primary hover:border-primary hover:bg-primary hover:text-inverse'
                           }`}
                         >
                           {addingRec === product.id ? 'Added' : 'Quick Add'}
@@ -581,7 +581,7 @@ export default function CartPage() {
           {/* Order Summary */}
           <div className="mt-16 lg:col-span-5 lg:mt-0">
             <Card className="p-6">
-              <p className="text-body-xl font-medium color-ink mb-6">
+              <p className="mb-6 text-body-xl font-medium text-primary">
                 Order Summary
               </p>
 
@@ -699,12 +699,12 @@ export default function CartPage() {
                   aria-label="Postal code"
                 />
                 {shippingLoading && (
-                  <p className="text-body-xs color-muted mt-1">
+                  <p className="mt-1 text-body-xs text-muted">
                     Loading shipping options...
                   </p>
                 )}
                 {!shippingLoading && shippingMessage ? (
-                  <p className="mt-2 text-body-xs color-muted">
+                  <p className="mt-2 text-body-xs text-muted">
                     {shippingMessage}
                   </p>
                 ) : null}
@@ -712,7 +712,7 @@ export default function CartPage() {
                 {/* Shipping Options Radio Group */}
                 {_shippingOptions.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <label className="block text-body-xs font-medium color-muted mb-2">
+                    <label className="mb-2 block text-body-xs font-medium text-muted">
                       Select shipping method
                     </label>
                     {_shippingOptions.map((option) => (
@@ -720,8 +720,8 @@ export default function CartPage() {
                         key={option.id}
                         className={`flex items-center justify-between p-3 border rounded-md cursor-pointer transition-colors ${
                           selectedShippingOption === option.id
-                            ? 'border-[var(--ink)] bg-surface'
-                            : 'border-border-subtle hover:border-[var(--muted)]'
+                            ? 'border-primary bg-surface'
+                            : 'border-border-subtle hover:border-[var(--ds-text-muted)]'
                         }`}
                       >
                         <div className="flex items-center">
@@ -733,13 +733,13 @@ export default function CartPage() {
                             onChange={() =>
                               handleShippingOptionChange(option.id)
                             }
-                            className="h-4 w-4 color-ink focus:ring-[var(--ink)]"
+                            className="h-4 w-4 text-primary focus:ring-primary"
                           />
                           <div className="ml-3">
-                            <p className="text-body-sm font-medium color-ink">
+                            <p className="text-body-sm font-medium text-primary">
                               {option.name}
                             </p>
-                            <p className="text-body-xs color-muted">
+                            <p className="text-body-xs text-muted">
                               {option.description}
                               {option.estimated_days &&
                               option.estimated_days.trim() !== ''
@@ -748,7 +748,7 @@ export default function CartPage() {
                             </p>
                           </div>
                         </div>
-                        <span className="text-body-sm font-medium color-ink">
+                        <span className="text-body-sm font-medium text-primary">
                           {subtotal >= freeShippingThreshold
                             ? 'Free'
                             : formatCartPrice(option.price)}
@@ -761,23 +761,23 @@ export default function CartPage() {
 
               {/* Summary Details */}
               <div className="flow-root">
-                <dl className="-my-4 divide-y divide-[var(--soft)]">
+                <dl className="-my-4 divide-y divide-border-subtle">
                   <div className="flex items-center justify-between py-4">
-                    <dt className="color-muted">Subtotal</dt>
-                    <dd className="font-medium color-ink">
+                    <dt className="text-muted">Subtotal</dt>
+                    <dd className="font-medium text-primary">
                       {formatCartPrice(subtotal)}
                     </dd>
                   </div>
                   {discountAmount > 0 && (
                     <div className="flex items-center justify-between py-4">
-                      <dt className="color-muted">Discount</dt>
+                      <dt className="text-muted">Discount</dt>
                       <dd className="font-medium text-success">
                         -{formatCartPrice(discountAmount)}
                       </dd>
                     </div>
                   )}
                   <div className="flex items-center justify-between py-4">
-                    <dt className="color-muted">
+                    <dt className="text-muted">
                       Shipping
                       {shippingCost === 0 &&
                         subtotal >= freeShippingThreshold && (
@@ -786,17 +786,17 @@ export default function CartPage() {
                           </span>
                         )}
                     </dt>
-                    <dd className="font-medium color-ink">
+                    <dd className="font-medium text-primary">
                       {!countryCode ? (
-                        <span className="color-muted text-body-sm">
+                        <span className="text-body-sm text-muted">
                           Calculated at checkout
                         </span>
                       ) : countryCode && _shippingOptions.length === 0 ? (
-                        <span className="color-muted text-body-sm">
+                        <span className="text-body-sm text-muted">
                           Shipping unavailable
                         </span>
                       ) : !selectedShipping ? (
-                        <span className="color-muted text-body-sm">
+                        <span className="text-body-sm text-muted">
                           Not available
                         </span>
                       ) : shippingCost === 0 ? (
@@ -807,10 +807,10 @@ export default function CartPage() {
                     </dd>
                   </div>
                   <div className="flex items-center justify-between py-4">
-                    <dt className="text-body-md font-medium color-ink">
+                    <dt className="text-body-md font-medium text-primary">
                       Total
                     </dt>
-                    <dd className="text-display-sm font-medium color-ink">
+                    <dd className="text-display-sm font-medium text-primary">
                       {formatCartPrice(total)}
                     </dd>
                   </div>
@@ -820,7 +820,7 @@ export default function CartPage() {
               {/* Free Shipping Notice */}
               {(shippingCost === null || shippingCost > 0) &&
                 subtotal < freeShippingThreshold && (
-                  <div className="mt-4 flex items-center gap-2 text-body-sm color-muted bg-surface p-3 rounded-md">
+                  <div className="mt-4 flex items-center gap-2 rounded-md bg-surface p-3 text-body-sm text-muted">
                     <AlertCircle size={16} />
                     <span>
                       Add {formatCartPrice(freeShippingThreshold - subtotal)}{' '}
@@ -832,13 +832,13 @@ export default function CartPage() {
               {/* Checkout Button */}
               <Link
                 href="/checkout"
-                className="mt-6 block w-full bg-[var(--ink)] text-inverse text-center py-4 text-body-sm font-bold  tracking-token-wider hover:bg-[var(--ink)] transition-colors"
+                className="mt-6 block w-full bg-primary py-4 text-center text-body-sm font-bold tracking-token-wider text-inverse transition-colors hover:bg-primary"
               >
                 Proceed to Checkout
               </Link>
 
               {/* Secure Checkout Notice */}
-              <div className="mt-4 flex items-center justify-center gap-2 text-body-xs color-muted">
+              <div className="mt-4 flex items-center justify-center gap-2 text-body-xs text-muted">
                 <svg
                   className="w-4 h-4"
                   fill="currentColor"
@@ -855,8 +855,8 @@ export default function CartPage() {
                 </span>
               </div>
 
-              <div className="mt-4 rounded-md border border-border-subtle bg-surface p-4 text-body-xs color-muted">
-                <p className="font-medium color-ink">Before you pay</p>
+              <div className="mt-4 rounded-md border border-border-subtle bg-surface p-4 text-body-xs text-muted">
+                <p className="font-medium text-primary">Before you pay</p>
                 <p className="mt-2">{storefrontTrust.shippingSummary}</p>
                 <p className="mt-2">{storefrontTrust.returnSummary}</p>
                 <div className="mt-3 flex flex-wrap gap-3">

@@ -12,11 +12,7 @@ const blockHeights: Record<string, string> = {
 
 export default function HomepageLoading() {
   return (
-    <div
-      className="bg-surface-page text-primary"
-      style={{ '--homepage-gutter': 'var(--ds-home-gutter-mobile)' } as React.CSSProperties}
-      aria-label="Loading homepage"
-    >
+    <div className="bg-surface-page text-primary" aria-label="Loading homepage">
       {Object.entries(blockHeights).map(([block, heightClass]) => (
         <section
           key={block}

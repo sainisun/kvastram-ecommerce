@@ -185,7 +185,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                             onClick={() => setImgIndex(index)}
                             aria-label={`Show product image ${index + 1}`}
                             className={`rounded-full transition-all ${
-                              index === imgIndex ? 'h-1.5 w-4 bg-[var(--ink)]' : 'h-1.5 w-1.5 bg-[var(--ink)]/25'
+                              index === imgIndex ? 'h-1.5 w-4 bg-primary' : 'h-1.5 w-1.5 bg-primary/25'
                             }`}
                           />
                         ))}
@@ -234,7 +234,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                           key={v.id}
                           onClick={() => setSelectedVariant(v)}
                           className={cn(
-                            'min-h-[36px] px-[var(--ds-space-sm)] border-[1.5px] rounded-[var(--ds-radius-sm)] text-body-sm font-[var(--ds-type-strong-weight)] transition-[150ms_ease] hover:border-accent hover:text-accent',
+                            'min-h-[var(--ds-control-sm)] px-[var(--ds-space-sm)] border-[1.5px] rounded-[var(--ds-radius-sm)] text-body-sm font-[var(--ds-type-strong-weight)] transition-[150ms_ease] hover:border-accent hover:text-accent',
                             isActive 
                               ? 'border-primary bg-primary text-inverse' 
                               : 'border-border-subtle bg-surface-paper text-primary'

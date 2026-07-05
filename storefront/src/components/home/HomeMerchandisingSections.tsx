@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { homepageSectionActionClassName } from '@/components/ui/HomepageSection';
 import type { HomepageMerchandisingSlot } from '@/types/homepage';
 
 interface HomeMerchandisingSectionsProps {
@@ -19,10 +20,10 @@ function SectionHead({
   action?: { label: string; href: string };
 }) {
   return (
-    <div className="max-md:py-[var(--ds-space-md)]-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
+    <div className="mb-[var(--ds-space-md)] flex flex-col gap-[var(--ds-space-sm)] md:mb-[var(--ds-space-lg)] md:flex-row md:items-end md:justify-between">
       <div className="kv-tag">{eyebrow}</div>
       {action ? (
-        <Link href={action.href} className="max-md:py-[var(--ds-space-md)]-link">
+        <Link href={action.href} className={homepageSectionActionClassName}>
           {action.label}
         </Link>
       ) : null}
@@ -173,4 +174,3 @@ export function HomeMerchandisingSections({
     </>
   );
 }
-

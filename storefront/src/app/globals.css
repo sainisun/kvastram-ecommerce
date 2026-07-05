@@ -91,7 +91,8 @@
   --kv-radius-pill:  var(--ds-radius-pill);
   --font-ui:         var(--ds-font-ui);
 
-  /* Tailwind compat aliases */
+  /* Compatibility-only aliases for legacy CSS bridges. Runtime TSX must not consume
+     --ink, --cream, --line, --soft, or --muted directly. */
   --terracotta: var(--ds-accent-primary);
   --terracotta-dark: var(--ds-accent-hover);
   --terracotta-light: var(--ds-accent-soft);

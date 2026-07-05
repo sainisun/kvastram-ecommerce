@@ -129,14 +129,18 @@ export default function TestimonialsCarousel({
               type="button"
               onClick={() => setCurrentIndex(index)}
               variant="ghost"
-              size="sm"
-              className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${
-                index === currentIndex
-                  ? 'w-6 bg-surface-paper'
-                  : 'w-2 bg-secondary hover:bg-muted'
-              }`}
+              size="none"
+              className="flex h-11 w-11 items-center justify-center rounded-full border-0 p-0"
               aria-label={`Go to testimonial ${index + 1}`}
-            />
+            >
+              <span
+                className={`block rounded-full transition-all ${
+                  index === currentIndex
+                    ? 'h-2 w-6 bg-surface-paper'
+                    : 'h-2 w-2 bg-secondary hover:bg-muted'
+                }`}
+              />
+            </Button>
           ))}
         </div>
       )}

@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
-import { ButtonLink, UnstyledButton } from '@/components/ui/Button';
+import { Button, ButtonLink, IconButton } from '@/components/ui/Button';
 
 const ORDERS_PER_PAGE = 10;
 
@@ -223,39 +223,43 @@ export default function OrdersListPage() {
                     {orders.length} orders
                   </p>
                   <div className="flex items-center gap-2">
-                    <UnstyledButton
+                    <IconButton
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="p-2 border border-border-subtle text-secondary hover:bg-parchment disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-md border border-border-subtle text-secondary hover:bg-parchment"
                       aria-label="Previous page"
                     >
                       <ChevronLeft size={16} />
-                    </UnstyledButton>
+                    </IconButton>
 
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                       (page) => (
-                        <UnstyledButton
+                        <Button
                           key={page}
                           onClick={() => handlePageChange(page)}
-                          className={`account-page-button h-10 w-10 transition-colors ${
-                            currentPage === page
-                              ? 'border border-primary bg-surface-paper text-primary'
-                              : 'border border-border-subtle text-secondary hover:bg-parchment'
-                          }`}
+                          variant={
+                            currentPage === page ? 'paginationSelected' : 'pagination'
+                          }
+                          size="none"
+                          className="catalog-count"
                         >
                           {page}
-                        </UnstyledButton>
+                        </Button>
                       )
                     )}
 
-                    <UnstyledButton
+                    <IconButton
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="p-2 border border-border-subtle text-secondary hover:bg-parchment disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-md border border-border-subtle text-secondary hover:bg-parchment"
                       aria-label="Next page"
                     >
                       <ChevronRight size={16} />
-                    </UnstyledButton>
+                    </IconButton>
                   </div>
                 </div>
               )}

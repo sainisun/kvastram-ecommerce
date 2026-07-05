@@ -121,8 +121,14 @@ Use these before adding page-local UI systems:
 - Homepage content width: `--ds-home-content-width` (`1520px`).
 - Homepage gutters: `30px` desktop, `28px` tablet, and `15px` mobile through the `--ds-home-gutter-*` tokens.
 - Homepage section rhythm: `108px` desktop and `56px` mobile through the `--ds-home-section-space-*` tokens.
-- Hero is full bleed. Other homepage content uses `.homepage-container`.
+- Hero is full bleed. Other homepage content uses the shared `HomepageContainer` / `HomepageSection` primitives.
 - Homepage media containers must declare an intrinsic aspect ratio or explicit dimensions.
+
+## Runtime Consumption Rules
+
+- Prefer semantic Tailwind utilities bridged from `globals.css`.
+- Raw `var(--ds-*)` usage in TSX is allowed only as a Tailwind arbitrary-value escape hatch when no semantic utility exists.
+- `--ink`, `--cream`, and `--line` remain compatibility-only aliases and must not be consumed by runtime TSX.
 
 ## Current Metrics
 

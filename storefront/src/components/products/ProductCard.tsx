@@ -10,7 +10,7 @@ import OptimizedImage from '@/components/ui/OptimizedImage';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { Badge } from '@/components/ui/Badge';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { Button, IconButton } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/Button';
 import { Check, ShoppingBag } from 'lucide-react';
 
 export interface ProductCardPrice {
@@ -63,10 +63,10 @@ export function ProductCard({
   added = false,
   currency = 'USD',
   categoryLabel,
-  showQuickView = true,
+  showQuickView: _showQuickView = true,
   actionLabel,
   onAddToCart,
-  onQuickView,
+  onQuickView: _onQuickView,
 }: ProductCardProps) {
   const displayTitle = getProductDisplayTitle(product.title);
   const href = `/products/${product.handle || product.id}`;
@@ -143,18 +143,17 @@ export function ProductCard({
 
       </div>
 
-      <div className="absolute top-[var(--ds-space-xs)] right-[var(--ds-space-xs)] w-[34px] h-[34px] border-0 rounded-full bg-surface-paper shadow-[0_2px_8px_rgba(var(--ds-black-rgb),.12)] grid place-items-center cursor-pointer z-10">
-        <WishlistButton
-          productId={product.id}
-          title={displayTitle}
-          price={firstVariant?.prices?.[0]?.amount || 0}
-          currency={currency}
-            thumbnail={primaryImage || undefined}
-          handle={product.handle || product.id}
-          variantId={firstVariant?.id}
-          size="sm"
-        />
-      </div>
+      <WishlistButton
+        productId={product.id}
+        title={displayTitle}
+        price={firstVariant?.prices?.[0]?.amount || 0}
+        currency={currency}
+        thumbnail={primaryImage || undefined}
+        handle={product.handle || product.id}
+        variantId={firstVariant?.id}
+        size="sm"
+        className="absolute right-[var(--ds-space-xs)] top-[var(--ds-space-xs)] z-10 border-0 shadow-[0_2px_8px_rgba(var(--ds-black-rgb),.12)]"
+      />
 
       <div className="p-[var(--ds-space-xs)]">
         <p className="text-muted font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-product-meta-tracking)] uppercase italic font-light">{categoryLabel || product.collection?.title || product.subtitle || 'Odhvica'}</p>
@@ -181,7 +180,7 @@ export function ProductCard({
           </div>
         ) : null}
 
-        <div className="flex items-center justify-between gap-[var(--ds-space-xs)] min-h-[34px]">
+        <div className="flex min-h-[var(--ds-control-sm)] items-center justify-between gap-[var(--ds-space-xs)]">
           <PriceDisplay
             price={price.label}
             compareAtPrice={price.compareAtLabel}
@@ -194,9 +193,9 @@ export function ProductCard({
             onClick={(event) => onAddToCart(event, product)}
             variant={added ? 'primary' : 'ghost'}
             size="sm"
-            className="flex-none w-[34px] h-[34px] rounded-[var(--ds-radius-sm)] font-body font-[var(--ds-type-ui-weight)] text-primary hover:bg-accent hover:text-inverse"
+            className="flex-none rounded-[var(--ds-radius-sm)] font-body font-[var(--ds-type-ui-weight)] text-primary hover:bg-accent hover:text-inverse"
             aria-label={added ? 'Added to cart' : 'Add to cart'}
-        >
+          >
             {added ? (
               <Check aria-hidden="true" size={16} strokeWidth={2} />
             ) : (

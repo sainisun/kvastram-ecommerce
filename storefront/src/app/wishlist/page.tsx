@@ -106,7 +106,8 @@ export default function WishlistPage() {
                 <IconButton
                   type="button"
                   onClick={() => handleRemove(item.productId)}
-                  className="absolute right-3 top-3 h-8 w-8 rounded-full border-0 bg-surface-paper/90 text-muted hover:text-error"
+                  size="sm"
+                  className="absolute right-3 top-3 rounded-full border-0 bg-surface-paper/90 text-muted hover:text-error"
                   aria-label="Remove from wishlist"
                 >
                   <Trash2 size={16} />

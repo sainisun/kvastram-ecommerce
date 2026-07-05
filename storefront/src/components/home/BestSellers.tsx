@@ -10,6 +10,12 @@ import { ProductCard } from '@/components/products/ProductCard';
 import { useCurrency } from '@/context/currency-context';
 import { getProductDisplayTitle } from '@/lib/product-title';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
+import {
+  HomepageSection,
+  HomepageSectionHeader,
+  homepageScrollRailClassName,
+  homepageSectionActionClassName,
+} from '@/components/ui/HomepageSection';
 
 interface ProductPriceInfo {
   price: string;
@@ -28,14 +34,12 @@ export function BestSellers({
   const { formatPrice } = useCurrency();
   const { addItem } = useCart();
   const { showNotification } = useNotification();
-  const {
-    wholesaleInfo,
-    getPrice: getWholesalePrice,
-    fetchPrices,
-  } = useWholesale();
+  const { wholesaleInfo, getPrice: getWholesalePrice, fetchPrices } = useWholesale();
   const [addedId, setAddedId] = useState<string | null>(null);
 
-  const products = filterStorefrontReadyProducts(initialProducts || [], { requireSellablePrice: false });
+  const products = filterStorefrontReadyProducts(initialProducts || [], {
+    requireSellablePrice: false,
+  });
 
   useEffect(() => {
     if (wholesaleInfo?.hasWholesaleAccess && products.length > 0 && fetchPrices) {
@@ -125,38 +129,39 @@ export function BestSellers({
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full py-[var(--ds-home-section-space-mobile)] md:py-[var(--ds-home-section-space-desktop)]" data-home-section="5-best-sellers">
-      <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto">
-        <div className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]-head flex flex-col md:flex-row justify-between items-start md:items-end mb-[var(--ds-space-lg)] md:mb-[var(--ds-space-3xl)]">
-          <div>
-            <h2 className="text-display-lg font-display font-light italic tracking-wide text-primary">Best Sellers</h2>
-          </div>
-          <Link href="/collections/best-sellers" className="mt-4 md:mt-0 text-body-sm font-medium tracking-[0.1em] uppercase text-secondary hover:text-primary transition-colors border-b border-transparent hover:border-primary pb-1">
+    <HomepageSection data-home-section="5-best-sellers">
+      <HomepageSectionHeader
+        heading="Best Sellers"
+        headingClassName="font-light italic tracking-wide"
+        action={
+          <Link href="/collections/best-sellers" className={homepageSectionActionClassName}>
             View All Best Sellers
           </Link>
-        </div>
+        }
+      />
+
+      <div
+        className={`${homepageScrollRailClassName} gap-4 pb-8 lg:gap-8 [&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:bg-transparent [&_.product-card]:shadow-none [&_.product-info]:py-[var(--ds-space-sm)]`}
+      >
+        {products.map((product) => {
+          const priceInfo = getPrice(product);
+          return (
+            <div key={product.id} className="w-72 flex-shrink-0 animate-fade-in md:w-[316px]">
+              <ProductCard
+                product={product}
+                price={{
+                  label: priceInfo.price,
+                  compareAtLabel: priceInfo.compareAtLabel,
+                  isWholesale: priceInfo.isWholesale,
+                }}
+                onAddToCart={handleAddToCart}
+                added={addedId === product.id}
+                showQuickView={false}
+              />
+            </div>
+          );
+        })}
       </div>
-      
-      <div className="pl-[var(--ds-home-gutter-desktop)] md:pl-[calc(max(var(--ds-home-gutter-desktop),(100vw-1470px)/2))] [&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:shadow-none [&_.product-card]:bg-transparent [&_.product-info]:py-[var(--ds-space-sm)] overflow-x-auto no-scrollbar flex gap-4 md:gap-8 scroll-smooth pb-8 pr-[var(--ds-home-gutter-desktop)]">
-          {products.map((product) => {
-            const priceInfo = getPrice(product);
-            return (
-              <div key={product.id} className="flex-shrink-0 w-72 md:w-[316px] animate-fade-in">
-                <ProductCard
-                  product={product}
-                  price={{
-                    label: priceInfo.price,
-                    compareAtLabel: priceInfo.compareAtLabel,
-                    isWholesale: priceInfo.isWholesale,
-                  }}
-                  onAddToCart={handleAddToCart}
-                  added={addedId === product.id}
-                  showQuickView={false}
-                />
-              </div>
-            );
-          })}
-        </div>
-    </section>
+    </HomepageSection>
   );
 }

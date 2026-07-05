@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { HomepageContainer } from '@/components/ui/HomepageSection';
 import type { HomepageCategoryCard } from '@/types/homepage';
 
 export function CategoriesGrid({ categories }: { categories: HomepageCategoryCard[] }) {
@@ -12,7 +13,7 @@ export function CategoriesGrid({ categories }: { categories: HomepageCategoryCar
       aria-label="Featured categories"
       data-home-section="3-featured-categories"
     >
-      <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto grid grid-cols-2 md:grid-cols-4 gap-[clamp(8px,1vw,12px)]">
+      <HomepageContainer className="grid grid-cols-2 gap-[clamp(8px,1vw,12px)] md:grid-cols-4">
         {displayed.map((category) => (
           <Link key={category.id} href={category.link_url} className="relative aspect-[4/5] overflow-hidden bg-surface-soft group block">
             <OptimizedImage
@@ -26,7 +27,7 @@ export function CategoriesGrid({ categories }: { categories: HomepageCategoryCar
             <span className="absolute inset-x-[var(--ds-space-sm)] bottom-[var(--ds-space-sm)] z-[1] text-inverse font-display text-display-sm">{category.name}</span>
           </Link>
         ))}
-      </div>
+      </HomepageContainer>
     </section>
   );
 }

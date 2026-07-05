@@ -130,11 +130,19 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
                 type="button"
                 onClick={() => setCurrentIndex(idx)}
                 variant="ghost"
-                size="sm"
-                className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${idx === currentIndex ? 'w-8 bg-surface-paper' : 'w-2 bg-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:bg-surface-paper'}`}
+                size="none"
+                className="flex h-11 w-11 items-center justify-center rounded-full border-0 p-0"
                 aria-label={`Go to slide ${idx + 1}`}
                 aria-current={idx === currentIndex ? 'true' : 'false'}
-              />
+              >
+                <span
+                  className={`block rounded-full transition-all ${
+                    idx === currentIndex
+                      ? 'h-2 w-8 bg-surface-paper'
+                      : 'h-2 w-2 bg-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:bg-surface-paper'
+                  }`}
+                />
+              </Button>
             ))}
           </div>
         </>
@@ -142,4 +150,3 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
     </section>
   );
 }
-

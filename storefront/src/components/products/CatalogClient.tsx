@@ -18,10 +18,10 @@ import ProductGrid from '@/components/ProductGrid';
 import { RecentlyViewedRow } from '@/components/product/RecentlyViewedRow';
 import { Select } from '@/components/ui/Select';
 import { Drawer } from '@/components/ui/Drawer';
+import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import { Product } from '@/types';
-import { UnstyledButton } from '@/components/ui/Button';
 
 interface Category {
   id: string;
@@ -338,42 +338,45 @@ export default function CatalogClient({
           {activeFilterCount > 0 ? (
             <div className="mt-[var(--ds-space-sm)] flex flex-wrap items-center gap-[var(--ds-space-xs)]">
               {activeCategory ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
+                <Button
+                  type="button"
+                  onClick={() => clearFilter('category_id')}
+                  variant="chipSelected"
+                  size="sm"
+                  className="catalog-active-chip px-3 py-1"
+                  aria-label={`Remove category filter ${activeCategory.name}`}
+                >
                   {activeCategory.name}
-                  <UnstyledButton
-                    onClick={() => clearFilter('category_id')}
-                    aria-label="Remove category filter"
-                    className="text-muted transition-colors hover:text-primary"
-                  >
-                    <X size={12} />
-                  </UnstyledButton>
-                </span>
+                  <X size={12} />
+                </Button>
               ) : null}
 
               {activeTag ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
+                <Button
+                  type="button"
+                  onClick={() => clearFilter('tag_id')}
+                  variant="chipSelected"
+                  size="sm"
+                  className="catalog-active-chip px-3 py-1"
+                  aria-label={`Remove tag filter ${activeTag.name}`}
+                >
                   {activeTag.name}
-                  <UnstyledButton
-                    onClick={() => clearFilter('tag_id')}
-                    aria-label="Remove tag filter"
-                    className="text-muted transition-colors hover:text-primary"
-                  >
-                    <X size={12} />
-                  </UnstyledButton>
-                </span>
+                  <X size={12} />
+                </Button>
               ) : null}
 
               {activeCollection ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
+                <Button
+                  type="button"
+                  onClick={() => clearFilter('collection_id')}
+                  variant="chipSelected"
+                  size="sm"
+                  className="catalog-active-chip px-3 py-1"
+                  aria-label={`Remove collection filter ${activeCollection.title}`}
+                >
                   {activeCollection.title}
-                  <UnstyledButton
-                    onClick={() => clearFilter('collection_id')}
-                    aria-label="Remove collection filter"
-                    className="text-muted transition-colors hover:text-primary"
-                  >
-                    <X size={12} />
-                  </UnstyledButton>
-                </span>
+                  <X size={12} />
+                </Button>
               ) : null}
 
               {currentAttributeCode && currentAttributeValue ? (
@@ -395,7 +398,19 @@ export default function CatalogClient({
               ) : null}
 
               {(currentMinPrice || currentMaxPrice) ? (
-                <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
+                <Button
+                  type="button"
+                  onClick={() =>
+                    updateQuery((params) => {
+                      params.delete('min_price');
+                      params.delete('max_price');
+                    })
+                  }
+                  variant="chipSelected"
+                  size="sm"
+                  className="catalog-active-chip px-3 py-1"
+                  aria-label="Remove price filter"
+                >
                   Price:{' '}
                   {[
                     currentMinPrice
@@ -407,19 +422,8 @@ export default function CatalogClient({
                   ]
                     .filter(Boolean)
                     .join(' ')}
-                  <UnstyledButton
-                    onClick={() =>
-                      updateQuery((params) => {
-                        params.delete('min_price');
-                        params.delete('max_price');
-                      })
-                    }
-                    aria-label="Remove price filter"
-                    className="text-muted transition-colors hover:text-primary"
-                  >
-                    <X size={12} />
-                  </UnstyledButton>
-                </span>
+                  <X size={12} />
+                </Button>
               ) : null}
             </div>
           ) : null}
@@ -434,14 +438,16 @@ export default function CatalogClient({
 
             {totalPages > 1 ? (
               <div className="mt-[var(--ds-space-2xl)] flex items-center justify-center gap-[var(--ds-space-xs)]">
-                <UnstyledButton
+                <IconButton
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page === 1 || loading}
-                  className="rounded-md border border-border-subtle p-2 text-secondary transition-colors hover:bg-parchment hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-md border border-border-subtle text-secondary hover:bg-parchment hover:text-primary"
                   aria-label="Previous page"
                 >
                   <ChevronLeft size={20} />
-                </UnstyledButton>
+                </IconButton>
 
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   let pageNum: number;
@@ -456,31 +462,31 @@ export default function CatalogClient({
                   }
 
                   return (
-                    <UnstyledButton
+                    <Button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
                       disabled={loading}
-                      className={`catalog-page-button h-10 w-10 rounded-[var(--ds-radius-md)] transition-colors ${
-                        page === pageNum
-                          ? 'border border-primary bg-surface-paper text-primary'
-                          : 'text-secondary hover:bg-parchment hover:text-primary'
-                      }`}
+                      variant={page === pageNum ? 'paginationSelected' : 'pagination'}
+                      size="none"
+                      className="catalog-count"
                       aria-label={`Page ${pageNum}`}
                       aria-current={page === pageNum ? 'page' : undefined}
                     >
                       {pageNum}
-                    </UnstyledButton>
+                    </Button>
                   );
                 })}
 
-                <UnstyledButton
+                <IconButton
                   onClick={() => handlePageChange(page + 1)}
                   disabled={page === totalPages || loading}
-                  className="rounded-md border border-border-subtle p-2 text-secondary transition-colors hover:bg-parchment hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-md border border-border-subtle text-secondary hover:bg-parchment hover:text-primary"
                   aria-label="Next page"
                 >
                   <ChevronRight size={20} />
-                </UnstyledButton>
+                </IconButton>
               </div>
             ) : null}
             <RecentlyViewedRow />

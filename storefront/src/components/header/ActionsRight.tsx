@@ -18,8 +18,8 @@ export function ActionsRight({ onCartOpen, isTransparent = false }: ActionsRight
   const { totalItems: wishlistCount } = useWishlist();
 
   const iconCls = isTransparent
-    ? 'relative flex h-9 w-9 items-center justify-center rounded-full text-inverse transition-colors hover:bg-[rgba(var(--ds-white-rgb),0.15)] hover:text-inverse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]'
-    : 'relative flex h-9 w-9 items-center justify-center rounded-full text-secondary transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.6)] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]';
+    ? 'relative inline-flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center rounded-full text-inverse transition-colors hover:bg-[rgba(var(--ds-white-rgb),0.15)] hover:text-inverse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]'
+    : 'relative inline-flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center rounded-full text-secondary transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.6)] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]';
 
   const ringCls = isTransparent ? 'ring-surface-page' : 'ring-surface-parchment';
 

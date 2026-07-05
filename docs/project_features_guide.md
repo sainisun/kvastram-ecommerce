@@ -1,5 +1,10 @@
 # Odhvica E-Commerce Platform — Comprehensive Features Guide
 
+## UI/UX Architecture & Tailwind v4
+- **Primitives System:** Core UI components (`Button`, `Badge`, `Input`, etc.) are built using `class-variance-authority` (cva) pattern for strict, type-safe variant mapping.
+- **Design Tokens:** The storefront uses native Tailwind v4 CSS variables injected via `globals.css` (e.g., `--color-accent`, `--color-surface-paper`). Raw `var(--ds-*)` usage in `.tsx` is allowed only as a Tailwind arbitrary-value escape hatch when no semantic utility exists. Runtime TSX must not consume `--ink`, `--cream`, or `--line`; use `--ds-*` tokens or semantic utilities like `bg-surface-paper` and `text-accent-hover`.
+- **Layout Logic:** Global layout CSS (`.products-grid`, etc.) is deprecated. Layouts MUST be explicitly defined in React components using Tailwind grid utilities (e.g., `grid grid-cols-2`).
+
 ## UI/UX & Tailwind Refactoring (v1.0)
 * **Technical Flow**: Transitioning legacy custom CSS components (`product-card.css`, `collections.css`, `home-sections.css`) to utility-first Tailwind CSS. 
 * **Architecture**: Enforces a strict separation of concerns where global resets reside in `tokens.css` and `base.css`, while all component-level styles are handled via inline Tailwind classes (e.g. `bg-[var(--ds-surface-paper)]`, `text-body-sm`).
@@ -136,3 +141,71 @@ This guide is the definitive registry of all backend features implemented in the
 * **What you need to do**:
   * Ensure the design system audits (`npm run verify:design-system`) pass without warnings.
   * Use the tokens `var(--font-cardo)` mapped internally when expanding any future layout elements.
+
+### B. Storefront Architecture Recovery (v1.2)
+* **Technical Flow**:
+  * **Runtime-First Contract**: `storefront/src/styles/tokens.css` is the single source of truth for typography and homepage layout. Active values are `Amiri` for `--ds-font-display`, `Cardo` for `--ds-font-body`, homepage gutters `15px / 28px / 30px`, and homepage section rhythm `56px / 108px`.
+  * **Homepage Primitives**: Homepage layout ownership is centralized in `src/components/ui/HomepageSection.tsx` through `HomepageContainer`, `HomepageSection`, and `HomepageSectionHeader`. Homepage sections must use these primitives instead of repeating `w-[min(calc(...))]` formulas or malformed utility fragments.
+  * **Chrome Modes**: `MainLayout` now resolves explicit `store`, `checkout`, and `wholesale` chrome modes. Checkout routes render without consumer site chrome, while wholesale routes keep their own dedicated header and footer.
+  * **Touch Targets**: Shared button tokens now enforce `44px` minimum small controls and `48px` default controls. Header actions, product-card wishlist/cart actions, cookie controls, and checkout/cart inline actions were normalized to this contract.
+  * **Audit Hardening**: `scripts/design-system-audit.mjs` now validates live token declarations, homepage spacing contract, malformed utility fragments, legacy alias usage, and known touch-target regressions instead of relying on comment-only matches.
+* **What you need to do**:
+  * Keep homepage sections on `HomepageContainer`/`HomepageSection` primitives when adding or editing merchandising blocks.
+  * Treat compatibility aliases in `globals.css` as CSS bridge-only; do not introduce new runtime TSX consumers of `--ink`, `--cream`, `--line`, `--soft`, or `--muted`.
+  * Run the full storefront verification chain after touching homepage layout, checkout shell, or shared primitives:
+    `npm.cmd run audit:design-system`
+    `npm.cmd run audit:design-system:metrics`
+    `npm.cmd run lint`
+    `npm.cmd run verify:design-system -- --pool=threads`
+    `npm.cmd run build`
+
+### C. Storefront Consistency Closure (v1.3)
+* **Technical Flow**:
+  * **Shared Interaction Closure**: Remaining runtime chip and pagination patterns now close over shared button primitives instead of route-local legacy classes. This applies to bestsellers size chips, search attribute chips, search overlay chips, mobile filter chips, listing/catalog pagination, and account order pagination.
+  * **Dead Selector Reduction**: After migrating those runtime consumers, the unused selector contracts for `kv-text-chip`, `catalog-page-button`, `filter-tag-button`, and `account-page-button` are removed from the live storefront typography layer to reduce duplicate ownership and drift.
+  * **Claim Discipline**: “100% consistency” can only be claimed for the verified storefront runtime scope after audits, lint, design-system verification, and build are all green. It must not be used as a blanket claim for untouched historical code.
+* **What you need to do**:
+  * Add future chip-like filters and pagination controls through shared button variants instead of introducing new page-local classes.
+  * Keep consistency claims scoped to the audited storefront runtime.
+  * Re-run the storefront verification chain before treating any closure pass as complete:
+    `npm.cmd run audit:design-system`
+    `npm.cmd run audit:design-system:metrics`
+    `npm.cmd run lint`
+    `npm.cmd run verify:design-system -- --pool=threads`
+    `npm.cmd run build`
+
+### D. CSS Ownership Closure (v1.4)
+* **Technical Flow**:
+  * **Single Owner Cleanup**: Duplicate selector ownership across utility, typography, responsive, mobile override, animation, and component CSS layers was collapsed into single-owner files. Responsive and mobile variants were folded back into their component owner files instead of being split across unrelated override files.
+  * **Audit Hardening**: `scripts/css-ownership-audit.mjs` now strips CSS comments and string literals before selector collection and ignores generic state modifiers like `active` and `visible`, preventing false positives from comments, import paths, and generic state tokens.
+  * **Zero Duplicate Baseline**: The active storefront CSS ownership audit now passes at `0` duplicate selectors, so future drift is blocked immediately instead of being tolerated through a large baseline.
+* **What you need to do**:
+  * When adding responsive or mobile rules, place them in the same component or utility owner file instead of creating a second selector owner elsewhere.
+  * Treat CSS ownership drift as a regression, not as acceptable cleanup debt.
+  * Run `npm.cmd run audit:css-ownership` alongside the standard storefront verification chain whenever shared CSS or layout primitives change.
+
+### E. Checkout & Interaction Consistency Closure (v1.5)
+* **Technical Flow**:
+  * **Checkout Semantic Cleanup**: `storefront/src/app/checkout/page.tsx` no longer relies on legacy compatibility text classes in runtime JSX. Progress steps, shipping/payment copy, policy links, order summary, and trust panels now use semantic utilities like `text-primary`, `text-muted`, and `text-accent`.
+  * **44px Control Enforcement**: Remaining undersized runtime controls were normalized to the shared control contract, including search overlay clear actions, filter sidebar toggles, auth password visibility toggles, wishlist remove actions, carousel dots, and the global scroll-to-top control.
+  * **Touch Discoverability**: Cart drawer removal affordances now remain visible on touch/smaller breakpoints instead of depending only on hover, preserving parity between desktop and mobile interaction models.
+  * **Dead Local Alias Reduction**: Product detail page local semantic alias variables that duplicated the storefront token contract were removed from `storefront/src/components/product/pdp.module.css`, keeping the page on the shared design token layer.
+* **What you need to do**:
+  * Use shared button or icon-button primitives for future dismiss, toggle, carousel, and remove actions instead of applying `h-8`, `w-8`, or other route-local shrink overrides.
+  * Keep checkout and trust surfaces on semantic text utilities; do not reintroduce `color-ink`, `color-muted`, or `color-accent` into runtime TSX.
+  * Re-run the full storefront verification chain after changing checkout, auth, search overlay, filters, wishlist, cart drawer, or carousel controls:
+    `npm.cmd run audit:design-system`
+    `npm.cmd run audit:design-system:metrics`
+    `npm.cmd run lint`
+    `npm.cmd run verify:design-system -- --pool=threads`
+    `npm.cmd run build`
+
+### F. Local Runtime Warning Closure (v1.6)
+* **Technical Flow**:
+  * **Exchange Rate Fallback Discipline**: `storefront/src/app/api/exchange-rates/route.ts` now prefers local fallback rates during production build generation and local mock-API test environments instead of repeatedly attempting an unnecessary live TLS fetch. Live provider fallback remains intact for real runtime failures, but dev logging is reduced to a single warning instead of repeated noisy stack traces.
+  * **Responsive OAuth Width Contract**: `storefront/src/app/login/page.tsx` now measures the Google sign-in container and passes a valid pixel width to the Google Identity button, preserving the feature while avoiding invalid `100%` width configuration.
+  * **Above-the-Fold Image Stability**: Homepage circle images now eagerly load the first visible set, and the hero image stack uses explicit positioned containers for mobile and desktop assets so above-the-fold loading and fill sizing stay stable under local smoke tests.
+* **What you need to do**:
+  * Do not hardcode percentage strings into third-party auth button width props when the provider expects pixel values; measure the container and pass a bounded number instead.
+  * Keep local mock and smoke-test environments off unnecessary live external fetches when a built-in fallback already exists.
+  * When adjusting homepage hero or category media, preserve explicit above-the-fold loading intent and positioned fill containers to avoid LCP or zero-height image regressions.

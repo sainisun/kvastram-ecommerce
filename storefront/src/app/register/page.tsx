@@ -180,8 +180,7 @@ export default function RegisterPage() {
                   variant="ghost"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="h-8 w-8 border-0"
-                  tabIndex={-1}
+                  className="border-0"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </IconButton>

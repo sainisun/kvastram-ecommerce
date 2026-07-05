@@ -21,7 +21,7 @@ function getFilenameSlug(urlStr) {
     let pathname = url.pathname.replace(/^\/|\/$/g, '');
     if (!pathname) return 'homepage';
     return pathname.replace(/\//g, '_');
-  } catch (e) {
+  } catch {
     return 'unknown';
   }
 }
@@ -80,7 +80,7 @@ async function main() {
   let browser;
   try {
     browser = await chromium.launch({ headless: true });
-  } catch (e) {
+  } catch {
     console.log('Failed to launch from playwright directly, trying @playwright/test chromium...');
     // Fallback import
     const playwrightTest = await import('@playwright/test');

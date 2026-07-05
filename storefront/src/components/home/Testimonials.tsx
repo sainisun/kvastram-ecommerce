@@ -22,7 +22,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
   return (
     <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper border-b border-border-subtle">
       <div className="kv-container">
-        <div className="max-md:py-[var(--ds-space-md)]-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
+        <div className="mb-[var(--ds-space-md)] flex flex-col gap-[var(--ds-space-sm)] md:mb-[var(--ds-space-lg)]">
           <div className="kv-tag">Love shared by customers</div>
         </div>
 
@@ -67,4 +67,3 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
     </section>
   );
 }
-

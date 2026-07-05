@@ -240,19 +240,25 @@
   --ds-home-content-width: 1520px;
   --ds-page-width: 1440px;
   /* ── Page gutters ── */
-  --ds-home-gutter-mobile:  1.25rem;   /* 20px — premium mobile feel */
-  --ds-home-gutter-tablet:  2rem;      /* 32px */
-  --ds-home-gutter-desktop: 3rem;      /* 48px — editorial breathing room */
+  --ds-home-gutter-mobile:  0.9375rem; /* 15px */
+  --ds-home-gutter-tablet:  1.75rem;   /* 28px */
+  --ds-home-gutter-desktop: 1.875rem;  /* 30px */
 
   /* ── Section spacing (homepage) ── */
-  --ds-home-section-space-mobile: 48px;
-  --ds-home-section-space-desktop: 80px;
+  --ds-home-section-space-mobile: 56px;
+  --ds-home-section-space-desktop: 108px;
 
   /* ── Component spacing rules ── */
   --ds-btn-padding-y:    0.875rem;  /* 14px — 52px total height with line-height */
   --ds-btn-padding-x:    1.75rem;   /* 28px */
   --ds-btn-gap:          var(--ds-space-xs);    /* 8px between buttons */
   --ds-btn-whitespace:   var(--ds-space-sm);    /* 16px around CTA (research: +49% tap rate) */
+  --ds-control-sm:       44px;
+  --ds-control-md:       48px;
+  --ds-control-lg:       52px;
+  --ds-control-icon-sm:  44px;
+  --ds-control-icon-md:  48px;
+  --ds-control-icon-lg:  52px;
 
   --ds-card-padding:     var(--ds-space-md);    /* 24px card internal */
   --ds-card-gap:         var(--ds-space-md);    /* 24px between cards desktop */
@@ -279,5 +285,3 @@
   --ds-transition-normal: 220ms ease;
   --ds-transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-
-

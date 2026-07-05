@@ -103,9 +103,17 @@ Koi naya kaam aaye toh:
 --ds-z-modal: 300
 
 ### Typography
---ds-font-display: Libre Caslon Text (headings)
---ds-font-body: Hanken Grotesk (body text)
+--ds-font-display: Amiri bridged through next/font (headings)
+--ds-font-body: Cardo bridged through next/font (body text)
 --ds-font-ui: same as body (buttons, inputs)
+
+### Homepage layout
+--ds-home-gutter-mobile: 15px
+--ds-home-gutter-tablet: 28px
+--ds-home-gutter-desktop: 30px
+--ds-home-section-space-mobile: 56px
+--ds-home-section-space-desktop: 108px
+Homepage sections should use HomepageContainer/HomepageSection primitives instead of ad-hoc width formulas.
 
 ### Radius
 --ds-radius-sm, --ds-radius-md, --ds-radius-lg, --ds-radius-pill

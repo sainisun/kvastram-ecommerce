@@ -1,20 +1,6 @@
 /* Product page CVR redesign */
 .pdp-page {
   --pdp-paper: var(--ds-surface-paper);
-  --ink: var(--ds-text-primary);
-  --ink-muted: var(--ds-text-secondary);
-  --ink-faint: var(--ds-text-muted);
-  --terracotta: var(--ds-accent-primary);
-  --gold: var(--ds-accent-gold);
-  --green: var(--ds-success);
-  --green-lt: var(--ds-success-bg);
-  --amber: var(--ds-warning);
-  --amber-lt: var(--ds-warning-bg);
-  --blue: var(--ds-info);
-  --blue-lt: var(--ds-info-bg);
-  --teal: var(--ds-whatsapp);
-  --teal-lt: var(--ds-whatsapp-bg);
-  --border: var(--ds-border-subtle);
   background: var(--ds-surface-page);
   color: var(--ds-text-primary);
   font-family: var(--ds-font-body);
@@ -792,6 +778,5 @@
   border-radius: var(--ds-radius-md) var(--ds-radius-md) 0 0;
   }
 }
-
 
 

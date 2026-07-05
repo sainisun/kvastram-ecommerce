@@ -12,8 +12,16 @@ import { CookieConsent } from '@/components/ui/CookieConsent';
 import { ArrowUp } from 'lucide-react';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { NewsletterModal } from '@/components/ui/NewsletterModal';
-import { UnstyledButton } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/Button';
 import { ChatWidget } from '@/components/ui/ChatWidget';
+
+type ChromeMode = 'store' | 'checkout' | 'wholesale';
+
+function getChromeMode(pathname: string | null): ChromeMode {
+  if (pathname?.startsWith('/wholesale')) return 'wholesale';
+  if (pathname?.startsWith('/checkout')) return 'checkout';
+  return 'store';
+}
 
 function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -50,13 +58,15 @@ function ScrollToTop() {
   if (isMobile || !visible) return null;
 
   return (
-    <UnstyledButton
+    <IconButton
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       aria-label="Scroll to top"
-      className="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-50 w-10 h-10 bg-primary text-inverse rounded-full flex items-center justify-center shadow-lg hover:bg-secondary transition-all duration-300 hover:-translate-y-1 animate-scale-in"
+      size="sm"
+      variant="primary"
+      className="fixed bottom-24 right-5 z-50 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-secondary md:bottom-8 md:right-8 animate-scale-in"
     >
       <ArrowUp size={18} />
-    </UnstyledButton>
+    </IconButton>
   );
 }
 
@@ -66,28 +76,26 @@ export function MainLayout({
   readonly children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isWholesalePage = pathname?.startsWith('/wholesale');
-  const isCheckoutPage = pathname?.startsWith('/checkout');
-  const hideSiteChrome = isCheckoutPage;
+  const chromeMode = getChromeMode(pathname);
+  const isStorePage = chromeMode === 'store';
+  const isWholesalePage = chromeMode === 'wholesale';
 
   return (
     <>
-      <ScrollProgress />
-      {isWholesalePage ? <WholesaleHeader /> : <SiteHeader />}
+      {isStorePage ? <ScrollProgress /> : null}
+      {isWholesalePage ? <WholesaleHeader /> : null}
+      {isStorePage ? <SiteHeader /> : null}
       <main id="main-content" tabIndex={-1} className="page-transition">
         {children}
       </main>
-      {isWholesalePage ? <WholesaleFooter /> : <Footer />}
-      {/* Mobile Bottom Navigation - Hide on immersive/checkout surfaces */}
-      {!hideSiteChrome && <BottomNav />}
-      {/* Scroll to top */}
-      {!hideSiteChrome && <ScrollToTop />}
-      {/* Cart Abandonment Recovery Modal */}
-      {!hideSiteChrome && <CartRecovery />}
-      {/* Cookie Consent */}
-      {!hideSiteChrome && !isWholesalePage && <CookieConsent />}
-      {!hideSiteChrome && !isWholesalePage && <NewsletterModal />}
-      {!hideSiteChrome && !isWholesalePage && <ChatWidget />}
+      {isWholesalePage ? <WholesaleFooter /> : null}
+      {isStorePage ? <Footer /> : null}
+      {isStorePage && <BottomNav />}
+      {isStorePage && <ScrollToTop />}
+      {isStorePage && <CartRecovery />}
+      {isStorePage && <CookieConsent />}
+      {isStorePage && <NewsletterModal />}
+      {isStorePage && <ChatWidget />}
     </>
   );
 }

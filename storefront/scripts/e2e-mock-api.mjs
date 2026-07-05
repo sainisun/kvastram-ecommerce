@@ -4,14 +4,19 @@ const port = Number.parseInt(process.env.MOCK_API_PORT || '4000', 10);
 const image = 'https://res.cloudinary.com/demo/image/upload/sample.jpg';
 const video = 'https://res.cloudinary.com/demo/video/upload/dog.mp4';
 
-function product(id, title) {
+function withVariant(url, variant) {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}mock=${encodeURIComponent(variant)}`;
+}
+
+function product(id, title, imageVariant = id) {
   return {
     id,
     title,
     handle: id,
     status: 'published',
-    thumbnail: image,
-    images: [{ id: `${id}-image`, url: image }],
+    thumbnail: withVariant(image, `${imageVariant}-thumbnail`),
+    images: [{ id: `${id}-image`, url: withVariant(image, `${imageVariant}-gallery`) }],
     variants: [
       {
         id: `${id}-variant`,
@@ -50,15 +55,15 @@ const homepage = {
   category_circles: Array.from({ length: 6 }, (_, index) => ({
     id: `circle-${index + 1}`,
     label: ['Jackets', 'Dresses', 'Bags', 'Quilts', 'Sarees', 'Gifts'][index],
-    image_url: image,
+    image_url: withVariant(image, `circle-${index + 1}`),
     link_url: `/categories/category-${index + 1}`,
     is_active: true,
     sort_order: index,
   })),
   hero: Array.from({ length: 4 }, (_, index) => ({
     id: `hero-${index + 1}`,
-    image_url: image,
-    mobile_image_url: image,
+    image_url: withVariant(image, `hero-desktop-${index + 1}`),
+    mobile_image_url: withVariant(image, `hero-mobile-${index + 1}`),
     title: ['Made slowly, worn often', 'Jaipur in every stitch', 'The art of layering', 'Gifts with a story'][index],
     button_text: 'Shop Now',
     button_link: '/products',
@@ -66,7 +71,7 @@ const homepage = {
   featured_categories: Array.from({ length: 4 }, (_, index) => ({
     id: `featured-${index + 1}`,
     name: ['Jackets', 'Dresses', 'Bags', 'Home'][index],
-    image_url: image,
+    image_url: withVariant(image, `featured-${index + 1}`),
     link_url: `/categories/featured-${index + 1}`,
     is_active: true,
     sort_order: index,
@@ -79,32 +84,32 @@ const homepage = {
       title: 'Travel Edit',
       handle: 'travel-edit',
       description: 'Effortless styles for the journey ahead.',
-      image,
-      products: [product('travel-1', 'Travel Set')],
+      image: withVariant(image, 'collection-slider-1'),
+      products: [product('travel-1', 'Travel Set', 'travel-1')],
     },
     {
       id: 'slider-2',
       title: 'One Of Kind',
       handle: 'one-of-a-kind',
       description: 'Artisanal unique pieces.',
-      image,
-      products: [product('unique-1', 'One of a Kind Scarf')],
+      image: withVariant(image, 'collection-slider-2'),
+      products: [product('unique-1', 'One of a Kind Scarf', 'unique-1')],
     },
     {
       id: 'slider-3',
       title: 'Chic Layers',
       handle: 'chic-layers',
       description: 'Layering essentials for any season.',
-      image,
-      products: [product('layers-1', 'Artisan Coat')],
+      image: withVariant(image, 'collection-slider-3'),
+      products: [product('layers-1', 'Artisan Coat', 'layers-1')],
     },
     {
       id: 'slider-4',
       title: 'Jaipur Stories',
       handle: 'jaipur-stories',
       description: 'Vibrant hand-block prints.',
-      image,
-      products: [product('jaipur-1', 'Block Print Dress')],
+      image: withVariant(image, 'collection-slider-4'),
+      products: [product('jaipur-1', 'Block Print Dress', 'jaipur-1')],
     },
   ],
   collections: [
@@ -113,7 +118,7 @@ const homepage = {
       title: 'The Indigo Edit',
       handle: 'indigo-edit',
       description: 'A study in hand stitching and deep natural colour.',
-      image,
+      image: withVariant(image, 'campaign-1'),
       products: [
         product('campaign-1-product-1', 'Indigo Wrap'),
         product('campaign-1-product-2', 'Kantha Scarf'),
@@ -125,7 +130,7 @@ const homepage = {
       title: 'Summer in Jaipur',
       handle: 'summer-jaipur',
       description: 'Breathable cotton and hand-blocked colour.',
-      image,
+      image: withVariant(image, 'campaign-2'),
       products: [
         product('campaign-2-product-1', 'Cotton Kurta'),
         product('campaign-2-product-2', 'Block Print Dress'),
@@ -137,7 +142,7 @@ const homepage = {
     {
       id: 'reel-1',
       video_url: video,
-      thumbnail_url: image,
+      thumbnail_url: withVariant(image, 'watch-shop-1'),
       sort_order: 0,
       product: product('watch-product-1', 'Kantha Jacket in Motion'),
     },
@@ -145,11 +150,11 @@ const homepage = {
   brand_story: {
     title: 'Preserving craft, one thread at a time',
     content: 'Odhvica connects Jaipur-rooted workmanship with considered modern wardrobes.',
-    image_url: image,
+    image_url: withVariant(image, 'brand-story'),
   },
   social: Array.from({ length: 8 }, (_, index) => ({
     id: `social-${index + 1}`,
-    image_url: image,
+    image_url: withVariant(image, `social-${index + 1}`),
     alt_text: `Odhvica community look ${index + 1}`,
     caption: 'Handmade textiles in everyday life.',
     destination_url: 'https://instagram.com/odhvica',

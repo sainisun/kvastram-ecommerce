@@ -6,12 +6,14 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { ButtonLink, IconButton, UnstyledButton } from '@/components/ui/Button';
+import { HomepageContainer } from '@/components/ui/HomepageSection';
 import type { HomepageHeroSlide } from '@/types/homepage';
 
 export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
   const slides = banners.slice(0, 4);
   const [paused, setPaused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const autoplay = useMemo(
     () => Autoplay({ delay: 5500, stopOnInteraction: false, stopOnMouseEnter: true }),
     []
@@ -36,6 +38,18 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
     };
   }, [autoplay, emblaApi]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const syncViewport = () => setIsMobileViewport(mediaQuery.matches);
+
+    syncViewport();
+    mediaQuery.addEventListener('change', syncViewport);
+
+    return () => {
+      mediaQuery.removeEventListener('change', syncViewport);
+    };
+  }, []);
+
   const toggleAutoplay = useCallback(() => {
     if (paused) autoplay.play();
     else autoplay.stop();
@@ -46,7 +60,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
 
   return (
     <section
-      className="relative min-h-[clamp(520px,76svh,820px)] overflow-hidden bg-primary"
+      className="relative h-[clamp(520px,76svh,820px)] overflow-hidden bg-primary"
       aria-label="Featured campaigns"
       data-home-section="2-hero"
       onFocusCapture={() => autoplay.stop()}
@@ -54,16 +68,13 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
         if (!paused) autoplay.play();
       }}
     >
-      <div className="min-h-[inherit] overflow-hidden" ref={emblaRef}>
-        <div className="flex min-h-[inherit]">
+      <div className="h-[clamp(520px,76svh,820px)] overflow-hidden" ref={emblaRef}>
+        <div className="flex h-[clamp(520px,76svh,820px)]">
           {slides.map((slide, index) => (
-            <article className="relative flex-[0_0_100%] min-w-0 min-h-[inherit]" key={slide.id}>
-              <picture className="absolute inset-0">
-                {slide.mobile_image_url ? (
-                  <source media="(max-width: 767px)" srcSet={slide.mobile_image_url} />
-                ) : null}
+            <article className="relative h-[clamp(520px,76svh,820px)] min-w-0 flex-[0_0_100%]" key={slide.id}>
+              <div className="absolute inset-0">
                 <OptimizedImage
-                  src={slide.image_url}
+                  src={isMobileViewport && slide.mobile_image_url ? slide.mobile_image_url : slide.image_url}
                   alt=""
                   fill
                   priority={index === 0}
@@ -71,14 +82,16 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
                   sizes="100vw"
                   className="object-cover"
                 />
-              </picture>
+              </div>
               <div className="absolute inset-0 bg-gradient-to-r from-[rgba(var(--ds-black-rgb),0.68)] to-[rgba(var(--ds-black-rgb),0.08)_70%]" />
-              <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto relative z-10 flex min-h-[inherit] flex-col items-start justify-end gap-6 pb-[clamp(76px,10vw,132px)] text-inverse">
-                <h1 className="max-w-[15ch] m-0 text-inverse font-display text-display-xl font-normal">{slide.title}</h1>
+              <HomepageContainer className="relative z-10 flex h-[clamp(520px,76svh,820px)] flex-col items-start justify-end gap-6 pb-[clamp(76px,10vw,132px)] text-inverse">
+                <h1 className="m-0 max-w-[15ch] font-display text-display-xl font-normal text-inverse">
+                  {slide.title}
+                </h1>
                 <ButtonLink href={slide.button_link} variant="secondary" size="lg">
                   {slide.button_text}
                 </ButtonLink>
-              </div>
+              </HomepageContainer>
             </article>
           ))}
         </div>
@@ -86,12 +99,12 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
 
       {slides.length > 1 ? (
         <>
-          <div className="absolute inset-x-[var(--homepage-gutter)] top-1/2 z-[2] flex justify-between pointer-events-none">
+          <div className="pointer-events-none absolute inset-x-[var(--ds-home-gutter-mobile)] top-1/2 z-[2] flex justify-between md:inset-x-[var(--ds-home-gutter-tablet)] lg:inset-x-[var(--ds-home-gutter-desktop)]">
             <IconButton
               type="button"
               variant="ghost"
               size="md"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md pointer-events-auto"
+              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md"
               onClick={() => emblaApi?.scrollPrev()}
               aria-label="Previous hero slide"
             >
@@ -101,20 +114,20 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               type="button"
               variant="ghost"
               size="md"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md pointer-events-auto"
+              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md"
               onClick={() => emblaApi?.scrollNext()}
               aria-label="Next hero slide"
             >
               <ChevronRight aria-hidden="true" />
             </IconButton>
           </div>
-          <div className="absolute right-[var(--homepage-gutter)] bottom-6 z-[2] flex items-center gap-[var(--ds-space-sm)]">
+          <div className="absolute bottom-6 right-[var(--ds-home-gutter-mobile)] z-[2] flex items-center gap-[var(--ds-space-sm)] md:right-[var(--ds-home-gutter-tablet)] lg:right-[var(--ds-home-gutter-desktop)]">
             <div className="flex gap-[var(--ds-space-xs)]">
               {slides.map((slide, index) => (
                 <UnstyledButton
                   key={slide.id}
                   type="button"
-                  className="w-[28px] h-[3px] bg-[rgba(var(--ds-white-rgb),0.45)] aria-[current=true]:bg-inverse transition-colors duration-150"
+                  className="min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] rounded-full bg-[rgba(var(--ds-white-rgb),0.16)] px-0 aria-[current=true]:bg-inverse transition-colors duration-150"
                   onClick={() => emblaApi?.scrollTo(index)}
                   aria-label={`Go to hero slide ${index + 1}`}
                   aria-current={selectedIndex === index ? 'true' : undefined}
@@ -125,7 +138,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               type="button"
               variant="ghost"
               size="sm"
-              className="border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md pointer-events-auto"
+              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md"
               onClick={toggleAutoplay}
               aria-label={paused ? 'Play hero slideshow' : 'Pause hero slideshow'}
             >

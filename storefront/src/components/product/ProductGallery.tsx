@@ -418,11 +418,15 @@ export default function ProductGallery({
                     key={`${item.id}-desktop-dot`}
                     type="button"
                     onClick={() => goToIndex(index)}
-                    className={`h-2 rounded-[var(--ds-radius-pill)] transition-all ${
-                      activeIndex === index ? 'w-8 bg-primary' : 'w-2 bg-border'
-                    }`}
+                    className="flex h-11 w-11 items-center justify-center rounded-full"
                     aria-label={`Go to media ${index + 1}`}
-                  />
+                  >
+                    <span
+                      className={`block rounded-[var(--ds-radius-pill)] transition-all ${
+                        activeIndex === index ? 'h-2 w-8 bg-primary' : 'h-2 w-2 bg-border'
+                      }`}
+                    />
+                  </UnstyledButton>
                 ))}
               </div>
 

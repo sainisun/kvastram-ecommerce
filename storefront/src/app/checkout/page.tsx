@@ -10,19 +10,10 @@ import {
   CheckCircle,
   Lock,
   ShieldCheck,
-  CreditCard,
 } from 'lucide-react';
 import SecurityBadges, { PaymentIcons } from '@/components/ui/SecurityBadges';
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
-import { loadStripe } from '@stripe/stripe-js';
-import {
-  Elements,
-  PaymentElement,
-  useStripe,
-  useElements,
-  ExpressCheckoutElement,
-} from '@stripe/react-stripe-js';
 import CountrySelect from '@/components/ui/CountrySelect';
 import { getCountryName } from '@/config/countries';
 import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
@@ -39,10 +30,6 @@ import { useCurrency } from '@/context/currency-context';
 import { formatMoney } from '@/lib/currency';
 import { resolveRegionForCountry } from '@/lib/regions';
 
-// Initialize Stripe
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
-
 interface ShippingOption {
   id: string;
   name: string;
@@ -50,135 +37,6 @@ interface ShippingOption {
   price: number;
   estimated_days: string;
   currency_code: string;
-}
-
-// Payment Form Component
-function PaymentForm({
-  orderId,
-  onSuccess,
-  onError,
-}: {
-  orderId: string;
-  onSuccess: () => void;
-  onError: (msg: string) => void;
-}) {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    setIsProcessing(true);
-
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/checkout/success?order_id=${orderId}`,
-      },
-      redirect: 'if_required',
-    });
-
-    if (error) {
-      onError(error.message || 'Payment failed');
-      setIsProcessing(false);
-    } else {
-      // Payment succeeded without redirect
-      onSuccess();
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-surface p-6 border border-border-subtle">
-        <h4 className="text-body-sm font-bold  tracking-token-wider color-muted mb-4">
-          Payment Details
-        </h4>
-        <PaymentElement />
-      </div>
-
-      <Button
-        type="submit"
-        disabled={!stripe || isProcessing}
-        variant="secondary"
-        size="lg"
-        fullWidth
-        leadingIcon={<CreditCard size={16} />}
-      >
-        {isProcessing ? 'Processing Payment...' : 'Pay Now'}
-      </Button>
-    </form>
-  );
-}
-
-// Express Checkout Component (Apple Pay / Google Pay)
-function ExpressCheckoutForm({
-  orderId,
-  onSuccess,
-  onError,
-}: {
-  orderId: string;
-  onSuccess: () => void;
-  onError: (msg: string) => void;
-}) {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleConfirm = async () => {
-    if (!stripe || !elements) return;
-
-    setIsLoading(true);
-
-    try {
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/checkout/success?order_id=${orderId}`,
-        },
-        redirect: 'if_required',
-      });
-
-      if (error) {
-        onError(error.message || 'Express payment failed');
-      } else {
-        onSuccess();
-      }
-    } catch {
-      onError('An unexpected error occurred during payment');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="mb-6">
-      <ExpressCheckoutElement
-        onConfirm={handleConfirm}
-        options={{
-          paymentMethods: {
-            applePay: 'always',
-            googlePay: 'always',
-            link: 'auto',
-          },
-          buttonType: {
-            applePay: 'buy',
-            googlePay: 'buy',
-          },
-          buttonHeight: 44,
-        }}
-      />
-      {isLoading && (
-        <div className="mt-2 text-center text-body-sm color-muted">
-          Processing payment...
-        </div>
-      )}
-    </div>
-  );
 }
 
 export default function CheckoutPage() {
@@ -203,7 +61,6 @@ export default function CheckoutPage() {
   const [orderId, setOrderId] = useState('');         // display_id for UI
   const [orderUUID, setOrderUUID] = useState('');      // UUID for payment APIs
   const [checkoutPaymentToken, setCheckoutPaymentToken] = useState('');
-  const [clientSecret, setClientSecret] = useState('');
   const [confirmedOrderTotals, setConfirmedOrderTotals] = useState<{
     total: number;
     shipping_total: number;
@@ -403,12 +260,12 @@ export default function CheckoutPage() {
   if (items.length === 0 && step !== 'success') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-surface-paper">
-        <h1 className="text-display-lg font-display mb-4 color-ink">
+        <h1 className="mb-4 font-display text-display-lg text-primary">
           Your cart is empty
         </h1>
         <Link
           href="/"
-          className="color-muted hover:text-primary border-b border-border-subtle pb-1 transition-colors"
+          className="border-b border-border-subtle pb-1 text-muted transition-colors hover:text-primary"
         >
           Return to Shop
         </Link>
@@ -429,36 +286,36 @@ export default function CheckoutPage() {
             />
           </div>
         </div>
-        <span className="text-body-xs color-muted font-bold  tracking-token-wider mb-3 block">
+        <span className="mb-3 block text-body-xs font-bold tracking-token-wider text-muted">
           Order Placed Successfully
         </span>
-        <h1 className="text-display-xl font-display mb-3 color-ink">Thank You!</h1>
-        <p className="color-muted mb-2 max-w-md font-light text-body-xl">
+        <h1 className="mb-3 font-display text-display-xl text-primary">Thank You!</h1>
+        <p className="mb-2 max-w-md text-body-xl font-light text-muted">
           Your order{' '}
-          <span className="font-semibold color-ink">#{orderId}</span> has
+          <span className="font-semibold text-primary">#{orderId}</span> has
           been confirmed.
         </p>
-        <p className="color-muted text-body-sm mb-10 max-w-md font-light">
+        <p className="mb-10 max-w-md text-body-sm font-light text-muted">
           We&apos;re preparing your order for shipment. You&apos;ll receive an
           email confirmation shortly.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 mb-10">
           <Link
             href="/"
-            className="bg-[var(--ink)] text-inverse px-8 py-3  tracking-token-wider text-body-xs font-bold hover:bg-[var(--ink)] transition-colors"
+            className="bg-primary px-8 py-3 text-body-xs font-bold tracking-token-wider text-inverse transition-colors hover:bg-primary"
           >
             Continue Shopping
           </Link>
           <Link
             href="/account"
-            className="border border-border-subtle color-ink px-8 py-3  tracking-token-wider text-body-xs font-bold hover:bg-surface transition-colors"
+            className="border border-border-subtle px-8 py-3 text-body-xs font-bold tracking-token-wider text-primary transition-colors hover:bg-surface"
           >
             Track My Order
           </Link>
         </div>
         {/* WhatsApp support */}
-        <div className="mt-4 pt-6 border-t border-[var(--soft)] w-full max-w-md">
-          <p className="text-body-xs color-muted mb-3">
+        <div className="mt-4 w-full max-w-md border-t border-border-subtle pt-6">
+          <p className="mb-3 text-body-xs text-muted">
             Need help with your order?
           </p>
           <a
@@ -637,11 +494,11 @@ export default function CheckoutPage() {
       {/* PHASE 3.2: Mobile-first responsive layout */}
       <div className="grid lg:grid-cols-2 min-h-screen">
         {/* Left: Form */}
-        <div className="p-4 md:p-8 lg:p-20 lg:border-r border-[var(--soft)] order-2 lg:order-1">
+        <div className="order-2 border-border-subtle p-4 md:p-8 lg:order-1 lg:border-r lg:p-20">
           <div className="max-w-lg mx-auto">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 color-muted hover:text-primary mb-6 md:mb-12 text-body-sm transition-colors"
+              className="mb-6 inline-flex items-center gap-2 text-body-sm text-muted transition-colors hover:text-primary md:mb-12"
             >
               <ArrowLeft size={16} />
               <span className="hidden sm:inline">Back to Shop</span>
@@ -649,10 +506,10 @@ export default function CheckoutPage() {
             </Link>
 
             <div className="mb-12">
-              <h2 className="text-display-lg font-display color-ink mb-2">
+              <h2 className="mb-2 font-display text-display-lg text-primary">
                 Checkout
               </h2>
-              <p className="color-muted font-light text-body-sm flex items-center gap-2">
+              <p className="flex items-center gap-2 text-body-sm font-light text-muted">
                 <Lock size={14} /> Secure Checkout
               </p>
             </div>
@@ -663,17 +520,17 @@ export default function CheckoutPage() {
                 {/* Step 1: Shipping */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-body-xs font-bold border-2 transition-all ${
+                    className={`flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center rounded-full border-2 text-body-xs font-bold transition-all ${
                       step === 'shipping'
-                        ? 'border-[var(--ink)] bg-surface-paper color-ink'
-                        : 'border-[var(--ink)] bg-surface-paper color-ink'
+                        ? 'border-primary bg-surface-paper text-primary'
+                        : 'border-border-subtle bg-surface-paper text-muted'
                     }`}
                   >
                     {step === 'payment' ? '✓' : '1'}
                   </div>
                   <span
                     className={`text-body-xs font-bold  tracking-token-wider mt-1 ${
-                      step === 'shipping' ? 'color-ink' : 'color-muted'
+                      step === 'shipping' ? 'text-primary' : 'text-muted'
                     }`}
                   >
                     Shipping
@@ -682,35 +539,35 @@ export default function CheckoutPage() {
                 {/* Connector 1-2 */}
                 <div
                   className={`flex-1 h-0.5 mx-2 transition-colors ${
-                    step === 'payment' ? 'bg-[var(--ink)]' : 'bg-[var(--line)]'
+                    step === 'payment' ? 'bg-primary' : 'bg-border-subtle'
                   }`}
                 />
                 {/* Step 2: Payment */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-body-xs font-bold border-2 transition-all ${
+                    className={`flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center rounded-full border-2 text-body-xs font-bold transition-all ${
                       step === 'payment'
-                        ? 'border-[var(--ink)] bg-surface-paper color-ink'
-                        : 'border-border-subtle bg-surface-paper color-muted'
+                        ? 'border-primary bg-surface-paper text-primary'
+                        : 'border-border-subtle bg-surface-paper text-muted'
                     }`}
                   >
                     {'2'}
                   </div>
                   <span
                     className={`text-body-xs font-bold  tracking-token-wider mt-1 ${
-                      step === 'payment' ? 'color-ink' : 'color-muted'
+                      step === 'payment' ? 'text-primary' : 'text-muted'
                     }`}
                   >
                     Payment
                   </span>
                 </div>
-                <div className={`flex-1 h-0.5 mx-2 bg-[var(--line)]`} />
+                <div className="mx-2 h-0.5 flex-1 bg-border-subtle" />
                 {/* Step 3: Confirmation */}
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-body-xs font-bold border-2 border-border-subtle bg-surface-paper color-muted">
+                  <div className="flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center rounded-full border-2 border-border-subtle bg-surface-paper text-body-xs font-bold text-muted">
                     3
                   </div>
-                  <span className="text-body-xs font-bold  tracking-token-wider mt-1 color-muted">
+                  <span className="text-body-xs font-bold  tracking-token-wider mt-1 text-muted">
                     Confirm
                   </span>
                 </div>
@@ -722,8 +579,8 @@ export default function CheckoutPage() {
                 <div className="bg-danger-bg border border-danger text-error p-4 text-body-sm">
                   {error}
                 </div>
-                <div className="border border-border-subtle bg-surface p-4 text-body-xs color-muted">
-                  <p className="font-medium color-ink">Need help completing payment?</p>
+                <div className="border border-border-subtle bg-surface p-4 text-body-xs text-muted">
+                  <p className="font-medium text-primary">Need help completing payment?</p>
                   <p className="mt-2">
                     Do not retry blindly if you are unsure whether a payment was
                     charged. Use payment help or contact support with your order
@@ -756,7 +613,7 @@ export default function CheckoutPage() {
             {step === 'auth' ? (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
                     {authStage === 'email' ? 'Enter Email' : 'Verify OTP'}
                   </h3>
                   
@@ -768,7 +625,7 @@ export default function CheckoutPage() {
 
                   {authStage === 'email' ? (
                     <div className="space-y-4">
-                      <p className="text-body-sm color-muted">Please enter your email to proceed with checkout.</p>
+                      <p className="text-body-sm text-muted">Please enter your email to proceed with checkout.</p>
                       <Input
                         id="auth_email"
                         type="email"
@@ -803,7 +660,7 @@ export default function CheckoutPage() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <p className="text-body-sm color-muted">Enter the 6-digit code sent to {authEmail}</p>
+                      <p className="text-body-sm text-muted">Enter the 6-digit code sent to {authEmail}</p>
                       <Input
                         id="auth_otp"
                         type="text"
@@ -844,7 +701,7 @@ export default function CheckoutPage() {
                       </Button>
                       <button
                         onClick={() => setAuthStage('email')}
-                        className="text-body-xs underline color-muted mt-2 inline-block w-full text-center"
+                        className="mt-2 inline-block w-full text-center text-body-xs text-muted underline"
                         type="button"
                       >
                         Change Email
@@ -856,7 +713,7 @@ export default function CheckoutPage() {
             ) : step === 'shipping' ? (
               <form onSubmit={handleShippingSubmit} className="space-y-8">
                 <div>
-                  <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
                     Contact
                   </h3>
                   <div className="space-y-4">
@@ -879,7 +736,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
                     Shipping Address
                   </h3>
                   {/* PHASE 3.2: Mobile-first responsive grid */}
@@ -980,12 +837,12 @@ export default function CheckoutPage() {
 
                 {/* PHASE 1.3: Shipping Method Selection */}
                 <div className="mt-8">
-                  <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                  <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
                     Shipping Method
                   </h3>
 
                   {shippingLoading ? (
-                    <div className="py-4 text-center color-muted">
+                    <div className="py-4 text-center text-muted">
                       Loading shipping options...
                     </div>
                   ) : shippingOptions.length > 0 ? (
@@ -1001,8 +858,8 @@ export default function CheckoutPage() {
                             key={option.id}
                             className={`flex items-center justify-between p-4 border cursor-pointer transition-colors ${
                               selectedShipping?.id === option.id
-                                ? 'border-[var(--ink)] bg-surface'
-                                : 'border-border-subtle hover:border-[var(--muted)]'
+                                ? 'border-primary bg-surface'
+                                : 'border-border-subtle hover:border-[var(--ds-text-muted)]'
                             }`}
                           >
                             <div className="flex items-center gap-3">
@@ -1012,19 +869,19 @@ export default function CheckoutPage() {
                                 value={option.id}
                                 checked={selectedShipping?.id === option.id}
                                 onChange={() => setSelectedShipping(option)}
-                                className="w-4 h-4 color-ink focus:ring-[var(--ink)]"
+                                className="h-4 w-4 text-primary focus:ring-primary"
                               />
                               <div>
-                                <p className="font-medium color-ink">
+                                <p className="font-medium text-primary">
                                   {option.name}
                                 </p>
-                                <p className="text-body-sm color-muted">
+                                <p className="text-body-sm text-muted">
                                   {option.description}
                                 </p>
                               </div>
                             </div>
                             <span
-                              className={`font-medium ${isFree ? 'text-success' : 'color-ink'}`}
+                              className={`font-medium ${isFree ? 'text-success' : 'text-primary'}`}
                             >
                               {isFree
                                 ? 'FREE'
@@ -1042,16 +899,16 @@ export default function CheckoutPage() {
                         )}
                     </div>
                   ) : formData.country_code ? (
-                    <div className="py-4 text-center color-muted">
+                    <div className="py-4 text-center text-muted">
                       No shipping options available for this country
                     </div>
                   ) : (
-                    <div className="py-4 text-center color-muted">
+                    <div className="py-4 text-center text-muted">
                       Select your country to see available shipping methods
                     </div>
                   )}
                   {!shippingLoading && shippingPreviewMessage ? (
-                    <p className="mt-3 text-body-xs color-muted">
+                    <p className="mt-3 text-body-xs text-muted">
                       {shippingPreviewMessage}
                     </p>
                   ) : null}
@@ -1059,34 +916,34 @@ export default function CheckoutPage() {
 
                 {/* D3: Gift Wrapping */}
                 <div className="mt-8">
-                  <h3 className="text-body-xl font-display color-ink mb-4 border-b border-[var(--soft)] pb-2">
+                  <h3 className="mb-4 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
                     Gift Options
                   </h3>
                   <label
                     className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${
                       giftWrapping
-                        ? 'border-[var(--ink)] bg-surface'
-                        : 'border-border-subtle hover:border-[var(--muted)]'
+                        ? 'border-primary bg-surface'
+                        : 'border-border-subtle hover:border-[var(--ds-text-muted)]'
                     }`}
                   >
                     <div className="flex items-center gap-4">
                       <div className="text-display-md">🎁</div>
                       <div>
-                        <p className="font-medium color-ink text-body-sm">
+                        <p className="text-body-sm font-medium text-primary">
                           Premium Gift Wrapping
                         </p>
-                        <p className="text-body-xs color-muted font-light">
+                        <p className="text-body-xs font-light text-muted">
                           Signature Odhvica box with ribbon &amp; message card
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-body-sm font-medium color-muted">
+                      <span className="text-body-sm font-medium text-muted">
                         +{displayMoney(giftWrappingFee)}
                       </span>
                       <div
                         className={`relative w-11 h-6 rounded-full transition-colors ${
-                          giftWrapping ? 'bg-[var(--ink)]' : 'bg-[var(--line)]'
+                          giftWrapping ? 'bg-primary' : 'bg-border-subtle'
                         }`}
                       >
                         <input
@@ -1115,7 +972,7 @@ export default function CheckoutPage() {
                         rows={3}
                         className="min-h-[96px] resize-none"
                       />
-                      <p className="text-body-xs color-muted text-right mt-1">
+                      <p className="mt-1 text-right text-body-xs text-muted">
                         {giftMessage.length}/200
                       </p>
                     </div>
@@ -1123,21 +980,21 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* PHASE 1.5: Terms Acceptance */}
-                <div className="mt-8 pt-6 border-t border-[var(--soft)]">
+                <div className="mt-8 border-t border-border-subtle pt-6">
                   <label className="flex items-start gap-3 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={acceptTerms}
                       onChange={(e) => setAcceptTerms(e.target.checked)}
-                      className="w-5 h-5 mt-0.5 rounded border-border-subtle color-ink focus:ring-[var(--ink)]"
+                      className="mt-0.5 h-5 w-5 rounded border-border-subtle text-primary focus:ring-primary"
                     />
-                    <span className="text-body-sm color-muted group-hover:color-ink">
+                    <span className="text-body-sm text-muted group-hover:text-primary">
                       I agree to the{' '}
                       <Link
                         href={storefrontTrust.policyRoutes.terms}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline hover:color-ink"
+                        className="underline hover:text-primary"
                       >
                         Terms of Service
                       </Link>{' '}
@@ -1146,7 +1003,7 @@ export default function CheckoutPage() {
                         href={storefrontTrust.policyRoutes.privacy}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline hover:color-ink"
+                        className="underline hover:text-primary"
                       >
                         Privacy Policy
                       </Link>
@@ -1155,7 +1012,7 @@ export default function CheckoutPage() {
                         href={storefrontTrust.policyRoutes.shipping}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline hover:color-ink"
+                        className="underline hover:text-primary"
                       >
                         Shipping
                       </Link>{' '}
@@ -1164,7 +1021,7 @@ export default function CheckoutPage() {
                         href={storefrontTrust.policyRoutes.refundPolicy}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="underline hover:color-ink"
+                        className="underline hover:text-primary"
                       >
                         Refund Policy
                       </Link>
@@ -1186,10 +1043,10 @@ export default function CheckoutPage() {
               </form>
             ) : (
               <div>
-                <h3 className="text-body-xl font-display color-ink mb-6 border-b border-[var(--soft)] pb-2">
+                <h3 className="mb-6 border-b border-border-subtle pb-2 text-body-xl font-display text-primary">
                   Payment
                 </h3>
-                <p className="mb-4 text-body-sm color-muted">
+                <p className="mb-4 text-body-sm text-muted">
                   {currency.toLowerCase() === 'inr'
                     ? storefrontTrust.paymentMethodsIndia
                     : storefrontTrust.paymentMethodsInternational}
@@ -1241,11 +1098,11 @@ export default function CheckoutPage() {
                         <div className="w-full border-t border-border-subtle"></div>
                       </div>
                       <div className="relative flex justify-center text-body-sm">
-                        <span className="px-2 bg-surface-paper color-muted">or express checkout</span>
+                        <span className="bg-surface-paper px-2 text-muted">or express checkout</span>
                       </div>
                     </div>
                     <ErrorBoundary fallback={
-                      <p className="text-body-sm color-muted py-2">Express checkout unavailable.</p>
+                      <p className="py-2 text-body-sm text-muted">Express checkout unavailable.</p>
                     }>
                       <Elements stripe={stripePromise} options={{ clientSecret }}>
                         <ExpressCheckoutForm
@@ -1261,7 +1118,7 @@ export default function CheckoutPage() {
                         <div className="w-full border-t border-border-subtle"></div>
                       </div>
                       <div className="relative flex justify-center text-body-sm">
-                        <span className="px-2 bg-surface-paper color-muted">or pay with card</span>
+                        <span className="bg-surface-paper px-2 text-muted">or pay with card</span>
                       </div>
                     </div>
                     <ErrorBoundary fallback={
@@ -1292,8 +1149,8 @@ export default function CheckoutPage() {
                   Back to Shipping
                 </Button>
 
-                <div className="mt-6 border border-border-subtle bg-surface p-4 text-body-xs color-muted">
-                  <p className="font-medium color-ink">Payment and policy help</p>
+                <div className="mt-6 border border-border-subtle bg-surface p-4 text-body-xs text-muted">
+                  <p className="font-medium text-primary">Payment and policy help</p>
                   <p className="mt-2">{storefrontTrust.paymentSummary}</p>
                   <p className="mt-2">{storefrontTrust.shippingSummary}</p>
                   <div className="mt-3 flex flex-wrap gap-3">
@@ -1331,7 +1188,7 @@ export default function CheckoutPage() {
         {/* Right: Summary - Mobile on top, Desktop on right */}
         <div className="bg-surface p-4 md:p-8 lg:p-20 order-1 lg:order-2">
           <div className="max-w-lg mx-auto sticky top-24">
-            <h2 className="text-display-sm font-display color-ink mb-8">
+            <h2 className="mb-8 text-display-sm font-display text-primary">
               Order Summary
             </h2>
 
@@ -1349,21 +1206,21 @@ export default function CheckoutPage() {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full bg-[var(--line)] flex items-center justify-center color-muted text-body-xs text-center p-1">
+                      <div className="flex h-full w-full items-center justify-center bg-border-subtle p-1 text-center text-body-xs text-muted">
                         No Image
                       </div>
                     )}
-                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-[var(--ink)] text-inverse text-body-xs flex items-center justify-center rounded-full">
+                    <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-body-xs text-inverse">
                       {item.quantity}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-display color-ink">{item.title}</p>
-                    <p className="text-body-xs color-muted mt-1  tracking-token-wider">
+                    <p className="font-display text-primary">{item.title}</p>
+                    <p className="mt-1 text-body-xs tracking-token-wider text-muted">
                       Qty: {item.quantity}
                     </p>
                     {(item.material || item.origin || item.sku) && (
-                      <div className="mt-1 text-body-xs color-muted">
+                      <div className="mt-1 text-body-xs text-muted">
                         {item.material && <span>{item.material}</span>}
                         {item.material && (item.origin || item.sku) && (
                           <span> · </span>
@@ -1374,7 +1231,7 @@ export default function CheckoutPage() {
                       </div>
                     )}
                   </div>
-                  <p className="font-medium color-ink">
+                  <p className="font-medium text-primary">
                     {displayMoney(item.price * item.quantity)}
                   </p>
                 </div>
@@ -1383,11 +1240,11 @@ export default function CheckoutPage() {
 
             {/* Promo Code Input */}
             {step === 'shipping' && (
-              <div className="mb-6 pb-6 border-b border-[var(--soft)]">
-                <label className="text-body-xs  tracking-token-wider color-muted font-bold mb-2 block">
+              <div className="mb-6 border-b border-border-subtle pb-6">
+                <label className="mb-2 block text-body-xs font-bold tracking-token-wider text-muted">
                   Promo Code
                 </label>
-                <div className="flex gap-0 border-b border-border-subtle focus-within:border-[var(--ink)] transition-colors">
+                <div className="flex gap-0 border-b border-border-subtle transition-colors focus-within:border-primary">
                   <Input
                     type="text"
                     aria-label="Promo code"
@@ -1419,7 +1276,7 @@ export default function CheckoutPage() {
             )}
 
             <div className="border-t border-border-subtle pt-6 space-y-3 text-body-sm">
-              <div className="flex justify-between color-muted">
+              <div className="flex justify-between text-muted">
                 <span>Subtotal</span>
                 <span>
                   {displayMoney(cartTotal)}
@@ -1429,7 +1286,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-success">
                   <div className="flex items-center gap-2">
                     <span>Discount</span>
-                    <span className="text-body-xs bg-surface-soft px-1 py-0.5 rounded color-muted">
+                    <span className="rounded bg-surface-soft px-1 py-0.5 text-body-xs text-muted">
                       {discount.code}
                     </span>
                   </div>
@@ -1441,7 +1298,7 @@ export default function CheckoutPage() {
               )}
               {/* PHASE 1.3: Shipping Cost Display */}
               {step === 'payment' || selectedShipping ? (
-                <div className="flex justify-between color-muted">
+                <div className="flex justify-between text-muted">
                   <span>
                     Shipping
                     {selectedShipping ? ` (${selectedShipping.name})` : ''}
@@ -1455,18 +1312,18 @@ export default function CheckoutPage() {
                   </span>
                 </div>
               ) : (
-                <div className="flex justify-between color-muted">
+                <div className="flex justify-between text-muted">
                   <span>Shipping</span>
                   <span>Calculated at next step</span>
                 </div>
               )}
               {/* PHASE 1.4: Tax Display */}
               {(taxLoading || displayedTaxAmount > 0) && (
-                <div className="flex justify-between color-muted">
+                <div className="flex justify-between text-muted">
                   <span>{taxName}</span>
                   <span>
                     {taxLoading ? (
-                      <span className="color-muted">Calculating...</span>
+                      <span className="text-muted">Calculating...</span>
                     ) : (
                       confirmedOrderTotals
                         ? displayConfirmedMoney(displayedTaxAmount)
@@ -1477,7 +1334,7 @@ export default function CheckoutPage() {
               )}
               {/* Gift Wrapping line */}
               {giftWrapping && (
-                <div className="flex justify-between color-muted">
+                <div className="flex justify-between text-muted">
                   <span className="flex items-center gap-1.5">
                     <span>🎁</span> Gift Wrapping
                   </span>
@@ -1488,7 +1345,7 @@ export default function CheckoutPage() {
                   </span>
                 </div>
               )}
-              <div className="flex justify-between text-body-xl font-display color-ink pt-4 border-t border-border-subtle">
+              <div className="flex justify-between border-t border-border-subtle pt-4 text-body-xl font-display text-primary">
                 <span>Total</span>
                 <span>
                   {confirmedOrderTotals
@@ -1498,8 +1355,8 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="mt-8 bg-surface-paper p-4 border border-[var(--soft)] flex gap-3 color-muted text-body-xs">
-              <ShieldCheck size={32} className="color-muted shrink-0" />
+            <div className="mt-8 flex gap-3 border border-border-subtle bg-surface-paper p-4 text-body-xs text-muted">
+              <ShieldCheck size={32} className="shrink-0 text-muted" />
               <p>
                 Every purchase is backed by our Authenticity Guarantee. We
                 ensure the highest standards of craftsmanship.
@@ -1508,14 +1365,14 @@ export default function CheckoutPage() {
 
             {/* PHASE 7.3: Payment Icons */}
             <div className="mt-6">
-              <p className="text-body-xs color-muted text-center mb-3  tracking-token-wider">
+              <p className="mb-3 text-center text-body-xs tracking-token-wider text-muted">
                 Accepted Payment Methods
               </p>
               <PaymentIcons />
             </div>
 
             {/* PHASE 7.3: Security Badges */}
-            <div className="mt-6 pt-6 border-t border-[var(--soft)]">
+            <div className="mt-6 border-t border-border-subtle pt-6">
               <SecurityBadges />
             </div>
           </div>

@@ -99,5 +99,20 @@
   opacity: 0.6;
 }
 
+@media (max-width: 900px) {
+  .pdp-grid-prem {
+    grid-template-columns: 1fr;
+  }
+
+  .pdp-gallery-prem {
+    position: relative;
+    top: 0;
+    height: 80vw;
+  }
+
+  .pdp-info-prem {
+    padding: var(--ds-space-xl) var(--ds-space-md);
+  }
+}
 
 

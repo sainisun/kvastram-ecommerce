@@ -805,7 +805,7 @@ function ReelPlayerModal({
             onClick={onClose}
             variant="ghost"
             size="sm"
-            className="h-9 w-9 rounded-full border-transparent bg-primary/40 text-inverse backdrop-blur-sm hover:bg-primary/60"
+            className="rounded-full border-transparent bg-primary/40 text-inverse backdrop-blur-sm hover:bg-primary/60"
             aria-label="Close reel player"
           >
             <ArrowLeft size={18} />
@@ -896,7 +896,7 @@ function ReelPlayerModal({
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}
-            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-surface-paper/70 bg-surface-paper/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(var(--ds-black-rgb),0.24)] backdrop-blur-xl transition active:scale-[0.98]"
+            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-surface-paper/70 bg-surface-paper/[0.88] p-2.5 text-primary shadow-[0_18px_50px_rgba(var(--ds-black-rgb),0.24)] backdrop-blur-xl transition active:scale-[0.98]"
           >
             <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border border-primary/10 bg-surface-paper">
               <OptimizedImage
@@ -908,10 +908,10 @@ function ReelPlayerModal({
               />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-body-sm font-semibold leading-token-snug color-ink">
+              <p className="line-clamp-2 text-body-sm font-semibold leading-token-snug text-primary">
                 {current.product_name}
               </p>
-              <p className="mt-1 text-body-sm font-bold color-accent">
+              <p className="mt-1 text-body-sm font-bold text-accent">
                 {formatPrice(current.price)}
               </p>
               <p className="mt-0.5 hidden text-body-xs text-muted sm:block">

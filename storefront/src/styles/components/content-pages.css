@@ -143,6 +143,18 @@
   margin-bottom: 0;
 }
 
+.content-rich h1,
+.editorial-text h1 {
+  scroll-margin-top: 120px;
+  margin: clamp(52px, 8vw, 96px) 0 var(--ds-space-sm);
+  color: var(--ds-text-primary);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display-xl);
+  font-weight: var(--ds-type-heading-weight);
+  letter-spacing: 0;
+  line-height: var(--ds-leading-tight);
+}
+
 .content-rich h2,
 .section-block h2,
 .craft-story-section h2,
@@ -203,7 +215,9 @@
 }
 
 .content-rich strong,
-.editorial-text strong {
+.content-rich b,
+.editorial-text strong,
+.editorial-text b {
   color: var(--ds-text-primary);
   font-weight: var(--ds-type-strong-weight);
 }
@@ -622,24 +636,3 @@
     width: 100%;
   }
 }
-
-@media (min-width: 640px) {
-  .watch-buy-carousel {
-    grid-auto-columns: minmax(190px, 30%);
-  }
-  .collections-carousel {
-    grid-auto-columns: minmax(320px, 46%);
-  }
-}
-
-@media (min-width: 1024px) {
-  .watch-buy-carousel {
-    grid-auto-columns: minmax(220px, 23%);
-  }
-  .collections-carousel {
-    grid-auto-columns: minmax(300px, calc((100% - 108px) / 4));
-  }
-}
-
-
-

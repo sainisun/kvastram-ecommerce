@@ -214,7 +214,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           onClick={clearRecentSearches}
                           variant="ghost"
                           size="sm"
-                          className="min-h-8 px-0 text-muted hover:text-error"
+                          className="px-0 text-muted hover:text-error"
                         >
                           Clear All
                         </Button>
@@ -225,9 +225,9 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                             key={term}
                             type="button"
                             onClick={() => handleSearch(undefined, term)}
-                            variant="outline"
+                            variant="chip"
                             size="sm"
-                            className="kv-text-chip min-h-9 px-4 py-2 text-body-sm normal-case"
+                            className="px-4 text-body-sm"
                           >
                             <Search size={12} className="opacity-50" />
                             {term}
@@ -304,9 +304,9 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           key={term}
                           type="button"
                           onClick={() => setQuery(term)}
-                          variant="outline"
+                          variant="chip"
                           size="sm"
-                          className="kv-text-chip min-h-9 px-4 py-2 text-body-sm normal-case"
+                          className="px-4 text-body-sm"
                         >
                           {term}
                         </Button>

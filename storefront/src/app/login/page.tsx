@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -118,7 +118,27 @@ function GoogleOAuthWrapper({ redirect }: { redirect: string }) {
   const router = useRouter();
   const { setUser } = useAuth();
   const [error, setError] = useState('');
+  const [buttonWidth, setButtonWidth] = useState(360);
+  const buttonContainerRef = useRef<HTMLDivElement | null>(null);
   const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    const container = buttonContainerRef.current;
+    if (!container) return;
+
+    const updateWidth = () => {
+      const measuredWidth = Math.round(container.getBoundingClientRect().width);
+      if (!measuredWidth) return;
+      setButtonWidth(Math.min(Math.max(measuredWidth, 220), 400));
+    };
+
+    updateWidth();
+
+    const observer = new ResizeObserver(() => updateWidth());
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleGoogleSuccess = async (
     credentialResponse: CredentialResponse
@@ -187,14 +207,14 @@ function GoogleOAuthWrapper({ redirect }: { redirect: string }) {
         </StatusBanner>
       )}
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <div className="flex justify-center">
+        <div ref={buttonContainerRef} className="mx-auto w-full max-w-[400px]">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
             useOneTap
             theme="outline"
             size="large"
-            width="100%"
+            width={String(buttonWidth)}
             text="continue_with"
           />
         </div>
@@ -330,8 +350,7 @@ function LoginContent() {
                 size="sm"
                 variant="ghost"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="h-8 w-8 border-0"
-                tabIndex={-1}
+                className="border-0"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </IconButton>

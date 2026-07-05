@@ -8,7 +8,10 @@ const tsxExtensions = new Set(['.ts', '.tsx']);
 
 const defaultPalettePattern =
   /\b(?:text|bg|border|ring|fill|stroke|placeholder|from|via|to|decoration|divide|accent)-(?:white|black|stone|neutral|zinc|gray|slate|amber|rose|emerald|blue|green|red|yellow|pink|purple)(?:-[0-9]{2,3})?(?:\/[0-9]{1,3})?\b/g;
-const legacyButtonPattern = /\b(?:kv-btn|btn-primary|btn-outline|btn-[a-z0-9-]+)\b/g;
+const legacyButtonClassPattern = /\b(?:kv-btn|btn-primary|btn-outline|btn-[a-z0-9-]+)\b/g;
+const classAttributePattern =
+  /className\s*=\s*(?:"[^"]*"|'[^']*'|`[\s\S]*?`|\{`[\s\S]*?`\})/g;
+const legacyButtonCssSelectorPattern = /\.(?:kv-btn|btn-primary|btn-outline|btn-[a-z0-9-]+)\b/g;
 
 const approvedNativeButtonFiles = new Set([
   path.normalize('src/components/ui/Button.tsx'),
@@ -57,6 +60,22 @@ function countNativeStyledButtons(rel, text) {
   return tags.filter((tag) => /\bclassName\s*=/.test(tag)).length;
 }
 
+function countLegacyButtonClassRefs(rel, text) {
+  const ext = path.extname(rel);
+
+  if (ext === '.css') {
+    return countMatches(text, legacyButtonCssSelectorPattern);
+  }
+
+  if (!tsxExtensions.has(ext)) return 0;
+
+  const classAttributes = text.match(classAttributePattern) || [];
+  return classAttributes.reduce(
+    (total, attr) => total + countMatches(attr, legacyButtonClassPattern),
+    0
+  );
+}
+
 function collectDesignSystemMetrics() {
   const files = walk(srcRoot);
   const metrics = {
@@ -89,7 +108,7 @@ function collectDesignSystemMetrics() {
       text,
       /className=\{(?:`|cn\(|clsx\(|\[)/g
     );
-    metrics.legacyButtonClassRefs += countMatches(text, legacyButtonPattern);
+    metrics.legacyButtonClassRefs += countLegacyButtonClassRefs(rel, text);
 
     if (tsxExtensions.has(ext)) {
       metrics.defaultPaletteRefs += countMatches(text, defaultPalettePattern);

@@ -281,16 +281,16 @@ function SearchContent() {
                 appliedFilters.attributeValue === item.value;
 
               return (
-                <UnstyledButton
+                <Button
                   key={`${group.code}-${item.value}`}
                   type="button"
                   onClick={() => setAttributeFilter(group.code, item.value)}
-                  className={`kv-text-chip px-4 py-2 text-body-sm ${
-                    isActive ? 'kv-text-chip--selected' : ''
-                  }`}
+                  variant={isActive ? 'chipSelected' : 'chip'}
+                  size="sm"
+                  className="px-4 text-body-sm"
                 >
                   {group.label}: {item.label}
-                </UnstyledButton>
+                </Button>
               );
             })
           )}

@@ -15,7 +15,7 @@ import FilterSidebar from '@/components/products/FilterSidebar';
 import ProductGrid from '@/components/ProductGrid';
 import { Drawer } from '@/components/ui/Drawer';
 import { Select } from '@/components/ui/Select';
-import { UnstyledButton } from '@/components/ui/Button';
+import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
 import { api } from '@/lib/api';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
@@ -219,34 +219,36 @@ export default function ListingPageClient({
         {activeFilterCount > 0 ? (
           <div className="mt-4 flex flex-wrap items-center gap-2">
             {activeTag ? (
-              <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
+              <Button
+                type="button"
+                onClick={() => clearFilter('tag_id')}
+                variant="chipSelected"
+                size="sm"
+                className="catalog-active-chip px-3 py-1"
+                aria-label={`Remove tag filter ${activeTag.name}`}
+              >
                 {activeTag.name}
-                <UnstyledButton
-                  onClick={() => clearFilter('tag_id')}
-                  aria-label="Remove tag filter"
-                  className="text-muted transition-colors hover:text-primary"
-                >
-                  <X size={12} />
-                </UnstyledButton>
-              </span>
+                <X size={12} />
+              </Button>
             ) : null}
 
             {currentMinPrice || currentMaxPrice ? (
-              <span className="catalog-active-chip inline-flex items-center gap-2 rounded-full border border-border-subtle bg-parchment px-3 py-1">
+              <Button
+                type="button"
+                onClick={() =>
+                  updateQuery((params) => {
+                    params.delete('min_price');
+                    params.delete('max_price');
+                  })
+                }
+                variant="chipSelected"
+                size="sm"
+                className="catalog-active-chip px-3 py-1"
+                aria-label="Remove price filter"
+              >
                 Price filter
-                <UnstyledButton
-                  onClick={() =>
-                    updateQuery((params) => {
-                      params.delete('min_price');
-                      params.delete('max_price');
-                    })
-                  }
-                  aria-label="Remove price filter"
-                  className="text-muted transition-colors hover:text-primary"
-                >
-                  <X size={12} />
-                </UnstyledButton>
-              </span>
+                <X size={12} />
+              </Button>
             ) : null}
           </div>
         ) : null}
@@ -275,43 +277,45 @@ export default function ListingPageClient({
 
         {totalPages > 1 ? (
           <div className="mt-14 flex items-center justify-center gap-2">
-            <UnstyledButton
+            <IconButton
               onClick={() => handlePageChange(page - 1)}
               disabled={page === 1 || loading}
-              className="rounded-md border border-border-subtle p-2 text-secondary transition-colors hover:bg-parchment hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+              variant="ghost"
+              size="sm"
+              className="rounded-md border border-border-subtle text-secondary hover:bg-parchment hover:text-primary"
               aria-label="Previous page"
             >
               <ChevronLeft size={20} />
-            </UnstyledButton>
+            </IconButton>
 
             {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
               const pageNum = index + 1;
               return (
-                <UnstyledButton
+                <Button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
                   disabled={loading}
-                  className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
-                    page === pageNum
-                      ? 'border border-primary bg-surface-paper text-primary'
-                      : 'text-secondary hover:bg-parchment hover:text-primary'
-                  }`}
+                  variant={page === pageNum ? 'paginationSelected' : 'pagination'}
+                  size="none"
+                  className="catalog-count"
                   aria-label={`Page ${pageNum}`}
                   aria-current={page === pageNum ? 'page' : undefined}
                 >
                   {pageNum}
-                </UnstyledButton>
+                </Button>
               );
             })}
 
-            <UnstyledButton
+            <IconButton
               onClick={() => handlePageChange(page + 1)}
               disabled={page === totalPages || loading}
-              className="rounded-md border border-border-subtle p-2 text-secondary transition-colors hover:bg-parchment hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+              variant="ghost"
+              size="sm"
+              className="rounded-md border border-border-subtle text-secondary hover:bg-parchment hover:text-primary"
               aria-label="Next page"
             >
               <ChevronRight size={20} />
-            </UnstyledButton>
+            </IconButton>
           </div>
         ) : null}
       </div>

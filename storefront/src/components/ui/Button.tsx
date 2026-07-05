@@ -6,7 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 border font-ui font-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50',
+  'inline-flex touch-manipulation items-center justify-center gap-2 border font-ui font-semibold tracking-token-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -22,14 +22,21 @@ const buttonVariants = cva(
         inline: 'border-transparent bg-transparent text-accent hover:text-accent-hover underline underline-offset-2 p-0 h-auto',
         categoryOverlay: 'border-[rgba(var(--ds-white-rgb),0.3)] bg-[rgba(var(--ds-white-rgb),0.15)] text-inverse hover:bg-[rgba(var(--ds-white-rgb),0.25)] backdrop-blur-sm',
         'product-card': 'border-border-subtle bg-surface text-primary hover:bg-surface-soft hover:border-border-subtle text-body-xs',
+        chip: 'rounded-full border-border-subtle bg-surface-paper text-secondary hover:border-primary hover:bg-parchment hover:text-primary normal-case',
+        chipSelected:
+          "rounded-full border-primary bg-parchment text-primary normal-case before:inline-block before:h-[0.58rem] before:w-[0.34rem] before:mt-[-0.12rem] before:rotate-45 before:border-b-[1.5px] before:border-r-[1.5px] before:border-current before:content-['']",
+        pagination:
+          'h-[var(--ds-control-sm)] w-[var(--ds-control-sm)] rounded-[var(--ds-radius-md)] border-border-subtle bg-surface-paper text-secondary hover:bg-parchment hover:text-primary',
+        paginationSelected:
+          'h-[var(--ds-control-sm)] w-[var(--ds-control-sm)] rounded-[var(--ds-radius-md)] border-primary bg-surface-paper text-primary',
       },
       size: {
-        sm: 'min-h-9 px-[var(--ds-space-xs)] text-body-xs',
-        md: 'min-h-11 px-[var(--ds-space-md)] text-body-xs',
-        lg: 'min-h-12 px-[var(--ds-space-lg)] text-body-sm',
-        iconSm: 'h-9 w-9',
-        iconMd: 'h-10 w-10',
-        iconLg: 'h-12 w-12',
+        sm: 'min-h-[var(--ds-control-sm)] px-[var(--ds-space-xs)] text-body-xs',
+        md: 'min-h-[var(--ds-control-md)] px-[var(--ds-space-md)] text-body-xs',
+        lg: 'min-h-[var(--ds-control-lg)] px-[var(--ds-space-lg)] text-body-sm',
+        iconSm: 'h-[var(--ds-control-icon-sm)] w-[var(--ds-control-icon-sm)]',
+        iconMd: 'h-[var(--ds-control-icon-md)] w-[var(--ds-control-icon-md)]',
+        iconLg: 'h-[var(--ds-control-icon-lg)] w-[var(--ds-control-icon-lg)]',
         none: '',
       },
       fullWidth: {

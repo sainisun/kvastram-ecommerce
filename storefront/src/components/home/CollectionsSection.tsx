@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import type { HomepageCollection } from '@/types/homepage';
+import {
+  HomepageSection,
+  HomepageSectionHeader,
+  homepageSectionActionClassName,
+} from '@/components/ui/HomepageSection';
 
 export function CollectionsSection({
   collections,
@@ -10,62 +15,66 @@ export function CollectionsSection({
   if (collections.length === 0) return null;
 
   return (
-    <section className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]" data-home-section="6-collections">
-      <div className="w-[min(calc(100%-(var(--homepage-gutter)*2)),var(--ds-home-content-width))] mx-auto">
-        <div className="py-[var(--ds-home-section-space-mobile)] min-[1100px]:py-[var(--ds-home-section-space-desktop)]-head">
-          <div>
-            {/* eyebrow removed per user request */}
-            <h2 className="font-display text-display-lg text-primary">Stories in cloth</h2>
-          </div>
-          <Link href="/collections" className="max-md:py-[var(--ds-space-md)]-link">
-            View all collections →
+    <HomepageSection data-home-section="6-collections">
+      <HomepageSectionHeader
+        heading="Stories in cloth"
+        action={
+          <Link href="/collections" className={homepageSectionActionClassName}>
+            View All Collections
           </Link>
-        </div>
-        <div className="grid gap-[var(--ds-home-section-space-mobile)] md:grid-cols-2">
-          {collections.slice(0, 4).map((collection) => (
-            <article className="grid gap-[var(--ds-space-md)]" key={collection.id}>
-              <Link
-                href={`/collections/${collection.handle}`}
-                className="relative block aspect-[4/5] overflow-hidden bg-surface-soft"
-              >
-                <OptimizedImage
-                  src={collection.image}
-                  alt={collection.title}
-                  fill
-                  sizes="(max-width: 900px) 100vw, 50vw"
-                  className="object-cover"
-                />
-                <span className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.64)] to-transparent_50%" />
-                <span className="absolute inset-x-8 bottom-8 z-[1] grid gap-2 text-inverse">
-                  <strong className="font-display text-display-md font-[var(--ds-type-heading-weight)]">{collection.title}</strong>
-                  {collection.description ? <small className="max-w-[var(--ds-caption-width)] text-body-sm">{collection.description}</small> : null}
-                </span>
-              </Link>
-              <div className="grid grid-cols-3 gap-[var(--ds-space-sm)]" aria-label={`${collection.title} preview`}>
-                {collection.products.map((product) => (
-                  <Link
-                    key={product.id}
-                    href={`/products/${product.handle || product.id}`}
-                    data-campaign-product-id={product.id}
-                    className="grid gap-2 text-primary text-body-xs no-underline"
-                  >
-                    <span className="relative aspect-[4/5] overflow-hidden bg-surface-soft">
-                      <OptimizedImage
-                        src={product.thumbnail || product.images?.[0]?.url || ''}
-                        alt={product.title}
-                        fill
-                        sizes="96px"
-                        className="object-cover"
-                      />
-                    </span>
-                    <span className="line-clamp-2">{product.title}</span>
-                  </Link>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
+        }
+      />
+
+      <div className="grid gap-[var(--ds-home-section-space-mobile)] md:grid-cols-2">
+        {collections.slice(0, 4).map((collection) => (
+          <article className="grid gap-[var(--ds-space-md)]" key={collection.id}>
+            <Link
+              href={`/collections/${collection.handle}`}
+              className="relative block overflow-hidden bg-surface-soft aspect-[4/5]"
+            >
+              <OptimizedImage
+                src={collection.image}
+                alt={collection.title}
+                fill
+                sizes="(max-width: 900px) 100vw, 50vw"
+                className="object-cover"
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.64)] to-transparent_50%" />
+              <span className="absolute inset-x-8 bottom-8 z-[1] grid gap-2 text-inverse">
+                <strong className="font-display text-display-md font-[var(--ds-type-heading-weight)]">
+                  {collection.title}
+                </strong>
+                {collection.description ? (
+                  <small className="max-w-[var(--ds-caption-width)] text-body-sm">
+                    {collection.description}
+                  </small>
+                ) : null}
+              </span>
+            </Link>
+            <div className="grid grid-cols-3 gap-[var(--ds-space-sm)]" aria-label={`${collection.title} preview`}>
+              {collection.products.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/products/${product.handle || product.id}`}
+                  data-campaign-product-id={product.id}
+                  className="grid gap-2 text-body-xs text-primary no-underline"
+                >
+                  <span className="relative overflow-hidden bg-surface-soft aspect-[4/5]">
+                    <OptimizedImage
+                      src={product.thumbnail || product.images?.[0]?.url || ''}
+                      alt={product.title}
+                      fill
+                      sizes="96px"
+                      className="object-cover"
+                    />
+                  </span>
+                  <span className="line-clamp-2">{product.title}</span>
+                </Link>
+              ))}
+            </div>
+          </article>
+        ))}
       </div>
-    </section>
+    </HomepageSection>
   );
 }

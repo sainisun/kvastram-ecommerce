@@ -3,8 +3,8 @@ import { ButtonLink } from '@/components/ui/Button';
 import { ArrowUpRight } from 'lucide-react';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { homepageSectionActionClassName } from '@/components/ui/HomepageSection';
 import type { HomepageSpotlightProduct } from '@/types/homepage';
-import { cloudinaryUrlOrNull } from '@/lib/media';
 
 interface ShopTheLookProps {
   spotlightProducts: HomepageSpotlightProduct[];
@@ -38,10 +38,10 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
   return (
     <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper">
       <div className="kv-container">
-        <div className="max-md:py-[var(--ds-space-md)]-head">
+        <div className="flex flex-col gap-[var(--ds-space-sm)] md:flex-row md:items-end md:justify-between">
           <div className="kv-tag">Style Story</div>
-          <Link href="/products" className="max-md:py-[var(--ds-space-md)]-link">
-            View All →
+          <Link href="/products" className={homepageSectionActionClassName}>
+            View All
           </Link>
         </div>
 
@@ -109,4 +109,3 @@ export function ShopTheLook({ spotlightProducts }: ShopTheLookProps) {
     </section>
   );
 }
-

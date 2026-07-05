@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { HelpCircle, MessageCircle, PackageCheck, Ruler, Shirt, Sparkles } from 'lucide-react';
 import { ButtonLink } from '@/components/ui/Button';
+import { homepageSectionActionClassName } from '@/components/ui/HomepageSection';
 
 function whatsappHref(message: string) {
   return `https://wa.me/message/odhvica?text=${encodeURIComponent(message)}&utm_source=homepage&utm_medium=cta`;
@@ -129,12 +130,12 @@ export function ShippingReturnsMiniFAQ() {
   return (
     <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper">
       <div className="kv-container">
-        <div className="max-md:py-[var(--ds-space-md)]-head">
+        <div className="flex flex-col gap-[var(--ds-space-sm)] md:flex-row md:items-end md:justify-between">
           <div>
             <div className="kv-tag">Before checkout</div>
             <h2 className="kv-title">Shipping and support, answered quickly</h2>
           </div>
-          <Link href="/returns" className="max-md:py-[var(--ds-space-md)]-link">
+          <Link href="/returns" className={homepageSectionActionClassName}>
             Returns Help
           </Link>
         </div>

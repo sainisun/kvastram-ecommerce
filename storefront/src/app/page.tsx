@@ -59,7 +59,7 @@ export default async function Home() {
   const homepageSchema = [buildBreadcrumbJsonLd([{ name: 'Home', path: '/' }])];
 
   return (
-    <div className="bg-surface-page text-primary [--homepage-gutter:var(--ds-home-gutter-mobile)] md:[--homepage-gutter:var(--ds-home-gutter-desktop)]" data-homepage-generated-at={homepage.generated_at || undefined}>
+    <div className="bg-surface-page text-primary" data-homepage-generated-at={homepage.generated_at || undefined}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}

@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server';
 
 export const revalidate = 21600; // 6 hours
 
+let hasLoggedFallbackReason = false;
+
 interface ExchangeRateResponse {
   result: string;
   base_code: string;
@@ -45,8 +47,42 @@ function fallbackResponse() {
   );
 }
 
-export async function GET() {
+function logFallbackReason(reason: string, error?: unknown) {
+  if (process.env.NODE_ENV !== 'development' || hasLoggedFallbackReason) {
+    return;
+  }
+
+  hasLoggedFallbackReason = true;
+
+  if (error) {
+    console.warn(`Exchange rate route is using fallback rates: ${reason}`, error);
+    return;
+  }
+
+  console.warn(`Exchange rate route is using fallback rates: ${reason}`);
+}
+
+function shouldPreferFallbackRates() {
   if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return 'production build';
+  }
+
+  const publicApiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+  const internalApiUrl = process.env.INTERNAL_API_URL || '';
+  const localApiPattern = /https?:\/\/(?:127\.0\.0\.1|localhost)(?::\d+)?/i;
+
+  if (localApiPattern.test(publicApiUrl) || localApiPattern.test(internalApiUrl)) {
+    return 'local mock API environment';
+  }
+
+  return null;
+}
+
+export async function GET() {
+  const fallbackReason = shouldPreferFallbackRates();
+
+  if (fallbackReason) {
+    logFallbackReason(fallbackReason);
     return fallbackResponse();
   }
 
@@ -74,9 +110,7 @@ export async function GET() {
       }
     );
   } catch (err) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Exchange rate fetch failed:', err);
-    }
+    logFallbackReason('live provider fetch failed', err);
     // Fallback rates (approximate) so the site never fully breaks
     return fallbackResponse();
   }

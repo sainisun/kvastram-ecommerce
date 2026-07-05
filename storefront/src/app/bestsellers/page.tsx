@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import OptimizedImage from '@/components/ui/OptimizedImage';
+import { ButtonLink } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { RatingDisplay } from '@/components/ui/RatingDisplay';
@@ -228,24 +229,24 @@ export default async function BestsellersPage({
 
         {sizes.length > 0 ? (
           <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <Link
+            <ButtonLink
               href="/bestsellers"
-              className={`kv-text-chip px-4 py-2 text-body-xs font-medium  tracking-token-wider ${
-                selectedSize === 'all' ? 'kv-text-chip--selected' : ''
-              }`}
+              variant={selectedSize === 'all' ? 'chipSelected' : 'chip'}
+              size="sm"
+              className="px-4 text-body-xs font-medium tracking-token-wider"
             >
               All Sizes
-            </Link>
+            </ButtonLink>
             {sizes.map((size) => (
-              <Link
-              key={size}
-              href={`/bestsellers?size=${encodeURIComponent(size)}`}
-              className={`kv-text-chip px-4 py-2 text-body-xs font-medium  tracking-token-wider ${
-                selectedSize === size ? 'kv-text-chip--selected' : ''
-              }`}
-            >
-              {size}
-            </Link>
+              <ButtonLink
+                key={size}
+                href={`/bestsellers?size=${encodeURIComponent(size)}`}
+                variant={selectedSize === size ? 'chipSelected' : 'chip'}
+                size="sm"
+                className="px-4 text-body-xs font-medium tracking-token-wider"
+              >
+                {size}
+              </ButtonLink>
             ))}
           </div>
         ) : null}

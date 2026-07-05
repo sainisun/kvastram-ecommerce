@@ -222,7 +222,7 @@ export default function TrackOrderPage() {
                     step.completed
                       ? 'border-accent bg-accent text-inverse'
                       : step.current
-                        ? 'border-accent bg-surface-paper color-accent shadow-[0_0_0_4px_rgba(var(--ds-accent-rgb),0.12)]'
+                        ? 'border-accent bg-surface-paper text-accent shadow-[0_0_0_4px_rgba(var(--ds-accent-rgb),0.12)]'
                         : 'border-border-subtle bg-surface-paper text-muted'
                   }`}
                 >

@@ -79,6 +79,17 @@
   transform: translateX(0);
 }
 
+@media (max-width: 900px) {
+  .category-grid-prem {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .cat-card-prem {
+    height: 260px;
+  }
+}
+
 /* ═══ MARQUEE STRIP ═══ */
 .marquee-section-prem {
   background: var(--ds-text-primary);

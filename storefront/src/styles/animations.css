@@ -10,6 +10,8 @@
   }
 }
 .page-transition {
+  background: var(--ds-surface-page);
+  min-height: 70vh;
   animation: pageFadeIn 0.35s ease-out both;
 }
 

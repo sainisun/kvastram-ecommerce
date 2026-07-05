@@ -188,7 +188,7 @@ export default function FilterSidebar({
                 onClick={clearAllFilters}
                 variant="ghost"
                 size="sm"
-                className="filter-clear-button min-h-8 px-0 underline underline-offset-4"
+                className="filter-clear-button px-0 underline underline-offset-4"
               >
                 Clear All
               </Button>
@@ -221,7 +221,7 @@ export default function FilterSidebar({
                           onClick={() => toggleCategory(cat.id)}
                           variant="ghost"
                           size="sm"
-                          className="filter-expand-button h-8 w-8 rounded-full"
+                          className="filter-expand-button rounded-full"
                           aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
                         >
                           {isExpanded ? (
@@ -316,13 +316,9 @@ export default function FilterSidebar({
                       onClick={() =>
                         updateDraftFilter('tag_id', isActive ? null : tag.id)
                       }
-                      variant="ghost"
+                      variant={isActive ? 'chipSelected' : 'chip'}
                       size="sm"
-                      className={`filter-tag-button min-h-9 rounded-full border px-3 py-2 ${
-                        isActive
-                          ? 'border-primary bg-primary text-inverse'
-                          : 'filter-tag-button-inactive border-border-subtle bg-surface-paper hover:border-primary'
-                      }`}
+                      className="px-3 text-body-xs tracking-token-wider"
                     >
                       {tag.name}
                     </Button>
@@ -366,7 +362,7 @@ export default function FilterSidebar({
                         onClick={() => toggleCategory(cat.id)}
                         variant="ghost"
                         size="sm"
-                        className="filter-expand-button h-8 w-8 shrink-0 rounded-full"
+                        className="filter-expand-button shrink-0 rounded-full"
                         aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name}`}
                       >
                         {isExpanded ? (

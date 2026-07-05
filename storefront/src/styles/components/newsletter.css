@@ -58,5 +58,10 @@
   user-select: none;
 }
 
+@media (max-width: 900px) {
+  .newsletter-prem {
+    padding: var(--ds-space-2xl) var(--ds-space-md);
+  }
+}
 
 

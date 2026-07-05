@@ -81,7 +81,7 @@ export function CookieConsent() {
             onClick={handleAcceptAll}
             variant="secondary"
             size="sm"
-            className="min-h-10 flex-1 whitespace-nowrap bg-primary text-inverse"
+            className="flex-1 whitespace-nowrap bg-primary text-inverse"
           >
             Accept All
           </Button>
@@ -89,13 +89,13 @@ export function CookieConsent() {
             onClick={handleRejectAll}
             variant="outline"
             size="sm"
-            className="min-h-10 flex-1 whitespace-nowrap"
+            className="flex-1 whitespace-nowrap"
           >
             Reject All
           </Button>
           <Link
             href="/cookie-settings"
-            className="col-span-2 flex min-h-9 flex-1 items-center justify-center text-center text-body-xs tracking-token-wider text-primary underline transition-colors font-bold hover:text-accent sm:col-span-1"
+            className="col-span-2 flex min-h-[var(--ds-control-sm)] flex-1 items-center justify-center text-center text-body-xs font-bold tracking-token-wider text-primary underline transition-colors hover:text-accent sm:col-span-1"
           >
             Customize
           </Link>
@@ -104,4 +104,3 @@ export function CookieConsent() {
     </div>
   );
 }
-

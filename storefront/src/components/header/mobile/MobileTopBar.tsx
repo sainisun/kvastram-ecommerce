@@ -43,7 +43,7 @@ export function MobileTopBar({
         onClick={onToggleDrawer}
         variant="ghost"
         size="md"
-        className="h-10 w-10 animate-fade-in"
+        className="animate-fade-in"
         aria-label={isDrawerOpen ? 'Close navigation' : 'Open navigation'}
       >
         {isDrawerOpen ? (
@@ -68,7 +68,7 @@ export function MobileTopBar({
         </IconButton>
         <Link
           href="/wishlist"
-          className={`relative ${iconCls}`}
+          className={`relative inline-flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center ${iconCls}`}
           aria-label={`Wishlist, ${wishlistCount} items`}
         >
           <Heart size={20} strokeWidth={1.4} />

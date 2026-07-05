@@ -488,8 +488,16 @@
   grid-auto-columns: minmax(170px, 44%);
 }
 
-.watch-buy-section .kv-section-head {
-  align-items: end;
+@media (min-width: 640px) {
+  .watch-buy-carousel {
+    grid-auto-columns: minmax(190px, 30%);
+  }
+}
+
+@media (min-width: 1024px) {
+  .watch-buy-carousel {
+    grid-auto-columns: minmax(220px, 23%);
+  }
 }
 
 .watch-buy-heading {

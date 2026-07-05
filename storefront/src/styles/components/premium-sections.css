@@ -104,5 +104,19 @@
   color: var(--ds-text-muted);
 }
 
+@media (max-width: 900px) {
+  .stats-bar-prem {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0px var(--ds-space-sm);
+  }
+
+  .stat-item-prem:nth-child(2n) {
+    border-right: none;
+  }
+
+  .section-prem {
+    padding: var(--ds-space-xl) var(--ds-space-md);
+  }
+}
 
 

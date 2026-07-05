@@ -9,24 +9,20 @@ const workspaceRoot = path.resolve(storefrontRoot, '..');
 const roots = [path.join(storefrontRoot, 'src')];
 const extraFiles = [
   path.join(workspaceRoot, 'docs/design-system/storefront-design-system-v1.md'),
+  path.join(workspaceRoot, 'docs/project_features_guide.md'),
+  path.join(storefrontRoot, 'AGENTS.md'),
   path.join(storefrontRoot, 'KVASTRAM_HEADER_DESIGN_SYSTEM.md'),
 ];
 const baseline = JSON.parse(
   readFileSync(path.join(storefrontRoot, 'scripts/design-system-baseline.json'), 'utf8')
 );
-const allowedRawHexFiles = new Set([
-  path.normalize('src/styles/tokens.css'),
-]);
-const allowedImportantFiles = new Set([
-  // Required to honor reduced-motion preferences against component animations.
-  path.normalize('src/styles/animations.css'),
-]);
+const allowedRawHexFiles = new Set([path.normalize('src/styles/tokens.css')]);
+const allowedImportantFiles = new Set([path.normalize('src/styles/animations.css')]);
 const allowedLegacyFontFiles = new Set([
-  // Compatibility selectors only. Runtime markup should use font-display/font-body.
   path.normalize('src/styles/utilities.css'),
   path.normalize('src/app/globals.css'),
 ]);
-const checkedExtensions = new Set(['.css', '.ts', '.tsx']);
+const checkedExtensions = new Set(['.css', '.ts', '.tsx', '.md']);
 const defaultPalettePattern =
   /\b(?:text|bg|border|ring|fill|stroke|placeholder|from|via|to|decoration|divide|accent)-(?:white|black|stone|neutral|zinc|gray|slate|amber|rose|emerald|blue|green|red|yellow|pink|purple)(?:-[0-9]{2,3})?(?:\/[0-9]{1,3})?\b/g;
 const localCtaClassPattern =
@@ -34,7 +30,30 @@ const localCtaClassPattern =
 const rawNumericRgbPattern = /rgba?\(\s*(?:\d{1,3}\s*,\s*){2}\d{1,3}/i;
 const namedColorDeclarationPattern =
   /\b(?:color|background(?:-color)?|border(?:-(?:top|right|bottom|left))?(?:-color)?|outline-color|text-decoration-color|fill|stroke)\s*:[^;]*(?<![a-z-])(?:white|black)\b/i;
-const legacyAccentNamePattern = new RegExp(`\\b(?:${'sien'}${'na'}|${'co'}${'ral'})\\b`, 'i');
+const legacyAccentNamePattern = /\b(?:sienna|coral)\b/i;
+const malformedUtilityPattern = /\](?:-head|-head-centered|-link)\b/;
+const homepageWidthFormulaPattern =
+  /w-\[min\(calc\(100%-\(var\(--homepage-gutter\)\*2\)\),var\(--ds-home-content-width\)\)\]/;
+const legacyAliasUsagePattern = /var\(\s*--(?:ink|cream|line|soft|muted)\b/i;
+const targetTouchFiles = new Map([
+  [path.normalize('src/components/ui/Button.tsx'), /\b(?:min-h-9|h-9 w-9|h-10 w-10)\b/],
+  [path.normalize('src/components/products/ProductCard.tsx'), /\b(?:w-\[34px\]|h-\[34px\])\b/],
+  [path.normalize('src/components/header/ActionsRight.tsx'), /\bh-9 w-9\b/],
+  [path.normalize('src/components/header/mobile/MobileTopBar.tsx'), /\bh-10 w-10\b/],
+  [path.normalize('src/components/ui/CookieConsent.tsx'), /\b(?:min-h-9|min-h-10)\b/],
+  [path.normalize('src/components/layout/CartDrawer.tsx'), /\bw-7 h-7\b/],
+  [path.normalize('src/app/checkout/page.tsx'), /\bw-8 h-8\b/],
+  [path.normalize('src/components/search/SearchOverlay.tsx'), /\bmin-h-8\b/],
+  [path.normalize('src/components/products/FilterSidebar.tsx'), /\b(?:min-h-8|h-8 w-8)\b/],
+  [path.normalize('src/app/wishlist/page.tsx'), /\bh-8 w-8\b/],
+  [path.normalize('src/app/login/page.tsx'), /\bh-8 w-8\b/],
+  [path.normalize('src/app/register/page.tsx'), /\bh-8 w-8\b/],
+  [path.normalize('src/app/reset-password/page.tsx'), /\bh-8 w-8\b/],
+  [path.normalize('src/components/layout/MainLayout.tsx'), /\bw-10 h-10\b/],
+  [path.normalize('src/components/BannerCarousel.tsx'), /className=\{`h-2 min-h-0|className="h-2 min-h-0/],
+  [path.normalize('src/components/TestimonialsCarousel.tsx'), /className=\{`h-2 min-h-0|className="h-2 min-h-0/],
+  [path.normalize('src/components/product/ProductGallery.tsx'), /className=\{`h-2 rounded|className="h-2 rounded/],
+]);
 const allowedInlineStylePatterns = [
   /style=\{\{\s*animationDelay:/,
   /style=\{\{\s*width:\s*`/,
@@ -48,26 +67,99 @@ const allowedInlineStylePatterns = [
   /shape:\s*'rect'/,
   /label:\s*'pay'/,
   /height:\s*48/,
-  /style=\{\{\s*'--homepage-gutter':/,
+];
+
+const requiredRuntimeTokenValues = new Map([
+  ['--ds-font-display', "var(--font-amiri), var(--font-cardo), serif"],
+  ['--ds-font-body', 'var(--font-cardo), serif'],
+  ['--ds-home-gutter-mobile', '0.9375rem'],
+  ['--ds-home-gutter-tablet', '1.75rem'],
+  ['--ds-home-gutter-desktop', '1.875rem'],
+  ['--ds-home-section-space-mobile', '56px'],
+  ['--ds-home-section-space-desktop', '108px'],
+]);
+
+const requiredDocSnippets = [
+  'Amiri',
+  'Cardo',
+  '`15px` mobile',
+  '`28px` tablet',
+  '`30px` desktop',
+  '`108px` desktop',
+  '`56px` mobile',
+  '`--ink`, `--cream`, and `--line` remain compatibility-only aliases and must not be consumed by runtime TSX.',
+  'Raw `var(--ds-*)` usage in TSX is allowed only as a Tailwind arbitrary-value escape hatch when no semantic utility exists.',
 ];
 
 const findings = [];
 const definedDesignTokens = new Set();
 const usedDesignTokens = new Map();
+
 const tokenSource = readFileSync(path.join(storefrontRoot, 'src/styles/tokens.css'), 'utf8');
 const designSystemDoc = readFileSync(
   path.join(workspaceRoot, 'docs/design-system/storefront-design-system-v1.md'),
   'utf8'
 );
+const agentsDoc = readFileSync(path.join(storefrontRoot, 'AGENTS.md'), 'utf8');
+const featuresGuide = readFileSync(
+  path.join(workspaceRoot, 'docs/project_features_guide.md'),
+  'utf8'
+);
 
-if (!/--ds-font-display:\s*'Amiri'/.test(tokenSource)) {
-  findings.push('Typography contract: --ds-font-display must start with Amiri.');
+function stripCssComments(text) {
+  return text.replace(/\/\*[\s\S]*?\*\//g, '');
 }
-if (!/--ds-font-body:\s*'Cardo'/.test(tokenSource)) {
-  findings.push('Typography contract: --ds-font-body must start with Cardo.');
+
+function extractRootCustomProperties(cssText) {
+  const css = stripCssComments(cssText);
+  const rootStart = css.indexOf(':root');
+  if (rootStart < 0) return new Map();
+  const blockStart = css.indexOf('{', rootStart);
+  if (blockStart < 0) return new Map();
+
+  let depth = 0;
+  let blockEnd = -1;
+  for (let index = blockStart; index < css.length; index += 1) {
+    const char = css[index];
+    if (char === '{') depth += 1;
+    if (char === '}') {
+      depth -= 1;
+      if (depth === 0) {
+        blockEnd = index;
+        break;
+      }
+    }
+  }
+
+  if (blockEnd < 0) return new Map();
+  const body = css.slice(blockStart + 1, blockEnd);
+  const values = new Map();
+
+  for (const declaration of body.split(';')) {
+    const colonIndex = declaration.indexOf(':');
+    if (colonIndex < 0) continue;
+    const property = declaration.slice(0, colonIndex).trim();
+    const value = declaration.slice(colonIndex + 1).trim();
+    if (property.startsWith('--ds-')) {
+      values.set(property, value);
+    }
+  }
+
+  return values;
 }
-if (!designSystemDoc.includes('Amiri') || !designSystemDoc.includes('Cardo')) {
-  findings.push('Typography contract: active documentation must match runtime font tokens.');
+
+const runtimeTokens = extractRootCustomProperties(tokenSource);
+for (const [tokenName, expectedValue] of requiredRuntimeTokenValues) {
+  const actualValue = runtimeTokens.get(tokenName);
+  if (actualValue !== expectedValue) {
+    findings.push(`${tokenName} must equal "${expectedValue}" in tokens.css (found "${actualValue || 'missing'}")`);
+  }
+}
+
+for (const snippet of requiredDocSnippets) {
+  if (!designSystemDoc.includes(snippet) && !agentsDoc.includes(snippet) && !featuresGuide.includes(snippet)) {
+    findings.push(`Documentation sync: expected snippet missing -> ${snippet}`);
+  }
 }
 
 function walk(dir) {
@@ -87,6 +179,10 @@ function auditFile(fullPath) {
   const ext = path.extname(rel);
   const text = readFileSync(fullPath, 'utf8');
   const lines = text.split(/\r?\n/);
+
+  if (ext === '.md') {
+    return;
+  }
 
   for (const match of text.matchAll(/(--ds-[a-z0-9-]+)\s*:/gi)) {
     definedDesignTokens.add(match[1]);
@@ -111,7 +207,7 @@ function auditFile(fullPath) {
       findings.push(`${location} legacy font utility should use font-display or font-body`);
     }
 
-    if (/[Ãâ�]/.test(line)) {
+    if (/[ÃƒÃ¢ï¿½]/.test(line)) {
       findings.push(`${location} likely mojibake/encoding artifact in UI source`);
     }
 
@@ -142,6 +238,23 @@ function auditFile(fullPath) {
 
     if (/\b(?:warm-white|kv-white)\b/.test(line)) {
       findings.push(`${location} legacy white alias should use --ds-surface-* or component-scoped paper tokens`);
+    }
+
+    if (malformedUtilityPattern.test(line)) {
+      findings.push(`${location} malformed utility fragment should be replaced by a shared primitive or valid utility list`);
+    }
+
+    if (homepageWidthFormulaPattern.test(line)) {
+      findings.push(`${location} homepage width formula should use HomepageContainer or HomepageSection primitives`);
+    }
+
+    if (legacyAliasUsagePattern.test(line)) {
+      findings.push(`${location} legacy color alias usage should be replaced with --ds-* tokens or semantic utilities`);
+    }
+
+    const touchPattern = targetTouchFiles.get(rel);
+    if (touchPattern?.test(line)) {
+      findings.push(`${location} interactive control fell below the 44px minimum touch target`);
     }
 
     if (/style=\{\{/.test(line)) {
@@ -196,4 +309,4 @@ if (findings.length) {
   process.exit(1);
 }
 
-console.log('Design system audit passed: tokens, legacy accent names, and override usage are consistent.');
+console.log('Design system audit passed: runtime tokens, docs, primitives, and touch targets are consistent.');

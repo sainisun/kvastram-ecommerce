@@ -54,9 +54,9 @@ export default function WishlistButton({
   };
 
   const sizeClasses = {
-    sm: 'w-8 h-8',
-    md: 'w-10 h-10',
-    lg: 'w-12 h-12',
+    sm: 'h-[var(--ds-control-icon-sm)] w-[var(--ds-control-icon-sm)]',
+    md: 'h-[var(--ds-control-icon-md)] w-[var(--ds-control-icon-md)]',
+    lg: 'h-[var(--ds-control-icon-lg)] w-[var(--ds-control-icon-lg)]',
   };
 
   const iconSizes = {

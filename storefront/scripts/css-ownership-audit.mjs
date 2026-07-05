@@ -7,6 +7,9 @@ const storefrontRoot = path.resolve(scriptDir, '..');
 const stylesRoot = path.join(storefrontRoot, 'src');
 const baselinePath = path.join(scriptDir, 'css-ownership-baseline.json');
 const classPattern = /\.([a-zA-Z_][\w-]*)/g;
+const cssCommentPattern = /\/\*[\s\S]*?\*\//g;
+const cssStringPattern = /(["'])(?:\\.|(?!\1)[^\\])*\1/g;
+const ignoredClassNames = new Set(['active', 'visible']);
 
 function cssFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -20,8 +23,14 @@ function cssFiles(dir) {
 const owners = new Map();
 for (const file of cssFiles(stylesRoot)) {
   const relativeFile = path.relative(storefrontRoot, file).replaceAll('\\', '/');
-  const css = readFileSync(file, 'utf8');
-  const classes = new Set([...css.matchAll(classPattern)].map((match) => match[1]));
+  const css = readFileSync(file, 'utf8')
+    .replace(cssCommentPattern, '')
+    .replace(cssStringPattern, '');
+  const classes = new Set(
+    [...css.matchAll(classPattern)]
+      .map((match) => match[1])
+      .filter((className) => !ignoredClassNames.has(className))
+  );
   for (const className of classes) {
     const files = owners.get(className) || [];
     files.push(relativeFile);

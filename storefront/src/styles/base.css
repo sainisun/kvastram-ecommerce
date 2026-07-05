@@ -51,20 +51,6 @@ p {
   text-transform: var(--ds-type-label-transform);
 }
 
-.announcement-bar {
-  font-family: var(--ds-type-label-font);
-  font-size: var(--ds-text-body-xs);
-  font-weight: var(--ds-type-label-weight);
-  letter-spacing: var(--ds-type-label-tracking);
-  line-height: var(--ds-leading-normal);
-  color: var(--color-text-inverse);
-  text-transform: none;
-}
-
-.announcement-dismiss {
-  color: var(--color-text-inverse);
-}
-
 .nav-logo {
   font-family: var(--ds-type-heading-font);
   font-size: var(--ds-text-display-sm);
