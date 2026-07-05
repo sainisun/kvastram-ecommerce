@@ -23,15 +23,21 @@
   --type-heading-tracking: var(--ds-type-heading-tracking);
   --type-label-tracking: var(--ds-type-label-tracking);
 
-  --color-text-primary: var(--ds-text-primary);
-  --color-text-secondary: var(--ds-text-secondary);
-  --color-text-muted: var(--ds-text-muted);
-  --color-text-disabled: var(--ds-text-disabled);
-  --color-text-inverse: var(--ds-text-inverse);
-  --color-text-accent: var(--ds-accent-primary);
+  --color-primary: var(--ds-text-primary);
+  --color-secondary: var(--ds-text-secondary);
+  --color-muted: var(--ds-text-muted);
+  --color-disabled: var(--ds-text-disabled);
+  --color-inverse: var(--ds-text-inverse);
+  --color-accent: var(--ds-accent-primary);
   --color-text-error: var(--ds-danger);
   --color-text-success: var(--ds-success);
   --color-text-price: var(--ds-text-price);
+  --color-surface: var(--ds-surface-page);
+  --color-surface-soft: var(--ds-surface-soft);
+  --color-surface-warm: var(--ds-surface-warm);
+  --color-surface-hover: var(--ds-surface-parchment);
+  --color-surface-hover-2: var(--ds-surface-parchment-2);
+  --color-surface-paper: var(--ds-surface-paper);
   --color-text-price-old: var(--ds-text-price-old);
   --color-text-sale: var(--ds-danger);
 
