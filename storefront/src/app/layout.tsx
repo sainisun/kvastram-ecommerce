@@ -81,7 +81,11 @@ export default async function RootLayout({
   const globalSchema = [buildOrganizationJsonLd(), buildWebsiteJsonLd()];
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${fontCardo.variable} ${fontAmiri.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <link
           rel="preconnect"
@@ -97,7 +101,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
       </head>
-      <body className={`font-body antialiased ${fontCardo.variable} ${fontAmiri.variable}`}>
+      <body className="font-body antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(globalSchema) }}

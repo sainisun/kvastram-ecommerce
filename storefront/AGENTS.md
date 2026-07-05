@@ -74,25 +74,25 @@ Koi naya kaam aaye toh:
 ## TOKEN QUICK REFERENCE
 
 ### Colors
---ds-text-primary: #1A1A1A (main text)
---ds-text-secondary: #666666 (secondary text)
---ds-text-muted: #7f756e (muted/placeholder)
---ds-text-inverse: white (text on dark bg)
---ds-surface-page: #FFFFFF (page background)
+--ds-text-primary: #1C1410 (warm ink main text)
+--ds-text-secondary: #6B5E52 (secondary text)
+--ds-text-muted: #9C8B7E (muted/placeholder)
+--ds-text-inverse: #FDFAF6 (text on dark/accent backgrounds)
+--ds-surface-page: #FDFAF6 (parchment page background)
 --ds-surface-paper: #FFFFFF (card background)
---ds-surface-soft: #F7F7F7 (subtle bg)
---ds-surface-warm: #F5F5F5 (warm tinted bg)
+--ds-surface-soft: #F5EFE6 (subtle bg)
+--ds-surface-warm: #EDE8E0 (warm tinted bg)
 --ds-accent-primary: brand terracotta (buttons, CTAs)
 --ds-accent-gold: #B89B5E (gold accents, eyebrows)
---ds-accent-hover: #9E8148 (hover state)
---ds-border-subtle: #E5E5E5 (light borders)
---ds-border-strong: #7f756e (strong borders)
+--ds-accent-hover: #8F3D1F (hover state)
+--ds-border-subtle: #EDE8E0 (light borders)
+--ds-border-strong: #6B5E52 (strong borders)
 
 ### Spacing
 --ds-space-xs: 8px
 --ds-space-sm: 16px
 --ds-space-md: 24px
---ds-space-lg: 32px
+--ds-space-lg: 40px
 --ds-space-xl: fluid clamp (48px→80px)
 --ds-space-2xl: fluid clamp (64px→120px)
 
@@ -108,12 +108,13 @@ Koi naya kaam aaye toh:
 --ds-font-ui: same as body (buttons, inputs)
 
 ### Homepage layout
---ds-home-gutter-mobile: 15px
---ds-home-gutter-tablet: 28px
---ds-home-gutter-desktop: 30px
---ds-home-section-space-mobile: 56px
---ds-home-section-space-desktop: 108px
+--ds-home-gutter-mobile: 20px
+--ds-home-gutter-tablet: 32px
+--ds-home-gutter-desktop: 48px
+--ds-home-section-space-mobile: 48px
+--ds-home-section-space-desktop: 80px
 Homepage sections should use HomepageContainer/HomepageSection primitives instead of ad-hoc width formulas.
+Horizontal homepage rails must use homepageScrollRailClassName so flex row and overflow behavior stay inseparable.
 
 ### Radius
 --ds-radius-sm, --ds-radius-md, --ds-radius-lg, --ds-radius-pill

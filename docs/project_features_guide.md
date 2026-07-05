@@ -209,3 +209,19 @@ This guide is the definitive registry of all backend features implemented in the
   * Do not hardcode percentage strings into third-party auth button width props when the provider expects pixel values; measure the container and pass a bounded number instead.
   * Keep local mock and smoke-test environments off unnecessary live external fetches when a built-in fallback already exists.
   * When adjusting homepage hero or category media, preserve explicit above-the-fold loading intent and positioned fill containers to avoid LCP or zero-height image regressions.
+
+### G. Storefront Visual Recovery Guardrails (v1.7)
+* **Technical Flow**:
+  * **Warm Brand Contract Restored**: The storefront runtime again maps semantic surfaces, text, and actions to parchment (`#FDFAF6`), warm ink (`#1C1410`), and terracotta (`#C4603A`) tokens. Components continue consuming semantic utilities, so no feature needs route-local color values.
+  * **Root Font Resolution**: Next.js Cardo and Amiri font variables are attached to the root `<html>` element. This allows `:root` design tokens to resolve before `font-body` and `font-display` utilities are consumed on any route.
+  * **Horizontal Rail Integrity**: `homepageScrollRailClassName` owns `display: flex` together with horizontal scrolling. Best Sellers, New Arrivals, category cards, and shoppable video cards therefore cannot silently collapse into vertical single-card columns.
+  * **Editorial Rhythm Recovery**: Homepage gutters use `20px / 32px / 48px` and section spacing uses `48px / 80px`, restoring readable mobile insets and controlled desktop whitespace while preserving the shared primitive architecture.
+  * **Runtime Regression Gates**: The design-system audit now locks the warm palette, root font placement, inverse-text owner, and flex rail contract. Desktop/mobile browser tests assert computed Cardo/Amiri fonts, inverse hero contrast, and same-row product geometry.
+  * **Category Index Continuity**: `/categories` permanently redirects to `/collections`, matching the existing category-detail redirect contract and preventing global navigation prefetches from generating repeated 404 responses.
+* **Edge Cases and Dependencies**:
+  * Do not move the Next font variable classes back to `<body>`; root token declarations cannot reliably resolve variables introduced only on a descendant.
+  * Do not remove `flex` from the shared homepage rail or add it independently to consumers. Layout ownership must remain atomic in the primitive.
+  * `text-inverse` has an explicit CSS owner because critical hero and overlay contrast must not depend solely on generated Tailwind output.
+  * Category detail slugs remain supported through `/categories/[slug]`; both category index and detail routes preserve their public URLs while resolving to the active collection discovery architecture.
+* **Operational Commands**:
+  * Run `npm.cmd run verify:design-system -- --pool=threads`, `npm.cmd run build`, and `npm.cmd run test:e2e` after changing homepage rails, root fonts, semantic colors, or homepage spacing.

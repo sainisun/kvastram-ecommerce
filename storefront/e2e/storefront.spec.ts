@@ -124,12 +124,49 @@ test.describe('Storefront visual contract', () => {
     expect(overflow).toBeLessThanOrEqual(2);
   });
 
+  test('homepage rails, typography, and inverse contrast preserve visual geometry', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const railSections = ['3-category-carousel', '5-best-sellers', '6-new-arrivals', '7-watch-shop'];
+    for (const sectionName of railSections) {
+      const rail = page.locator(`[data-home-section="${sectionName}"] .overflow-x-auto`).first();
+      await expect(rail).toBeVisible();
+      expect(await rail.evaluate((element) => getComputedStyle(element).display)).toBe('flex');
+    }
+
+    const bestSellerCards = page.locator('[data-home-section="5-best-sellers"] .product-card');
+    await expect(bestSellerCards).toHaveCount(4);
+    const cardPositions = await bestSellerCards.evaluateAll((cards) =>
+      cards.map((card) => {
+        const rect = card.getBoundingClientRect();
+        return { x: Math.round(rect.x), y: Math.round(rect.y) };
+      })
+    );
+    expect(new Set(cardPositions.map((position) => position.y)).size).toBe(1);
+    expect(cardPositions[1].x).toBeGreaterThan(cardPositions[0].x);
+
+    const typography = await page.evaluate(() => ({
+      body: getComputedStyle(document.body).fontFamily,
+      heading: getComputedStyle(document.querySelector('[data-home-section="2-hero"] h1')!).fontFamily,
+      heroColor: getComputedStyle(document.querySelector('[data-home-section="2-hero"] h1')!).color,
+    }));
+    expect(typography.body).toMatch(/Cardo/i);
+    expect(typography.heading).toMatch(/Amiri/i);
+    expect(typography.heroColor).toBe('rgb(253, 250, 246)');
+  });
+
   test('products, cart, and login routes remain usable', async ({ page }) => {
     for (const path of ['/products', '/cart', '/login']) {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('#main-content')).toBeVisible();
     }
     await expect(page.locator('input[type="email"]').first()).toBeVisible();
+  });
+
+  test('categories navigation resolves to the active discovery index', async ({ page }) => {
+    const response = await page.goto('/categories', { waitUntil: 'domcontentloaded' });
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page).toHaveURL(/\/collections$/);
   });
 
   test('legacy trending route resolves to reels', async ({ page }) => {

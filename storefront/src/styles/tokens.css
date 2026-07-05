@@ -73,13 +73,13 @@
      ═══════════════════════════════════════════════ */
 
   /* Terracotta — Jaipur ki mitti, Amber Fort walls */
-  --ds-terracotta-50:  #F5F5F5;
-  --ds-terracotta-100: #E5E5E5;
-  --ds-terracotta-200: #D4D4D4;
-  --ds-terracotta-400: #737373;
-  --ds-terracotta-600: #000000;
-  --ds-terracotta-800: #000000;
-  --ds-terracotta-950: #000000;
+  --ds-terracotta-50:  #FDF3EF;
+  --ds-terracotta-100: #FADDD3;
+  --ds-terracotta-200: #F4B8A4;
+  --ds-terracotta-400: #D97F5E;
+  --ds-terracotta-600: #C4603A;
+  --ds-terracotta-800: #8F3D1F;
+  --ds-terracotta-950: #5C2210;
 
   /* Gold — artisan gold thread, Kantha embroidery */
   --ds-gold-50:  #FAF5E9;
@@ -89,17 +89,17 @@
   --ds-gold-800: #7A6335;
 
   /* Parchment — aged paper, handmade feel */
-  --ds-parchment-50:  #FFFFFF;
-  --ds-parchment-100: #F7F7F7;
-  --ds-parchment-200: #E5E5E5;
-  --ds-parchment-300: #D4D4D4;
+  --ds-parchment-50:  #FDFAF6;
+  --ds-parchment-100: #F5EFE6;
+  --ds-parchment-200: #EDE8E0;
+  --ds-parchment-300: #D9D0C4;
 
   /* Ink — warm charcoal, not cold black */
-  --ds-ink-50:  #666666;
-  --ds-ink-100: #333333;
-  --ds-ink-200: #1A1A1A;
-  --ds-ink-600: #000000;
-  --ds-ink-900: #000000;
+  --ds-ink-50:  #9C8B7E;
+  --ds-ink-100: #6B5E52;
+  --ds-ink-200: #3D3530;
+  --ds-ink-600: #1C1410;
+  --ds-ink-900: #0E0A07;
 
   /* ═══════════════════════════════════════════════
      SEMANTIC TOKENS — What components use
@@ -107,7 +107,7 @@
      ═══════════════════════════════════════════════ */
 
   /* Surfaces */
-  --ds-surface-page:      #FFFFFF;
+  --ds-surface-page:      var(--ds-parchment-50);
   --ds-surface-paper:     #FFFFFF;
   --ds-surface-soft:      var(--ds-parchment-100);
   --ds-surface-subtle:    var(--ds-parchment-100);
@@ -118,26 +118,26 @@
   --ds-surface-darkest:   var(--ds-ink-900);
 
   /* Text */
-  --ds-text-primary:      #000000;
+  --ds-text-primary:      var(--ds-ink-600);
   --ds-text-secondary:    var(--ds-ink-100);
   --ds-text-muted:        var(--ds-ink-50);
-  --ds-text-disabled:     var(--ds-terracotta-400);
-  --ds-text-inverse:      #FFFFFF;
-  --ds-text-on-dark:      #FFFFFF;
+  --ds-text-disabled:     var(--ds-parchment-300);
+  --ds-text-inverse:      var(--ds-parchment-50);
+  --ds-text-on-dark:      var(--ds-parchment-50);
   --ds-text-on-accent:    #FFFFFF;
   --ds-text-price:        var(--ds-ink-600);
   --ds-text-price-old:    var(--ds-ink-50);
 
   /* Accent — Primary CTA (Terracotta) */
-  --ds-accent-primary:    #000000;
-  --ds-accent-hover:      #000000;
+  --ds-accent-primary:    var(--ds-terracotta-600);
+  --ds-accent-hover:      var(--ds-terracotta-800);
   --ds-accent-subtle:     var(--ds-terracotta-100);
   --ds-accent-focus:      var(--ds-terracotta-400);
   --ds-accent-soft:       var(--ds-terracotta-50);
-  --ds-accent-rgb:        0, 0, 0;
+  --ds-accent-rgb:        196, 96, 58;
 
   /* Accent — Gold (secondary, eyebrows, badges) */
-  --ds-accent-gold:       var(--ds-gold-800);
+  --ds-accent-gold:       var(--ds-gold-600);
   --ds-accent-gold-soft:  var(--ds-gold-100);
   --ds-accent-gold-rgb:   184, 155, 94;
 
@@ -148,14 +148,14 @@
   --ds-border-dark:       var(--ds-ink-200);
 
   /* RGB values for rgba() usage */
-  --ds-ink-rgb:               0, 0, 0;
-  --ds-text-primary-rgb:      0, 0, 0;
-  --ds-text-secondary-rgb:    51, 51, 51;
-  --ds-cream-rgb:             255, 255, 255;
-  --ds-surface-page-rgb:      255, 255, 255;
+  --ds-ink-rgb:               28, 20, 16;
+  --ds-text-primary-rgb:      28, 20, 16;
+  --ds-text-secondary-rgb:    107, 94, 82;
+  --ds-cream-rgb:             253, 250, 246;
+  --ds-surface-page-rgb:      253, 250, 246;
   --ds-surface-paper-rgb:     255, 255, 255;
-  --ds-surface-soft-rgb:      247, 247, 247;
-  --ds-surface-parchment-rgb: 247, 247, 247;
+  --ds-surface-soft-rgb:      245, 239, 230;
+  --ds-surface-parchment-rgb: 245, 239, 230;
   --ds-white-rgb:             255, 255, 255;
   --ds-black-rgb:             0, 0, 0;
 
@@ -240,13 +240,13 @@
   --ds-home-content-width: 1520px;
   --ds-page-width: 1440px;
   /* ── Page gutters ── */
-  --ds-home-gutter-mobile:  0.9375rem; /* 15px */
-  --ds-home-gutter-tablet:  1.75rem;   /* 28px */
-  --ds-home-gutter-desktop: 1.875rem;  /* 30px */
+  --ds-home-gutter-mobile:  1.25rem; /* 20px */
+  --ds-home-gutter-tablet:  2rem;    /* 32px */
+  --ds-home-gutter-desktop: 3rem;    /* 48px */
 
   /* ── Section spacing (homepage) ── */
-  --ds-home-section-space-mobile: 56px;
-  --ds-home-section-space-desktop: 108px;
+  --ds-home-section-space-mobile: 48px;
+  --ds-home-section-space-desktop: 80px;
 
   /* ── Component spacing rules ── */
   --ds-btn-padding-y:    0.875rem;  /* 14px — 52px total height with line-height */

@@ -9,7 +9,7 @@ export const homepageSectionSpacingClassName =
 
 export const homepageScrollRailClassName = cn(
   homepageContainerClassName,
-  'overflow-x-auto no-scrollbar scroll-smooth'
+  'flex overflow-x-auto no-scrollbar scroll-smooth'
 );
 
 export const homepageSectionActionClassName =

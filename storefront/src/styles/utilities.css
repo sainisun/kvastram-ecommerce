@@ -16,6 +16,10 @@
   font-family: var(--ds-font-ui);
 }
 
+.text-inverse {
+  color: var(--ds-text-inverse);
+}
+
 .font-label {
   font-family: var(--ds-font-label);
 }

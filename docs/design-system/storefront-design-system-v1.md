@@ -36,13 +36,13 @@ Odhvica storefront typography uses an editorial serif display face with a restra
 
 ## Color
 
-The storefront color contract is black and white by default:
+The storefront color contract is a warm editorial palette grounded in Jaipur craft materials:
 
-- Primary text uses pure black via `--ds-text-primary`.
-- Primary page background uses pure white via `--ds-surface-page`.
-- Primary CTA/button background uses pure black via `--ds-accent-primary`.
-- Primary CTA/button text uses pure white via `--ds-text-inverse`.
-- Supporting surfaces may use neutral off-white/gray tokens for borders, muted states, and hierarchy.
+- Primary text uses warm ink (`#1C1410`) via `--ds-text-primary`.
+- Primary page background uses parchment (`#FDFAF6`) via `--ds-surface-page`.
+- Primary CTA/button background uses terracotta (`#C4603A`) via `--ds-accent-primary`.
+- Primary CTA/button text uses parchment via `--ds-text-inverse`.
+- Supporting surfaces use parchment, paper, gold, and warm ink tokens for borders, muted states, and hierarchy.
 
 Use:
 
@@ -119,9 +119,10 @@ Use these before adding page-local UI systems:
 ## Homepage Layout Contract
 
 - Homepage content width: `--ds-home-content-width` (`1520px`).
-- Homepage gutters: `30px` desktop, `28px` tablet, and `15px` mobile through the `--ds-home-gutter-*` tokens.
-- Homepage section rhythm: `108px` desktop and `56px` mobile through the `--ds-home-section-space-*` tokens.
+- Homepage gutters: `48px` desktop, `32px` tablet, and `20px` mobile through the `--ds-home-gutter-*` tokens.
+- Homepage section rhythm: `80px` desktop and `48px` mobile through the `--ds-home-section-space-*` tokens.
 - Hero is full bleed. Other homepage content uses the shared `HomepageContainer` / `HomepageSection` primitives.
+- Horizontal homepage rails use the shared `homepageScrollRailClassName`, which owns both `display: flex` and horizontal overflow behavior.
 - Homepage media containers must declare an intrinsic aspect ratio or explicit dimensions.
 
 ## Runtime Consumption Rules

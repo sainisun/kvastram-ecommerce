@@ -72,21 +72,27 @@ const allowedInlineStylePatterns = [
 const requiredRuntimeTokenValues = new Map([
   ['--ds-font-display', "var(--font-amiri), var(--font-cardo), serif"],
   ['--ds-font-body', 'var(--font-cardo), serif'],
-  ['--ds-home-gutter-mobile', '0.9375rem'],
-  ['--ds-home-gutter-tablet', '1.75rem'],
-  ['--ds-home-gutter-desktop', '1.875rem'],
-  ['--ds-home-section-space-mobile', '56px'],
-  ['--ds-home-section-space-desktop', '108px'],
+  ['--ds-terracotta-600', '#C4603A'],
+  ['--ds-parchment-50', '#FDFAF6'],
+  ['--ds-ink-600', '#1C1410'],
+  ['--ds-accent-primary', 'var(--ds-terracotta-600)'],
+  ['--ds-surface-page', 'var(--ds-parchment-50)'],
+  ['--ds-text-primary', 'var(--ds-ink-600)'],
+  ['--ds-home-gutter-mobile', '1.25rem'],
+  ['--ds-home-gutter-tablet', '2rem'],
+  ['--ds-home-gutter-desktop', '3rem'],
+  ['--ds-home-section-space-mobile', '48px'],
+  ['--ds-home-section-space-desktop', '80px'],
 ]);
 
 const requiredDocSnippets = [
   'Amiri',
   'Cardo',
-  '`15px` mobile',
-  '`28px` tablet',
-  '`30px` desktop',
-  '`108px` desktop',
-  '`56px` mobile',
+  '`20px` mobile',
+  '`32px` tablet',
+  '`48px` desktop',
+  '`80px` desktop',
+  '`48px` mobile',
   '`--ink`, `--cream`, and `--line` remain compatibility-only aliases and must not be consumed by runtime TSX.',
   'Raw `var(--ds-*)` usage in TSX is allowed only as a Tailwind arbitrary-value escape hatch when no semantic utility exists.',
 ];
@@ -105,6 +111,24 @@ const featuresGuide = readFileSync(
   path.join(workspaceRoot, 'docs/project_features_guide.md'),
   'utf8'
 );
+const homepagePrimitiveSource = readFileSync(
+  path.join(storefrontRoot, 'src/components/ui/HomepageSection.tsx'),
+  'utf8'
+);
+const rootLayoutSource = readFileSync(path.join(storefrontRoot, 'src/app/layout.tsx'), 'utf8');
+const utilitySource = readFileSync(path.join(storefrontRoot, 'src/styles/utilities.css'), 'utf8');
+
+if (!/homepageScrollRailClassName[\s\S]*['"]flex overflow-x-auto/.test(homepagePrimitiveSource)) {
+  findings.push('Homepage scroll rail primitive must own display:flex before overflow behavior');
+}
+
+if (!/<html[\s\S]*className=\{`\$\{fontCardo\.variable\} \$\{fontAmiri\.variable\}`\}/.test(rootLayoutSource)) {
+  findings.push('Next font variables must be attached to the root html element before :root tokens resolve');
+}
+
+if (!/\.text-inverse\s*\{\s*color:\s*var\(--ds-text-inverse\)/.test(utilitySource)) {
+  findings.push('Semantic text-inverse utility must have an explicit runtime CSS owner');
+}
 
 function stripCssComments(text) {
   return text.replace(/\/\*[\s\S]*?\*\//g, '');

@@ -12,7 +12,10 @@ import path from 'path';
   let retries = 10;
   while (retries > 0) {
     try {
-      const response = await page.goto('http://localhost:3000/', { timeout: 10000 });
+      const response = await page.goto('http://localhost:3000/', {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000,
+      });
       if (response && response.ok()) break;
     } catch {
       console.log('Server not ready, retrying...');
@@ -22,14 +25,17 @@ import path from 'path';
   }
 
   console.log('Capturing Homepage...');
-  await page.goto('http://localhost:3000/');
-  await page.waitForLoadState('networkidle');
+  await page.goto('http://localhost:3000/', { waitUntil: 'domcontentloaded', timeout: 90000 });
+  await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(2000);
   await page.screenshot({ path: path.join(dir, 'homepage.png'), fullPage: true });
 
   console.log('Capturing Collections...');
-  await page.goto('http://localhost:3000/collections');
-  await page.waitForLoadState('networkidle');
+  await page.goto('http://localhost:3000/collections', {
+    waitUntil: 'domcontentloaded',
+    timeout: 90000,
+  });
+  await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(2000);
   await page.screenshot({ path: path.join(dir, 'collections.png'), fullPage: true });
 
@@ -38,13 +44,13 @@ import path from 'path';
     const productLink = document.querySelector('a[href^="/products/"]');
     if (productLink) productLink.click();
   });
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(2000);
   await page.screenshot({ path: path.join(dir, 'product.png'), fullPage: true });
 
   console.log('Capturing Cart Drawer...');
-  await page.goto('http://localhost:3000/');
-  await page.waitForLoadState('networkidle');
+  await page.goto('http://localhost:3000/', { waitUntil: 'domcontentloaded', timeout: 90000 });
+  await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(1000);
   await page.evaluate(() => {
     const btn = Array.from(document.querySelectorAll('button')).find(b => 
