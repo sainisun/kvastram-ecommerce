@@ -285,7 +285,7 @@ function LoginContent() {
   };
 
   return (
-    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface-paper px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-display-lg font-display text-primary">Welcome Back</h1>
@@ -382,7 +382,7 @@ function LoginContent() {
             {(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_FACEBOOK_APP_ID) && (
               <>
                 <div className="relative flex justify-center text-body-sm">
-                  <span className="px-4 bg-[var(--ds-surface-paper)] text-muted">
+                  <span className="px-4 bg-surface-paper text-muted">
                     or continue with
                   </span>
                 </div>

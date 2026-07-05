@@ -63,7 +63,7 @@ export default function WholesaleDashboardPage() {
   if (loading || wholesaleLoading || !customer) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[var(--ds-text-primary)]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -87,9 +87,9 @@ export default function WholesaleDashboardPage() {
   }
 
   const tierColors: Record<string, string> = {
-    starter: 'border-[var(--ds-info)] bg-[var(--ds-info-bg)] text-[var(--ds-info-text)]',
-    growth: 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success',
-    enterprise: 'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-soft)] text-[var(--ds-accent-hover)]',
+    starter: 'border-info bg-info-bg text-info-text',
+    growth: 'border-success bg-success-bg text-success',
+    enterprise: 'border-accent bg-accent-soft text-accent-hover',
   };
 
   const tierColor =
@@ -172,7 +172,7 @@ export default function WholesaleDashboardPage() {
 
           {ordersLoading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-[var(--ds-text-primary)] mx-auto"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary mx-auto"></div>
             </div>
           ) : orders.length === 0 ? (
             <EmptyState
@@ -226,7 +226,7 @@ export default function WholesaleDashboardPage() {
                           ? 'text-success'
                           : order.status === 'canceled'
                             ? 'text-error'
-                            : 'text-[var(--ds-warning-text)]'
+                            : 'text-warning-text'
                       }`}
                     >
                       {order.status}

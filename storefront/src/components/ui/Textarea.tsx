@@ -32,8 +32,8 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : rest['aria-describedby']}
           className={cn(
-            'form-control-typography min-h-[120px] w-full resize-y border bg-[var(--ds-surface-paper)] p-3 text-primary outline-none transition-colors placeholder:text-muted focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50',
-            error ? 'border-[var(--ds-danger)]' : 'border-border-subtle',
+            'form-control-typography min-h-[120px] w-full resize-y border bg-surface-paper p-3 text-primary outline-none transition-colors placeholder:text-muted focus:border-accent disabled:cursor-not-allowed disabled:opacity-50',
+            error ? 'border-danger' : 'border-border-subtle',
             className
           )}
         />

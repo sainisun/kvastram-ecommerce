@@ -25,13 +25,13 @@ type CustomerReturn = {
 function getReturnStatusClasses(status: string) {
   switch (status) {
     case 'approved':
-      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success';
+      return 'border-success bg-success-bg text-success';
     case 'refunded':
       return 'kv-status-subtle';
     case 'rejected':
-      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error';
+      return 'border-danger bg-danger-bg text-error';
     default:
-      return 'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]';
+      return 'border-warning bg-warning-bg text-warning-text';
   }
 }
 
@@ -116,19 +116,19 @@ export default function OrdersListPage() {
         <div className="mb-6 flex flex-wrap gap-3">
           <Link
             href="/help"
-            className="border border-border bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
+            className="border border-border bg-surface-paper px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
           >
             Help Center
           </Link>
           <Link
             href="/payment-help"
-            className="border border-border bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
+            className="border border-border bg-surface-paper px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
           >
             Payment Help
           </Link>
           <Link
             href="/returns"
-            className="border border-border bg-[var(--ds-surface-paper)] px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
+            className="border border-border bg-surface-paper px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-parchment"
           >
             View Returns Hub
           </Link>
@@ -239,7 +239,7 @@ export default function OrdersListPage() {
                           onClick={() => handlePageChange(page)}
                           className={`account-page-button h-10 w-10 transition-colors ${
                             currentPage === page
-                              ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                              ? 'border border-primary bg-surface-paper text-primary'
                               : 'border border-border-subtle text-secondary hover:bg-parchment'
                           }`}
                         >

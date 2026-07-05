@@ -22,7 +22,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
           Size Chart
         </h3>
         <table className="w-full text-center font-body text-body-sm text-secondary">
-          <thead className="bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-subtle)]">
+          <thead className="bg-surface-paper border-b border-border-subtle">
             <tr>
               <th className="py-[var(--ds-space-xs)]">Size</th>
               {guide.measurements[0]?.chest && (
@@ -86,7 +86,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               Womenswear
             </h3>
             <table className="w-full text-center font-body text-body-sm text-secondary">
-              <thead className="bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-subtle)]">
+              <thead className="bg-surface-paper border-b border-border-subtle">
                 <tr>
                   <th className="py-[var(--ds-space-xs)]">Size</th>
                   <th className="py-[var(--ds-space-xs)]">US</th>
@@ -147,7 +147,7 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
               Menswear
             </h3>
             <table className="w-full text-center font-body text-body-sm text-secondary">
-              <thead className="bg-[var(--ds-surface-paper)] border-b border-[var(--ds-border-subtle)]">
+              <thead className="bg-surface-paper border-b border-border-subtle">
                 <tr>
                   <th className="py-[var(--ds-space-xs)]">Size</th>
                   <th className="py-[var(--ds-space-xs)]">US</th>

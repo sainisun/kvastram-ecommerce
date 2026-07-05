@@ -45,7 +45,7 @@ export function RegionSelector({
           onRegionChange?.();
         }}
         className={cn(
-          'max-w-44 border border-border-subtle bg-[var(--ds-surface-paper)] px-2 text-primary outline-none transition-colors focus:border-[var(--ds-accent-primary)]',
+          'max-w-44 border border-border-subtle bg-surface-paper px-2 text-primary outline-none transition-colors focus:border-accent',
           compact ? 'h-9 text-body-xs' : 'h-11 w-full text-body-sm'
         )}
       >

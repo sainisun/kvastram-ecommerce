@@ -14,7 +14,7 @@ export function UserCard({ firstName, lastName, email }: UserCardProps) {
     `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
 
   return (
-    <div className="bg-[var(--ds-surface-paper)] p-6 border-b border-border-subtle">
+    <div className="bg-surface-paper p-6 border-b border-border-subtle">
       <div className="flex items-center gap-4">
         <div className="w-14 h-14 bg-surface-soft rounded-full flex items-center justify-center shrink-0">
           {initials ? (

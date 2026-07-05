@@ -77,7 +77,7 @@ export function CartRecovery() {
         </div>
 
         {recoverError && (
-          <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error px-4 py-2 rounded text-body-sm mb-4">
+          <div className="bg-danger-bg border border-danger text-error px-4 py-2 rounded text-body-sm mb-4">
             {recoverError}
           </div>
         )}

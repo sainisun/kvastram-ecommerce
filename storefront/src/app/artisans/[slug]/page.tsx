@@ -49,7 +49,7 @@ export default async function ArtisanPage({ params }: Props) {
           <h2 className="collection-section-title">Pieces by this artisan</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {products.map((product: { id: string; title: string; handle: string }) => (
-              <Link key={product.id} href={`/products/${product.handle}`} className="border border-border-subtle p-5 transition-colors hover:border-[var(--ds-text-primary)]">
+              <Link key={product.id} href={`/products/${product.handle}`} className="border border-border-subtle p-5 transition-colors hover:border-primary">
                 <p className="collection-card-product-title">{product.title}</p>
               </Link>
             ))}

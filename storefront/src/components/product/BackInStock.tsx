@@ -48,7 +48,7 @@ export function BackInStock({
 
   if (subscribed) {
     return (
-      <div className="bg-[var(--ds-success-bg)] border border-[var(--ds-success)] p-4 rounded-sm">
+      <div className="bg-success-bg border border-success p-4 rounded-sm">
         <div className="flex items-center gap-3 text-success">
           <CheckCircle size={20} />
           <div>

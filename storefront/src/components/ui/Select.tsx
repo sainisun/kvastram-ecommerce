@@ -36,8 +36,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : helperText ? helpId : undefined}
           className={cn(
-            'form-control-typography h-12 w-full border bg-[var(--ds-surface-paper)] px-3 text-primary outline-none transition-colors focus:border-[var(--ds-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:h-11',
-            error ? 'border-[var(--ds-danger)]' : 'border-border-subtle',
+            'form-control-typography h-12 w-full border bg-surface-paper px-3 text-primary outline-none transition-colors focus:border-accent disabled:cursor-not-allowed disabled:opacity-50 sm:h-11',
+            error ? 'border-danger' : 'border-border-subtle',
             className
           )}
           {...props}

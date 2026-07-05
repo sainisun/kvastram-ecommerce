@@ -168,7 +168,7 @@ export default async function BestsellersPage({
   ];
 
   return (
-    <div className="bestsellers-shell min-h-screen bg-[var(--ds-surface-paper)]">
+    <div className="bestsellers-shell min-h-screen bg-surface-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
@@ -275,7 +275,7 @@ export default async function BestsellersPage({
                           />
                         ) : null}
 
-                        <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[var(--ds-text-primary)] font-display text-display-sm font-medium text-inverse">
+                        <span className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary font-display text-display-sm font-medium text-inverse">
                           {index + 1}
                         </span>
                       </div>

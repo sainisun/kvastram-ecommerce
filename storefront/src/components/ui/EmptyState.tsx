@@ -21,7 +21,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'border border-border-subtle bg-[var(--ds-surface-paper)] px-6 py-12 text-center md:px-10 md:py-16',
+        'border border-border-subtle bg-surface-paper px-6 py-12 text-center md:px-10 md:py-16',
         className
       )}
       {...props}

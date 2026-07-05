@@ -8,7 +8,7 @@ function whatsappHref(message: string) {
 
 export function WhatsAppHelpStrip() {
   return (
-    <section className="border-y border-border-subtle bg-[var(--ds-surface-paper)]" aria-label="Product help">
+    <section className="border-y border-border-subtle bg-surface-paper" aria-label="Product help">
       <div className="kv-container grid gap-[14px] items-center py-[18px] md:grid-cols-[1fr_auto]">
         <div>
           <span className="block text-primary font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)] [text-transform:var(--type-label-transform)]">Need size, fabric, or more photos?</span>
@@ -51,11 +51,11 @@ const craftCards = [
 
 export function CraftEducationStrip() {
   return (
-    <section className="max-md:py-[var(--ds-space-md)] bg-[var(--ds-surface-paper)]">
+    <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper">
       <div className="kv-container">
         <div className="grid gap-[var(--ds-space-xs)] md:grid-cols-3">
           {craftCards.map(({ icon: Icon, title, copy, href }) => (
-            <Link key={title} href={href} className="grid gap-[10px] grid-cols-[auto_1fr] border border-border-subtle rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-primary no-underline">
+            <Link key={title} href={href} className="grid gap-[10px] grid-cols-[auto_1fr] border border-border-subtle rounded-md bg-surface-paper p-[18px] text-primary no-underline">
               <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-accent" />
               <div>
                 <h3 className="m-0 text-primary font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)]">{title}</h3>
@@ -127,7 +127,7 @@ const faqItems = [
 
 export function ShippingReturnsMiniFAQ() {
   return (
-    <section className="max-md:py-[var(--ds-space-md)] bg-[var(--ds-surface-paper)]">
+    <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper">
       <div className="kv-container">
         <div className="max-md:py-[var(--ds-space-md)]-head">
           <div>
@@ -140,7 +140,7 @@ export function ShippingReturnsMiniFAQ() {
         </div>
         <div className="grid gap-[var(--ds-space-xs)] md:grid-cols-4">
           {faqItems.map(({ icon: Icon, title, copy }) => (
-            <article key={title} className="grid content-start gap-[10px] border border-border-subtle rounded-md bg-[var(--ds-surface-paper)] p-[18px] text-primary no-underline">
+            <article key={title} className="grid content-start gap-[10px] border border-border-subtle rounded-md bg-surface-paper p-[18px] text-primary no-underline">
               <Icon aria-hidden="true" size={18} strokeWidth={1.7} className="text-accent" />
               <h3 className="m-0 text-primary font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)]">{title}</h3>
               <p className="mt-1.5 text-muted text-body-sm">{copy}</p>

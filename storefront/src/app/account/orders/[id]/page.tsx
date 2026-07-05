@@ -97,13 +97,13 @@ type CustomerReturn = {
 function getReturnStatusClasses(status: string) {
   switch (status) {
     case 'approved':
-      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success';
+      return 'border-success bg-success-bg text-success';
     case 'refunded':
       return 'kv-status-subtle';
     case 'rejected':
-      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error';
+      return 'border-danger bg-danger-bg text-error';
     default:
-      return 'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]';
+      return 'border-warning bg-warning-bg text-warning-text';
   }
 }
 
@@ -309,7 +309,7 @@ export default function OrderDetailsPage() {
   if (loading || fetching) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-primary)]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -400,7 +400,7 @@ export default function OrderDetailsPage() {
             </div>
             <div className="mt-3 h-1 bg-surface-warm rounded-full relative">
               <div
-                className="absolute left-0 top-0 h-full bg-[var(--ds-text-primary)] rounded-full transition-all duration-500"
+                className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-500"
                 style={{ width: workflowIndex >= 0 ? workflowProgressWidth : '25%' }}
               ></div>
             </div>
@@ -670,7 +670,7 @@ export default function OrderDetailsPage() {
                     variant="outline"
                     size="md"
                     fullWidth
-                    className="hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger-bg)] hover:text-error"
+                    className="hover:border-danger hover:bg-danger-bg hover:text-error"
                   >
                     <RotateCcw size={14} /> Request Return
                   </Button>

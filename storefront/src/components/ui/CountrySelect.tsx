@@ -79,7 +79,7 @@ export default function CountrySelect({
       <UnstyledButton
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="form-control-typography flex h-12 w-full items-center justify-between border border-border-subtle bg-[var(--ds-surface-paper)] px-3 text-left text-primary outline-none transition-colors focus:border-[var(--ds-accent-primary)] sm:h-11"
+        className="form-control-typography flex h-12 w-full items-center justify-between border border-border-subtle bg-surface-paper px-3 text-left text-primary outline-none transition-colors focus:border-accent sm:h-11"
         aria-label={required ? `${name}, required` : name}
         aria-haspopup="listbox"
         aria-expanded={isOpen}

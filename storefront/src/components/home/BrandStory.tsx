@@ -18,7 +18,7 @@ export function BrandStory({ story }: { story: HomepageBrandStory | null }) {
           />
         </div>
         <div className="py-[var(--ds-space-md)]">
-          <p className="m-0 mb-[var(--ds-space-xs)] text-[var(--ds-accent-primary)] font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-label-tracking)]">Our Story</p>
+          <p className="m-0 mb-[var(--ds-space-xs)] text-accent font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-label-tracking)]">Our Story</p>
           <h2 className="m-0 font-display text-display-md font-[var(--ds-type-heading-weight)]">{story.title}</h2>
           <p className="max-w-[58ch] mt-[var(--ds-space-md)] mb-[var(--ds-space-lg)] text-secondary">{story.content}</p>
           <ButtonLink href="/about" variant="outline" size="md">

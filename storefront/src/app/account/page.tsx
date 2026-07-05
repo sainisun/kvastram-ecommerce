@@ -46,7 +46,7 @@ export default function AccountPage() {
             icon={<User size={42} />}
             title="Sign in to view your account."
             description="Orders, addresses, wishlist, notifications, and profile settings are available after login."
-            className="rounded-lg bg-[var(--ds-surface-paper)]"
+            className="rounded-lg bg-surface-paper"
             actions={
               <>
                 <ButtonLink href="/login?redirect=/account" variant="secondary" size="md">
@@ -68,7 +68,7 @@ export default function AccountPage() {
       {/* Mobile Layout */}
       <div className="md:hidden">
         {/* Header */}
-        <div className="bg-[var(--ds-surface-paper)] border-b border-border-subtle sticky top-0 z-10">
+        <div className="bg-surface-paper border-b border-border-subtle sticky top-0 z-10">
           <div className="px-4 h-14 flex items-center justify-center">
             <h1 className="account-mobile-title">Profile</h1>
           </div>
@@ -146,7 +146,7 @@ export default function AccountPage() {
                     variant="ghost"
                     size="sm"
                     fullWidth
-                    className="account-nav-danger mt-4 justify-start gap-2 px-4 py-2 text-left normal-case hover:bg-[var(--ds-danger-bg)]"
+                    className="account-nav-danger mt-4 justify-start gap-2 px-4 py-2 text-left normal-case hover:bg-danger-bg"
                   >
                     <LogOut size={14} /> Sign Out
                   </Button>
@@ -207,7 +207,7 @@ export default function AccountPage() {
 
                 {ordersLoading ? (
                   <div className="p-12 text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--ds-text-primary)] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                   </div>
                 ) : orders.length === 0 ? (
                   <EmptyState

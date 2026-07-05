@@ -30,7 +30,7 @@ export default function ListingHero({
   const hasCollectionImage = isCollection && Boolean(image);
 
   return (
-    <header className="bg-[var(--ds-surface-paper)]">
+    <header className="bg-surface-paper">
       <section
         className={
           hasCollectionImage

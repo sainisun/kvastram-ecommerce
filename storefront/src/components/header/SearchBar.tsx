@@ -50,7 +50,7 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
           className="overflow-hidden border-t border-border bg-parchment"
         >
           <form onSubmit={handleSubmit} className="h-[44px] flex items-center px-[var(--ds-space-lg)] gap-[var(--ds-space-xs)] max-w-screen-xl mx-auto">
-            <Search size={16} className="text-[var(--ds-text-disabled)] shrink-0" />
+            <Search size={16} className="text-disabled shrink-0" />
             <Input
               ref={inputRef}
               type="search"

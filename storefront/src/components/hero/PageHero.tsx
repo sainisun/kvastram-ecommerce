@@ -35,7 +35,7 @@ export default function PageHero({
       )}
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-[var(--ds-text-primary)]/40" />
+      <div className="absolute inset-0 bg-primary/40" />
 
       {/* Content */}
       <div className="kv-page-container relative z-10 mx-auto max-w-page space-y-4 px-6 text-center md:px-12 lg:px-20">

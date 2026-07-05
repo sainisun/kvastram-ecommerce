@@ -52,7 +52,7 @@ export default function NewsletterForm({
   if (status === 'success') {
     return (
       <output
-        className={`flex items-center gap-2 ${minimal ? 'text-[var(--ds-success)]' : 'text-[var(--ds-success)]'}`}
+        className={`flex items-center gap-2 ${minimal ? 'text-success' : 'text-success'}`}
       >
         <CheckCircle size={minimal ? 16 : 20} aria-hidden="true" />
         <span className={minimal ? 'text-body-sm' : ''}>{message}</span>
@@ -75,7 +75,7 @@ export default function NewsletterForm({
           required
           disabled={status === 'loading'}
           containerClassName="flex-1"
-          className={minimal ? 'bg-[var(--ds-footer-surface)] text-inverse' : 'bg-[rgba(var(--ds-surface-paper-rgb),0.05)] text-inverse'}
+          className={minimal ? 'bg-footer-surface text-inverse' : 'bg-[rgba(var(--ds-surface-paper-rgb),0.05)] text-inverse'}
           aria-label="Email address"
           aria-required="true"
         />

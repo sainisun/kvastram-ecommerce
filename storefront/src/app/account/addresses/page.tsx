@@ -195,7 +195,7 @@ export default function AddressesPage() {
   if (loading || !customer) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-parchment">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--ds-text-primary)]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
       </div>
     );
   }
@@ -426,12 +426,12 @@ export default function AddressesPage() {
 
         {loadingAddresses ? (
           <Card className="p-12 text-center shadow-sm">
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--ds-text-primary)]" />
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
             <p className="account-muted mt-4">Loading saved addresses...</p>
           </Card>
         ) : addresses.length === 0 ? (
           <Card className="p-12 text-center shadow-sm">
-            <MapPin size={48} className="mx-auto mb-4 text-[var(--ds-text-disabled)]" />
+            <MapPin size={48} className="mx-auto mb-4 text-disabled" />
             <h3 className="account-section-title mb-2">No saved addresses</h3>
             <p className="account-muted mb-6">
               Add an address now to speed up future checkouts and order support.
@@ -498,7 +498,7 @@ export default function AddressesPage() {
                     disabled={deletingId === address.id}
                     variant="outline"
                     size="sm"
-                    className="hover:border-[var(--ds-danger)] hover:text-error"
+                    className="hover:border-danger hover:text-error"
                     aria-label={`Delete address ${address.id}`}
                   >
                     <Trash2 size={16} />

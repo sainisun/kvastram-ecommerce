@@ -98,7 +98,7 @@ export function Drawer({
         aria-modal="true"
         aria-label={typeof title === 'string' ? title : undefined}
         className={cn(
-          'absolute flex flex-col overflow-hidden border-border-subtle bg-[var(--ds-surface-paper)] text-primary shadow-[var(--ds-shadow)]',
+          'absolute flex flex-col overflow-hidden border-border-subtle bg-surface-paper text-primary shadow-[var(--ds-shadow)]',
           side === 'bottom' ? 'border-t' : 'border-l',
           sideClasses[side],
           className

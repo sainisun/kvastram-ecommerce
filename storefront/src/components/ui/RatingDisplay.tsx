@@ -53,14 +53,14 @@ export function RatingDisplay({
     <>
       <span
         aria-hidden="true"
-        className="inline-flex items-center gap-0.5 text-[var(--ds-accent-gold)]"
+        className="inline-flex items-center gap-0.5 text-accent-gold"
       >
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
             size={starSize}
             fill={star <= roundedRating ? 'currentColor' : 'none'}
-            className={star <= roundedRating ? 'text-[var(--ds-accent-gold)]' : 'text-[var(--ds-border-strong)]'}
+            className={star <= roundedRating ? 'text-accent-gold' : 'text-border'}
           />
         ))}
       </span>

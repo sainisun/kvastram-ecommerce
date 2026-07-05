@@ -88,7 +88,7 @@ export function SiteHeader() {
 
   const headerCls = isTransparent
     ? 'sticky top-0 z-50 w-full bg-transparent transition-all duration-300'
-    : 'sticky top-0 z-50 w-full bg-[var(--ds-surface-paper)] shadow-sm transition-all duration-300';
+    : 'sticky top-0 z-50 w-full bg-transparent shadow-sm transition-all duration-300';
 
   return (
     <>

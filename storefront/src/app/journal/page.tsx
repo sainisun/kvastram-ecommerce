@@ -54,7 +54,7 @@ export default async function JournalPage() {
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full bg-surface-soft flex items-center justify-center text-[var(--ds-text-disabled)] italic font-display">
+                <div className="w-full h-full bg-surface-soft flex items-center justify-center text-disabled italic font-display">
                   Odhvica Journal
                 </div>
               )}
@@ -69,7 +69,7 @@ export default async function JournalPage() {
               <p className="text-secondary font-light line-clamp-3">
                 {post.excerpt || post.content.substring(0, 150) + '...'}
               </p>
-              <span className="inline-block text-body-xs font-bold border-b border-[var(--ds-text-primary)] pb-1 mt-2">
+              <span className="inline-block text-body-xs font-bold border-b border-primary pb-1 mt-2">
                 Read Story
               </span>
             </div>

@@ -222,7 +222,7 @@ export default function ProductGallery({
                     <UnstyledButton
                       type="button"
                       onClick={() => setIsMuted((current) => !current)}
-                      className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/40 text-inverse backdrop-blur-sm"
+                      className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/40 text-inverse backdrop-blur-sm"
                       aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                     >
                       {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -250,7 +250,7 @@ export default function ProductGallery({
                 )}
 
                 {item.type === 'video' && (
-                  <div className="media-badge absolute left-4 top-4 flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--ds-text-primary)]/45 px-3 py-1.5">
+                  <div className="media-badge absolute left-4 top-4 flex items-center gap-2 rounded-[var(--radius-sm)] bg-primary/45 px-3 py-1.5">
                     <Play size={12} fill="currentColor" />
                     Reel
                   </div>
@@ -290,7 +290,7 @@ export default function ProductGallery({
                   onClick={() => scrollToIndex(index)}
                   className={`relative h-16 w-12 shrink-0 overflow-hidden rounded-[var(--ds-radius-sm)] border-2 transition-colors ${
                     activeIndex === index
-                      ? 'border-[var(--ds-text-primary)]'
+                      ? 'border-primary'
                       : 'border-transparent opacity-70'
                   }`}
                   aria-label={`Select media ${index + 1}`}
@@ -310,8 +310,8 @@ export default function ProductGallery({
                           <Play size={14} />
                         </div>
                       )}
-                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-text-primary)]/10">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/60 text-inverse">
+                      <div className="absolute inset-0 flex items-center justify-center bg-primary/10">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/60 text-inverse">
                           <Play size={12} fill="currentColor" />
                         </div>
                       </div>
@@ -352,12 +352,12 @@ export default function ProductGallery({
                 <UnstyledButton
                   type="button"
                   onClick={() => setIsMuted((current) => !current)}
-                  className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/40 text-inverse backdrop-blur-sm"
+                  className="absolute bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-primary/40 text-inverse backdrop-blur-sm"
                   aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                 >
                   {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                 </UnstyledButton>
-                <div className="media-badge absolute left-5 top-5 flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--ds-text-primary)]/45 px-3 py-1.5">
+                <div className="media-badge absolute left-5 top-5 flex items-center gap-2 rounded-[var(--radius-sm)] bg-primary/45 px-3 py-1.5">
                   <Play size={12} fill="currentColor" />
                   Reel
                 </div>
@@ -385,7 +385,7 @@ export default function ProductGallery({
                 <UnstyledButton
                   type="button"
                   onClick={() => showPrev()}
-                  className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/90 text-primary shadow-sm"
+                  className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-surface-paper/90 text-primary shadow-sm"
                   aria-label="Previous media"
                 >
                   <ChevronLeft size={20} />
@@ -393,7 +393,7 @@ export default function ProductGallery({
                 <UnstyledButton
                   type="button"
                   onClick={() => showNext()}
-                  className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/90 text-primary shadow-sm"
+                  className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-surface-paper/90 text-primary shadow-sm"
                   aria-label="Next media"
                 >
                   <ChevronRight size={20} />
@@ -419,7 +419,7 @@ export default function ProductGallery({
                     type="button"
                     onClick={() => goToIndex(index)}
                     className={`h-2 rounded-[var(--ds-radius-pill)] transition-all ${
-                      activeIndex === index ? 'w-8 bg-[var(--ds-text-primary)]' : 'w-2 bg-[var(--ds-border-strong)]'
+                      activeIndex === index ? 'w-8 bg-primary' : 'w-2 bg-border'
                     }`}
                     aria-label={`Go to media ${index + 1}`}
                   />
@@ -436,7 +436,7 @@ export default function ProductGallery({
                     onClick={() => goToIndex(index)}
                     className={`relative aspect-[4/5] overflow-hidden rounded-[var(--radius-md)] border ${
                       activeIndex === index
-                        ? 'border-[var(--ds-text-primary)]'
+                        ? 'border-primary'
                         : 'border-transparent opacity-75'
                     }`}
                     aria-label={`Select media ${index + 1}`}
@@ -456,8 +456,8 @@ export default function ProductGallery({
                             <Play size={16} />
                           </div>
                         )}
-                        <div className="absolute inset-0 flex items-center justify-center bg-[var(--ds-text-primary)]/10">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ds-text-primary)]/60 text-inverse">
+                        <div className="absolute inset-0 flex items-center justify-center bg-primary/10">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/60 text-inverse">
                             <Play size={12} fill="currentColor" />
                           </div>
                         </div>
@@ -490,7 +490,7 @@ export default function ProductGallery({
           <UnstyledButton
             type="button"
             onClick={() => setLightboxOpen(false)}
-            className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-inverse"
+            className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-surface-paper/10 text-inverse"
             aria-label="Close fullscreen image"
           >
             <X size={22} />
@@ -504,7 +504,7 @@ export default function ProductGallery({
                   event.stopPropagation();
                   showPrev();
                 }}
-                className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-inverse"
+                className="absolute left-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-surface-paper/10 text-inverse"
                 aria-label="Previous image"
               >
                 <ChevronLeft size={22} />
@@ -515,7 +515,7 @@ export default function ProductGallery({
                   event.stopPropagation();
                   showNext();
                 }}
-                className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-[var(--ds-surface-paper)]/10 text-inverse"
+                className="absolute right-5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-surface-paper/10 text-inverse"
                 aria-label="Next image"
               >
                 <ChevronRight size={22} />

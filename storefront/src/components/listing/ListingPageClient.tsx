@@ -167,7 +167,7 @@ export default function ListingPageClient({
   };
 
   return (
-    <section className="bg-[var(--ds-surface-paper)]">
+    <section className="bg-surface-paper">
       <div className="kv-page-container py-8 md:py-12 lg:py-16">
         {intro ? (
           <p className="mb-6 max-w-3xl text-body-md leading-token-relaxed text-secondary">
@@ -175,19 +175,19 @@ export default function ListingPageClient({
           </p>
         ) : null}
 
-        <div className="sticky top-[72px] z-30 -mx-4 border-y border-border-subtle bg-[var(--ds-surface-paper)]/95 px-4 py-3 backdrop-blur md:static md:mx-0 md:border-x-0 md:px-0 md:backdrop-blur-0">
+        <div className="sticky top-[72px] z-30 -mx-4 border-y border-border-subtle bg-surface-paper/95 px-4 py-3 backdrop-blur md:static md:mx-0 md:border-x-0 md:px-0 md:backdrop-blur-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <UnstyledButton
               ref={filterButtonRef}
               type="button"
               onClick={() => setFilterDrawerOpen(true)}
-              className="inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs font-bold tracking-token-wider text-primary transition-colors hover:bg-[var(--ds-text-primary)] hover:text-inverse"
+              className="inline-flex h-10 items-center gap-2 border border-primary bg-surface-paper px-4 text-body-xs font-bold tracking-token-wider text-primary transition-colors hover:bg-primary hover:text-inverse"
               aria-label="Open filters"
             >
               <SlidersHorizontal size={14} />
               Filter
               {activeFilterCount > 0 ? (
-                <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-[var(--ds-text-primary)] px-1.5 text-inverse">
+                <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-primary px-1.5 text-inverse">
                   {activeFilterCount}
                 </span>
               ) : null}
@@ -265,7 +265,7 @@ export default function ListingPageClient({
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-full border border-border-subtle px-4 py-2 text-body-sm text-secondary transition-colors hover:border-[var(--ds-text-primary)] hover:text-primary"
+                className="rounded-full border border-border-subtle px-4 py-2 text-body-sm text-secondary transition-colors hover:border-primary hover:text-primary"
               >
                 {link.label}
               </Link>
@@ -293,7 +293,7 @@ export default function ListingPageClient({
                   disabled={loading}
                   className={`catalog-page-button h-10 w-10 rounded-md transition-colors ${
                     page === pageNum
-                      ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                      ? 'border border-primary bg-surface-paper text-primary'
                       : 'text-secondary hover:bg-parchment hover:text-primary'
                   }`}
                   aria-label={`Page ${pageNum}`}

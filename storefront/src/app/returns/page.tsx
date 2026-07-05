@@ -38,13 +38,13 @@ type CustomerOrder = {
 function getReturnStatusClasses(status: string) {
   switch (status) {
     case 'approved':
-      return 'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success';
+      return 'border-success bg-success-bg text-success';
     case 'refunded':
       return 'kv-status-subtle';
     case 'rejected':
-      return 'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error';
+      return 'border-danger bg-danger-bg text-error';
     default:
-      return 'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]';
+      return 'border-warning bg-warning-bg text-warning-text';
   }
 }
 
@@ -150,7 +150,7 @@ export default function ReturnsPage() {
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
                   href="/login"
-                  className="bg-[var(--ds-text-primary)] px-5 py-3 text-body-xs font-bold  tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
+                  className="bg-primary px-5 py-3 text-body-xs font-bold  tracking-token-wider text-inverse transition-colors hover:bg-secondary"
                 >
                   Sign In
                 </Link>
@@ -248,13 +248,13 @@ export default function ReturnsPage() {
                         <div className="mt-4 flex flex-wrap gap-3">
                           <Link
                             href={`/account/orders/${order.id}`}
-                            className="bg-[var(--ds-text-primary)] px-4 py-2 text-body-xs font-bold  tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
+                            className="bg-primary px-4 py-2 text-body-xs font-bold  tracking-token-wider text-inverse transition-colors hover:bg-secondary"
                           >
                             Open Order
                           </Link>
                           <Link
                             href={storefrontTrust.policyRoutes.refundPolicy}
-                            className="border border-border px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-[var(--ds-surface-paper)]"
+                            className="border border-border px-4 py-2 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-surface-paper"
                           >
                             Review Policy
                           </Link>

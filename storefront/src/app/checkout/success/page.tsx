@@ -63,7 +63,7 @@ function SuccessContent() {
 
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] p-4">
+      <div className="flex min-h-screen items-center justify-center bg-surface-paper p-4">
         <EmptyState
           icon={<Loader2 size={48} className="animate-spin" />}
           title="Confirming Your Order..."
@@ -76,7 +76,7 @@ function SuccessContent() {
 
   if (status === 'error') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] p-4">
+      <div className="flex min-h-screen items-center justify-center bg-surface-paper p-4">
         <EmptyState
           title="Payment Failed"
           description={
@@ -87,7 +87,7 @@ function SuccessContent() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/checkout"
-                className="bg-[var(--ds-text-primary)] px-8 py-3 text-body-xs  tracking-token-wider text-inverse font-bold transition-colors hover:bg-[var(--ds-text-secondary)]"
+                className="bg-primary px-8 py-3 text-body-xs  tracking-token-wider text-inverse font-bold transition-colors hover:bg-secondary"
               >
                 Try Again
               </Link>
@@ -111,20 +111,20 @@ function SuccessContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+    <div className="min-h-screen bg-surface-paper">
       {/* Hero success area */}
       <div className="kv-page-gutter border-b border-border-subtle bg-parchment px-6 py-12 text-center md:px-12 md:py-16 lg:px-20 lg:py-24">
         {/* Animated success ring */}
         <div className="relative inline-flex mb-8">
-          <div className="w-28 h-28 rounded-full bg-[var(--ds-success-bg)] flex items-center justify-center">
+          <div className="w-28 h-28 rounded-full bg-success-bg flex items-center justify-center">
             <CheckCircle
               size={56}
               strokeWidth={1.5}
-              className="text-[var(--ds-success)]"
+              className="text-success"
             />
           </div>
           {/* Ping ring */}
-          <span className="absolute inset-0 rounded-full animate-ping bg-[var(--ds-success-bg)] opacity-30" />
+          <span className="absolute inset-0 rounded-full animate-ping bg-success-bg opacity-30" />
         </div>
 
         <span className="text-body-xs text-muted font-bold  tracking-token-wider block mb-3">
@@ -206,7 +206,7 @@ function SuccessContent() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-12">
           <Link
             href="/"
-            className="bg-[var(--ds-text-primary)] text-inverse px-10 py-4  tracking-token-wider text-body-xs font-bold hover:bg-[var(--ds-text-secondary)] transition-colors text-center"
+            className="bg-primary text-inverse px-10 py-4  tracking-token-wider text-body-xs font-bold hover:bg-secondary transition-colors text-center"
           >
             Continue Shopping
           </Link>
@@ -232,14 +232,14 @@ function SuccessContent() {
             >
               <span className="text-body-md">💬</span> WhatsApp Support
             </a>
-            <span className="hidden sm:block text-[var(--ds-text-disabled)]">|</span>
+            <span className="hidden sm:block text-disabled">|</span>
             <a
               href={`mailto:${storefrontTrust.supportEmail}`}
               className="inline-flex items-center gap-2 font-bold text-secondary hover:text-primary transition-colors"
             >
               <span>✉️</span> Email Us
             </a>
-            <span className="hidden sm:block text-[var(--ds-text-disabled)]">|</span>
+            <span className="hidden sm:block text-disabled">|</span>
             <Link
               href={storefrontTrust.policyRoutes.returns}
               className="inline-flex items-center gap-2 font-bold text-secondary hover:text-primary transition-colors"

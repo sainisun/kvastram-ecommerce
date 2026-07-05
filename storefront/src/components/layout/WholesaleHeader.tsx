@@ -4,9 +4,9 @@ import { IconButton } from '@/components/ui/Button';
 
 export function WholesaleHeader() {
   return (
-    <header className="sticky top-0 z-50 bg-[var(--ds-text-primary)] text-inverse border-b border-[var(--ds-text-secondary)]">
+    <header className="sticky top-0 z-50 bg-primary text-inverse border-b border-secondary">
       {/* Top Bar */}
-      <div className="bg-[var(--ds-warning)] text-primary py-2">
+      <div className="bg-warning text-primary py-2">
         <div className="kv-page-container mx-auto flex max-w-page items-center justify-between text-body-xs font-bold">
           <div className="flex items-center gap-[var(--ds-space-md)]">
             <span className="flex items-center gap-[var(--ds-space-xs)]">
@@ -41,8 +41,8 @@ export function WholesaleHeader() {
         {/* Logo */}
         <Link href="/wholesale" className="flex items-center gap-[var(--ds-space-xs)]">
           <div className="text-display-md font-bold tracking-token-tight">ODHVICA</div>
-          <div className="h-8 w-px bg-[var(--ds-text-secondary)]"></div>
-          <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] font-bold">
+          <div className="h-8 w-px bg-secondary"></div>
+          <div className="text-body-xs  tracking-token-wider text-accent-gold font-bold">
             Wholesale
           </div>
         </Link>
@@ -51,25 +51,25 @@ export function WholesaleHeader() {
         <nav className="hidden md:flex items-center gap-[var(--ds-space-md)] text-body-sm font-medium">
           <Link
             href="/wholesale#benefits"
-            className="hover:text-[var(--ds-accent-gold)] transition-colors"
+            className="hover:text-accent-gold transition-colors"
           >
             Benefits
           </Link>
           <Link
             href="/wholesale#pricing"
-            className="hover:text-[var(--ds-accent-gold)] transition-colors"
+            className="hover:text-accent-gold transition-colors"
           >
             Pricing
           </Link>
           <Link
             href="/wholesale#process"
-            className="hover:text-[var(--ds-accent-gold)] transition-colors"
+            className="hover:text-accent-gold transition-colors"
           >
             How It Works
           </Link>
           <Link
             href="/wholesale#inquiry"
-            className="hover:text-[var(--ds-accent-gold)] transition-colors"
+            className="hover:text-accent-gold transition-colors"
           >
             Get Quote
           </Link>
@@ -85,7 +85,7 @@ export function WholesaleHeader() {
         <div className="flex items-center gap-[var(--ds-space-sm)]">
           <a
             href="#inquiry"
-            className="hidden lg:block bg-[var(--ds-warning)] text-primary px-6 py-2.5 text-body-xs font-bold  tracking-token-wider hover:bg-[var(--ds-accent-gold)] transition-colors"
+            className="hidden lg:block bg-warning text-primary px-6 py-2.5 text-body-xs font-bold  tracking-token-wider hover:bg-accent-gold transition-colors"
           >
             Request Pricing
           </a>

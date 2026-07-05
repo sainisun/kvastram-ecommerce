@@ -94,7 +94,7 @@ function SetPasswordContent() {
             <p className="text-secondary mb-6">
               This password setup link is invalid or has expired.
             </p>
-            <Link href="/wholesale" className="text-[var(--ds-info)] hover:underline">
+            <Link href="/wholesale" className="text-info hover:underline">
               Return to Wholesale
             </Link>
           </div>
@@ -108,8 +108,8 @@ function SetPasswordContent() {
       <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <Card className="w-full max-w-md p-8 shadow-lg">
           <div className="text-center">
-            <div className="w-16 h-16 bg-[var(--ds-success-bg)] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-[var(--ds-success)]" />
+            <div className="w-16 h-16 bg-success-bg rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-success" />
             </div>
             <h1 className="text-display-md font-bold text-primary mb-2">
               Password Set!
@@ -118,7 +118,7 @@ function SetPasswordContent() {
               Your wholesale account has been created successfully. Redirecting
               to wholesale...
             </p>
-            <Link href="/wholesale" className="text-[var(--ds-info)] hover:underline">
+            <Link href="/wholesale" className="text-info hover:underline">
               Go to Wholesale Now
             </Link>
           </div>
@@ -180,9 +180,9 @@ function SetPasswordContent() {
               {passwordRequirements.map((req, index) => (
                 <li key={index} className="flex items-center text-body-sm">
                   {req.valid ? (
-                    <Check className="w-4 h-4 text-[var(--ds-success)] mr-2" />
+                    <Check className="w-4 h-4 text-success mr-2" />
                   ) : (
-                    <X className="w-4 h-4 text-[var(--ds-text-disabled)] mr-2" />
+                    <X className="w-4 h-4 text-disabled mr-2" />
                   )}
                   <span
                     className={req.valid ? 'text-success' : 'text-muted'}
@@ -195,7 +195,7 @@ function SetPasswordContent() {
           </div>
 
           {error && (
-            <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error px-4 py-3 rounded-lg">
+            <div className="bg-danger-bg border border-danger text-error px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
@@ -230,7 +230,7 @@ export default function SetPasswordPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[var(--ds-info)]" />
+          <Loader2 className="w-8 h-8 animate-spin text-info" />
         </div>
       }
     >

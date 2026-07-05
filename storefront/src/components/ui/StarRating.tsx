@@ -46,8 +46,8 @@ export function StarRating({
             fill={(hoverRating || rating) >= star ? 'currentColor' : 'none'}
             className={
               (hoverRating || rating) >= star
-                ? 'text-[var(--ds-accent-gold)]'
-                : 'text-[var(--ds-border-strong)]'
+                ? 'text-accent-gold'
+                : 'text-border'
             }
           />
         </UnstyledButton>

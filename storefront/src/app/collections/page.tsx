@@ -54,7 +54,7 @@ function CollectionCard({
   return (
     <Link
       href={`/collections/${collection.handle}`}
-      className="group block border border-border-subtle bg-[var(--ds-surface-paper)] transition-colors hover:border-[var(--ds-text-primary)]"
+      className="group block border border-border-subtle bg-surface-paper transition-colors hover:border-primary"
     >
       {image ? (
         <div className="relative aspect-[3/4] overflow-hidden bg-surface-soft">
@@ -133,7 +133,7 @@ export default async function CollectionsPage({
 
   if (collections.length === 0) {
     return (
-      <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+      <div className="min-h-screen bg-surface-paper">
         <div className="kv-page-container mx-auto max-w-page px-6 py-10 md:px-12 md:py-14 lg:px-20">
           <nav
             aria-label="Breadcrumb"
@@ -165,7 +165,7 @@ export default async function CollectionsPage({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+    <div className="min-h-screen bg-surface-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -279,7 +279,7 @@ export default async function CollectionsPage({
           <div className="mt-14 text-center">
             <Link
               href="/collections?show=all"
-              className="inline-flex items-center gap-2 border-b border-[var(--ds-text-primary)] pb-1 text-primary transition-colors hover:border-[var(--ds-text-muted)] hover:text-secondary"
+              className="inline-flex items-center gap-2 border-b border-primary pb-1 text-primary transition-colors hover:border-muted hover:text-secondary"
             >
               Load More Collections
               <ArrowRight size={16} />
@@ -289,7 +289,7 @@ export default async function CollectionsPage({
           <div className="mt-14 text-center">
             <Link
               href="/collections"
-              className="inline-flex items-center gap-2 border-b border-[var(--ds-text-primary)] pb-1 text-primary transition-colors hover:border-[var(--ds-text-muted)] hover:text-secondary"
+              className="inline-flex items-center gap-2 border-b border-primary pb-1 text-primary transition-colors hover:border-muted hover:text-secondary"
             >
               View Fewer Collections
               <ArrowRight size={16} />

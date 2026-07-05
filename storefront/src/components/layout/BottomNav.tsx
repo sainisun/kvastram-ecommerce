@@ -83,7 +83,7 @@ export function BottomNav() {
 
       {/* Bottom Navigation Bar */}
       <nav
-        className={`fixed bottom-0 left-0 right-0 bg-[var(--ds-surface-paper)]/95 backdrop-blur-md border-t border-border-subtle z-[45] pointer-events-auto transition-transform duration-300 md:hidden ${
+        className={`fixed bottom-0 left-0 right-0 bg-surface-paper/95 backdrop-blur-md border-t border-border-subtle z-[45] pointer-events-auto transition-transform duration-300 md:hidden ${
           isVisible ? 'translate-y-0' : 'translate-y-full'
         }`}
         aria-label="Bottom navigation"
@@ -108,7 +108,7 @@ export function BottomNav() {
                   <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
                   {/* Badge */}
                   {item.badge > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[var(--ds-text-primary)] text-inverse text-body-xs font-bold rounded-full flex items-center justify-center leading-token-tight">
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-primary text-inverse text-body-xs font-bold rounded-full flex items-center justify-center leading-token-tight">
                       {item.badge > 9 ? '9+' : item.badge}
                     </span>
                   )}
@@ -122,7 +122,7 @@ export function BottomNav() {
                 </span>
                 {/* Active indicator dot */}
                 {isActive && (
-                  <span className="absolute bottom-1 w-1 h-1 bg-[var(--ds-text-primary)] rounded-full" />
+                  <span className="absolute bottom-1 w-1 h-1 bg-primary rounded-full" />
                 )}
               </a>
             );

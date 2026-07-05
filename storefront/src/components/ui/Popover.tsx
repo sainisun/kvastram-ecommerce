@@ -14,7 +14,7 @@ export function PopoverPanel({
   return (
     <div
       className={cn(
-        'absolute z-50 mt-2 overflow-hidden border border-border-subtle bg-[var(--ds-surface-paper)] text-primary shadow-[var(--ds-shadow)]',
+        'absolute z-50 mt-2 overflow-hidden border border-border-subtle bg-surface-paper text-primary shadow-[var(--ds-shadow)]',
         align === 'right' ? 'right-0' : 'left-0',
         className
       )}

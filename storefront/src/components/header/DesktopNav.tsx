@@ -49,10 +49,10 @@ export function DesktopNav({ activeMega, onMegaEnter, onMegaLeave, isTransparent
               className={[
                 'font-ui text-body-sm font-medium tracking-token-wide pb-1 transition-colors',
                 isActive || isMegaOpen
-                  ? 'text-accent border-b border-[var(--ds-accent-primary)]'
+                  ? 'text-accent border-b border-accent'
                   : isTransparent
-                    ? 'text-inverse hover:text-inverse hover:border-b hover:border-[var(--ds-text-inverse)]'
-                    : 'text-secondary hover:text-primary hover:border-b hover:border-[var(--ds-text-disabled)]',
+                    ? 'text-inverse hover:text-inverse hover:border-b hover:border-inverse'
+                    : 'text-secondary hover:text-primary hover:border-b hover:border-muted',
               ].join(' ')}
               aria-haspopup={item.hasMega ? 'true' : undefined}
               aria-expanded={item.hasMega ? isMegaOpen : undefined}

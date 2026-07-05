@@ -152,7 +152,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
               <Link
                 href="/checkout"
                 onClick={onClose}
-                className="block w-full text-center py-3 bg-[var(--ds-text-primary)] text-inverse text-body-sm font-medium hover:bg-[var(--ds-text-secondary)] transition-colors"
+                className="block w-full text-center py-3 bg-primary text-inverse text-body-sm font-medium hover:bg-secondary transition-colors"
               >
                 Checkout
               </Link>

@@ -106,7 +106,7 @@ export function Modal({
         aria-label={typeof title === 'string' ? title : undefined}
         tabIndex={-1}
         className={cn(
-          'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto border border-border-subtle bg-[var(--ds-surface-paper)] text-primary shadow-[var(--ds-shadow)]',
+          'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto border border-border-subtle bg-surface-paper text-primary shadow-[var(--ds-shadow)]',
           className
         )}
       >

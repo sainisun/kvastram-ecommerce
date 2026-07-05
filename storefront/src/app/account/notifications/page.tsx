@@ -116,7 +116,7 @@ export default function AccountNotificationsPage() {
     <div className="min-h-screen bg-parchment px-4 py-10 md:px-8 md:py-16">
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="space-y-3">
-          <div className="inline-flex h-11 w-11 items-center justify-center border border-border-subtle bg-[var(--ds-surface-paper)]">
+          <div className="inline-flex h-11 w-11 items-center justify-center border border-border-subtle bg-surface-paper">
             <Bell size={20} />
           </div>
           <p className="text-body-xs font-semibold tracking-token-wider text-muted">

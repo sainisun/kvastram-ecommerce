@@ -108,7 +108,7 @@ export function ChatWidget() {
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="fixed bottom-40 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--ds-text-primary)] text-inverse shadow-xl transition-colors hover:bg-[var(--ds-accent-hover)] md:bottom-6 md:right-6"
+          className="fixed bottom-40 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-inverse shadow-xl transition-colors hover:bg-accent-hover md:bottom-6 md:right-6"
           onClick={handleOpenChat}
           aria-label="Open chat support"
         >
@@ -129,7 +129,7 @@ export function ChatWidget() {
               isMinimized ? 'h-14' : 'h-[500px]'
             )}
           >
-            <div className="flex items-center justify-between bg-[var(--ds-text-primary)] p-4 text-inverse">
+            <div className="flex items-center justify-between bg-primary p-4 text-inverse">
               <div className="flex items-center gap-[var(--ds-space-xs)]">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(var(--ds-cream-rgb),0.2)]">
                   <MessageCircle size={16} />
@@ -175,8 +175,8 @@ export function ChatWidget() {
                         <div
                           className={`max-w-[85%] rounded-lg px-[var(--ds-space-sm)] py-[var(--ds-space-xs)] text-body-sm ${
                             message.role === 'user'
-                              ? 'rounded-tr-sm bg-[var(--ds-text-primary)] text-inverse'
-                              : 'rounded-tl-sm border border-border-subtle bg-[var(--ds-surface-paper)] text-secondary'
+                              ? 'rounded-tr-sm bg-primary text-inverse'
+                              : 'rounded-tl-sm border border-border-subtle bg-surface-paper text-secondary'
                           }`}
                         >
                           {message.text}
@@ -190,7 +190,7 @@ export function ChatWidget() {
                           key={reply.label}
                           type="button"
                           onClick={() => handleQuickReply(reply.action)}
-                          className="rounded-full border border-border-subtle bg-[var(--ds-surface-paper)] px-3 py-1.5 text-body-xs text-secondary transition-colors hover:border-[var(--ds-accent-primary)] hover:text-accent"
+                          className="rounded-full border border-border-subtle bg-surface-paper px-3 py-1.5 text-body-xs text-secondary transition-colors hover:border-accent hover:text-accent"
                         >
                           {reply.label}
                         </UnstyledButton>
@@ -199,7 +199,7 @@ export function ChatWidget() {
                   </div>
                 </div>
 
-                <div className="border-t border-border-subtle bg-[var(--ds-surface-paper)] p-4">
+                <div className="border-t border-border-subtle bg-surface-paper p-4">
                   <form
                     className="flex gap-[var(--ds-space-xs)]"
                     onSubmit={(event) => {

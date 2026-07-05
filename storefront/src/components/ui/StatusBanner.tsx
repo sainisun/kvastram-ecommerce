@@ -12,13 +12,13 @@ interface StatusBannerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
 
 const toneClasses: Record<StatusBannerTone, string> = {
   info:
-    'border-[var(--ds-info)] bg-[var(--ds-info-bg)] text-[var(--ds-info-text)]',
+    'border-info bg-info-bg text-info-text',
   success:
-    'border-[var(--ds-success)] bg-[var(--ds-success-bg)] text-success',
+    'border-success bg-success-bg text-success',
   warning:
-    'border-[var(--ds-warning)] bg-[var(--ds-warning-bg)] text-[var(--ds-warning-text)]',
+    'border-warning bg-warning-bg text-warning-text',
   danger:
-    'border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] text-error',
+    'border-danger bg-danger-bg text-error',
 };
 
 export function StatusBanner({

@@ -62,7 +62,7 @@ export default function CategoryBannerCarousel({ banners }: Props) {
                         </h2>
                       ) : null}
                       {banner.button_label ? (
-                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full border border-[var(--ds-surface-paper)]/70 bg-transparent px-5 py-2.5 text-inverse">
+                        <span className="category-banner-cta mt-4 inline-flex items-center rounded-full border border-surface-paper/70 bg-transparent px-5 py-2.5 text-inverse">
                           {banner.button_label}
                         </span>
                       ) : null}
@@ -109,8 +109,8 @@ export default function CategoryBannerCarousel({ banners }: Props) {
               onClick={() => setActiveIndex(index)}
               className={`h-2.5 rounded-[var(--ds-radius-pill)] transition-all ${
                 index === safeActiveIndex
-                  ? 'w-7 bg-[var(--ds-surface-paper)]'
-                  : 'w-2.5 bg-[var(--ds-surface-paper)]/55'
+                  ? 'w-7 bg-surface-paper'
+                  : 'w-2.5 bg-surface-paper/55'
               }`}
               aria-label={`Go to category banner ${index + 1}`}
             />

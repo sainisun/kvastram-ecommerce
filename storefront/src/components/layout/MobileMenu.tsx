@@ -49,13 +49,13 @@ export default function MobileMenu({
               href={item.href}
               onClick={onClose}
               className={`flex items-center justify-between border-b border-border-subtle px-5 py-4 transition-colors ${
-                isActive ? 'text-accent bg-[var(--ds-surface-subtle)]' : 'text-primary'
+                isActive ? 'text-accent bg-surface-subtle' : 'text-primary'
               }`}
             >
               <span className="font-ui text-body-md font-medium tracking-token-wide uppercase">
                 {item.label}
               </span>
-              <ChevronRight size={18} className="text-[var(--ds-text-disabled)]" />
+              <ChevronRight size={18} className="text-disabled" />
             </Link>
           );
         })}

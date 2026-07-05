@@ -24,7 +24,7 @@ function usePasswordValidation(password: string) {
 
 function SuccessView() {
   return (
-    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface-paper px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <EmptyState
         icon={<CheckCircle size={48} />}
         title="Password Reset Successfully"
@@ -32,7 +32,7 @@ function SuccessView() {
         actions={
         <Link
           href="/login"
-          className="inline-block bg-[var(--ds-text-primary)] text-inverse px-8 py-3 font-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-text-secondary)] transition-colors"
+          className="inline-block bg-primary text-inverse px-8 py-3 font-bold  tracking-token-wider text-body-xs hover:bg-secondary transition-colors"
         >
           Go to Login
         </Link>
@@ -128,7 +128,7 @@ function ResetPasswordContent() {
   if (success) return <SuccessView />;
 
   return (
-    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface-paper px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Link

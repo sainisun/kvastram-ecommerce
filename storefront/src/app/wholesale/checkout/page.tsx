@@ -137,8 +137,8 @@ export default function WholesaleCheckoutPage() {
       <div className="min-h-screen bg-parchment py-20">
         <div className="max-w-2xl mx-auto px-4">
           <Card className="p-8 text-center shadow-lg">
-            <div className="w-20 h-20 bg-[var(--ds-success-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-[var(--ds-success)]" />
+            <div className="w-20 h-20 bg-success-bg rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-success" />
             </div>
             <h1 className="text-display-md font-bold text-primary mb-4">
               Order Submitted Successfully!
@@ -237,7 +237,7 @@ export default function WholesaleCheckoutPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Validation Errors */}
               {validation.errors.length > 0 && (
-                <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] rounded-lg p-4">
+                <div className="bg-danger-bg border border-danger rounded-lg p-4">
                   <div className="flex items-center gap-2 text-error mb-2">
                     <AlertCircle className="w-5 h-5" />
                     <h3 className="font-bold">Cart Validation Errors</h3>
@@ -281,7 +281,7 @@ export default function WholesaleCheckoutPage() {
                       key={term.value}
                       className={`flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${
                         formData.payment_terms === term.value
-                          ? 'border-[var(--ds-text-primary)] bg-parchment'
+                          ? 'border-primary bg-parchment'
                           : 'border-border-subtle hover:border-border'
                       }`}
                     >
@@ -296,7 +296,7 @@ export default function WholesaleCheckoutPage() {
                             payment_terms: e.target.value,
                           })
                         }
-                        className="w-4 h-4 text-primary focus:ring-[var(--ds-text-muted)]"
+                        className="w-4 h-4 text-primary focus:ring-text-muted"
                       />
                       <div className="ml-3">
                         <p className="font-medium text-primary">
@@ -491,7 +491,7 @@ export default function WholesaleCheckoutPage() {
               </Card>
 
               {error && (
-                <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error px-4 py-3 rounded-lg">
+                <div className="bg-danger-bg border border-danger text-error px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}
@@ -538,7 +538,7 @@ export default function WholesaleCheckoutPage() {
                         {((item.finalPrice || item.price) / 100).toFixed(2)}
                       </p>
                       {item.moq && item.moq > 1 && (
-                        <p className="text-body-xs text-[var(--ds-warning)]">
+                        <p className="text-body-xs text-warning">
                           MOQ: {item.moq}
                         </p>
                       )}
@@ -552,12 +552,12 @@ export default function WholesaleCheckoutPage() {
                         ).toFixed(2)}
                       </p>
                       {(item.tierDiscount ?? 0) > 0 && (
-                        <p className="text-body-xs text-[var(--ds-success)]">
+                        <p className="text-body-xs text-success">
                           -{item.tierDiscount}% tier
                         </p>
                       )}
                       {(item.bulkDiscount ?? 0) > 0 && (
-                        <p className="text-body-xs text-[var(--ds-info)]">
+                        <p className="text-body-xs text-info">
                           -{item.bulkDiscount}% bulk
                         </p>
                       )}
@@ -574,13 +574,13 @@ export default function WholesaleCheckoutPage() {
                   </span>
                 </div>
                 {cartSummary.tierDiscount > 0 && (
-                  <div className="flex justify-between text-body-sm text-[var(--ds-success)]">
+                  <div className="flex justify-between text-body-sm text-success">
                     <span>Tier Discount</span>
                     <span>-${(cartSummary.tierDiscount / 100).toFixed(2)}</span>
                   </div>
                 )}
                 {cartSummary.bulkDiscount > 0 && (
-                  <div className="flex justify-between text-body-sm text-[var(--ds-info)]">
+                  <div className="flex justify-between text-body-sm text-info">
                     <span>Bulk Discount</span>
                     <span>-${(cartSummary.bulkDiscount / 100).toFixed(2)}</span>
                   </div>
@@ -590,7 +590,7 @@ export default function WholesaleCheckoutPage() {
                   <span>${(cartSummary.total / 100).toFixed(2)}</span>
                 </div>
                 {cartSummary.savings > 0 && (
-                  <p className="text-body-sm text-[var(--ds-success)] text-center">
+                  <p className="text-body-sm text-success text-center">
                     You saved ${(cartSummary.savings / 100).toFixed(2)}!
                   </p>
                 )}

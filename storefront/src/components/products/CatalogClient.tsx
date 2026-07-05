@@ -244,8 +244,8 @@ export default function CatalogClient({
   const endItem = Math.min(page * limit, total);
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
-      <div className="bg-[var(--ds-surface-paper)]">
+    <div className="min-h-screen bg-surface-paper">
+      <div className="bg-surface-paper">
         <div className="kv-container pb-12 pt-6 md:pb-16 md:pt-8 lg:pb-24">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-4">
             <div className="min-w-0">
@@ -267,13 +267,13 @@ export default function CatalogClient({
                 ref={filterButtonRef}
                 type="button"
                 onClick={() => setFilterDrawerOpen(true)}
-                className="group inline-flex h-10 items-center gap-2 border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] px-4 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-[var(--ds-text-primary)] hover:text-inverse"
+                className="group inline-flex h-10 items-center gap-2 border border-primary bg-surface-paper px-4 text-body-xs font-bold  tracking-token-wider text-primary transition-colors hover:bg-primary hover:text-inverse"
                 aria-label="Open filters"
               >
                 <SlidersHorizontal size={14} />
                 Filter
                 {activeFilterCount > 0 ? (
-                  <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-[var(--ds-text-primary)] px-1.5 text-inverse group-hover:bg-[var(--ds-surface-paper)] group-hover:text-primary">
+                  <span className="kv-count-badge inline-flex h-5 min-w-5 rounded-full bg-primary px-1.5 text-inverse group-hover:bg-surface-paper group-hover:text-primary">
                     {activeFilterCount}
                   </span>
                 ) : null}
@@ -286,7 +286,7 @@ export default function CatalogClient({
               </div>
 
               <div
-                className="hidden items-center overflow-hidden border border-border-subtle bg-[var(--ds-surface-paper)] sm:flex"
+                className="hidden items-center overflow-hidden border border-border-subtle bg-surface-paper sm:flex"
                 aria-label="Product grid density"
               >
                 <UnstyledButton
@@ -294,7 +294,7 @@ export default function CatalogClient({
                   onClick={() => setGridDensity('grid')}
                   className={`flex h-10 w-10 items-center justify-center border transition-colors ${
                     gridDensity === 'grid'
-                      ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                      ? 'border-primary bg-surface-paper text-primary'
                       : 'border-transparent text-muted hover:bg-parchment hover:text-primary'
                   }`}
                   aria-label="Grid view"
@@ -307,7 +307,7 @@ export default function CatalogClient({
                   onClick={() => setGridDensity('compact')}
                   className={`flex h-10 w-10 items-center justify-center border transition-colors ${
                     gridDensity === 'compact'
-                      ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                      ? 'border-primary bg-surface-paper text-primary'
                       : 'border-transparent text-muted hover:bg-parchment hover:text-primary'
                   }`}
                   aria-label="Compact view"
@@ -462,7 +462,7 @@ export default function CatalogClient({
                       disabled={loading}
                       className={`catalog-page-button h-10 w-10 rounded-[var(--ds-radius-md)] transition-colors ${
                         page === pageNum
-                          ? 'border border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
+                          ? 'border border-primary bg-surface-paper text-primary'
                           : 'text-secondary hover:bg-parchment hover:text-primary'
                       }`}
                       aria-label={`Page ${pageNum}`}

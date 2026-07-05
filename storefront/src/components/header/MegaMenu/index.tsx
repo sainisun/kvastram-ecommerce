@@ -116,10 +116,10 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
           exit="exit"
           role="navigation"
           aria-label="Main navigation"
-          className="absolute top-full left-0 right-0 bg-[var(--ds-surface-paper)] border-b-[1.5px] border-[var(--ds-border-dark)] z-[100] shadow-sm"
+          className="absolute top-full left-0 right-0 bg-surface-paper border-b-[1.5px] border-border-dark z-[100] shadow-sm"
         >
           <div className="grid grid-cols-[1.1fr_1fr_1fr_180px]">
-            <div className="px-8 py-6 border-r border-[var(--ds-surface-parchment-2)]">
+            <div className="px-8 py-6 border-r border-surface-parchment-2">
               <MegaColumn
                 groups={categoryGroups}
                 viewAllLabel="Shop all products"
@@ -128,11 +128,11 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
               />
             </div>
 
-            <div className="px-8 py-6 border-r border-[var(--ds-surface-parchment-2)]">
+            <div className="px-8 py-6 border-r border-surface-parchment-2">
               <MegaColumn groups={secondaryGroups} onClose={onClose} />
             </div>
 
-            <div className="px-8 py-6 border-r border-[var(--ds-surface-parchment-2)]">
+            <div className="px-8 py-6 border-r border-surface-parchment-2">
               <MegaColumn
                 groups={collectionGroups}
                 viewAllLabel="All collections"
@@ -149,7 +149,7 @@ export function MegaMenu({ isOpen, onClose, categories, collections }: MegaMenuP
                 onClick={onClose}
               />
             ) : (
-              <div className="h-full min-h-[240px] bg-[var(--ds-text-primary)]" />
+              <div className="h-full min-h-[240px] bg-primary" />
             )}
           </div>
         </motion.div>

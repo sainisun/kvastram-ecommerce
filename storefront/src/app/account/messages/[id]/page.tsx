@@ -130,7 +130,7 @@ export default function AccountMessageDetailPage() {
           </UnstyledButton>
         </div>
 
-        <div className="border border-border-subtle bg-[var(--ds-surface-paper)]">
+        <div className="border border-border-subtle bg-surface-paper">
           {isLoading ? (
             <div className="flex h-64 items-center justify-center text-muted">
               <RefreshCw className="mr-2 animate-spin" size={20} />
@@ -142,8 +142,8 @@ export default function AccountMessageDetailPage() {
                 const isAdmin = message.sender_type === 'admin';
                 return (
                   <div key={message.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-surface-soft text-primary' : 'bg-[var(--ds-text-primary)] text-inverse'}`}>
-                      <p className={`account-message-meta mb-1 ${isAdmin ? 'text-muted' : 'text-[var(--ds-text-disabled)]'}`}>
+                    <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-surface-soft text-primary' : 'bg-primary text-inverse'}`}>
+                      <p className={`account-message-meta mb-1 ${isAdmin ? 'text-muted' : 'text-disabled'}`}>
                         {isAdmin ? message.sender_name || 'Odhvica Studio' : 'You'}
                       </p>
                       <p className="account-message-body whitespace-pre-wrap">{message.message}</p>

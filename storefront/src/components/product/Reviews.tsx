@@ -287,7 +287,7 @@ export function Reviews({ productId }: ReviewsProps) {
                         onClick={() => removeImage(index)}
                         variant="primary"
                         size="sm"
-                        className="absolute -right-1 -top-1 h-6 w-6 border-[var(--ds-danger)] bg-[var(--ds-danger)] text-inverse hover:border-[var(--ds-danger)] hover:bg-[var(--ds-danger)]"
+                        className="absolute -right-1 -top-1 h-6 w-6 border-danger bg-danger text-inverse hover:border-danger hover:bg-danger"
                         aria-label={`Remove image ${index + 1}`}
                       >
                         <X size={12} />
@@ -337,7 +337,7 @@ export function Reviews({ productId }: ReviewsProps) {
         )}
 
         {submitted && (
-          <div className="bg-[var(--ds-success-bg)] text-[var(--ds-success)] p-6 mb-12 rounded-lg text-center">
+          <div className="bg-success-bg text-success p-6 mb-12 rounded-lg text-center">
             <h3 className="review-success-title mb-2">Thank you!</h3>
             <p className="review-success-copy">
               Your review has been submitted and is pending approval.
@@ -351,7 +351,7 @@ export function Reviews({ productId }: ReviewsProps) {
             Loading reviews...
           </div>
         ) : loadError ? (
-          <div className="text-center py-12 bg-[var(--ds-danger-bg)] text-error">
+          <div className="text-center py-12 bg-danger-bg text-error">
             {loadError}
           </div>
         ) : reviews.length === 0 ? (

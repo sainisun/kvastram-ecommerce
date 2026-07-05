@@ -59,7 +59,7 @@ function PolicyTable({
             <th className="px-4 py-3 font-[var(--ds-type-heading-weight)]">{secondHeader}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)]">
+        <tbody className="divide-y divide-[var(--ds-border-subtle)] bg-surface-paper">
           {rows.map(([first, second]) => (
             <tr key={first}>
               <td className="px-4 py-3 text-primary">{first}</td>

@@ -58,7 +58,7 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
                   </h3>
                   <div className="flex items-center justify-between mt-1">
                     {price ? <PriceDisplay price={price} variant="inline" /> : <span />}
-                    <Link href={productHref} className="text-body-xs font-ui font-semibold text-[var(--ds-accent-gold)] hover:text-primary transition-colors uppercase tracking-wider">
+                    <Link href={productHref} className="text-body-xs font-ui font-semibold text-accent-gold hover:text-primary transition-colors uppercase tracking-wider">
                       Shop
                     </Link>
                   </div>

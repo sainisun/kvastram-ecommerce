@@ -57,10 +57,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           <div
             key={notification.id}
             className={`rounded px-4 py-3 text-body-sm font-medium text-inverse shadow-lg animate-fade-in
-                            ${notification.type === 'success' ? 'bg-[var(--ds-success)]' : ''}
-                            ${notification.type === 'error' ? 'bg-[var(--ds-danger)]' : ''}
-                            ${notification.type === 'info' ? 'bg-[var(--ds-info)]' : ''}
-                            ${notification.type === 'warning' ? 'bg-[var(--ds-warning)]' : ''}
+                            ${notification.type === 'success' ? 'bg-success' : ''}
+                            ${notification.type === 'error' ? 'bg-danger' : ''}
+                            ${notification.type === 'info' ? 'bg-info' : ''}
+                            ${notification.type === 'warning' ? 'bg-warning' : ''}
                         `}
           >
             <div className="flex items-center gap-2">

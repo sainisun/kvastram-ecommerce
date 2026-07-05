@@ -10,7 +10,7 @@ import { StatusBanner } from '@/components/ui/StatusBanner';
 
 function SuccessView({ email }: { readonly email: string }) {
   return (
-    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface-paper px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <EmptyState
         icon={<CheckCircle size={48} />}
         title="Check Your Email"
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
   if (submitted) return <SuccessView email={email} />;
 
   return (
-    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
+    <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface-paper px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Link

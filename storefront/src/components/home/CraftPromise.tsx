@@ -45,9 +45,9 @@ export function CraftPromise() {
           </div>
         </div>
 
-        <div className="grid gap-[1px] overflow-hidden border border-border-subtle bg-[var(--ds-border-subtle)] md:grid-cols-2" aria-label="Odhvica commerce promises">
+        <div className="grid gap-[1px] overflow-hidden border border-border-subtle bg-border-subtle md:grid-cols-2" aria-label="Odhvica commerce promises">
           {promises.map(({ icon: Icon, title, copy }) => (
-            <div key={title} className="grid grid-cols-[auto_1fr] gap-[12px] p-[18px] bg-[var(--ds-surface-paper)]">
+            <div key={title} className="grid grid-cols-[auto_1fr] gap-[12px] p-[18px] bg-surface-paper">
               <Icon size={18} strokeWidth={1.7} aria-hidden="true" className="mt-[2px] text-accent" />
               <div>
                 <strong className="block text-primary font-label text-body-sm font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-label-tracking)]">{title}</strong>

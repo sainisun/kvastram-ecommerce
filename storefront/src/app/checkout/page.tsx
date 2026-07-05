@@ -402,7 +402,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0 && step !== 'success') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[var(--ds-surface-paper)]">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-surface-paper">
         <h1 className="text-display-lg font-display mb-4 color-ink">
           Your cart is empty
         </h1>
@@ -418,14 +418,14 @@ export default function CheckoutPage() {
 
   if (step === 'success') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[var(--ds-surface-paper)]">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-surface-paper">
         {/* Animated check */}
         <div className="relative w-24 h-24 mb-8">
-          <div className="w-24 h-24 rounded-full bg-[var(--ds-success-bg)] flex items-center justify-center animate-scale-in">
+          <div className="w-24 h-24 rounded-full bg-success-bg flex items-center justify-center animate-scale-in">
             <CheckCircle
               size={48}
               strokeWidth={1.5}
-              className="text-[var(--ds-success)]"
+              className="text-success"
             />
           </div>
         </div>
@@ -633,7 +633,7 @@ export default function CheckoutPage() {
     formatMoney(amount, confirmedOrderTotals?.currency_code || currency);
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+    <div className="min-h-screen bg-surface-paper">
       {/* PHASE 3.2: Mobile-first responsive layout */}
       <div className="grid lg:grid-cols-2 min-h-screen">
         {/* Left: Form */}
@@ -665,8 +665,8 @@ export default function CheckoutPage() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-body-xs font-bold border-2 transition-all ${
                       step === 'shipping'
-                        ? 'border-[var(--ink)] bg-[var(--ds-surface-paper)] color-ink'
-                        : 'border-[var(--ink)] bg-[var(--ds-surface-paper)] color-ink'
+                        ? 'border-[var(--ink)] bg-surface-paper color-ink'
+                        : 'border-[var(--ink)] bg-surface-paper color-ink'
                     }`}
                   >
                     {step === 'payment' ? '✓' : '1'}
@@ -690,8 +690,8 @@ export default function CheckoutPage() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-body-xs font-bold border-2 transition-all ${
                       step === 'payment'
-                        ? 'border-[var(--ink)] bg-[var(--ds-surface-paper)] color-ink'
-                        : 'border-border-subtle bg-[var(--ds-surface-paper)] color-muted'
+                        ? 'border-[var(--ink)] bg-surface-paper color-ink'
+                        : 'border-border-subtle bg-surface-paper color-muted'
                     }`}
                   >
                     {'2'}
@@ -707,7 +707,7 @@ export default function CheckoutPage() {
                 <div className={`flex-1 h-0.5 mx-2 bg-[var(--line)]`} />
                 {/* Step 3: Confirmation */}
                 <div className="flex flex-col items-center">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-body-xs font-bold border-2 border-border-subtle bg-[var(--ds-surface-paper)] color-muted">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-body-xs font-bold border-2 border-border-subtle bg-surface-paper color-muted">
                     3
                   </div>
                   <span className="text-body-xs font-bold  tracking-token-wider mt-1 color-muted">
@@ -719,7 +719,7 @@ export default function CheckoutPage() {
 
             {error && (
               <div className="mb-6 space-y-3">
-                <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error p-4 text-body-sm">
+                <div className="bg-danger-bg border border-danger text-error p-4 text-body-sm">
                   {error}
                 </div>
                 <div className="border border-border-subtle bg-surface p-4 text-body-xs color-muted">
@@ -761,7 +761,7 @@ export default function CheckoutPage() {
                   </h3>
                   
                   {authError && (
-                    <div className="bg-[var(--ds-danger-bg)] text-error p-3 text-body-sm mb-4">
+                    <div className="bg-danger-bg text-error p-3 text-body-sm mb-4">
                       {authError}
                     </div>
                   )}
@@ -1024,7 +1024,7 @@ export default function CheckoutPage() {
                               </div>
                             </div>
                             <span
-                              className={`font-medium ${isFree ? 'text-[var(--ds-success)]' : 'color-ink'}`}
+                              className={`font-medium ${isFree ? 'text-success' : 'color-ink'}`}
                             >
                               {isFree
                                 ? 'FREE'
@@ -1036,7 +1036,7 @@ export default function CheckoutPage() {
 
                       {cartTotal >= freeShippingThreshold &&
                         selectedShipping && (
-                          <p className="text-body-sm text-[var(--ds-success)] bg-[var(--ds-success-bg)] p-3 border border-[var(--ds-success)]">
+                          <p className="text-body-sm text-success bg-success-bg p-3 border border-success">
                             🎉 You&apos;ve unlocked FREE shipping!
                           </p>
                         )}
@@ -1097,7 +1097,7 @@ export default function CheckoutPage() {
                           id="gift-wrapping-toggle"
                         />
                         <span
-                          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-[var(--ds-surface-paper)] shadow transition-transform ${
+                          className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface-paper shadow transition-transform ${
                             giftWrapping ? 'translate-x-5' : 'translate-x-0'
                           }`}
                         />
@@ -1241,7 +1241,7 @@ export default function CheckoutPage() {
                         <div className="w-full border-t border-border-subtle"></div>
                       </div>
                       <div className="relative flex justify-center text-body-sm">
-                        <span className="px-2 bg-[var(--ds-surface-paper)] color-muted">or express checkout</span>
+                        <span className="px-2 bg-surface-paper color-muted">or express checkout</span>
                       </div>
                     </div>
                     <ErrorBoundary fallback={
@@ -1261,11 +1261,11 @@ export default function CheckoutPage() {
                         <div className="w-full border-t border-border-subtle"></div>
                       </div>
                       <div className="relative flex justify-center text-body-sm">
-                        <span className="px-2 bg-[var(--ds-surface-paper)] color-muted">or pay with card</span>
+                        <span className="px-2 bg-surface-paper color-muted">or pay with card</span>
                       </div>
                     </div>
                     <ErrorBoundary fallback={
-                      <div className="p-4 border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] rounded text-body-sm text-error">
+                      <div className="p-4 border border-danger bg-danger-bg rounded text-body-sm text-error">
                         Payment form failed to load. Please refresh the page.
                       </div>
                     }>
@@ -1338,7 +1338,7 @@ export default function CheckoutPage() {
             <div className="space-y-6 mb-8">
               {items.map((item) => (
                 <div key={item.variantId} className="flex gap-4">
-                  <div className="relative w-20 h-24 bg-[var(--ds-surface-paper)] border border-border-subtle">
+                  <div className="relative w-20 h-24 bg-surface-paper border border-border-subtle">
                     {item.thumbnail ? (
                       <OptimizedImage
                         src={item.thumbnail}
@@ -1410,7 +1410,7 @@ export default function CheckoutPage() {
                 </div>
                 {promoMessage && (
                   <p
-                    className={`text-body-xs mt-2 ${promoMessage.type === 'success' ? 'text-[var(--ds-success)]' : 'text-error'}`}
+                    className={`text-body-xs mt-2 ${promoMessage.type === 'success' ? 'text-success' : 'text-error'}`}
                   >
                     {promoMessage.text}
                   </p>
@@ -1426,7 +1426,7 @@ export default function CheckoutPage() {
                 </span>
               </div>
               {discount && (
-                <div className="flex justify-between text-[var(--ds-success)]">
+                <div className="flex justify-between text-success">
                   <div className="flex items-center gap-2">
                     <span>Discount</span>
                     <span className="text-body-xs bg-surface-soft px-1 py-0.5 rounded color-muted">
@@ -1446,7 +1446,7 @@ export default function CheckoutPage() {
                     Shipping
                     {selectedShipping ? ` (${selectedShipping.name})` : ''}
                   </span>
-                  <span className={shippingCost === 0 ? 'text-[var(--ds-success)]' : ''}>
+                  <span className={shippingCost === 0 ? 'text-success' : ''}>
                     {shippingCost === 0
                       ? 'FREE'
                        : confirmedOrderTotals
@@ -1498,7 +1498,7 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="mt-8 bg-[var(--ds-surface-paper)] p-4 border border-[var(--soft)] flex gap-3 color-muted text-body-xs">
+            <div className="mt-8 bg-surface-paper p-4 border border-[var(--soft)] flex gap-3 color-muted text-body-xs">
               <ShieldCheck size={32} className="color-muted shrink-0" />
               <p>
                 Every purchase is backed by our Authenticity Guarantee. We

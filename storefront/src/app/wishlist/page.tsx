@@ -40,7 +40,7 @@ export default function WishlistPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="min-h-screen bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="kv-page-container mx-auto max-w-page">
           <EmptyState
             icon={<Heart size={56} />}
@@ -49,7 +49,7 @@ export default function WishlistPage() {
             actions={
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-[var(--ds-text-primary)] text-inverse px-8 py-3 text-body-xs font-bold  tracking-token-wider hover:bg-[var(--ds-text-secondary)] transition-colors"
+              className="inline-flex items-center gap-2 bg-primary text-inverse px-8 py-3 text-body-xs font-bold  tracking-token-wider hover:bg-secondary transition-colors"
             >
               Start Shopping
               <ArrowRight size={16} />
@@ -62,7 +62,7 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         <div className="flex items-center justify-between mb-12">
           <div>
@@ -106,7 +106,7 @@ export default function WishlistPage() {
                 <IconButton
                   type="button"
                   onClick={() => handleRemove(item.productId)}
-                  className="absolute right-3 top-3 h-8 w-8 rounded-full border-0 bg-[var(--ds-surface-paper)]/90 text-muted hover:text-error"
+                  className="absolute right-3 top-3 h-8 w-8 rounded-full border-0 bg-surface-paper/90 text-muted hover:text-error"
                   aria-label="Remove from wishlist"
                 >
                   <Trash2 size={16} />

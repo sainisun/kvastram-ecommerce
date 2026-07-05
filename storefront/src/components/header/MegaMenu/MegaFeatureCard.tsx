@@ -19,7 +19,7 @@ export function MegaFeatureCard({
     <Link
       href={`/collections/${handle}`}
       onClick={onClick}
-      className="group relative flex h-full min-h-[240px] cursor-pointer flex-col justify-end overflow-hidden bg-[var(--ds-text-primary)] p-5"
+      className="group relative flex h-full min-h-[240px] cursor-pointer flex-col justify-end overflow-hidden bg-primary p-5"
     >
       {image ? (
         <OptimizedImage
@@ -37,7 +37,7 @@ export function MegaFeatureCard({
       <h3 className="relative z-10 mb-3 font-display text-display-sm italic font-normal leading-token-tight text-inverse">
         {name}
       </h3>
-      <span className="relative z-10 inline-block border-b border-[var(--ds-surface-paper)]/25 pb-0.5 font-ui text-body-xs tracking-token-wide text-inverse/80 transition-colors group-hover:text-inverse">
+      <span className="relative z-10 inline-block border-b border-surface-paper/25 pb-0.5 font-ui text-body-xs tracking-token-wide text-inverse/80 transition-colors group-hover:text-inverse">
         Shop the edit
       </span>
     </Link>

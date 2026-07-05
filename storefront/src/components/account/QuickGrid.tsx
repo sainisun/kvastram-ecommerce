@@ -41,7 +41,7 @@ export function QuickGrid() {
   ];
 
   return (
-    <div className="bg-[var(--ds-surface-paper)] border-b border-border-subtle p-4">
+    <div className="bg-surface-paper border-b border-border-subtle p-4">
       <div className="grid grid-cols-2 gap-3">
         {gridItems.map((item) => {
           const Icon = item.icon;
@@ -54,7 +54,7 @@ export function QuickGrid() {
               <div className="relative">
                 <Icon size={22} strokeWidth={1.5} className="text-secondary" />
                 {item.count !== null && (
-                  <span className="absolute -top-2 -right-2 w-4 h-4 bg-[var(--ds-text-primary)] text-inverse text-body-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 w-4 h-4 bg-primary text-inverse text-body-xs font-bold rounded-full flex items-center justify-center">
                     {item.count}
                   </span>
                 )}

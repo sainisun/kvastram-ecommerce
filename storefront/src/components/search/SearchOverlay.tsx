@@ -275,7 +275,7 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           }}
                           variant="outline"
                           size="sm"
-                          className="group flex min-h-24 flex-col items-center gap-2 border-border-subtle bg-[var(--ds-surface-paper)] p-4 text-secondary hover:border-border hover:bg-surface-soft hover:text-primary"
+                          className="group flex min-h-24 flex-col items-center gap-2 border-border-subtle bg-surface-paper p-4 text-secondary hover:border-border hover:bg-surface-soft hover:text-primary"
                         >
                           <span className="text-display-md group-hover:scale-110 transition-transform">
                             {label.charAt(0)}
@@ -403,13 +403,13 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
             <div className="bg-surface-soft px-8 py-3.5 text-body-xs text-muted flex justify-between items-center border-t border-border-subtle">
               <span>
                 Press{' '}
-                <kbd className="px-1.5 py-0.5 bg-[var(--ds-surface-paper)] border border-border-subtle rounded text-body-xs font-mono">
+                <kbd className="px-1.5 py-0.5 bg-surface-paper border border-border-subtle rounded text-body-xs font-mono">
                   Enter
                 </kbd>{' '}
                 to search
               </span>
               <span className="hidden md:flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-[var(--ds-surface-paper)] border border-border-subtle rounded text-body-xs font-mono">
+                <kbd className="px-1.5 py-0.5 bg-surface-paper border border-border-subtle rounded text-body-xs font-mono">
                   Esc
                 </kbd>{' '}
                 to close

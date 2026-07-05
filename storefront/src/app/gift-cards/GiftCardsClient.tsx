@@ -81,7 +81,7 @@ export function GiftCardsClient() {
             Back to Home
           </Link>
           <div className="space-y-4">
-            <div className="inline-flex h-12 w-12 items-center justify-center border border-border-subtle bg-[var(--ds-surface-paper)]">
+            <div className="inline-flex h-12 w-12 items-center justify-center border border-border-subtle bg-surface-paper">
               <Gift size={22} />
             </div>
             <p className="text-body-xs font-semibold tracking-token-wider text-muted">
@@ -95,13 +95,13 @@ export function GiftCardsClient() {
             </p>
           </div>
           <div className="grid gap-3 text-body-sm text-secondary">
-            <div className="border border-border-subtle bg-[var(--ds-surface-paper)] p-4">
+            <div className="border border-border-subtle bg-surface-paper p-4">
               Choose an amount and send the request to the team.
             </div>
-            <div className="border border-border-subtle bg-[var(--ds-surface-paper)] p-4">
+            <div className="border border-border-subtle bg-surface-paper p-4">
               The buyer care team confirms availability, payment, and delivery.
             </div>
-            <div className="border border-border-subtle bg-[var(--ds-surface-paper)] p-4">
+            <div className="border border-border-subtle bg-surface-paper p-4">
               The recipient can redeem against eligible Odhvica pieces.
             </div>
           </div>
@@ -109,13 +109,13 @@ export function GiftCardsClient() {
 
         <Card className="p-5 shadow-sm md:p-7">
           {status === 'success' ? (
-            <div className="mb-5 flex gap-3 border border-[var(--ds-success)] bg-[var(--ds-success-bg)] p-4 text-body-sm text-success" role="status">
+            <div className="mb-5 flex gap-3 border border-success bg-success-bg p-4 text-body-sm text-success" role="status">
               <CheckCircle className="mt-0.5 shrink-0" size={18} />
               <p>{message}</p>
             </div>
           ) : null}
           {status === 'error' ? (
-            <div className="mb-5 border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] p-4 text-body-sm text-error" role="alert">
+            <div className="mb-5 border border-danger bg-danger-bg p-4 text-body-sm text-error" role="alert">
               {message}
             </div>
           ) : null}
@@ -152,7 +152,7 @@ export function GiftCardsClient() {
               <select
                 value={form.amount}
                 onChange={(event) => setForm((current) => ({ ...current, amount: event.target.value }))}
-                className="h-12 w-full border border-border-subtle bg-[var(--ds-surface-paper)] px-3 text-body-sm text-primary outline-none focus:border-[var(--ds-accent-primary)]"
+                className="h-12 w-full border border-border-subtle bg-surface-paper px-3 text-body-sm text-primary outline-none focus:border-accent"
               >
                 <option value="1000">Rs. 1,000</option>
                 <option value="2500">Rs. 2,500</option>

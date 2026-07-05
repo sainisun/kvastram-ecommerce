@@ -88,7 +88,7 @@ export default function AccountMessagesPage() {
               {live.isConnected ? 'Live inbox connected' : 'Live inbox connecting...'}
             </StatusBanner>
           </div>
-          <MessageCircle className="text-[var(--ds-text-disabled)]" size={34} />
+          <MessageCircle className="text-disabled" size={34} />
         </div>
 
         {loadingMessages ? (

@@ -208,7 +208,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
         {/* Footer — Subtotal + Checkout */}
         {items.length > 0 && (
-          <div className="border-t border-[var(--soft)] bg-[var(--ds-surface-paper)]">
+          <div className="border-t border-[var(--soft)] bg-surface-paper">
             {/* Subtotal */}
             <div className="px-[var(--ds-space-md)] py-[var(--ds-space-sm)] space-y-2">
               <div className="flex items-center justify-between">
@@ -225,7 +225,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 </span>
                 <span className="text-body-xs color-muted">
                   {hasFreeShipping ? (
-                    <span className="text-[var(--ds-success)] font-medium">FREE ✦</span>
+                    <span className="text-success font-medium">FREE ✦</span>
                   ) : (
                     'Calculated at checkout'
                   )}

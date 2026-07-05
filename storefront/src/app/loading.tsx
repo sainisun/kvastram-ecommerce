@@ -13,14 +13,14 @@ const blockHeights: Record<string, string> = {
 export default function HomepageLoading() {
   return (
     <div
-      className="bg-[var(--ds-surface-page)] text-[var(--ds-text-primary)]"
+      className="bg-surface-page text-primary"
       style={{ '--homepage-gutter': 'var(--ds-home-gutter-mobile)' } as React.CSSProperties}
       aria-label="Loading homepage"
     >
       {Object.entries(blockHeights).map(([block, heightClass]) => (
         <section
           key={block}
-          className={`relative overflow-hidden bg-[var(--ds-surface-soft)] ${heightClass}`}
+          className={`relative overflow-hidden bg-surface-soft ${heightClass}`}
           aria-hidden="true"
         >
           <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-[rgba(var(--ds-white-rgb),0.6)] to-transparent" />

@@ -16,7 +16,7 @@ const ARTISANS = [
     story:
       'Sunita learned Kantha from her mother at age nine. She now teaches the stitch to younger women in the neighbourhood, keeping the tradition alive for another generation.',
     initials: 'SD',
-    color: 'bg-[var(--ds-warning-bg)]',
+    color: 'bg-warning-bg',
   },
   {
     name: 'Rekha Kumari',
@@ -26,7 +26,7 @@ const ARTISANS = [
     story:
       'Rekha\'s family has been block-printing fabric in Sanganer for three generations. She carves each wooden block herself — a process that takes longer than the printing.',
     initials: 'RK',
-    color: 'bg-[var(--ds-danger-bg)]',
+    color: 'bg-danger-bg',
   },
   {
     name: 'Champa Bai',
@@ -36,7 +36,7 @@ const ARTISANS = [
     story:
       'Champa grew up in West Bengal where Kantha quilting was a daily practice — women would recycle worn-out saris into layered quilts during the long evenings. She brought that tradition to Jaipur when she moved here 12 years ago.',
     initials: 'CB',
-    color: 'bg-[var(--ds-success-bg)]',
+    color: 'bg-success-bg',
   },
   {
     name: 'Geeta Sharma',
@@ -52,7 +52,7 @@ const ARTISANS = [
 
 export default function AboutPage() {
   return (
-    <div className="bg-[var(--ds-surface-paper)]">
+    <div className="bg-surface-paper">
       {/* Hero */}
       <div className="kv-page-gutter bg-surface-soft px-6 py-16 text-center md:px-12 md:py-20 lg:px-20 lg:py-32">
         <span className="text-body-xs font-semibold  tracking-token-wider text-muted">
@@ -121,7 +121,7 @@ export default function AboutPage() {
       {/* How we work */}
       <div className="kv-page-gutter border-y border-border-subtle bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="kv-page-frame mx-auto max-w-page">
-          <div className="text-body-xs  tracking-token-wider text-[var(--ds-warning-text)]">
+          <div className="text-body-xs  tracking-token-wider text-warning-text">
             How Odhvica works
           </div>
           <h2 className="mt-4 font-display text-display-xl font-medium leading-token-tight tracking-token-tight text-primary">
@@ -147,7 +147,7 @@ export default function AboutPage() {
               },
             ].map((item) => (
               <div key={item.step} className="border-t border-border pt-6">
-                <div className="font-display text-display-lg font-medium text-[var(--ds-warning-text)]">
+                <div className="font-display text-display-lg font-medium text-warning-text">
                   {item.step}
                 </div>
                 <h3 className="mt-3 text-body-lg font-semibold text-primary">{item.title}</h3>
@@ -182,12 +182,12 @@ export default function AboutPage() {
                   {/* Replace with <Image> once you have real photos */}
                 </div>
                 <p className="text-body-md font-semibold text-primary">{artisan.name}</p>
-                <p className="mt-1 text-body-sm font-medium text-[var(--ds-warning-text)]">{artisan.craft}</p>
+                <p className="mt-1 text-body-sm font-medium text-warning-text">{artisan.craft}</p>
                 <p className="mt-0.5 text-body-xs  tracking-token-wider text-muted">
                   {artisan.region}
                 </p>
                 <p className="mt-4 text-body-sm leading-token-relaxed text-muted">{artisan.story}</p>
-                <p className="mt-4 text-body-xs font-semibold  tracking-token-wider text-[var(--ds-text-disabled)]">
+                <p className="mt-4 text-body-xs font-semibold  tracking-token-wider text-disabled">
                   {artisan.years}
                 </p>
               </div>
@@ -233,7 +233,7 @@ export default function AboutPage() {
                 { num: 'Natural dyes', label: 'No azo dyes in our workshop' },
                 { num: 'Fairly paid', label: 'Above regional market rate' },
               ].map((item) => (
-                <div key={item.label} className="bg-[var(--ds-surface-paper)] p-6">
+                <div key={item.label} className="bg-surface-paper p-6">
                   <p className="font-display text-display-sm font-semibold text-primary">
                     {item.num}
                   </p>
@@ -257,13 +257,13 @@ export default function AboutPage() {
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link
             href="/products"
-            className="inline-flex items-center bg-[var(--ds-text-primary)] px-8 py-4 text-body-xs font-semibold  tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
+            className="inline-flex items-center bg-primary px-8 py-4 text-body-xs font-semibold  tracking-token-wider text-inverse transition-colors hover:bg-secondary"
           >
             Shop the collection
           </Link>
           <Link
             href="/journal/what-is-kantha"
-            className="inline-flex items-center border border-border px-8 py-4 text-body-xs font-semibold  tracking-token-wider text-secondary transition-colors hover:border-[var(--ds-text-primary)]"
+            className="inline-flex items-center border border-border px-8 py-4 text-body-xs font-semibold  tracking-token-wider text-secondary transition-colors hover:border-primary"
           >
             What is Kantha?
           </Link>

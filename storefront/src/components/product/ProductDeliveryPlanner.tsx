@@ -143,7 +143,7 @@ export default function ProductDeliveryPlanner() {
           {shippingOptions.slice(0, 3).map((option) => (
             <div
               key={option.id}
-              className="rounded-lg border border-border-subtle bg-[var(--ds-surface-paper)] p-4"
+              className="rounded-lg border border-border-subtle bg-surface-paper p-4"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>

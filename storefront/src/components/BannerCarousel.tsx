@@ -43,7 +43,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
             <div className="pt-8">
               <Link
                 href="/products"
-                className="inline-block bg-[var(--ds-surface-paper)] text-primary px-12 py-4 text-body-sm  tracking-token-wider font-semibold hover:bg-[var(--ds-text-primary)] hover:text-inverse transition-all duration-300"
+                className="inline-block bg-surface-paper text-primary px-12 py-4 text-body-sm  tracking-token-wider font-semibold hover:bg-primary hover:text-inverse transition-all duration-300"
               >
                 Shop The Collection
               </Link>
@@ -90,7 +90,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
                 <div className="pt-8">
                   <Link
                     href={banner.link}
-                    className="inline-block bg-[var(--ds-surface-paper)] text-primary px-12 py-4 text-body-sm  tracking-token-wider font-semibold hover:bg-[var(--ds-text-primary)] hover:text-inverse transition-all duration-300"
+                    className="inline-block bg-surface-paper text-primary px-12 py-4 text-body-sm  tracking-token-wider font-semibold hover:bg-primary hover:text-inverse transition-all duration-300"
                   >
                     {banner.button_text || 'Shop Now'}
                   </Link>
@@ -131,7 +131,7 @@ export default function BannerCarousel({ banners }: { banners: Banner[] }) {
                 onClick={() => setCurrentIndex(idx)}
                 variant="ghost"
                 size="sm"
-                className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${idx === currentIndex ? 'w-8 bg-[var(--ds-surface-paper)]' : 'w-2 bg-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:bg-[var(--ds-surface-paper)]'}`}
+                className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${idx === currentIndex ? 'w-8 bg-surface-paper' : 'w-2 bg-[rgba(var(--ds-surface-paper-rgb),0.5)] hover:bg-surface-paper'}`}
                 aria-label={`Go to slide ${idx + 1}`}
                 aria-current={idx === currentIndex ? 'true' : 'false'}
               />

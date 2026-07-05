@@ -113,8 +113,8 @@ export default function WishlistButton({
       className={cn(
         'rounded-full transition-all duration-200',
         isWishlisted
-          ? 'bg-[var(--ds-danger-bg)] text-error hover:brightness-95'
-          : 'bg-[var(--ds-surface-paper)]/90 text-muted hover:bg-[var(--ds-surface-paper)] hover:text-error',
+          ? 'bg-danger-bg text-error hover:brightness-95'
+          : 'bg-surface-paper/90 text-muted hover:bg-surface-paper hover:text-error',
         sizeClasses[size],
         className
       )}

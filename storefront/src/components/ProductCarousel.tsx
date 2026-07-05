@@ -90,7 +90,7 @@ function ProductCarousel({
 
   if (loading) {
     return (
-      <div className="products-grid">
+      <div className="grid grid-flow-col auto-cols-[85vw] sm:auto-cols-[45vw] md:auto-cols-[30vw] lg:auto-cols-[22vw] gap-[var(--ds-space-xs)] overflow-x-auto snap-x snap-mandatory md:gap-[var(--ds-space-sm)] pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
         {[1, 2, 3, 4].map((item) => (
           <div key={item} className="product-card animate-pulse">
             <div className="product-media bg-surface-soft" />
@@ -110,7 +110,7 @@ function ProductCarousel({
   }
 
   return (
-    <div className="products-grid">
+    <div className="grid grid-flow-col auto-cols-[85vw] sm:auto-cols-[45vw] md:auto-cols-[30vw] lg:auto-cols-[22vw] gap-[var(--ds-space-xs)] overflow-x-auto snap-x snap-mandatory md:gap-[var(--ds-space-sm)] pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
       {displayProducts.map((product, index) => (
         <ProductCard
           key={product.id}

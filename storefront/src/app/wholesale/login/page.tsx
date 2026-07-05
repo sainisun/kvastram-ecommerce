@@ -89,7 +89,7 @@ export default function WholesaleLoginPage() {
           />
 
           {error && (
-            <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] text-error px-4 py-3 rounded-lg">
+            <div className="bg-danger-bg border border-danger text-error px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
@@ -111,7 +111,7 @@ export default function WholesaleLoginPage() {
             New to Odhvica Wholesale?{' '}
             <Link
               href="/wholesale"
-              className="text-[var(--ds-info)] hover:underline font-medium"
+              className="text-info hover:underline font-medium"
             >
               Apply Now
             </Link>

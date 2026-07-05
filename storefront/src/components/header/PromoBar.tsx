@@ -70,7 +70,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
   if (dismissed || isSticky) return null;
 
   return (
-    <div className="kv-page-frame relative flex h-8 items-center justify-center bg-[var(--ds-text-primary)] px-6 md:mx-auto md:h-10 md:w-full md:max-w-page md:rounded-[999px] md:bg-[var(--ds-accent-soft)] md:px-6 md:shadow-[0_10px_24px_rgba(var(--ds-accent-rgb),0.12)]">
+    <div className="kv-page-frame relative flex h-8 items-center justify-center bg-primary px-6 md:mx-auto md:h-10 md:w-full md:max-w-page md:rounded-[999px] md:bg-accent-soft md:px-6 md:shadow-[0_10px_24px_rgba(var(--ds-accent-rgb),0.12)]">
       <div className="absolute left-5 hidden items-center gap-[var(--ds-space-xs)] md:flex">
         {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
           <a
@@ -79,7 +79,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--ds-accent-hover)] transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-accent-hover transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]"
           >
             <Icon size={15} strokeWidth={1.7} />
           </a>
@@ -94,7 +94,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             aria-label="Previous announcement"
             variant="ghost"
             size="sm"
-            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary"
+            className="h-7 w-7 rounded-full text-accent-hover hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary"
           >
             <ChevronLeft size={16} strokeWidth={1.8} />
           </IconButton>
@@ -104,14 +104,14 @@ export function PromoBar({ isSticky }: PromoBarProps) {
             aria-label="Next announcement"
             variant="ghost"
             size="sm"
-            className="h-7 w-7 rounded-full text-[var(--ds-accent-hover)] hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary"
+            className="h-7 w-7 rounded-full text-accent-hover hover:bg-[rgba(var(--ds-surface-paper-rgb),0.35)] hover:text-primary"
           >
             <ChevronRight size={16} strokeWidth={1.8} />
           </IconButton>
         </div>
       )}
 
-      <p className="text-body-xs font-medium tracking-token-wide text-[var(--ds-text-disabled)] select-none md:max-w-[60%] md:text-center md:text-[var(--ds-accent-hover)]">
+      <p className="text-body-xs font-medium tracking-token-wide text-disabled select-none md:max-w-[60%] md:text-center md:text-accent-hover">
         {MESSAGES.map((msg, i) => (
           <span
             key={msg}
@@ -131,7 +131,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
         onClick={dismiss}
         variant="ghost"
         size="sm"
-        className="absolute right-3 top-1/2 h-7 w-7 -translate-y-1/2 text-muted hover:text-[var(--ds-text-disabled)] md:hidden"
+        className="absolute right-3 top-1/2 h-7 w-7 -translate-y-1/2 text-muted hover:text-disabled md:hidden"
         aria-label="Dismiss"
       >
         <X size={13} strokeWidth={2} />

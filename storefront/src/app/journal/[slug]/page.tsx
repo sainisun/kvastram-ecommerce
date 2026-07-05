@@ -72,7 +72,7 @@ export default async function ArticlePage({ params }: Props) {
   ];
 
   return (
-    <article className="min-h-screen bg-[var(--ds-surface-paper)] pb-24">
+    <article className="min-h-screen bg-surface-paper pb-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -94,13 +94,13 @@ export default async function ArticlePage({ params }: Props) {
             <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.50)] to-transparent" />
           </div>
         ) : (
-          <div className="absolute inset-0 bg-[var(--ds-text-primary)]" />
+          <div className="absolute inset-0 bg-primary" />
         )}
 
         <div className="kv-page-container absolute inset-0 mx-auto flex w-full max-w-page flex-col justify-between p-6 md:p-12 lg:px-20">
           <Link
             href="/journal"
-            className="flex w-fit items-center gap-2 text-body-sm font-bold  tracking-token-wider hover:text-[var(--ds-text-disabled)]"
+            className="flex w-fit items-center gap-2 text-body-sm font-bold  tracking-token-wider hover:text-disabled"
           >
             <ArrowLeft size={16} />
             Back to Journal
@@ -121,7 +121,7 @@ export default async function ArticlePage({ params }: Props) {
 
       <div className="mx-auto max-w-3xl px-6 py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         {post.excerpt && (
-          <p className="mb-12 border-l-4 border-[var(--ds-text-primary)] pl-6 font-display text-display-md font-medium leading-token-relaxed text-secondary">
+          <p className="mb-12 border-l-4 border-primary pl-6 font-display text-display-md font-medium leading-token-relaxed text-secondary">
             {post.excerpt}
           </p>
         )}

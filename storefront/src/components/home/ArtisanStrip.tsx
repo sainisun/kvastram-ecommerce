@@ -45,7 +45,7 @@ export function ArtisanStrip() {
             <div className="kv-tag">The hands behind every piece</div>
             <h2 className="kv-title">Meet our <em className="italic">artisans</em></h2>
           </div>
-          <Link href="/about#artisans" className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--ds-radius-sm)] px-6 font-ui text-body-xs font-[var(--ds-type-ui-weight)] tracking-[var(--ds-type-button-tracking)] leading-[var(--ds-leading-tight)] [text-transform:var(--ds-type-button-transform)] transition-colors duration-150 no-underline border border-border bg-[var(--ds-surface-paper)] text-primary hover:border-[var(--ds-accent-primary)] hover:text-accent focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-2">
+          <Link href="/about#artisans" className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--ds-radius-sm)] px-6 font-ui text-body-xs font-[var(--ds-type-ui-weight)] tracking-[var(--ds-type-button-tracking)] leading-[var(--ds-leading-tight)] [text-transform:var(--ds-type-button-transform)] transition-colors duration-150 no-underline border border-border bg-surface-paper text-primary hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-2">
             All artisans
           </Link>
         </div>

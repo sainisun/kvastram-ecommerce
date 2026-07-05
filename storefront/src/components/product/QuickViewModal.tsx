@@ -234,10 +234,10 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                           key={v.id}
                           onClick={() => setSelectedVariant(v)}
                           className={cn(
-                            'min-h-[36px] px-[var(--ds-space-sm)] border-[1.5px] rounded-[var(--ds-radius-sm)] text-body-sm font-[var(--ds-type-strong-weight)] transition-[150ms_ease] hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]',
+                            'min-h-[36px] px-[var(--ds-space-sm)] border-[1.5px] rounded-[var(--ds-radius-sm)] text-body-sm font-[var(--ds-type-strong-weight)] transition-[150ms_ease] hover:border-accent hover:text-accent',
                             isActive 
                               ? 'border-primary bg-primary text-inverse' 
-                              : 'border-[var(--ds-border-subtle)] bg-[var(--ds-surface-paper)] text-primary'
+                              : 'border-border-subtle bg-surface-paper text-primary'
                           )}
                         >
                           {v.title}
@@ -260,7 +260,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                   variant={added ? "success" : "secondary"}
                   size="lg"
                   fullWidth
-                  className={added ? '!bg-[var(--ds-success)] !border-[var(--ds-success)] !text-[var(--ds-text-inverse)]' : ''}
+                  className={added ? '!bg-success !border-success !text-inverse' : ''}
                   leadingIcon={
                     added ? <Check size={15} /> : adding ? undefined : <ShoppingBag size={15} />
                   }
@@ -270,7 +270,7 @@ export function QuickViewModal({ product, isOpen, onClose }: QuickViewModalProps
                 <Link
                   href={`/products/${product.handle || product.id}`}
                   onClick={onClose}
-                  className="inline-flex min-h-[48px] w-full items-center justify-center gap-[var(--ds-space-xs)] border border-[var(--ds-border-strong)] bg-[var(--ds-surface-paper)] px-[var(--ds-space-md)] text-primary font-body text-body-sm font-[var(--ds-type-strong-weight)] tracking-[var(--ds-type-button-tracking)] uppercase transition-[160ms_ease] hover:border-[var(--ds-accent-primary)] hover:text-[var(--ds-accent-primary)]"
+                  className="inline-flex min-h-[48px] w-full items-center justify-center gap-[var(--ds-space-xs)] border border-border bg-surface-paper px-[var(--ds-space-md)] text-primary font-body text-body-sm font-[var(--ds-type-strong-weight)] tracking-[var(--ds-type-button-tracking)] uppercase transition-[160ms_ease] hover:border-accent hover:text-accent"
                 >
                   Full Details
                 </Link>

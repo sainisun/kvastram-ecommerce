@@ -82,7 +82,7 @@ export default function TestimonialsCarousel({
               key={i}
               size={24}
               fill={i < rating ? 'currentColor' : 'none'}
-              className={i < rating ? 'text-[var(--ds-accent-gold)]' : 'text-secondary'}
+              className={i < rating ? 'text-accent-gold' : 'text-secondary'}
             />
           ))}
         </div>
@@ -132,8 +132,8 @@ export default function TestimonialsCarousel({
               size="sm"
               className={`h-2 min-h-0 rounded-full border-0 p-0 transition-all ${
                 index === currentIndex
-                  ? 'w-6 bg-[var(--ds-surface-paper)]'
-                  : 'w-2 bg-[var(--ds-text-secondary)] hover:bg-[var(--ds-text-muted)]'
+                  ? 'w-6 bg-surface-paper'
+                  : 'w-2 bg-secondary hover:bg-muted'
               }`}
               aria-label={`Go to testimonial ${index + 1}`}
             />

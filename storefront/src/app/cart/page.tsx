@@ -258,7 +258,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+      <div className="min-h-screen bg-surface-paper">
         <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           {/* Hero empty message */}
           <div className="text-center mb-16">
@@ -284,7 +284,7 @@ export default function CartPage() {
           {recommendations.length > 0 && (
             <div>
               <div className="flex items-center gap-3 mb-8">
-                <Sparkles size={18} className="text-[var(--ds-warning)]" />
+                <Sparkles size={18} className="text-warning" />
                 <p className="text-body-sm font-bold  tracking-token-wider color-ink">
                   You Might Love
                 </p>
@@ -339,7 +339,7 @@ export default function CartPage() {
                         disabled={addingRec === product.id || !variant}
                         className={`w-full py-2.5 text-body-xs font-bold  tracking-token-wider border transition-all ${
                           addingRec === product.id
-                            ? 'bg-[var(--ds-success)] text-inverse border-[var(--ds-success)]'
+                            ? 'bg-success text-inverse border-success'
                             : 'border-border-subtle color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-inverse'
                         }`}
                       >
@@ -501,9 +501,9 @@ export default function CartPage() {
             </div>
 
             {recommendations.length > 0 ? (
-              <section className="mt-12 rounded-lg border border-border-subtle bg-[var(--ds-surface-paper)] p-6">
+              <section className="mt-12 rounded-lg border border-border-subtle bg-surface-paper p-6">
                 <div className="mb-6 flex items-center gap-3">
-                  <Sparkles size={18} className="text-[var(--ds-warning)]" />
+                  <Sparkles size={18} className="text-warning" />
                   <div>
                     <p className="text-body-xs font-bold  tracking-token-wider color-muted">
                       Pair With Your Bag
@@ -564,7 +564,7 @@ export default function CartPage() {
                           disabled={addingRec === product.id || !variant}
                           className={`w-full border py-2.5 text-body-xs font-bold  tracking-token-wider transition-all ${
                             addingRec === product.id
-                              ? 'border-[var(--ds-success)] bg-[var(--ds-success)] text-inverse'
+                              ? 'border-success bg-success text-inverse'
                               : 'border-border-subtle color-ink hover:border-[var(--ink)] hover:bg-[var(--ink)] hover:text-inverse'
                           }`}
                         >
@@ -588,12 +588,12 @@ export default function CartPage() {
               {/* Promo Code */}
               <div className="mb-6">
                 {discount ? (
-                  <div className="flex items-center justify-between bg-[var(--ds-success-bg)] border border-[var(--ds-success)] rounded-md p-3">
+                  <div className="flex items-center justify-between bg-success-bg border border-success rounded-md p-3">
                     <div>
                       <span className="text-body-sm font-medium text-success">
                         {discount.code}
                       </span>
-                      <span className="text-body-xs text-[var(--ds-success)] ml-2">
+                      <span className="text-body-xs text-success ml-2">
                         (-{formatCartPrice(discount.amount)})
                       </span>
                     </div>
@@ -602,7 +602,7 @@ export default function CartPage() {
                       onClick={handleRemovePromo}
                       variant="ghost"
                       size="sm"
-                      className="min-h-0 px-0 text-body-xs text-[var(--ds-success)] hover:text-[var(--ds-success)]"
+                      className="min-h-0 px-0 text-body-xs text-success hover:text-success"
                     >
                       Remove
                     </Button>
@@ -771,7 +771,7 @@ export default function CartPage() {
                   {discountAmount > 0 && (
                     <div className="flex items-center justify-between py-4">
                       <dt className="color-muted">Discount</dt>
-                      <dd className="font-medium text-[var(--ds-success)]">
+                      <dd className="font-medium text-success">
                         -{formatCartPrice(discountAmount)}
                       </dd>
                     </div>
@@ -781,7 +781,7 @@ export default function CartPage() {
                       Shipping
                       {shippingCost === 0 &&
                         subtotal >= freeShippingThreshold && (
-                          <span className="ml-2 text-body-xs text-[var(--ds-success)]">
+                          <span className="ml-2 text-body-xs text-success">
                             (Free over {formatCartPrice(freeShippingThreshold)})
                           </span>
                         )}

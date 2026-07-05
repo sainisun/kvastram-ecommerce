@@ -134,7 +134,7 @@ export default function VerifyOtpPage() {
   if (!email) return null;
 
   return (
-    <div className="kv-page-gutter flex min-h-screen flex-col items-center justify-center bg-[var(--ds-surface-paper)] px-6 py-12 md:px-12">
+    <div className="kv-page-gutter flex min-h-screen flex-col items-center justify-center bg-surface-paper px-6 py-12 md:px-12">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-display-lg font-display text-primary">Verify Your Email</h1>
@@ -160,7 +160,7 @@ export default function VerifyOtpPage() {
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                className="w-14 h-16 md:w-16 md:h-18 text-center text-2xl font-semibold bg-surface-soft border border-border-subtle focus:border-border focus:ring-1 focus:ring-[var(--ds-border-strong)] rounded-md outline-none transition-all"
+                className="w-14 h-16 md:w-16 md:h-18 text-center text-2xl font-semibold bg-surface-soft border border-border-subtle focus:border-border focus:ring-1 focus:ring-border rounded-md outline-none transition-all"
                 autoFocus={index === 0}
               />
             ))}

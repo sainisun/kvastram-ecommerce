@@ -125,20 +125,20 @@ export default function WholesalePage() {
 
   return (
     <>
-      <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+      <div className="min-h-screen bg-surface-paper">
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-[var(--ds-text-primary)] via-[var(--ds-text-secondary)] to-[var(--ds-warning-text)] py-16 pt-32 text-inverse md:py-20 lg:py-32">
           <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
           <div className="kv-page-container relative z-10 mx-auto max-w-page">
             <div className="max-w-3xl">
-              <span className="text-[var(--ds-accent-gold)] text-body-xs font-bold  tracking-token-wider block mb-4">
+              <span className="text-accent-gold text-body-xs font-bold  tracking-token-wider block mb-4">
                 B2B Partnership
               </span>
               <h1 className="text-display-xl md:text-display-xl font-display mb-6 leading-token-tight">
                 Wholesale & <br />
                 Bulk Orders
               </h1>
-              <p className="text-display-sm text-[var(--ds-text-disabled)] font-light leading-token-relaxed mb-8">
+              <p className="text-display-sm text-disabled font-light leading-token-relaxed mb-8">
                 Partner with Odhvica to bring authentic artisanal luxury to
                 your customers. Exclusive pricing, dedicated support, and global
                 logistics for retailers and distributors worldwide.
@@ -146,13 +146,13 @@ export default function WholesalePage() {
               <div className="flex flex-wrap gap-4">
                 <a
                   href="#inquiry"
-                  className="bg-[var(--ds-warning)] text-primary px-8 py-4 font-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-accent-gold)] transition-colors"
+                  className="bg-warning text-primary px-8 py-4 font-bold  tracking-token-wider text-body-xs hover:bg-accent-gold transition-colors"
                 >
                   Request Pricing
                 </a>
                 <a
                   href="#benefits"
-                  className="border-2 border-[var(--ds-surface-paper)] text-inverse px-8 py-4 font-bold  tracking-token-wider text-body-xs hover:bg-[var(--ds-surface-paper)] hover:text-primary transition-colors"
+                  className="border-2 border-surface-paper text-inverse px-8 py-4 font-bold  tracking-token-wider text-body-xs hover:bg-surface-paper hover:text-primary transition-colors"
                 >
                   Learn More
                 </a>
@@ -175,9 +175,9 @@ export default function WholesalePage() {
             </div>
 
             <div className="grid gap-x-4 gap-y-8 md:grid-cols-2 md:gap-x-6 md:gap-y-12 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
-              <div className="bg-[var(--ds-surface-paper)] p-8 text-center">
-                <div className="w-16 h-16 bg-[var(--ds-warning-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
-                  <DollarSign className="text-[var(--ds-warning)]" size={28} />
+              <div className="bg-surface-paper p-8 text-center">
+                <div className="w-16 h-16 bg-warning-bg rounded-full flex items-center justify-center mx-auto mb-6">
+                  <DollarSign className="text-warning" size={28} />
                 </div>
                 <h3 className="text-body-xl font-bold text-primary mb-3">
                   Competitive Pricing
@@ -188,9 +188,9 @@ export default function WholesalePage() {
                 </p>
               </div>
 
-              <div className="bg-[var(--ds-surface-paper)] p-8 text-center">
-                <div className="w-16 h-16 bg-[var(--ds-warning-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Package className="text-[var(--ds-warning)]" size={28} />
+              <div className="bg-surface-paper p-8 text-center">
+                <div className="w-16 h-16 bg-warning-bg rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Package className="text-warning" size={28} />
                 </div>
                 <h3 className="text-body-xl font-bold text-primary mb-3">
                   Flexible MOQ
@@ -201,9 +201,9 @@ export default function WholesalePage() {
                 </p>
               </div>
 
-              <div className="bg-[var(--ds-surface-paper)] p-8 text-center">
-                <div className="w-16 h-16 bg-[var(--ds-warning-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Globe className="text-[var(--ds-warning)]" size={28} />
+              <div className="bg-surface-paper p-8 text-center">
+                <div className="w-16 h-16 bg-warning-bg rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Globe className="text-warning" size={28} />
                 </div>
                 <h3 className="text-body-xl font-bold text-primary mb-3">
                   Global Shipping
@@ -214,9 +214,9 @@ export default function WholesalePage() {
                 </p>
               </div>
 
-              <div className="bg-[var(--ds-surface-paper)] p-8 text-center">
-                <div className="w-16 h-16 bg-[var(--ds-warning-bg)] rounded-full flex items-center justify-center mx-auto mb-6">
-                  <TrendingUp className="text-[var(--ds-warning)]" size={28} />
+              <div className="bg-surface-paper p-8 text-center">
+                <div className="w-16 h-16 bg-warning-bg rounded-full flex items-center justify-center mx-auto mb-6">
+                  <TrendingUp className="text-warning" size={28} />
                 </div>
                 <h3 className="text-body-xl font-bold text-primary mb-3">
                   Marketing Support
@@ -231,7 +231,7 @@ export default function WholesalePage() {
         </section>
 
         {/* Pricing Tiers */}
-        <section className="bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+        <section className="bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           <div className="kv-page-container mx-auto max-w-page">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-primary mb-4">
@@ -244,17 +244,17 @@ export default function WholesalePage() {
 
             {tiersLoading ? (
               <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--ds-warning)]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warning"></div>
               </div>
             ) : (
               <div className={`grid gap-8 ${tiers.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-' + tiers.length}`}>
                 {tiers.map((tier, index) => (
                   <div
                     key={tier.id}
-                    className={`border p-8 ${index === 1 ? 'border-2 border-[var(--ds-warning)] p-8 relative bg-[var(--ds-warning-bg)]' : 'border-border-subtle'}`}
+                    className={`border p-8 ${index === 1 ? 'border-2 border-warning p-8 relative bg-warning-bg' : 'border-border-subtle'}`}
                   >
                     {index === 1 && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--ds-warning)] text-inverse text-body-xs font-bold px-4 py-1  tracking-token-wider">
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-warning text-inverse text-body-xs font-bold px-4 py-1  tracking-token-wider">
                         Most Popular
                       </div>
                     )}
@@ -274,14 +274,14 @@ export default function WholesalePage() {
                       <li className="flex items-start gap-2 text-body-sm">
                         <CheckCircle
                           size={16}
-                          className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
+                          className="text-success mt-0.5 flex-shrink-0"
                         />
                         <span>MOQ: {tier.default_moq} units</span>
                       </li>
                       <li className="flex items-start gap-2 text-body-sm">
                         <CheckCircle
                           size={16}
-                          className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
+                          className="text-success mt-0.5 flex-shrink-0"
                         />
                         <span className="capitalize">{tier.payment_terms.replace('_', ' ')} payment terms</span>
                       </li>
@@ -289,7 +289,7 @@ export default function WholesalePage() {
                         <li className="flex items-start gap-2 text-body-sm">
                           <CheckCircle
                             size={16}
-                            className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
+                            className="text-success mt-0.5 flex-shrink-0"
                           />
                           <span>Dedicated account manager</span>
                         </li>
@@ -299,14 +299,14 @@ export default function WholesalePage() {
                           <li className="flex items-start gap-2 text-body-sm">
                             <CheckCircle
                               size={16}
-                              className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
+                              className="text-success mt-0.5 flex-shrink-0"
                             />
                             <span>White-glove logistics</span>
                           </li>
                           <li className="flex items-start gap-2 text-body-sm">
                             <CheckCircle
                               size={16}
-                              className="text-[var(--ds-success)] mt-0.5 flex-shrink-0"
+                              className="text-success mt-0.5 flex-shrink-0"
                             />
                             <span>Custom product development</span>
                           </li>
@@ -356,7 +356,7 @@ export default function WholesalePage() {
                 },
               ].map((item, i) => (
                 <div key={i} className="text-center">
-                  <div className="text-display-xl font-bold text-[var(--ds-warning-bg)] mb-4">
+                  <div className="text-display-xl font-bold text-warning-bg mb-4">
                     {item.step}
                   </div>
                   <h3 className="text-body-xl font-bold text-primary mb-2">
@@ -372,7 +372,7 @@ export default function WholesalePage() {
         </section>
 
         {/* Inquiry Form */}
-        <section id="inquiry" className="bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+        <section id="inquiry" className="bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
           <div className="mx-auto max-w-4xl">
             <div className="text-center mb-12">
               <h2 className="text-display-lg font-display text-primary mb-4">
@@ -384,10 +384,10 @@ export default function WholesalePage() {
             </div>
 
             {submitted ? (
-              <div className="bg-[var(--ds-success-bg)] border border-[var(--ds-success)] p-12 text-center">
+              <div className="bg-success-bg border border-success p-12 text-center">
                 <CheckCircle
                   size={48}
-                  className="text-[var(--ds-success)] mx-auto mb-4"
+                  className="text-success mx-auto mb-4"
                 />
                 <h3 className="text-display-md font-bold text-primary mb-2">
                   Thank You!
@@ -400,7 +400,7 @@ export default function WholesalePage() {
             ) : (
               <>
                 {error && (
-                  <div className="bg-[var(--ds-danger-bg)] border border-[var(--ds-danger)] p-4 mb-6 text-center rounded">
+                  <div className="bg-danger-bg border border-danger p-4 mb-6 text-center rounded">
                     <p className="text-error font-medium">{error}</p>
                   </div>
                 )}
@@ -545,11 +545,11 @@ export default function WholesalePage() {
         </section>
 
         {/* Contact CTA */}
-        <section className="py-16 bg-[var(--ds-text-primary)] text-inverse">
+        <section className="py-16 bg-primary text-inverse">
           <div className="kv-page-container mx-auto max-w-page">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
-                <Mail size={32} className="mx-auto mb-4 text-[var(--ds-accent-gold)]" />
+                <Mail size={32} className="mx-auto mb-4 text-accent-gold" />
                 <h3 className="font-bold mb-2">Email Us</h3>
                 <a
                   href="mailto:wholesale@odhvica.com"
@@ -559,7 +559,7 @@ export default function WholesalePage() {
                 </a>
               </div>
               <div>
-                <Phone size={32} className="mx-auto mb-4 text-[var(--ds-accent-gold)]" />
+                <Phone size={32} className="mx-auto mb-4 text-accent-gold" />
                 <h3 className="font-bold mb-2">Call Us</h3>
                 <a
                   href="tel:+1234567890"
@@ -569,7 +569,7 @@ export default function WholesalePage() {
                 </a>
               </div>
               <div>
-                <FileText size={32} className="mx-auto mb-4 text-[var(--ds-accent-gold)]" />
+                <FileText size={32} className="mx-auto mb-4 text-accent-gold" />
                 <h3 className="font-bold mb-2">Download Catalog</h3>
                 <a href="#" className="text-muted hover:text-inverse text-body-sm">
                   2024 Wholesale Catalog (PDF)

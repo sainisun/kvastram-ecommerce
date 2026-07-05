@@ -38,9 +38,9 @@ export function WholesaleFooter() {
   }, []);
 
   return (
-    <footer className="bg-[var(--ds-text-primary)] text-inverse">
+    <footer className="bg-primary text-inverse">
       {/* Main Footer */}
-      <div className="border-t border-[var(--ds-text-secondary)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="border-t border-secondary py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
         <div className="kv-page-container mx-auto max-w-page">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[var(--ds-space-lg)]">
             {/* Company Info */}
@@ -49,8 +49,8 @@ export function WholesaleFooter() {
                 <div className="text-display-md font-bold tracking-token-tight">
                   ODHVICA
                 </div>
-                <div className="h-6 w-px bg-[var(--ds-text-secondary)]"></div>
-                <div className="text-body-xs  tracking-token-wider text-[var(--ds-accent-gold)] font-bold">
+                <div className="h-6 w-px bg-secondary"></div>
+                <div className="text-body-xs  tracking-token-wider text-accent-gold font-bold">
                   Wholesale
                 </div>
               </div>
@@ -59,7 +59,7 @@ export function WholesaleFooter() {
                 Serving retailers and distributors worldwide since 2020.
               </p>
               <div className="pt-4">
-                <div className="inline-flex items-center gap-2 text-body-xs text-[var(--ds-accent-gold)] font-bold  tracking-token-wider">
+                <div className="inline-flex items-center gap-2 text-body-xs text-accent-gold font-bold  tracking-token-wider">
                   <Building2 size={16} />
                   B2B Division
                 </div>
@@ -68,7 +68,7 @@ export function WholesaleFooter() {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-accent-gold">
                 Quick Links
               </h4>
               <ul className="space-y-3 text-body-sm text-muted">
@@ -108,10 +108,10 @@ export function WholesaleFooter() {
                     Request Quote
                   </Link>
                 </li>
-                <li className="pt-2 border-t border-[var(--ds-text-secondary)]">
+                <li className="pt-2 border-t border-secondary">
                   <Link
                     href="/"
-                    className="hover:text-[var(--ds-accent-gold)] transition-colors text-body-xs"
+                    className="hover:text-accent-gold transition-colors text-body-xs"
                   >
                     Visit Retail Store →
                   </Link>
@@ -121,7 +121,7 @@ export function WholesaleFooter() {
 
             {/* Resources */}
             <div>
-              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-accent-gold">
                 Resources
               </h4>
               <ul className="space-y-3 text-body-sm text-muted">
@@ -214,14 +214,14 @@ export function WholesaleFooter() {
 
             {/* Contact */}
             <div>
-              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-[var(--ds-accent-gold)]">
+              <h4 className="text-body-sm font-bold  tracking-token-wider mb-6 text-accent-gold">
                 Contact B2B Team
               </h4>
               <ul className="space-y-4 text-body-sm text-muted">
                 <li className="flex items-start gap-[var(--ds-space-xs)]">
                   <Mail
                     size={16}
-                    className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
+                    className="text-accent-gold mt-0.5 flex-shrink-0"
                   />
                   <div>
                     <div className="text-inverse font-medium mb-1">Email</div>
@@ -236,7 +236,7 @@ export function WholesaleFooter() {
                 <li className="flex items-start gap-[var(--ds-space-xs)]">
                   <Phone
                     size={16}
-                    className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
+                    className="text-accent-gold mt-0.5 flex-shrink-0"
                   />
                   <div>
                     <div className="text-inverse font-medium mb-1">Phone</div>
@@ -254,7 +254,7 @@ export function WholesaleFooter() {
                 <li className="flex items-start gap-[var(--ds-space-xs)]">
                   <MapPin
                     size={16}
-                    className="text-[var(--ds-accent-gold)] mt-0.5 flex-shrink-0"
+                    className="text-accent-gold mt-0.5 flex-shrink-0"
                   />
                   <div>
                     <div className="text-inverse font-medium mb-1">Office</div>
@@ -274,7 +274,7 @@ export function WholesaleFooter() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-[var(--ds-text-primary)] py-6">
+      <div className="bg-primary py-6">
         <div className="kv-page-container mx-auto max-w-page">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-body-xs text-muted">
             <div className="flex items-center gap-[var(--ds-space-md)]">
@@ -288,13 +288,13 @@ export function WholesaleFooter() {
               </span>
             </div>
             <div className="flex items-center gap-[var(--ds-space-md)]">
-              <Link href="#" className="hover:text-[var(--ds-text-disabled)] transition-colors">
+              <Link href="#" className="hover:text-disabled transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="#" className="hover:text-[var(--ds-text-disabled)] transition-colors">
+              <Link href="#" className="hover:text-disabled transition-colors">
                 Terms of Service
               </Link>
-              <Link href="#" className="hover:text-[var(--ds-text-disabled)] transition-colors">
+              <Link href="#" className="hover:text-disabled transition-colors">
                 Trade Agreement
               </Link>
             </div>
@@ -303,33 +303,33 @@ export function WholesaleFooter() {
       </div>
 
       {/* Trust Badges */}
-      <div className="bg-[var(--ds-text-primary)] py-8 border-t border-[var(--ds-text-primary)]">
+      <div className="bg-primary py-8 border-t border-primary">
         <div className="kv-page-container mx-auto max-w-page">
           <div className="flex flex-wrap items-center justify-center gap-8 text-secondary text-body-xs">
             <div className="flex items-center gap-[var(--ds-space-xs)]">
-              <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
-                <Building2 size={14} className="text-[var(--ds-warning)]" />
+              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                <Building2 size={14} className="text-warning" />
               </div>
               <span>Verified Business</span>
             </div>
-            <div className="w-px h-6 bg-[var(--ds-text-secondary)]"></div>
+            <div className="w-px h-6 bg-secondary"></div>
             <div className="flex items-center gap-[var(--ds-space-xs)]">
-              <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
-                <FileText size={14} className="text-[var(--ds-warning)]" />
+              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                <FileText size={14} className="text-warning" />
               </div>
               <span>ISO Certified</span>
             </div>
-            <div className="w-px h-6 bg-[var(--ds-text-secondary)]"></div>
+            <div className="w-px h-6 bg-secondary"></div>
             <div className="flex items-center gap-[var(--ds-space-xs)]">
-              <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
-                <MapPin size={14} className="text-[var(--ds-warning)]" />
+              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                <MapPin size={14} className="text-warning" />
               </div>
               <span>Global Shipping</span>
             </div>
-            <div className="w-px h-6 bg-[var(--ds-text-secondary)]"></div>
+            <div className="w-px h-6 bg-secondary"></div>
             <div className="flex items-center gap-[var(--ds-space-xs)]">
-              <div className="w-8 h-8 bg-[var(--ds-text-secondary)] rounded-full flex items-center justify-center">
-                <Phone size={14} className="text-[var(--ds-warning)]" />
+              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                <Phone size={14} className="text-warning" />
               </div>
               <span>24/7 Support</span>
             </div>

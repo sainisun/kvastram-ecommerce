@@ -39,7 +39,7 @@ export function SettingsList() {
   ];
 
   return (
-    <div className="bg-[var(--ds-surface-paper)]">
+    <div className="bg-surface-paper">
       <div className="p-4">
         <h2 className="text-body-xs font-bold  tracking-token-wider text-muted mb-3">
           Account Settings
@@ -86,7 +86,7 @@ export function SettingsList() {
           variant="ghost"
           size="md"
           fullWidth
-          className="justify-between border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] p-4 normal-case hover:bg-[var(--ds-danger-bg)]"
+          className="justify-between border border-danger bg-danger-bg p-4 normal-case hover:bg-danger-bg"
         >
           <div className="flex items-center gap-3">
             <LogOut size={18} className="text-error" />

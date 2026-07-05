@@ -403,7 +403,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+    <div className="min-h-screen bg-surface-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
@@ -446,7 +446,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
                 <Link
                   key={child.id}
                   href={`/collections/${child.slug || child.handle}`}
-                  className="rounded-full border border-border-subtle px-4 py-2 text-body-sm text-secondary transition-colors hover:border-[var(--ds-text-primary)] hover:text-primary"
+                  className="rounded-full border border-border-subtle px-4 py-2 text-body-sm text-secondary transition-colors hover:border-primary hover:text-primary"
                 >
                   {child.name || titleFromHandle(child.slug || child.handle || '')}
                 </Link>
@@ -498,7 +498,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
               <Link
                 key={collection.id}
                 href={`/collections/${collection.handle}`}
-                className="border border-border-subtle p-5 transition-colors hover:border-[var(--ds-text-primary)]"
+                className="border border-border-subtle p-5 transition-colors hover:border-primary"
               >
                 <p className="collection-card-kicker">More in this edit</p>
                 <p className="collection-card-product-title mt-2">

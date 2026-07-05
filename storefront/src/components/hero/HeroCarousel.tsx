@@ -55,7 +55,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
   }
 
   return (
-    <div className="relative group overflow-hidden bg-[var(--ds-footer-bg)] border-b border-border">
+    <div className="relative group overflow-hidden bg-footer-bg border-b border-border">
       {/* Carousel Viewport */}
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex touch-pan-y">
@@ -65,9 +65,9 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
               key={slide.id}
             >
               {/* Left Content Half (Dark Editorial) */}
-              <div className="w-full md:w-1/2 h-1/2 md:h-full bg-[var(--ds-footer-bg)] flex items-center justify-center p-8 md:p-16 lg:p-24 z-10">
+              <div className="w-full md:w-1/2 h-1/2 md:h-full bg-footer-bg flex items-center justify-center p-8 md:p-16 lg:p-24 z-10">
                 <div className="max-w-xl w-full animate-fade-in-up">
-                  <span className="text-[var(--ds-accent-gold)] text-body-xs md:text-body-sm font-bold tracking-token-wider  mb-4 md:mb-6 block">
+                  <span className="text-accent-gold text-body-xs md:text-body-sm font-bold tracking-token-wider  mb-4 md:mb-6 block">
                     Odhvica Collection
                   </span>
 
@@ -79,7 +79,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
                     {slide.ctaText ? (
                       <Link
                         href={slide.ctaLink}
-                        className="bg-[var(--ds-surface-paper)] text-primary px-8 py-4 text-body-xs font-bold  tracking-token-wider hover:bg-surface-soft transition-colors shadow-xl"
+                        className="bg-surface-paper text-primary px-8 py-4 text-body-xs font-bold  tracking-token-wider hover:bg-surface-soft transition-colors shadow-xl"
                       >
                         {slide.ctaText}
                       </Link>
@@ -108,7 +108,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
       {/* Navigation Buttons */}
       <IconButton
         type="button"
-        className="absolute left-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(var(--ds-surface-paper-rgb),0.3)] bg-[rgba(var(--ds-black-rgb),0.2)] text-inverse opacity-0 backdrop-blur-sm duration-300 hover:bg-[var(--ds-surface-paper)] hover:text-primary group-hover:opacity-100 md:flex"
+        className="absolute left-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(var(--ds-surface-paper-rgb),0.3)] bg-[rgba(var(--ds-black-rgb),0.2)] text-inverse opacity-0 backdrop-blur-sm duration-300 hover:bg-surface-paper hover:text-primary group-hover:opacity-100 md:flex"
         onClick={scrollPrev}
         variant="ghost"
         size="lg"
@@ -118,7 +118,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
       </IconButton>
       <IconButton
         type="button"
-        className="absolute right-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(var(--ds-surface-paper-rgb),0.3)] bg-[rgba(var(--ds-black-rgb),0.2)] text-inverse opacity-0 backdrop-blur-sm duration-300 hover:bg-[var(--ds-surface-paper)] hover:text-primary group-hover:opacity-100 md:flex"
+        className="absolute right-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 rounded-full border-[rgba(var(--ds-surface-paper-rgb),0.3)] bg-[rgba(var(--ds-black-rgb),0.2)] text-inverse opacity-0 backdrop-blur-sm duration-300 hover:bg-surface-paper hover:text-primary group-hover:opacity-100 md:flex"
         onClick={scrollNext}
         variant="ghost"
         size="lg"

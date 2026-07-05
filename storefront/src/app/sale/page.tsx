@@ -95,7 +95,7 @@ export default function SalePage() {
   }, [campaignEndDate]);
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+    <div className="min-h-screen bg-surface-paper">
       <section className="kv-page-gutter border-b border-border-subtle bg-parchment px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="kv-page-frame mx-auto max-w-page space-y-6 text-center">
           <span className="text-body-xs font-bold tracking-token-wider text-accent">
@@ -118,7 +118,7 @@ export default function SalePage() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="border border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-4"
+                  className="border border-border-subtle bg-surface-paper px-4 py-4"
                 >
                   <span className="block font-display text-display-md leading-token-tight text-primary">
                     {String(value).padStart(2, '0')}
@@ -132,7 +132,7 @@ export default function SalePage() {
           ) : null}
           <a
             href="#saleGrid"
-            className="inline-flex items-center justify-center rounded-sm bg-[var(--ds-text-primary)] px-8 py-4 text-body-xs font-semibold tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
+            className="inline-flex items-center justify-center rounded-sm bg-primary px-8 py-4 text-body-xs font-semibold tracking-token-wider text-inverse transition-colors hover:bg-secondary"
           >
             Shop Sale
           </a>

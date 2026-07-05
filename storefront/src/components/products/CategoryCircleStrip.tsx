@@ -18,7 +18,7 @@ export default function CategoryCircleStrip({ circles }: Props) {
   }
 
   return (
-    <section className="border-b border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-4 md:hidden">
+    <section className="border-b border-border-subtle bg-surface-paper px-4 py-4 md:hidden">
       <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {circles.map((circle) => (
           <Link

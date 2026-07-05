@@ -73,7 +73,7 @@ const editCards = [
 
 export default function EditsPage() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         <div className="mx-auto max-w-3xl text-center">
           <span className="text-body-xs font-bold  tracking-token-wider text-muted">
@@ -130,7 +130,7 @@ export default function EditsPage() {
           </Link>
           <Link
             href={storefrontTrust.policyRoutes.contact}
-            className="bg-[var(--ds-text-primary)] px-6 py-4 text-center text-body-sm font-bold  tracking-token-wider text-inverse transition-colors hover:bg-[var(--ds-text-secondary)]"
+            className="bg-primary px-6 py-4 text-center text-body-sm font-bold  tracking-token-wider text-inverse transition-colors hover:bg-secondary"
           >
             Contact Concierge
           </Link>

@@ -151,6 +151,7 @@
   --color-primary: var(--ds-text-primary);
   --color-secondary: var(--ds-text-secondary);
   --color-muted: var(--ds-text-muted);
+  --color-disabled: var(--ds-text-disabled);
   --color-inverse: var(--ds-text-inverse);
   --color-accent: var(--ds-accent-primary);
   --color-surface: var(--ds-surface-page);
@@ -159,6 +160,19 @@
   --color-parchment: var(--ds-surface-parchment);
   --color-border: var(--ds-border-strong);
   --color-border-subtle: var(--ds-border-subtle);
+  --color-price: var(--ds-text-price);
+  --color-price-old: var(--ds-text-price-old);
+  
+  /* Interactive & Status Theme Tokens */
+  --color-accent-hover: var(--ds-accent-hover);
+  --color-surface-hover: var(--ds-surface-parchment);
+  --color-surface-hover-2: var(--ds-surface-parchment-2);
+  --color-surface-paper: var(--ds-surface-paper);
+  --color-danger: var(--ds-danger);
+  --color-danger-bg: var(--ds-danger-bg);
+  --color-success: var(--ds-success);
+  --color-success-bg: var(--ds-success-bg);
+  --color-accent-soft: var(--ds-accent-soft);
 
   --text-display-xl: var(--ds-text-display-xl);
   --text-display-lg: var(--ds-text-display-lg);

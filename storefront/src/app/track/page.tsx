@@ -105,13 +105,13 @@ export default function TrackOrderPage() {
   const getStatusIcon = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'delivered':
-        return <CheckCircle className="text-[var(--ds-success)]" size={24} />;
+        return <CheckCircle className="text-success" size={24} />;
       case 'shipped':
       case 'out_for_delivery':
-        return <Truck className="text-[var(--ds-info)]" size={24} />;
+        return <Truck className="text-info" size={24} />;
       case 'processing':
       case 'confirmed':
-        return <Package className="text-[var(--ds-warning)]" size={24} />;
+        return <Package className="text-warning" size={24} />;
       case 'cancelled':
         return <XCircle className="text-error" size={24} />;
       default:
@@ -133,7 +133,7 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)]">
+    <div className="min-h-screen bg-surface-paper">
       <section className="kv-page-gutter bg-surface-soft px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="mx-auto max-w-[860px]">
           <Card className="p-6 shadow-[0_20px_60px_rgba(var(--ds-black-rgb),0.05)] md:p-10">
@@ -184,7 +184,7 @@ export default function TrackOrderPage() {
 
         {error && (
           <div className="mt-6 space-y-4">
-            <div className="border border-[var(--ds-danger)] bg-[var(--ds-danger-bg)] p-4 text-center text-error">
+            <div className="border border-danger bg-danger-bg p-4 text-center text-error">
               {error}
             </div>
             <div className="grid gap-3 md:grid-cols-3">
@@ -220,10 +220,10 @@ export default function TrackOrderPage() {
                 <div
                   className={`mx-auto mb-2 grid h-10 w-10 place-items-center rounded-full border-2 ${
                     step.completed
-                      ? 'border-[var(--ds-accent-primary)] bg-[var(--ds-accent-primary)] text-inverse'
+                      ? 'border-accent bg-accent text-inverse'
                       : step.current
-                        ? 'border-[var(--ds-accent-primary)] bg-[var(--ds-surface-paper)] color-accent shadow-[0_0_0_4px_rgba(var(--ds-accent-rgb),0.12)]'
-                        : 'border-border-subtle bg-[var(--ds-surface-paper)] text-muted'
+                        ? 'border-accent bg-surface-paper color-accent shadow-[0_0_0_4px_rgba(var(--ds-accent-rgb),0.12)]'
+                        : 'border-border-subtle bg-surface-paper text-muted'
                   }`}
                 >
                   {step.completed ? <CheckCircle size={18} /> : index + 1}

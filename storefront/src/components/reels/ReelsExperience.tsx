@@ -585,7 +585,7 @@ function ReelsExperienceContent({ basePath = '/reels' }: ReelsExperienceProps) {
 function ReelsGridSkeleton() {
   return (
     <div className="min-h-screen bg-surface">
-      <div className="sticky top-0 z-40 h-12 border-b border-border-subtle bg-[var(--ds-surface-paper)]/95" />
+      <div className="sticky top-0 z-40 h-12 border-b border-border-subtle bg-surface-paper/95" />
       <div className="kv-container pt-6 pb-8">
         <div className="grid grid-cols-2 gap-[var(--ds-space-xs)]">
           {[1, 2, 3, 4].map((i) => (
@@ -731,7 +731,7 @@ function ReelPlayerModal({
       onClose={onClose}
       showHeader={false}
       rootClassName="z-[9999] p-0"
-      className="reel-player-modal h-dvh max-h-none max-w-none border-0 bg-[var(--ds-text-primary)] shadow-none lg:flex lg:items-center lg:justify-center"
+      className="reel-player-modal h-dvh max-h-none max-w-none border-0 bg-primary shadow-none lg:flex lg:items-center lg:justify-center"
       bodyClassName="h-full overflow-hidden p-0"
     >
 
@@ -742,7 +742,7 @@ function ReelPlayerModal({
         disabled={currentIndex === 0}
         variant="ghost"
         size="lg"
-        className="reel-player-nav reel-player-nav-prev absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-inverse backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
+        className="reel-player-nav reel-player-nav-prev absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-surface-paper/15 text-inverse backdrop-blur-md hover:bg-surface-paper/30 disabled:opacity-20 lg:flex"
         aria-label="Previous reel"
       >
         <ChevronLeft size={24} />
@@ -753,7 +753,7 @@ function ReelPlayerModal({
         disabled={currentIndex === localReels.length - 1}
         variant="ghost"
         size="lg"
-        className="reel-player-nav reel-player-nav-next absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-[var(--ds-surface-paper)]/15 text-inverse backdrop-blur-md hover:bg-[var(--ds-surface-paper)]/30 disabled:opacity-20 lg:flex"
+        className="reel-player-nav reel-player-nav-next absolute top-1/2 z-50 hidden -translate-y-1/2 rounded-full border-transparent bg-surface-paper/15 text-inverse backdrop-blur-md hover:bg-surface-paper/30 disabled:opacity-20 lg:flex"
         aria-label="Next reel"
       >
         <ChevronRight size={24} />
@@ -765,7 +765,7 @@ function ReelPlayerModal({
        * Desktop: h-[90dvh] max-w-[390px] with rounded corners.
        */}
       <div
-        className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-[var(--ds-text-primary)] lg:h-[90dvh] lg:max-w-[430px] lg:rounded-lg"
+        className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-primary lg:h-[90dvh] lg:max-w-[430px] lg:rounded-lg"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -805,7 +805,7 @@ function ReelPlayerModal({
             onClick={onClose}
             variant="ghost"
             size="sm"
-            className="h-9 w-9 rounded-full border-transparent bg-[var(--ds-text-primary)]/40 text-inverse backdrop-blur-sm hover:bg-[var(--ds-text-primary)]/60"
+            className="h-9 w-9 rounded-full border-transparent bg-primary/40 text-inverse backdrop-blur-sm hover:bg-primary/60"
             aria-label="Close reel player"
           >
             <ArrowLeft size={18} />
@@ -896,9 +896,9 @@ function ReelPlayerModal({
           {/* Product card */}
           <Link
             href={current.link_url || '/products'}
-            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-[var(--ds-surface-paper)]/70 bg-[var(--ds-surface-paper)]/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(var(--ds-black-rgb),0.24)] backdrop-blur-xl transition active:scale-[0.98]"
+            className="reel-product-overlay flex min-w-0 items-center gap-3 rounded-lg border border-surface-paper/70 bg-surface-paper/[0.88] p-2.5 text-[var(--ink)] shadow-[0_18px_50px_rgba(var(--ds-black-rgb),0.24)] backdrop-blur-xl transition active:scale-[0.98]"
           >
-            <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border border-[var(--ds-text-primary)]/10 bg-[var(--ds-surface-paper)]">
+            <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-md border border-primary/10 bg-surface-paper">
               <OptimizedImage
                 src={current.thumbnail_url}
                 alt={current.product_name}
@@ -918,7 +918,7 @@ function ReelPlayerModal({
                 View details, fabric, care, and shipping
               </p>
             </div>
-            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--ds-accent-primary)] px-3.5 py-2 text-body-xs font-bold  tracking-token-wider text-inverse shadow-lg">
+            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-accent px-3.5 py-2 text-body-xs font-bold  tracking-token-wider text-inverse shadow-lg">
               <ShoppingBag size={14} aria-hidden="true" />
               Shop
             </span>
@@ -928,7 +928,7 @@ function ReelPlayerModal({
         {/* Swipe hint on first reel */}
         {localReels.length > 1 && currentIndex === 0 && (
           <div className="pointer-events-none absolute inset-x-0 bottom-44 z-10 flex justify-center lg:hidden">
-            <span className="rounded-full bg-[var(--ds-text-primary)]/40 px-4 py-1.5 text-body-xs text-inverse/70 backdrop-blur-sm">
+            <span className="rounded-full bg-primary/40 px-4 py-1.5 text-body-xs text-inverse/70 backdrop-blur-sm">
               Swipe up for next
             </span>
           </div>

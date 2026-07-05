@@ -8,7 +8,7 @@ interface TestimonialsProps {
 function renderStars(rating?: number) {
   const filled = Math.max(0, Math.min(5, Math.round(rating || 5)));
   return Array.from({ length: 5 }, (_, index) => (
-    <span key={index} className={index < filled ? 'text-[var(--ds-accent-gold)]' : 'text-muted'}>
+    <span key={index} className={index < filled ? 'text-accent-gold' : 'text-muted'}>
       ★
     </span>
   ));
@@ -20,7 +20,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
   if (displayed.length === 0) return null;
 
   return (
-    <section className="max-md:py-[var(--ds-space-md)] bg-[var(--ds-surface-paper)] border-b border-border-subtle">
+    <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper border-b border-border-subtle">
       <div className="kv-container">
         <div className="max-md:py-[var(--ds-space-md)]-head mb-[var(--ds-space-md)] md:mb-[var(--ds-space-lg)]">
           <div className="kv-tag">Love shared by customers</div>

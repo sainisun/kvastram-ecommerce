@@ -53,7 +53,7 @@ export function CircularCategoriesClient({
 
   return (
     <section
-      className="overflow-hidden border-b border-border-subtle bg-[var(--ds-surface-paper)]"
+      className="overflow-hidden border-b border-border-subtle bg-surface-paper"
       aria-labelledby="homepage-circles-title"
       data-home-section="1-circle-categories"
     >

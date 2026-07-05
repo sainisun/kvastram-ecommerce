@@ -177,7 +177,7 @@ export default function FilterSidebar({
   );
 
   return (
-    <div className={`flex min-h-full flex-col bg-[var(--ds-surface-paper)] ${className}`}>
+    <div className={`flex min-h-full flex-col bg-surface-paper ${className}`}>
       <div className="flex-1 sm:hidden">
         <div className="space-y-7">
           <div className="flex items-center justify-between gap-4 border-b border-border-subtle pb-4">
@@ -320,8 +320,8 @@ export default function FilterSidebar({
                       size="sm"
                       className={`filter-tag-button min-h-9 rounded-full border px-3 py-2 ${
                         isActive
-                          ? 'border-[var(--ds-text-primary)] bg-[var(--ds-text-primary)] text-inverse'
-                          : 'filter-tag-button-inactive border-border-subtle bg-[var(--ds-surface-paper)] hover:border-[var(--ds-text-primary)]'
+                          ? 'border-primary bg-primary text-inverse'
+                          : 'filter-tag-button-inactive border-border-subtle bg-surface-paper hover:border-primary'
                       }`}
                     >
                       {tag.name}
@@ -490,7 +490,7 @@ export default function FilterSidebar({
         ) : null}
       </div>
 
-      <div className="sticky bottom-0 -mx-4 mt-8 grid gap-3 border-t border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-4 sm:hidden sm:-mx-0 sm:grid-cols-2">
+      <div className="sticky bottom-0 -mx-4 mt-8 grid gap-3 border-t border-border-subtle bg-surface-paper px-4 py-4 sm:hidden sm:-mx-0 sm:grid-cols-2">
         <Button
           type="button"
           onClick={applyFilters}
@@ -511,7 +511,7 @@ export default function FilterSidebar({
         </Button>
       </div>
 
-      <div className="sticky bottom-0 -mx-4 mt-8 hidden grid-cols-2 gap-3 border-t border-border-subtle bg-[var(--ds-surface-paper)] px-4 py-4 shadow-[0_-10px_24px_rgba(var(--ds-black-rgb),0.04)] sm:-mx-5 sm:grid sm:px-5">
+      <div className="sticky bottom-0 -mx-4 mt-8 hidden grid-cols-2 gap-3 border-t border-border-subtle bg-surface-paper px-4 py-4 shadow-[0_-10px_24px_rgba(var(--ds-black-rgb),0.04)] sm:-mx-5 sm:grid sm:px-5">
         <Button
           type="button"
           onClick={clearAllFilters}
@@ -616,7 +616,7 @@ function MobileFilterButton({
         small ? 'filter-option-small' : 'filter-option-regular'
       } ${
         active
-          ? 'filter-option-active bg-[var(--ds-text-primary)] text-inverse'
+          ? 'filter-option-active bg-primary text-inverse'
           : 'filter-option-inactive hover:bg-surface-soft'
       }`}
     >
@@ -649,14 +649,14 @@ function FilterButton({
       } ${
         active
           ? 'filter-option-active border-border-subtle bg-surface-soft text-primary'
-          : 'filter-option-inactive border-transparent bg-[var(--ds-surface-paper)] text-secondary hover:border-border-subtle hover:bg-surface-soft hover:text-primary'
+          : 'filter-option-inactive border-transparent bg-surface-paper text-secondary hover:border-border-subtle hover:bg-surface-soft hover:text-primary'
       }`}
     >
       <span
         className={`flex h-4 w-4 shrink-0 items-center justify-center border transition-colors ${
           active
-            ? 'border-[var(--ds-text-primary)] bg-[var(--ds-surface-paper)] text-primary'
-            : 'border-border bg-[var(--ds-surface-paper)]'
+            ? 'border-primary bg-surface-paper text-primary'
+            : 'border-border bg-surface-paper'
         }`}
         aria-hidden="true"
       >

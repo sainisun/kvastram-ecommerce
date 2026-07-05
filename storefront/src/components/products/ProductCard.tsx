@@ -93,8 +93,8 @@ export function ProductCard({
     null;
 
   return (
-    <article className="product-card relative bg-[var(--ds-surface-paper)] border border-[var(--ds-border-subtle)] rounded-[var(--ds-radius-md)] overflow-hidden shadow-[0_1px_2px_rgba(var(--ds-black-rgb),.03)] transition-[box-shadow,border-color] duration-180 hover:border-[rgba(var(--ds-accent-rgb),0.22)] focus-within:border-[rgba(var(--ds-accent-rgb),0.22)] hover:shadow-[0_2px_14px_rgba(var(--ds-black-rgb),.06)] focus-within:shadow-[0_2px_14px_rgba(var(--ds-black-rgb),.06)] group">
-      <div className="relative aspect-[4/5] grid place-items-center font-body text-body-md leading-normal bg-surface-soft overflow-hidden group-hover:saturate-[1.06] focus-within:saturate-[1.06]">
+    <article className="product-card relative bg-transparent overflow-hidden group">
+      <div className="relative aspect-[2/3] md:aspect-[4/5] grid place-items-center font-body text-body-md leading-normal bg-surface-soft overflow-hidden group-hover:saturate-[1.06] focus-within:saturate-[1.06]">
         <Link
           href={href}
           className="relative block h-full w-full"
@@ -143,7 +143,7 @@ export function ProductCard({
 
       </div>
 
-      <div className="absolute top-[var(--ds-space-xs)] right-[var(--ds-space-xs)] w-[34px] h-[34px] border-0 rounded-full bg-[var(--ds-surface-paper)] shadow-[0_2px_8px_rgba(var(--ds-black-rgb),.12)] grid place-items-center cursor-pointer z-10">
+      <div className="absolute top-[var(--ds-space-xs)] right-[var(--ds-space-xs)] w-[34px] h-[34px] border-0 rounded-full bg-surface-paper shadow-[0_2px_8px_rgba(var(--ds-black-rgb),.12)] grid place-items-center cursor-pointer z-10">
         <WishlistButton
           productId={product.id}
           title={displayTitle}
@@ -159,7 +159,7 @@ export function ProductCard({
       <div className="p-[var(--ds-space-xs)]">
         <p className="text-muted font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-product-meta-tracking)] uppercase italic font-light">{categoryLabel || product.collection?.title || product.subtitle || 'Odhvica'}</p>
         <Link href={href}>
-          <h3 className="mt-[3px] mx-0 mb-[var(--ds-space-xs)] font-[var(--ds-type-product-title-font)] text-[var(--ds-type-product-title-size)] font-[var(--ds-type-product-title-weight)] leading-snug tracking-normal text-primary max-w-[var(--ds-caption-width)] min-h-[2.5em] overflow-hidden line-clamp-2" title={displayTitle}>
+          <h3 className="mt-[3px] mx-0 mb-[var(--ds-space-xs)] font-[var(--ds-type-product-title-font)] text-type-product-title-size font-[var(--ds-type-product-title-weight)] leading-snug tracking-normal text-primary max-w-[var(--ds-caption-width)] min-h-[2.5em] overflow-hidden line-clamp-2" title={displayTitle}>
             {displayTitle}
           </h3>
         </Link>
@@ -194,7 +194,7 @@ export function ProductCard({
             onClick={(event) => onAddToCart(event, product)}
             variant={added ? 'primary' : 'ghost'}
             size="sm"
-            className="flex-none w-[34px] h-[34px] rounded-[var(--ds-radius-sm)] font-body font-[var(--ds-type-ui-weight)] text-primary hover:bg-[var(--ds-accent-primary)] hover:text-inverse"
+            className="flex-none w-[34px] h-[34px] rounded-[var(--ds-radius-sm)] font-body font-[var(--ds-type-ui-weight)] text-primary hover:bg-accent hover:text-inverse"
             aria-label={added ? 'Added to cart' : 'Add to cart'}
         >
             {added ? (
@@ -205,7 +205,7 @@ export function ProductCard({
           </IconButton>
         </div>
         {actionLabel ? (
-          <Link href={href} className="inline-flex mt-[var(--ds-space-xs)] text-primary text-body-xs font-[var(--ds-type-ui-weight)] underline underline-offset-4 hover:text-[var(--ds-accent-primary)]">
+          <Link href={href} className="inline-flex mt-[var(--ds-space-xs)] text-primary text-body-xs font-[var(--ds-type-ui-weight)] underline underline-offset-4 hover:text-accent">
             {actionLabel}
           </Link>
         ) : null}

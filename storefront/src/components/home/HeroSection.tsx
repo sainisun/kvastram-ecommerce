@@ -46,7 +46,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
 
   return (
     <section
-      className="relative min-h-[clamp(520px,76svh,820px)] overflow-hidden bg-[var(--ds-text-primary)]"
+      className="relative min-h-[clamp(520px,76svh,820px)] overflow-hidden bg-primary"
       aria-label="Featured campaigns"
       data-home-section="2-hero"
       onFocusCapture={() => autoplay.stop()}
@@ -114,7 +114,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
                 <UnstyledButton
                   key={slide.id}
                   type="button"
-                  className="w-[28px] h-[3px] bg-[rgba(var(--ds-white-rgb),0.45)] aria-[current=true]:bg-[var(--ds-text-inverse)] transition-colors duration-150"
+                  className="w-[28px] h-[3px] bg-[rgba(var(--ds-white-rgb),0.45)] aria-[current=true]:bg-inverse transition-colors duration-150"
                   onClick={() => emblaApi?.scrollTo(index)}
                   aria-label={`Go to hero slide ${index + 1}`}
                   aria-current={selectedIndex === index ? 'true' : undefined}

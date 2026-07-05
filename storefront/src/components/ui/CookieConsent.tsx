@@ -47,7 +47,7 @@ export function CookieConsent() {
           <div className="flex min-w-0 items-start gap-2.5">
             <Cookie
               size={20}
-              className="mt-0.5 shrink-0 text-[var(--ds-accent-gold)]"
+              className="mt-0.5 shrink-0 text-accent-gold"
             />
             <div className="min-w-0">
               <p className="text-body-sm text-primary font-semibold">
@@ -81,7 +81,7 @@ export function CookieConsent() {
             onClick={handleAcceptAll}
             variant="secondary"
             size="sm"
-            className="min-h-10 flex-1 whitespace-nowrap bg-[var(--ds-text-primary)] text-inverse"
+            className="min-h-10 flex-1 whitespace-nowrap bg-primary text-inverse"
           >
             Accept All
           </Button>

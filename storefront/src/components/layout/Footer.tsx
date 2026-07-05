@@ -77,7 +77,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer data-home-section="11-footer" className="odhvica-footer border-t border-[var(--ds-footer-border)]">
+    <footer data-home-section="11-footer" className="odhvica-footer border-t border-footer-border">
       <div
         className="footer-watermark-prem overflow-hidden px-[var(--ds-space-md)] pt-[var(--ds-space-md)] sm:px-[var(--ds-space-md)] md:px-[var(--ds-space-lg)] md:pt-[var(--ds-space-md)] select-none"
         aria-hidden="true"

@@ -2,7 +2,7 @@ import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 export const cardClasses =
-  'rounded-[var(--radius-md)] border border-border-subtle bg-[var(--ds-surface-paper)] text-primary';
+  'rounded-[var(--radius-md)] border border-border-subtle bg-surface-paper text-primary';
 
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (

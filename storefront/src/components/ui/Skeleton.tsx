@@ -17,7 +17,7 @@ export function Skeleton({ className }: SkeletonProps) {
 // Product card skeleton
 export function ProductCardSkeleton() {
   return (
-    <div className="bg-[var(--ds-surface-paper)]">
+    <div className="bg-surface-paper">
       {/* Image skeleton */}
       <div className="relative mb-4 aspect-[3/4] overflow-hidden bg-surface-soft">
         <Skeleton className="absolute inset-0" />
@@ -47,7 +47,7 @@ export function ProductGridSkeleton({ count = 8 }: { count?: number }) {
 // Product detail skeleton
 export function ProductDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--ds-surface-paper)] py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="min-h-screen bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
       <div className="kv-page-container mx-auto max-w-page">
         {/* Breadcrumb skeleton */}
         <Skeleton className="h-4 w-64 mb-8" />
@@ -115,7 +115,7 @@ export function CartSkeleton() {
           {/* Cart items */}
           <div className="lg:col-span-7 space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex gap-4 bg-[var(--ds-surface-paper)] p-4">
+              <div key={i} className="flex gap-4 bg-surface-paper p-4">
                 <Skeleton className="w-24 h-24 shrink-0" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-5 w-3/4" />
@@ -128,7 +128,7 @@ export function CartSkeleton() {
 
           {/* Order summary */}
           <div className="lg:col-span-5">
-            <div className="space-y-4 bg-[var(--ds-surface-paper)] p-6">
+            <div className="space-y-4 bg-surface-paper p-6">
               <Skeleton className="h-6 w-32" />
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-full" />
@@ -166,7 +166,7 @@ export function CheckoutSkeleton() {
           </div>
 
           {/* Order summary */}
-          <div className="space-y-4 bg-[var(--ds-surface-paper)] p-6">
+          <div className="space-y-4 bg-surface-paper p-6">
             <Skeleton className="h-6 w-32" />
             {Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="flex gap-[var(--ds-space-sm)]">
@@ -198,7 +198,7 @@ export function AccountSkeleton() {
         <div className="flex flex-col lg:flex-row gap-[var(--ds-space-md)]">
           {/* Sidebar */}
           <div className="lg:w-64 shrink-0">
-            <div className="space-y-4 bg-[var(--ds-surface-paper)] p-6">
+            <div className="space-y-4 bg-surface-paper p-6">
               <Skeleton className="w-16 h-16 rounded-[var(--ds-radius-pill)] mx-auto" />
               <Skeleton className="h-4 w-3/4 mx-auto" />
               <Skeleton className="h-3 w-1/2 mx-auto" />
@@ -214,7 +214,7 @@ export function AccountSkeleton() {
             {/* Stats */}
             <div className="grid sm:grid-cols-3 gap-[var(--ds-space-sm)]">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="space-y-2 bg-[var(--ds-surface-paper)] p-6">
+                <div key={i} className="space-y-2 bg-surface-paper p-6">
                   <Skeleton className="h-4 w-24" />
                   <Skeleton className="h-8 w-16" />
                 </div>
@@ -222,7 +222,7 @@ export function AccountSkeleton() {
             </div>
 
             {/* Recent orders */}
-            <div className="bg-[var(--ds-surface-paper)] p-6">
+            <div className="bg-surface-paper p-6">
               <Skeleton className="h-6 w-32 mb-4" />
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="flex justify-between py-[var(--ds-space-sm)] border-b">
@@ -245,7 +245,7 @@ export function OrdersListSkeleton() {
       <div className="mx-auto max-w-4xl">
         <Skeleton className="h-10 w-64 mb-8" />
 
-        <div className="bg-[var(--ds-surface-paper)]">
+        <div className="bg-surface-paper">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}

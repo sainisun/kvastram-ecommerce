@@ -21,7 +21,7 @@ export function ActionsRight({ onCartOpen, isTransparent = false }: ActionsRight
     ? 'relative flex h-9 w-9 items-center justify-center rounded-full text-inverse transition-colors hover:bg-[rgba(var(--ds-white-rgb),0.15)] hover:text-inverse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]'
     : 'relative flex h-9 w-9 items-center justify-center rounded-full text-secondary transition-colors hover:bg-[rgba(var(--ds-surface-paper-rgb),0.6)] hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ds-accent-primary)]';
 
-  const ringCls = isTransparent ? 'ring-[var(--ds-surface-page)]' : 'ring-[var(--ds-surface-parchment)]';
+  const ringCls = isTransparent ? 'ring-surface-page' : 'ring-surface-parchment';
 
   return (
     <div className="flex items-center justify-end gap-1.5">
@@ -42,7 +42,7 @@ export function ActionsRight({ onCartOpen, isTransparent = false }: ActionsRight
       >
         <Heart size={20} strokeWidth={1.4} />
         {wishlistCount > 0 && (
-          <span className={`kv-count-badge absolute right-0.5 top-0.5 h-3.5 min-w-3.5 rounded-full bg-[var(--ds-accent-primary)] px-0.5 text-inverse ring-[1.5px] ${ringCls}`}>
+          <span className={`kv-count-badge absolute right-0.5 top-0.5 h-3.5 min-w-3.5 rounded-full bg-accent px-0.5 text-inverse ring-[1.5px] ${ringCls}`}>
             {wishlistCount > 9 ? '9+' : wishlistCount}
           </span>
         )}
@@ -58,7 +58,7 @@ export function ActionsRight({ onCartOpen, isTransparent = false }: ActionsRight
       >
         <ShoppingBag size={20} strokeWidth={1.4} />
         {totalItems > 0 && (
-          <span className={`kv-count-badge absolute right-0.5 top-0.5 h-3.5 min-w-3.5 rounded-full bg-[var(--ds-accent-primary)] px-0.5 text-inverse ring-[1.5px] ${ringCls}`}>
+          <span className={`kv-count-badge absolute right-0.5 top-0.5 h-3.5 min-w-3.5 rounded-full bg-accent px-0.5 text-inverse ring-[1.5px] ${ringCls}`}>
             {totalItems > 9 ? '9+' : totalItems}
           </span>
         )}

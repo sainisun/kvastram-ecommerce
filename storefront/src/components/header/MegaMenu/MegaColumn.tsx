@@ -24,7 +24,7 @@ export function MegaColumn({ groups, viewAllLabel, viewAllHref, onClose }: MegaC
       {groups.map((group) => (
         <div key={group.label}>
           <p
-            className="font-label text-body-xs font-medium tracking-token-wide text-[var(--ds-text-disabled)] mb-4 pb-2.5 border-b border-[var(--ds-surface-parchment-2)]"
+            className="font-label text-body-xs font-medium tracking-token-wide text-disabled mb-4 pb-2.5 border-b border-surface-parchment-2"
           >
             {group.label}
           </p>

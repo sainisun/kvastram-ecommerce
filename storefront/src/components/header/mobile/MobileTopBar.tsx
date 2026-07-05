@@ -34,7 +34,7 @@ export function MobileTopBar({
     : 'text-secondary hover:text-primary transition-colors';
 
   const menuIconColor = isTransparent ? 'text-inverse' : 'text-secondary';
-  const ringCls = isTransparent ? 'ring-[var(--ds-surface-page)]' : 'ring-[var(--ds-surface-paper)]';
+  const ringCls = isTransparent ? 'ring-surface-page' : 'ring-surface-paper';
 
   return (
     <div className={wrapperCls}>
@@ -73,7 +73,7 @@ export function MobileTopBar({
         >
           <Heart size={20} strokeWidth={1.4} />
           {wishlistCount > 0 && (
-            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-inverse rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
+            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-accent text-inverse rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
               {wishlistCount > 9 ? '9+' : wishlistCount}
             </span>
           )}
@@ -88,7 +88,7 @@ export function MobileTopBar({
         >
           <ShoppingBag size={20} strokeWidth={1.4} />
           {totalItems > 0 && (
-            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-[var(--ds-accent-primary)] text-inverse rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
+            <span className={`kv-count-badge absolute -top-1 -right-1 w-3.5 h-3.5 bg-accent text-inverse rounded-full flex items-center justify-center ring-[1.5px] ${ringCls}`}>
               {totalItems > 9 ? '9+' : totalItems}
             </span>
           )}

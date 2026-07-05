@@ -75,7 +75,7 @@ export function NewsletterModal() {
           Subscribe for artisan stories, launches, and the active welcome offer.
         </p>
         {status === 'success' ? (
-          <div className="flex gap-3 border border-[var(--ds-success)] bg-[var(--ds-success-bg)] p-4 text-body-sm text-success" role="status">
+          <div className="flex gap-3 border border-success bg-success-bg p-4 text-body-sm text-success" role="status">
             <CheckCircle className="mt-0.5 shrink-0" size={18} />
             <p>{message}</p>
           </div>
@@ -120,7 +120,7 @@ export function NewsletterModal() {
         <Link
           href="/products"
           onClick={() => setOpen(false)}
-          className="block w-full border border-border-subtle px-6 py-4 text-center text-body-xs font-semibold  tracking-token-wider text-primary transition-colors hover:border-[var(--ds-text-primary)]"
+          className="block w-full border border-border-subtle px-6 py-4 text-center text-body-xs font-semibold  tracking-token-wider text-primary transition-colors hover:border-primary"
         >
           No Thanks
         </Link>

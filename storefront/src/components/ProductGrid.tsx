@@ -16,6 +16,7 @@ import { PriceDisplay } from '@/components/ui/PriceDisplay';
 import { useCurrency } from '@/context/currency-context';
 import { buildProductImageAlt } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
+import { cn } from '@/lib/utils';
 import {
   filterStorefrontReadyProducts,
   isStorefrontProductReady,
@@ -70,7 +71,10 @@ function ProductGrid({
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const products = filterStorefrontReadyProducts(initialProducts, { requireSellablePrice });
   const resolvedLoading = externalLoading === true;
-  const gridClassName = density === 'compact' ? 'products-grid compact' : 'products-grid';
+  const gridClassName = cn(
+    'grid grid-cols-2 gap-[var(--ds-space-xs)] md:grid-cols-3 lg:grid-cols-4 md:gap-[var(--ds-space-sm)]',
+    density === 'compact' ? 'gap-y-[var(--ds-space-md)] md:gap-y-[var(--ds-space-lg)]' : ''
+  );
 
   useEffect(() => {
     if (wholesaleInfo?.hasWholesaleAccess && products.length > 0 && fetchPrices) {
@@ -240,7 +244,7 @@ function ProductGrid({
               ) : null}
               <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.60)] via-[rgba(var(--ds-black-rgb),0.10)] to-transparent" />
               {spotlight.badge_text ? (
-                <Badge className="spotlight-badge absolute left-4 top-4 z-10 rounded-[var(--radius-xs)] bg-[var(--ds-surface-paper)]/90 px-3 py-1">
+                <Badge className="spotlight-badge absolute left-4 top-4 z-10 rounded-[var(--radius-xs)] bg-surface-paper/90 px-3 py-1">
                   {spotlight.badge_text}
                 </Badge>
               ) : null}
@@ -257,7 +261,7 @@ function ProductGrid({
                   variant="inline"
                   priceClassName="spotlight-price"
                 />
-                <span className="spotlight-action inline-flex items-center rounded-[var(--radius-xs)] bg-[var(--ds-text-primary)] px-5 py-2">
+                <span className="spotlight-action inline-flex items-center rounded-[var(--radius-xs)] bg-primary px-5 py-2">
                   View
                 </span>
               </div>
