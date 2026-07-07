@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { usePathname } from 'next/navigation';
 import { PromoBar } from './PromoBar';
 import { HeaderMain } from './HeaderMain';
 import { SearchBar } from './SearchBar';
@@ -78,9 +77,10 @@ export function SiteHeader() {
     megaLeaveTimer.current = setTimeout(() => setActiveMega(null), 180);
   }, []);
 
-  const pathname = usePathname();
-  const isHomepage = pathname === '/';
-  const isTransparent = isHomepage && !isSticky;
+  // The homepage no longer begins with a full-bleed dark hero. Its first section is
+  // a light category discovery strip, so transparent/inverse header chrome makes the
+  // brand mark and navigation disappear into the page background on first paint.
+  const isTransparent = false;
 
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
