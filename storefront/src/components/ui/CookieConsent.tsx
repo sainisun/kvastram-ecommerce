@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { X, Cookie } from 'lucide-react';
 import { ConsentManager } from '@/lib/consent-manager';
 import { Button, IconButton } from '@/components/ui/Button';
@@ -9,16 +10,19 @@ import { Card } from '@/components/ui/Card';
 
 export function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
+  const pathname = usePathname();
+  const isHomepage = pathname === '/';
 
   useEffect(() => {
     // only show banner when there is no stored consent
     const existing = ConsentManager.getConsent();
     if (!existing) {
-      // Give the first brand viewport a moment before asking for consent.
-      const timer = setTimeout(() => setShowBanner(true), 3200);
+      // Give the first viewport space before asking for consent, especially on the homepage hero.
+      const delayMs = isHomepage ? 8000 : 3200;
+      const timer = setTimeout(() => setShowBanner(true), delayMs);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [isHomepage]);
 
   const handleAcceptAll = () => {
     ConsentManager.acceptAll();
@@ -36,7 +40,7 @@ export function CookieConsent() {
 
   return (
     <div
-      className="cookie-consent fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] left-3 right-3 z-50 animate-fade-in-up md:bottom-6 md:left-auto md:right-6 md:max-w-md"
+      className="cookie-consent fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] left-3 right-3 z-50 animate-fade-in-up md:bottom-6 md:left-6 md:right-auto md:max-w-[380px]"
       role="dialog"
       aria-label="Cookie consent"
       aria-live="polite"
