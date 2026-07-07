@@ -1,6 +1,5 @@
 import { Home, Search, ArrowLeft } from 'lucide-react';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { ButtonLink } from '@/components/ui/Button';
+import { ButtonLink, EmptyState } from '@/design-system';
 
 export default function NotFound() {
   return (

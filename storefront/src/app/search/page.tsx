@@ -1,14 +1,16 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
 import { Loader2, Filter, ArrowLeft, Search } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import { Button, ButtonLink, UnstyledButton } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { Input } from '@/design-system';
+import { Button, ButtonLink, UnstyledButton } from '@/design-system';
+import { Card } from '@/design-system';
+import { EmptyState } from '@/design-system';
 import ProductGrid from '@/components/ProductGrid';
 import type { Product } from '@/types';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
@@ -131,8 +133,8 @@ function SearchContent() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="kv-page-container mx-auto max-w-page">
+    <div className="min-h-screen bg-surface-paper py-token-xl md:py-token-2xl lg:py-token-3xl">
+      <div className="ds-page-container mx-auto max-w-page">
         {/* Header */}
         <div className="mb-12">
           <Link
@@ -141,7 +143,7 @@ function SearchContent() {
           >
             <ArrowLeft size={14} /> Back to Home
           </Link>
-          <h1 className="search-title mb-4">{hasQuery ? 'Search Results' : 'Search Odhvica'}</h1>
+          <Heading role="page" className="search-title mb-4">{hasQuery ? 'Search Results' : 'Search Odhvica'}</Heading>
           <form onSubmit={submitSearch} className="mb-4 max-w-2xl">
             <div className="relative">
               <Search

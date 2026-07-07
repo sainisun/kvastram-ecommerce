@@ -133,20 +133,20 @@ export function StatsSection({ statsData }: StatsSectionProps) {
 
   return (
     <section ref={sectionRef} className="kv-page-gutter px-[var(--ds-space-md)] py-home-section-mobile md:px-[var(--ds-space-lg)] md:py-[var(--ds-space-2xl)] lg:px-[var(--ds-space-xl)] lg:py-home-section">
-      <div className="stats-row-prem">
+      <div className="stats-row">
         {statsData.map((stat, index) => (
-          <article key={stat.label} className="stat-entry-prem">
-            <span className="stat-symbol-prem" aria-hidden="true">
+          <article key={stat.label} className="stat-entry">
+            <span className="stat-symbol" aria-hidden="true">
               {statSymbols[index] || '•'}
             </span>
-            <span className="stat-num-prem">{animatedValues[index] ?? stat.num}</span>
-            <span className="stat-label-prem">{stat.label}</span>
+            <span className="stat-num">{animatedValues[index] ?? stat.num}</span>
+            <span className="stat-label">{stat.label}</span>
           </article>
         ))}
       </div>
 
       <style jsx>{`
-        .stats-row-prem {
+        .stats-row {
           max-width: 1360px;
           margin: 0 auto;
           display: grid;
@@ -154,7 +154,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           gap: var(--ds-space-2xl) var(--ds-space-lg);
         }
 
-        .stat-entry-prem {
+        .stat-entry {
           position: relative;
           display: flex;
           min-width: 0;
@@ -164,7 +164,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           text-align: center;
         }
 
-        .stat-entry-prem::after {
+        .stat-entry::after {
           content: '';
           position: absolute;
           top: 22%;
@@ -179,11 +179,11 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           );
         }
 
-        .stat-entry-prem:nth-child(2n)::after {
+        .stat-entry:nth-child(2n)::after {
           display: none;
         }
 
-        .stat-symbol-prem {
+        .stat-symbol {
           margin-bottom: var(--ds-space-sm);
           font-size: var(--ds-text-body-lg);
           line-height: var(--ds-leading-tight);
@@ -192,7 +192,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           animation: symbolFloat 4.2s ease-in-out infinite;
         }
 
-        .stat-num-prem {
+        .stat-num {
           font-family: var(--ds-font-display);
           font-size: var(--ds-text-display-lg);
           font-weight: var(--ds-type-heading-weight);
@@ -202,7 +202,7 @@ export function StatsSection({ statsData }: StatsSectionProps) {
           white-space: nowrap;
         }
 
-        .stat-label-prem {
+        .stat-label {
           margin-top: var(--ds-space-sm);
           font-size: var(--ds-text-body-xs);
           font-weight: var(--ds-type-label-weight);
@@ -213,27 +213,27 @@ export function StatsSection({ statsData }: StatsSectionProps) {
         }
 
         @media (min-width: 768px) {
-          .stats-row-prem {
+          .stats-row {
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: var(--ds-space-md);
           }
 
-          .stat-entry-prem::after {
+          .stat-entry::after {
             right: -12px;
             display: block;
           }
 
-          .stat-entry-prem:last-child::after {
+          .stat-entry:last-child::after {
             display: none;
           }
 
-          .stat-symbol-prem {
+          .stat-symbol {
             margin-bottom: var(--ds-space-md);
           }
         }
 
         @media (max-width: 767px) {
-          .stat-num-prem {
+          .stat-num {
             font-size: var(--ds-text-display-md);
             white-space: normal;
           }

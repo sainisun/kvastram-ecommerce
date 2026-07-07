@@ -1,10 +1,12 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useState, Suspense, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { Button } from '@/design-system';
+import { EmptyState } from '@/design-system';
 
 function VerifyContent() {
   const searchParams = useSearchParams();
@@ -59,9 +61,9 @@ function VerifyContent() {
         {status === 'loading' && (
           <>
             <Loader2 className="animate-spin mx-auto" size={48} />
-            <h1 className="text-display-md font-display text-primary">
+            <Heading role="page" className="text-display-md font-display text-primary">
               Verifying your email...
-            </h1>
+            </Heading>
           </>
         )}
 

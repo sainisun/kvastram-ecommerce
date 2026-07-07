@@ -50,13 +50,15 @@ export function useInventoryWebSocket(
       process.env.NEXT_PUBLIC_WS_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
       'http://localhost:4000';
+    const isE2E = process.env.NEXT_PUBLIC_E2E === 'true';
 
     // Don't connect in development if explicitly disabled
     if (
+      isE2E ||
       process.env.NODE_ENV === 'development' &&
       !process.env.NEXT_PUBLIC_ENABLE_WS_DEV
     ) {
-      console.log('[Inventory WebSocket] Disabled in development');
+      console.log('[Inventory WebSocket] Disabled for local verification');
       return;
     }
 

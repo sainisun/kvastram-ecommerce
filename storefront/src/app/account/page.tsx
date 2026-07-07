@@ -1,5 +1,7 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
 import { OrderWithDetails } from '@/types';
@@ -9,11 +11,11 @@ import { Package, User, LogOut, MapPin, Bell } from 'lucide-react';
 import { UserCard } from '@/components/account/UserCard';
 import { QuickGrid } from '@/components/account/QuickGrid';
 import { SettingsList } from '@/components/account/SettingsList';
-import { Badge } from '@/components/ui/Badge';
-import { Button, ButtonLink } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { AccountSkeleton } from '@/components/ui/Skeleton';
+import { Badge } from '@/design-system';
+import { Button, ButtonLink } from '@/design-system';
+import { Card } from '@/design-system';
+import { EmptyState } from '@/design-system';
+import { AccountSkeleton } from '@/design-system';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
 
 export default function AccountPage() {
@@ -70,7 +72,7 @@ export default function AccountPage() {
         {/* Header */}
         <div className="bg-surface-paper border-b border-border-subtle sticky top-0 z-10">
           <div className="px-4 h-14 flex items-center justify-center">
-            <h1 className="account-mobile-title">Profile</h1>
+            <Heading role="page" className="account-mobile-title">Profile</Heading>
           </div>
         </div>
 
@@ -95,7 +97,7 @@ export default function AccountPage() {
 
       {/* Desktop Layout */}
       <div className="hidden pb-16 pt-16 md:block lg:pb-24 lg:pt-24">
-        <div className="kv-page-container mx-auto max-w-page">
+        <div className="ds-page-container mx-auto max-w-page">
           <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
             {/* Sidebar */}
             <div className="lg:w-64 shrink-0">
@@ -156,9 +158,9 @@ export default function AccountPage() {
 
             {/* Main Content */}
             <div className="flex-1 min-w-0">
-              <h1 className="account-page-title mb-8">
+              <Heading role="page" className="account-page-title mb-8">
                 My Account
-              </h1>
+              </Heading>
 
               {/* Quick Stats */}
               <div className="grid sm:grid-cols-3 gap-4 mb-8">

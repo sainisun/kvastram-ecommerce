@@ -1,3 +1,5 @@
+
+import { Heading } from '@/design-system';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -31,12 +33,12 @@ export default async function ArtisanPage({ params }: Props) {
   const { artisan, products = [] } = data;
 
   return (
-    <main className="kv-container py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <main className="ds-home-container py-token-xl md:py-token-2xl lg:py-token-3xl">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildPersonJsonLd(artisan)) }}
       />
-      <h1 className="collection-detail-title">{artisan.name}</h1>
+      <Heading role="page" className="collection-detail-title">{artisan.name}</Heading>
       <p className="collection-detail-copy mt-4 max-w-3xl">
         {artisan.bio || artisan.craft_specialty || 'Textile artisan connected to Odhvica handmade craft.'}
       </p>

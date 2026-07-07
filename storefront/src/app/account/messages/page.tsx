@@ -1,5 +1,7 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,11 +10,11 @@ import { useAuth } from '@/context/auth-context';
 import { useStudioChatSocket } from '@/hooks/useStudioChatSocket';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/Badge';
-import { cardClasses } from '@/components/ui/Card';
-import { ButtonLink } from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { Badge } from '@/design-system';
+import { cardClasses } from '@/design-system';
+import { ButtonLink } from '@/design-system';
+import { EmptyState } from '@/design-system';
+import { StatusBanner } from '@/design-system';
 
 interface StudioInquirySummary {
   id: string;
@@ -73,13 +75,13 @@ export default function AccountMessagesPage() {
 
   return (
     <div className="min-h-screen bg-parchment">
-      <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
         <div className="mb-8 flex items-center justify-between gap-4">
           <div>
             <Link href="/account" className="account-muted hover:text-primary">
               Account
             </Link>
-            <h1 className="account-page-title mt-2">Messages</h1>
+            <Heading role="page" className="account-page-title mt-2">Messages</Heading>
             <p className="account-muted mt-2">Your product conversations with Odhvica Studio.</p>
             <StatusBanner
               tone={live.isConnected ? 'success' : 'info'}

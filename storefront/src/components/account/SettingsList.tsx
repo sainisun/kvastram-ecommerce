@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User, MapPin, Bell, LogOut, ChevronRight, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/design-system';
 import { RegionSelector } from '@/components/region/RegionSelector';
 
 export function SettingsList() {

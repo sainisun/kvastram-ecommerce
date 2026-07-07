@@ -2,6 +2,19 @@
 
 These rules apply to humans and AI agents working in this repository.
 
+## Storefront Master Phase Gate (Mandatory)
+
+- Current state: `ARCHITECTURE_V4_IN_PROGRESS`.
+- Read `docs/design-system/storefront-architecture-consistency-plan-v4.md` and `docs/design-system/storefront-visual-art-direction-plan-v5.md` before storefront work.
+- V4 is the complete architecture constitution. V5 may not shorten, replace, reinterpret, or begin before an exact V4 SHA has a truthful certificate and explicit user approval.
+- V4 work occurs only on `codex/storefront-architecture-v4`. Production deployment and pushes to `main` are locked during V4.
+- Generated design-system artifacts must never be edited directly; edit `storefront/design-system/tokens.json` and run the generator.
+- Frozen architecture direction, audit baselines, route contracts, and exceptions may not be silently changed to make a gate pass.
+- Features, CMS behavior, SEO, APIs, URLs, and business logic may be migrated but not removed.
+- Green tests alone are not completion evidence. The implementing agent cannot approve its own certificate or claim `100% complete` before certificate evidence and user screenshot approval.
+- Rejected screenshots keep the phase incomplete. V5 architecture-freeze failures set `BLOCKED_FOR_ARCHITECTURE_REVIEW`.
+- Only after both user approvals may the certified result merge once to `main`; deployment remains GitHub Actions-only.
+
 ## Canonical Sources
 
 - GitHub source of truth: `origin/main`
@@ -95,4 +108,3 @@ reported back before any follow-up action is taken.
   - Technical functionality and flow
   - User requirements, settings, credentials, DLT setups, or configurations
   - Edge cases, dependencies, and operational commands.
-

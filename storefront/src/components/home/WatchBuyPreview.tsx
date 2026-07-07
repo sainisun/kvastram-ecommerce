@@ -1,18 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import {
+  HomepageSection,
+  HomepageSectionHeader,
+  OptimizedImage,
+  PriceDisplay,
+  homepageScrollRailClassName,
+  homepageSectionActionClassName,
+} from '@/design-system';
 import { useCurrency } from '@/context/currency-context';
 import type { MoneyAmount } from '@/types';
 import type { HomepageTrendingReel } from '@/types/homepage';
 import { Play } from 'lucide-react';
-import {
-  HomepageSection,
-  HomepageSectionHeader,
-  homepageScrollRailClassName,
-  homepageSectionActionClassName,
-} from '@/components/ui/HomepageSection';
 
 export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
   const { formatPrice } = useCurrency();

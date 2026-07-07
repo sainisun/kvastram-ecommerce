@@ -1,3 +1,5 @@
+
+import { Heading } from '@/design-system';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -79,9 +81,9 @@ export default function ShippingPolicyPage() {
         <p className="text-body-xs font-ui uppercase tracking-[var(--ds-type-label-tracking)] text-muted">
           Policies
         </p>
-        <h1 className="mt-3 text-display-md font-display font-[var(--ds-type-heading-weight)] text-primary">
+        <Heading role="page" className="mt-3 text-display-md font-display font-[var(--ds-type-heading-weight)] text-primary">
           Shipping Policy
-        </h1>
+        </Heading>
         <p className="mt-4 text-body-lg leading-[var(--ds-leading-relaxed)] text-secondary">
           This Shipping Policy explains how Odhvica dispatches domestic and
           international orders placed on odhvica.com.

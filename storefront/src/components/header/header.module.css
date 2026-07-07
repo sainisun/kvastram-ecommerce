@@ -1,3 +1,4 @@
+@layer components {
 .scrollbarNone {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -20,4 +21,5 @@
 .mmLink:hover {
   color: var(--ds-accent-primary);
   padding-left: 4px;
+}
 }

@@ -26,7 +26,7 @@ const trustItems = [
 export function HomeTrustBar() {
   return (
     <section className="bg-surface-paper border-b border-border-subtle" aria-label="Odhvica shopping promises">
-      <div className="kv-container">
+      <div className="ds-home-container">
         <div className="flex flex-nowrap overflow-x-auto gap-[20px] px-[16px] py-[12px] border-0 no-scrollbar md:grid md:grid-cols-4 md:gap-[1px] md:p-0 md:border-x md:border-border-subtle md:overflow-visible">
           {trustItems.map((item) => {
             const Icon = item.icon;

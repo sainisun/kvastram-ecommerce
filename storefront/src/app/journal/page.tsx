@@ -1,6 +1,8 @@
+
+import { Heading } from '@/design-system';
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { OptimizedImage } from '@/design-system';
+import { EmptyState } from '@/design-system';
 import { api } from '@/lib/api';
 
 export const revalidate = 60; // Re-generate at most every 60 seconds (ISR)
@@ -22,14 +24,14 @@ export default async function JournalPage() {
   const posts: Post[] = data.posts || [];
 
   return (
-    <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+    <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
       <div className="mb-12 space-y-4 text-center md:mb-16">
         <span className="text-body-xs font-bold  tracking-token-wider text-muted">
           The Journal
         </span>
-        <h1 className="text-display-xl font-display text-primary italic">
+        <Heading role="page" className="text-display-xl font-display text-primary italic">
           Stories from the Atelier
-        </h1>
+        </Heading>
         <p className="text-secondary font-light max-w-2xl mx-auto">
           Exploring the intersection of heritage craftsmanship, sustainable
           luxury, and modern design.

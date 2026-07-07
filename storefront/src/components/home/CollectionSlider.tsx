@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import type { HomepageCollection } from '@/types/homepage';
-import { cn } from '@/lib/utils';
 import {
   HomepageSection,
   HomepageSectionHeader,
+  OptimizedImage,
   homepageSectionActionClassName,
-} from '@/components/ui/HomepageSection';
+} from '@/design-system';
+import type { HomepageCollection } from '@/types/homepage';
+import { cn } from '@/lib/utils';
 
 export function CollectionSlider({ collections }: { collections: HomepageCollection[] }) {
   if (!collections || collections.length === 0) return null;

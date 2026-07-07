@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Cardo, Amiri } from 'next/font/google';
+import localFont from 'next/font/local';
 
 import './globals.css';
 import '../styles/storefront.css';
@@ -54,18 +54,51 @@ export const metadata: Metadata = {
   },
 };
 
-const fontCardo = Cardo({
-  weight: ['400', '700'],
-  style: ['normal', 'italic'],
-  subsets: ['latin'],
+const fontCardo = localFont({
+  src: [
+    {
+      path: '../assets/fonts/Cardo-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../assets/fonts/Cardo-Italic.ttf',
+      weight: '400',
+      style: 'italic',
+    },
+    {
+      path: '../assets/fonts/Cardo-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
   display: 'swap',
   variable: '--font-cardo',
 });
 
-const fontAmiri = Amiri({
-  weight: ['400', '700'],
-  style: ['normal', 'italic'],
-  subsets: ['latin'],
+const fontAmiri = localFont({
+  src: [
+    {
+      path: '../assets/fonts/Amiri-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../assets/fonts/Amiri-Italic.ttf',
+      weight: '400',
+      style: 'italic',
+    },
+    {
+      path: '../assets/fonts/Amiri-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../assets/fonts/Amiri-BoldItalic.ttf',
+      weight: '700',
+      style: 'italic',
+    },
+  ],
   display: 'swap',
   variable: '--font-amiri',
 });
@@ -75,6 +108,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isE2E = process.env.NEXT_PUBLIC_E2E === 'true';
   const csrfToken = await import('@/lib/csrf').then((module) =>
     module.CsrfManager.getServerToken()
   );
@@ -93,12 +127,16 @@ export default async function RootLayout({
         />
         <link rel="preconnect" href={SITE_URL} />
         {csrfToken && <meta name="csrf-token" content={csrfToken} />}
-        <link
-          rel="preconnect"
-          href="https://res.cloudinary.com"
-          crossOrigin="anonymous"
-        />
-        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        {!isE2E ? (
+          <>
+            <link
+              rel="preconnect"
+              href="https://res.cloudinary.com"
+              crossOrigin="anonymous"
+            />
+            <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+          </>
+        ) : null}
 
       </head>
       <body className="font-body antialiased">

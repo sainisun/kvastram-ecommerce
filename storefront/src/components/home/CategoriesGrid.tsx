@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { HomepageContainer } from '@/components/ui/HomepageSection';
+import { HomepageContainer, OptimizedImage } from '@/design-system';
 import type { HomepageCategoryCard } from '@/types/homepage';
 
 export function CategoriesGrid({ categories }: { categories: HomepageCategoryCard[] }) {

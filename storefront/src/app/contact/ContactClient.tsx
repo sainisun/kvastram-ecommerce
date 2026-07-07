@@ -15,12 +15,15 @@ import {
   HighlightBox,
   InfoCard,
 } from '@/components/content/ContentPageSystem';
-import Input from '@/components/ui/Input';
-import Textarea from '@/components/ui/Textarea';
-import { Button, ButtonLink } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import {
+  Button,
+  ButtonLink,
+  Card,
+  EmptyState,
+  Input,
+  StatusBanner,
+  Textarea,
+} from '@/design-system';
 import { storefrontTrust } from '@/config/storefront-trust';
 
 const reasonLabels: Record<string, string> = {

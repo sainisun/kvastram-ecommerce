@@ -1,5 +1,8 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
+import { HiddenCheckbox, SelectionControl } from '@/design-system';
 import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
@@ -11,16 +14,16 @@ import {
   Lock,
   ShieldCheck,
 } from 'lucide-react';
-import SecurityBadges, { PaymentIcons } from '@/components/ui/SecurityBadges';
+import { SecurityBadges,  PaymentIcons  } from '@/design-system';
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import CountrySelect from '@/components/ui/CountrySelect';
+import { OptimizedImage } from '@/design-system';
+import { CountrySelect } from '@/design-system';
 import { getCountryName } from '@/config/countries';
-import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
-import Input from '@/components/ui/Input';
-import Textarea from '@/components/ui/Textarea';
-import { Button } from '@/components/ui/Button';
-import { CheckoutSkeleton } from '@/components/ui/Skeleton';
+import { AddressAutocomplete } from '@/design-system';
+import { Input } from '@/design-system';
+import { Textarea } from '@/design-system';
+import { Button } from '@/design-system';
+import { CheckoutSkeleton } from '@/design-system';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import RazorpayButton from '@/components/checkout/RazorpayButton';
 import PayPalButton from '@/components/checkout/PayPalButton';
@@ -260,9 +263,9 @@ export default function CheckoutPage() {
   if (items.length === 0 && step !== 'success') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-surface-paper">
-        <h1 className="mb-4 font-display text-display-lg text-primary">
+        <Heading role="page" className="mb-4 font-display text-display-lg text-primary">
           Your cart is empty
-        </h1>
+        </Heading>
         <Link
           href="/"
           className="border-b border-border-subtle pb-1 text-muted transition-colors hover:text-primary"
@@ -289,7 +292,7 @@ export default function CheckoutPage() {
         <span className="mb-3 block text-body-xs font-bold tracking-token-wider text-muted">
           Order Placed Successfully
         </span>
-        <h1 className="mb-3 font-display text-display-xl text-primary">Thank You!</h1>
+        <Heading role="page" className="mb-3 font-display text-display-xl text-primary">Thank You!</Heading>
         <p className="mb-2 max-w-md text-body-xl font-light text-muted">
           Your order{' '}
           <span className="font-semibold text-primary">#{orderId}</span> has
@@ -520,7 +523,7 @@ export default function CheckoutPage() {
                 {/* Step 1: Shipping */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center rounded-full border-2 text-body-xs font-bold transition-all ${
+                    className={`flex min-h-control-sm min-w-control-sm items-center justify-center rounded-full border-2 text-body-xs font-bold transition-all ${
                       step === 'shipping'
                         ? 'border-primary bg-surface-paper text-primary'
                         : 'border-border-subtle bg-surface-paper text-muted'
@@ -545,7 +548,7 @@ export default function CheckoutPage() {
                 {/* Step 2: Payment */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center rounded-full border-2 text-body-xs font-bold transition-all ${
+                    className={`flex min-h-control-sm min-w-control-sm items-center justify-center rounded-full border-2 text-body-xs font-bold transition-all ${
                       step === 'payment'
                         ? 'border-primary bg-surface-paper text-primary'
                         : 'border-border-subtle bg-surface-paper text-muted'
@@ -564,7 +567,7 @@ export default function CheckoutPage() {
                 <div className="mx-2 h-0.5 flex-1 bg-border-subtle" />
                 {/* Step 3: Confirmation */}
                 <div className="flex flex-col items-center">
-                  <div className="flex min-h-[var(--ds-control-sm)] min-w-[var(--ds-control-sm)] items-center justify-center rounded-full border-2 border-border-subtle bg-surface-paper text-body-xs font-bold text-muted">
+                  <div className="flex min-h-control-sm min-w-control-sm items-center justify-center rounded-full border-2 border-border-subtle bg-surface-paper text-body-xs font-bold text-muted">
                     3
                   </div>
                   <span className="text-body-xs font-bold  tracking-token-wider mt-1 text-muted">
@@ -699,13 +702,14 @@ export default function CheckoutPage() {
                       >
                         Verify OTP
                       </Button>
-                      <button
+                      <Button
                         onClick={() => setAuthStage('email')}
-                        className="mt-2 inline-block w-full text-center text-body-xs text-muted underline"
+                        variant="inline"
+                        fullWidth
                         type="button"
                       >
                         Change Email
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -859,17 +863,16 @@ export default function CheckoutPage() {
                             className={`flex items-center justify-between p-4 border cursor-pointer transition-colors ${
                               selectedShipping?.id === option.id
                                 ? 'border-primary bg-surface'
-                                : 'border-border-subtle hover:border-[var(--ds-text-muted)]'
+                                : 'border-border-subtle hover:border-muted'
                             }`}
                           >
                             <div className="flex items-center gap-3">
-                              <input
+                              <SelectionControl
                                 type="radio"
                                 name="shipping_method"
                                 value={option.id}
                                 checked={selectedShipping?.id === option.id}
                                 onChange={() => setSelectedShipping(option)}
-                                className="h-4 w-4 text-primary focus:ring-primary"
                               />
                               <div>
                                 <p className="font-medium text-primary">
@@ -923,7 +926,7 @@ export default function CheckoutPage() {
                     className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${
                       giftWrapping
                         ? 'border-primary bg-surface'
-                        : 'border-border-subtle hover:border-[var(--ds-text-muted)]'
+                        : 'border-border-subtle hover:border-muted'
                     }`}
                   >
                     <div className="flex items-center gap-4">
@@ -946,11 +949,9 @@ export default function CheckoutPage() {
                           giftWrapping ? 'bg-primary' : 'bg-border-subtle'
                         }`}
                       >
-                        <input
-                          type="checkbox"
+                        <HiddenCheckbox
                           checked={giftWrapping}
                           onChange={(e) => setGiftWrapping(e.target.checked)}
-                          className="sr-only"
                           id="gift-wrapping-toggle"
                         />
                         <span
@@ -970,7 +971,7 @@ export default function CheckoutPage() {
                         placeholder="Write a personal message for the recipient..."
                         maxLength={200}
                         rows={3}
-                        className="min-h-[96px] resize-none"
+                        className="min-h-24 resize-none"
                       />
                       <p className="mt-1 text-right text-body-xs text-muted">
                         {giftMessage.length}/200
@@ -982,11 +983,11 @@ export default function CheckoutPage() {
                 {/* PHASE 1.5: Terms Acceptance */}
                 <div className="mt-8 border-t border-border-subtle pt-6">
                   <label className="flex items-start gap-3 cursor-pointer group">
-                    <input
+                    <SelectionControl
                       type="checkbox"
                       checked={acceptTerms}
                       onChange={(e) => setAcceptTerms(e.target.checked)}
-                      className="mt-0.5 h-5 w-5 rounded border-border-subtle text-primary focus:ring-primary"
+                      className="-ml-3 -mt-3"
                     />
                     <span className="text-body-sm text-muted group-hover:text-primary">
                       I agree to the{' '}

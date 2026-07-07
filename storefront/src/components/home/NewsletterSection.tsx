@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import Input from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Button, HomepageSection, HomepageSectionHeader, Input } from '@/design-system';
 import type { HomepageNewsletter } from '@/types/homepage';
-import { HomepageSection, HomepageSectionHeader } from '@/components/ui/HomepageSection';
 
 export function NewsletterSection({
   settings,

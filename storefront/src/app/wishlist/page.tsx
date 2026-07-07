@@ -1,15 +1,17 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useWishlist, WishlistItem } from '@/context/wishlist-context';
 import { useCart } from '@/context/cart-context';
 import { useNotification } from '@/context/notification-context';
 import { useCurrency } from '@/context/currency-context';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { OptimizedImage } from '@/design-system';
 import Link from 'next/link';
 import { Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
-import { Button, IconButton } from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { PriceDisplay } from '@/components/ui/PriceDisplay';
+import { Button, IconButton } from '@/design-system';
+import { EmptyState } from '@/design-system';
+import { PriceDisplay } from '@/design-system';
 
 export default function WishlistPage() {
   const { items, removeItem, clearWishlist } = useWishlist();
@@ -40,8 +42,8 @@ export default function WishlistPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-        <div className="kv-page-container mx-auto max-w-page">
+      <div className="min-h-screen bg-surface-paper py-token-xl md:py-token-2xl lg:py-token-3xl">
+        <div className="ds-page-container mx-auto max-w-page">
           <EmptyState
             icon={<Heart size={56} />}
             title="Your Wishlist is Empty"
@@ -62,13 +64,13 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="kv-page-container mx-auto max-w-page">
+    <div className="min-h-screen bg-surface-paper py-token-xl md:py-token-2xl lg:py-token-3xl">
+      <div className="ds-page-container mx-auto max-w-page">
         <div className="flex items-center justify-between mb-12">
           <div>
-            <h1 className="text-display-lg font-display text-primary mb-2">
+            <Heading role="page" className="text-display-lg font-display text-primary mb-2">
               My Wishlist
-            </h1>
+            </Heading>
             <p className="text-muted">
               {items.length} saved item{items.length === 1 ? '' : 's'}
             </p>

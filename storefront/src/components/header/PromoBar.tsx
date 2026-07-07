@@ -7,7 +7,7 @@ import {
   Instagram,
   X,
 } from 'lucide-react';
-import { IconButton } from '@/components/ui/Button';
+import { IconButton } from '@/design-system';
 
 const MESSAGES = [
   'Handmade in Jaipur, Rajasthan',

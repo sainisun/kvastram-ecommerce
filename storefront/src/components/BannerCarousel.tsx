@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { Button, IconButton, OptimizedImage } from '@/design-system';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Banner } from '@/types';
-import { Button, IconButton } from '@/components/ui/Button';
 
 export default function BannerCarousel({ banners }: { banners: Banner[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);

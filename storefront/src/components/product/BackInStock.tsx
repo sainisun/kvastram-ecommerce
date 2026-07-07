@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { Mail, Bell, CheckCircle, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
-import Input from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Button, Input } from '@/design-system';
 
 interface BackInStockProps {
   readonly productId: string;

@@ -8,12 +8,8 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { WholesaleHeader } from '@/components/layout/WholesaleHeader';
 import { WholesaleFooter } from '@/components/layout/WholesaleFooter';
 import { CartRecovery } from '@/components/cart/CartRecovery';
-import { CookieConsent } from '@/components/ui/CookieConsent';
 import { ArrowUp } from 'lucide-react';
-import { ScrollProgress } from '@/components/ui/ScrollProgress';
-import { NewsletterModal } from '@/components/ui/NewsletterModal';
-import { IconButton } from '@/components/ui/Button';
-import { ChatWidget } from '@/components/ui/ChatWidget';
+import { ChatWidget, CookieConsent, IconButton, NewsletterModal, PageShell, ScrollProgress } from '@/design-system';
 
 type ChromeMode = 'store' | 'checkout' | 'wholesale';
 
@@ -79,23 +75,26 @@ export function MainLayout({
   const chromeMode = getChromeMode(pathname);
   const isStorePage = chromeMode === 'store';
   const isWholesalePage = chromeMode === 'wholesale';
+  const isDesignSystemLab = pathname === '/__design-system';
+  const showStoreChrome = isStorePage && !isDesignSystemLab;
+  const showStoreOverlays = isStorePage && !isDesignSystemLab;
 
   return (
     <>
-      {isStorePage ? <ScrollProgress /> : null}
+      {showStoreChrome ? <ScrollProgress /> : null}
       {isWholesalePage ? <WholesaleHeader /> : null}
-      {isStorePage ? <SiteHeader /> : null}
+      {showStoreChrome ? <SiteHeader /> : null}
       <main id="main-content" tabIndex={-1} className="page-transition">
-        {children}
+        <PageShell>{children}</PageShell>
       </main>
       {isWholesalePage ? <WholesaleFooter /> : null}
-      {isStorePage ? <Footer /> : null}
-      {isStorePage && <BottomNav />}
-      {isStorePage && <ScrollToTop />}
-      {isStorePage && <CartRecovery />}
-      {isStorePage && <CookieConsent />}
-      {isStorePage && <NewsletterModal />}
-      {isStorePage && <ChatWidget />}
+      {showStoreChrome ? <Footer /> : null}
+      {showStoreChrome && <BottomNav />}
+      {showStoreOverlays && <ScrollToTop />}
+      {showStoreOverlays && <CartRecovery />}
+      {showStoreOverlays && <CookieConsent />}
+      {showStoreOverlays && <NewsletterModal />}
+      {showStoreOverlays && <ChatWidget />}
     </>
   );
 }

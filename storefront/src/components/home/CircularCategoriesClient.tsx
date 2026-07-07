@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef } from 'react';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { HomepageContainer } from '@/components/ui/HomepageSection';
+import { HomepageContainer, OptimizedImage } from '@/design-system';
 import type { HomepageCategoryCircle } from '@/types/homepage';
 
 export function CircularCategoriesClient({

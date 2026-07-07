@@ -1,13 +1,15 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
-import Input from '@/components/ui/Input';
-import { Button, IconButton } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Input } from '@/design-system';
+import { Button, IconButton } from '@/design-system';
+import { Card } from '@/design-system';
 
 export default function WholesaleLoginPage() {
   const router = useRouter();
@@ -45,7 +47,7 @@ export default function WholesaleLoginPage() {
     <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <Card className="w-full max-w-md p-8 shadow-lg">
         <div className="text-center mb-8">
-          <h1 className="text-display-md font-bold text-primary">Wholesale Login</h1>
+          <Heading role="page" className="text-display-md font-bold text-primary">Wholesale Login</Heading>
           <p className="text-secondary mt-2">
             Sign in to access your wholesale account
           </p>

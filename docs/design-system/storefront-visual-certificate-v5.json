@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "phase": "LOCKED_PENDING_ARCHITECTURE_V4_CERTIFICATION",
+  "certifiedV4BaseSha": null,
+  "architectureFreeze": { "status": "not_started", "hashes": {} },
+  "v5CommitSha": null,
+  "shopMulmulBenchmarkCaptureDate": null,
+  "assetManifest": null,
+  "cmsRollbackSnapshot": null,
+  "componentLabScreenshots": [],
+  "routeScreenshotMatrix": { "status": "not_started" },
+  "accessibilityPerformance": { "status": "not_started" },
+  "consoleNetwork": { "status": "not_started" },
+  "userApproval": { "status": "not_requested", "approvedAt": null },
+  "claimAllowed": false
+}

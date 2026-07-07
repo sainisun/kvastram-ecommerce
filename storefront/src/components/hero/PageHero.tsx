@@ -1,4 +1,4 @@
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { OptimizedImage } from '@/design-system';
 
 /**
  * PageHero Component
@@ -38,7 +38,7 @@ export default function PageHero({
       <div className="absolute inset-0 bg-primary/40" />
 
       {/* Content */}
-      <div className="kv-page-container relative z-10 mx-auto max-w-page space-y-4 px-6 text-center md:px-12 lg:px-20">
+      <div className="ds-page-container relative z-10 mx-auto max-w-page space-y-4 px-6 text-center md:px-12 lg:px-20">
         {subtitle && (
           <span className="font-body block text-body-sm font-medium  tracking-token-wide text-inverse/80">
             {subtitle}
@@ -56,4 +56,3 @@ export default function PageHero({
     </section>
   );
 }
-

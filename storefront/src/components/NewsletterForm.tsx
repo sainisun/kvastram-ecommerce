@@ -2,8 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { Loader2, CheckCircle } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Button, Input } from '@/design-system';
 
 interface NewsletterFormProps {
   minimal?: boolean;
@@ -108,4 +107,3 @@ export default function NewsletterForm({
     </>
   );
 }
-

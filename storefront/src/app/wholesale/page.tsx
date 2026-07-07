@@ -1,5 +1,8 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
+import { MediaOverlay } from '@/design-system';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import {
@@ -13,10 +16,10 @@ import {
   FileText,
   ArrowRight,
 } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import Textarea from '@/components/ui/Textarea';
-import { Select } from '@/components/ui/Select';
-import { Button } from '@/components/ui/Button';
+import { Input } from '@/design-system';
+import { Textarea } from '@/design-system';
+import { Select } from '@/design-system';
+import { Button } from '@/design-system';
 
 interface TierData {
   id: string;
@@ -128,16 +131,16 @@ export default function WholesalePage() {
       <div className="min-h-screen bg-surface-paper">
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-[var(--ds-text-primary)] via-[var(--ds-text-secondary)] to-[var(--ds-warning-text)] py-16 pt-32 text-inverse md:py-20 lg:py-32">
-          <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
-          <div className="kv-page-container relative z-10 mx-auto max-w-page">
+          <MediaOverlay variant="pattern" />
+          <div className="ds-page-container relative z-10 mx-auto max-w-page">
             <div className="max-w-3xl">
               <span className="text-accent-gold text-body-xs font-bold  tracking-token-wider block mb-4">
                 B2B Partnership
               </span>
-              <h1 className="text-display-xl md:text-display-xl font-display mb-6 leading-token-tight">
+              <Heading role="page" className="text-display-xl md:text-display-xl font-display mb-6 leading-token-tight">
                 Wholesale & <br />
                 Bulk Orders
-              </h1>
+              </Heading>
               <p className="text-display-sm text-disabled font-light leading-token-relaxed mb-8">
                 Partner with Odhvica to bring authentic artisanal luxury to
                 your customers. Exclusive pricing, dedicated support, and global
@@ -162,8 +165,8 @@ export default function WholesalePage() {
         </section>
 
         {/* Benefits Section */}
-        <section id="benefits" className="bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-          <div className="kv-page-container mx-auto max-w-page">
+        <section id="benefits" className="bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
+          <div className="ds-page-container mx-auto max-w-page">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-primary mb-4">
                 Why Partner With Odhvica?
@@ -231,8 +234,8 @@ export default function WholesalePage() {
         </section>
 
         {/* Pricing Tiers */}
-        <section className="bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-          <div className="kv-page-container mx-auto max-w-page">
+        <section className="bg-surface-paper py-token-xl md:py-token-2xl lg:py-token-3xl">
+          <div className="ds-page-container mx-auto max-w-page">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-primary mb-4">
                 Wholesale Pricing Tiers
@@ -321,8 +324,8 @@ export default function WholesalePage() {
         </section>
 
         {/* Process Section */}
-        <section className="bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-          <div className="kv-page-container mx-auto max-w-page">
+        <section className="bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
+          <div className="ds-page-container mx-auto max-w-page">
             <div className="text-center mb-16">
               <h2 className="text-display-lg font-display text-primary mb-4">
                 How It Works
@@ -372,7 +375,7 @@ export default function WholesalePage() {
         </section>
 
         {/* Inquiry Form */}
-        <section id="inquiry" className="bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+        <section id="inquiry" className="bg-surface-paper py-token-xl md:py-token-2xl lg:py-token-3xl">
           <div className="mx-auto max-w-4xl">
             <div className="text-center mb-12">
               <h2 className="text-display-lg font-display text-primary mb-4">
@@ -546,7 +549,7 @@ export default function WholesalePage() {
 
         {/* Contact CTA */}
         <section className="py-16 bg-primary text-inverse">
-          <div className="kv-page-container mx-auto max-w-page">
+          <div className="ds-page-container mx-auto max-w-page">
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <Mail size={32} className="mx-auto mb-4 text-accent-gold" />

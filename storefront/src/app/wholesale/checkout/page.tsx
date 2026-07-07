@@ -1,5 +1,8 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
+import { SelectionControl } from '@/design-system';
 import { useAuth } from '@/context/auth-context';
 import { useWholesaleCart } from '@/context/wholesale-cart-context';
 import { useWholesale } from '@/context/wholesale-context';
@@ -15,12 +18,12 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import CountrySelect from '@/components/ui/CountrySelect';
-import Input from '@/components/ui/Input';
-import Textarea from '@/components/ui/Textarea';
-import { Button, ButtonLink } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { OptimizedImage } from '@/design-system';
+import { CountrySelect } from '@/design-system';
+import { Input } from '@/design-system';
+import { Textarea } from '@/design-system';
+import { Button, ButtonLink } from '@/design-system';
+import { Card } from '@/design-system';
 
 const PAYMENT_TERMS = [
   {
@@ -140,9 +143,9 @@ export default function WholesaleCheckoutPage() {
             <div className="w-20 h-20 bg-success-bg rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-success" />
             </div>
-            <h1 className="text-display-md font-bold text-primary mb-4">
+            <Heading role="page" className="text-display-md font-bold text-primary mb-4">
               Order Submitted Successfully!
-            </h1>
+            </Heading>
             <p className="text-secondary mb-2">
               Your wholesale order has been received.
             </p>
@@ -192,9 +195,9 @@ export default function WholesaleCheckoutPage() {
     return (
       <div className="min-h-screen bg-parchment py-20">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <h1 className="text-display-md font-bold text-primary mb-4">
+          <Heading role="page" className="text-display-md font-bold text-primary mb-4">
             Your cart is empty
-          </h1>
+          </Heading>
           <Link
             href="/products"
             className="text-secondary hover:text-primary underline"
@@ -207,8 +210,8 @@ export default function WholesaleCheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="kv-page-container mx-auto max-w-page">
+    <div className="min-h-screen bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
+      <div className="ds-page-container mx-auto max-w-page">
         {/* Header */}
         <div className="mb-8">
           <Link
@@ -221,9 +224,9 @@ export default function WholesaleCheckoutPage() {
           <div className="flex items-center gap-3">
             <Building2 className="w-8 h-8 text-secondary" />
             <div>
-              <h1 className="text-display-md font-bold text-primary">
+              <Heading role="page" className="text-display-md font-bold text-primary">
                 Wholesale Checkout
-              </h1>
+              </Heading>
               <p className="text-secondary text-body-sm">
                 {wholesaleInfo.companyName} - {wholesaleInfo.tier} tier
               </p>
@@ -285,7 +288,7 @@ export default function WholesaleCheckoutPage() {
                           : 'border-border-subtle hover:border-border'
                       }`}
                     >
-                      <input
+                      <SelectionControl
                         type="radio"
                         name="payment_terms"
                         value={term.value}
@@ -296,7 +299,6 @@ export default function WholesaleCheckoutPage() {
                             payment_terms: e.target.value,
                           })
                         }
-                        className="w-4 h-4 text-primary focus:ring-text-muted"
                       />
                       <div className="ml-3">
                         <p className="font-medium text-primary">

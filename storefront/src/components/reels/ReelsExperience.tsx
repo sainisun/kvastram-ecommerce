@@ -24,9 +24,7 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 import { api } from '@/lib/api';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { Modal } from '@/components/ui/Modal';
-import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
+import { Button, IconButton, Modal, OptimizedImage, UnstyledButton } from '@/design-system';
 
 interface TrendingReelItem {
   id: string;
@@ -586,7 +584,7 @@ function ReelsGridSkeleton() {
   return (
     <div className="min-h-screen bg-surface">
       <div className="sticky top-0 z-40 h-12 border-b border-border-subtle bg-surface-paper/95" />
-      <div className="kv-container pt-6 pb-8">
+      <div className="ds-home-container pt-6 pb-8">
         <div className="grid grid-cols-2 gap-[var(--ds-space-xs)]">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="aspect-[9/16] animate-pulse rounded-lg bg-surface-soft" />

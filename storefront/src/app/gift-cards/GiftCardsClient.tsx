@@ -3,10 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, Gift, Loader2, Mail } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import Textarea from '@/components/ui/Textarea';
-import { Button, ButtonLink } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Button, ButtonLink, Card, Heading, Input, Select, Textarea } from '@/design-system';
 
 type SubmitStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -87,9 +84,9 @@ export function GiftCardsClient() {
             <p className="text-body-xs font-semibold tracking-token-wider text-muted">
               Gift Cards
             </p>
-            <h1 className="font-display text-display-lg text-primary">
+            <Heading role="page" as="h1">
               Send a Odhvica gift request
-            </h1>
+            </Heading>
             <p className="max-w-xl text-body-md leading-token-relaxed text-secondary">
               Choose an amount, add recipient details, and our buyer care team will help you complete the gift.
             </p>
@@ -145,21 +142,16 @@ export function GiftCardsClient() {
               placeholder="Email address"
               required
             />
-            <label className="block">
-              <span className="mb-2 block text-body-xs font-semibold tracking-token-wider text-muted">
-                Gift Amount
-              </span>
-              <select
-                value={form.amount}
-                onChange={(event) => setForm((current) => ({ ...current, amount: event.target.value }))}
-                className="h-12 w-full border border-border-subtle bg-surface-paper px-3 text-body-sm text-primary outline-none focus:border-accent"
-              >
-                <option value="1000">Rs. 1,000</option>
-                <option value="2500">Rs. 2,500</option>
-                <option value="5000">Rs. 5,000</option>
-                <option value="10000">Rs. 10,000</option>
-              </select>
-            </label>
+            <Select
+              label="Gift Amount"
+              value={form.amount}
+              onChange={(event) => setForm((current) => ({ ...current, amount: event.target.value }))}
+            >
+              <option value="1000">Rs. 1,000</option>
+              <option value="2500">Rs. 2,500</option>
+              <option value="5000">Rs. 5,000</option>
+              <option value="10000">Rs. 10,000</option>
+            </Select>
             <Input
               name="recipient"
               value={form.recipient}

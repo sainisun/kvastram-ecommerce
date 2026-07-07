@@ -1,9 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import {
+  HomepageSection,
+  HomepageSectionHeader,
+  OptimizedImage,
+  homepageScrollRailClassName,
+} from '@/design-system';
 import type { HomepageCategoryCard } from '@/types/homepage';
-import { HomepageSection, HomepageSectionHeader, homepageScrollRailClassName } from '@/components/ui/HomepageSection';
 
 export function CategoryCarousel({ categories }: { categories: HomepageCategoryCard[] }) {
   if (categories.length === 0) return null;

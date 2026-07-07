@@ -52,7 +52,7 @@ export function RevealOnScroll({
  */
 export function StatReveal() {
   useEffect(() => {
-    const statItems = document.querySelectorAll('[data-stat-reveal], .stat-item-prem');
+    const statItems = document.querySelectorAll('[data-stat-reveal]');
 
     const handleIntersect = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry, i) => {

@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { Button, IconButton } from '@/components/ui/Button';
+import { Button, IconButton, OptimizedImage } from '@/design-system';
 
 interface Testimonial {
   id: string;

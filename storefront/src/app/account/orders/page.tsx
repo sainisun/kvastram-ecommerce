@@ -1,5 +1,7 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
 import { OrderWithDetails } from '@/types';
@@ -7,12 +9,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
-import { OrdersListSkeleton } from '@/components/ui/Skeleton';
-import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { OrdersListSkeleton } from '@/design-system';
+import { Badge } from '@/design-system';
+import { Card } from '@/design-system';
+import { EmptyState } from '@/design-system';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
-import { Button, ButtonLink, IconButton } from '@/components/ui/Button';
+import { Button, ButtonLink, IconButton } from '@/design-system';
 
 const ORDERS_PER_PAGE = 10;
 
@@ -98,8 +100,8 @@ export default function OrdersListPage() {
   if (loading || !customer) return <OrdersListSkeleton />;
 
   return (
-    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="mx-auto max-w-4xl px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]">
+    <div className="min-h-screen bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
+      <div className="mx-auto max-w-4xl px-home-mobile md:px-home-tablet lg:px-home-desktop">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link
@@ -111,7 +113,7 @@ export default function OrdersListPage() {
           </Link>
         </div>
 
-        <h1 className="account-page-title mb-8">My Orders</h1>
+        <Heading role="page" className="account-page-title mb-8">My Orders</Heading>
 
         <div className="mb-6 flex flex-wrap gap-3">
           <Link

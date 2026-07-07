@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { UnstyledButton } from '@/components/ui/Button';
+import { OptimizedImage, UnstyledButton } from '@/design-system';
 
 interface CategoryBanner {
   id: string;

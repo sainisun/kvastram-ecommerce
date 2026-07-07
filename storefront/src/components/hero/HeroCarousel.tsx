@@ -3,10 +3,9 @@
 import React, { useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { IconButton, OptimizedImage } from '@/design-system';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { IconButton } from '@/components/ui/Button';
 
 /**
  * HeroCarousel Component
@@ -134,4 +133,3 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
     </div>
   );
 }
-

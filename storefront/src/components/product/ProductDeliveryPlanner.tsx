@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
-import CountrySelect from '@/components/ui/CountrySelect';
-import Input from '@/components/ui/Input';
+import { CountrySelect, Input } from '@/design-system';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 import { useShop } from '@/context/shop-context';

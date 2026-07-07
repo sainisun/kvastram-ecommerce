@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { OptimizedImage } from '@/design-system';
 import type { HomepageCollection } from '@/types/homepage';
 
 interface ShopByNeedProps {
@@ -24,7 +24,7 @@ export function ShopByNeed({ collections }: ShopByNeedProps) {
 
   return (
     <section className="max-md:py-[var(--ds-space-md)] shop-need-section bg-parchment">
-      <div className="kv-container">
+      <div className="ds-home-container">
         <div className="flex flex-col gap-[var(--ds-space-sm)]">
           <div>
             <div className="kv-tag">Curated paths</div>

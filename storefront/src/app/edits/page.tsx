@@ -1,3 +1,5 @@
+
+import { Heading } from '@/design-system';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Gift, Layers3, Sparkles, Tags, Wand2 } from 'lucide-react';
@@ -5,7 +7,7 @@ import { ArrowRight, Gift, Layers3, Sparkles, Tags, Wand2 } from 'lucide-react';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { buildBasicPageMetadata } from '@/lib/seo';
 import { cn } from '@/lib/utils';
-import { cardClasses } from '@/components/ui/Card';
+import { cardClasses } from '@/design-system';
 
 export const metadata: Metadata = buildBasicPageMetadata({
   title: 'Curated Edits | Odhvica',
@@ -73,15 +75,15 @@ const editCards = [
 
 export default function EditsPage() {
   return (
-    <div className="min-h-screen bg-surface-paper py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="kv-page-container mx-auto max-w-page">
+    <div className="min-h-screen bg-surface-paper py-token-xl md:py-token-2xl lg:py-token-3xl">
+      <div className="ds-page-container mx-auto max-w-page">
         <div className="mx-auto max-w-3xl text-center">
           <span className="text-body-xs font-bold  tracking-token-wider text-muted">
             Guided Discovery
           </span>
-          <h1 className="mt-4 font-display text-display-xl text-primary">
+          <Heading role="page" className="mt-4 font-display text-display-xl text-primary">
             Curated Edits
-          </h1>
+          </Heading>
           <p className="mx-auto mt-4 max-w-2xl text-body-lg text-secondary">
             Use curated routes when you want a faster way into the storefront
             than broad search, generic filters, or starting from every product

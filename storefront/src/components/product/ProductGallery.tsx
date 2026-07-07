@@ -1,9 +1,7 @@
 'use client';
 
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { Modal } from '@/components/ui/Modal';
-import { Badge } from '@/components/ui/Badge';
+import { Badge, Modal, OptimizedImage, UnstyledButton } from '@/design-system';
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,7 +11,6 @@ import {
   X,
 } from 'lucide-react';
 import type { ProductImage, ProductVideo } from '@/types';
-import { UnstyledButton } from '@/components/ui/Button';
 import styles from './pdp.module.css';
 
 

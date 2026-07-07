@@ -8,7 +8,7 @@ import {
   PageHero,
   SectionBlock,
 } from '@/components/content/ContentPageSystem';
-import { ButtonLink } from '@/components/ui/Button';
+import { ButtonLink } from '@/design-system';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { buildNoindexPageMetadata } from '@/lib/seo';
 

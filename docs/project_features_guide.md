@@ -135,7 +135,7 @@ This guide is the definitive registry of all backend features implemented in the
 
 ### A. Accessibility & Layout Polish
 * **Technical Flow**:
-  * **Typography Integration**: The layout natively bridges Next.js `next/font/google` variables (`--font-cardo`, `--font-amiri`) directly to internal CSS tokens (`--ds-font-body`, `--ds-font-display`) removing render-blocking external stylesheets.
+  * **Typography Integration**: The root layout vendors official `Cardo` and `Amiri` font files through `next/font/local`, exposing `--font-cardo` and `--font-amiri` variables to internal CSS tokens (`--ds-font-body`, `--ds-font-display`) without relying on runtime Google font fetches.
   * **Motion Accessiblity**: Animations are wrapped in an `(prefers-reduced-motion: reduce)` media query across the application. When a user enables reduced motion on their OS, animations and smooth scrolling are stripped globally by resetting `animation-duration` to `0.01ms`.
   * **Interactive Focus Trap**: Navigational elements like `Drawer.tsx` capture focus via a custom `useEffect` trap keeping keyboard navigation (Tab & Shift-Tab) strictly bound to internal interactable elements when the drawer is open.
 * **What you need to do**:
@@ -144,7 +144,7 @@ This guide is the definitive registry of all backend features implemented in the
 
 ### B. Storefront Architecture Recovery (v1.2)
 * **Technical Flow**:
-  * **Runtime-First Contract**: `storefront/src/styles/tokens.css` is the single source of truth for typography and homepage layout. Active values are `Amiri` for `--ds-font-display`, `Cardo` for `--ds-font-body`, homepage gutters `15px / 28px / 30px`, and homepage section rhythm `56px / 108px`.
+  * **Runtime-First Contract**: `storefront/src/styles/tokens.css` is the single source of truth for typography and homepage layout. Active values are `Amiri` for `--ds-font-display`, `Cardo` for `--ds-font-body`, homepage gutters `20px / 32px / 48px`, and homepage section rhythm `48px / 80px`.
   * **Homepage Primitives**: Homepage layout ownership is centralized in `src/components/ui/HomepageSection.tsx` through `HomepageContainer`, `HomepageSection`, and `HomepageSectionHeader`. Homepage sections must use these primitives instead of repeating `w-[min(calc(...))]` formulas or malformed utility fragments.
   * **Chrome Modes**: `MainLayout` now resolves explicit `store`, `checkout`, and `wholesale` chrome modes. Checkout routes render without consumer site chrome, while wholesale routes keep their own dedicated header and footer.
   * **Touch Targets**: Shared button tokens now enforce `44px` minimum small controls and `48px` default controls. Header actions, product-card wishlist/cart actions, cookie controls, and checkout/cart inline actions were normalized to this contract.
@@ -212,10 +212,10 @@ This guide is the definitive registry of all backend features implemented in the
 
 ### G. Storefront Visual Recovery Guardrails (v1.7)
 * **Technical Flow**:
-  * **Warm Brand Contract Restored**: The storefront runtime again maps semantic surfaces, text, and actions to parchment (`#FDFAF6`), warm ink (`#1C1410`), and terracotta (`#C4603A`) tokens. Components continue consuming semantic utilities, so no feature needs route-local color values.
-  * **Root Font Resolution**: Next.js Cardo and Amiri font variables are attached to the root `<html>` element. This allows `:root` design tokens to resolve before `font-body` and `font-display` utilities are consumed on any route.
+  * **Monochrome Runtime Contract**: The storefront runtime maps semantic surfaces, text, and actions to the V4 monochrome editorial palette: page/paper `#FFFFFF`, soft/subtle `#F7F7F7 / #E5E5E5`, primary `#000000`, secondary `#333333`, muted `#666666`, and accent `#000000` with hover `#1A1A1A`.
+  * **Root Font Resolution**: Vendored Cardo and Amiri variables are attached to the root `<html>` element through `next/font/local`. This allows `:root` design tokens to resolve before `font-body` and `font-display` utilities are consumed on any route, even during offline or isolated builds.
   * **Horizontal Rail Integrity**: `homepageScrollRailClassName` owns `display: flex` together with horizontal scrolling. Best Sellers, New Arrivals, category cards, and shoppable video cards therefore cannot silently collapse into vertical single-card columns.
-  * **Editorial Rhythm Recovery**: Homepage gutters use `20px / 32px / 48px` and section spacing uses `48px / 80px`, restoring readable mobile insets and controlled desktop whitespace while preserving the shared primitive architecture.
+  * **Editorial Rhythm Recovery**: Homepage gutters use `20px / 32px / 48px` and section spacing uses `48px / 80px`, preserving readable mobile insets and controlled desktop whitespace under the shared primitive architecture.
   * **Runtime Regression Gates**: The design-system audit now locks the warm palette, root font placement, inverse-text owner, and flex rail contract. Desktop/mobile browser tests assert computed Cardo/Amiri fonts, inverse hero contrast, and same-row product geometry.
   * **Category Index Continuity**: `/categories` permanently redirects to `/collections`, matching the existing category-detail redirect contract and preventing global navigation prefetches from generating repeated 404 responses.
 * **Edge Cases and Dependencies**:
@@ -225,3 +225,56 @@ This guide is the definitive registry of all backend features implemented in the
   * Category detail slugs remain supported through `/categories/[slug]`; both category index and detail routes preserve their public URLs while resolving to the active collection discovery architecture.
 * **Operational Commands**:
   * Run `npm.cmd run verify:design-system -- --pool=threads`, `npm.cmd run build`, and `npm.cmd run test:e2e` after changing homepage rails, root fonts, semantic colors, or homepage spacing.
+
+### I. V4 Local Evidence Runner (v1.8)
+* **Technical Flow**:
+  * `storefront/scripts/playwright-storefront-server.mjs` now rebuilds and starts the production storefront under deterministic local E2E env values, including the escaped `__design-system` lab route and mock API URLs.
+  * `storefront/scripts/run-playwright-local.mjs` orchestrates the mock API server, storefront server, and Playwright process directly instead of depending on Playwright's Windows web-server shutdown behavior.
+  * The design-system lab is isolated from live storefront chrome in `MainLayout`, so header/footer overlays, cookie dialogs, newsletter popups, and chat widgets do not contaminate component evidence.
+  * LogRocket is lazy-loaded and skipped during E2E-only runs, preserving the feature in runtime while removing false console/network failures from local certification smoke tests.
+* **What you need to do**:
+  * Use `npm.cmd run test:e2e:local -- e2e/architecture-v4.spec.ts` for local V4 smoke evidence when Windows Playwright web-server shutdown is unreliable.
+  * Keep `__design-system` isolated from consumer chrome and runtime overlays; do not reattach the normal storefront shell to the component lab.
+  * Preserve the local E2E env contract (`NEXT_PUBLIC_API_URL`, `INTERNAL_API_URL`, `NEXT_PUBLIC_E2E`, `DESIGN_SYSTEM_LAB`) when extending certification scripts.
+
+### J. V4 Batched Route Evidence & E2E Isolation (v1.9)
+* **Technical Flow**:
+  * `storefront/scripts/architecture-route-matrix.mjs` now supports viewport and route batching, retries through redirect-driven execution-context swaps, records request/HTTP failures, and ignores benign same-origin aborted prefetches that occur during redirects or RSC transitions.
+  * `storefront/scripts/run-architecture-route-matrix-batched-local.mjs` starts the mock API and production storefront once, then executes the full `61 routes × 4 viewports` evidence matrix in batches without rebuilding between each route slice.
+  * Local certification media fixtures in `storefront/scripts/e2e-mock-api.mjs` now use inline SVG data URIs and a local `pattern.svg`, preventing false CDN/network failures while preserving homepage, collection, and wholesale visual structure.
+  * Login and product detail verification isolate third-party/runtime-only services during `NEXT_PUBLIC_E2E=true`: Google/Facebook auth SDKs stay disabled on the login screen, and the inventory Socket.IO client is skipped so route evidence is not polluted by external handshake errors.
+  * Homepage page-heading evidence now uses a single hidden `Heading role="page"` owner while hero slide titles stay visual-only, preserving the one-H1 contract across all certified routes.
+* **What you need to do**:
+  * Use `npm.cmd run test:architecture:matrix:batched:local` when you need full V4 route evidence across `375 / 768 / 1024 / 1440`.
+  * Keep verification-only gates behind `NEXT_PUBLIC_E2E=true`; do not remove live production features, but do prevent third-party SDKs or sockets from contaminating isolated certification runs.
+  * When adding new mock homepage, collection, or product fixtures, prefer inline/local assets over remote CDN URLs so route evidence stays deterministic.
+
+### H. Two-Phase Storefront Certification Program (V4/V5)
+* **Technical Flow**:
+  * Architecture V4 is isolated on `codex/storefront-architecture-v4` and replaces historical completion claims with evidence-driven certification.
+  * V4 introduces generated three-layer tokens, explicit cascade layers, a public design-system API, typed route/exception contracts, a development-only component lab, AST enforcement, and route/state screenshot evidence.
+  * Visual V5 remains locked until explicit user approval of an exact V4 SHA. Its separate branch freezes architecture hashes and permits only certified visual composition and approved media work.
+  * Both phases merge to `main` once after user approvals; GitHub Actions remains the sole deployment path.
+* **Requirements and Settings**:
+  * Set `DESIGN_SYSTEM_LAB=true` only when intentionally opening the component lab; production must return 404 for that route.
+  * Do not edit generated design-system files. Change `storefront/design-system/tokens.json` and run the generator/check.
+  * Do not add unreviewed exceptions or raise baselines. Features, CMS behavior, SEO, URLs, APIs, and business logic must be preserved.
+* **Edge Cases and Operations**:
+  * A failed or rejected screenshot keeps the active phase incomplete even when lint/build pass.
+  * If V5 requires a protected API/token/schema change, stop with `BLOCKED_FOR_ARCHITECTURE_REVIEW`; do not silently reopen V4.
+  * Production deployment remains prohibited until both certificates and user approvals exist.
+  * Component-lab routing uses the App Router escaped folder `src/app/%5F%5Fdesign-system`, which serves `/__design-system`; a literal underscore-prefixed folder is private to Next.js and will not create a route.
+  * The lab is `force-dynamic` and requires `DESIGN_SYSTEM_LAB=true` or `NEXT_PUBLIC_DESIGN_SYSTEM_LAB=true`. Without either flag it returns 404, including in production.
+
+### K. V4 Public Design-System Barrel Hardening (v1.10)
+* **Technical Flow**:
+  * `storefront/src/design-system/index.ts` now re-exports homepage layout primitives in addition to core controls, so the shared barrel is the intended runtime API for both route files and most feature components.
+  * Homepage sections, listing surfaces, cart flows, product detail support surfaces, and several shared content/header components were migrated away from direct `@/components/ui/*` primitive imports to `@/design-system`.
+  * This keeps the primitive ownership boundary explicit: UI implementation files stay internal, while consuming code increasingly depends on one stable design-system entrypoint.
+  * Composite storefront widgets that are intentionally shared across feature surfaces — `WishlistButton`, `ShareButtons`, `StarRating`, `CookieConsent`, `ScrollProgress`, `NewsletterModal`, and `ChatWidget` — are now explicitly exported through the public barrel so feature/layout consumers no longer reach into `@/components/ui/*` directly.
+* **Edge Cases and Dependencies**:
+  * Components that intentionally depend on internal composite widgets such as `WishlistButton`, `ShareButtons`, `StarRating`, `CookieConsent`, `NewsletterModal`, and similar feature-level UI modules are not automatically converted into public design-system exports; they need separate architecture decisions before public exposure.
+  * Files inside `src/components/ui/**` must not import the public barrel, otherwise circular ownership is introduced between implementation and API layers.
+  * After this hardening wave, remaining direct `@/components/ui/*` references are limited to `src/components/ui/**` implementation files plus a unit-test mock path. Feature and layout consumers were migrated to the public barrel.
+* **Operational Commands**:
+  * After any further barrel migration wave, run `npm.cmd run lint`, `npx.cmd tsc --noEmit --pretty false`, and `npm.cmd run verify:design-system -- --pool=threads` to confirm the public API boundary still compiles and certifies cleanly.

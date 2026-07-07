@@ -2,7 +2,7 @@
 
 import { Component, ErrorInfo, ReactNode } from 'react';
 import * as Sentry from '@sentry/nextjs';
-import { UnstyledButton } from '@/components/ui/Button';
+import { UnstyledButton } from '@/design-system';
 
 interface Props {
   children: ReactNode;
@@ -78,4 +78,3 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-

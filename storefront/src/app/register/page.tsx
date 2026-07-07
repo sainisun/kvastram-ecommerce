@@ -1,14 +1,16 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useState } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { api } from '@/lib/api';
-import Input from '@/components/ui/Input';
-import { Button, IconButton } from '@/components/ui/Button';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { Input } from '@/design-system';
+import { Button, IconButton } from '@/design-system';
+import { StatusBanner } from '@/design-system';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -83,7 +85,7 @@ export default function RegisterPage() {
     <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface-paper px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-display-lg font-display text-primary">Join Odhvica</h1>
+          <Heading role="page" className="text-display-lg font-display text-primary">Join Odhvica</Heading>
           <p className="mt-2 text-muted font-light">
             Create an account to track orders and more
           </p>

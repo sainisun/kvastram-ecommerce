@@ -1,12 +1,14 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { Input } from '@/design-system';
+import { Button } from '@/design-system';
+import { EmptyState } from '@/design-system';
+import { StatusBanner } from '@/design-system';
 
 function SuccessView({ email }: { readonly email: string }) {
   return (
@@ -89,9 +91,9 @@ export default function ForgotPasswordPage() {
             <ArrowLeft size={16} className="mr-1" />
             Back to Login
           </Link>
-          <h1 className="text-display-lg font-display text-primary">
+          <Heading role="page" className="text-display-lg font-display text-primary">
             Forgot Password?
-          </h1>
+          </Heading>
           <p className="mt-2 text-muted font-light">
             Enter your email address and we&apos;ll send you a link to reset
             your password.

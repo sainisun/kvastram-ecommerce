@@ -6,11 +6,7 @@ import type { Product } from '@/types';
 import { buildProductImageAlt } from '@/lib/seo';
 import { getProductDisplayTitle } from '@/lib/product-title';
 import { cn } from '@/lib/utils';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import WishlistButton from '@/components/ui/WishlistButton';
-import { Badge } from '@/components/ui/Badge';
-import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { IconButton } from '@/components/ui/Button';
+import { Badge, IconButton, OptimizedImage, PriceDisplay, WishlistButton } from '@/design-system';
 import { Check, ShoppingBag } from 'lucide-react';
 
 export interface ProductCardPrice {

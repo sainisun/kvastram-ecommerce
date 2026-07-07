@@ -21,6 +21,7 @@ const allowedImportantFiles = new Set([path.normalize('src/styles/animations.css
 const allowedLegacyFontFiles = new Set([
   path.normalize('src/styles/utilities.css'),
   path.normalize('src/app/globals.css'),
+  path.normalize('src/styles/theme.generated.css'),
 ]);
 const checkedExtensions = new Set(['.css', '.ts', '.tsx', '.md']);
 const defaultPalettePattern =
@@ -72,12 +73,15 @@ const allowedInlineStylePatterns = [
 const requiredRuntimeTokenValues = new Map([
   ['--ds-font-display', "var(--font-amiri), var(--font-cardo), serif"],
   ['--ds-font-body', 'var(--font-cardo), serif'],
-  ['--ds-terracotta-600', '#C4603A'],
-  ['--ds-parchment-50', '#FDFAF6'],
-  ['--ds-ink-600', '#1C1410'],
-  ['--ds-accent-primary', 'var(--ds-terracotta-600)'],
-  ['--ds-surface-page', 'var(--ds-parchment-50)'],
-  ['--ds-text-primary', 'var(--ds-ink-600)'],
+  ['--ds-accent-primary', '#000000'],
+  ['--ds-accent-hover', '#1A1A1A'],
+  ['--ds-surface-page', '#FFFFFF'],
+  ['--ds-surface-paper', '#FFFFFF'],
+  ['--ds-surface-soft', '#F7F7F7'],
+  ['--ds-border-subtle', '#E5E5E5'],
+  ['--ds-text-primary', '#000000'],
+  ['--ds-text-secondary', '#333333'],
+  ['--ds-text-muted', '#666666'],
   ['--ds-home-gutter-mobile', '1.25rem'],
   ['--ds-home-gutter-tablet', '2rem'],
   ['--ds-home-gutter-desktop', '3rem'],
@@ -122,8 +126,26 @@ if (!/homepageScrollRailClassName[\s\S]*['"]flex overflow-x-auto/.test(homepageP
   findings.push('Homepage scroll rail primitive must own display:flex before overflow behavior');
 }
 
+if (!/import\s+localFont\s+from\s+['"]next\/font\/local['"]/.test(rootLayoutSource)) {
+  findings.push('Root layout must vendor Amiri and Cardo through next/font/local');
+}
+
 if (!/<html[\s\S]*className=\{`\$\{fontCardo\.variable\} \$\{fontAmiri\.variable\}`\}/.test(rootLayoutSource)) {
   findings.push('Next font variables must be attached to the root html element before :root tokens resolve');
+}
+
+for (const requiredFontPath of [
+  '../assets/fonts/Cardo-Regular.ttf',
+  '../assets/fonts/Cardo-Italic.ttf',
+  '../assets/fonts/Cardo-Bold.ttf',
+  '../assets/fonts/Amiri-Regular.ttf',
+  '../assets/fonts/Amiri-Italic.ttf',
+  '../assets/fonts/Amiri-Bold.ttf',
+  '../assets/fonts/Amiri-BoldItalic.ttf',
+]) {
+  if (!rootLayoutSource.includes(requiredFontPath)) {
+    findings.push(`Root layout must vendor required font asset: ${requiredFontPath}`);
+  }
 }
 
 if (!/\.text-inverse\s*\{\s*color:\s*var\(--ds-text-inverse\)/.test(utilitySource)) {

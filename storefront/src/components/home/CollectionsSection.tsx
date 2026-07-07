@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import type { HomepageCollection } from '@/types/homepage';
 import {
   HomepageSection,
   HomepageSectionHeader,
+  OptimizedImage,
   homepageSectionActionClassName,
-} from '@/components/ui/HomepageSection';
+} from '@/design-system';
+import type { HomepageCollection } from '@/types/homepage';
 
 export function CollectionsSection({
   collections,

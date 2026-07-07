@@ -22,13 +22,17 @@ import ProductGallery from '@/components/product/ProductGallery';
 import { Reviews } from '@/components/product/Reviews';
 import { BackInStock } from '@/components/product/BackInStock';
 import { SizeGuide } from '@/components/product/SizeGuide';
-import ShareButtons from '@/components/ui/ShareButtons';
-import { Badge } from '@/components/ui/Badge';
-import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { RatingDisplay } from '@/components/ui/RatingDisplay';
-import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
+import {
+  Badge,
+  Button,
+  IconButton,
+  PriceDisplay,
+  RatingDisplay,
+  ShareButtons,
+  UnstyledButton,
+  WishlistButton,
+} from '@/design-system';
 import { WhatsAppCTA } from '@/components/WhatsAppCTA';
-import WishlistButton from '@/components/ui/WishlistButton';
 import { useCart } from '@/context/cart-context';
 import { useCurrency } from '@/context/currency-context';
 import { useRecentlyViewed } from '@/context/recently-viewed-context';
@@ -347,7 +351,7 @@ export default function ProductView({ product }: { product: Product }) {
         </div>
       </div>
 
-      <div className={['kv-container', styles['pdp-container']].filter(Boolean).join(' ')}>
+      <div className={['ds-home-container', styles['pdp-container']].filter(Boolean).join(' ')}>
         <nav aria-label="Breadcrumb" className={[styles['breadcrumb'], styles['pdp-desktop-breadcrumb']].filter(Boolean).join(' ')}>
           <Link href="/">Home</Link>
           <span className="breadcrumb-separator">/</span>

@@ -1,11 +1,14 @@
+
+import { Heading } from '@/design-system';
+import { EditorialMedia, MediaOverlay } from '@/design-system';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { ButtonLink } from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { RatingDisplay } from '@/components/ui/RatingDisplay';
+import { OptimizedImage } from '@/design-system';
+import { ButtonLink } from '@/design-system';
+import { EmptyState } from '@/design-system';
+import { PriceDisplay } from '@/design-system';
+import { RatingDisplay } from '@/design-system';
 import { api } from '@/lib/api';
 import { formatPriceFromINR } from '@/lib/currency';
 import {
@@ -175,7 +178,7 @@ export default async function BestsellersPage({
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
       />
 
-      <section className="relative h-[480px] overflow-hidden bg-gradient-to-br from-[var(--ds-text-primary)] via-[var(--ds-text-secondary)] to-[var(--ds-text-secondary)]">
+      <EditorialMedia variant="campaign">
         {heroImage ? (
           <OptimizedImage
             src={heroImage}
@@ -186,18 +189,18 @@ export default async function BestsellersPage({
             className="object-cover opacity-70"
           />
         ) : null}
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.3),rgba(var(--ds-black-rgb),0.5))]" />
-        <div className="kv-page-container relative z-10 mx-auto flex h-full max-w-page flex-col items-center justify-center px-6 text-center text-inverse md:px-12 lg:px-20">
-          <h1 className="font-display text-display-xl font-normal leading-token-tight tracking-token-tight text-inverse">
+        <MediaOverlay variant="strong" />
+        <div className="ds-page-container relative z-10 mx-auto flex h-full max-w-page flex-col items-center justify-center px-6 text-center text-inverse md:px-12 lg:px-20">
+          <Heading role="page" className="font-display text-display-xl font-normal leading-token-tight tracking-token-tight text-inverse">
             Most <em className="italic">Loved</em>
-          </h1>
-          <p className="mt-4 max-w-[600px] font-display text-display-sm font-normal italic leading-token-relaxed text-inverse/90">
+          </Heading>
+          <p className="mt-4 max-w-prose font-display text-display-sm font-normal italic leading-token-relaxed text-inverse/90">
             These are the pieces the Kavastram community can&apos;t stop talking about. Curated from thousands of orders and five-star reviews.
           </p>
         </div>
-      </section>
+      </EditorialMedia>
 
-      <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
         <nav
           aria-label="Breadcrumb"
           className="mb-10 flex items-center gap-2 text-body-xs font-medium  tracking-token-wide text-muted"
@@ -251,7 +254,7 @@ export default async function BestsellersPage({
           </div>
         ) : null}
 
-        <section className="py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+        <section className="py-token-xl md:py-token-2xl lg:py-token-3xl">
           {products.length > 0 ? (
             <div className="grid gap-x-4 gap-y-8 sm:grid-cols-2 md:gap-x-6 md:gap-y-12 xl:grid-cols-3 xl:gap-x-8 xl:gap-y-16">
               {products.map((product, index) => {

@@ -1,5 +1,7 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -13,7 +15,7 @@ import {
 import { api } from '@/lib/api';
 import { buildWhatsAppHref } from '@/components/WhatsAppCTA';
 import { storefrontTrust } from '@/config/storefront-trust';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { EmptyState } from '@/design-system';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -130,9 +132,9 @@ function SuccessContent() {
         <span className="text-body-xs text-muted font-bold  tracking-token-wider block mb-3">
           Order Confirmed
         </span>
-        <h1 className="text-display-xl md:text-display-xl font-display text-primary mb-4">
+        <Heading role="page" className="text-display-xl md:text-display-xl font-display text-primary mb-4">
           Thank You!
-        </h1>
+        </Heading>
         {orderId && (
           <p className="text-muted font-light text-body-xl mb-2">
             Order reference:{' '}

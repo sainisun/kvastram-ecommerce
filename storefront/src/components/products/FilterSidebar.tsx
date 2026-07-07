@@ -4,8 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import { Button, IconButton } from '@/components/ui/Button';
+import { Button, IconButton, Input } from '@/design-system';
 
 interface Category {
   id: string;

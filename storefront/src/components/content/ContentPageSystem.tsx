@@ -3,9 +3,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { ButtonLink } from '@/components/ui/Button';
-import { cardClasses } from '@/components/ui/Card';
+import { ButtonLink, OptimizedImage, cardClasses } from '@/design-system';
 import { cn } from '@/lib/utils';
 
 export type TocItem = {

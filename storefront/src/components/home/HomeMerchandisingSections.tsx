@@ -2,8 +2,7 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { homepageSectionActionClassName } from '@/components/ui/HomepageSection';
+import { OptimizedImage, homepageSectionActionClassName } from '@/design-system';
 import type { HomepageMerchandisingSlot } from '@/types/homepage';
 
 interface HomeMerchandisingSectionsProps {
@@ -116,7 +115,7 @@ export function HomeMerchandisingSections({
     <>
       {seasonalSlots.length > 0 ? (
         <section className="max-md:py-[var(--ds-space-md)] bg-surface">
-          <div className="kv-container">
+          <div className="ds-home-container">
             <SectionHead
               eyebrow="Limited editions"
               action={{ label: 'View All', href: '/products' }}
@@ -134,7 +133,7 @@ export function HomeMerchandisingSections({
 
       {fabricSlots.length > 0 ? (
         <section className="max-md:py-[var(--ds-space-md)] bg-surface">
-          <div className="kv-container">
+          <div className="ds-home-container">
             <SectionHead
               eyebrow="Craft &amp; material"
               action={{ label: 'View All', href: '/products' }}
@@ -154,7 +153,7 @@ export function HomeMerchandisingSections({
 
       {occasionSlots.length > 0 ? (
         <section className="max-md:py-[var(--ds-space-md)] bg-surface">
-          <div className="kv-container">
+          <div className="ds-home-container">
             <SectionHead
               eyebrow="Dress for the moment"
               action={{ label: 'View All', href: '/collections' }}
