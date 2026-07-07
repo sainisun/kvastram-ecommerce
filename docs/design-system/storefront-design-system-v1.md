@@ -5,17 +5,18 @@ Date: 2026-06-20
 
 ## Source Of Truth
 
-Runtime tokens:
+Human-editable token source:
+
+```text
+storefront/design-system/tokens.json
+```
+
+Generated runtime artifacts (do not edit directly):
 
 ```text
 storefront/src/styles/tokens.css
-```
-
-Global and Tailwind bridges:
-
-```text
-storefront/src/app/globals.css
-storefront/tailwind.config.ts
+storefront/src/styles/theme.generated.css
+storefront/src/design-system/tokens.generated.ts
 ```
 
 Repeatable gate:
@@ -36,13 +37,13 @@ Odhvica storefront typography uses an editorial serif display face with a restra
 
 ## Color
 
-The storefront color contract is a warm editorial palette grounded in Jaipur craft materials:
+The V4 storefront color contract is monochrome editorial so product textiles carry the color:
 
-- Primary text uses warm ink (`#1C1410`) via `--ds-text-primary`.
-- Primary page background uses parchment (`#FDFAF6`) via `--ds-surface-page`.
-- Primary CTA/button background uses terracotta (`#C4603A`) via `--ds-accent-primary`.
-- Primary CTA/button text uses parchment via `--ds-text-inverse`.
-- Supporting surfaces use parchment, paper, gold, and warm ink tokens for borders, muted states, and hierarchy.
+- Primary text and CTA use `#000000` via semantic tokens.
+- Secondary and muted text use `#333333` and `#666666`.
+- Page and paper surfaces use `#FFFFFF`; soft and subtle surfaces use `#F7F7F7` and `#E5E5E5`.
+- CTA hover uses `#1A1A1A`; inverse text uses `#FFFFFF`.
+- Gold is restricted to ratings and approved heritage metadata.
 
 Use:
 
@@ -56,16 +57,7 @@ Use:
 --ds-accent-rgb
 ```
 
-Public accent bridges are available only where a non-`--ds-*` bridge is unavoidable:
-
-```text
---terracotta
---terracotta-dark
---terracotta-light
---terracotta-rgb
-```
-
-Do not add alternate accent token names or raw accent hex values outside `tokens.css`.
+Compatibility bridges are migration-only and accept no new consumers. Do not add alternate accent names or raw visual values outside `tokens.json`.
 
 ## CMS Visual Contract
 
@@ -77,10 +69,10 @@ Do not add alternate accent token names or raw accent hex values outside `tokens
 
 ## Primitives
 
-Shared UI primitives live under:
+The only public route-facing UI API is:
 
 ```text
-storefront/src/components/ui/
+storefront/src/design-system/index.ts
 ```
 
 Use these before adding page-local UI systems:

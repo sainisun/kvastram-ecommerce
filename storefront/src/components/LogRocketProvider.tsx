@@ -1,40 +1,42 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import LogRocket from 'logrocket';
 import { useAuth } from '@/context/auth-context';
 import { ConsentManager } from '@/lib/consent-manager';
 
 const LOGROCKET_APP_ID = process.env.NEXT_PUBLIC_LOGROCKET_APP_ID;
+const isE2EEnvironment = process.env.NEXT_PUBLIC_E2E === 'true';
+
+type LogRocketModule = {
+  init: (appId: string, options: Record<string, unknown>) => void;
+  identify: (id: string, traits?: Record<string, string | number | boolean>) => void;
+};
 
 export function LogRocketProvider({ children }: { children: React.ReactNode }) {
   const { customer } = useAuth();
   const initialized = useRef(false);
   const consentGranted = useRef(false);
+  const logRocketRef = useRef<LogRocketModule | null>(null);
 
-  // Check for user consent (GDPR/CCPA)
   useEffect(() => {
     const consent = localStorage.getItem('logrocket_consent');
     consentGranted.current = consent === 'true';
   }, []);
 
-  // helper to query consent; guard against SSR
   const hasSessionConsent = () =>
     typeof window !== 'undefined' &&
     ConsentManager.hasConsentFor('session_recording');
 
   useEffect(() => {
-    // Only initialize once, if app ID is provided, user has granted consent,
-    // and the consent manager is also okay.
+    if (isE2EEnvironment) return;
     if (
       !LOGROCKET_APP_ID ||
       initialized.current ||
       !consentGranted.current ||
       !hasSessionConsent()
-    )
+    ) {
       return;
-
-    // Don't initialize in development unless explicitly enabled
+    }
     if (
       process.env.NODE_ENV === 'development' &&
       !process.env.NEXT_PUBLIC_ENABLE_LOGROCKET_DEV
@@ -42,120 +44,121 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    try {
-      LogRocket.init(LOGROCKET_APP_ID, {
-        // Sanitize sensitive data
-        dom: {
-          // Don't record sensitive input fields
-          inputSanitizer: true,
-          // Hide password fields and other PII
-          privateAttributeBlocklist: [
-            'password',
-            'credit-card',
-            'cvv',
-            'ssn',
-            'email',
-            'name',
-            'address',
-          ],
-        },
-        // Network request/response sanitization
-        network: {
-          // Sanitize request bodies that might contain sensitive data
-          requestSanitizer: (request) => {
-            // Remove authorization headers
-            if (request.headers) {
-              delete request.headers['authorization'];
-              delete request.headers['Authorization'];
-            }
+    let cancelled = false;
 
-            // Mask sensitive fields in request body
-            if (request.body) {
-              try {
-                const body = JSON.parse(request.body);
-                const piiKeys = [
-                  'email',
-                  'name',
-                  'address',
-                  'card_number',
-                  'cvv',
-                  'ssn',
-                  'password',
-                  'creditCard',
-                ];
-                piiKeys.forEach((key) => {
-                  if (body[key]) body[key] = '[REDACTED]';
-                });
-                // Also check for keys matching PII patterns
-                Object.keys(body).forEach((key) => {
-                  if (/(email|name|address|card|cc|cvv|ssn)/i.test(key)) {
-                    body[key] = '[REDACTED]';
+    async function initializeLogRocket() {
+      try {
+        const logRocketModule = await import('logrocket');
+        if (cancelled) return;
+        const LogRocket = logRocketModule.default as LogRocketModule;
+        logRocketRef.current = LogRocket;
+
+        LogRocket.init(LOGROCKET_APP_ID!, {
+          dom: {
+            inputSanitizer: true,
+            privateAttributeBlocklist: [
+              'password',
+              'credit-card',
+              'cvv',
+              'ssn',
+              'email',
+              'name',
+              'address',
+            ],
+          },
+          network: {
+            requestSanitizer: (request: {
+              headers?: Record<string, string>;
+              body?: string;
+            }) => {
+              if (request.headers) {
+                delete request.headers.authorization;
+                delete request.headers.Authorization;
+              }
+
+              if (request.body) {
+                try {
+                  const body = JSON.parse(request.body) as Record<string, unknown>;
+                  const piiKeys = [
+                    'email',
+                    'name',
+                    'address',
+                    'card_number',
+                    'cvv',
+                    'ssn',
+                    'password',
+                    'creditCard',
+                  ];
+                  for (const key of piiKeys) {
+                    if (body[key]) body[key] = '[REDACTED]';
                   }
-                });
-                request.body = JSON.stringify(body);
-              } catch {
-                // Not JSON, leave as is
+                  for (const key of Object.keys(body)) {
+                    if (/(email|name|address|card|cc|cvv|ssn)/i.test(key)) {
+                      body[key] = '[REDACTED]';
+                    }
+                  }
+                  request.body = JSON.stringify(body);
+                } catch {
+                  // Leave non-JSON payloads unchanged.
+                }
               }
-            }
-            return request;
-          },
-          // Sanitize response bodies
-          responseSanitizer: (response) => {
-            // Remove sensitive data from responses
-            if (response.body) {
-              try {
-                const body = JSON.parse(response.body);
-                // Redact tokens
-                if (body.token) body.token = '[REDACTED]';
-                if (body.accessToken) body.accessToken = '[REDACTED]';
-                if (body.refreshToken) body.refreshToken = '[REDACTED]';
-                // Redact PII in response
-                const piiKeys = [
-                  'email',
-                  'name',
-                  'address',
-                  'card_number',
-                  'cvv',
-                  'ssn',
-                ];
-                piiKeys.forEach((key) => {
-                  if (body[key]) body[key] = '[REDACTED]';
-                });
-                response.body = JSON.stringify(body);
-              } catch {
-                // Not JSON, leave as is
+              return request;
+            },
+            responseSanitizer: (response: { body?: string }) => {
+              if (response.body) {
+                try {
+                  const body = JSON.parse(response.body) as Record<string, unknown>;
+                  if (body.token) body.token = '[REDACTED]';
+                  if (body.accessToken) body.accessToken = '[REDACTED]';
+                  if (body.refreshToken) body.refreshToken = '[REDACTED]';
+                  for (const key of [
+                    'email',
+                    'name',
+                    'address',
+                    'card_number',
+                    'cvv',
+                    'ssn',
+                  ]) {
+                    if (body[key]) body[key] = '[REDACTED]';
+                  }
+                  response.body = JSON.stringify(body);
+                } catch {
+                  // Leave non-JSON payloads unchanged.
+                }
               }
-            }
-            return response;
+              return response;
+            },
           },
-        },
-        // Console logging options
-        console: {
-          // Include all console methods except debug in production
-          isEnabled: {
-            log: true,
-            info: true,
-            warn: true,
-            error: true,
-            debug: process.env.NODE_ENV === 'development',
+          console: {
+            isEnabled: {
+              log: true,
+              info: true,
+              warn: true,
+              error: true,
+              debug: process.env.NODE_ENV === 'development',
+            },
           },
-        },
-        // Release tracking
-        release: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
-      });
+          release: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
+        });
 
-      initialized.current = true;
-    } catch (error) {
-      console.error('[LogRocket] Failed to initialize:', error);
+        initialized.current = true;
+      } catch (error) {
+        console.error('[LogRocket] Failed to initialize:', error);
+      }
     }
+
+    void initializeLogRocket();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  // Identify user when they log in
   useEffect(() => {
-    if (!LOGROCKET_APP_ID || !initialized.current) return;
+    if (isE2EEnvironment) return;
+    if (!LOGROCKET_APP_ID || !initialized.current || !logRocketRef.current) return;
 
     if (customer) {
-      // User logged in - identify them
       const traits: Record<string, string | number | boolean> = {
         name:
           `${customer.first_name || ''} ${customer.last_name || ''}`.trim() ||
@@ -163,28 +166,23 @@ export function LogRocketProvider({ children }: { children: React.ReactNode }) {
         email: customer.email,
       };
 
-      // Only add registration date if it exists
       if (customer.created_at) {
         traits.registrationDate = customer.created_at;
       }
 
-      LogRocket.identify(customer.id, traits);
-    } else {
-      // User logged out - anonymize
-      LogRocket.identify('anonymous');
+      logRocketRef.current.identify(customer.id, traits);
+      return;
     }
+
+    logRocketRef.current.identify('anonymous');
   }, [customer]);
 
   return <>{children}</>;
 }
 
-// Export function to request LogRocket consent (to be called from consent banner)
 export const requestLogRocketConsent = () => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('logrocket_consent', 'true');
-    window.location.reload(); // Reload to initialize LogRocket
+    window.location.reload();
   }
 };
-
-// Export LogRocket instance for manual logging
-export { LogRocket };

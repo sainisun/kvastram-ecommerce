@@ -23,7 +23,7 @@ function RecentlyViewedRowComponent({ currentProductId = '' }: RecentlyViewedRow
 
   return (
     <section className="border-t border-border-subtle bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="kv-page-container mx-auto max-w-page">
+      <div className="ds-page-container mx-auto max-w-page">
         <div className="flex items-end justify-between mb-8">
           <div>
             <span className="recently-eyebrow mb-1 block">

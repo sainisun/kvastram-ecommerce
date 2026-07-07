@@ -1,5 +1,7 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useAuth } from '@/context/auth-context';
 import { useWholesale } from '@/context/wholesale-context';
 import { api } from '@/lib/api';
@@ -14,10 +16,10 @@ import {
   Clock,
   Building2,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/Badge';
-import { ButtonLink } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { Badge } from '@/design-system';
+import { ButtonLink } from '@/design-system';
+import { Card } from '@/design-system';
+import { EmptyState } from '@/design-system';
 
 interface WholesaleOrder {
   id: string;
@@ -108,9 +110,9 @@ export default function WholesaleDashboardPage() {
           </Link>
         </div>
 
-        <h1 className="account-detail-title mb-8">
+        <Heading role="page" className="account-detail-title mb-8">
           Wholesale Dashboard
-        </h1>
+        </Heading>
 
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6 lg:gap-8">
           <Card className="p-6">

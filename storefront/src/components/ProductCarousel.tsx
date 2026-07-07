@@ -7,7 +7,7 @@ import { useCurrency } from '@/context/currency-context';
 import { useNotification } from '@/context/notification-context';
 import { useShop } from '@/context/shop-context';
 import { ProductCard } from '@/components/products/ProductCard';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { EmptyState } from '@/design-system';
 import { getProductDisplayTitle } from '@/lib/product-title';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 

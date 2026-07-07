@@ -3,8 +3,7 @@
 import { useCart } from '@/context/cart-context';
 import { ShoppingCart, ArrowRight } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
+import { Button, Modal } from '@/design-system';
 
 export function CartRecovery() {
   const { savedCartCount, recoverSavedCart, dismissSavedCart } = useCart();
@@ -108,4 +107,3 @@ export function CartRecovery() {
     </Modal>
   );
 }
-

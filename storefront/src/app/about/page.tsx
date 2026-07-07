@@ -1,3 +1,5 @@
+
+import { Heading } from '@/design-system';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -58,10 +60,10 @@ export default function AboutPage() {
         <span className="text-body-xs font-semibold  tracking-token-wider text-muted">
           Made in Jaipur, India
         </span>
-        <h1 className="mx-auto mt-4 max-w-3xl font-display text-display-xl font-medium leading-token-tight tracking-token-tight text-primary">
+        <Heading role="page" className="mx-auto mt-4 max-w-3xl font-display text-display-xl font-medium leading-token-tight tracking-token-tight text-primary">
           Not a factory.{' '}
           <em className="italic">A family of hands.</em>
-        </h1>
+        </Heading>
         <p className="mx-auto mt-6 max-w-xl text-body-lg leading-token-relaxed text-secondary">
           Odhvica is a small workshop run by artisan women in Jaipur who practice
           Kantha — a 300-year-old Indian embroidery tradition. Every piece is
@@ -70,7 +72,7 @@ export default function AboutPage() {
       </div>
 
       {/* The Story */}
-      <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
         <div className="grid items-start gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <div className="text-body-xs  tracking-token-wider text-muted">
@@ -119,7 +121,7 @@ export default function AboutPage() {
       </div>
 
       {/* How we work */}
-      <div className="kv-page-gutter border-y border-border-subtle bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="kv-page-gutter border-y border-border-subtle bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
         <div className="kv-page-frame mx-auto max-w-page">
           <div className="text-body-xs  tracking-token-wider text-warning-text">
             How Odhvica works
@@ -159,7 +161,7 @@ export default function AboutPage() {
       </div>
 
       {/* Artisans */}
-      <div id="artisans" className="kv-page-gutter py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div id="artisans" className="kv-page-gutter py-token-xl md:py-token-2xl lg:py-token-3xl">
         <div className="kv-page-frame mx-auto max-w-page">
           <div className="text-body-xs  tracking-token-wider text-muted">
             The people behind every piece
@@ -197,7 +199,7 @@ export default function AboutPage() {
       </div>
 
       {/* Sustainability */}
-      <div id="sustainability" className="kv-page-gutter bg-surface-soft py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div id="sustainability" className="kv-page-gutter bg-surface-soft py-token-xl md:py-token-2xl lg:py-token-3xl">
         <div className="kv-page-frame mx-auto max-w-page">
           <div className="grid items-center gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16">
             <div>

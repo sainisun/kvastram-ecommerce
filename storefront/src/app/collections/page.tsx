@@ -1,9 +1,12 @@
+
+import { Heading } from '@/design-system';
+import { EditorialMedia, MediaOverlay } from '@/design-system';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-import { EmptyState } from '@/components/ui/EmptyState';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { EmptyState } from '@/design-system';
+import { OptimizedImage } from '@/design-system';
 import { api } from '@/lib/api';
 import {
   buildBasicPageMetadata,
@@ -134,7 +137,7 @@ export default async function CollectionsPage({
   if (collections.length === 0) {
     return (
       <div className="min-h-screen bg-surface-paper">
-        <div className="kv-page-container mx-auto max-w-page px-6 py-10 md:px-12 md:py-14 lg:px-20">
+        <div className="ds-page-container mx-auto max-w-page px-6 py-10 md:px-12 md:py-14 lg:px-20">
           <nav
             aria-label="Breadcrumb"
             className="listing-breadcrumb mb-8 flex items-center gap-2"
@@ -149,12 +152,12 @@ export default async function CollectionsPage({
             <div className="text-body-xs font-semibold uppercase tracking-token-wider text-secondary">
               Curated Series
             </div>
-            <h1 className="mt-4 font-display text-display-lg font-normal leading-token-tight text-primary md:text-display-xl">
+            <Heading role="page" className="mt-4 font-display text-display-lg font-normal leading-token-tight text-primary md:text-display-xl">
               Collections
-            </h1>
+            </Heading>
           </section>
         </div>
-        <div className="kv-page-container mx-auto max-w-page px-6 pb-12 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
+        <div className="ds-page-container mx-auto max-w-page px-6 pb-12 md:px-12 md:pb-16 lg:px-20 lg:pb-24">
           <EmptyState
             title="No collections found."
             description="Check back soon for new curated series."
@@ -174,7 +177,7 @@ export default async function CollectionsPage({
       />
 
       {heroImage?.cover_image_url || heroImage?.image ? (
-        <section className="relative h-[360px] overflow-hidden bg-surface-soft sm:h-[420px]">
+        <EditorialMedia variant="collection">
           <OptimizedImage
             src={heroImage.cover_image_url || heroImage.image || ''}
             alt="Collections"
@@ -183,31 +186,31 @@ export default async function CollectionsPage({
             sizes="100vw"
             className="object-cover object-center"
           />
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-surface-paper-rgb),0.2),rgba(var(--ds-black-rgb),0.3))]" />
+        <MediaOverlay variant="soft" />
         <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
           <div className="max-w-3xl">
             <div className="collection-hero-eyebrow">
               Curated Series
             </div>
-            <h1 className="collection-hero-title mt-4">
+            <Heading role="page" className="collection-hero-title mt-4">
               Our <em className="italic">Collections</em>
-            </h1>
+            </Heading>
             <p className="collection-hero-copy mx-auto mt-4 max-w-2xl italic">
               From everyday kurta sets to handcrafted bridal lehengas — every
               edit tells a story.
             </p>
           </div>
         </div>
-        </section>
+        </EditorialMedia>
       ) : (
-        <section className="kv-page-container mx-auto max-w-page px-6 pt-10 md:px-12 md:pt-14 lg:px-20">
+        <section className="ds-page-container mx-auto max-w-page px-6 pt-10 md:px-12 md:pt-14 lg:px-20">
           <div className="border-y border-border-subtle py-10 md:py-14">
             <div className="text-body-xs font-semibold uppercase tracking-token-wider text-secondary">
               Curated Series
             </div>
-            <h1 className="mt-4 font-display text-display-lg font-normal leading-token-tight text-primary md:text-display-xl">
+            <Heading role="page" className="mt-4 font-display text-display-lg font-normal leading-token-tight text-primary md:text-display-xl">
               Our <em className="italic">Collections</em>
-            </h1>
+            </Heading>
             <p className="mt-4 max-w-2xl font-display text-display-sm leading-token-relaxed text-secondary">
               From everyday kurta sets to handcrafted bridal lehengas, every
               edit tells a story.
@@ -216,7 +219,7 @@ export default async function CollectionsPage({
         </section>
       )}
 
-      <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
         <nav
           aria-label="Breadcrumb"
           className="listing-breadcrumb mb-10 flex items-center gap-2"
@@ -245,13 +248,13 @@ export default async function CollectionsPage({
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : null}
-                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.08),rgba(var(--ds-black-rgb),0.45))]" />
+                <MediaOverlay variant="card" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-inverse">
                   <h2 className="collection-feature-title">
                     {collection.title}
                   </h2>
                   {collection.description ? (
-                    <p className="collection-feature-copy mt-3 max-w-[18rem]">
+                    <p className="collection-feature-copy mt-3 max-w-xs">
                       {collection.description}
                     </p>
                   ) : null}

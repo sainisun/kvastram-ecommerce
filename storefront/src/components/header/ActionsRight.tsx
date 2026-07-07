@@ -4,7 +4,7 @@ import { Heart, Search, User, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
-import { IconButton } from '@/components/ui/Button';
+import { IconButton } from '@/design-system';
 import { RegionSelector } from '@/components/region/RegionSelector';
 
 interface ActionsRightProps {

@@ -3,7 +3,7 @@
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { useCurrency } from '@/context/currency-context';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { Drawer, OptimizedImage, UnstyledButton } from '@/design-system';
 import Link from 'next/link';
 import {
   Minus,
@@ -13,8 +13,6 @@ import {
   ArrowRight,
   Truck,
 } from 'lucide-react';
-import { Drawer } from '@/components/ui/Drawer';
-import { UnstyledButton } from '@/components/ui/Button';
 
 interface CartDrawerProps {
   readonly isOpen: boolean;

@@ -1,7 +1,6 @@
 import { Instagram } from 'lucide-react';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { HomepageSection, HomepageSectionHeader, OptimizedImage } from '@/design-system';
 import type { HomepageSocialPost } from '@/types/homepage';
-import { HomepageSection, HomepageSectionHeader } from '@/components/ui/HomepageSection';
 
 export function InstagramSection({ posts }: { posts: HomepageSocialPost[] }) {
   if (posts.length === 0) return null;

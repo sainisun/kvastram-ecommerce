@@ -1,10 +1,12 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import ProductGrid from '@/components/ProductGrid';
-import { ButtonLink } from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { ButtonLink } from '@/design-system';
+import { EmptyState } from '@/design-system';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { MoneyAmount, Product } from '@/types';
 
@@ -101,9 +103,9 @@ export default function SalePage() {
           <span className="text-body-xs font-bold tracking-token-wider text-accent">
             {activeCampaign ? 'Limited Time' : 'Current Markdowns'}
           </span>
-          <h1 className="font-display text-display-xl font-medium leading-token-tight tracking-token-normal text-primary">
+          <Heading role="page" className="font-display text-display-xl font-medium leading-token-tight tracking-token-normal text-primary">
             {activeCampaign?.name || 'Sale'}
-          </h1>
+          </Heading>
           <p className="mx-auto max-w-xl text-body-lg leading-token-relaxed text-secondary">
             {activeCampaign?.description ||
               'Selected artisan pieces at special prices, powered by real product markdowns.'}
@@ -139,7 +141,7 @@ export default function SalePage() {
         </div>
       </section>
 
-      <div id="saleGrid" className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div id="saleGrid" className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
         {products.length > 0 || loading ? (
           <ProductGrid
             initialProducts={products}

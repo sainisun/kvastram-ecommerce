@@ -1,3 +1,5 @@
+
+import { Heading } from '@/design-system';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -14,8 +16,8 @@ export default async function ArtisansPage() {
   const { artisans = [] } = await api.getArtisans();
 
   return (
-    <main className="kv-container py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <h1 className="collection-detail-title">Artisans</h1>
+    <main className="ds-home-container py-token-xl md:py-token-2xl lg:py-token-3xl">
+      <Heading role="page" className="collection-detail-title">Artisans</Heading>
       <p className="collection-detail-copy mt-4 max-w-3xl">
         Odhvica works with textile artisans and small craft teams connected to Jaipur block printing, quilting, embroidery, and handmade cotton accessories.
       </p>

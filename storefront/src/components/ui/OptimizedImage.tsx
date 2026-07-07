@@ -15,6 +15,7 @@ export default function OptimizedImage({
   ...props
 }: OptimizedImageProps) {
   const originalSrc = typeof props.src === 'string' ? props.src : null;
+  const isDataUri = typeof props.src === 'string' && props.src.startsWith('data:');
   // Auto-convert HEIC/HEIF and optimize format for browser via Cloudinary
   if (typeof props.src === 'string') {
     let finalSrc = isCloudinaryUrl(props.src) ? props.src : optimizeCloudinaryUrl(props.src);
@@ -46,6 +47,7 @@ export default function OptimizedImage({
     quality,
     loading: resolvedLoading,
     sizes: resolvedSizes,
+    ...(isDataUri ? { unoptimized: true } : {}),
     ...(originalSrc && isCloudinaryUrl(originalSrc)
       ? { loader: cloudinaryImageLoader }
       : {}),

@@ -1,12 +1,15 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
+import { SelectionControl } from '@/design-system';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
 import { useNotification } from '@/context/notification-context';
 import { useCurrency } from '@/context/currency-context';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { OptimizedImage } from '@/design-system';
 import Link from 'next/link';
 import { storefrontTrust } from '@/config/storefront-trust';
 import {
@@ -19,10 +22,10 @@ import {
   Sparkles,
 } from 'lucide-react';
 import type { Product } from '@/types';
-import Input from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
-import { Button, UnstyledButton } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Input } from '@/design-system';
+import { Select } from '@/design-system';
+import { Button, UnstyledButton } from '@/design-system';
+import { Card } from '@/design-system';
 import {
   filterStorefrontReadyProducts,
   getProductPrimaryImage,
@@ -259,22 +262,22 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-surface-paper">
-        <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+        <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
           {/* Hero empty message */}
           <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-surface-soft mb-6">
               <ShoppingBag className="h-10 w-10 text-muted" />
             </div>
-            <h1 className="mb-3 font-display text-display-xl text-primary">
+            <Heading role="page" className="mb-3 font-display text-display-xl text-primary">
               Your Bag Is Empty
-            </h1>
+            </Heading>
             <p className="mb-8 text-body-xl font-light text-muted">
               Looks like you haven&apos;t added anything yet. Let us inspire
               you.
             </p>
             <Link
               href="/products"
-              className="inline-flex min-h-[var(--ds-control-md)] items-center gap-2 bg-primary px-10 py-4 text-body-xs font-bold tracking-token-wider text-inverse transition-colors hover:bg-primary"
+              className="inline-flex min-h-control-md items-center gap-2 bg-primary px-10 py-4 text-body-xs font-bold tracking-token-wider text-inverse transition-colors hover:bg-primary"
             >
               Explore Collection <ArrowRight size={16} />
             </Link>
@@ -358,10 +361,10 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <div className="kv-page-container mx-auto max-w-page py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="font-display text-display-lg text-primary">Shopping Cart</h1>
+          <Heading role="page" className="font-display text-display-lg text-primary">Shopping Cart</Heading>
           <UnstyledButton
             onClick={() => {
               if (confirm('Are you sure you want to clear your cart?')) {
@@ -438,7 +441,7 @@ export default function CartPage() {
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity - 1)
                             }
-                            className="flex min-h-[44px] min-w-[44px] items-center justify-center p-1 text-muted hover:text-primary"
+                            className="flex min-h-control-sm min-w-control-sm items-center justify-center p-1 text-muted hover:text-primary"
                             aria-label="Decrease quantity"
                           >
                             <Minus size={16} />
@@ -459,7 +462,7 @@ export default function CartPage() {
                             onClick={() =>
                               updateQuantity(item.variantId, item.quantity + 1)
                             }
-                            className="flex min-h-[44px] min-w-[44px] items-center justify-center p-1 text-muted hover:text-primary"
+                            className="flex min-h-control-sm min-w-control-sm items-center justify-center p-1 text-muted hover:text-primary"
                             aria-label="Increase quantity"
                           >
                             <Plus size={16} />
@@ -470,7 +473,7 @@ export default function CartPage() {
                         <div className="absolute right-0 top-0">
                           <UnstyledButton
                             onClick={() => removeItem(item.variantId)}
-                            className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-muted transition-colors hover:text-error"
+                            className="flex min-h-control-sm min-w-control-sm items-center justify-center p-2 text-muted transition-colors hover:text-error"
                             aria-label="Remove item"
                           >
                             <Trash2 size={18} />
@@ -721,11 +724,11 @@ export default function CartPage() {
                         className={`flex items-center justify-between p-3 border rounded-md cursor-pointer transition-colors ${
                           selectedShippingOption === option.id
                             ? 'border-primary bg-surface'
-                            : 'border-border-subtle hover:border-[var(--ds-text-muted)]'
+                            : 'border-border-subtle hover:border-muted'
                         }`}
                       >
                         <div className="flex items-center">
-                          <input
+                          <SelectionControl
                             type="radio"
                             name="shipping-option"
                             value={option.id}
@@ -733,7 +736,6 @@ export default function CartPage() {
                             onChange={() =>
                               handleShippingOptionChange(option.id)
                             }
-                            className="h-4 w-4 text-primary focus:ring-primary"
                           />
                           <div className="ml-3">
                             <p className="text-body-sm font-medium text-primary">

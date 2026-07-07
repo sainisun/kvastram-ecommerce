@@ -22,30 +22,38 @@ export default defineConfig({
           url: 'http://127.0.0.1:4000/health',
           reuseExistingServer: !process.env.CI,
           timeout: 30000,
+          gracefulShutdown: {
+            signal: 'SIGTERM',
+            timeout: 5000,
+          },
         },
         {
-          command: process.env.CI
-            ? 'node node_modules/next/dist/bin/next start -p 3000 -H 0.0.0.0'
-            : 'node node_modules/next/dist/bin/next dev -p 3000',
+          command: 'node scripts/playwright-storefront-server.mjs',
           url: 'http://127.0.0.1:3000/health',
           reuseExistingServer: !process.env.CI,
-          timeout: 120000,
-          env: {
-            ...process.env,
-            INTERNAL_API_URL: process.env.INTERNAL_API_URL || 'http://127.0.0.1:4000',
-            NEXT_PUBLIC_API_URL:
-              process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:4000',
+          timeout: 240000,
+          gracefulShutdown: {
+            signal: 'SIGTERM',
+            timeout: 5000,
           },
         },
       ],
   projects: [
     {
-      name: 'desktop-chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'mobile-375',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 375, height: 812 } },
     },
     {
-      name: 'mobile-chromium',
-      use: { ...devices['Pixel 7'] },
+      name: 'tablet-768',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 } },
+    },
+    {
+      name: 'tablet-1024',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1024, height: 768 } },
+    },
+    {
+      name: 'desktop-1440',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1000 } },
     },
   ],
 });

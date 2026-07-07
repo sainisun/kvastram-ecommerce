@@ -1,5 +1,7 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -7,8 +9,8 @@ import { MessageCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { useStudioChatSocket } from '@/hooks/useStudioChatSocket';
 import { api } from '@/lib/api';
-import Textarea from '@/components/ui/Textarea';
-import { Button, UnstyledButton } from '@/components/ui/Button';
+import { Textarea } from '@/design-system';
+import { Button, UnstyledButton } from '@/design-system';
 
 interface StudioMessage {
   id: string;
@@ -115,7 +117,7 @@ export default function AccountMessageDetailPage() {
             <Link href="/account/messages" className="account-muted hover:text-primary">
               Messages
             </Link>
-            <h1 className="account-page-title mt-2">{inquiry?.product_title || 'Studio Chat'}</h1>
+            <Heading role="page" className="account-page-title mt-2">{inquiry?.product_title || 'Studio Chat'}</Heading>
             <p className={`account-caption mt-2 ${liveConnected ? 'text-success' : 'text-muted'}`}>
               {liveConnected ? 'Live chat connected' : 'Connecting live chat...'}
             </p>
@@ -142,7 +144,7 @@ export default function AccountMessageDetailPage() {
                 const isAdmin = message.sender_type === 'admin';
                 return (
                   <div key={message.id} className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[84%] rounded-lg px-4 py-3 ${isAdmin ? 'bg-surface-soft text-primary' : 'bg-primary text-inverse'}`}>
+                    <div className={`max-w-4/5 rounded-lg px-4 py-3 ${isAdmin ? 'bg-surface-soft text-primary' : 'bg-primary text-inverse'}`}>
                       <p className={`account-message-meta mb-1 ${isAdmin ? 'text-muted' : 'text-disabled'}`}>
                         {isAdmin ? message.sender_name || 'Odhvica Studio' : 'You'}
                       </p>

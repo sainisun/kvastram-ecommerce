@@ -1,6 +1,4 @@
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { ButtonLink } from '@/components/ui/Button';
-import { HomepageSection, HomepageSectionHeader } from '@/components/ui/HomepageSection';
+import { ButtonLink, HomepageSection, HomepageSectionHeader, OptimizedImage } from '@/design-system';
 import type { HomepageBrandStory } from '@/types/homepage';
 
 export function BrandStory({ story }: { story: HomepageBrandStory | null }) {

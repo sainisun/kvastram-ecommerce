@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { HelpCircle, MessageCircle, PackageCheck, Ruler, Shirt, Sparkles } from 'lucide-react';
-import { ButtonLink } from '@/components/ui/Button';
-import { homepageSectionActionClassName } from '@/components/ui/HomepageSection';
+import { ButtonLink, homepageSectionActionClassName } from '@/design-system';
 
 function whatsappHref(message: string) {
   return `https://wa.me/message/odhvica?text=${encodeURIComponent(message)}&utm_source=homepage&utm_medium=cta`;
@@ -10,7 +9,7 @@ function whatsappHref(message: string) {
 export function WhatsAppHelpStrip() {
   return (
     <section className="border-y border-border-subtle bg-surface-paper" aria-label="Product help">
-      <div className="kv-container grid gap-[14px] items-center py-[18px] md:grid-cols-[1fr_auto]">
+      <div className="ds-home-container grid gap-[14px] items-center py-[18px] md:grid-cols-[1fr_auto]">
         <div>
           <span className="block text-primary font-label text-body-sm font-[var(--type-label-weight)] tracking-[var(--type-label-tracking)] [text-transform:var(--type-label-transform)]">Need size, fabric, or more photos?</span>
           <p className="mt-[5px] text-muted text-body-sm">Ask before you buy. It is especially useful for jackets, kimonos, bags, and gifts.</p>
@@ -53,7 +52,7 @@ const craftCards = [
 export function CraftEducationStrip() {
   return (
     <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper">
-      <div className="kv-container">
+      <div className="ds-home-container">
         <div className="grid gap-[var(--ds-space-xs)] md:grid-cols-3">
           {craftCards.map(({ icon: Icon, title, copy, href }) => (
             <Link key={title} href={href} className="grid gap-[10px] grid-cols-[auto_1fr] border border-border-subtle rounded-md bg-surface-paper p-[18px] text-primary no-underline">
@@ -73,7 +72,7 @@ export function CraftEducationStrip() {
 export function FitScaleHelp() {
   return (
     <section className="max-md:py-[var(--ds-space-md)] bg-parchment">
-      <div className="kv-container grid gap-[22px] items-center md:grid-cols-[1fr_auto]">
+      <div className="ds-home-container grid gap-[22px] items-center md:grid-cols-[1fr_auto]">
         <div>
           <div className="kv-tag">Fit &amp; scale help</div>
           <h2 className="kv-title">Unsure about fit or size?</h2>
@@ -129,7 +128,7 @@ const faqItems = [
 export function ShippingReturnsMiniFAQ() {
   return (
     <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper">
-      <div className="kv-container">
+      <div className="ds-home-container">
         <div className="flex flex-col gap-[var(--ds-space-sm)] md:flex-row md:items-end md:justify-between">
           <div>
             <div className="kv-tag">Before checkout</div>

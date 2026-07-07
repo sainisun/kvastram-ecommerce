@@ -1,7 +1,7 @@
 'use client';
 
 import type { SizeGuide as SizeGuideType, SizeMeasurement } from '@/types';
-import { Modal } from '@/components/ui/Modal';
+import { Modal } from '@/design-system';
 
 interface SizeGuideProps {
   isOpen: boolean;
@@ -237,5 +237,4 @@ export function SizeGuide({ isOpen, onClose, sizeGuide }: SizeGuideProps) {
     </Modal>
   );
 }
-
 

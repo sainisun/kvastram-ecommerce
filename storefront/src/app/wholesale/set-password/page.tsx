@@ -1,13 +1,15 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff, Check, X } from 'lucide-react';
 import { api } from '@/lib/api';
-import Input from '@/components/ui/Input';
-import { Button, IconButton } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Input } from '@/design-system';
+import { Button, IconButton } from '@/design-system';
+import { Card } from '@/design-system';
 
 function SetPasswordContent() {
   const router = useRouter();
@@ -88,9 +90,9 @@ function SetPasswordContent() {
       <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
         <Card className="w-full max-w-md p-8 shadow-lg">
           <div className="text-center">
-            <h1 className="text-display-md font-bold text-primary mb-4">
+            <Heading role="page" className="text-display-md font-bold text-primary mb-4">
               Invalid Link
-            </h1>
+            </Heading>
             <p className="text-secondary mb-6">
               This password setup link is invalid or has expired.
             </p>
@@ -111,9 +113,9 @@ function SetPasswordContent() {
             <div className="w-16 h-16 bg-success-bg rounded-full flex items-center justify-center mx-auto mb-4">
               <Check className="w-8 h-8 text-success" />
             </div>
-            <h1 className="text-display-md font-bold text-primary mb-2">
+            <Heading role="page" className="text-display-md font-bold text-primary mb-2">
               Password Set!
-            </h1>
+            </Heading>
             <p className="text-secondary mb-6">
               Your wholesale account has been created successfully. Redirecting
               to wholesale...
@@ -131,9 +133,9 @@ function SetPasswordContent() {
     <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <Card className="w-full max-w-md p-8 shadow-lg">
         <div className="text-center mb-8">
-          <h1 className="text-display-md font-bold text-primary">
+          <Heading role="page" className="text-display-md font-bold text-primary">
             Set Up Your Password
-          </h1>
+          </Heading>
           <p className="text-secondary mt-2">
             Create a password to access your wholesale account
           </p>

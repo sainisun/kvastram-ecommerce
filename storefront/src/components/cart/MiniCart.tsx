@@ -1,12 +1,10 @@
 'use client';
 
 import { useCart } from '@/context/cart-context';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { Drawer, OptimizedImage, UnstyledButton } from '@/design-system';
 import Link from 'next/link';
 import { useCurrency } from '@/context/currency-context';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { Drawer } from '@/components/ui/Drawer';
-import { UnstyledButton } from '@/components/ui/Button';
 
 interface MiniCartProps {
   isOpen: boolean;

@@ -1,3 +1,4 @@
+@layer components {
 /* Product page CVR redesign */
 .pdp-page {
   --pdp-paper: var(--ds-surface-paper);
@@ -678,7 +679,7 @@
 }
 
 @media (max-width: 767px) {
-  .pdp-page .kv-container {
+  .pdp-page .ds-home-container {
     padding-left: 0;
     padding-right: 0;
   }
@@ -779,4 +780,4 @@
   }
 }
 
-
+}

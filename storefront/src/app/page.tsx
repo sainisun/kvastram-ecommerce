@@ -15,6 +15,7 @@ import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { BrandStory } from '@/components/home/BrandStory';
 import { InstagramSection } from '@/components/home/InstagramSection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
+import { Heading } from '@/design-system';
 import type { HomepagePayload } from '@/types/homepage';
 
 export const dynamic = 'force-dynamic';
@@ -64,6 +65,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
+      <Heading role="page" className="sr-only">Odhvica storefront</Heading>
       {/* 1. Circle Category Strip */}
       <CircularCategories circles={homepage.category_circles} />
       

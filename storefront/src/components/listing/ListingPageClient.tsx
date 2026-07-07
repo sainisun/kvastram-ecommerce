@@ -13,9 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import FilterSidebar from '@/components/products/FilterSidebar';
 import ProductGrid from '@/components/ProductGrid';
-import { Drawer } from '@/components/ui/Drawer';
-import { Select } from '@/components/ui/Select';
-import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
+import { Button, Drawer, IconButton, Select, UnstyledButton } from '@/design-system';
 import { api } from '@/lib/api';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import type { Product } from '@/types';
@@ -168,7 +166,7 @@ export default function ListingPageClient({
 
   return (
     <section className="bg-surface-paper">
-      <div className="kv-page-container py-8 md:py-12 lg:py-16">
+      <div className="ds-page-container py-8 md:py-12 lg:py-16">
         {intro ? (
           <p className="mb-6 max-w-3xl text-body-md leading-token-relaxed text-secondary">
             {intro}

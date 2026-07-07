@@ -1,5 +1,7 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useState } from 'react';
 import {
   Search,
@@ -12,9 +14,9 @@ import {
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { storefrontTrust } from '@/config/storefront-trust';
-import Input from '@/components/ui/Input';
-import { Button, ButtonLink } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Input } from '@/design-system';
+import { Button, ButtonLink } from '@/design-system';
+import { Card } from '@/design-system';
 
 interface OrderStatus {
   id: string;
@@ -135,14 +137,14 @@ export default function TrackOrderPage() {
   return (
     <div className="min-h-screen bg-surface-paper">
       <section className="kv-page-gutter bg-surface-soft px-6 py-14 md:px-12 md:py-20 lg:px-20">
-        <div className="mx-auto max-w-[860px]">
+        <div className="mx-auto max-w-narrow">
           <Card className="p-6 shadow-[0_20px_60px_rgba(var(--ds-black-rgb),0.05)] md:p-10">
             <div className="text-body-xs font-semibold  tracking-token-wider text-muted">
               Order tracking
             </div>
-            <h1 className="mt-3 font-display text-display-xl font-medium leading-token-tight tracking-token-tight text-primary">
+            <Heading role="page" className="mt-3 font-display text-display-xl font-medium leading-token-tight tracking-token-tight text-primary">
               Track your order
-            </h1>
+            </Heading>
             <p className="mt-4 max-w-2xl text-body-md leading-token-relaxed text-secondary">
               Enter your order ID to load real shipment details and see the visual delivery timeline.
             </p>

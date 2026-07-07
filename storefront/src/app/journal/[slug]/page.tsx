@@ -1,9 +1,12 @@
+
+import { Heading } from '@/design-system';
+import { EditorialMedia } from '@/design-system';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { OptimizedImage } from '@/design-system';
 import { api } from '@/lib/api';
 import {
   buildArticleJsonLd,
@@ -80,7 +83,7 @@ export default async function ArticlePage({ params }: Props) {
         }}
       />
 
-      <div className="relative h-[60vh] text-inverse">
+      <EditorialMedia as="div" variant="journal" className="text-inverse">
         {post.cover_image ? (
           <div className="absolute inset-0">
             <OptimizedImage
@@ -97,7 +100,7 @@ export default async function ArticlePage({ params }: Props) {
           <div className="absolute inset-0 bg-primary" />
         )}
 
-        <div className="kv-page-container absolute inset-0 mx-auto flex w-full max-w-page flex-col justify-between p-6 md:p-12 lg:px-20">
+        <div className="ds-page-container absolute inset-0 mx-auto flex w-full max-w-page flex-col justify-between p-6 md:p-12 lg:px-20">
           <Link
             href="/journal"
             className="flex w-fit items-center gap-2 text-body-sm font-bold  tracking-token-wider hover:text-disabled"
@@ -112,14 +115,14 @@ export default async function ArticlePage({ params }: Props) {
               <span>&bull;</span>
               <span>Odhvica Editorial</span>
             </div>
-            <h1 className="font-display text-display-xl font-semibold  tracking-token-wide md:text-display-xl">
+            <Heading role="page" className="font-display text-display-xl font-semibold  tracking-token-wide md:text-display-xl">
               {post.title}
-            </h1>
+            </Heading>
           </div>
         </div>
-      </div>
+      </EditorialMedia>
 
-      <div className="mx-auto max-w-3xl px-6 py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="mx-auto max-w-3xl px-6 py-token-xl md:py-token-2xl lg:py-token-3xl">
         {post.excerpt && (
           <p className="mb-12 border-l-4 border-primary pl-6 font-display text-display-md font-medium leading-token-relaxed text-secondary">
             {post.excerpt}

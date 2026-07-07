@@ -438,7 +438,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       />
 
       {landing.kind === 'category' && landing.children && landing.children.length > 0 ? (
-        <section className="kv-page-container border-b border-border-subtle py-5">
+        <section className="ds-page-container border-b border-border-subtle py-5">
           <div className="flex flex-wrap gap-3">
             {landing.children
               .filter((child) => child.is_active !== false && (child.slug || child.handle))
@@ -491,7 +491,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       />
 
       {landing.kind === 'collection' && relatedCollections.length > 0 ? (
-        <section className="kv-page-container border-t border-border-subtle py-10 md:py-14">
+        <section className="ds-page-container border-t border-border-subtle py-10 md:py-14">
           <h2 className="collection-section-title mb-6">Related collections</h2>
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
             {relatedCollections.map((collection) => (
@@ -511,7 +511,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       ) : null}
 
       {landing.kind === 'seo_landing' && landing.outro_content ? (
-        <section className="kv-page-container border-t border-border-subtle py-10">
+        <section className="ds-page-container border-t border-border-subtle py-10">
           <p className="collection-detail-copy mx-auto max-w-3xl text-center">
             {landing.outro_content}
           </p>
@@ -519,7 +519,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       ) : null}
 
       {landing.kind === 'collection' && landing.faq_items && landing.faq_items.length > 0 ? (
-        <section className="kv-page-container border-t border-border-subtle py-10">
+        <section className="ds-page-container border-t border-border-subtle py-10">
           <div className="mx-auto max-w-3xl space-y-6">
             {landing.faq_items.map((item) => (
               <details

@@ -1,19 +1,24 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useEffect, useRef, useState, Suspense } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import { Button, IconButton } from '@/components/ui/Button';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { Input } from '@/design-system';
+import { Button, IconButton } from '@/design-system';
+import { StatusBanner } from '@/design-system';
 import { api } from '@/lib/api';
 import {
   GoogleOAuthProvider,
   GoogleLogin,
   CredentialResponse,
 } from '@react-oauth/google';
+
+const isE2E = process.env.NEXT_PUBLIC_E2E === 'true';
+
 // Facebook OAuth Wrapper Component — uses the official Meta JS SDK (no npm package)
 function FacebookOAuthWrapper({ redirect }: { redirect: string }) {
   const router = useRouter();
@@ -79,10 +84,10 @@ function FacebookOAuthWrapper({ redirect }: { redirect: string }) {
     );
   };
 
-  if (!FB_APP_ID) {
+  if (isE2E || !FB_APP_ID) {
     return (
       <StatusBanner tone="warning">
-        Facebook login not configured. Please use email login.
+        Facebook login unavailable here. Please use email login.
       </StatusBanner>
     );
   }
@@ -191,10 +196,10 @@ function GoogleOAuthWrapper({ redirect }: { redirect: string }) {
     setError('Google login failed. Please try again or use email login.');
   };
 
-  if (!GOOGLE_CLIENT_ID) {
+  if (isE2E || !GOOGLE_CLIENT_ID) {
     return (
       <StatusBanner tone="warning">
-        Google login not configured. Please use email login.
+        Google login unavailable here. Please use email login.
       </StatusBanner>
     );
   }
@@ -207,7 +212,7 @@ function GoogleOAuthWrapper({ redirect }: { redirect: string }) {
         </StatusBanner>
       )}
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <div ref={buttonContainerRef} className="mx-auto w-full max-w-[400px]">
+        <div ref={buttonContainerRef} className="mx-auto w-full max-w-sm">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
@@ -308,7 +313,7 @@ function LoginContent() {
     <div className="kv-page-gutter flex min-h-screen items-center justify-center bg-surface-paper px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-display-lg font-display text-primary">Welcome Back</h1>
+          <Heading role="page" className="text-display-lg font-display text-primary">Welcome Back</Heading>
           <p className="mt-2 text-muted font-light">
             Sign in to access your account
           </p>
@@ -398,7 +403,7 @@ function LoginContent() {
             </div>
 
             {/* Only show divider and OAuth section if at least one provider is configured */}
-            {(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_FACEBOOK_APP_ID) && (
+            {!isE2E && (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_FACEBOOK_APP_ID) && (
               <>
                 <div className="relative flex justify-center text-body-sm">
                   <span className="px-4 bg-surface-paper text-muted">

@@ -1,8 +1,10 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useEffect, useState } from 'react';
 import { ConsentManager } from '@/lib/consent-manager';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/design-system';
 
 export default function CookieSettingsPage() {
   const defaultConsent = {
@@ -42,7 +44,7 @@ export default function CookieSettingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12 md:px-12 md:py-16 lg:px-20 lg:py-24">
-      <h1 className="text-display-md font-bold mb-6">Cookie & Privacy Settings</h1>
+      <Heading role="page" className="text-display-md font-bold mb-6">Cookie & Privacy Settings</Heading>
       <p className="mb-8">
         Adjust which categories of cookies and tracking technologies you allow.
       </p>

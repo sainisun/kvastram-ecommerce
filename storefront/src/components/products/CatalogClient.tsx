@@ -16,9 +16,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import FilterSidebar from '@/components/products/FilterSidebar';
 import ProductGrid from '@/components/ProductGrid';
 import { RecentlyViewedRow } from '@/components/product/RecentlyViewedRow';
-import { Select } from '@/components/ui/Select';
-import { Drawer } from '@/components/ui/Drawer';
-import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
+import { Button, Drawer, IconButton, Select, UnstyledButton } from '@/design-system';
 import { api } from '@/lib/api';
 import { filterStorefrontReadyProducts } from '@/lib/storefront-product-quality';
 import { Product } from '@/types';
@@ -246,7 +244,7 @@ export default function CatalogClient({
   return (
     <div className="min-h-screen bg-surface-paper">
       <div className="bg-surface-paper">
-        <div className="kv-container pb-12 pt-6 md:pb-16 md:pt-8 lg:pb-24">
+        <div className="ds-home-container pb-12 pt-6 md:pb-16 md:pt-8 lg:pb-24">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-4">
             <div className="min-w-0">
               <h1 className="catalog-page-heading">Products</h1>

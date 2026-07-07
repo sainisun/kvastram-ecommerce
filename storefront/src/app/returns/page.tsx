@@ -8,9 +8,9 @@ import {
   InlineCTA,
   PageHero,
 } from '@/components/content/ContentPageSystem';
-import { Badge } from '@/components/ui/Badge';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { Badge } from '@/design-system';
+import { EmptyState } from '@/design-system';
+import { StatusBanner } from '@/design-system';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
@@ -90,7 +90,7 @@ export default function ReturnsPage() {
         ]}
       />
       <div className="content-page-band">
-      <div className="content-shell max-w-4xl py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
+      <div className="content-shell max-w-4xl py-token-xl md:py-token-2xl lg:py-token-3xl">
         <StatusBanner tone="info" className="mb-8">
           <p className="font-semibold">
             Refunds are processed within 3–7 business days to the original payment method after return approval.

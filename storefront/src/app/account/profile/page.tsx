@@ -1,15 +1,17 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useAuth } from '@/context/auth-context';
 import { api } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
-import Input from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { Input } from '@/design-system';
+import { Button } from '@/design-system';
+import { Card } from '@/design-system';
+import { StatusBanner } from '@/design-system';
 
 export default function ProfilePage() {
   const { customer, loading, setUser } = useAuth();
@@ -68,8 +70,8 @@ export default function ProfilePage() {
     );
 
   return (
-    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="mx-auto max-w-2xl px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]">
+    <div className="min-h-screen bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
+      <div className="mx-auto max-w-2xl px-home-mobile md:px-home-tablet lg:px-home-desktop">
         <Link
           href="/account"
           className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-primary"
@@ -78,9 +80,9 @@ export default function ProfilePage() {
         </Link>
 
         <Card className="p-8 shadow-sm">
-          <h1 className="account-detail-title mb-6">
+          <Heading role="page" className="account-detail-title mb-6">
             Edit Profile
-          </h1>
+          </Heading>
 
           {message && (
             <StatusBanner

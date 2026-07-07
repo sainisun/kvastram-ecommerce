@@ -1,13 +1,16 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
+import { SelectionControl } from '@/design-system';
 import { useEffect, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, CheckCircle, Loader2, Mail } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { StatusBanner } from '@/components/ui/StatusBanner';
-import { AccountSkeleton } from '@/components/ui/Skeleton';
+import { Button } from '@/design-system';
+import { Card } from '@/design-system';
+import { StatusBanner } from '@/design-system';
+import { AccountSkeleton } from '@/design-system';
 
 const STORAGE_KEY = 'odhvica-notification-preferences';
 
@@ -46,12 +49,11 @@ function ToggleRow({
           {description}
         </span>
       </span>
-      <input
+      <SelectionControl
         type="checkbox"
         checked={checked}
         disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
-        className="h-5 w-5 accent-[var(--ds-accent-primary)]"
       />
     </label>
   );
@@ -122,9 +124,9 @@ export default function AccountNotificationsPage() {
           <p className="text-body-xs font-semibold tracking-token-wider text-muted">
             Account
           </p>
-          <h1 className="font-display text-display-md text-primary">
+          <Heading role="page" className="font-display text-display-md text-primary">
             Notification Preferences
-          </h1>
+          </Heading>
           <p className="text-body-sm leading-token-relaxed text-secondary">
             Choose how Odhvica should keep you posted about orders, launches, and product availability.
           </p>

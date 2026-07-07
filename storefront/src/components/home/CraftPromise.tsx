@@ -1,5 +1,5 @@
 import { Globe2, Hand, MessageCircle, ShieldCheck } from 'lucide-react';
-import { ButtonLink } from '@/components/ui/Button';
+import { ButtonLink } from '@/design-system';
 
 const promises = [
   {
@@ -27,7 +27,7 @@ const promises = [
 export function CraftPromise() {
   return (
     <section className="max-md:py-[var(--ds-space-md)] bg-parchment border-y border-border-subtle">
-      <div className="kv-container grid gap-[28px] items-start md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      <div className="ds-home-container grid gap-[28px] items-start md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div className="max-w-[620px]">
           <div className="kv-tag">Why Odhvica</div>
           <h2 className="kv-title">Handmade, edited, and ready to wear.</h2>

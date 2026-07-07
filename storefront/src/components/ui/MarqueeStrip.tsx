@@ -13,12 +13,12 @@ export function MarqueeStrip({
   const doubled = [...items, ...items];
 
   return (
-    <div className={`marquee-section-prem ${className}`} aria-hidden="true">
-      <div className="marquee-track-prem" style={{ animationDuration: speed }}>
+    <div className={`marquee-section ${className}`} aria-hidden="true">
+      <div className="marquee-track" style={{ animationDuration: speed }}>
         {doubled.map((item, i) => (
-          <span key={i} className="marquee-item-prem">
+          <span key={i} className="marquee-item">
             {item}
-            {i < doubled.length - 1 && <span className="marquee-dot-prem" />}
+            {i < doubled.length - 1 && <span className="marquee-dot" />}
           </span>
         ))}
       </div>

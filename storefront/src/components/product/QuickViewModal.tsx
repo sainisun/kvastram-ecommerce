@@ -2,16 +2,20 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { ShoppingBag, ChevronLeft, ChevronRight, Check } from 'lucide-react';
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import {
+  Button,
+  IconButton,
+  Modal,
+  OptimizedImage,
+  PriceDisplay,
+  RatingDisplay,
+  UnstyledButton,
+} from '@/design-system';
 import Link from 'next/link';
 import { useCart } from '@/context/cart-context';
 import { useCurrency } from '@/context/currency-context';
 import { api } from '@/lib/api';
 import { getProductDisplayTitle } from '@/lib/product-title';
-import { Modal } from '@/components/ui/Modal';
-import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { RatingDisplay } from '@/components/ui/RatingDisplay';
-import { Button, IconButton, UnstyledButton } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 
 interface QuickViewProduct {

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import OptimizedImage from '@/components/ui/OptimizedImage';
+import { OptimizedImage } from '@/design-system';
 
 type BreadcrumbItem = {
   label: string;
@@ -34,7 +34,7 @@ export default function ListingHero({
       <section
         className={
           hasCollectionImage
-            ? 'kv-page-container grid gap-6 pb-8 pt-6 md:grid-cols-[0.92fr_1fr] md:items-center md:gap-10 md:pb-12 md:pt-10 lg:gap-16'
+            ? 'ds-page-container grid gap-6 pb-8 pt-6 md:grid-cols-[0.92fr_1fr] md:items-center md:gap-10 md:pb-12 md:pt-10 lg:gap-16'
             : 'relative overflow-hidden border-b border-border-subtle bg-surface-soft'
         }
       >
@@ -59,7 +59,7 @@ export default function ListingHero({
             />
           </>
         ) : isCollection ? (
-          <div className="kv-page-container py-10 md:py-14">
+          <div className="ds-page-container py-10 md:py-14">
             <HeroCopy
               eyebrow={eyebrow}
               title={title}
@@ -83,7 +83,7 @@ export default function ListingHero({
             {image ? (
               <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(var(--ds-black-rgb),0.08),rgba(var(--ds-black-rgb),0.48))]" />
             ) : null}
-            <div className="kv-page-container relative z-10 flex min-h-[240px] items-end pb-8 pt-20 md:min-h-[340px] md:pb-12">
+            <div className="ds-page-container relative z-10 flex min-h-[240px] items-end pb-8 pt-20 md:min-h-[340px] md:pb-12">
               <HeroCopy
                 eyebrow={eyebrow}
                 title={title}
@@ -98,7 +98,7 @@ export default function ListingHero({
 
       <nav
         aria-label="Breadcrumb"
-        className="listing-breadcrumb kv-page-container flex items-center gap-2 border-b border-border-subtle py-4"
+        className="listing-breadcrumb ds-page-container flex items-center gap-2 border-b border-border-subtle py-4"
       >
         {breadcrumbs.map((item, index) => (
           <span key={`${item.label}-${index}`} className="inline-flex items-center gap-2">

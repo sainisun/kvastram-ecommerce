@@ -3,9 +3,7 @@
 import Link from 'next/link';
 import { ArrowLeft, RefreshCw, ShoppingBag } from 'lucide-react';
 import { storefrontTrust } from '@/config/storefront-trust';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Button, ButtonLink } from '@/components/ui/Button';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { Button, ButtonLink, EmptyState, StatusBanner } from '@/design-system';
 
 export default function CheckoutError({
   error,
@@ -16,7 +14,7 @@ export default function CheckoutError({
 }) {
   return (
     <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="kv-page-container mx-auto max-w-page">
+      <div className="ds-page-container mx-auto max-w-page">
         <Link
           href="/cart"
           className="inline-flex items-center gap-2 text-muted hover:text-primary mb-8 text-body-sm transition-colors"

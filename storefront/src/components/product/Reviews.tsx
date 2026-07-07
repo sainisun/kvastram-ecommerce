@@ -3,12 +3,8 @@
 import { ThumbsUp, Loader2, X, Upload } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { StarRating } from '@/components/ui/StarRating';
 import { useAuth } from '@/context/auth-context';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import Input from '@/components/ui/Input';
-import Textarea from '@/components/ui/Textarea';
-import { Button, IconButton } from '@/components/ui/Button';
+import { Button, IconButton, Input, OptimizedImage, StarRating, Textarea } from '@/design-system';
 
 interface ReviewsProps {
   productId: string;
@@ -182,7 +178,7 @@ export function Reviews({ productId }: ReviewsProps) {
 
   return (
     <div className="border-t border-border-subtle py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]" id="reviews">
-      <div className="kv-page-container mx-auto max-w-page">
+      <div className="ds-page-container mx-auto max-w-page">
         <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-[var(--ds-space-md)]">
           <div>
             <h2 className="review-heading mb-2">

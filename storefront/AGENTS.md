@@ -7,41 +7,37 @@ storefront built with Next.js + Tailwind CSS v4 + custom
 CSS design tokens.
 
 ## MANDATORY FIRST STEPS (every session)
-1. Read src/styles/tokens.css — know all available tokens
-2. Read DESIGN_SYSTEM.md — understand the system
-3. Read the component file you are about to change
-4. THEN make changes
+1. Read `../docs/design-system/storefront-architecture-consistency-plan-v4.md`.
+2. Read `../docs/design-system/storefront-visual-art-direction-plan-v5.md`.
+3. Read `design-system/tokens.json`; generated token artifacts are read-only.
+4. Read the target component and its route contract before editing.
 
 ## THE ONE RULE
 Every visual value MUST come from tokens.css via --ds-* tokens.
 No exceptions. No shortcuts.
 
 ## PHASE STATUS
-- Phases 5A-5D: All complete
-- Phase 5E: Visual check complete
+- Current state: `ARCHITECTURE_V4_IN_PROGRESS`.
+- All earlier migration-complete and 100%-consistency claims are revoked.
+- V5 is locked until an exact V4 SHA has a truthful certificate and explicit user approval.
+- No production deployment or `main` push is allowed during V4.
 
 ## AUDIT FALSE POSITIVES & EXCEPTIONS
 - **rgba(var(--ds-*), opacity)**: This pattern is CORRECT and intentional for transparent overlays. Do not flag as a violation.
 - **Rule 2**: Blur radius and filter values are NOT spacing. They are intentional and should be left hardcoded.
 - **Rule 3**: `48px` and `64px` magic numbers are sometimes intentional to avoid risk with `--ds-space-xl` and `--ds-space-2xl`, as those are fluid `clamp()` values which could cause layout breakage in strict bounds.
 
-## CURRENT STATUS — MAINTENANCE MODE
+## CURRENT STATUS — ARCHITECTURE RECOVERY
 
-Design system migration: COMPLETE ✅
-
-All phases done:
-- Phase 1-4: Foundation, primitives, homepage, CSS hygiene ✅
-- Phase 5A: Content pages TSX ✅
-- Phase 5B: pdp.css ✅
-- Phase 5C: 17 CSS files ✅
-- Phase 5D: 7 TSX components ✅
-- Phase 5E: Visual regression check ✅
-- Phase 6: Documentation sync ✅
+The storefront is not certified. The implementing agent owns migration accuracy,
+feature preservation, verification, and evidence truth, but cannot self-approve.
+Generated artifacts, protected architecture surfaces, baselines, and typed exceptions
+cannot be edited to hide regressions. Rejected screenshots mean incomplete work.
 
 ## ONGOING MAINTENANCE RULES
 
 New component banao → follow token rules from day 1
-New token chahiye → tokens.css mein add karo only
+New token chahiye → `design-system/tokens.json` edit karo, generator run karo
 Audit scripts CI pe run hote hain automatically
 Koi bhi hardcoded value → Rule 1 dekho
 
@@ -74,19 +70,17 @@ Koi naya kaam aaye toh:
 ## TOKEN QUICK REFERENCE
 
 ### Colors
---ds-text-primary: #1C1410 (warm ink main text)
---ds-text-secondary: #6B5E52 (secondary text)
---ds-text-muted: #9C8B7E (muted/placeholder)
---ds-text-inverse: #FDFAF6 (text on dark/accent backgrounds)
---ds-surface-page: #FDFAF6 (parchment page background)
---ds-surface-paper: #FFFFFF (card background)
---ds-surface-soft: #F5EFE6 (subtle bg)
---ds-surface-warm: #EDE8E0 (warm tinted bg)
---ds-accent-primary: brand terracotta (buttons, CTAs)
---ds-accent-gold: #B89B5E (gold accents, eyebrows)
---ds-accent-hover: #8F3D1F (hover state)
---ds-border-subtle: #EDE8E0 (light borders)
---ds-border-strong: #6B5E52 (strong borders)
+--ds-text-primary: #000000
+--ds-text-secondary: #333333
+--ds-text-muted: #666666
+--ds-text-inverse: #FFFFFF
+--ds-surface-page: #FFFFFF
+--ds-surface-paper: #FFFFFF
+--ds-surface-soft: #F7F7F7
+--ds-accent-primary: #000000
+--ds-accent-hover: #1A1A1A
+--ds-border-subtle: #E5E5E5
+Gold is restricted to ratings and approved heritage metadata.
 
 ### Spacing
 --ds-space-xs: 8px
@@ -124,10 +118,9 @@ Horizontal homepage rails must use homepageScrollRailClassName so flex row and o
 --ds-transition-fast: 150ms ease
 --ds-transition-normal: 220ms ease
 
-## DO NOT TOUCH THESE (Shared Primitives)
-These CSS classes are intentionally kept as CSS.
-Never convert to Tailwind. Never delete. Never modify 
-without explicit instruction:
+## MIGRATION-SENSITIVE SHARED PRIMITIVES
+Preserve behavior and JS hooks while migrating consumers. Legacy layout classes
+may be removed only after consumer count reaches zero and replacement coverage is proven:
 
 .homepage-container (11 consumers — complex responsive gutters)
 .homepage-section (5 consumers — 1100px breakpoint)
@@ -136,14 +129,14 @@ without explicit instruction:
 .homepage-hero-scrim (complex gradient)
 .homepage-campaign-scrim (shared block)
 .homepage-featured-overlay (shared with campaign-scrim)
-.kv-* classes (universal primitives in utilities.css)
+.kv-* classes (legacy universal primitives; migrate consumer-first)
 
 ## JS HOOK — NEVER REMOVE FROM DOM
 .homepage-circle-link — used in closest() for keyboard nav
 Even if you remove its CSS rule, keep className on element.
 
 ## FILE OWNERSHIP
-New token → tokens.css ONLY
+New token → `design-system/tokens.json` ONLY; regenerate artifacts
 New typography → typography.css
 New animation → animations.css  
 Home section primitive → home-sections.css

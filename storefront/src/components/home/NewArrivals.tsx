@@ -15,7 +15,7 @@ import {
   HomepageSectionHeader,
   homepageScrollRailClassName,
   homepageSectionActionClassName,
-} from '@/components/ui/HomepageSection';
+} from '@/design-system';
 
 interface ProductPriceInfo {
   price: string;

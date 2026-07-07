@@ -1,3 +1,5 @@
+
+import { Heading } from '@/design-system';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -77,9 +79,9 @@ export default function RefundPolicyPage() {
         <p className="text-body-xs font-ui uppercase tracking-[var(--ds-type-label-tracking)] text-muted">
           Policies
         </p>
-        <h1 className="mt-3 text-display-md font-display font-[var(--ds-type-heading-weight)] text-primary">
+        <Heading role="page" className="mt-3 text-display-md font-display font-[var(--ds-type-heading-weight)] text-primary">
           Cancellation & Refund Policy
-        </h1>
+        </Heading>
         <p className="mt-4 text-body-lg leading-[var(--ds-leading-relaxed)] text-secondary">
           This policy explains how cancellations, returns, exchanges, and
           refunds are handled for orders placed on odhvica.com.

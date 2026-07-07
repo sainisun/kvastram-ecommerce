@@ -4,8 +4,7 @@ import { useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import Input from '@/components/ui/Input';
-import { IconButton } from '@/components/ui/Button';
+import { IconButton, Input } from '@/design-system';
 
 interface SearchBarProps {
   isOpen: boolean;

@@ -1,5 +1,7 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { useShop } from '@/context/shop-context';
@@ -19,15 +21,15 @@ import {
   RotateCcw,
   Loader2,
 } from 'lucide-react';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import Textarea from '@/components/ui/Textarea';
-import { Select } from '@/components/ui/Select';
-import { Badge } from '@/components/ui/Badge';
-import { Button, ButtonAnchor, ButtonLink } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Modal } from '@/components/ui/Modal';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { OptimizedImage } from '@/design-system';
+import { Textarea } from '@/design-system';
+import { Select } from '@/design-system';
+import { Badge } from '@/design-system';
+import { Button, ButtonAnchor, ButtonLink } from '@/design-system';
+import { Card } from '@/design-system';
+import { EmptyState } from '@/design-system';
+import { Modal } from '@/design-system';
+import { StatusBanner } from '@/design-system';
 import { getOrderStatusBadgeClass, getOrderStatusConfig } from '@/lib/order-status';
 
 // Extended order interface for frontend display
@@ -357,8 +359,8 @@ export default function OrderDetailsPage() {
     order.status === 'delivered' || order.raw_status === 'completed';
 
   return (
-    <div className="min-h-screen bg-parchment py-[var(--ds-space-xl)] md:py-[var(--ds-space-2xl)] lg:py-[var(--ds-space-3xl)]">
-      <div className="mx-auto max-w-4xl px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]">
+    <div className="min-h-screen bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
+      <div className="mx-auto max-w-4xl px-home-mobile md:px-home-tablet lg:px-home-desktop">
         <Link
           href="/account"
           className="account-muted mb-8 inline-flex items-center gap-2 transition-colors hover:text-primary"
@@ -369,9 +371,9 @@ export default function OrderDetailsPage() {
         <Card className="overflow-hidden shadow-sm">
           <div className="p-6 md:p-8 border-b border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="account-detail-title mb-1">
+              <Heading role="page" className="account-detail-title mb-1">
                 Order #{order.display_id}
-              </h1>
+              </Heading>
               <p className="account-muted flex items-center gap-2">
                 <Clock size={14} /> Placed on {date}
               </p>

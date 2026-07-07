@@ -5,7 +5,7 @@ import { Menu, X, Search, ShoppingBag, Heart } from 'lucide-react';
 import { Logo } from '../Logo';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
-import { IconButton } from '@/components/ui/Button';
+import { IconButton } from '@/design-system';
 
 interface MobileTopBarProps {
   isDrawerOpen: boolean;

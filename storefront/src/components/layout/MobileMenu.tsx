@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Drawer } from '@/components/ui/Drawer';
+import { Drawer } from '@/design-system';
 import { STOREFRONT_NAV_ITEMS } from '@/config/storefront-navigation';
 import { ChevronRight } from 'lucide-react';
 import { RegionSelector } from '@/components/region/RegionSelector';

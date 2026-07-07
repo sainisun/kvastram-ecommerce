@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CreditCard } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/design-system';
 
 interface RazorpayButtonProps {
   orderId: string;        // Our DB order ID (UUID)

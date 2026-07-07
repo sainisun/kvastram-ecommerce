@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { Card } from '@/components/ui/Card';
-import { homepageSectionActionClassName } from '@/components/ui/HomepageSection';
+import { Card, homepageSectionActionClassName } from '@/design-system';
 
 const ARTISANS = [
   {
@@ -40,7 +39,7 @@ const ARTISANS = [
 export function ArtisanStrip() {
   return (
     <section className="max-md:py-[var(--ds-space-md)] bg-surface">
-      <div className="kv-container">
+      <div className="ds-home-container">
         <div className="mb-[var(--ds-space-md)] flex flex-col gap-[var(--ds-space-sm)] md:mb-[var(--ds-space-lg)] md:flex-row md:items-end md:justify-between">
           <div>
             <div className="kv-tag">The hands behind every piece</div>

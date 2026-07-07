@@ -1,13 +1,15 @@
 'use client';
 
+
+import { Heading } from '@/design-system';
 import { useState, Suspense, useEffect, useMemo, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, ArrowLeft, Eye, EyeOff, Check, X, CheckCircle } from 'lucide-react';
-import Input from '@/components/ui/Input';
-import { Button, IconButton } from '@/components/ui/Button';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { StatusBanner } from '@/components/ui/StatusBanner';
+import { Input } from '@/design-system';
+import { Button, IconButton } from '@/design-system';
+import { EmptyState } from '@/design-system';
+import { StatusBanner } from '@/design-system';
 
 function usePasswordValidation(password: string) {
   return useMemo(
@@ -138,7 +140,7 @@ function ResetPasswordContent() {
             <ArrowLeft size={16} className="mr-1" />
             Back
           </Link>
-          <h1 className="text-display-lg font-display text-primary">Reset Password</h1>
+          <Heading role="page" className="text-display-lg font-display text-primary">Reset Password</Heading>
           <p className="mt-2 text-muted font-light">
             Enter your new password below.
           </p>

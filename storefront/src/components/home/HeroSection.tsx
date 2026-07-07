@@ -4,9 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { ButtonLink, IconButton, UnstyledButton } from '@/components/ui/Button';
-import { HomepageContainer } from '@/components/ui/HomepageSection';
+import { ButtonLink, HomepageContainer, IconButton, OptimizedImage, UnstyledButton } from '@/design-system';
 import type { HomepageHeroSlide } from '@/types/homepage';
 
 export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
@@ -85,9 +83,9 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
               </div>
               <div className="absolute inset-0 bg-gradient-to-r from-[rgba(var(--ds-black-rgb),0.68)] to-[rgba(var(--ds-black-rgb),0.08)_70%]" />
               <HomepageContainer className="relative z-10 flex h-[clamp(520px,76svh,820px)] flex-col items-start justify-end gap-6 pb-[clamp(76px,10vw,132px)] text-inverse">
-                <h1 className="m-0 max-w-[15ch] font-display text-display-xl font-normal text-inverse">
+                <p className="m-0 max-w-[15ch] font-display text-display-xl font-normal text-inverse">
                   {slide.title}
-                </h1>
+                </p>
                 <ButtonLink href={slide.button_link} variant="secondary" size="lg">
                   {slide.button_text}
                 </ButtonLink>

@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Button, ButtonLink } from '@/components/ui/Button';
+import { Button, ButtonLink, EmptyState } from '@/design-system';
 
 export default function GlobalError({
   error,
