@@ -58,7 +58,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
 
   return (
     <section
-      className="relative h-[clamp(520px,76svh,820px)] overflow-hidden bg-primary"
+      className="relative h-[clamp(560px,78svh,860px)] overflow-hidden bg-primary"
       aria-label="Featured campaigns"
       data-home-section="2-hero"
       onFocusCapture={() => autoplay.stop()}
@@ -66,10 +66,10 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
         if (!paused) autoplay.play();
       }}
     >
-      <div className="h-[clamp(520px,76svh,820px)] overflow-hidden" ref={emblaRef}>
-        <div className="flex h-[clamp(520px,76svh,820px)]">
+      <div className="h-[clamp(560px,78svh,860px)] overflow-hidden" ref={emblaRef}>
+        <div className="flex h-[clamp(560px,78svh,860px)]">
           {slides.map((slide, index) => (
-            <article className="relative h-[clamp(520px,76svh,820px)] min-w-0 flex-[0_0_100%]" key={slide.id}>
+            <article className="relative h-[clamp(560px,78svh,860px)] min-w-0 flex-[0_0_100%]" key={slide.id}>
               <div className="absolute inset-0">
                 <OptimizedImage
                   src={isMobileViewport && slide.mobile_image_url ? slide.mobile_image_url : slide.image_url}
@@ -81,12 +81,20 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
                   className="object-cover"
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-[rgba(var(--ds-black-rgb),0.68)] to-[rgba(var(--ds-black-rgb),0.08)_70%]" />
-              <HomepageContainer className="relative z-10 flex h-[clamp(520px,76svh,820px)] flex-col items-start justify-end gap-6 pb-[clamp(76px,10vw,132px)] text-inverse">
-                <p className="m-0 max-w-[15ch] font-display text-display-xl font-normal text-inverse">
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(var(--ds-black-rgb),0.72)_0%,rgba(var(--ds-black-rgb),0.32)_46%,rgba(var(--ds-black-rgb),0.08)_72%),linear-gradient(180deg,rgba(var(--ds-black-rgb),0.02)_0%,rgba(var(--ds-black-rgb),0.08)_52%,rgba(var(--ds-black-rgb),0.32)_100%)]" />
+              <HomepageContainer className="relative z-10 flex h-[clamp(560px,78svh,860px)] flex-col items-start justify-end gap-5 pb-[clamp(68px,9vw,116px)] text-inverse">
+                <p className="font-label text-body-xs uppercase tracking-[0.22em] text-[rgba(var(--ds-white-rgb),0.84)]">
+                  Odhvica editorial campaign
+                </p>
+                <p className="m-0 max-w-[11ch] font-display text-[clamp(3rem,6vw,5.6rem)] leading-[0.94] font-normal text-inverse text-balance">
                   {slide.title}
                 </p>
-                <ButtonLink href={slide.button_link} variant="secondary" size="lg">
+                <ButtonLink
+                  href={slide.button_link}
+                  variant="categoryOverlay"
+                  size="lg"
+                  className="border-[rgba(var(--ds-white-rgb),0.4)] bg-[rgba(var(--ds-white-rgb),0.12)] px-7 uppercase tracking-[0.18em]"
+                >
                   {slide.button_text}
                 </ButtonLink>
               </HomepageContainer>
