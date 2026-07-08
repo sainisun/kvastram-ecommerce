@@ -140,12 +140,12 @@ export function NewArrivals({
       />
 
       <div
-        className={`${homepageScrollRailClassName} gap-4 pb-8 lg:gap-8 [&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:bg-transparent [&_.product-card]:shadow-none [&_.product-info]:py-[var(--ds-space-sm)]`}
+        className={`${homepageScrollRailClassName} gap-4 pb-[var(--ds-home-section-space-mobile)] lg:gap-8 lg:pb-[var(--ds-home-section-space-desktop)] [&_.product-card]:rounded-none [&_.product-card]:border-none [&_.product-card]:bg-transparent [&_.product-card]:shadow-none [&_.product-info]:py-[var(--ds-space-sm)]`}
       >
         {products.map((product) => {
           const priceInfo = getPrice(product);
           return (
-            <div key={product.id} className="w-72 flex-shrink-0 animate-fade-in md:w-[316px]">
+            <div key={product.id} className="w-[80vw] max-w-[320px] flex-shrink-0 animate-fade-in sm:w-[45vw] sm:max-w-none md:w-[calc(33.33%-1rem)] lg:w-[calc(25%-1.5rem)]">
               <ProductCard
                 product={product}
                 price={{

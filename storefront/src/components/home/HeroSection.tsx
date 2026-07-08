@@ -58,7 +58,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
 
   return (
     <section
-      className="relative h-[clamp(560px,78svh,860px)] overflow-hidden bg-primary"
+      className="relative min-h-[100svh] overflow-hidden bg-primary md:min-h-[85vh] lg:min-h-[90vh]"
       aria-label="Featured campaigns"
       data-home-section="2-hero"
       onFocusCapture={() => autoplay.stop()}
@@ -66,10 +66,10 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
         if (!paused) autoplay.play();
       }}
     >
-      <div className="h-[clamp(560px,78svh,860px)] overflow-hidden" ref={emblaRef}>
-        <div className="flex h-[clamp(560px,78svh,860px)]">
+      <div className="h-full min-h-[inherit] overflow-hidden" ref={emblaRef}>
+        <div className="flex h-full min-h-[inherit]">
           {slides.map((slide, index) => (
-            <article className="relative h-[clamp(560px,78svh,860px)] min-w-0 flex-[0_0_100%]" key={slide.id}>
+            <article className="relative h-full min-h-[inherit] min-w-0 flex-[0_0_100%]" key={slide.id}>
               <div className="absolute inset-0">
                 <OptimizedImage
                   src={isMobileViewport && slide.mobile_image_url ? slide.mobile_image_url : slide.image_url}
@@ -82,7 +82,7 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
                 />
               </div>
               <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(var(--ds-black-rgb),0.72)_0%,rgba(var(--ds-black-rgb),0.32)_46%,rgba(var(--ds-black-rgb),0.08)_72%),linear-gradient(180deg,rgba(var(--ds-black-rgb),0.02)_0%,rgba(var(--ds-black-rgb),0.08)_52%,rgba(var(--ds-black-rgb),0.32)_100%)]" />
-              <HomepageContainer className="relative z-10 flex h-[clamp(560px,78svh,860px)] flex-col items-start justify-end gap-5 pb-[clamp(68px,9vw,116px)] text-inverse">
+              <HomepageContainer className="relative z-10 flex h-full min-h-[inherit] flex-col items-start justify-end gap-5 pb-[clamp(80px,12vw,140px)] text-inverse">
                 <p className="font-label text-body-xs uppercase tracking-[0.22em] text-[rgba(var(--ds-white-rgb),0.84)]">
                   Odhvica editorial campaign
                 </p>

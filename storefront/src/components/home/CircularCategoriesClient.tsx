@@ -67,7 +67,7 @@ export function CircularCategoriesClient({
       <HomepageContainer>
         <div
           ref={rowRef}
-          className="flex gap-[var(--ds-space-sm)] overflow-x-auto py-[var(--ds-space-sm)] snap-x snap-mandatory no-scrollbar [scroll-padding-inline:var(--ds-home-gutter-mobile)] md:gap-[var(--ds-space-md)] md:py-[var(--ds-space-md)] md:[scroll-padding-inline:var(--ds-home-gutter-tablet)] lg:[scroll-padding-inline:var(--ds-home-gutter-desktop)] min-[1100px]:justify-center"
+          className="flex gap-6 overflow-x-auto py-[var(--ds-space-md)] snap-x snap-mandatory no-scrollbar [scroll-padding-inline:var(--ds-home-gutter-mobile)] md:[scroll-padding-inline:var(--ds-home-gutter-tablet)] lg:gap-10 lg:[scroll-padding-inline:var(--ds-home-gutter-desktop)] min-[1100px]:justify-center"
         >
           {circles.map((circle, index) => (
             <Link
@@ -76,7 +76,7 @@ export function CircularCategoriesClient({
                 linksRef.current[index] = element;
               }}
               href={circle.link_url.replace('/categories/', '/collections/')}
-              className="homepage-circle-link grid flex-[0_0_76px] gap-2 text-center text-body-xs text-primary no-underline snap-center focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-4 md:basis-[92px]"
+              className="homepage-circle-link grid flex-[0_0_80px] gap-2 text-center text-body-xs text-primary no-underline snap-center focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-4 md:flex-[0_0_96px] lg:flex-[0_0_120px]"
               data-circle-index={index}
             >
               <span className="relative block aspect-square overflow-hidden rounded-full border border-border-subtle bg-surface-soft shadow-[0_8px_24px_rgba(var(--ds-black-rgb),0.06)]">
@@ -86,7 +86,7 @@ export function CircularCategoriesClient({
                   fill
                   priority
                   loading="eager"
-                  sizes="(max-width: 767px) 76px, 92px"
+                  sizes="(max-width: 767px) 80px, (max-width: 1023px) 96px, 120px"
                   className="object-cover"
                 />
               </span>
