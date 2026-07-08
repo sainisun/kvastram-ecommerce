@@ -20,8 +20,8 @@ export function HeaderMain({
   isTransparent = false,
 }: HeaderMainProps) {
   const containerCls = isTransparent
-    ? 'relative hidden w-full h-[74px] grid-cols-3 items-center bg-transparent border-b border-transparent transition-all duration-300 md:grid px-[30px]'
-    : 'relative hidden w-full h-[74px] grid-cols-3 items-center bg-[rgba(var(--ds-surface-paper-rgb),0.9)] backdrop-blur-md border-b border-border-subtle shadow-sm transition-all duration-300 md:grid px-[30px]';
+    ? 'relative hidden w-full h-[70px] grid-cols-3 items-center bg-transparent border-b border-transparent transition-all duration-300 md:grid px-6 xl:px-8'
+    : 'relative hidden w-full h-[70px] grid-cols-3 items-center bg-[rgba(var(--ds-surface-paper-rgb),0.94)] backdrop-blur-md border-b border-border-subtle shadow-sm transition-all duration-300 md:grid px-6 xl:px-8';
 
   return (
     <div className={containerCls}>

@@ -50,6 +50,7 @@ Test `375/768/1024/1440` across populated/empty/loading/error/missing media/long
 
 The visual certificate records V4 base SHA, freeze hashes, V5 SHA, benchmark date, asset manifest, CMS rollback snapshot, lab/route screenshots, accessibility/performance and console/network results, plus user approval status.
 
+<<<<<<< HEAD
 ## Homepage layout and spacing improvements (user-requested addition)
 
 All existing homepage sections are retained. This section defines the visual refinements to make the homepage layout professional and luxurious.
@@ -73,7 +74,6 @@ All homepage sections use V4 design-system section rhythm tokens (`--ds-section-
 ### Product card styling
 
 Cards on homepage are borderless, shadow-free, and transparent-background (editorial style). Product info area uses `--ds-space-sm` padding. Price, title, and badge typography follow V4 heading/body token recipes. Hover states use subtle scale (`1.02`) with `220ms` ease transition.
-
 ## State machine and release lock
 
 Allowed states: `ARCHITECTURE_V4_PENDING`, `ARCHITECTURE_V4_IN_PROGRESS`, `ARCHITECTURE_V4_AWAITING_USER_APPROVAL`, `ARCHITECTURE_V4_CERTIFIED`, `VISUAL_V5_IN_PROGRESS`, `VISUAL_V5_AWAITING_USER_APPROVAL`, `READY_FOR_FINAL_DEPLOYMENT`, `DEPLOYED_AND_VERIFIED`.

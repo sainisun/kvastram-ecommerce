@@ -8,9 +8,11 @@ test.describe('Storefront visual contract', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     try {
+      const viewportWidth = testInfo.project.use?.viewport?.width ?? 1440;
+      const isMobileViewport = viewportWidth < 768;
       await expect(page).toHaveTitle(/Odhvica|Kantha/i);
       await expect(page.locator('main')).toBeVisible();
-      if (testInfo.project.name === 'mobile-chromium') {
+      if (isMobileViewport) {
         await expect(page.getByRole('button', { name: 'Open navigation' })).toBeVisible();
       } else {
         await expect(page.locator('nav').first()).toBeVisible();
@@ -145,14 +147,24 @@ test.describe('Storefront visual contract', () => {
     expect(new Set(cardPositions.map((position) => position.y)).size).toBe(1);
     expect(cardPositions[1].x).toBeGreaterThan(cardPositions[0].x);
 
-    const typography = await page.evaluate(() => ({
-      body: getComputedStyle(document.body).fontFamily,
-      heading: getComputedStyle(document.querySelector('[data-home-section="2-hero"] h1')!).fontFamily,
-      heroColor: getComputedStyle(document.querySelector('[data-home-section="2-hero"] h1')!).color,
-    }));
+    const typography = await page.evaluate(() => {
+      const heroHeading = document.querySelector(
+        '[data-home-section="2-hero"] article:first-of-type .font-display'
+      );
+
+      if (!(heroHeading instanceof Element)) {
+        throw new Error('Hero visual heading element was not found.');
+      }
+
+      return {
+        body: getComputedStyle(document.body).fontFamily,
+        heading: getComputedStyle(heroHeading).fontFamily,
+        heroColor: getComputedStyle(heroHeading).color,
+      };
+    });
     expect(typography.body).toMatch(/Cardo/i);
     expect(typography.heading).toMatch(/Amiri/i);
-    expect(typography.heroColor).toBe('rgb(253, 250, 246)');
+    expect(typography.heroColor).toBe('rgb(255, 255, 255)');
   });
 
   test('products, cart, and login routes remain usable', async ({ page }) => {

@@ -70,8 +70,8 @@ export function PromoBar({ isSticky }: PromoBarProps) {
   if (dismissed || isSticky) return null;
 
   return (
-    <div className="kv-page-frame relative flex h-8 items-center justify-center bg-primary px-6 md:mx-auto md:h-10 md:w-full md:max-w-page md:rounded-[999px] md:bg-accent-soft md:px-6 md:shadow-[0_10px_24px_rgba(var(--ds-accent-rgb),0.12)]">
-      <div className="absolute left-5 hidden items-center gap-[var(--ds-space-xs)] md:flex">
+    <div className="kv-page-frame relative flex h-8 items-center justify-center bg-primary px-6 md:mx-auto md:grid md:h-10 md:w-full md:max-w-page md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-4 md:rounded-[999px] md:bg-accent-soft md:px-5 md:shadow-[0_10px_24px_rgba(var(--ds-accent-rgb),0.12)]">
+      <div className="hidden items-center gap-[var(--ds-space-xs)] md:flex">
         {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
           <a
             key={label}
@@ -87,7 +87,7 @@ export function PromoBar({ isSticky }: PromoBarProps) {
       </div>
 
       {MESSAGES.length > 1 && (
-        <div className="absolute right-4 hidden items-center gap-1 md:flex">
+        <div className="hidden items-center justify-end gap-1 md:flex">
           <IconButton
             type="button"
             onClick={goToPrevious}
@@ -111,20 +111,8 @@ export function PromoBar({ isSticky }: PromoBarProps) {
         </div>
       )}
 
-      <p className="text-body-xs font-medium tracking-token-wide text-disabled select-none md:max-w-[60%] md:text-center md:text-accent-hover">
-        {MESSAGES.map((msg, i) => (
-          <span
-            key={msg}
-            className={`transition-opacity duration-500 ${
-              i === msgIdx ? 'opacity-100' : 'absolute opacity-0'
-            }`}
-          >
-            {i > 0 && i === msgIdx && (
-              <span className="mx-4 text-secondary md:hidden">.</span>
-            )}
-            {msg}
-          </span>
-        ))}
+      <p className="text-body-xs font-medium tracking-token-wide text-disabled select-none md:truncate md:px-4 md:text-center md:text-accent-hover">
+        <span className="transition-opacity duration-300">{MESSAGES[msgIdx]}</span>
       </p>
       <IconButton
         type="button"

@@ -79,7 +79,7 @@ export function CircularCategoriesClient({
               className="homepage-circle-link grid flex-[0_0_80px] gap-2 text-center text-body-xs text-primary no-underline snap-center focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ds-accent-primary)] focus-visible:outline-offset-4 md:flex-[0_0_96px] lg:flex-[0_0_120px]"
               data-circle-index={index}
             >
-              <span className="relative block aspect-square overflow-hidden rounded-full border border-border-subtle bg-surface-soft">
+              <span className="relative block aspect-square overflow-hidden rounded-full border border-border-subtle bg-surface-soft shadow-[0_8px_24px_rgba(var(--ds-black-rgb),0.06)]">
                 <OptimizedImage
                   src={circle.image_url || ''}
                   alt=""
@@ -90,7 +90,9 @@ export function CircularCategoriesClient({
                   className="object-cover"
                 />
               </span>
-              <span>{circle.label}</span>
+              <span className="mx-auto max-w-[11ch] font-label text-[11px] uppercase tracking-[var(--ds-type-label-tracking)] text-secondary md:text-body-xs">
+                {circle.label}
+              </span>
             </Link>
           ))}
         </div>
