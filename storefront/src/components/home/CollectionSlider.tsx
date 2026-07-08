@@ -37,23 +37,24 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
         <Link
           href={`/collections/${featured.handle}`}
-          className="group relative block overflow-hidden aspect-[4/5] lg:col-span-7 lg:aspect-auto lg:min-h-[700px]"
+          className="group flex flex-col lg:col-span-7 lg:min-h-[700px]"
         >
-          <OptimizedImage
-            src={featured.image}
-            alt={featured.title}
-            fill
-            sizes="(max-width: 1023px) 100vw, 60vw"
-            className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.6)] via-[rgba(var(--ds-black-rgb),0.1)] to-transparent opacity-80" />
+          <div className="relative w-full flex-grow overflow-hidden aspect-[4/5] lg:aspect-auto rounded-sm bg-surface-soft">
+            <OptimizedImage
+              src={featured.image}
+              alt={featured.title}
+              fill
+              sizes="(max-width: 1023px) 100vw, 60vw"
+              className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
+            />
+          </div>
 
-          <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end p-8 text-center text-inverse lg:p-12 lg:text-left">
+          <div className="mt-[var(--ds-space-md)] flex flex-col text-center text-primary lg:text-left">
             <h3 className="mb-2 font-display text-display-md font-light tracking-wide">
               {featured.title}
             </h3>
             {featured.description ? (
-              <p className="mx-auto max-w-md text-body-md font-light text-inverse/80 lg:mx-0">
+              <p className="mx-auto max-w-md text-body-md font-light text-primary/80 lg:mx-0">
                 {featured.description}
               </p>
             ) : null}
@@ -71,18 +72,19 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
               <Link
                 key={collection.id}
                 href={`/collections/${collection.handle}`}
-                className="group relative block overflow-hidden aspect-square lg:h-full lg:aspect-auto"
+                className="group flex flex-col"
               >
-                <OptimizedImage
-                  src={collection.image}
-                  alt={collection.title}
-                  fill
-                  sizes="(max-width: 1023px) 100vw, 40vw"
-                  className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.5)] via-transparent to-transparent opacity-80" />
+                <div className="relative w-full flex-grow overflow-hidden aspect-square lg:h-full lg:aspect-auto rounded-sm bg-surface-soft">
+                  <OptimizedImage
+                    src={collection.image}
+                    alt={collection.title}
+                    fill
+                    sizes="(max-width: 1023px) 100vw, 40vw"
+                    className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
+                  />
+                </div>
 
-                <div className="absolute inset-x-0 bottom-0 p-6 text-center text-inverse lg:text-left">
+                <div className="mt-[var(--ds-space-sm)] text-center text-primary lg:text-left">
                   <h3 className="font-display text-display-sm font-light tracking-wide">
                     {collection.title}
                   </h3>
@@ -99,18 +101,19 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
             <Link
               key={collection.id}
               href={`/collections/${collection.handle}`}
-              className="group relative block overflow-hidden aspect-square lg:aspect-[4/5]"
+              className="group flex flex-col"
             >
-              <OptimizedImage
-                src={collection.image}
-                alt={collection.title}
-                fill
-                sizes="(max-width: 1023px) 100vw, 33vw"
-                className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(var(--ds-black-rgb),0.5)] via-[rgba(var(--ds-black-rgb),0.1)] to-transparent opacity-80" />
+              <div className="relative w-full flex-grow overflow-hidden aspect-[4/5] rounded-sm bg-surface-soft">
+                <OptimizedImage
+                  src={collection.image}
+                  alt={collection.title}
+                  fill
+                  sizes="(max-width: 1023px) 100vw, 33vw"
+                  className="object-cover motion-safe:transition-transform duration-[1500ms] ease-out motion-safe:group-hover:scale-[1.03]"
+                />
+              </div>
 
-              <div className="absolute inset-x-0 bottom-0 p-6 text-center text-inverse lg:text-left">
+              <div className="mt-[var(--ds-space-sm)] text-center text-primary lg:text-left">
                 <h3 className="font-display text-display-sm font-light tracking-wide">
                   {collection.title}
                 </h3>
