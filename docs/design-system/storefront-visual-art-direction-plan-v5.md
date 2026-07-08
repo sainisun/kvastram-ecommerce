@@ -1,6 +1,8 @@
 # Storefront Visual Art Direction Plan V5
 
-Status: `LOCKED_PENDING_ARCHITECTURE_V4_CERTIFICATION`
+Status: `VISUAL_V5_IN_PROGRESS`  
+V4 Base SHA: `7ca181685d8c06d3ebcde703fbbe43526475f35a`  
+Certified: 2026-07-08
 
 V5 is visual work only. It starts from the exact user-approved V4 SHA and cannot modify V4 architecture.
 
@@ -47,6 +49,30 @@ Odhvica and a dated ShopMulmul capture are scored 1–10 for distinctiveness, hi
 Test `375/768/1024/1440` across populated/empty/loading/error/missing media/long copy, auth states, cart states, sale/wholesale/multi-currency. Require ≤`0.1%` approved screenshot drift, green freeze audit, unchanged roles, WCAG AA, ≥`44×44`, LCP ≤`2.5s`, CLS ≤`0.1`, INP ≤`200ms`, no overflow/unexpected console/network failures, and keyboard/reduced-motion.
 
 The visual certificate records V4 base SHA, freeze hashes, V5 SHA, benchmark date, asset manifest, CMS rollback snapshot, lab/route screenshots, accessibility/performance and console/network results, plus user approval status.
+
+## Homepage layout and spacing improvements (user-requested addition)
+
+All existing homepage sections are retained. This section defines the visual refinements to make the homepage layout professional and luxurious.
+
+### Hero section
+
+Desktop (`1440px`): minimum height `85vh` for immersive full-bleed impact. Mobile (`375px`): minimum height `100svh` for full-screen editorial feel. Gradient overlay softened so product imagery remains the focal point. Typography alignment: clean bottom-left with generous padding from edges.
+
+### Product image dimensions and aspect ratios
+
+All product cards on homepage (Best Sellers, New Arrivals, and any product slider) enforce a strict `4:5` portrait aspect ratio with `object-cover` fit. No stretched, squished, or inconsistent image frames. Desktop card width adapts to grid columns (`25%` at `1440px`, `33.33%` at `1024px`). Mobile shows one-and-a-peek layout (primary card fills `~80vw`, next card peeks in to signal scrollability).
+
+### Category circle sizing
+
+Circular category images use explicit, consistent dimensions: mobile `80×80px`, tablet `96×96px`, desktop `120×120px`. Uniform horizontal gap `gap-6` on mobile, `gap-10` on desktop. No visible scrollbar; CSS `scrollbar-width: none` with swipe affordance.
+
+### Section spacing and rhythm
+
+All homepage sections use V4 design-system section rhythm tokens (`--ds-section-rhythm`: `48px` mobile / `80px` desktop) for vertical gaps between sections. No hardcoded `pb-8` or arbitrary padding values. Consistent breathing room between every section for premium editorial density.
+
+### Product card styling
+
+Cards on homepage are borderless, shadow-free, and transparent-background (editorial style). Product info area uses `--ds-space-sm` padding. Price, title, and badge typography follow V4 heading/body token recipes. Hover states use subtle scale (`1.02`) with `220ms` ease transition.
 
 ## State machine and release lock
 

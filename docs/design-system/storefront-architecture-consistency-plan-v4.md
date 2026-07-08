@@ -1,8 +1,10 @@
 # Storefront Architecture Constitution & 100% Consistency Plan V4
 
-Status: `ARCHITECTURE_V4_IN_PROGRESS`  
+Status: `ARCHITECTURE_V4_CERTIFIED`  
 Branch: `codex/storefront-architecture-v4`  
-Base: `origin/main` at `b7efe2b48671df8060e595016ad53ba32a740d4f`
+Base: `origin/main` at `b7efe2b48671df8060e595016ad53ba32a740d4f`  
+`ARCHITECTURE_V4_CERTIFIED_SHA=7ca181685d8c06d3ebcde703fbbe43526475f35a`  
+Certified: 2026-07-08 by user approval (all audits green, 62/62 routes, 15/15 tests, build passed)
 
 This constitution must be executed in full. V5 cannot shorten, replace, or reinterpret it. “100%” is a certification gate, not an agent claim.
 

@@ -90,7 +90,7 @@ export function ProductCard({
 
   return (
     <article className="product-card relative bg-transparent overflow-hidden group">
-      <div className="relative aspect-[2/3] md:aspect-[4/5] grid place-items-center font-body text-body-md leading-normal bg-surface-soft overflow-hidden group-hover:saturate-[1.06] focus-within:saturate-[1.06]">
+      <div className="relative aspect-[4/5] grid place-items-center font-body text-body-md leading-normal bg-surface-soft overflow-hidden group-hover:saturate-[1.06] focus-within:saturate-[1.06]">
         <Link
           href={href}
           className="relative block h-full w-full"
