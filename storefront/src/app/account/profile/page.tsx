@@ -94,7 +94,7 @@ export default function ProfilePage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Input
                 type="text"
                 label="First Name"

@@ -314,6 +314,7 @@ export default function CartPage() {
                             alt={product.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-700"
+                            sizes="(max-width: 768px) 45vw, 25vw"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-muted">
@@ -393,6 +394,7 @@ export default function CartPage() {
                           alt={item.title}
                           fill
                           className="object-cover object-center"
+                          sizes="(max-width: 640px) 96px, 128px"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-muted">
