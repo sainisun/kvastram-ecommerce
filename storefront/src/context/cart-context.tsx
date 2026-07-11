@@ -77,9 +77,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setIsLoaded(true);
       }, 0);
       return () => clearTimeout(timer);
-    } catch (err) {
-      setCartError('Unable to load your cart. Please refresh the page.');
-      setIsLoaded(true);
+    } catch {
+      setTimeout(() => {
+        setCartError('Unable to load your cart. Please refresh the page.');
+        setIsLoaded(true);
+      }, 0);
     }
   }, []);
 
