@@ -60,7 +60,7 @@ export default function HeroCarousel({ banners }: HeroCarouselProps) {
         <div className="flex touch-pan-y">
           {slides.map((slide, index) => (
             <div
-              className="relative flex-[0_0_100%] min-w-0 h-[85vh] min-h-[600px] flex flex-col md:flex-row"
+              className="relative flex-[0_0_100%] min-w-0 h-[85vh] min-h-[500px] sm:min-h-[600px] flex flex-col md:flex-row"
               key={slide.id}
             >
               {/* Left Content Half (Dark Editorial) */}
