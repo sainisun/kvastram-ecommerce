@@ -2134,7 +2134,7 @@ class OrderService {
           COALESCE(SUM(total), 0)::int AS revenue
         FROM orders
         WHERE created_at >= NOW() - (${days} || ' days')::interval
-          AND status NOT IN ('cancelled', 'refunded')
+          AND status IN ('completed', 'delivered')
         GROUP BY TO_CHAR(created_at, 'YYYY-MM-DD')
         ORDER BY date ASC
       `
