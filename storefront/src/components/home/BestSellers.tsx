@@ -146,11 +146,6 @@ export function BestSellers({
         {products.map((product) => {
           const priceInfo = getPrice(product);
           
-          // Generate deterministic mock rating based on product ID for Best Sellers (between 4 and 5)
-          const hash = product.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-          const rating = 4 + (hash % 10) / 10; // 4.0 to 4.9
-          const reviewsCount = 4 + (hash % 20); // 4 to 23
-
           return (
               <div key={product.id} className="w-[45vw] max-w-[280px] flex-shrink-0 animate-fade-in md:w-[calc(33.33%-1rem)] lg:w-[calc(25%-1.5rem)]">
               <ProductCard
@@ -163,8 +158,8 @@ export function BestSellers({
                 onAddToCart={handleAddToCart}
                 added={addedId === product.id}
                 showQuickView={false}
-                rating={rating}
-                reviewsCount={reviewsCount}
+                rating={product.avg_rating}
+                reviewsCount={product.review_count}
               />
             </div>
           );

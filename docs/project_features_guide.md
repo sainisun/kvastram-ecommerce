@@ -278,3 +278,22 @@ This guide is the definitive registry of all backend features implemented in the
   * After this hardening wave, remaining direct `@/components/ui/*` references are limited to `src/components/ui/**` implementation files plus a unit-test mock path. Feature and layout consumers were migrated to the public barrel.
 * **Operational Commands**:
   * After any further barrel migration wave, run `npm.cmd run lint`, `npx.cmd tsc --noEmit --pretty false`, and `npm.cmd run verify:design-system -- --pool=threads` to confirm the public API boundary still compiles and certifies cleanly.
+
+### L. Homepage Wireframe V3 Completion (v1.11)
+* **Technical Flow**:
+  * The homepage restores the CMS-backed New Arrivals rail after Curated Edits while preserving the existing collection-discovery slider as a separate shopping feature.
+  * Hero micro social proof uses the first available testimonial returned by `GET /testimonials/store`; it renders nothing when no testimonial is published and never substitutes invented customer copy.
+  * Best Seller cards use `avg_rating` and `review_count` from product data. Missing review data leaves the rating row absent instead of generating synthetic values.
+  * `MobileStickyActions` mounts only on the homepage, becomes visible after the visitor passes the hero, and reads the live cart count from cart context.
+  * Footer craft motion is an SVG/CSS presentation owned by the shared footer. The former canvas animation and duplicate standalone pre-footer section are removed.
+* **Requirements and Settings**:
+  * Homepage CMS sources remain `GET /homepage`, `GET /testimonials/store`, and `GET /homepage-merchandising`; empty CMS sections must render nothing.
+  * The public section contract is ordered from categories and hero through discovery, social proof, craft, Watch & Buy, collections, newsletter/social, and the shared footer.
+  * Product review aggregates must come from backend data. Do not derive ratings or review counts from product IDs or other placeholders.
+* **Edge Cases and Dependencies**:
+  * A missing testimonial removes hero social proof without shifting the CTA or blocking hero rendering.
+  * A missing New Arrivals payload removes only that rail; Best Sellers and collection discovery continue independently.
+  * Footer stitch motion is disabled by `prefers-reduced-motion: reduce` and does not allocate a canvas or animation frame loop.
+* **Operational Commands**:
+  * Run the design-system audits, lint, verification suite, production build, and desktop/mobile Playwright storefront smoke tests after changing this composition.
+  * Run `npm.cmd run audit:architecture-freeze` before V5 certification or release; it fails with `BLOCKED_FOR_ARCHITECTURE_REVIEW` when a protected V4 contract differs from certified SHA `7ca181685d8c06d3ebcde703fbbe43526475f35a`.

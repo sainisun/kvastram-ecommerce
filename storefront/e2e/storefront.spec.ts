@@ -49,13 +49,13 @@ test.describe('Storefront visual contract', () => {
       '5-best-sellers',
       '6-shopping-help',
       '7-curated-edits',
-      '8-watch-shop',
-      '9-collection-slider',
+      '8-new-arrivals',
+      '9-testimonials',
       '10-craft-journey',
       '11-stats',
-      '12-testimonials',
-      '13-join-circle',
-      '14-footer-animation',
+      '12-watch-shop',
+      '13-collection-slider',
+      '14-join-circle',
       '15-footer',
     ]);
   });
@@ -133,7 +133,12 @@ test.describe('Storefront visual contract', () => {
   test('homepage rails, typography, and inverse contrast preserve visual geometry', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    const railSections = ['5-best-sellers', '7-curated-edits', '8-watch-shop'];
+    const railSections = [
+      '5-best-sellers',
+      '7-curated-edits',
+      '8-new-arrivals',
+      '12-watch-shop',
+    ];
     for (const sectionName of railSections) {
       const rail = page.locator(`[data-home-section="${sectionName}"] .overflow-x-auto`).first();
       await expect(rail).toBeVisible();

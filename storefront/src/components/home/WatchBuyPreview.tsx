@@ -20,7 +20,7 @@ export function WatchBuyPreview({ reels }: { reels: HomepageTrendingReel[] }) {
   if (reels.length === 0) return null;
 
   return (
-    <HomepageSection data-home-section="8-watch-shop">
+    <HomepageSection data-home-section="12-watch-shop">
       <HomepageSectionHeader
         heading="See the craft in motion"
         headingClassName="font-medium"

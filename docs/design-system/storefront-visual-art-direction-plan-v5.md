@@ -50,7 +50,6 @@ Test `375/768/1024/1440` across populated/empty/loading/error/missing media/long
 
 The visual certificate records V4 base SHA, freeze hashes, V5 SHA, benchmark date, asset manifest, CMS rollback snapshot, lab/route screenshots, accessibility/performance and console/network results, plus user approval status.
 
-<<<<<<< HEAD
 ## Homepage layout and spacing improvements (user-requested addition)
 
 All existing homepage sections are retained. This section defines the visual refinements to make the homepage layout professional and luxurious.

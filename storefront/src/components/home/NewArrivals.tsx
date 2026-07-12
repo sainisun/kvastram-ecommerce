@@ -128,7 +128,7 @@ export function NewArrivals({
   if (products.length === 0) return null;
 
   return (
-    <HomepageSection data-home-section="6-new-arrivals">
+    <HomepageSection data-home-section="8-new-arrivals">
       <HomepageSectionHeader
         heading="New Arrivals"
         headingClassName="font-light italic tracking-wide"

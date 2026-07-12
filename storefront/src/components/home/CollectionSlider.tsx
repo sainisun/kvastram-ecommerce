@@ -20,7 +20,7 @@ export function CollectionSlider({ collections }: { collections: HomepageCollect
   return (
     <HomepageSection
       aria-labelledby="homepage-collection-slider-title"
-      data-home-section="9-collection-slider"
+      data-home-section="13-collection-slider"
     >
       <HomepageSectionHeader
         heading="Curated Collections"

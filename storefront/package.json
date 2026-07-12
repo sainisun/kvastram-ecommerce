@@ -12,6 +12,7 @@
     "check:design-system-generated": "node scripts/generate-design-system.mjs --check",
     "audit:architecture": "node scripts/architecture-audit.mjs",
     "audit:architecture:certify": "node scripts/architecture-audit.mjs --certify",
+    "audit:architecture-freeze": "node scripts/architecture-freeze-audit.mjs",
     "audit:design-system": "node scripts/design-system-audit.mjs",
     "audit:css-ownership": "node scripts/css-ownership-audit.mjs",
     "audit:design-system:metrics": "node scripts/design-system-metrics.mjs",

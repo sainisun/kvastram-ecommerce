@@ -195,6 +195,17 @@ const categories = [
     is_active: true,
     children: [],
   },
+  {
+    id: 'category-bags',
+    name: 'Bags',
+    slug: 'bags',
+    handle: 'bags',
+    description: 'Textile bags made from small-batch artisan fabrics.',
+    image: withVariant(image, 'category-bags'),
+    header_image_url: withVariant(image, 'category-bags-header'),
+    is_active: true,
+    children: [],
+  },
 ];
 
 const artisan = {
