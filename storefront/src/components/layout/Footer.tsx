@@ -84,7 +84,7 @@ export function Footer() {
       <CraftEducationStrip />
       <ShippingReturnsMiniFAQ />
 
-      <footer data-home-section="11-footer" className="odhvica-footer relative border-t border-footer-border overflow-hidden">
+      <footer data-home-section="15-footer" className="odhvica-footer relative border-t border-footer-border overflow-hidden">
         {/* Background Option B Animation */}
         <ArtisanFooterAnimation />
 

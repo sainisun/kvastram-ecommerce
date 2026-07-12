@@ -26,6 +26,8 @@ interface ProductCardProps {
   actionLabel?: string;
   onAddToCart: (event: React.MouseEvent<HTMLButtonElement>, product: Product) => void;
   onQuickView?: (product: Product) => void;
+  rating?: number;
+  reviewsCount?: number;
 }
 
 const SWATCH_CLASS_BY_SLUG: Record<string, string> = {
@@ -63,6 +65,8 @@ export function ProductCard({
   actionLabel,
   onAddToCart,
   onQuickView: _onQuickView,
+  rating,
+  reviewsCount,
 }: ProductCardProps) {
   const displayTitle = getProductDisplayTitle(product.title);
   const href = `/products/${product.handle || product.id}`;
@@ -130,8 +134,8 @@ export function ProductCard({
               </Badge>
             ) : null}
             {isLowStock ? (
-              <Badge variant="accent" className="rounded-[var(--ds-radius-pill)] px-[var(--ds-space-xs)] py-1">
-                Almost Gone
+              <Badge variant="accent" className="rounded-[var(--ds-radius-pill)] px-[var(--ds-space-xs)] py-1 font-bold">
+                ONLY {stockQty} LEFT
               </Badge>
             ) : null}
           </div>
@@ -199,6 +203,21 @@ export function ProductCard({
             )}
           </IconButton>
         </div>
+
+        {/* Rating Display */}
+        {(rating !== undefined && reviewsCount !== undefined) ? (
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <div className="flex text-accent" aria-label={`Rating: ${rating} out of 5 stars`}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <svg key={star} className={`w-3.5 h-3.5 ${star <= rating ? 'fill-current' : 'fill-transparent stroke-current stroke-[1.5px]'}`} viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+              ))}
+            </div>
+            <span className="text-xs font-ui text-muted">({reviewsCount})</span>
+          </div>
+        ) : null}
+
         {actionLabel ? (
           <Link href={href} className="inline-flex mt-[var(--ds-space-xs)] text-primary text-body-xs font-[var(--ds-type-ui-weight)] underline underline-offset-4 hover:text-accent">
             {actionLabel}

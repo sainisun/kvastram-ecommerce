@@ -20,7 +20,7 @@ export function Testimonials({ testimonials }: TestimonialsProps) {
   if (displayed.length === 0) return null;
 
   return (
-    <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper border-b border-border-subtle">
+    <section className="max-md:py-[var(--ds-space-md)] bg-surface-paper border-b border-border-subtle" data-home-section="12-testimonials">
       <div className="ds-home-container">
         <div className="mb-[var(--ds-space-md)] flex flex-col gap-[var(--ds-space-sm)] md:mb-[var(--ds-space-lg)]">
           <div className="kv-tag">Love shared by customers</div>
