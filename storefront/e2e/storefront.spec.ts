@@ -32,10 +32,10 @@ test.describe('Storefront visual contract', () => {
     }
   });
 
-  test('homepage renders the exact 11-section contract in order', async ({ page }) => {
+  test('homepage renders the exact 15-section contract in order', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const sections = page.locator('[data-home-section]');
-    await expect(sections).toHaveCount(11);
+    await expect(sections).toHaveCount(15);
     await expect(sections.first()).toHaveAttribute('data-home-section', /1-circle-categories/, {
       timeout: 10000,
     });
@@ -45,11 +45,15 @@ test.describe('Storefront visual contract', () => {
       '1-circle-categories',
       '2-hero',
       '3-category-carousel',
-      '4-collection-slider',
-      '5-best-sellers',
       '6-new-arrivals',
+      'merch-seasonal_edits',
+      '4-collection-slider',
+      'merch-fabric_edits',
+      '8-craft-journey',
       '7-watch-shop',
-      '8-brand-story',
+      '5-best-sellers',
+      'merch-occasion_edits',
+      '14-join-circle',
       '9-social',
       '10-newsletter',
       '11-footer',
