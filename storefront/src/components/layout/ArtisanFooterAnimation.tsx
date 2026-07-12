@@ -44,7 +44,8 @@ export function ArtisanFooterAnimation() {
       time += 0.01;
 
       // Draw floating "threads" / dust
-      ctx.fillStyle = 'rgba(201, 174, 119, 0.4)'; // Gold/thread color
+      const rgbString = '201, 174, 119';
+      ctx.fillStyle = `rgba(${rgbString}, 0.4)`; // Gold/thread color
       particles.forEach(p => {
         ctx.globalAlpha = p.opacity;
         ctx.beginPath();

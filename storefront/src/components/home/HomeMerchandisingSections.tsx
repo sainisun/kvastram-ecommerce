@@ -1,14 +1,10 @@
 'use client';
 
-import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { OptimizedImage, homepageSectionActionClassName } from '@/design-system';
 import type { HomepageMerchandisingSlot } from '@/types/homepage';
 
-interface HomeMerchandisingSectionsProps {
-  merchandisingSlots: HomepageMerchandisingSlot[];
-  children?: ReactNode;
-}
+
 
 function SectionHead({
   eyebrow,
