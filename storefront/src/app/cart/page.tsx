@@ -42,7 +42,7 @@ interface ShippingOption {
 }
 
 export default function CartPage() {
-  const { items, addItem, removeItem, updateQuantity, cartTotal, clearCart } =
+  const { items, addItem, removeItem, updateQuantity, cartTotal, clearCart, cartError } =
     useCart();
   const { currentRegion, settings } = useShop();
   const { showNotification } = useNotification();
@@ -260,6 +260,19 @@ export default function CartPage() {
   };
 
   if (items.length === 0) {
+    if (cartError) {
+      return (
+        <div className="min-h-screen bg-surface-paper">
+          <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
+            <div className="flex items-center justify-center p-4 mb-8 border rounded-md bg-error-bg border-error text-error">
+              <AlertCircle className="w-5 h-5 mr-2" />
+              <span className="font-medium text-body-md">{cartError}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-surface-paper">
         <div className="ds-page-container mx-auto max-w-page py-token-xl md:py-token-2xl lg:py-token-3xl">
@@ -314,6 +327,7 @@ export default function CartPage() {
                             alt={product.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-700"
+                            sizes="(max-width: 768px) 45vw, 25vw"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-muted">
@@ -393,6 +407,7 @@ export default function CartPage() {
                           alt={item.title}
                           fill
                           className="object-cover object-center"
+                          sizes="(max-width: 640px) 96px, 128px"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-muted">

@@ -126,7 +126,7 @@ export function ChatWidget() {
             className={cn(
               cardClasses,
               'fixed bottom-40 right-4 z-50 w-[calc(100vw-1rem)] max-w-80 overflow-hidden shadow-2xl md:bottom-6 md:right-6 md:w-96',
-              isMinimized ? 'h-14' : 'h-[500px]'
+              isMinimized ? 'h-14' : 'h-[80dvh] max-h-[500px]'
             )}
           >
             <div className="flex items-center justify-between bg-primary p-4 text-inverse">

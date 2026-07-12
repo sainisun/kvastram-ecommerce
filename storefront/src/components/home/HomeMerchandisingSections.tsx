@@ -1,14 +1,10 @@
 'use client';
 
-import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { OptimizedImage, homepageSectionActionClassName } from '@/design-system';
 import type { HomepageMerchandisingSlot } from '@/types/homepage';
 
-interface HomeMerchandisingSectionsProps {
-  merchandisingSlots: HomepageMerchandisingSlot[];
-  children?: ReactNode;
-}
+
 
 function SectionHead({
   eyebrow,
@@ -103,73 +99,44 @@ function groupSlots(slots: HomepageMerchandisingSlot[], key: string) {
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 }
 
-export function HomeMerchandisingSections({
+export function HomeMerchandisingSection({
   merchandisingSlots,
-  children,
-}: HomeMerchandisingSectionsProps) {
-  const seasonalSlots = groupSlots(merchandisingSlots, 'seasonal_edits');
-  const fabricSlots = groupSlots(merchandisingSlots, 'fabric_edits');
-  const occasionSlots = groupSlots(merchandisingSlots, 'occasion_edits');
+  slotKey,
+}: {
+  merchandisingSlots: HomepageMerchandisingSlot[];
+  slotKey: 'seasonal_edits' | 'fabric_edits' | 'occasion_edits';
+}) {
+  const slots = groupSlots(merchandisingSlots, slotKey);
+  if (slots.length === 0) return null;
+
+  let eyebrow = '';
+  let actionHref = '/products';
+  let variant: MerchSlotCardVariant = 'default';
+
+  if (slotKey === 'seasonal_edits') {
+    eyebrow = 'Limited editions';
+  } else if (slotKey === 'fabric_edits') {
+    eyebrow = 'Craft & material';
+    variant = 'categoryOverlay';
+  } else if (slotKey === 'occasion_edits') {
+    eyebrow = 'Dress for the moment';
+    actionHref = '/collections';
+    variant = 'categoryOverlay';
+  }
 
   return (
-    <>
-      {seasonalSlots.length > 0 ? (
-        <section className="max-md:py-[var(--ds-space-md)] bg-surface">
-          <div className="ds-home-container">
-            <SectionHead
-              eyebrow="Limited editions"
-              action={{ label: 'View All', href: '/products' }}
-            />
-            <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {seasonalSlots.map((slot) => (
-                <MerchSlotCard key={slot.id} slot={slot} />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {children}
-
-      {fabricSlots.length > 0 ? (
-        <section className="max-md:py-[var(--ds-space-md)] bg-surface">
-          <div className="ds-home-container">
-            <SectionHead
-              eyebrow="Craft &amp; material"
-              action={{ label: 'View All', href: '/products' }}
-            />
-            <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {fabricSlots.map((slot) => (
-                <MerchSlotCard
-                  key={slot.id}
-                  slot={slot}
-                  variant="categoryOverlay"
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {occasionSlots.length > 0 ? (
-        <section className="max-md:py-[var(--ds-space-md)] bg-surface">
-          <div className="ds-home-container">
-            <SectionHead
-              eyebrow="Dress for the moment"
-              action={{ label: 'View All', href: '/collections' }}
-            />
-            <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {occasionSlots.map((slot) => (
-                <MerchSlotCard
-                  key={slot.id}
-                  slot={slot}
-                  variant="categoryOverlay"
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
-    </>
+    <section className="max-md:py-[var(--ds-space-md)] bg-surface" data-home-section={`merch-${slotKey}`}>
+      <div className="ds-home-container">
+        <SectionHead
+          eyebrow={eyebrow}
+          action={{ label: 'View All', href: actionHref }}
+        />
+        <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {slots.map((slot) => (
+            <MerchSlotCard key={slot.id} slot={slot} variant={variant} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

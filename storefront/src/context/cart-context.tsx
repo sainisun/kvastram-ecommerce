@@ -37,6 +37,7 @@ interface CartContextType {
   totalItems: number;
   cartTotal: number;
   savedCartCount: number;
+  cartError: string | null;
   recoverSavedCart: () => Promise<void>;
   dismissSavedCart: () => void;
 }
@@ -60,20 +61,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [savedCartCount, setSavedCartCount] = useState(0);
   const [recoveryOffered, setRecoveryOffered] = useState(false);
+  const [cartError, setCartError] = useState<string | null>(null);
   const { customer } = useAuth();
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const stored = sanitizeCartItems(
-      storage.get<CartItem[]>('odhvica_cart', [])
-    );
-    const timer = setTimeout(() => {
-      if (stored && stored.length > 0) {
-        setItems(stored);
-      }
-      setIsLoaded(true);
-    }, 0);
-    return () => clearTimeout(timer);
+    try {
+      const stored = sanitizeCartItems(
+        storage.get<CartItem[]>('odhvica_cart', [])
+      );
+      const timer = setTimeout(() => {
+        if (stored && stored.length > 0) {
+          setItems(stored);
+        }
+        setIsLoaded(true);
+      }, 0);
+      return () => clearTimeout(timer);
+    } catch {
+      setTimeout(() => {
+        setCartError('Unable to load your cart. Please refresh the page.');
+        setIsLoaded(true);
+      }, 0);
+    }
   }, []);
 
   // Save cart to localStorage whenever it changes
@@ -114,7 +123,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
             setSavedCartCount(0);
           }
         })
-        .catch(() => setSavedCartCount(0));
+        .catch(() => {
+          setSavedCartCount(0);
+          setCartError('Unable to load your cart. Please refresh the page.');
+        });
     }
   }, [customer, isLoaded]);
 
@@ -217,6 +229,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         totalItems,
         cartTotal,
         savedCartCount,
+        cartError,
         recoverSavedCart,
         dismissSavedCart,
       }}

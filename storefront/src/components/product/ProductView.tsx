@@ -458,12 +458,16 @@ export default function ProductView({ product }: { product: Product }) {
                           key={value.value}
                           type="button"
                           onClick={() => setSelectedOptions((prev) => ({ ...prev, [option.title]: value.value }))}
-                          className={`${styles['pdp-color-swatch']}${isSelected ? ` ${styles.active}` : ''}${unavailable ? ` ${styles.unavailable}` : ''}`}
-                          style={{ background: getColorHex(value.value) }}
+                          className={`${styles['pdp-color-swatch-wrapper']}${isSelected ? ` ${styles.active}` : ''}${unavailable ? ` ${styles.unavailable}` : ''}`}
                           aria-label={value.value}
                           title={value.value}
                           disabled={unavailable}
-                        />
+                        >
+                          <span
+                            className={styles['pdp-color-swatch']}
+                            style={{ background: getColorHex(value.value) }}
+                          />
+                        </UnstyledButton>
                       ) : (
                         <UnstyledButton
                           key={value.value}

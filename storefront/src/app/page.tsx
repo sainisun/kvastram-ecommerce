@@ -12,9 +12,12 @@ import { CollectionSlider } from '@/components/home/CollectionSlider';
 import { BestSellers } from '@/components/home/BestSellers';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
-import { BrandStory } from '@/components/home/BrandStory';
 import { InstagramSection } from '@/components/home/InstagramSection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
+import { HomeMerchandisingSection } from '@/components/home/HomeMerchandisingSections';
+import { Testimonials } from '@/components/home/Testimonials';
+import { ShoppingHelpStrip } from '@/components/home/ShoppingHelpStrip';
+import { CraftJourneySection } from '@/components/home/CraftJourneySection';
 import { Heading } from '@/design-system';
 import type { HomepagePayload } from '@/types/homepage';
 
@@ -51,8 +54,18 @@ const EMPTY_HOMEPAGE: HomepagePayload = {
 
 export default async function Home() {
   let homepage = EMPTY_HOMEPAGE;
+  let testimonialsResponse = { testimonials: [] };
+  let merchandisingResponse = { slots: [] };
+
   try {
-    homepage = await api.getHomepage();
+    const [hp, test, merch] = await Promise.all([
+      api.getHomepage(),
+      api.getTestimonials(),
+      api.getHomepageMerchandising()
+    ]);
+    homepage = hp;
+    testimonialsResponse = test;
+    merchandisingResponse = merch;
   } catch (error) {
     console.error('[Homepage] unable to load aggregate payload:', error);
   }
@@ -66,35 +79,53 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
       <Heading role="page" className="sr-only">Odhvica storefront</Heading>
+      
       {/* 1. Circle Category Strip */}
       <CircularCategories circles={homepage.category_circles} />
       
       {/* 2. Hero Section */}
       <HeroSection banners={homepage.hero} />
       
-      {/* 3. Category Carousel */}
+      {/* 3. Category Carousel / Shop by Need */}
       <CategoryCarousel categories={homepage.featured_categories} />
 
-      {/* 4. Collection Slider */}
-      <CollectionSlider collections={homepage.collection_slider} />
-      
-      {/* 5. Chosen For You / Best Seller Product Slider */}
-      <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
-
-      {/* 6. New Arrivals Product Carousel */}
+      {/* 4. New Arrivals Product Carousel */}
       <NewArrivals products={homepage.new_arrivals} />
       
-      {/* 7. Watch & Buy / Trending Now Section */}
+      {/* 5. Limited Editions (Seasonal Edits) */}
+      <HomeMerchandisingSection merchandisingSlots={merchandisingResponse.slots || []} slotKey="seasonal_edits" />
+
+      {/* 6. Shopping Help Strip */}
+      <ShoppingHelpStrip />
+
+      {/* 7. Collection Slider */}
+      <CollectionSlider collections={homepage.collection_slider} />
+      
+      {/* 8. Craft & Material (Fabric Edits) */}
+      <HomeMerchandisingSection merchandisingSlots={merchandisingResponse.slots || []} slotKey="fabric_edits" />
+      
+      {/* 9. Our Craft Journey (Merges Brand Story + Craft Promise) */}
+      <CraftJourneySection story={homepage.brand_story} />
+      
+      {/* 10. Watch & Buy / Trending Now Section */}
       <WatchBuyPreview reels={homepage.watch_shop} />
       
-      {/* 8. Brand Story Section */}
-      <BrandStory story={homepage.brand_story} />
-      
-      {/* 9. Instagram / Social Feed Section */}
-      <InstagramSection posts={homepage.social} />
-      
-      {/* 10. Newsletter Section */}
-      <NewsletterSection settings={homepage.newsletter} />
+      {/* 11. Chosen For You / Best Seller Product Slider */}
+      <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
+
+      {/* 12. Dress for the Moment (Occasion Edits) */}
+      <HomeMerchandisingSection merchandisingSlots={merchandisingResponse.slots || []} slotKey="occasion_edits" />
+
+      {/* 13. Customer Love (Testimonials) */}
+      <Testimonials testimonials={testimonialsResponse.testimonials || []} />
+
+      {/* 14. Join the Circle (Newsletter + Social Feed side-by-side) */}
+      <section className="bg-surface-paper border-t border-border-subtle" data-home-section="14-join-circle">
+        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border-subtle">
+          <InstagramSection posts={homepage.social} isCompact />
+          <NewsletterSection settings={homepage.newsletter} />
+        </div>
+      </section>
     </div>
   );
 }
