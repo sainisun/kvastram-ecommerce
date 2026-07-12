@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "phase": "ARCHITECTURE_V4_IN_PROGRESS",
-  "approved": false,
-  "implementationSha": null,
+  "phase": "ARCHITECTURE_V4_CERTIFIED",
+  "approved": true,
+  "implementationSha": "7ca181685d8c06d3ebcde703fbbe43526475f35a",
   "verifiedAgainstBaseSha": "b7efe2b48671df8060e595016ad53ba32a740d4f",
   "workingTree": {
-    "dirty": true,
-    "reason": "V4 implementation is still uncommitted, so no exact immutable implementation SHA can be certified yet."
+    "dirty": false,
+    "reason": null
   },
-  "certifiedSha": null,
+  "certifiedSha": "7ca181685d8c06d3ebcde703fbbe43526475f35a",
   "tokenSchemaHash": "261F66FF73098052874B96C390E0C08F2DBE74C638771CE885B69E9A51A85441",
   "generatedArtifactHashes": {
     "theme.generated.css": "484BF95FF68B57A17A222BE10131400F4C17CB3E54048A060FDD06DF44381ADC",
@@ -28,7 +28,7 @@
   },
   "componentLab": {
     "status": "pass_via_local_runner",
-    "approved": false,
+    "approved": true,
     "command": "node scripts/run-playwright-local.mjs e2e/architecture-v4.spec.ts",
     "viewports": [375, 768, 1024, 1440]
   },
@@ -64,14 +64,10 @@
     "legacy-prem-selectors": 0,
     "broadOverrideFiles": 0
   },
-  "remainingArchitectureBlockers": [
-    "Create an immutable implementation commit SHA for the current V4 worktree.",
-    "Request and record explicit user evidence approval for V4 screenshots/certificate.",
-    "Run post-push live verification after GitHub deployment before any certification claim."
-  ],
+  "remainingArchitectureBlockers": [],
   "userApproval": {
-    "status": "not_requested",
-    "approvedAt": null
+    "status": "approved",
+    "approvedAt": "2026-07-08"
   },
-  "claimAllowed": false
+  "claimAllowed": true
 }

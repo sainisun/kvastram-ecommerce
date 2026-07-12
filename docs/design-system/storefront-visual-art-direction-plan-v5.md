@@ -1,8 +1,10 @@
 # Storefront Visual Art Direction Plan V5
 
-Status: `VISUAL_V5_IN_PROGRESS`  
-V4 Base SHA: `7ca181685d8c06d3ebcde703fbbe43526475f35a`  
+Status: `READY_FOR_FINAL_DEPLOYMENT`
+V4 Base SHA: `7ca181685d8c06d3ebcde703fbbe43526475f35a`
 Certified: 2026-07-08
+V5 Implementation SHA: `ba735d773d6429de494ab2dfb9fc3164c426ed61`
+Visual approval: 2026-07-12 by explicit user confirmation after local review
 
 V5 is visual work only. It starts from the exact user-approved V4 SHA and cannot modify V4 architecture.
 
