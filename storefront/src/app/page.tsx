@@ -7,17 +7,19 @@ import {
 } from '@/lib/seo';
 import { CircularCategories } from '@/components/home/CircularCategories';
 import { HeroSection } from '@/components/home/HeroSection';
-import { CategoryCarousel } from '@/components/home/CategoryCarousel';
-import { CollectionSlider } from '@/components/home/CollectionSlider';
+import { HomeTrustBar } from '@/components/home/HomeTrustBar';
+import { EditorialCategoryGrid } from '@/components/home/EditorialCategoryGrid';
 import { BestSellers } from '@/components/home/BestSellers';
-import { NewArrivals } from '@/components/home/NewArrivals';
+import { ShoppingHelpStrip } from '@/components/home/ShoppingHelpStrip';
+import { CuratedEditsSection } from '@/components/home/HomeMerchandisingSections';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
+import { CollectionSlider } from '@/components/home/CollectionSlider';
+import { CraftJourneySection } from '@/components/home/CraftJourneySection';
+import { StatsSection } from '@/components/home/StatsSection';
+import { Testimonials } from '@/components/home/Testimonials';
 import { InstagramSection } from '@/components/home/InstagramSection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
-import { HomeMerchandisingSection } from '@/components/home/HomeMerchandisingSections';
-import { Testimonials } from '@/components/home/Testimonials';
-import { ShoppingHelpStrip } from '@/components/home/ShoppingHelpStrip';
-import { CraftJourneySection } from '@/components/home/CraftJourneySection';
+import { FooterCraftAnimation } from '@/components/home/FooterCraftAnimation';
 import { Heading } from '@/design-system';
 import type { HomepagePayload } from '@/types/homepage';
 
@@ -72,6 +74,13 @@ export default async function Home() {
 
   const homepageSchema = [buildBreadcrumbJsonLd([{ name: 'Home', path: '/' }])];
 
+  const statsData = [
+    { num: '30k+', label: 'Happy Customers' },
+    { num: '4.9', label: 'Average Rating' },
+    { num: '100%', label: 'Handmade' },
+    { num: '14', label: 'Days Return' },
+  ];
+
   return (
     <div className="bg-surface-page text-primary" data-homepage-generated-at={homepage.generated_at || undefined}>
       <script
@@ -80,52 +89,52 @@ export default async function Home() {
       />
       <Heading role="page" className="sr-only">Odhvica storefront</Heading>
       
-      {/* 1. Circle Category Strip */}
+      {/* S1. Circle Category Strip */}
       <CircularCategories circles={homepage.category_circles} />
       
-      {/* 2. Hero Section */}
+      {/* S2. Hero Section */}
       <HeroSection banners={homepage.hero} />
       
-      {/* 3. Category Carousel / Shop by Need */}
-      <CategoryCarousel categories={homepage.featured_categories} />
+      {/* S3. Trust Bar */}
+      <HomeTrustBar />
 
-      {/* 4. New Arrivals Product Carousel */}
-      <NewArrivals products={homepage.new_arrivals} />
-      
-      {/* 5. Limited Editions (Seasonal Edits) */}
-      <HomeMerchandisingSection merchandisingSlots={merchandisingResponse.slots || []} slotKey="seasonal_edits" />
+      {/* S4. Editorial Category Grid */}
+      <EditorialCategoryGrid categories={homepage.featured_categories} />
 
-      {/* 6. Shopping Help Strip */}
-      <ShoppingHelpStrip />
-
-      {/* 7. Collection Slider */}
-      <CollectionSlider collections={homepage.collection_slider} />
-      
-      {/* 8. Craft & Material (Fabric Edits) */}
-      <HomeMerchandisingSection merchandisingSlots={merchandisingResponse.slots || []} slotKey="fabric_edits" />
-      
-      {/* 9. Our Craft Journey (Merges Brand Story + Craft Promise) */}
-      <CraftJourneySection story={homepage.brand_story} />
-      
-      {/* 10. Watch & Buy / Trending Now Section */}
-      <WatchBuyPreview reels={homepage.watch_shop} />
-      
-      {/* 11. Chosen For You / Best Seller Product Slider */}
+      {/* S5. Best Sellers */}
       <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
 
-      {/* 12. Dress for the Moment (Occasion Edits) */}
-      <HomeMerchandisingSection merchandisingSlots={merchandisingResponse.slots || []} slotKey="occasion_edits" />
+      {/* S6. Shopping Help Strip */}
+      <ShoppingHelpStrip />
 
-      {/* 13. Customer Love (Testimonials) */}
+      {/* S7. Curated Edits (Unified Merchandising) */}
+      <CuratedEditsSection merchandisingSlots={merchandisingResponse.slots || []} />
+      
+      {/* S8. Watch & Buy */}
+      <WatchBuyPreview reels={homepage.watch_shop} />
+
+      {/* S9. Collection Slider */}
+      <CollectionSlider collections={homepage.collection_slider} />
+      
+      {/* S10. Our Craft Journey */}
+      <CraftJourneySection story={homepage.brand_story} />
+
+      {/* S11. Stats Counter */}
+      <StatsSection statsData={statsData} />
+
+      {/* S12. Customer Love */}
       <Testimonials testimonials={testimonialsResponse.testimonials || []} />
 
-      {/* 14. Join the Circle (Newsletter + Social Feed side-by-side) */}
-      <section className="bg-surface-paper border-t border-border-subtle" data-home-section="14-join-circle">
-        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border-subtle">
+      {/* S13. Join the Circle (Newsletter + Social Feed) */}
+      <section className="bg-surface-paper border-t border-[var(--ds-border-subtle)]" data-home-section="13-join-circle">
+        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--ds-border-subtle)]">
           <InstagramSection posts={homepage.social} isCompact />
           <NewsletterSection settings={homepage.newsletter} />
         </div>
       </section>
+
+      {/* S14. Footer Craft Animation */}
+      <FooterCraftAnimation />
     </div>
   );
 }

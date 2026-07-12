@@ -99,43 +99,68 @@ function groupSlots(slots: HomepageMerchandisingSlot[], key: string) {
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 }
 
-export function HomeMerchandisingSection({
-  merchandisingSlots,
-  slotKey,
+function MerchRow({
+  slots,
+  eyebrow,
+  actionHref,
+  variant,
 }: {
-  merchandisingSlots: HomepageMerchandisingSlot[];
-  slotKey: 'seasonal_edits' | 'fabric_edits' | 'occasion_edits';
+  slots: HomepageMerchandisingSlot[];
+  eyebrow: string;
+  actionHref: string;
+  variant: MerchSlotCardVariant;
 }) {
-  const slots = groupSlots(merchandisingSlots, slotKey);
   if (slots.length === 0) return null;
 
-  let eyebrow = '';
-  let actionHref = '/products';
-  let variant: MerchSlotCardVariant = 'default';
+  return (
+    <div className="mb-12 last:mb-0">
+      <SectionHead
+        eyebrow={eyebrow}
+        action={{ label: 'View All', href: actionHref }}
+      />
+      <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {slots.map((slot) => (
+          <MerchSlotCard key={slot.id} slot={slot} variant={variant} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-  if (slotKey === 'seasonal_edits') {
-    eyebrow = 'Limited editions';
-  } else if (slotKey === 'fabric_edits') {
-    eyebrow = 'Craft & material';
-    variant = 'categoryOverlay';
-  } else if (slotKey === 'occasion_edits') {
-    eyebrow = 'Dress for the moment';
-    actionHref = '/collections';
-    variant = 'categoryOverlay';
-  }
+export function CuratedEditsSection({
+  merchandisingSlots,
+}: {
+  merchandisingSlots: HomepageMerchandisingSlot[];
+}) {
+  if (!merchandisingSlots || merchandisingSlots.length === 0) return null;
+
+  const seasonal = groupSlots(merchandisingSlots, 'seasonal_edits');
+  const fabric = groupSlots(merchandisingSlots, 'fabric_edits');
+  const occasion = groupSlots(merchandisingSlots, 'occasion_edits');
+
+  if (seasonal.length === 0 && fabric.length === 0 && occasion.length === 0) return null;
 
   return (
-    <section className="max-md:py-[var(--ds-space-md)] bg-surface" data-home-section={`merch-${slotKey}`}>
+    <section className="py-[var(--ds-space-md)] md:py-[var(--ds-space-xl)] bg-[var(--ds-surface-paper)] border-y border-[var(--ds-border-subtle)]" data-home-section="7-curated-edits">
       <div className="ds-home-container">
-        <SectionHead
-          eyebrow={eyebrow}
-          action={{ label: 'View All', href: actionHref }}
+        <MerchRow
+          slots={seasonal}
+          eyebrow="Limited editions"
+          actionHref="/products"
+          variant="default"
         />
-        <div className="flex snap-x snap-mandatory gap-[var(--ds-space-sm)] overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {slots.map((slot) => (
-            <MerchSlotCard key={slot.id} slot={slot} variant={variant} />
-          ))}
-        </div>
+        <MerchRow
+          slots={fabric}
+          eyebrow="Craft & material"
+          actionHref="/collections"
+          variant="categoryOverlay"
+        />
+        <MerchRow
+          slots={occasion}
+          eyebrow="Dress for the moment"
+          actionHref="/collections"
+          variant="categoryOverlay"
+        />
       </div>
     </section>
   );

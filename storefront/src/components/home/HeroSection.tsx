@@ -89,14 +89,20 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
                 <p className="m-0 max-w-[11ch] font-display text-[clamp(3rem,6vw,5.6rem)] leading-[0.94] font-normal text-inverse text-balance">
                   {slide.title}
                 </p>
-                <ButtonLink
-                  href={slide.button_link}
-                  variant="categoryOverlay"
-                  size="lg"
-                  className="border-[rgba(var(--ds-white-rgb),0.4)] bg-[rgba(var(--ds-white-rgb),0.12)] px-7 uppercase tracking-[0.18em]"
-                >
-                  {slide.button_text}
-                </ButtonLink>
+                <div className="flex flex-col items-start gap-4 mt-2">
+                  <ButtonLink
+                    href={slide.button_link}
+                    variant="categoryOverlay"
+                    size="lg"
+                    className="border-[rgba(var(--ds-white-rgb),0.4)] bg-[rgba(var(--ds-white-rgb),0.12)] px-7 uppercase tracking-[0.18em]"
+                  >
+                    {slide.button_text}
+                  </ButtonLink>
+                  <div className="flex items-center gap-2 text-inverse opacity-90">
+                    <span className="text-[var(--ds-accent-gold)] text-sm tracking-widest">★★★★★</span>
+                    <span className="font-body text-body-xs italic">&ldquo;Stunning quality&rdquo; — Sarah, London</span>
+                  </div>
+                </div>
               </HomepageContainer>
             </article>
           ))}

@@ -44,19 +44,19 @@ test.describe('Storefront visual contract', () => {
     )).toEqual([
       '1-circle-categories',
       '2-hero',
-      '3-category-carousel',
-      '6-new-arrivals',
-      'merch-seasonal_edits',
-      '4-collection-slider',
-      'merch-fabric_edits',
-      '8-craft-journey',
-      '7-watch-shop',
+      '3-trust-bar',
+      '4-editorial-categories',
       '5-best-sellers',
-      'merch-occasion_edits',
-      '14-join-circle',
-      '9-social',
-      '10-newsletter',
-      '11-footer',
+      '6-shopping-help',
+      '7-curated-edits',
+      '8-watch-shop',
+      '9-collection-slider',
+      '10-craft-journey',
+      '11-stats',
+      '12-testimonials',
+      '13-join-circle',
+      '14-footer-animation',
+      '15-footer',
     ]);
   });
 
@@ -133,7 +133,7 @@ test.describe('Storefront visual contract', () => {
   test('homepage rails, typography, and inverse contrast preserve visual geometry', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    const railSections = ['3-category-carousel', '5-best-sellers', '6-new-arrivals', '7-watch-shop'];
+    const railSections = ['5-best-sellers', '7-curated-edits', '8-watch-shop'];
     for (const sectionName of railSections) {
       const rail = page.locator(`[data-home-section="${sectionName}"] .overflow-x-auto`).first();
       await expect(rail).toBeVisible();

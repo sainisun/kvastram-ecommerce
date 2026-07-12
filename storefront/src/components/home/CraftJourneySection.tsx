@@ -5,23 +5,23 @@ import type { HomepageBrandStory } from '@/types/homepage';
 const promises = [
   {
     icon: Hand,
-    title: 'Only sellable pieces make it online',
-    copy: 'Every homepage piece needs real media, clear price, and enough detail to shop with confidence.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Honest photos and clear details',
-    copy: 'Texture, fabric, color, and handmade variation should be visible before you open the product page.',
+    title: 'Ethical Sourcing',
+    copy: 'We work directly with artisans in Jaipur to ensure fair wages and safe working conditions.',
   },
   {
     icon: Globe2,
-    title: 'Small-batch, not mass-produced',
-    copy: 'Kantha, block print, and quilted cotton pieces are selected as limited textile edits.',
+    title: 'Small Batches',
+    copy: 'Limited textile runs mean less waste and unique pieces you won\'t see everywhere.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Quality Guaranteed',
+    copy: 'Every piece is hand-inspected for stitching, fabric integrity, and vibrant color before shipping.',
   },
   {
     icon: MessageCircle,
-    title: 'Sizing and gift help on WhatsApp',
-    copy: 'Ask for extra photos, measurements, styling help, or gifting guidance before checkout.',
+    title: 'Personal Support',
+    copy: 'Need sizing help? Chat with us directly on WhatsApp for real human assistance.',
   },
 ];
 
@@ -29,12 +29,12 @@ export function CraftJourneySection({ story }: { story: HomepageBrandStory | nul
   if (!story) return null;
 
   return (
-    <section className="bg-surface-page border-y border-border-subtle overflow-hidden" data-home-section="8-craft-journey">
-      <div className="grid md:grid-cols-[1.1fr_0.9fr] lg:grid-cols-[1.2fr_0.8fr] divide-y md:divide-y-0 md:divide-x divide-border-subtle">
+    <section className="bg-[var(--ds-surface-paper)] border-y border-[var(--ds-border-subtle)] overflow-hidden" data-home-section="10-craft-journey">
+      <div className="grid md:grid-cols-[1.1fr_0.9fr] lg:grid-cols-[1.2fr_0.8fr] divide-y md:divide-y-0 md:divide-x divide-[var(--ds-border-subtle)]">
         
         {/* Left: Brand Story Image & Text */}
-        <div className="p-[var(--ds-space-md)] md:p-[var(--ds-space-xl)] lg:p-[var(--ds-space-2xl)] bg-surface-soft grid items-center gap-[var(--ds-space-lg)] lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.88fr)]">
-          <div className="relative overflow-hidden bg-surface-page aspect-[4/5] md:aspect-[5/4] rounded-sm shadow-sm">
+        <div className="p-8 md:p-12 lg:p-16 bg-[var(--ds-surface-soft)] grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.88fr)]">
+          <div className="relative overflow-hidden bg-[var(--ds-surface-page)] aspect-[4/5] md:aspect-[5/4] rounded-sm shadow-sm">
             <OptimizedImage
               src={story.image_url}
               alt={story.title}
@@ -47,9 +47,9 @@ export function CraftJourneySection({ story }: { story: HomepageBrandStory | nul
             <HomepageSectionHeader
               eyebrow="Our Story"
               heading={story.title}
-              headingClassName="text-display-md font-[var(--ds-type-heading-weight)]"
+              headingClassName="text-display-md font-display"
               description={story.content}
-              className="mb-[var(--ds-space-lg)] gap-[var(--ds-space-xs)]"
+              className="mb-8 gap-3"
             />
             <ButtonLink href="/about" variant="outline" size="md">
               Discover Odhvica
@@ -58,13 +58,12 @@ export function CraftJourneySection({ story }: { story: HomepageBrandStory | nul
         </div>
 
         {/* Right: Craft Promises */}
-        <div className="p-[var(--ds-space-md)] md:p-[var(--ds-space-lg)] lg:p-[var(--ds-space-2xl)] bg-surface-paper flex flex-col justify-center">
-          <div className="mb-[var(--ds-space-lg)]">
-            <div className="kv-tag">Why Odhvica</div>
-            <h2 className="kv-title text-display-md">Handmade, edited, and ready to wear.</h2>
-            <p className="kv-sub mt-[var(--ds-space-xs)]">
-              The homepage is designed around real product media, short shopping paths,
-              craft proof near buying moments, and fast routes to help.
+        <div className="p-8 md:p-10 lg:p-16 bg-[var(--ds-surface-paper)] flex flex-col justify-center">
+          <div className="mb-10">
+            <div className="font-label text-label-sm tracking-widest uppercase text-muted mb-2">Why Odhvica</div>
+            <h2 className="font-display text-display-md text-primary mb-3">Handmade, curated, and ready to wear.</h2>
+            <p className="font-body text-body-md text-muted">
+              We believe in slow-craft, direct relationships with artisans, and bringing the vibrant heritage of Indian textiles into modern, everyday wardrobes.
             </p>
           </div>
 
