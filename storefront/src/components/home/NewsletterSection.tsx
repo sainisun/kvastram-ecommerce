@@ -6,8 +6,10 @@ import type { HomepageNewsletter } from '@/types/homepage';
 
 export function NewsletterSection({
   settings,
+  isCompact = false,
 }: {
   settings: HomepageNewsletter | null;
+  isCompact?: boolean;
 }) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -40,7 +42,7 @@ export function NewsletterSection({
     <HomepageSection
       className="bg-accent text-inverse"
       contentClassName="max-w-[720px] text-center"
-      data-home-section="10-newsletter"
+      data-home-section={isCompact ? undefined : '10-newsletter'}
     >
       <HomepageSectionHeader
         eyebrow="Newsletter"

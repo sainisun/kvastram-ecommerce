@@ -3,11 +3,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Autoplay from 'embla-carousel-autoplay';
 import useEmblaCarousel from 'embla-carousel-react';
-import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pause, Play, Star } from 'lucide-react';
 import { ButtonLink, HomepageContainer, IconButton, OptimizedImage, UnstyledButton } from '@/design-system';
-import type { HomepageHeroSlide } from '@/types/homepage';
+import type { HomepageHeroSlide, HomepageTestimonial } from '@/types/homepage';
 
-export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
+export function HeroSection({
+  banners,
+  testimonial,
+}: {
+  banners: HomepageHeroSlide[];
+  testimonial?: HomepageTestimonial;
+}) {
   const slides = banners.slice(0, 4);
   const [paused, setPaused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -98,10 +104,24 @@ export function HeroSection({ banners }: { banners: HomepageHeroSlide[] }) {
                   >
                     {slide.button_text}
                   </ButtonLink>
-                  <div className="flex items-center gap-2 text-inverse opacity-90">
-                    <span className="text-[var(--ds-accent-gold)] text-sm tracking-widest">★★★★★</span>
-                    <span className="font-body text-body-xs italic">&ldquo;Stunning quality&rdquo; — Sarah, London</span>
-                  </div>
+                  {testimonial ? (
+                    <div className="flex items-center gap-2 text-inverse opacity-90">
+                      <span className="flex text-[var(--ds-accent-gold)]" aria-label={`${testimonial.rating || 5} out of 5 stars`}>
+                        {Array.from({ length: 5 }, (_, starIndex) => (
+                          <Star
+                            key={starIndex}
+                            aria-hidden="true"
+                            size={13}
+                            fill={starIndex < Math.round(testimonial.rating || 5) ? 'currentColor' : 'none'}
+                          />
+                        ))}
+                      </span>
+                      <span className="font-body text-body-xs italic">
+                        &ldquo;{testimonial.content}&rdquo; - {testimonial.name}
+                        {testimonial.location ? `, ${testimonial.location}` : ''}
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
               </HomepageContainer>
             </article>

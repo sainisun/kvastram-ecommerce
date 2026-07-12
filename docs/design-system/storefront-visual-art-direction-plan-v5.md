@@ -1,8 +1,10 @@
 # Storefront Visual Art Direction Plan V5
 
-Status: `VISUAL_V5_IN_PROGRESS`  
-V4 Base SHA: `7ca181685d8c06d3ebcde703fbbe43526475f35a`  
+Status: `READY_FOR_FINAL_DEPLOYMENT`
+V4 Base SHA: `7ca181685d8c06d3ebcde703fbbe43526475f35a`
 Certified: 2026-07-08
+V5 Implementation SHA: `ba735d773d6429de494ab2dfb9fc3164c426ed61`
+Visual approval: 2026-07-12 by explicit user confirmation after local review
 
 V5 is visual work only. It starts from the exact user-approved V4 SHA and cannot modify V4 architecture.
 
@@ -50,7 +52,6 @@ Test `375/768/1024/1440` across populated/empty/loading/error/missing media/long
 
 The visual certificate records V4 base SHA, freeze hashes, V5 SHA, benchmark date, asset manifest, CMS rollback snapshot, lab/route screenshots, accessibility/performance and console/network results, plus user approval status.
 
-<<<<<<< HEAD
 ## Homepage layout and spacing improvements (user-requested addition)
 
 All existing homepage sections are retained. This section defines the visual refinements to make the homepage layout professional and luxurious.

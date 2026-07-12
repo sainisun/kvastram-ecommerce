@@ -12,6 +12,7 @@ import { EditorialCategoryGrid } from '@/components/home/EditorialCategoryGrid';
 import { BestSellers } from '@/components/home/BestSellers';
 import { ShoppingHelpStrip } from '@/components/home/ShoppingHelpStrip';
 import { CuratedEditsSection } from '@/components/home/HomeMerchandisingSections';
+import { NewArrivals } from '@/components/home/NewArrivals';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { CollectionSlider } from '@/components/home/CollectionSlider';
 import { CraftJourneySection } from '@/components/home/CraftJourneySection';
@@ -19,7 +20,7 @@ import { StatsSection } from '@/components/home/StatsSection';
 import { Testimonials } from '@/components/home/Testimonials';
 import { InstagramSection } from '@/components/home/InstagramSection';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
-import { FooterCraftAnimation } from '@/components/home/FooterCraftAnimation';
+import { MobileStickyActions } from '@/components/home/MobileStickyActions';
 import { Heading } from '@/design-system';
 import type { HomepagePayload } from '@/types/homepage';
 
@@ -93,7 +94,10 @@ export default async function Home() {
       <CircularCategories circles={homepage.category_circles} />
       
       {/* S2. Hero Section */}
-      <HeroSection banners={homepage.hero} />
+      <HeroSection
+        banners={homepage.hero}
+        testimonial={testimonialsResponse.testimonials?.[0]}
+      />
       
       {/* S3. Trust Bar */}
       <HomeTrustBar />
@@ -109,12 +113,12 @@ export default async function Home() {
 
       {/* S7. Curated Edits (Unified Merchandising) */}
       <CuratedEditsSection merchandisingSlots={merchandisingResponse.slots || []} />
-      
-      {/* S8. Watch & Buy */}
-      <WatchBuyPreview reels={homepage.watch_shop} />
 
-      {/* S9. Collection Slider */}
-      <CollectionSlider collections={homepage.collection_slider} />
+      {/* S8. New Arrivals */}
+      <NewArrivals products={homepage.new_arrivals} />
+
+      {/* S9. Customer Love */}
+      <Testimonials testimonials={testimonialsResponse.testimonials || []} />
       
       {/* S10. Our Craft Journey */}
       <CraftJourneySection story={homepage.brand_story} />
@@ -122,19 +126,21 @@ export default async function Home() {
       {/* S11. Stats Counter */}
       <StatsSection statsData={statsData} />
 
-      {/* S12. Customer Love */}
-      <Testimonials testimonials={testimonialsResponse.testimonials || []} />
+      {/* S12. Watch & Buy */}
+      <WatchBuyPreview reels={homepage.watch_shop} />
 
-      {/* S13. Join the Circle (Newsletter + Social Feed) */}
-      <section className="bg-surface-paper border-t border-[var(--ds-border-subtle)]" data-home-section="13-join-circle">
-        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--ds-border-subtle)]">
+      {/* S13. Collection discovery (preserved existing feature) */}
+      <CollectionSlider collections={homepage.collection_slider} />
+
+      {/* S14. Join the Circle (Newsletter + Social Feed) */}
+      <section className="bg-surface-paper border-t border-border-subtle" data-home-section="14-join-circle">
+        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border-subtle">
           <InstagramSection posts={homepage.social} isCompact />
-          <NewsletterSection settings={homepage.newsletter} />
+          <NewsletterSection settings={homepage.newsletter} isCompact />
         </div>
       </section>
 
-      {/* S14. Footer Craft Animation */}
-      <FooterCraftAnimation />
+      <MobileStickyActions />
     </div>
   );
 }

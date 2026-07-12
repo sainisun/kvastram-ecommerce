@@ -8,7 +8,10 @@ export function InstagramSection({ posts, isCompact }: { posts: HomepageSocialPo
   const displayCount = isCompact ? 4 : 8;
 
   return (
-    <HomepageSection data-home-section="9-social" className={isCompact ? 'py-[var(--ds-space-xl)]' : undefined}>
+    <HomepageSection
+      data-home-section={isCompact ? undefined : '9-social'}
+      className={isCompact ? 'py-[var(--ds-space-xl)]' : undefined}
+    >
       <HomepageSectionHeader
         eyebrow="Follow Our Journey"
         heading="From our circle"
