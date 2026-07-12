@@ -4,6 +4,7 @@ import { sendAbandonedCartEmails } from '../jobs/abandonedCartEmailJob';
 import { syncAllProductsToMeilisearch } from '../jobs/syncMeilisearch';
 import { syncGSCPerformance } from '../jobs/syncGSC';
 import { releaseExpiredInventoryReservations } from '../utils/inventory-reservation';
+import { releaseAbandonedOrderInventory } from '../jobs/releaseAbandonedOrderInventory';
 
 type JobResult = {
   name: string;
@@ -36,6 +37,7 @@ export async function runSeoCronJobs() {
     runJob('review_request_emails', () => sendReviewRequestEmails()),
     runJob('abandoned_cart_emails', () => sendAbandonedCartEmails()),
     runJob('sync_meilisearch', () => syncAllProductsToMeilisearch()),
+    runJob('release_abandoned_order_inventory', () => releaseAbandonedOrderInventory()),
   ]);
 }
 
@@ -70,6 +72,7 @@ export function startSeoCronScheduler() {
   scheduleJob('generate_embeddings', 24 * hour, () => generateEmbeddingsForProducts());
   scheduleJob('sync_meilisearch', 12 * hour, () => syncAllProductsToMeilisearch());
   scheduleJob('sync_gsc', 7 * 24 * hour, () => syncGSCPerformance());
+  scheduleJob('release_abandoned_order_inventory', 30 * 60 * 1000, () => releaseAbandonedOrderInventory());
   console.log('[seo-cron] Scheduler started');
 }
 
