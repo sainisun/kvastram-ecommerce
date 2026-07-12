@@ -755,6 +755,38 @@ checkoutRouter.post(
       // Total is strictly the sum of the independently rounded parts
       const total = taxableAmount + shippingTotal + taxTotal + giftWrappingTotal;
 
+      // --- Idempotency Check ---
+      const { createHash } = await import('crypto');
+      const sortedCartData = validatedItems
+        .map((item) => `${item.id}:${item.quantity}`)
+        .sort()
+        .join(',');
+      const idempotencyRaw = `${normalizedEmail}|${sortedCartData}|${total}`;
+      const idempotencyKey = createHash('sha256').update(idempotencyRaw).digest('hex');
+
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+      const existingOrder = await db.query.orders.findFirst({
+        where: and(
+          eq(orders.idempotency_key, idempotencyKey),
+          gte(orders.created_at, tenMinutesAgo)
+        ),
+      });
+
+      if (existingOrder) {
+        const newToken = generateCheckoutPaymentToken();
+        
+        // Re-issue a new token for the existing order
+        await db
+          .update(orders)
+          .set({
+            metadata: sql`COALESCE(${orders.metadata}, '{}'::jsonb) || ${JSON.stringify(buildCheckoutPaymentTokenMetadata(newToken))}::jsonb`
+          })
+          .where(eq(orders.id, existingOrder.id));
+
+        return c.json({ order: existingOrder, checkout_payment_token: newToken });
+      }
+      // -------------------------
+
       // 4. Create Order Transaction
       let newOrder: typeof orders.$inferSelect | undefined;
       const checkoutPaymentToken = generateCheckoutPaymentToken();
@@ -883,6 +915,7 @@ checkoutRouter.post(
           total,
           shipping_address_id: shAddr.id,
           billing_address_id: billingAddressId,
+          idempotency_key: idempotencyKey,
           metadata: {
             ...buildCheckoutPaymentTokenMetadata(checkoutPaymentToken),
             ...buildInventoryReservationMetadata(),

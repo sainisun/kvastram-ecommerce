@@ -9,6 +9,7 @@ import {
   uuid,
   serial,
   index,
+  uniqueIndex,
   primaryKey,
   customType,
 } from 'drizzle-orm/pg-core';
@@ -834,6 +835,7 @@ export const orders = pgTable(
     shipping_carrier: text('shipping_carrier'),
     tracking_link: text('tracking_link'),
     metadata: jsonb('metadata'),
+    idempotency_key: text('idempotency_key'),
     ...createdUpdated,
   },
   (table) => ({
@@ -841,6 +843,7 @@ export const orders = pgTable(
     customerIdIdx: index('idx_orders_customer_id').on(table.customer_id),
     regionIdIdx: index('idx_orders_region_id').on(table.region_id),
     discountIdIdx: index('idx_orders_discount_id').on(table.discount_id),
+    idempotencyKeyIdx: uniqueIndex('idx_orders_idempotency_key').on(table.idempotency_key),
     createdAtIndex: index('idx_orders_created_at').on(table.created_at),
   })
 );
