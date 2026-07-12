@@ -591,7 +591,18 @@ const server = createServer((request, response) => {
   }
 
   if (pathname === '/testimonials/store') {
-    json(response, { testimonials: [] });
+    json(response, {
+      testimonials: [
+        {
+          id: 'test-1',
+          name: 'Jane Doe',
+          rating: 5,
+          content: 'Amazing quality and craftsmanship.',
+          location: 'London, UK',
+          avatar_url: withVariant(image, 'avatar-1')
+        }
+      ]
+    });
     return;
   }
 
@@ -601,7 +612,34 @@ const server = createServer((request, response) => {
   }
 
   if (pathname === '/homepage-merchandising') {
-    json(response, { slots: [] });
+    json(response, {
+      slots: [
+        {
+          id: 'merch-1',
+          slot_key: 'seasonal_edits',
+          title: 'Seasonal',
+          image_url: withVariant(image, 'seasonal'),
+          is_active: true,
+          sort_order: 1
+        },
+        {
+          id: 'merch-2',
+          slot_key: 'fabric_edits',
+          title: 'Fabric',
+          image_url: withVariant(image, 'fabric'),
+          is_active: true,
+          sort_order: 1
+        },
+        {
+          id: 'merch-3',
+          slot_key: 'occasion_edits',
+          title: 'Occasion',
+          image_url: withVariant(image, 'occasion'),
+          is_active: true,
+          sort_order: 1
+        }
+      ]
+    });
     return;
   }
 
