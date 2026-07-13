@@ -1,5 +1,5 @@
 import { db } from '../db/client';
-import { line_items, orders, product_variants } from '../db/schema';
+import { line_items, orders, product_variants, order_status_history } from '../db/schema';
 import { and, eq, sql } from 'drizzle-orm';
 
 export async function releaseAbandonedOrderInventory() {
@@ -33,6 +33,14 @@ export async function releaseAbandonedOrderInventory() {
           updated_at: new Date(),
         })
         .where(eq(orders.id, order.id));
+
+      await tx.insert(order_status_history).values({
+        order_id: order.id,
+        from_status: 'draft',
+        to_status: 'cancelled',
+        changed_by: 'system',
+        note: 'Auto-cancelled: payment not completed',
+      });
 
       // Find and restore inventory for all items
       const items = await tx

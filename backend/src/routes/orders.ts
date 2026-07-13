@@ -12,6 +12,9 @@ import {
 } from '../middleware/error-handler';
 import { successResponse, paginatedResponse } from '../utils/api-response';
 import { releaseInventoryReservation } from '../utils/inventory-reservation';
+import { db } from '../db';
+import { orders, order_status_history } from '../db/schema';
+import { eq, inArray } from 'drizzle-orm';
 
 const ordersRouter = new Hono();
 
@@ -187,12 +190,28 @@ ordersRouter.put(
       );
     }
 
-    const updated = await orderService.updateStatus(id, status);
+    const [existingOrder] = await db
+      .select({ status: orders.status })
+      .from(orders)
+      .where(eq(orders.id, id));
 
-    if (!updated) throw new NotFoundError('Order not found');
+    if (!existingOrder) throw new NotFoundError('Order not found');
+
+    const updated = await orderService.updateStatus(id, status);
 
     if (status === 'cancelled') {
       await releaseInventoryReservation(id, 'admin_cancelled');
+    }
+
+    const user = c.get('user') as any;
+    if (existingOrder.status !== status) {
+      await db.insert(order_status_history).values({
+        order_id: id,
+        from_status: existingOrder.status,
+        to_status: status,
+        changed_by: 'admin',
+        changed_by_id: user?.id,
+      });
     }
 
     return successResponse(
@@ -573,12 +592,34 @@ ordersRouter.post(
       );
     }
 
+    const existingOrders = await db
+      .select({ id: orders.id, status: orders.status })
+      .from(orders)
+      .where(inArray(orders.id, order_ids));
+
     const count = await orderService.bulkUpdateStatus(order_ids, status);
 
     if (status === 'cancelled') {
       await Promise.all(
         order_ids.map((id: string) => releaseInventoryReservation(id, 'admin_cancelled'))
       );
+    }
+
+    const user = c.get('user') as any;
+    if (existingOrders.length > 0) {
+      const historyRecords = existingOrders
+        .filter(o => o.status !== status)
+        .map(o => ({
+          order_id: o.id,
+          from_status: o.status,
+          to_status: status,
+          changed_by: 'admin',
+          changed_by_id: user?.id,
+        }));
+      
+      if (historyRecords.length > 0) {
+        await db.insert(order_status_history).values(historyRecords);
+      }
     }
 
     return successResponse(
