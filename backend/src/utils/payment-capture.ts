@@ -8,6 +8,16 @@ export async function finalizeCapturedPayment(
   orderId: string,
   metadataPatch: Record<string, unknown>
 ) {
+  const [existingOrder] = await db
+    .select({ payment_status: orders.payment_status })
+    .from(orders)
+    .where(eq(orders.id, orderId))
+    .limit(1);
+
+  if (existingOrder?.payment_status === 'captured') {
+    console.warn(`[Payment Capture] Order ${orderId} already finalized, skipping`);
+    return true;
+  }
   const [captured] = await db
     .update(orders)
     .set({
