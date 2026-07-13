@@ -59,6 +59,52 @@ async function getCustomerId(c: Context): Promise<string | null> {
   }
 }
 
+// Helper to cross-reference saved items with live stock
+const checkStock = async (cartItems: any[]) => {
+  if (!cartItems || cartItems.length === 0) return [];
+  const variantIds = cartItems.map(i => i.variant_id);
+  const variants = await db
+    .select({ 
+      id: product_variants.id, 
+      inventory_quantity: product_variants.inventory_quantity,
+      allow_backorder: product_variants.allow_backorder
+    })
+    .from(product_variants)
+    .where(inArray(product_variants.id, variantIds));
+    
+  const stockMap = new Map(variants.map(v => [v.id, v]));
+  const processedItems = [];
+  
+  for (const item of cartItems) {
+    const variant = stockMap.get(item.variant_id);
+    
+    if (!variant) {
+      // Variant no longer exists: keep in payload to flag it to frontend
+      processedItems.push({ ...item, out_of_stock: true, removed_from_cart: true });
+      continue;
+    }
+    
+    let adjustedQuantity = item.quantity;
+    let outOfStock = false;
+    
+    if (!variant.allow_backorder) {
+      if (variant.inventory_quantity <= 0) {
+        outOfStock = true;
+      } else if (variant.inventory_quantity < item.quantity) {
+        adjustedQuantity = variant.inventory_quantity;
+      }
+    }
+    
+    processedItems.push({
+      ...item,
+      quantity: adjustedQuantity,
+      out_of_stock: outOfStock,
+      stock_adjusted: item.quantity !== adjustedQuantity
+    });
+  }
+  return processedItems;
+};
+
 // GET /store/cart — Fetch saved cart
 cartRouter.get('/', async (c) => {
   try {
@@ -105,7 +151,7 @@ cartRouter.get('/', async (c) => {
         }
       }
 
-      return c.json({ items });
+      return c.json({ items: await checkStock(items) });
     }
 
     // Fallback: session-based cart for guests
@@ -116,7 +162,7 @@ cartRouter.get('/', async (c) => {
         .from(saved_carts)
         .where(eq(saved_carts.session_id, sessionId))
         .limit(1);
-      return c.json({ items: cart?.items || [] });
+      return c.json({ items: await checkStock(cart?.items as any[] || []) });
     }
 
     return c.json({ items: [] });
@@ -135,6 +181,35 @@ cartRouter.post('/save', async (c) => {
       return c.json({ error: 'Invalid cart data', details: parsed.error.errors }, 400);
     }
     const { items } = parsed.data;
+
+    // Validate live inventory before allowing save
+    if (items && items.length > 0) {
+      const variantIds = items.map((i: any) => i.variant_id);
+      const variants = await db
+        .select({ 
+          id: product_variants.id, 
+          inventory_quantity: product_variants.inventory_quantity,
+          allow_backorder: product_variants.allow_backorder
+        })
+        .from(product_variants)
+        .where(inArray(product_variants.id, variantIds));
+      
+      const stockMap = new Map(variants.map(v => [v.id, v]));
+      for (const item of items) {
+        const variant = stockMap.get(item.variant_id);
+        const title = item.title || 'Product';
+        
+        if (!variant) {
+          return c.json({ error: `Item ${title} is no longer available` }, 400);
+        }
+        if (variant.inventory_quantity <= 0 && !variant.allow_backorder) {
+          return c.json({ error: `Item ${title} is out of stock` }, 400);
+        }
+        if (item.quantity > variant.inventory_quantity && !variant.allow_backorder) {
+          return c.json({ error: `Only ${variant.inventory_quantity} items available for ${title}` }, 400);
+        }
+      }
+    }
 
     const customerId = await getCustomerId(c);
 
