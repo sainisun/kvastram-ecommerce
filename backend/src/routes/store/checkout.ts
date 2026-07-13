@@ -55,7 +55,7 @@ const PlaceOrderSchema = z.object({
   email: z.string().email(),
   first_name: z.string().optional(),
   last_name: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().regex(/^\+?[1-9]\d{6,14}$/, 'Invalid phone number format').optional(),
   shipping_address: z.object({
     first_name: z.string().optional(),
     last_name: z.string().optional(),
@@ -65,7 +65,7 @@ const PlaceOrderSchema = z.object({
     postal_code: z.string(),
     province: z.string().optional(),
     country_code: z.string(),
-    phone: z.string().optional(),
+    phone: z.string().regex(/^\+?[1-9]\d{6,14}$/, 'Invalid phone number format').optional(),
   }),
   billing_address: z
     .object({
@@ -77,7 +77,7 @@ const PlaceOrderSchema = z.object({
       postal_code: z.string(),
       province: z.string().optional(),
       country_code: z.string(),
-      phone: z.string().optional(),
+      phone: z.string().regex(/^\+?[1-9]\d{6,14}$/, 'Invalid phone number format').optional(),
     })
     .optional(),
   items: z
