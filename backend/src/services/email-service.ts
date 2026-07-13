@@ -26,6 +26,23 @@ function formatCurrency(total: number, currency: string): string {
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+async function sendWithRetry(
+  transporter: nodemailer.Transporter,
+  mailOptions: nodemailer.SendMailOptions,
+  maxRetries: number = 3,
+  delayMs: number = 1000
+): Promise<any> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await transporter.sendMail(mailOptions);
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+      console.warn(`[Email] Attempt ${attempt} failed, retrying in ${delayMs}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs * attempt));
+    }
+  }
+}
 interface EmailOptions {
   to: string;
   subject: string;
@@ -133,7 +150,7 @@ class EmailService {
   async sendEmail(options: EmailOptions) {
     try {
       await this.ensureReady(); // OPT-001: Wait for transporter initialization
-      const info = await this.transporter.sendMail({
+      const info = await sendWithRetry(this.transporter, {
         from: process.env.SMTP_FROM || '"Odhvica Support" <noreply@odhvica.com>', // sender address
         to: options.to, // list of receivers
         subject: options.subject, // Subject line
