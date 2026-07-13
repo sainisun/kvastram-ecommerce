@@ -181,6 +181,12 @@ ordersRouter.put(
     const id = c.req.param('id');
     const { status } = (c.req as any).valid('json');
 
+    if (status === 'refunded') {
+      throw new ValidationError(
+        'Refunds must be processed via the Returns workflow, not by manually changing order status.'
+      );
+    }
+
     const updated = await orderService.updateStatus(id, status);
 
     if (!updated) throw new NotFoundError('Order not found');
@@ -560,6 +566,12 @@ ordersRouter.post(
   zValidator('json', BulkUpdateStatusSchema),
   asyncHandler(async (c) => {
     const { order_ids, status } = (c.req as any).valid('json');
+
+    if (status === 'refunded') {
+      throw new ValidationError(
+        'Refunds must be processed via the Returns workflow, not by manually changing order status.'
+      );
+    }
 
     const count = await orderService.bulkUpdateStatus(order_ids, status);
 
