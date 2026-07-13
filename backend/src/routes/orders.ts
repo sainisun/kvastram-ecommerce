@@ -11,6 +11,7 @@ import {
   ValidationError,
 } from '../middleware/error-handler';
 import { successResponse, paginatedResponse } from '../utils/api-response';
+import { releaseInventoryReservation } from '../utils/inventory-reservation';
 
 const ordersRouter = new Hono();
 
@@ -183,6 +184,10 @@ ordersRouter.put(
     const updated = await orderService.updateStatus(id, status);
 
     if (!updated) throw new NotFoundError('Order not found');
+
+    if (status === 'cancelled') {
+      await releaseInventoryReservation(id, 'admin_cancelled');
+    }
 
     return successResponse(
       c,
@@ -557,6 +562,12 @@ ordersRouter.post(
     const { order_ids, status } = (c.req as any).valid('json');
 
     const count = await orderService.bulkUpdateStatus(order_ids, status);
+
+    if (status === 'cancelled') {
+      await Promise.all(
+        order_ids.map((id: string) => releaseInventoryReservation(id, 'admin_cancelled'))
+      );
+    }
 
     return successResponse(
       c,
