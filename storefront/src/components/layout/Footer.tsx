@@ -8,7 +8,6 @@ import NewsletterForm from '@/components/NewsletterForm';
 import { storefrontTrust } from '@/config/storefront-trust';
 import { api } from '@/lib/api';
 import { ArtisanFooterAnimation } from '@/components/layout/ArtisanFooterAnimation';
-import { CraftEducationStrip, ShippingReturnsMiniFAQ } from '@/components/home/ConversionHelpSections';
 
 const shopLinks = [
   { label: 'New Kantha Short Kimono', href: '/categories/new-kantha-short-kimono' },
@@ -80,9 +79,7 @@ export function Footer() {
 
   return (
     <>
-      {/* Absorbed Pre-footer strips */}
-      <CraftEducationStrip />
-      <ShippingReturnsMiniFAQ />
+      {/* Absorbed Pre-footer strips removed per simplified homepage layout */}
 
       <footer data-home-section="15-footer" className="odhvica-footer relative border-t border-footer-border overflow-hidden">
         {/* Background Option B Animation */}

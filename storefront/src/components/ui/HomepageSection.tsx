@@ -5,7 +5,7 @@ export const homepageContainerClassName =
   'mx-auto w-full max-w-[var(--ds-home-content-width)] px-[var(--ds-home-gutter-mobile)] md:px-[var(--ds-home-gutter-tablet)] lg:px-[var(--ds-home-gutter-desktop)]';
 
 export const homepageSectionSpacingClassName =
-  'py-[var(--ds-home-section-space-mobile)] lg:py-[var(--ds-home-section-space-desktop)]';
+  'py-16 md:py-24';
 
 export const homepageScrollRailClassName = cn(
   homepageContainerClassName,

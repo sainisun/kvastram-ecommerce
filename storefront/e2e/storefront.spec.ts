@@ -32,10 +32,10 @@ test.describe('Storefront visual contract', () => {
     }
   });
 
-  test('homepage renders the exact 15-section contract in order', async ({ page }) => {
+  test('homepage renders the exact 8-section contract in order', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const sections = page.locator('[data-home-section]');
-    await expect(sections).toHaveCount(15);
+    await expect(sections).toHaveCount(8);
     await expect(sections.first()).toHaveAttribute('data-home-section', /1-circle-categories/, {
       timeout: 10000,
     });
@@ -45,17 +45,10 @@ test.describe('Storefront visual contract', () => {
       '1-circle-categories',
       '2-hero',
       '3-trust-bar',
-      '4-editorial-categories',
       '5-best-sellers',
-      '6-shopping-help',
-      '7-curated-edits',
       '8-new-arrivals',
-      '9-testimonials',
-      '10-craft-journey',
-      '11-stats',
       '12-watch-shop',
-      '13-collection-slider',
-      '14-join-circle',
+      '10-craft-journey',
       '15-footer',
     ]);
   });
@@ -135,7 +128,6 @@ test.describe('Storefront visual contract', () => {
 
     const railSections = [
       '5-best-sellers',
-      '7-curated-edits',
       '8-new-arrivals',
       '12-watch-shop',
     ];
