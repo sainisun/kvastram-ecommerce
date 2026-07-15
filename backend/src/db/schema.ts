@@ -1778,15 +1778,14 @@ export const redirects = pgTable(
     fromIdx: index('idx_redirects_from').on(table.from_path),
   })
 );
- 
- e x p o r t   c o n s t   o r d e r _ s t a t u s _ h i s t o r y   =   p g T a b l e ( ' o r d e r _ s t a t u s _ h i s t o r y ' ,   {  
-     i d :   u u i d ( ' i d ' ) . p r i m a r y K e y ( ) . d e f a u l t R a n d o m ( ) ,  
-     o r d e r _ i d :   t e x t ( ' o r d e r _ i d ' ) . r e f e r e n c e s ( ( )   = >   o r d e r s . i d ) . n o t N u l l ( ) ,  
-     f r o m _ s t a t u s :   t e x t ( ' f r o m _ s t a t u s ' ) . n o t N u l l ( ) ,  
-     t o _ s t a t u s :   t e x t ( ' t o _ s t a t u s ' ) . n o t N u l l ( ) ,  
-     c h a n g e d _ b y :   t e x t ( ' c h a n g e d _ b y ' ) . n o t N u l l ( ) ,  
-     c h a n g e d _ b y _ i d :   t e x t ( ' c h a n g e d _ b y _ i d ' ) ,  
-     n o t e :   t e x t ( ' n o t e ' ) ,  
-     c r e a t e d _ a t :   t i m e s t a m p ( ' c r e a t e d _ a t ' ) . d e f a u l t N o w ( ) . n o t N u l l ( ) ,  
- } ) ;  
- 
+
+export const order_status_history = pgTable('order_status_history', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  order_id: text('order_id').references(() => orders.id).notNull(),
+  from_status: text('from_status').notNull(),
+  to_status: text('to_status').notNull(),
+  changed_by: text('changed_by').notNull(),
+  changed_by_id: text('changed_by_id'),
+  note: text('note'),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+});
