@@ -412,7 +412,9 @@ export default function CheckoutPage() {
           province: formData.province || undefined,
           country_code: formData.country_code,
           postal_code: formData.postal_code,
-          phone: formData.phone || undefined,
+          phone: formData.phone && /^\+?[1-9]\d{6,14}$/.test(formData.phone) 
+            ? formData.phone 
+            : undefined,
         },
         shipping_method: selectedShipping.id,
         discount_code: discount?.code,
