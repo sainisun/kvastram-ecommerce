@@ -227,6 +227,11 @@ async function getCsrfHeader(): Promise<Record<string, string>> {
   return {};
 }
 
+interface ZodIssue {
+  path: string[];
+  message: string;
+}
+
 export const api = {
   async getHomepage(): Promise<HomepagePayload> {
     const res = await fetchWithTrace(`${API_URL}/homepage`, {
@@ -733,8 +738,8 @@ export const api = {
       const errorMessage =
         typeof error.details === 'string' ? error.details :
         typeof error.error === 'string' ? error.error :
-        Array.isArray(error.error?.issues) ? error.error.issues.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ') :
-        Array.isArray(error.details) ? error.details.map((e: any) => e.message).join(', ') :
+        Array.isArray(error.error?.issues) ? error.error.issues.map((e: ZodIssue) => `${e.path.join('.')}: ${e.message}`).join(', ') :
+        Array.isArray(error.details) ? error.details.map((e: ZodIssue) => e.message).join(', ') :
         'Failed to place order';
       throw new Error(errorMessage);
     }
