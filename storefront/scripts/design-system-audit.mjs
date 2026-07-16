@@ -85,8 +85,8 @@ const requiredRuntimeTokenValues = new Map([
   ['--ds-home-gutter-mobile', '1.25rem'],
   ['--ds-home-gutter-tablet', '2rem'],
   ['--ds-home-gutter-desktop', '3rem'],
-  ['--ds-home-section-space-mobile', '48px'],
-  ['--ds-home-section-space-desktop', '80px'],
+  ['--ds-home-section-space-mobile', '56px'],
+  ['--ds-home-section-space-desktop', '96px'],
 ]);
 
 const requiredDocSnippets = [
@@ -95,8 +95,8 @@ const requiredDocSnippets = [
   '`20px` mobile',
   '`32px` tablet',
   '`48px` desktop',
-  '`80px` desktop',
-  '`48px` mobile',
+  '`96px` desktop',
+  '`56px` mobile',
   '`--ink`, `--cream`, and `--line` remain compatibility-only aliases and must not be consumed by runtime TSX.',
   'Raw `var(--ds-*)` usage in TSX is allowed only as a Tailwind arbitrary-value escape hatch when no semantic utility exists.',
 ];
