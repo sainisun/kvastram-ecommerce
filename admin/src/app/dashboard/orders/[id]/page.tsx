@@ -446,11 +446,6 @@ export default function OrderDetailsPage() {
                 />
                 <div className="mt-3 flex flex-wrap items-center gap-3">
                   <StatusBadge status={order.status} className="text-sm" />
-                  {order.raw_status && order.raw_status !== order.status ? (
-                    <span className="text-xs text-[var(--kv-muted)]">
-                      Raw status: {order.raw_status}
-                    </span>
-                  ) : null}
                 </div>
               </div>
 
