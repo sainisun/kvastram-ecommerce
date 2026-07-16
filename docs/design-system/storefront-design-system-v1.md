@@ -112,7 +112,7 @@ Use these before adding page-local UI systems:
 
 - Homepage content width: `--ds-home-content-width` (`1520px`).
 - Homepage gutters: `48px` desktop, `32px` tablet, and `20px` mobile through the `--ds-home-gutter-*` tokens.
-- Homepage section rhythm: `80px` desktop and `48px` mobile through the `--ds-home-section-space-*` tokens.
+- Homepage section rhythm: `96px` desktop and `56px` mobile through the `--ds-home-section-space-*` tokens.
 - Hero is full bleed. Other homepage content uses the shared `HomepageContainer` / `HomepageSection` primitives.
 - Horizontal homepage rails use the shared `homepageScrollRailClassName`, which owns both `display: flex` and horizontal overflow behavior.
 - Homepage media containers must declare an intrinsic aspect ratio or explicit dimensions.
