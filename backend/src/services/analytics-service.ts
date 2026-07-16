@@ -12,14 +12,14 @@ export class AnalyticsService {
           db
             .select({ value: sql<number>`sum(${orders.total})` })
             .from(orders)
-            .where(sql`${orders.status} NOT IN ('cancelled', 'refunded')`),
+            .where(sql`${orders.status} IN ('completed', 'delivered')`),
           // Total Orders
           db.select({ value: sql<number>`count(*)` }).from(orders),
           // Average Order Value (AOV)
           db
             .select({ value: sql<number>`avg(${orders.total})` })
             .from(orders)
-            .where(sql`${orders.status} NOT IN ('cancelled', 'refunded')`),
+            .where(sql`${orders.status} IN ('completed', 'delivered')`),
         ]);
 
       return {
@@ -49,7 +49,7 @@ export class AnalyticsService {
                     COUNT(*) as orders
                 FROM orders
                 WHERE created_at >= NOW() - ${validatedDays} * INTERVAL '1 day'
-                AND status NOT IN ('cancelled', 'refunded')
+                AND status IN ('completed', 'delivered')
                 GROUP BY date_trunc('day', created_at)
                 ORDER BY date_trunc('day', created_at) ASC
             `);

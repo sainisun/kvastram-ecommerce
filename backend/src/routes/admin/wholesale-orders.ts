@@ -87,7 +87,7 @@ app.get('/orders/stats', async (c) => {
         pending: sql<number>`count(*) filter (where status = 'pending')`,
         processing: sql<number>`count(*) filter (where status = 'processing')`,
         completed: sql<number>`count(*) filter (where status = 'completed')`,
-        total_value: sql<number>`sum(total)`,
+        total_value: sql<number>`sum(total) filter (where status in ('completed', 'delivered'))`,
       })
       .from(orders)
       .where(sql`${orders.metadata}->>'is_wholesale' = 'true'`);

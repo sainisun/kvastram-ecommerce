@@ -116,7 +116,7 @@ class CustomerService {
               total_spent: sql<number>`sum(${orders.total})`,
             })
             .from(orders)
-            .where(inArray(orders.customer_id, customerIds))
+            .where(sql`${inArray(orders.customer_id, customerIds)} AND ${orders.status} IN ('completed', 'delivered')`)
             .groupBy(orders.customer_id)
         : [];
 
@@ -159,10 +159,9 @@ class CustomerService {
       .orderBy(desc(orders.created_at));
 
     const totalOrders = customerOrders.length;
-    const totalSpent = customerOrders.reduce(
-      (sum, order) => sum + Number(order.total || 0),
-      0
-    );
+    const totalSpent = customerOrders
+      .filter(o => ['completed', 'delivered'].includes(o.status))
+      .reduce((sum, order) => sum + Number(order.total || 0), 0);
     const averageOrderValue = totalOrders > 0 ? totalSpent / totalOrders : 0;
 
     return {
