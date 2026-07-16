@@ -1781,7 +1781,7 @@ export const redirects = pgTable(
 
 export const order_status_history = pgTable('order_status_history', {
   id: uuid('id').primaryKey().defaultRandom(),
-  order_id: text('order_id').references(() => orders.id).notNull(),
+  order_id: uuid('order_id').references(() => orders.id).notNull(),
   from_status: text('from_status').notNull(),
   to_status: text('to_status').notNull(),
   changed_by: text('changed_by').notNull(),
