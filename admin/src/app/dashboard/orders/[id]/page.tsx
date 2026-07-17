@@ -45,9 +45,9 @@ const STATUS_LABELS: Record<WorkflowStatus, string> = {
 
 const VALID_TRANSITIONS: Record<WorkflowStatus, WorkflowStatus[]> = {
   pending: ['processing', 'cancelled'],
-  processing: ['shipped', 'cancelled', 'refunded'],
-  shipped: ['delivered', 'cancelled', 'refunded'],
-  delivered: ['refunded'],
+  processing: ['shipped', 'cancelled'],
+  shipped: ['delivered', 'cancelled'],
+  delivered: [],
   cancelled: [],
   refunded: [],
 };
@@ -149,10 +149,12 @@ const emptyTrackingForm: TrackingFormState = {
 };
 
 function normalizeStatus(status?: string | null): WorkflowStatus {
-  const normalized =
-    status?.toLowerCase() === 'canceled'
-      ? 'cancelled'
-      : status?.toLowerCase() || 'pending';
+  let normalized = status?.toLowerCase() || 'pending';
+  if (normalized === 'canceled' || normalized === 'failed') {
+    normalized = 'cancelled';
+  } else if (normalized === 'completed') {
+    normalized = 'processing';
+  }
   return Object.prototype.hasOwnProperty.call(STATUS_LABELS, normalized)
     ? (normalized as WorkflowStatus)
     : 'pending';

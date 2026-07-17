@@ -22,7 +22,7 @@ export async function finalizeCapturedPayment(
     .update(orders)
     .set({
       payment_status: 'captured',
-      status: 'completed',
+      status: 'processing',
       metadata: sql`COALESCE(${orders.metadata}, '{}'::jsonb) || ${JSON.stringify(metadataPatch)}::jsonb`,
       updated_at: new Date(),
     })
