@@ -19,7 +19,13 @@ import { eq, and, gte, sql, inArray } from 'drizzle-orm';
 import { getCookie } from 'hono/cookie';
 import { verify } from 'hono/jwt';
 import { config } from '../../config';
-import { calculateTax, type TaxBreakdown } from '../../utils/tax-calculator';
+import {
+  calculateTax,
+  determineGstRegime,
+  resolveIndianStateCode,
+  type GstRegime,
+  type TaxBreakdown,
+} from '../../utils/tax-calculator';
 import { carrierService } from '../../services/carrier-service';
 import {
   buildCheckoutPaymentTokenMetadata,
@@ -561,6 +567,27 @@ checkoutRouter.post(
       
       // Determine shipping country
       const destCountry = body.shipping_address.country_code.toUpperCase();
+      const destinationStateCode =
+        destCountry === 'IN'
+          ? resolveIndianStateCode(body.shipping_address.province)
+          : null;
+      let gstRegime: GstRegime;
+      try {
+        gstRegime = determineGstRegime(
+          destCountry,
+          body.shipping_address.province
+        );
+      } catch (error: unknown) {
+        return c.json(
+          {
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Unable to determine GST regime',
+          },
+          400
+        );
+      }
       const allowedCountries: string[] = (settingsMap['shipping_countries'] || 'US, CA').split(',').map((s: string) => s.trim().toUpperCase());
       
       if (!allowedCountries.includes(destCountry)) {
@@ -717,8 +744,15 @@ checkoutRouter.post(
 
       // Tax is calculated on the discounted subtotal (post-discount), not gross subtotal
       let taxableAmount = Math.max(0, subtotal - discountTotal);
-      let taxBreakdown: TaxBreakdown = calculateTax(taxableAmount, taxRate);
+      const taxBreakdownInInr: TaxBreakdown = calculateTax(
+        taxableAmount,
+        taxRate,
+        gstRegime
+      );
+      let taxBreakdown: TaxBreakdown = taxBreakdownInInr;
       let taxTotal = taxBreakdown.total;
+      let exchangeRateToOrderCurrency = 1;
+      let exchangeRateSource: 'identity' | 'api' | 'fallback' = 'identity';
 
       if (currencyCode !== 'INR') {
         let rate = 1;
@@ -730,13 +764,17 @@ checkoutRouter.post(
           const data = await res.json();
           rate = data.rates[currencyCode];
           if (!rate) throw new Error('Currency rate not found');
+          exchangeRateSource = 'api';
         } catch (error: any) {
           rate = FALLBACK_RATES[currencyCode];
           if (!rate) {
             return c.json({ error: `Currency ${currencyCode} is not supported.` }, 400);
           }
+          exchangeRateSource = 'fallback';
           console.warn(`[Checkout] Exchange rate API failed, used fallback for ${currencyCode}: ${rate}`);
         }
+
+        exchangeRateToOrderCurrency = rate;
 
         // Convert raw totals independently using Math.round
         subtotal = Math.round(subtotal * rate);
@@ -748,7 +786,7 @@ checkoutRouter.post(
         taxableAmount = Math.max(0, subtotal - discountTotal);
         
         // Recalculate tax breakdown on converted taxableAmount
-        taxBreakdown = calculateTax(taxableAmount, taxRate);
+        taxBreakdown = calculateTax(taxableAmount, taxRate, gstRegime);
         taxTotal = taxBreakdown.total;
       }
 
@@ -930,13 +968,39 @@ checkoutRouter.post(
               : null,
             gift_wrapping_total: giftWrappingTotal,
             tax_rate: taxBreakdown.rate,
+            gst_regime: gstRegime,
+            tax_origin: {
+              country_code: 'IN',
+              state_code: 'RJ',
+              state_name: 'Rajasthan',
+            },
+            tax_destination: {
+              country_code: destCountry,
+              province: body.shipping_address.province || null,
+              state_code: destinationStateCode,
+            },
             tax_breakdown: {
+              currency_code: currencyCode,
               gross_subtotal: subtotal,
               discount_total: discountTotal,
               taxable_amount: taxableAmount,
               cgst: taxBreakdown.cgst,
               sgst: taxBreakdown.sgst,
+              igst: taxBreakdown.igst,
               total: taxBreakdown.total,
+              calculated_at: new Date().toISOString(),
+            },
+            tax_breakdown_inr: {
+              currency_code: 'INR',
+              order_currency_code: currencyCode,
+              exchange_rate_to_order_currency: exchangeRateToOrderCurrency,
+              exchange_rate_source: exchangeRateSource,
+              taxable_amount: taxBreakdownInInr.subtotal,
+              rate: taxBreakdownInInr.rate,
+              cgst: taxBreakdownInInr.cgst,
+              sgst: taxBreakdownInInr.sgst,
+              igst: taxBreakdownInInr.igst,
+              total: taxBreakdownInInr.total,
               calculated_at: new Date().toISOString(),
             },
           },
