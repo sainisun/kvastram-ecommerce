@@ -17,8 +17,9 @@ import {
 import { SecurityBadges,  PaymentIcons  } from '@/design-system';
 import Link from 'next/link';
 import { OptimizedImage } from '@/design-system';
-import { CountrySelect } from '@/design-system';
+import { CountrySelect, Select } from '@/design-system';
 import { getCountryName } from '@/config/countries';
+import { INDIAN_STATES } from '@/config/indian-states';
 import { AddressAutocomplete } from '@/design-system';
 import { Input } from '@/design-system';
 import { Textarea } from '@/design-system';
@@ -361,6 +362,13 @@ export default function CheckoutPage() {
     setError(null);
 
     try {
+      if (
+        formData.country_code.toUpperCase() === 'IN' &&
+        !formData.province.trim()
+      ) {
+        throw new Error('Please select a State/Union Territory');
+      }
+
       if (!currentRegion) {
         throw new Error(
           formData.country_code 
@@ -800,15 +808,35 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <Input
-                        id="province"
-                        type="text"
-                        name="province"
-                        label="State/Province"
-                        value={formData.province}
-                        onChange={handleChange}
-                        autoComplete="address-level1"
-                      />
+                      {formData.country_code.toUpperCase() === 'IN' ? (
+                        <Select
+                          id="province"
+                          name="province"
+                          label="State/Union Territory"
+                          value={formData.province}
+                          onChange={handleChange}
+                          autoComplete="address-level1"
+                          required
+                          aria-required="true"
+                        >
+                          <option value="">Select state</option>
+                          {INDIAN_STATES.map((state) => (
+                            <option key={state.code} value={state.code}>
+                              {state.name}
+                            </option>
+                          ))}
+                        </Select>
+                      ) : (
+                        <Input
+                          id="province"
+                          type="text"
+                          name="province"
+                          label="State/Province"
+                          value={formData.province}
+                          onChange={handleChange}
+                          autoComplete="address-level1"
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4">
@@ -834,7 +862,12 @@ export default function CheckoutPage() {
                       name="country"
                       value={formData.country_code}
                       onChange={(code) =>
-                        setFormData((prev) => ({ ...prev, country_code: code }))
+                        setFormData((prev) => ({
+                          ...prev,
+                          country_code: code,
+                          province:
+                            code === prev.country_code ? prev.province : '',
+                        }))
                       }
                       required
                     />

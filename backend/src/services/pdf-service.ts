@@ -9,10 +9,19 @@ export interface InvoiceLineItem {
   total: number;
 }
 
+interface InvoiceTaxBreakdown {
+  currency_code?: string;
+  cgst?: number;
+  sgst?: number;
+  igst?: number;
+  total?: number;
+}
+
 export interface InvoiceOrderData {
   id: string;
   order_number: string | number;
   created_at: Date | string;
+  currency_code: string;
   total: number;
   subtotal: number;
   shipping_total?: number;
@@ -21,7 +30,27 @@ export interface InvoiceOrderData {
   customer_first_name?: string;
   customer_last_name?: string;
   billing_address?: string | Record<string, unknown>;
+  metadata?: unknown;
 }
+
+const formatInvoiceMoney = (amount: number, currencyCode: string): string =>
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: currencyCode,
+    minimumFractionDigits: 2,
+  }).format(amount / 100);
+
+const readTaxBreakdown = (
+  metadata: unknown
+): InvoiceTaxBreakdown | undefined => {
+  if (!metadata || typeof metadata !== 'object') return undefined;
+
+  const record = metadata as Record<string, unknown>;
+  const breakdown = record.tax_breakdown_inr ?? record.tax_breakdown;
+  if (!breakdown || typeof breakdown !== 'object') return undefined;
+
+  return breakdown as InvoiceTaxBreakdown;
+};
 
 export const generateInvoice = async (
   order: InvoiceOrderData,
@@ -193,9 +222,41 @@ export const generateInvoice = async (
   }
 
   const taxTotal = order.tax_total ?? 0;
-  if (taxTotal > 0) {
+  const taxBreakdown = readTaxBreakdown(order.metadata);
+  const taxCurrency = taxBreakdown?.currency_code ?? order.currency_code;
+  const igst = taxBreakdown?.igst ?? 0;
+  const cgst = taxBreakdown?.cgst ?? 0;
+  const sgst = taxBreakdown?.sgst ?? 0;
+
+  if (igst > 0) {
+    doc.text('IGST:', 350, y, { width: 90, align: 'right' });
+    doc.text(formatInvoiceMoney(igst, taxCurrency), rightAlign, y, {
+      width: 90,
+      align: 'right',
+    });
+    y += 18;
+  } else if (cgst > 0 || sgst > 0) {
+    if (cgst > 0) {
+      doc.text('CGST:', 350, y, { width: 90, align: 'right' });
+      doc.text(formatInvoiceMoney(cgst, taxCurrency), rightAlign, y, {
+        width: 90,
+        align: 'right',
+      });
+      y += 18;
+    }
+
+    if (sgst > 0) {
+      doc.text('SGST:', 350, y, { width: 90, align: 'right' });
+      doc.text(formatInvoiceMoney(sgst, taxCurrency), rightAlign, y, {
+        width: 90,
+        align: 'right',
+      });
+      y += 18;
+    }
+  } else if (taxTotal > 0) {
+    // Backward-compatible fallback for orders created before GST breakdowns.
     doc.text('Tax:', 350, y, { width: 90, align: 'right' });
-    doc.text(`$${(taxTotal / 100).toFixed(2)}`, rightAlign, y, {
+    doc.text(formatInvoiceMoney(taxTotal, order.currency_code), rightAlign, y, {
       width: 90,
       align: 'right',
     });

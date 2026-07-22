@@ -297,3 +297,21 @@ This guide is the definitive registry of all backend features implemented in the
 * **Operational Commands**:
   * Run the design-system audits, lint, verification suite, production build, and desktop/mobile Playwright storefront smoke tests after changing this composition.
   * Run `npm.cmd run audit:architecture-freeze` before V5 certification or release; it fails with `BLOCKED_FOR_ARCHITECTURE_REVIEW` when a protected V4 contract differs from certified SHA `7ca181685d8c06d3ebcde703fbbe43526475f35a`.
+
+### M. State-Aware GST Calculation and Invoice Labeling
+* **Technical Flow**:
+  * The GST origin is explicitly fixed to Jaipur, Rajasthan (`RJ`). Rajasthan deliveries use CGST/SGST; deliveries to another Indian state or Union Territory use IGST.
+  * International deliveries are classified as IGST by the application, subject to accountant confirmation of the store's export/LUT configuration.
+  * Indian checkout uses a constrained State/Union Territory selector. The backend also accepts normalized full state names for compatibility, but rejects and logs unknown values instead of guessing a tax regime.
+  * `orders.tax_total` remains the combined tax amount. `metadata.tax_breakdown` stores the order-currency breakdown, while `metadata.tax_breakdown_inr` preserves the original INR breakdown, conversion rate, rate source, and order currency for audit and filing workflows.
+  * Generated invoices prefer the INR breakdown and render either a single IGST row or separate CGST/SGST rows. Legacy orders without detailed metadata retain the generic Tax row.
+* **Requirements and Settings**:
+  * The admin shipping-origin state setting does not control GST origin. Changing the hardcoded Rajasthan origin requires a validated tax-origin design and accountant approval.
+  * Storefront pre-payment tax remains a combined display; detailed checkout display is deferred to a separate UX change.
+* **Required Accountant Sign-Off Before Merge**:
+  ## Requires accountant sign-off before merge
+  Do not merge until an accountant/CA confirms:
+  1. Whether domestic interstate shipments from the Jaipur, Rajasthan origin require IGST in this store's circumstances.
+  2. Whether international exports should charge IGST or use zero-rated LUT/bond treatment.
+  3. Whether foreign-currency invoice totals with a visible INR-equivalent GST line satisfy applicable invoice and filing requirements.
+  4. Whether wholesale orders' current tax_total: 0 (wholesale-orders.ts:172) is intentional policy or a gap — review alongside retail GST classification.
