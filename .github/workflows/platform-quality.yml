@@ -13,6 +13,23 @@ jobs:
     name: Backend quality and security
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      MIGRATION_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      MIGRATION_TEST_ADMIN_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
     defaults:
       run:
         working-directory: backend
@@ -31,6 +48,7 @@ jobs:
       - run: npm audit --omit=dev --audit-level=high
       - run: npm run lint
       - run: npm run test:run
+      - run: npm run test:migrations:safety
       - run: npm run build
 
   admin:
