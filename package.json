@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "audit:repository": "node scripts/check-repository-state.mjs",
+    "check:architecture-boundaries": "node scripts/check-architecture-boundaries.mjs",
     "setup:repository": "git config core.hooksPath .githooks",
     "test": "npm run test:backend && npm run test:storefront",
     "test:backend": "npm --prefix backend run test:run",
     "test:storefront": "npm --prefix storefront run test:unit -- --run",
     "lint": "npm --prefix backend run lint && npm --prefix storefront run lint && npm --prefix admin run lint && npm --prefix wholesale run lint",
     "build": "npm --prefix backend run build && npm --prefix storefront run build && npm --prefix admin run build && npm --prefix wholesale run build",
-    "verify:system": "npm run audit:repository && npm run test && npm run lint && npm run build",
+    "verify:system": "npm run audit:repository && npm run check:architecture-boundaries && npm run test && npm run lint && npm run build",
     "start": "npm --prefix backend run start"
   },
   "keywords": [],
