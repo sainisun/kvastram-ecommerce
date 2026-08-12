@@ -2,20 +2,7 @@ name: Platform Quality
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'backend/**'
-      - 'admin/**'
-      - 'wholesale/**'
-      - 'package.json'
-      - '.github/workflows/platform-quality.yml'
   pull_request:
-    paths:
-      - 'backend/**'
-      - 'admin/**'
-      - 'wholesale/**'
-      - 'package.json'
-      - '.github/workflows/platform-quality.yml'
 
 concurrency:
   group: platform-quality-${{ github.ref }}
