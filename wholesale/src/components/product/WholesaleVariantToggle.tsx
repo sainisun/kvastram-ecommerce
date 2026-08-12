@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
-
 interface WholesaleVariantToggleProps {
   isBulk: boolean;
   setIsBulk: (val: boolean) => void;

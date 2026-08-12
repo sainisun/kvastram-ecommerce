@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ProductGallery } from '@/components/product/ProductGallery';
+import ProductGallery from '@/components/product/ProductGallery';
 import { WholesaleVariantToggle } from '@/components/product/WholesaleVariantToggle';
 import { QuantityCalculator } from '@/components/product/QuantityCalculator';
 import { RequestQuoteModal } from '@/components/product/RequestQuoteModal';
@@ -13,8 +13,8 @@ const MOCK_PRODUCT = {
   title: 'Block Print Cotton Kurti',
   description: 'Hand-block printed pure cotton kurti crafted by artisans in Jaipur. Perfect for summer collections.',
   images: [
-    { url: 'https://images.unsplash.com/photo-1583391733958-611591572c63?auto=format&fit=crop&q=80', alt: 'Front' },
-    { url: 'https://images.unsplash.com/photo-1610030469983-98e550d61dc0?auto=format&fit=crop&q=80', alt: 'Detail' }
+    { id: 'p1-front', url: 'https://images.unsplash.com/photo-1583391733958-611591572c63?auto=format&fit=crop&q=80', alt: 'Front' },
+    { id: 'p1-detail', url: 'https://images.unsplash.com/photo-1610030469983-98e550d61dc0?auto=format&fit=crop&q=80', alt: 'Detail' }
   ],
   material: '100% Pure Cotton',
   care: 'Hand wash cold'
@@ -51,7 +51,7 @@ export default function WholesalePDP() {
         
         {/* Left Column: Gallery */}
         <div>
-          <ProductGallery images={MOCK_PRODUCT.images as any} />
+          <ProductGallery media={MOCK_PRODUCT.images} title={MOCK_PRODUCT.title} />
         </div>
         
         {/* Right Column: Details & B2B Logic */}

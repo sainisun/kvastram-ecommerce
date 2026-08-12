@@ -39,16 +39,16 @@
   },
   "dependencies": {
     "@getbrevo/brevo": "^6.0.2",
-    "@hono/node-server": "^1.19.13",
+    "@hono/node-server": "2.1.0",
     "@hono/zod-openapi": "^1.2.1",
     "@hono/zod-validator": "^0.7.6",
     "@scalar/hono-api-reference": "^0.9.40",
     "@types/nodemailer": "^7.0.9",
     "bcryptjs": "^3.0.3",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.30.0",
-    "drizzle-zod": "^0.5.1",
-    "hono": "^4.11.7",
+    "drizzle-orm": "0.45.2",
+    "drizzle-zod": "0.8.3",
+    "hono": "4.13.1",
     "hono-rate-limiter": "^0.5.3",
     "jsonwebtoken": "^9.0.3",
     "meilisearch": "^0.58.0",
@@ -66,6 +66,9 @@
     "twilio": "^6.0.2",
     "zod": "^3.22.0"
   },
+  "overrides": {
+    "socket.io-parser": "4.2.7"
+  },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
@@ -78,7 +81,7 @@
     "chalk": "^4.1.2",
     "chokidar": "^5.0.0",
     "concurrently": "^10.0.3",
-    "drizzle-kit": "^0.20.0",
+    "drizzle-kit": "0.31.10",
     "esbuild": "^0.28.1",
     "eslint": "^10.0.0",
     "husky": "^9.1.7",

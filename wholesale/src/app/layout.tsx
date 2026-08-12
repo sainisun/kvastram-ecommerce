@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font -- global brand fonts are intentionally loaded by the root app layout. */
 import type { Metadata } from 'next';
 import './globals.css';
 import { TrustStrip } from '@/components/layout/TrustStrip';

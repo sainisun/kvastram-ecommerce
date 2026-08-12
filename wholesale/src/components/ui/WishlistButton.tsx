@@ -1,8 +1,7 @@
 'use client';
 
+import { useState } from 'react';
 import { Heart } from 'lucide-react';
-import { useWishlist } from '@/context/wishlist-context';
-import { useShop } from '@/context/shop-context';
 import { cn } from '@/lib/utils';
 import { Button, IconButton } from '@/components/ui/Button';
 
@@ -31,26 +30,22 @@ export default function WishlistButton({
   size = 'md',
   showLabel = false,
 }: WishlistButtonProps) {
-  const { isInWishlist, toggleItem } = useWishlist();
-  const { currentRegion } = useShop();
-
-  const isWishlisted = isInWishlist(productId);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const item = {
-      productId,
-      variantId,
-      title,
-      price,
-      currency: currentRegion?.currency_code?.toUpperCase() || currency,
-      thumbnail,
-      handle,
-    };
-
-    toggleItem(item);
+    // Wholesale wishlist persistence is intentionally deferred until the account API is available.
+    // Keep the control responsive without depending on missing storefront-only contexts.
+    void productId;
+    void variantId;
+    void title;
+    void price;
+    void currency;
+    void thumbnail;
+    void handle;
+    setIsWishlisted((current) => !current);
   };
 
   const sizeClasses = {

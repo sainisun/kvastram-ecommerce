@@ -29,6 +29,14 @@ type ListingFilter = 'all' | 'published' | 'draft' | 'out_of_stock';
 type ViewMode = 'grid' | 'list';
 type SortMode = 'newest' | 'price' | 'stock';
 
+interface ProductVariantSummary {
+  id: string;
+  title: string;
+  sku?: string | null;
+  inventory_quantity: number;
+  prices?: Array<{ amount: number; currency_code?: string }>;
+}
+
 interface Product {
   id: string;
   title: string;
@@ -124,7 +132,7 @@ export default function ProductsPage() {
   const [inlinePrice, setInlinePrice] = useState<string>('');
   const [inlineStock, setInlineStock] = useState<string>('');
   const [expandedVariantId, setExpandedVariantId] = useState<string | null>(null);
-  const [variantsCache, setVariantsCache] = useState<Record<string, any[]>>({});
+  const [variantsCache, setVariantsCache] = useState<Record<string, ProductVariantSummary[]>>({});
   const [isLoadingVariants, setIsLoadingVariants] = useState(false);
   const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);

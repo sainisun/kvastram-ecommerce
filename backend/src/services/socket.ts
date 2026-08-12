@@ -103,6 +103,9 @@ export function initSocketServer(
 ): SocketServer {
   io = new SocketServer(httpServer, {
     path: '/socket.io',
+    // Bound unauthenticated transport resources; parser is also pinned to a patched release.
+    maxHttpBufferSize: 100_000,
+    connectTimeout: 10_000,
     cors: {
       origin: allowedOrigins,
       credentials: true,

@@ -1806,7 +1806,7 @@ class OrderService {
       const workflowStatus = deriveWorkflowStatus(row);
       countByStatus[workflowStatus] = (countByStatus[workflowStatus] || 0) + 1;
 
-      if (workflowStatus === 'completed' || workflowStatus === 'delivered') {
+      if (workflowStatus === 'delivered') {
         totalRevenueNum += Number(row.total || 0);
       }
     }

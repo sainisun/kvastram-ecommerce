@@ -1,14 +1,18 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 export function WholesaleHero() {
   return (
     <section className="relative w-full bg-[var(--ds-surface-dark)] overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1558769132-cb1fac08b4af?auto=format&fit=crop&q=80" 
-          alt="Artisans at work" 
-          className="w-full h-full object-cover opacity-40 mix-blend-overlay"
+        <OptimizedImage
+          src="https://images.unsplash.com/photo-1558769132-cb1fac08b4af?auto=format&fit=crop&q=80"
+          alt="Artisans at work"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-40 mix-blend-overlay"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/20" />
       </div>

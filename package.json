@@ -6,11 +6,13 @@
   "scripts": {
     "audit:repository": "node scripts/check-repository-state.mjs",
     "setup:repository": "git config core.hooksPath .githooks",
-    "verify:system": "npx tsx scripts/verify-system.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "cd backend && npm install --legacy-peer-deps",
-    "build": "cd backend && npm run build",
-    "start": "cd backend && npm run start"
+    "test": "npm run test:backend && npm run test:storefront",
+    "test:backend": "npm --prefix backend run test:run",
+    "test:storefront": "npm --prefix storefront run test:unit -- --run",
+    "lint": "npm --prefix backend run lint && npm --prefix storefront run lint && npm --prefix admin run lint && npm --prefix wholesale run lint",
+    "build": "npm --prefix backend run build && npm --prefix storefront run build && npm --prefix admin run build && npm --prefix wholesale run build",
+    "verify:system": "npm run audit:repository && npm run test && npm run lint && npm run build",
+    "start": "npm --prefix backend run start"
   },
   "keywords": [],
   "author": "sunil kumar saini",

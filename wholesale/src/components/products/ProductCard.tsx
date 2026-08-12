@@ -10,7 +10,7 @@ import OptimizedImage from '@/components/ui/OptimizedImage';
 import WishlistButton from '@/components/ui/WishlistButton';
 import { Badge } from '@/components/ui/Badge';
 import { PriceDisplay } from '@/components/ui/PriceDisplay';
-import { Button, IconButton } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/Button';
 import { Check, ShoppingBag } from 'lucide-react';
 
 export interface ProductCardPrice {
@@ -64,10 +64,8 @@ export function ProductCard({
   added = false,
   currency = 'USD',
   categoryLabel,
-  showQuickView = true,
   actionLabel,
   onAddToCart,
-  onQuickView,
 }: ProductCardProps) {
   const displayTitle = getProductDisplayTitle(product.title);
   const href = `/products/${product.handle || product.id}`;
@@ -130,12 +128,12 @@ export function ProductCard({
               <Badge className="rounded-[var(--ds-radius-pill)] px-[var(--ds-space-xs)] py-1">New</Badge>
             ) : null}
             {isOnSale && (
-              <Badge variant="sale" className="absolute left-2 top-2 z-10 sm:left-3 sm:top-3">
+              <Badge variant="accent" className="absolute left-2 top-2 z-10 sm:left-3 sm:top-3">
                 Sale
               </Badge>
             )}
             {price.moq && (
-              <Badge variant="warning" className="absolute left-2 bottom-2 z-10 sm:left-3 sm:bottom-3 text-[10px]">
+              <Badge variant="neutral" className="absolute left-2 bottom-2 z-10 sm:left-3 sm:bottom-3 text-[10px]">
                 MOQ: {price.moq}
               </Badge>
             )}

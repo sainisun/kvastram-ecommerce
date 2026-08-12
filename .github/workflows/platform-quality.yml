@@ -1,0 +1,84 @@
+name: Platform Quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'admin/**'
+      - 'wholesale/**'
+      - 'package.json'
+      - '.github/workflows/platform-quality.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'admin/**'
+      - 'wholesale/**'
+      - 'package.json'
+      - '.github/workflows/platform-quality.yml'
+
+concurrency:
+  group: platform-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend quality and security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci --legacy-peer-deps
+      - run: npm audit signatures
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run lint
+      - run: npm run test:run
+      - run: npm run build
+
+  admin:
+    name: Admin quality and security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+      - run: npm ci --legacy-peer-deps
+      - run: npm audit signatures
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run lint
+      - run: npm run build
+
+  wholesale:
+    name: Wholesale quality and security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: wholesale
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: npm
+          cache-dependency-path: wholesale/package-lock.json
+      - run: npm ci --legacy-peer-deps
+      - run: npm audit signatures
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run lint
+      - run: npm run build

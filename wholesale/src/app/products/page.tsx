@@ -3,36 +3,49 @@
 import { ProductFilterBar } from '@/components/products/ProductFilterBar';
 import { CatalogGrid } from '@/components/products/CatalogGrid';
 import { ProductCard } from '@/components/products/ProductCard';
+import type { Product } from '@/types';
 
 // Temporary Mock Data for UI building
-const MOCK_PRODUCTS = [
+const MOCK_PRODUCTS: Product[] = [
   {
     id: 'p1',
     title: 'Block Print Cotton Kurti',
     handle: 'block-print-cotton-kurti',
+    description: 'Hand-block printed cotton kurti for wholesale catalog preview.',
+    status: 'published',
+    created_at: '2026-01-01T00:00:00.000Z',
     thumbnail: 'https://images.unsplash.com/photo-1583391733958-611591572c63?auto=format&fit=crop&q=80',
-    variants: [{ inventory_quantity: 500 }]
+    variants: [{ id: 'p1-default', title: 'Default', inventory_quantity: 500 }]
   },
   {
     id: 'p2',
     title: 'Embroidered Silk Saree',
     handle: 'embroidered-silk-saree',
+    description: 'Embroidered silk saree for wholesale catalog preview.',
+    status: 'published',
+    created_at: '2026-01-01T00:00:00.000Z',
     thumbnail: 'https://images.unsplash.com/photo-1610030469983-98e550d61dc0?auto=format&fit=crop&q=80',
-    variants: [{ inventory_quantity: 150 }]
+    variants: [{ id: 'p2-default', title: 'Default', inventory_quantity: 150 }]
   },
   {
     id: 'p3',
     title: 'Handloom Linen Tunic',
     handle: 'handloom-linen-tunic',
+    description: 'Handloom linen tunic for wholesale catalog preview.',
+    status: 'published',
+    created_at: '2026-01-01T00:00:00.000Z',
     thumbnail: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80',
-    variants: [{ inventory_quantity: 100 }]
+    variants: [{ id: 'p3-default', title: 'Default', inventory_quantity: 100 }]
   },
   {
     id: 'p4',
     title: 'Festive Wear Lehenga',
     handle: 'festive-wear-lehenga',
+    description: 'Festive wear lehenga for wholesale catalog preview.',
+    status: 'published',
+    created_at: '2026-01-01T00:00:00.000Z',
     thumbnail: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80',
-    variants: [{ inventory_quantity: 50 }]
+    variants: [{ id: 'p4-default', title: 'Default', inventory_quantity: 50 }]
   }
 ];
 
@@ -50,7 +63,7 @@ export default function ProductsPage() {
         {MOCK_PRODUCTS.map((product, idx) => (
           <ProductCard
             key={product.id}
-            product={product as any}
+            product={product}
             price={{
               label: `Bulk: ₹${(800 + idx * 200).toFixed(2)}`,
               compareAtLabel: `Sample: ₹${(1500 + idx * 300).toFixed(2)}`,
