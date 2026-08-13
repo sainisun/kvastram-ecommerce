@@ -37,6 +37,7 @@ import type {
   WorkflowPackage,
 } from '../utils/order-workflow';
 import type { CarrierProvider } from '../services/carrier-service';
+import { purchaseCarrierLabelCommand } from '../application/orders/fulfillment-commands';
 import {
   assertOrderStatusTransition,
   canTransitionOrderStatus,
@@ -1562,58 +1563,31 @@ class OrderService {
     if (!data) return null;
 
     const context = buildCarrierContext(data.order, data.items || [], options.package_id);
-    const targetPackageId = options.package_id || context.package?.id || 'pkg_1';
-    const purchase = await carrierService.purchaseLabel(
+    return purchaseCarrierLabelCommand(
       {
-        order: context.order,
-        items: context.items || [],
+        context: {
+          order: context.order,
+          items: context.items || [],
+          packageId: context.package?.id || null,
+        },
+        options: {
+          provider: options.provider,
+          packageId: options.package_id,
+          courierId: options.courier_id,
+        },
       },
       {
-        provider: options.provider,
-        package_id: targetPackageId,
-        courier_id: options.courier_id,
+        carrierLabelProvider: {
+          purchaseLabel: (purchaseContext, purchaseOptions) =>
+            carrierService.purchaseLabel(
+              purchaseContext as any,
+              purchaseOptions as any
+            ),
+        },
+        updatePackage: (packageId, packageData) =>
+          this.updatePackage(id, packageId, packageData as any),
       }
     );
-
-    const updatedOrder = await this.updatePackage(id, targetPackageId, {
-      label_provider: purchase.provider,
-      shipping_carrier: purchase.shipping_carrier,
-      tracking_number: purchase.tracking_number,
-      tracking_link: purchase.tracking_url,
-      label_state: purchase.label_status,
-      label_url: purchase.label_url,
-      label_file_name: purchase.label_file_name,
-      label_cost: purchase.label_cost,
-      label_currency: purchase.label_currency,
-      package_weight_grams:
-        context.order.workflow?.label?.package_weight_grams ?? null,
-      package_length_cm: context.order.workflow?.label?.package_length_cm ?? null,
-      package_width_cm: context.order.workflow?.label?.package_width_cm ?? null,
-      package_height_cm: context.order.workflow?.label?.package_height_cm ?? null,
-      carrier_service: purchase.carrier_service,
-      provider_order_id:
-        purchase.shiprocket_order_id != null
-          ? String(purchase.shiprocket_order_id)
-          : null,
-      provider_shipment_id:
-        purchase.shiprocket_shipment_id != null
-          ? String(purchase.shiprocket_shipment_id)
-          : null,
-      provider_courier_id:
-        purchase.shiprocket_courier_id != null
-          ? String(purchase.shiprocket_courier_id)
-          : null,
-      pickup_reference:
-        purchase.shiprocket_pickup_id != null
-          ? String(purchase.shiprocket_pickup_id)
-          : null,
-      notify_buyer: false,
-    });
-
-    return {
-      order: updatedOrder,
-      purchase,
-    };
   }
 
   async sendBuyerUpdate(

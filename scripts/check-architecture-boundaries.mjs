@@ -188,6 +188,28 @@ function validateRf005Artifacts() {
   }
 }
 
+function validateRf006Artifacts() {
+  const commands = join(
+    backendRoot,
+    'application',
+    'orders',
+    'fulfillment-commands.ts'
+  );
+  if (!existsSync(commands)) {
+    findings.push(`[rf-006] missing fulfillment commands ${relative(root, commands)}`);
+    return;
+  }
+
+  const ordersRoute = join(backendRoot, 'routes', 'orders.ts');
+  const orderService = join(backendRoot, 'services', 'order-service.ts');
+  if (!readFileSync(ordersRoute, 'utf8').includes('generateOrderInvoiceCommand(')) {
+    findings.push('[rf-006] invoice route does not delegate to the invoice command');
+  }
+  if (!readFileSync(orderService, 'utf8').includes('purchaseCarrierLabelCommand(')) {
+    findings.push('[rf-006] order service does not delegate label purchase to the fulfillment command');
+  }
+}
+
 function validateRf001Artifacts() {
   const required = [
     join(docsRoot, 'README.md'),
@@ -207,6 +229,7 @@ validateCycles();
 validateRf001Artifacts();
 validateRf003Artifacts();
 validateRf005Artifacts();
+validateRf006Artifacts();
 
 if (findings.length) {
   console.error('Architecture boundary check failed:');

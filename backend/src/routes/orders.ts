@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { generateInvoice } from '../services/pdf-service';
 import { orderService } from '../services/order-service';
+import { generateOrderInvoiceCommand } from '../application/orders/fulfillment-commands';
 import type { CarrierProvider } from '../services/carrier-service';
 import {
   asyncHandler,
@@ -139,15 +140,20 @@ ordersRouter.get(
   '/:id/invoice',
   asyncHandler(async (c) => {
     const id = c.req.param('id');
-    const data = await orderService.getInvoiceData(id);
+    const invoice = await generateOrderInvoiceCommand(id, {
+      invoiceData: {
+        getInvoiceData: (orderId) => orderService.getInvoiceData(orderId) as any,
+      },
+      invoiceGenerator: {
+        generate: (order, items) => generateInvoice(order as any, items as any),
+      },
+    });
 
-    if (!data) throw new NotFoundError('Order not found');
+    if (!invoice) throw new NotFoundError('Order not found');
 
-    const pdfBuffer = await generateInvoice(data.order, data.items);
-
-    return c.body(pdfBuffer as any, 200, {
+    return c.body(invoice.pdfBuffer as any, 200, {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="invoice-${data.order.order_number}.pdf"`,
+      'Content-Disposition': `attachment; filename="invoice-${(invoice.order as any).order_number}.pdf"`,
     });
   })
 );
