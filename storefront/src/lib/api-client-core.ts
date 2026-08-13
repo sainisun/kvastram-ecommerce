@@ -2,6 +2,11 @@ import { getApiBaseUrl } from './api-base-url';
 
 export const API_URL = getApiBaseUrl();
 
+// CSRF is handled by backend origin-based validation.
+export async function getCsrfHeader(): Promise<Record<string, string>> {
+  return {};
+}
+
 const DEFAULT_API_TIMEOUT_MS = 15000;
 const DEFAULT_CLIENT_TIMEOUT_MS = 15000;
 
