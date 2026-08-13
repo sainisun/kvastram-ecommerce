@@ -12,6 +12,7 @@ import { api } from '@/lib/api';
 import { OptimizedImage } from '@/design-system';
 import Link from 'next/link';
 import { storefrontTrust } from '@/config/storefront-trust';
+import { CartPricingSummary } from '@/components/cart/CartPricingSummary';
 import {
   Trash2,
   Minus,
@@ -151,10 +152,6 @@ export default function CartPage() {
   } else if (!selectedShipping && subtotal >= freeShippingThreshold) {
     shippingCost = 0; // No option but qualifies for free shipping
   }
-
-  // Use 0 for math when shippingCost is null, but track presence for display
-  const shippingCostForMath = shippingCost ?? 0;
-  const total = Math.max(0, subtotal - discountAmount + shippingCostForMath);
 
   // A4: Recommended products for empty cart state
   const [recommendations, setRecommendations] = useState<Product[]>([]);
@@ -776,75 +773,16 @@ export default function CartPage() {
                 )}
               </div>
 
-              {/* Summary Details */}
-              <div className="flow-root">
-                <dl className="-my-4 divide-y divide-border-subtle">
-                  <div className="flex items-center justify-between py-4">
-                    <dt className="text-muted">Subtotal</dt>
-                    <dd className="font-medium text-primary">
-                      {formatCartPrice(subtotal)}
-                    </dd>
-                  </div>
-                  {discountAmount > 0 && (
-                    <div className="flex items-center justify-between py-4">
-                      <dt className="text-muted">Discount</dt>
-                      <dd className="font-medium text-success">
-                        -{formatCartPrice(discountAmount)}
-                      </dd>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between py-4">
-                    <dt className="text-muted">
-                      Shipping
-                      {shippingCost === 0 &&
-                        subtotal >= freeShippingThreshold && (
-                          <span className="ml-2 text-body-xs text-success">
-                            (Free over {formatCartPrice(freeShippingThreshold)})
-                          </span>
-                        )}
-                    </dt>
-                    <dd className="font-medium text-primary">
-                      {!countryCode ? (
-                        <span className="text-body-sm text-muted">
-                          Calculated at checkout
-                        </span>
-                      ) : countryCode && _shippingOptions.length === 0 ? (
-                        <span className="text-body-sm text-muted">
-                          Shipping unavailable
-                        </span>
-                      ) : !selectedShipping ? (
-                        <span className="text-body-sm text-muted">
-                          Not available
-                        </span>
-                      ) : shippingCost === 0 ? (
-                        'Free'
-                      ) : (
-                        formatCartPrice(shippingCost ?? 0)
-                      )}
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between py-4">
-                    <dt className="text-body-md font-medium text-primary">
-                      Total
-                    </dt>
-                    <dd className="text-display-sm font-medium text-primary">
-                      {formatCartPrice(total)}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-
-              {/* Free Shipping Notice */}
-              {(shippingCost === null || shippingCost > 0) &&
-                subtotal < freeShippingThreshold && (
-                  <div className="mt-4 flex items-center gap-2 rounded-md bg-surface p-3 text-body-sm text-muted">
-                    <AlertCircle size={16} />
-                    <span>
-                      Add {formatCartPrice(freeShippingThreshold - subtotal)}{' '}
-                      more for free shipping!
-                    </span>
-                  </div>
-                )}
+              <CartPricingSummary
+                subtotal={subtotal}
+                discountAmount={discountAmount}
+                shippingCost={shippingCost}
+                countryCode={countryCode}
+                hasShippingOptions={_shippingOptions.length > 0}
+                hasSelectedShipping={Boolean(selectedShipping)}
+                freeShippingThreshold={freeShippingThreshold}
+                formatPrice={formatCartPrice}
+              />
 
               {/* Checkout Button */}
               <Link

@@ -12,21 +12,16 @@ import { storage } from '@/lib/storage';
 import { useAuth } from './auth-context';
 import { api } from '@/lib/api';
 import { getCanonicalProductHandle } from '@/lib/product-links';
+import {
+  addCartItem,
+  calculateCartTotals,
+  mergeCartItems,
+  removeCartItem,
+  setCartItemQuantity,
+  type CartItem,
+} from '@/lib/cart-state';
 
-export interface CartItem {
-  id: string;
-  variantId: string;
-  quantity: number;
-  title: string;
-  price: number;
-  currency: string;
-  thumbnail?: string;
-  material?: string;
-  origin?: string;
-  sku?: string;
-  description?: string;
-  handle?: string;
-}
+export type { CartItem } from '@/lib/cart-state';
 
 interface CartContextType {
   items: CartItem[];
@@ -145,26 +140,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const data = await api.getSavedCart();
       if (data.items && data.items.length > 0) {
-        // Merge saved cart with current cart - immutable updates
-        setItems((prev) => {
-          const merged = [...prev];
-          sanitizeCartItems(data.items).forEach((savedItem: CartItem) => {
-            const existingIndex = merged.findIndex(
-              (i) => i.variantId === savedItem.variantId
-            );
-            if (existingIndex >= 0) {
-              // Update existing item with new quantity (create new object)
-              merged[existingIndex] = {
-                ...merged[existingIndex],
-                quantity: merged[existingIndex].quantity + savedItem.quantity,
-              };
-            } else {
-              // Add new item (create new object)
-              merged.push({ ...savedItem });
-            }
-          });
-          return merged;
-        });
+        setItems((previousItems) =>
+          mergeCartItems(previousItems, sanitizeCartItems(data.items))
+        );
         setSavedCartCount(0);
         setRecoveryOffered(false);
         // Clear saved cart from backend after recovery
@@ -182,41 +160,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addItem = (newItem: CartItem) => {
-    const sanitizedItem = sanitizeCartItem(newItem);
-    setItems((prev) => {
-      const existing = prev.find((i) => i.variantId === sanitizedItem.variantId);
-      if (existing) {
-        return prev.map((i) =>
-          i.variantId === sanitizedItem.variantId
-            ? { ...i, quantity: i.quantity + sanitizedItem.quantity }
-            : i
-        );
-      }
-      return [...prev, sanitizedItem];
-    });
+    setItems((previousItems) =>
+      addCartItem(previousItems, sanitizeCartItem(newItem))
+    );
   };
 
   const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.variantId !== id));
+    setItems((previousItems) => removeCartItem(previousItems, id));
   };
 
   const updateQuantity = (id: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeItem(id);
-      return;
-    }
-    setItems((prev) =>
-      prev.map((i) => (i.variantId === id ? { ...i, quantity } : i))
+    setItems((previousItems) =>
+      setCartItemQuantity(previousItems, id, quantity)
     );
   };
 
   const clearCart = () => setItems([]);
 
-  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
-  const cartTotal = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  const { totalItems, cartTotal } = calculateCartTotals(items);
 
   return (
     <CartContext.Provider
