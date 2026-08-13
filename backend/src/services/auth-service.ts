@@ -3,16 +3,12 @@ import { users } from '../db/schema';
 import { eq, and, lt, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import { sign } from 'hono/jwt';
-import { config } from '../config';
+import { issueAccessToken } from './token-lifecycle-service';
 import {
   validatePassword,
   isCommonPassword,
 } from '../utils/password-validator';
 import speakeasy from 'speakeasy';
-
-// --- Configuration ---
-const JWT_SECRET = config.jwt.secret;
 
 // --- Q9: Account Lockout Configuration (shared constants) ---
 import {
@@ -152,16 +148,26 @@ export class AuthService {
     // 🔒 Q9: Reset failed attempts on successful login
     await resetFailedAttempts(user.id);
 
-    // 4. Generate Token (hono/jwt uses exp as unix timestamp)
-    const token = await sign(
-      { sub: user.id, email: user.email, role: user.role, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 },
-      JWT_SECRET
-    );
+    // 4. Generate a versioned, audience-bound access token.
+    const token = await issueAccessToken({
+      subject: user.id,
+      email: user.email,
+      role: user.role ?? 'admin',
+      audience: 'admin',
+      tokenVersion: user.token_version,
+    });
 
     // Return user info (excluding password) and token
     const { password_hash, failed_login_attempts, locked_until, ...userInfo } =
       user;
     return { user: userInfo, token };
+  }
+
+  async revokeSessions(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ token_version: sql`${users.token_version} + 1` })
+      .where(eq(users.id, userId));
   }
 
   /**
@@ -214,11 +220,14 @@ export class AuthService {
       .returning();
     const newUser = newUserResult[0];
 
-    // 4. Generate Token (hono/jwt uses exp as unix timestamp)
-    const token = await sign(
-      { sub: newUser.id, email: newUser.email, role: newUser.role, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 },
-      JWT_SECRET
-    );
+    // 4. Generate a versioned, audience-bound access token.
+    const token = await issueAccessToken({
+      subject: newUser.id,
+      email: newUser.email,
+      role: newUser.role ?? 'admin',
+      audience: 'admin',
+      tokenVersion: newUser.token_version,
+    });
 
     const { password_hash, failed_login_attempts, locked_until, ...userInfo } =
       newUser;

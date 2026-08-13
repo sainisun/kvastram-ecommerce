@@ -356,8 +356,21 @@ storeAuthRouter.post('/setup-password', async (c) => {
   }
 });
 
-// 🔒 FIX-010: Logout route - clears the cookie
+// RF-007: Logout invalidates the current token version server-side, then clears the cookie.
 storeAuthRouter.post('/logout', async (c) => {
+  const token =
+    getCookie(c, 'auth_token') ||
+    c.req.header('Authorization')?.replace('Bearer ', '');
+
+  if (token) {
+    try {
+      const { customer } = await customerAuthService.getCustomer(token);
+      await customerAuthService.revokeSessions(customer.id);
+    } catch {
+      // An expired or malformed token still receives cookie cleanup.
+    }
+  }
+
   clearAuthCookie(c);
   return c.json({ success: true, message: 'Logged out successfully' });
 });

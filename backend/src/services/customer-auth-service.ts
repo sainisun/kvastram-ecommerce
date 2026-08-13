@@ -2,16 +2,17 @@ import { db } from '../db/client';
 import { customers } from '../db/schema';
 import { eq, sql } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
-import { sign, verify } from 'hono/jwt';
 import { z } from 'zod';
-import { config } from '../config';
+import {
+  issueAccessToken,
+  matchesTokenVersion,
+  verifyAccessToken,
+} from './token-lifecycle-service';
 import crypto from 'node:crypto';
 import {
   validatePassword,
   isCommonPassword,
 } from '../utils/password-validator';
-
-const JWT_SECRET = config.jwt.secret;
 
 // 🔒 FIX-011: Email verification constants
 const VERIFICATION_TOKEN_EXPIRY_MINUTES = 10;
@@ -359,14 +360,13 @@ export const customerAuthService = {
     // 🔒 Q9: Reset failed attempts on successful login
     await resetFailedAttempts(customer.id);
 
-    const token = await sign(
-      {
-        sub: customer.id,
-        role: 'customer',
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-      },
-      JWT_SECRET
-    );
+    const token = await issueAccessToken({
+      subject: customer.id,
+      email: customer.email,
+      role: 'customer',
+      audience: 'customer',
+      tokenVersion: customer.token_version,
+    });
 
     return { token, customer };
   },
@@ -499,11 +499,14 @@ export const customerAuthService = {
       .where(eq(customers.id, customer.id))
       .returning();
 
-    // Generate login token
-    const token = await sign(
-      { sub: updated.id, email: updated.email, role: 'customer', exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 },
-      config.jwt.secret
-    );
+    // Generate a versioned, audience-bound access token.
+    const token = await issueAccessToken({
+      subject: updated.id,
+      email: updated.email,
+      role: 'customer',
+      audience: 'customer',
+      tokenVersion: updated.token_version,
+    });
 
     const { password_hash, ...customerInfo } = updated;
     return { customer: customerInfo, token };
@@ -532,12 +535,18 @@ export const customerAuthService = {
     };
   },
 
+  async revokeSessions(customerId: string): Promise<void> {
+    await db
+      .update(customers)
+      .set({ token_version: sql`${customers.token_version} + 1` })
+      .where(eq(customers.id, customerId));
+  },
+
   // 🔒 FIX-010: Get customer by token (for cookie-based auth)
   async getCustomer(token: string) {
     try {
-      // Verify and decode the JWT token
-      const payload = await verify(token, JWT_SECRET, 'HS256');
-      const customerId = payload.sub as string;
+      const payload = await verifyAccessToken(token, 'customer');
+      const customerId = payload.sub;
 
       const [customer] = await db
         .select({
@@ -548,6 +557,7 @@ export const customerAuthService = {
           phone: customers.phone,
           has_account: customers.has_account,
           email_verified: customers.email_verified,
+          token_version: customers.token_version,
           created_at: customers.created_at,
         })
         .from(customers)
@@ -556,6 +566,9 @@ export const customerAuthService = {
 
       if (!customer) {
         throw new Error('Customer not found');
+      }
+      if (!matchesTokenVersion(payload.tv, customer.token_version)) {
+        throw new Error('Access token has been revoked');
       }
 
       return { customer };
@@ -620,15 +633,14 @@ export const customerAuthService = {
       isNewUser = true;
     }
 
-    // Generate JWT token
-    const token = await sign(
-      {
-        sub: customer.id,
-        role: 'customer',
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
-      },
-      JWT_SECRET
-    );
+    // Generate a versioned, audience-bound access token.
+    const token = await issueAccessToken({
+      subject: customer.id,
+      email: customer.email,
+      role: 'customer',
+      audience: 'customer',
+      tokenVersion: customer.token_version,
+    });
 
     return { token, customer, isNewUser };
   },

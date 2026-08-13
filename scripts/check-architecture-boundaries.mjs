@@ -210,6 +210,37 @@ function validateRf006Artifacts() {
   }
 }
 
+function validateRf007Artifacts() {
+  const required = [
+    join(backendRoot, 'services', 'token-lifecycle-service.ts'),
+    join(root, 'backend', 'drizzle', '0042_add_token_version.sql'),
+  ];
+  for (const artifact of required) {
+    if (!existsSync(artifact)) {
+      findings.push(`[rf-007] missing required artifact ${relative(root, artifact)}`);
+    }
+  }
+
+  const adminAuthRoute = readFileSync(join(backendRoot, 'routes', 'auth.ts'), 'utf8');
+  const customerAuthRoute = readFileSync(
+    join(backendRoot, 'routes', 'store', 'auth.ts'),
+    'utf8'
+  );
+  const migrationSafety = readFileSync(
+    join(root, 'backend', 'scripts', 'verify-migration-safety.mjs'),
+    'utf8'
+  );
+  if (!adminAuthRoute.includes('authService.revokeSessions(')) {
+    findings.push('[rf-007] admin logout does not revoke token versions');
+  }
+  if (!customerAuthRoute.includes('customerAuthService.revokeSessions(')) {
+    findings.push('[rf-007] customer logout does not revoke token versions');
+  }
+  if (!migrationSafety.includes("token_version")) {
+    findings.push('[rf-007] migration safety runner does not assert token_version columns');
+  }
+}
+
 function validateRf001Artifacts() {
   const required = [
     join(docsRoot, 'README.md'),
@@ -230,6 +261,7 @@ validateRf001Artifacts();
 validateRf003Artifacts();
 validateRf005Artifacts();
 validateRf006Artifacts();
+validateRf007Artifacts();
 
 if (findings.length) {
   console.error('Architecture boundary check failed:');

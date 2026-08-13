@@ -124,7 +124,9 @@ authRouter.post(
 // POST /auth/logout - Clear the httpOnly cookie
 authRouter.post(
   '/logout',
+  verifyAuth,
   asyncHandler(async (c) => {
+    await authService.revokeSessions(c.get('user').sub);
     deleteCookie(c, 'admin_token', {
       path: '/',
       httpOnly: true,

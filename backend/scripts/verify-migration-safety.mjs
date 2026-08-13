@@ -85,6 +85,23 @@ async function assertSchema(connectionString) {
       throw new Error('Migration safety assertion failed; orders.idempotency_key is missing.');
     }
 
+    const tokenVersionColumns = await client`
+      select table_name, column_name
+      from information_schema.columns
+      where table_schema = 'public'
+        and table_name in ('users', 'customers')
+        and column_name = 'token_version'
+    `;
+    const tokenVersionTables = new Set(tokenVersionColumns.map((row) => row.table_name));
+    const missingTokenVersionColumns = ['users', 'customers'].filter(
+      (table) => !tokenVersionTables.has(table)
+    );
+    if (missingTokenVersionColumns.length) {
+      throw new Error(
+        `Migration safety assertion failed; token_version is missing on: ${missingTokenVersionColumns.join(', ')}`
+      );
+    }
+
     const journalResult = await client`
       select exists (
         select 1

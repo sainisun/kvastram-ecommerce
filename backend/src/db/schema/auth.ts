@@ -15,6 +15,8 @@ export const users = pgTable(
     // 🔒 Q9: Account lockout fields
     failed_login_attempts: integer('failed_login_attempts').default(0),
     locked_until: timestamp('locked_until'),
+    // Incremented on logout/security events to invalidate previously issued JWTs.
+    token_version: integer('token_version').notNull().default(1),
     ...createdUpdated,
   },
   (table) => ({
