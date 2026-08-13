@@ -139,6 +139,30 @@ function validateCycles() {
   for (const file of graph.keys()) visit(file);
 }
 
+function validateRf003Artifacts() {
+  const required = [
+    join(backendRoot, 'application', 'tags', 'contracts.ts'),
+    join(backendRoot, 'application', 'tags', 'tag-service.ts'),
+    join(backendRoot, 'repositories', 'tag-repository.ts'),
+    join(backendRoot, 'services', 'tag-application-service.ts'),
+  ];
+  for (const artifact of required) {
+    if (!existsSync(artifact)) {
+      findings.push(`[rf-003] missing required artifact ${relative(root, artifact)}`);
+    }
+  }
+
+  const tagsRoute = join(backendRoot, 'routes', 'tags.ts');
+  const directDatabaseImport = importsFor(tagsRoute).find(
+    (specifier) => /(^|\/)db(?:\/|$)/.test(specifier)
+  );
+  if (directDatabaseImport) {
+    findings.push(
+      `[rf-003] ${relative(root, tagsRoute)} imports prohibited persistence dependency "${directDatabaseImport}"`
+    );
+  }
+}
+
 function validateRf001Artifacts() {
   const required = [
     join(docsRoot, 'README.md'),
@@ -156,6 +180,7 @@ function validateRf001Artifacts() {
 for (const boundary of boundaries) validateBoundary(boundary);
 validateCycles();
 validateRf001Artifacts();
+validateRf003Artifacts();
 
 if (findings.length) {
   console.error('Architecture boundary check failed:');

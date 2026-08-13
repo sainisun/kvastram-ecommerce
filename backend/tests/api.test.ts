@@ -22,6 +22,15 @@ describeIntegration('Store API Endpoints', () => {
         }, 30000);
     });
 
+    describe('Tags API', () => {
+        it('should serve tags through the decoupled route-service-repository path', async () => {
+            const response = await fetch(`${API_BASE}/tags`);
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(Array.isArray(data.tags)).toBe(true);
+        }, 30000);
+    });
+
     describe('Legal Pages API', () => {
         it('should return privacy policy page', async () => {
             const response = await fetch(`${API_BASE}/store/auth/legal?slug=privacy-policy`);
