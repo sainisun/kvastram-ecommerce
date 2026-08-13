@@ -37,15 +37,16 @@ import type {
   WorkflowPackage,
 } from '../utils/order-workflow';
 import type { CarrierProvider } from '../services/carrier-service';
+import {
+  assertOrderStatusTransition,
+  canTransitionOrderStatus,
+  deriveOrderStatusMutation,
+  type OrderStatus,
+} from '../domain/orders/order-transition-policy';
+
+export type { OrderStatus } from '../domain/orders/order-transition-policy';
 
 // --- TYPES ---
-export type OrderStatus =
-  | 'pending'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled'
-  | 'refunded';
 
 export interface OrderFilters {
   page?: number;
@@ -65,16 +66,6 @@ export interface OrderFilters {
   sort_by?: string;
   sort_order?: 'asc' | 'desc';
 }
-
-// --- CONSTANTS ---
-const VALID_TRANSITIONS: Record<string, string[]> = {
-  pending: ['processing', 'cancelled'],
-  processing: ['shipped', 'cancelled', 'refunded'],
-  shipped: ['delivered', 'refunded', 'cancelled'],
-  delivered: ['refunded'],
-  cancelled: [],
-  refunded: [],
-};
 
 // Aliases
 const shippingAddr = alias(addresses, 'shipping_address');
@@ -772,29 +763,17 @@ class OrderService {
 
     const currentStatus = deriveWorkflowStatus(existingOrder);
 
-    // Validate transition
-    if (currentStatus !== newStatus) {
-      const allowedTransitions = VALID_TRANSITIONS[currentStatus] || [];
-      if (!allowedTransitions.includes(newStatus)) {
-        throw new Error(
-          `Invalid status transition from '${currentStatus}' to '${newStatus}'`
-        );
-      }
-    }
+    assertOrderStatusTransition(currentStatus, newStatus);
 
     const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
       workflow_status: newStatus as OrderStatus,
     });
-    const nextFulfillmentStatus =
-      newStatus === 'delivered'
-        ? 'fulfilled'
-        : newStatus === 'shipped'
-          ? 'shipped'
-          : newStatus === 'processing'
-            ? 'not_fulfilled'
-            : existingOrder.fulfillment_status;
-    const nextPaymentStatus =
-      newStatus === 'refunded' ? 'refunded' : existingOrder.payment_status;
+    const { fulfillmentStatus: nextFulfillmentStatus, paymentStatus: nextPaymentStatus } =
+      deriveOrderStatusMutation(
+        newStatus,
+        existingOrder.fulfillment_status ?? '',
+        existingOrder.payment_status ?? ''
+      );
 
     const [updated] = await db
       .update(orders)
@@ -843,10 +822,7 @@ class OrderService {
     const invalidIds: string[] = [];
     for (const order of targets) {
       const currentStatus = deriveWorkflowStatus(order);
-      if (currentStatus === newStatus) continue;
-
-      const allowed = VALID_TRANSITIONS[currentStatus] || [];
-      if (!allowed.includes(newStatus)) {
+      if (!canTransitionOrderStatus(currentStatus, newStatus)) {
         invalidIds.push(order.id);
       }
     }
@@ -861,16 +837,12 @@ class OrderService {
       const nextMetadata = mergeWorkflowMetadata(order.metadata, {
         workflow_status: newStatus as OrderStatus,
       });
-      const nextFulfillmentStatus =
-        newStatus === 'delivered'
-          ? 'fulfilled'
-          : newStatus === 'shipped'
-            ? 'shipped'
-            : newStatus === 'processing'
-              ? 'not_fulfilled'
-              : order.fulfillment_status;
-      const nextPaymentStatus =
-        newStatus === 'refunded' ? 'refunded' : order.payment_status;
+      const { fulfillmentStatus: nextFulfillmentStatus, paymentStatus: nextPaymentStatus } =
+        deriveOrderStatusMutation(
+          newStatus as OrderStatus,
+          order.fulfillment_status ?? '',
+          order.payment_status ?? ''
+        );
 
       await db
         .update(orders)

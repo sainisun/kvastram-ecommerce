@@ -163,6 +163,31 @@ function validateRf003Artifacts() {
   }
 }
 
+function validateRf005Artifacts() {
+  const policy = join(
+    backendRoot,
+    'domain',
+    'orders',
+    'order-transition-policy.ts'
+  );
+  if (!existsSync(policy)) {
+    findings.push(`[rf-005] missing required policy ${relative(root, policy)}`);
+    return;
+  }
+
+  const orderService = join(backendRoot, 'services', 'order-service.ts');
+  const serviceSource = readFileSync(orderService, 'utf8');
+  if (!serviceSource.includes('assertOrderStatusTransition(')) {
+    findings.push('[rf-005] order service does not delegate single-order validation to the transition policy');
+  }
+  if (!serviceSource.includes('canTransitionOrderStatus(')) {
+    findings.push('[rf-005] order service does not delegate bulk validation to the transition policy');
+  }
+  if (serviceSource.includes('const VALID_TRANSITIONS')) {
+    findings.push('[rf-005] order service retains a duplicated transition graph');
+  }
+}
+
 function validateRf001Artifacts() {
   const required = [
     join(docsRoot, 'README.md'),
@@ -181,6 +206,7 @@ for (const boundary of boundaries) validateBoundary(boundary);
 validateCycles();
 validateRf001Artifacts();
 validateRf003Artifacts();
+validateRf005Artifacts();
 
 if (findings.length) {
   console.error('Architecture boundary check failed:');
