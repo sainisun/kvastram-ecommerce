@@ -5,6 +5,7 @@ import { adminOrdersApi } from './api-orders';
 import { adminContentMediaApi } from './api-content-media';
 import { adminCatalogApi } from './api-catalog';
 import { adminWholesaleInquiriesApi } from './api-wholesale-inquiries';
+import { adminWholesaleCustomersApi } from './api-wholesale-customers';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -21,6 +22,7 @@ export const api = {
   ...adminContentMediaApi,
   ...adminCatalogApi,
   ...adminWholesaleInquiriesApi,
+  ...adminWholesaleCustomersApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -357,51 +359,7 @@ export const api = {
 
   ...adminWholesaleInquiriesApi,
 
-  // Wholesale Customers endpoints
-  getWholesaleCustomers: async (
-    search?: string,
-    tier?: string,
-    page = 1,
-    limit = 20
-  ) => {
-    let url = `${API_BASE_URL}/wholesale-customers?page=${page}&limit=${limit}`;
-    if (search) url += `&search=${encodeURIComponent(search)}`;
-    if (tier && tier !== 'all') url += `&tier=${tier}`;
-
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok)
-      return handleApiError(res, 'Failed to fetch wholesale customers');
-    return res.json();
-  },
-
-  getWholesaleCustomerStats: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/wholesale-customers/stats`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok)
-      return handleApiError(res, 'Failed to fetch wholesale customer stats');
-    return res.json();
-  },
-
-  updateWholesaleCustomerTier: async (id: string, discount_tier: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/wholesale-customers/${id}/tier`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ discount_tier }),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update customer tier');
-    return res.json();
-  },
+  ...adminWholesaleCustomersApi,
 
   // Wholesale Orders endpoints
   getWholesaleOrders: async (status?: string, page = 1, limit = 20) => {
