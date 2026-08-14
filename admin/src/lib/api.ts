@@ -9,6 +9,7 @@ import { adminWholesaleCustomersApi } from './api-wholesale-customers';
 import { adminWholesaleOrdersApi } from './api-wholesale-orders';
 import { adminWholesaleTiersApi } from './api-wholesale-tiers';
 import { adminSettingsApi } from './api-settings';
+import { adminMarketingEngagementApi } from './api-marketing-engagement';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -29,6 +30,7 @@ export const api = {
   ...adminWholesaleOrdersApi,
   ...adminWholesaleTiersApi,
   ...adminSettingsApi,
+  ...adminMarketingEngagementApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -207,86 +209,7 @@ export const api = {
 
   ...adminSettingsApi,
 
-  // Coupon endpoints
-  getDiscounts: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/marketing/discounts`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch discounts');
-    return res.json();
-  },
-
-  createDiscount: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/marketing/discounts`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create discount');
-    return res.json();
-  },
-
-  updateDiscount: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/marketing/discounts/${id}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update discount');
-    return res.json();
-  },
-
-  deleteDiscount: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/marketing/discounts/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete discount');
-    return res.json();
-  },
-
-  // Returns & Refunds
-  getReturns: async (status?: string) => {
-    let url = `${API_BASE_URL}/admin/returns`;
-    if (status) url += `?status=${status}`;
-    const res = await fetchWithTimeout(url, {});
-    if (!res.ok) throw new Error('Failed to fetch returns');
-    return res.json();
-  },
-  getReviews: async (limit = 50, offset = 0, status?: string) => {
-    let url = `${API_BASE_URL}/reviews?limit=${limit}&offset=${offset}`;
-    if (status) url += `&status=${status}`;
-    const res = await fetchWithTimeout(url, {});
-    if (!res.ok) throw new Error('Failed to fetch reviews');
-    return res.json();
-  },
-
-  updateReviewStatus: async (id: string, status: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/reviews/${id}/status`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update review status');
-    return res.json();
-  },
-
-  deleteReview: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/reviews/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete review');
-    return res.json();
-  },
+  ...adminMarketingEngagementApi,
 
   // Generic POST helper for admin
   post: async (path: string, data?: unknown) => {
