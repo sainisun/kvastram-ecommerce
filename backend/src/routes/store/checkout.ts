@@ -35,6 +35,8 @@ import { buildInventoryReservationMetadata } from '../../utils/inventory-reserva
 import { getDefaultCheckoutShippingOptions } from '../../domain/checkout/checkout-pricing-policy';
 import { validateCheckoutDiscountCommand } from '../../application/checkout/discount-validation-command';
 import { DrizzleCheckoutDiscountRepository } from '../../repositories/checkout-discount-repository';
+import { resolveCheckoutShippingOption } from '../../application/checkout/shipping-resolution-command';
+import { CarrierServiceCheckoutRateProvider } from '../../repositories/checkout-carrier-rate-provider';
 
 const FALLBACK_RATES: Record<string, number> = {
   INR: 1, USD: 0.012, EUR: 0.011, GBP: 0.0095, JPY: 1.79,
@@ -45,6 +47,7 @@ const FALLBACK_RATES: Record<string, number> = {
 
 const checkoutRouter = new Hono();
 const checkoutDiscountRepository = new DrizzleCheckoutDiscountRepository();
+const checkoutCarrierRateProvider = new CarrierServiceCheckoutRateProvider();
 
 // --- SCHEMAS ---
 
@@ -143,57 +146,6 @@ async function getAuthenticatedCustomerId(c: any) {
   } catch {
     return null;
   }
-}
-
-async function resolveShippingOption(input: {
-  shippingMethod: string;
-  countryCode: string;
-  postalCode: string;
-  currencyCode: string;
-  domesticRate: number;
-  intlRate: number;
-  freeThreshold: number;
-  shippingAddress: z.infer<typeof PlaceOrderSchema>['shipping_address'];
-}) {
-  const fallback = getDefaultCheckoutShippingOptions(input);
-  let options = fallback.options;
-
-  if (input.countryCode === 'IN' && input.postalCode) {
-    try {
-      const liveRates = await carrierService.getRates({
-        email: 'checkout@odhvica.com',
-        payment_status: 'awaiting',
-        shipping_address: input.shippingAddress,
-        workflow: {
-          label: {
-            package_weight_grams: 500,
-            package_length_cm: 25,
-            package_width_cm: 20,
-            package_height_cm: 4,
-          },
-        },
-      });
-
-      if (liveRates.rates.length > 0) {
-        options = liveRates.rates.map((rate) => ({
-          id: rate.id,
-          name: rate.service,
-          description: rate.estimated_delivery_days
-            ? `Estimated ${rate.estimated_delivery_days} day delivery`
-            : 'Courier ETA confirmed at checkout',
-          price: rate.amount,
-          estimated_days: rate.estimated_delivery_days
-            ? String(rate.estimated_delivery_days)
-            : '',
-          currency_code: rate.currency,
-        }));
-      }
-    } catch {
-      // Use the deterministic fallback options returned by the preview endpoint.
-    }
-  }
-
-  return options.find((option) => option.id === input.shippingMethod) ?? null;
 }
 
 // --- ROUTES ---
@@ -484,16 +436,19 @@ checkoutRouter.post(
          return c.json({ error: `Shipping is not available to ${destCountry}` }, 400);
       }
 
-      const selectedShipping = await resolveShippingOption({
-        shippingMethod: body.shipping_method,
-        countryCode: destCountry,
-        postalCode: body.shipping_address.postal_code,
-        currencyCode,
-        domesticRate,
-        intlRate,
-        freeThreshold,
-        shippingAddress: body.shipping_address,
-      });
+      const selectedShipping = await resolveCheckoutShippingOption(
+        {
+          shippingMethod: body.shipping_method,
+          countryCode: destCountry,
+          postalCode: body.shipping_address.postal_code,
+          currencyCode,
+          domesticRate,
+          intlRate,
+          freeThreshold,
+          shippingAddress: body.shipping_address,
+        },
+        checkoutCarrierRateProvider
+      );
 
       if (!selectedShipping) {
         return c.json(
