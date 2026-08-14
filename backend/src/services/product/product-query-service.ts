@@ -30,6 +30,7 @@ import {
 import { eq, desc, asc, sql, or, and, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { escapeLikeWildcards } from '../../utils/validation';
+import { selectProductSearchResults } from '../../domain/products/product-search-result-policy';
 import { embedText, toVectorLiteral } from '../../jobs/generateEmbeddings';
 import type { ProductFilter, ProductSearch } from './product-validator';
 
@@ -895,35 +896,12 @@ export class ProductQueryService {
       limit: 50,
     });
 
-    // Post-process filtering (Price) and Sorting
-    let processedResults = searchResults.map((p) => {
-      const variantPrices =
-        p.variants?.flatMap((v) => v.prices?.map((pr) => pr.amount) || []) ||
-        [];
-      const minProductPrice =
-        variantPrices.length > 0 ? Math.min(...variantPrices) : 0;
-      return { ...p, price: minProductPrice };
+    // Apply in-memory price range and sorting after the database search.
+    let processedResults = selectProductSearchResults(searchResults, {
+      minPrice,
+      maxPrice,
+      sortBy,
     });
-
-    if (minPrice !== undefined) {
-      processedResults = processedResults.filter((p) => p.price >= minPrice);
-    }
-    if (maxPrice !== undefined) {
-      processedResults = processedResults.filter((p) => p.price <= maxPrice);
-    }
-
-    // Sort
-    if (sortBy === 'price_asc') {
-      processedResults.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price_desc') {
-      processedResults.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'newest') {
-      processedResults.sort(
-        (a, b) =>
-          new Date(b.created_at || 0).getTime() -
-          new Date(a.created_at || 0).getTime()
-      );
-    }
 
     let usedVectorFallback = false;
     if (query && processedResults.length === 0) {
