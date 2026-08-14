@@ -32,6 +32,7 @@ import { z } from 'zod';
 import { escapeLikeWildcards } from '../../utils/validation';
 import { selectProductSearchResults } from '../../domain/products/product-search-result-policy';
 import { enrichProductDetails } from '../../domain/products/product-enrichment-policy';
+import { assembleProductListDetails } from '../../domain/products/product-list-assembly-policy';
 import { embedText, toVectorLiteral } from '../../jobs/generateEmbeddings';
 import type { ProductFilter, ProductSearch } from './product-validator';
 
@@ -299,52 +300,6 @@ export class ProductQueryService {
   /**
    * Merge product data with variant stats and images
    */
-  private mergeProductData(
-    productsList: Array<Record<string, unknown>>,
-    variantData: VariantStats[],
-    imagesData: (typeof product_images.$inferSelect)[],
-    variantDetails?: Record<
-      string,
-      Array<{
-        id: string;
-        title: string;
-        sku: string | null;
-        inventory_quantity: number;
-        prices: Array<{
-          id: string;
-          amount: number;
-          currency_code: string;
-        }>;
-      }>
-    >
-  ): ProductWithStats[] {
-    return productsList.map((product) => {
-      const stats = variantData.find((v) => v.product_id === product.id);
-      const pImages = imagesData.filter((img) => img.product_id === product.id);
-      const pVariants = variantDetails?.[product.id as string] || [];
-      return {
-        id: String(product.id),
-        title: String(product.title),
-        handle: String(product.handle),
-        description: product.description as string | null,
-        collection_id: product.collection_id as string | null,
-        size_guide: product.size_guide as string | null,
-        care_instructions: product.care_instructions as string | null,
-        price_type: (product.price_type as string) || 'fixed',
-        seo_title: product.seo_title as string | null,
-        seo_description: product.seo_description as string | null,
-        status: String(product.status),
-        thumbnail: product.thumbnail as string | null,
-        created_at: product.created_at as Date,
-        updated_at: product.updated_at as Date | null,
-        variant_count: stats?.variant_count || 0,
-        total_inventory: stats?.total_inventory || 0,
-        images: pImages,
-        variants: pVariants,
-      };
-    });
-  }
-
   private async enrichProducts<T extends { id: string; collection_id?: string | null; images?: any[]; variants?: any[] }>(
     productsList: T[],
     includeRelatedProducts = true
@@ -609,11 +564,11 @@ export class ProductQueryService {
     ]);
 
     // Merge data
-    const productsWithStats = this.mergeProductData(
+    const productsWithStats = assembleProductListDetails(
       productsList,
       variantData,
       imagesData,
-      variantDetailsData
+      variantDetailsData,
     );
 
     // Use cached count from early return, or compute if no filters
