@@ -8,14 +8,8 @@ import { db } from '../../db/client';
 import {
   products,
   product_variants,
-  product_options,
-  money_amounts,
   product_images,
-  product_categories,
-  product_seo,
-  product_attribute_values,
 } from '../../db/schema';
-import { eq, inArray, and } from 'drizzle-orm';
 import { emailService } from '../email-service';
 import { syncSingleProductToMeilisearch, deleteProduct } from '../search-service';
 import { synchronizeProductSearch } from '../../application/products/product-search-synchronization-command';
@@ -47,8 +41,10 @@ import { productVariantRepository } from '../../repositories/product-variant-rep
 import { productBaseRepository } from '../../repositories/product-base-repository';
 import { productDiscoveryBaselineRepository } from '../../repositories/product-discovery-baseline-repository';
 import { productDeletionRepository } from '../../repositories/product-deletion-repository';
+import { productPublishReadinessRepository } from '../../repositories/product-publish-readiness-repository';
 import { backInStockSubscriptionRepository } from '../../repositories/back-in-stock-subscription-repository';
 import { notifyBackInStockSubscribers } from '../../application/products/back-in-stock-notification-command';
+import { getProductPublishReadinessIssues } from '../../application/products/product-publish-readiness-command';
 
 export class ProductMutationService {
   /**
@@ -135,7 +131,13 @@ export class ProductMutationService {
    */
   async update(id: string, data: UpdateProductInput) {
     if (data.status === 'published') {
-      await this.validatePublishReadiness(id, data);
+      const errors = await getProductPublishReadinessIssues(id, data, {
+        loadSnapshot: (productId) => productPublishReadinessRepository.loadSnapshot(productId),
+        getNewProductIssues: getNewProductPublishReadinessIssues,
+      });
+      if (errors.length > 0) {
+        throw new ValidationError('Product is not ready to publish', errors);
+      }
     }
 
     const result = await db.transaction(async (tx) => {
@@ -194,74 +196,6 @@ export class ProductMutationService {
     });
 
     return result;
-  }
-
-  private async validatePublishReadiness(id: string, data: UpdateProductInput) {
-    const [existing] = await db.select().from(products).where(eq(products.id, id)).limit(1);
-    if (!existing) throw new Error(`Product with id ${id} not found`);
-
-    const [seo] = await db.select().from(product_seo).where(eq(product_seo.product_id, id)).limit(1);
-    const existingImages = await db.select().from(product_images).where(eq(product_images.product_id, id));
-    const existingCategories = await db.select().from(product_categories).where(eq(product_categories.product_id, id));
-    const existingAttributes = await db.select().from(product_attribute_values).where(eq(product_attribute_values.product_id, id));
-    const existingVariants = await db
-      .select({ id: product_variants.id })
-      .from(product_variants)
-      .where(eq(product_variants.product_id, id));
-    const existingVariantIds = existingVariants.map((variant) => variant.id);
-    const existingPrices = existingVariantIds.length
-      ? await db
-          .select({ amount: money_amounts.amount })
-          .from(money_amounts)
-          .where(inArray(money_amounts.variant_id, existingVariantIds))
-      : [];
-
-    const hasImages = data.images ? data.images.some((image) => image.url) : existingImages.length > 0 || Boolean(data.thumbnail || existing.thumbnail);
-    const hasCategories = data.category_ids ? data.category_ids.length > 0 : existingCategories.length > 0;
-    const hasAttributes = existingAttributes.length > 0 || Boolean(data.material || existing.material);
-    const hasSeoTitle = Boolean(data.seo_title || seo?.seo_title || existing.seo_title);
-    const hasMetaDescription = Boolean(data.seo_description || seo?.meta_description || existing.seo_description);
-    const hasFixedPrice = (data.price_type || existing.price_type || 'fixed') === 'fixed';
-    const hasSellablePrice =
-      Boolean(data.prices?.some((price) => Number(price.amount) > 0)) ||
-      existingPrices.some((price) => Number(price.amount) > 0);
-    const hasPrice = hasFixedPrice && hasSellablePrice;
-
-    const errors: ValidationErrorDetails[] = [
-      { field: 'title', message: 'Published products need a title.' },
-      { field: 'handle', message: 'Published products need an editable URL slug.' },
-      { field: 'prices', message: 'Published products need fixed pricing with at least one positive price.' },
-      { field: 'images', message: 'Published products need at least one product image.' },
-      { field: 'category_ids', message: 'Published products need at least one category or collection.' },
-      { field: 'attributes', message: 'Published products need at least one structured attribute or legacy material.' },
-      { field: 'seo_title', message: 'Published products need an SEO title.' },
-      { field: 'seo_description', message: 'Published products need a meta description.' },
-    ].filter((error) => {
-      if (error.field === 'title') {
-        return getNewProductPublishReadinessIssues({
-          title: data.title || existing.title,
-          handle: data.handle || existing.handle,
-          thumbnail: data.thumbnail || existing.thumbnail || undefined,
-          images: data.images,
-          price_type: (data.price_type || existing.price_type || 'fixed') as 'fixed' | 'on_request',
-          prices: data.prices,
-          category_ids: data.category_ids,
-          collection_id: data.collection_id ?? existing.collection_id,
-        }).some((issue) => issue.field === 'title');
-      }
-      if (error.field === 'handle') return !Boolean(data.handle || existing.handle);
-      if (error.field === 'prices') return !hasPrice;
-      if (error.field === 'images') return !hasImages;
-      if (error.field === 'category_ids') return !hasCategories && !Boolean(data.collection_id ?? existing.collection_id);
-      if (error.field === 'attributes') return !hasAttributes;
-      if (error.field === 'seo_title') return !hasSeoTitle;
-      if (error.field === 'seo_description') return !hasMetaDescription;
-      return false;
-    });
-
-    if (errors.length > 0) {
-      throw new ValidationError('Product is not ready to publish', errors);
-    }
   }
 
   private async updateBaseProductDetails(tx: any, id: string, data: UpdateProductInput) {
