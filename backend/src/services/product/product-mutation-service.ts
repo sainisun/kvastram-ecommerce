@@ -9,25 +9,11 @@ import {
   products,
   product_variants,
   product_options,
-  product_option_values,
   money_amounts,
   product_images,
-  categories,
-  tags,
-  product_collections,
-  collection_products,
   product_categories,
-  product_tags,
   product_seo,
-  product_discovery,
-  product_attributes,
-  attribute_values,
   product_attribute_values,
-  product_variant_merchant,
-  product_media_seo,
-  product_embeddings,
-  back_in_stock_subscriptions,
-  regions,
 } from '../../db/schema';
 import { eq, inArray, and } from 'drizzle-orm';
 import { emailService } from '../email-service';
@@ -60,6 +46,7 @@ import { productOptionRepository } from '../../repositories/product-option-repos
 import { productVariantRepository } from '../../repositories/product-variant-repository';
 import { productBaseRepository } from '../../repositories/product-base-repository';
 import { productDiscoveryBaselineRepository } from '../../repositories/product-discovery-baseline-repository';
+import { productDeletionRepository } from '../../repositories/product-deletion-repository';
 import { backInStockSubscriptionRepository } from '../../repositories/back-in-stock-subscription-repository';
 import { notifyBackInStockSubscribers } from '../../application/products/back-in-stock-notification-command';
 
@@ -298,56 +285,7 @@ export class ProductMutationService {
    * Delete a product and all its related data.
    */
   async delete(id: string) {
-    const result = await db.transaction(async (tx) => {
-      // 1. Get variants for this product
-      const variants = await tx
-        .select({ id: product_variants.id })
-        .from(product_variants)
-        .where(eq(product_variants.product_id, id));
-
-      const variantIds = variants.map((v) => v.id);
-
-      // 2. Delete product_options and product_option_values
-      if (variantIds.length > 0) {
-        await tx
-          .delete(product_option_values)
-          .where(inArray(product_option_values.variant_id, variantIds));
-        await tx
-          .delete(product_options)
-          .where(eq(product_options.product_id, id));
-      }
-
-      // 3. Delete money_amounts (prices) for all variants
-      if (variantIds.length > 0) {
-        await tx
-          .delete(money_amounts)
-          .where(inArray(money_amounts.variant_id, variantIds));
-      }
-
-      // 4. Delete variants
-      await tx
-        .delete(product_variants)
-        .where(eq(product_variants.product_id, id));
-
-      // 5. Delete images
-      await tx.delete(product_images).where(eq(product_images.product_id, id));
-
-      // 6. Delete category associations
-      await tx
-        .delete(product_categories)
-        .where(eq(product_categories.product_id, id));
-
-      // 7. Delete tag associations
-      await tx.delete(product_tags).where(eq(product_tags.product_id, id));
-
-      // 8. Finally delete the product
-      await tx.delete(products).where(eq(products.id, id));
-
-      // 10. Delete Drizzle product_embeddings (if any)
-      await tx.delete(product_embeddings).where(eq(product_embeddings.product_id, id));
-
-      return { id, deleted: true };
-    });
+    const result = await db.transaction((tx) => productDeletionRepository.delete(tx, id));
 
     // Delete from Meilisearch in background (non-blocking)
     void synchronizeProductSearch(id, 'deleted', {
