@@ -50,6 +50,7 @@ import { bulkUpdateOrderStatus as bulkUpdateOrderStatusCommand } from '../applic
 import { updateOrderTracking as updateOrderTrackingCommand } from '../application/orders/order-tracking-update-command';
 import { completeOrder as completeOrderCommand } from '../application/orders/order-completion-command';
 import { addOrderPackage as addOrderPackageCommand } from '../application/orders/order-add-package-command';
+import { updateOrderPackage as updateOrderPackageCommand } from '../application/orders/order-package-update-command';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
 import { orderDetailQueryService } from './order-detail-query-service';
@@ -569,146 +570,56 @@ class OrderService {
       delivered_at?: string | null;
     }
   ) {
-    const [existingOrder] = await db
-      .select({
-        id: orders.id,
-        email: orders.email,
-        order_number: orders.display_id,
-        metadata: orders.metadata,
-        status: orders.status,
-        payment_status: orders.payment_status,
-        fulfillment_status: orders.fulfillment_status,
-        tracking_number: orders.tracking_number,
-        total: orders.total,
-        currency_code: orders.currency_code,
-      })
-      .from(orders)
-      .where(eq(orders.id, id));
-
-    if (!existingOrder) throw new Error('Order not found');
-
-    const existingPackages = getWorkflowPackages(existingOrder);
-    if (!existingPackages.some((pkg) => pkg.id === packageId)) {
-      throw new Error('Package not found');
-    }
-
-    const nextPackages = upsertWorkflowPackage(existingPackages, {
-      package_id: packageId,
-      ship_date: data.ship_date,
-      carrier: data.shipping_carrier,
-      service: data.shipping_service,
-      tracking_number: data.tracking_number,
-      tracking_url: data.tracking_link,
-      no_tracking: data.no_tracking,
-      no_tracking_reason: data.no_tracking_reason,
-      notify_buyer: data.notify_buyer,
-      notification_sent:
-        Object.prototype.hasOwnProperty.call(data, 'notify_buyer')
-          ? data.notify_buyer === true
-          : undefined,
-      notification_sent_at:
-        Object.prototype.hasOwnProperty.call(data, 'notify_buyer')
-          ? data.notify_buyer === true
-            ? new Date().toISOString()
-            : null
-          : undefined,
-      label_url: data.label_url,
-      label_file_name: data.label_file_name,
-      label_state: data.label_state,
-      label_cost: data.label_cost,
-      label_currency: data.label_currency,
-      package_weight_grams: data.package_weight_grams,
-      package_length_cm: data.package_length_cm,
-      package_width_cm: data.package_width_cm,
-      package_height_cm: data.package_height_cm,
-      carrier_service: data.carrier_service,
-      label_provider: data.label_provider,
-      provider_order_id: data.provider_order_id,
-      provider_shipment_id: data.provider_shipment_id,
-      provider_courier_id: data.provider_courier_id,
-      pickup_reference: data.pickup_reference,
-      delivered_at: data.delivered_at,
-    });
-    const primaryPackage = getPrimaryPackage(nextPackages);
-    const updatedPackage =
-      nextPackages.find((pkg) => pkg.id === packageId) || primaryPackage;
-    const updateStatus = data.delivered_at
-      ? 'delivered'
-      : updatedPackage?.ship_date
-        ? 'shipped'
-        : existingOrder.status;
-    const updateSubject =
-      updateStatus === 'delivered'
-        ? `Your Odhvica order #${existingOrder.order_number ?? id.slice(0, 8)} was marked delivered`
-        : `Shipping details updated for your Odhvica order #${existingOrder.order_number ?? id.slice(0, 8)}`;
-    const updateMessage =
-      updateStatus === 'delivered'
-        ? 'Your order has been marked as delivered.'
-        : data.no_tracking === true
-          ? 'Shipping details were updated for your order. This package does not include tracking.'
-          : 'Shipping details were updated for your order, including the latest tracking information.';
-    const nextMetadata = mergeWorkflowMetadata(
-      Object.prototype.hasOwnProperty.call(data, 'notify_buyer') &&
-        data.notify_buyer !== false
-        ? appendOrderCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
-            template: updateStatus === 'delivered' ? 'order_update' : 'shipped',
-            subject: updateSubject,
-            message: updateMessage,
-            status: 'queued',
+    const updated = await updateOrderPackageCommand(id, packageId, data, {
+      loadOrder: async (orderId) => {
+        const [existingOrder] = await db
+          .select({
+            id: orders.id,
+            email: orders.email,
+            order_number: orders.display_id,
+            metadata: orders.metadata,
+            status: orders.status,
+            payment_status: orders.payment_status,
+            fulfillment_status: orders.fulfillment_status,
+            tracking_number: orders.tracking_number,
+            total: orders.total,
+            currency_code: orders.currency_code,
           })
-        : existingOrder.metadata,
-      {
-      workflow_status: data.delivered_at ? 'delivered' : undefined,
-      shipped_at:
-        getWorkflowMetadata(existingOrder.metadata).shipped_at ||
-        primaryPackage?.ship_date ||
-        null,
-      delivered_at: data.delivered_at,
-      packages: nextPackages,
-      }
-    );
-    const trackingFields = deriveLegacyTrackingFields(nextPackages);
-
-    const [updated] = await db
-      .update(orders)
-      .set({
-        tracking_number: trackingFields.tracking_number,
-        shipping_carrier: trackingFields.shipping_carrier,
-        tracking_link: trackingFields.tracking_link,
-        status:
-          data.delivered_at
-            ? 'delivered'
-            : primaryPackage?.ship_date
-              ? 'shipped'
-              : existingOrder.status,
-        fulfillment_status:
-          data.delivered_at
-            ? 'fulfilled'
-            : primaryPackage?.ship_date
-              ? 'shipped'
-              : existingOrder.fulfillment_status,
-        metadata: nextMetadata,
-        updated_at: new Date(),
-      })
-      .where(eq(orders.id, id))
-      .returning();
-
-    if (
-      existingOrder.email &&
-      Object.prototype.hasOwnProperty.call(data, 'notify_buyer') &&
-      data.notify_buyer !== false
-    ) {
-      sendStatusNotification({
-        email: existingOrder.email,
-        order_number: existingOrder.order_number ?? id.slice(0, 8),
-        total: existingOrder.total,
-        currency_code: existingOrder.currency_code,
-        status: data.delivered_at ? 'delivered' : 'shipped',
-        tracking_number: updatedPackage?.tracking_number || trackingFields.tracking_number,
-        shipping_carrier: updatedPackage?.carrier || trackingFields.shipping_carrier,
-        tracking_link: updatedPackage?.tracking_url || trackingFields.tracking_link,
-      });
-    }
+          .from(orders)
+          .where(eq(orders.id, orderId));
+        return existingOrder || null;
+      },
+      getWorkflowPackages,
+      findPackage: (packages, targetId) => packages.find((pkg) => pkg.id === targetId) || null,
+      getPrimaryPackage,
+      getPackageFields: (pkg) => ({
+        ship_date: pkg?.ship_date || null,
+        tracking_number: pkg?.tracking_number || null,
+        shipping_carrier: pkg?.carrier || null,
+        tracking_link: pkg?.tracking_url || null,
+      }),
+      upsertWorkflowPackage: (packages, input) => upsertWorkflowPackage(packages, input as any),
+      getExistingShippedAt: (metadata) => getWorkflowMetadata(metadata).shipped_at,
+      mergeWorkflowMetadata: (metadata, update) => mergeWorkflowMetadata(metadata, update as WorkflowMetadata),
+      deriveLegacyTrackingFields,
+      persistOrder: async (orderId, input) => {
+        const [persisted] = await db
+          .update(orders)
+          .set({
+            tracking_number: input.tracking_number,
+            shipping_carrier: input.shipping_carrier,
+            tracking_link: input.tracking_link,
+            status: input.status as any,
+            fulfillment_status: input.fulfillment_status as any,
+            metadata: input.metadata as any,
+            updated_at: input.updated_at,
+          })
+          .where(eq(orders.id, orderId))
+          .returning();
+        return persisted;
+      },
+      notify: sendStatusNotification,
+    });
 
     return applyWorkflowSummary(updated as Record<string, any>);
   }
