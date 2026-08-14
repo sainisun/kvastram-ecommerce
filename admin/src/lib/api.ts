@@ -1,5 +1,6 @@
 import { adminAuthApi } from './api-auth';
 import { adminProductsApi } from './api-products';
+import { adminCustomersApi } from './api-customers';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -13,65 +14,7 @@ export const api = {
 
   ...adminProductsApi,
 
-  getCustomers: async (page = 1, search = '', filter = 'all') => {
-    let url = `${API_BASE_URL}/customers?page=${page}&limit=20`;
-    if (search) url += `&search=${encodeURIComponent(search)}`;
-    if (filter === 'registered') url += `&has_account=true`;
-    if (filter === 'guest') url += `&has_account=false`;
-
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch customers');
-    const response = await res.json();
-    return {
-      customers: response.data || [],
-      pagination: response.pagination,
-    };
-  },
-
-  getCustomer: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/customers/${id}`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch customer');
-    const response = await res.json();
-    return response.data;
-  },
-
-  updateCustomer: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/customers/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update customer');
-    const response = await res.json();
-    return response.data;
-  },
-
-  deleteCustomer: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/customers/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete customer');
-    const response = await res.json();
-    return response.data;
-  },
-
-  getCustomerStats: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/customers/stats/overview`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch customer stats');
-    const response = await res.json();
-    return response.data;
-  },
+  ...adminCustomersApi,
 
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
