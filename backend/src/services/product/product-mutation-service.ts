@@ -31,6 +31,7 @@ import {
 import {
   buildDefaultVariantInput,
   buildProductImageInputs,
+  buildProductBaseUpdateInput,
   compactUndefined,
 } from '../../domain/products/product-write-input-policy';
 import { productCatalogReferenceRepository } from '../../repositories/product-catalog-reference-repository';
@@ -144,7 +145,8 @@ export class ProductMutationService {
       await this.validateForeignKeys(tx, data.category_ids, data.tag_ids, data.collection_id);
 
       // 1. Update Product Base
-      const updatedProduct = await this.updateBaseProductDetails(tx, id, data);
+      const updatedProduct = await productBaseRepository.update(tx, id, buildProductBaseUpdateInput(data));
+      if (!updatedProduct) throw new Error(`Product with id ${id} not found`);
 
       // 2. Update default variant if exists
       const defaultVariantId = await productVariantRepository.updateDefault(tx, id, data);
@@ -196,23 +198,6 @@ export class ProductMutationService {
     });
 
     return result;
-  }
-
-  private async updateBaseProductDetails(tx: any, id: string, data: UpdateProductInput) {
-    const {
-      category_ids,
-      tag_ids,
-      collection_id,
-      options,
-      prices,
-      images,
-      inventory_quantity,
-      sku,
-      ...productFields
-    } = data;
-    const updatedProduct = await productBaseRepository.update(tx, id, productFields);
-    if (!updatedProduct) throw new Error(`Product with id ${id} not found`);
-    return updatedProduct;
   }
 
   /**

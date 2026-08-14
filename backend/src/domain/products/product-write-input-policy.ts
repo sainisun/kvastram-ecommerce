@@ -54,3 +54,35 @@ export function buildProductImageInputs(productId: string, images: ProductImageS
       metadata: image.metadata ?? null,
     }));
 }
+
+export type ProductBaseUpdateSource = {
+  category_ids?: unknown;
+  tag_ids?: unknown;
+  collection_id?: unknown;
+  options?: unknown;
+  prices?: unknown;
+  images?: unknown;
+  inventory_quantity?: unknown;
+  sku?: unknown;
+};
+
+/**
+ * Keeps the legacy product-base update boundary: relationship, variant, price,
+ * and media fields are handled by their dedicated persistence adapters.
+ */
+export function buildProductBaseUpdateInput<T extends ProductBaseUpdateSource>(
+  data: T,
+): Omit<T, keyof ProductBaseUpdateSource> {
+  const {
+    category_ids,
+    tag_ids,
+    collection_id,
+    options,
+    prices,
+    images,
+    inventory_quantity,
+    sku,
+    ...productFields
+  } = data;
+  return productFields;
+}

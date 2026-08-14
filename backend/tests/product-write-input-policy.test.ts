@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildDefaultVariantInput,
   buildProductImageInputs,
+  buildProductBaseUpdateInput,
   compactUndefined,
 } from '../src/domain/products/product-write-input-policy';
 
@@ -37,5 +38,25 @@ describe('product write-input policy', () => {
       metadata: null,
     }]);
     expect(compactUndefined({ title: 'Updated', subtitle: undefined, price: null })).toEqual({ title: 'Updated', price: null });
+  });
+
+  it('excludes relationship, variant, price, and media fields from base product persistence', () => {
+    expect(buildProductBaseUpdateInput({
+      title: 'Updated Jacket',
+      description: 'Updated description',
+      status: 'published',
+      category_ids: ['category-1'],
+      tag_ids: ['tag-1'],
+      collection_id: 'collection-1',
+      options: [{ title: 'Size' }],
+      prices: [{ amount: 249900 }],
+      images: [{ url: 'https://example.com/jacket.jpg' }],
+      inventory_quantity: 3,
+      sku: 'JACKET-1',
+    })).toEqual({
+      title: 'Updated Jacket',
+      description: 'Updated description',
+      status: 'published',
+    });
   });
 });
