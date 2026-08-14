@@ -3,6 +3,7 @@ import { adminProductsApi } from './api-products';
 import { adminCustomersApi } from './api-customers';
 import { adminOrdersApi } from './api-orders';
 import { adminContentMediaApi } from './api-content-media';
+import { adminCatalogApi } from './api-catalog';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -17,6 +18,7 @@ export const api = {
   ...adminCustomersApi,
   ...adminOrdersApi,
   ...adminContentMediaApi,
+  ...adminCatalogApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -583,217 +585,7 @@ export const api = {
 
   ...adminContentMediaApi,
 
-  // Product search used by category and collection assignment pickers.
-  searchFeaturedProductCandidates: async (query: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/featured-products/product-search?q=${encodeURIComponent(query)}`,
-      {}
-    );
-    if (!res.ok) throw new Error('Failed to search products');
-    return res.json();
-  },
-
-  getPages: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/pages`, {});
-    if (!res.ok) return handleApiError(res, 'Failed to fetch pages');
-    return res.json();
-  },
-
-  updatePage: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/pages/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update page');
-    return res.json();
-  },
-
-  // Categories
-  getCategories: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch categories');
-    return res.json();
-  },
-
-  getCategoriesTree: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/tree`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch category tree');
-    return res.json();
-  },
-
-  getCategory: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/${id}`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch category');
-    return res.json();
-  },
-
-  getCategoryProducts: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/${id}/products`, {});
-    if (!res.ok) throw new Error('Failed to fetch category products');
-    return res.json();
-  },
-
-  updateCategoryProducts: async (id: string, productIds: string[]) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/${id}/products`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ product_ids: productIds }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update category products');
-    return res.json();
-  },
-
-  createCategory: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create category');
-    return res.json();
-  },
-
-  updateCategory: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update category');
-    return res.json();
-  },
-
-  deleteCategory: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete category');
-    return res.json();
-  },
-
-  // Collections
-  getCollections: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/collections?status=all`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch collections');
-    return res.json();
-  },
-
-  getCollection: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch collection');
-    return res.json();
-  },
-
-  getCollectionProducts: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}/products`, {});
-    if (!res.ok) throw new Error('Failed to fetch collection products');
-    return res.json();
-  },
-
-  updateCollectionProducts: async (id: string, productIds: string[]) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}/products`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ product_ids: productIds }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update collection products');
-    return res.json();
-  },
-
-  createCollection: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/collections`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create collection');
-    return res.json();
-  },
-
-  updateCollection: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update collection');
-    return res.json();
-  },
-
-  deleteCollection: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/collections/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete collection');
-    return res.json();
-  },
-
-  // Tags
-  getTags: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/tags`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch tags');
-    return res.json();
-  },
-
-  createTag: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/tags`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create tag');
-    return res.json();
-  },
-
-  deleteTag: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/tags/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete tag');
-    return res.json();
-  },
-
-  // Category Order Management
-  updateCategoriesOrder: async (updates: Array<{ id: string; display_order: number; show_in_header?: boolean }>) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/categories/reorder`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ updates }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update category order');
-    return res.json();
-  },
+  ...adminCatalogApi,
 
   getAnalyticsOverview: async () => {
     const res = await fetchWithTimeout(`${API_BASE_URL}/analytics/overview`, {
