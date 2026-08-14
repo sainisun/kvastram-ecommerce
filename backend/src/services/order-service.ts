@@ -47,6 +47,7 @@ import { buildCarrierLabelContext } from '../domain/orders/carrier-context-polic
 import { appendOrderCommunicationEvent } from '../domain/orders/order-communication-event-policy';
 import { updateOrderStatus as updateOrderStatusCommand } from '../application/orders/order-status-update-command';
 import { bulkUpdateOrderStatus as bulkUpdateOrderStatusCommand } from '../application/orders/bulk-order-status-update-command';
+import { updateOrderTracking as updateOrderTrackingCommand } from '../application/orders/order-tracking-update-command';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
 import { orderDetailQueryService } from './order-detail-query-service';
@@ -370,78 +371,48 @@ class OrderService {
       notify_buyer?: boolean;
     }
   ) {
-    const [existingOrder] = await db
-      .select({
-        id: orders.id,
-        email: orders.email,
-        order_number: orders.display_id,
-        metadata: orders.metadata,
-        tracking_number: orders.tracking_number,
-        shipping_carrier: orders.shipping_carrier,
-        tracking_link: orders.tracking_link,
-      })
-      .from(orders)
-      .where(eq(orders.id, id));
-
-    if (!existingOrder) throw new Error('Order not found');
-
-    const shipDate = data.ship_date ? new Date(data.ship_date) : new Date();
-    const shippedAt = Number.isNaN(shipDate.getTime())
-      ? new Date().toISOString()
-      : shipDate.toISOString();
-    const nextPackages = upsertWorkflowPackage(
-      getWorkflowPackages(existingOrder),
-      {
-        package_id: 'pkg_1',
-        ship_date: shippedAt,
-        carrier: data.shipping_carrier ?? null,
-        tracking_number: data.tracking_number,
-        tracking_url: data.tracking_link ?? null,
-        no_tracking: false,
-        no_tracking_reason: null,
-        notify_buyer: data.notify_buyer !== false,
-        notification_sent: data.notify_buyer !== false,
-        notification_sent_at:
-          data.notify_buyer !== false ? new Date().toISOString() : null,
-      }
-    );
-
-    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
-      workflow_status: 'shipped',
-      shipped_at: shippedAt,
-      customer_note: data.customer_note,
-      internal_note: data.internal_note,
-      packages: nextPackages,
+    const updated = await updateOrderTrackingCommand(id, data, {
+      loadOrder: async (orderId) => {
+        const [existingOrder] = await db
+          .select({
+            id: orders.id,
+            email: orders.email,
+            order_number: orders.display_id,
+            metadata: orders.metadata,
+            tracking_number: orders.tracking_number,
+            shipping_carrier: orders.shipping_carrier,
+            tracking_link: orders.tracking_link,
+          })
+          .from(orders)
+          .where(eq(orders.id, orderId));
+        return existingOrder || null;
+      },
+      getWorkflowPackages,
+      upsertWorkflowPackage: (packages, input) => upsertWorkflowPackage(packages, input as any),
+      mergeWorkflowMetadata: (metadata, update) => mergeWorkflowMetadata(metadata, update as WorkflowMetadata),
+      deriveLegacyTrackingFields,
+      persistOrder: async (orderId, input) => {
+        const [persisted] = await db
+          .update(orders)
+          .set({
+            tracking_number: input.tracking_number,
+            shipping_carrier: input.shipping_carrier,
+            tracking_link: input.tracking_link,
+            status: input.status,
+            fulfillment_status: input.fulfillment_status,
+            metadata: input.metadata as any,
+            updated_at: input.updated_at,
+          })
+          .where(eq(orders.id, orderId))
+          .returning();
+        return persisted;
+      },
+      scheduleBuyerNotification: (notification) => {
+        import('./email-service')
+          .then(({ emailService }) => emailService.sendShippingNotification(notification))
+          .catch((err) => console.error('[OrderService] Failed to send shipping notification:', err));
+      },
     });
-    const trackingFields = deriveLegacyTrackingFields(nextPackages);
-    const addedPackage = nextPackages[nextPackages.length - 1] || null;
-
-    const [updated] = await db
-      .update(orders)
-      .set({
-        tracking_number: trackingFields.tracking_number,
-        shipping_carrier: trackingFields.shipping_carrier,
-        tracking_link: trackingFields.tracking_link,
-        status: 'shipped',
-        fulfillment_status: 'shipped',
-        metadata: nextMetadata,
-        updated_at: new Date()
-      })
-      .where(eq(orders.id, id))
-      .returning();
-
-    // Send shipping notification email (fire-and-forget)
-    if (existingOrder.email && data.notify_buyer !== false) {
-      import('./email-service').then(({ emailService }) => {
-        emailService.sendShippingNotification({
-          email: existingOrder.email!,
-          order_number: existingOrder.order_number ?? id.slice(0, 8),
-          tracking_number: data.tracking_number,
-          shipping_carrier: data.shipping_carrier,
-          tracking_link: data.tracking_link,
-        }).catch(err => console.error('[OrderService] Failed to send shipping notification:', err));
-      }).catch(err => console.error('[OrderService] Failed to load email service:', err));
-    }
 
     return applyWorkflowSummary(updated as Record<string, any>);
   }
