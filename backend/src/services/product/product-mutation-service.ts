@@ -53,6 +53,7 @@ import {
   compactUndefined,
 } from '../../domain/products/product-write-input-policy';
 import { productCatalogReferenceRepository } from '../../repositories/product-catalog-reference-repository';
+import { productPricingRepository } from '../../repositories/product-pricing-repository';
 
 export class ProductMutationService {
   /**
@@ -88,7 +89,7 @@ export class ProductMutationService {
       const newVariant = await this.createDefaultVariantForProduct(tx, newProduct.id, data);
 
       // 3. Create Prices (Money Amounts)
-      await this.assignPricesToVariant(tx, newVariant.id, prices);
+      await productPricingRepository.assign(tx, newVariant.id, prices);
 
       // 4. Create Options
       await this.assignOptionsToProduct(tx, newProduct.id, options);
@@ -137,31 +138,6 @@ export class ProductMutationService {
       .values(buildDefaultVariantInput(productId, data))
       .returning();
     return result[0];
-  }
-
-  private async assignPricesToVariant(tx: any, variantId: string, prices: any[] | undefined) {
-    if (!prices || prices.length === 0) return;
-    for (const price of prices) {
-      let regionId = price.region_id;
-
-      // SAFETY: Fallback lookup if region_id is silently null/undefined
-      if (!regionId && price.currency_code === 'inr') {
-        const inrRegion = await tx.select({ id: regions.id }).from(regions).where(eq(regions.currency_code, 'inr')).limit(1);
-        if (inrRegion.length > 0) {
-          regionId = inrRegion[0].id;
-        } else {
-          throw new ValidationError('INR Region missing in database. Cannot assign price without region_id.', []);
-        }
-      }
-
-      await tx.insert(money_amounts).values({
-        variant_id: variantId,
-        region_id: regionId,
-        currency_code: price.currency_code,
-        amount: price.amount,
-        min_quantity: 1,
-      });
-    }
   }
 
   private async assignOptionsToProduct(tx: any, productId: string, options: any[] | undefined) {
@@ -328,7 +304,7 @@ export class ProductMutationService {
 
       // 3. Sync prices for the default variant when pricing is provided
       if (defaultVariantId && data.prices) {
-        await this.syncVariantPrices(tx, defaultVariantId, data.prices);
+        await productPricingRepository.replace(tx, defaultVariantId, data.prices);
       }
 
       // 4. Handle images if provided
@@ -494,24 +470,6 @@ export class ProductMutationService {
       .where(eq(product_variants.id, variants[0].id));
 
     return variants[0].id;
-  }
-
-  private async syncVariantPrices(tx: any, variantId: string, prices: any[]) {
-    await tx.delete(money_amounts).where(eq(money_amounts.variant_id, variantId));
-
-    if (!prices.length) {
-      return;
-    }
-
-    await tx.insert(money_amounts).values(
-      prices.map((price) => ({
-        variant_id: variantId,
-        region_id: price.region_id ?? null,
-        currency_code: price.currency_code,
-        amount: price.amount,
-        min_quantity: 1,
-      }))
-    );
   }
 
   private async syncProductImages(tx: any, productId: string, images: any[]) {
