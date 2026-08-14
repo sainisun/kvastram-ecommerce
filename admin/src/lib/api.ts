@@ -8,6 +8,7 @@ import { adminWholesaleInquiriesApi } from './api-wholesale-inquiries';
 import { adminWholesaleCustomersApi } from './api-wholesale-customers';
 import { adminWholesaleOrdersApi } from './api-wholesale-orders';
 import { adminWholesaleTiersApi } from './api-wholesale-tiers';
+import { adminSettingsApi } from './api-settings';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -27,6 +28,7 @@ export const api = {
   ...adminWholesaleCustomersApi,
   ...adminWholesaleOrdersApi,
   ...adminWholesaleTiersApi,
+  ...adminSettingsApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -203,56 +205,7 @@ export const api = {
     });
   },
 
-  // Settings endpoints
-  getSettings: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/settings`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch settings');
-    return res.json();
-  },
-
-  // Get footer settings for wholesale page
-  getFooterSettings: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/settings/footer`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch footer settings');
-    return res.json();
-  },
-
-  // Get wholesale tiers for public page
-  getWholesaleTiersPublic: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/settings/wholesale-tiers`, {
-      // Public endpoint - no auth required
-    });
-    if (!res.ok) throw new Error('Failed to fetch wholesale tiers');
-    return res.json();
-  },
-
-  updateSetting: async (key: string, value: unknown, category?: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/settings/${key}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ value, category }),
-    });
-    if (!res.ok) return handleApiError(res, `Failed to update setting ${key}`);
-    return res.json();
-  },
-
-  updateSettingsBulk: async (settings: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/settings/bulk`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ settings }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update settings');
-    return res.json();
-  },
+  ...adminSettingsApi,
 
   // Coupon endpoints
   getDiscounts: async () => {
