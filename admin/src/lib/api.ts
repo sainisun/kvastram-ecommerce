@@ -2,6 +2,7 @@ import { adminAuthApi } from './api-auth';
 import { adminProductsApi } from './api-products';
 import { adminCustomersApi } from './api-customers';
 import { adminOrdersApi } from './api-orders';
+import { adminContentMediaApi } from './api-content-media';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -15,6 +16,7 @@ export const api = {
   ...adminProductsApi,
   ...adminCustomersApi,
   ...adminOrdersApi,
+  ...adminContentMediaApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -579,200 +581,7 @@ export const api = {
     return res.json();
   },
 
-  getTrendingReels: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/trending-reels`, {});
-    if (!res.ok) return handleApiError(res, 'Failed to fetch trending reels');
-    return res.json();
-  },
-
-  createTrendingReel: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/trending-reels`, {
-      method: 'POST',
-      body: formData,
-      timeout: 300000, // 5 minutes — Cloudinary video upload can be slow
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create trending reel');
-    return res.json();
-  },
-
-  updateTrendingReel: async (id: string, formData: FormData) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/trending-reels/${id}`,
-      {
-        method: 'PUT',
-        body: formData,
-        timeout: 300000, // 5 minutes — Cloudinary video upload can be slow
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update trending reel');
-    return res.json();
-  },
-
-  deleteTrendingReel: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/trending-reels/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete trending reel');
-    return res.json();
-  },
-
-  toggleTrendingReel: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/trending-reels/${id}/toggle`,
-      {
-        method: 'PATCH',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to toggle trending reel');
-    return res.json();
-  },
-
-  // Reel Collections
-  getReelCollections: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/reel-collections`, {});
-    if (!res.ok) return handleApiError(res, 'Failed to fetch reel collections');
-    return res.json();
-  },
-
-  createReelCollection: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/reel-collections`, {
-      method: 'POST',
-      body: formData,
-      timeout: 180000,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create reel collection');
-    return res.json();
-  },
-
-  updateReelCollection: async (id: string, formData: FormData) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/reel-collections/${id}`,
-      {
-        method: 'PUT',
-        body: formData,
-        timeout: 180000,
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update reel collection');
-    return res.json();
-  },
-
-  deleteReelCollection: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/reel-collections/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete reel collection');
-    return res.json();
-  },
-
-  toggleReelCollection: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/reel-collections/${id}/toggle`,
-      {
-        method: 'PATCH',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to toggle reel collection');
-    return res.json();
-  },
-
-  // Category Circles
-  getCategoryCircles: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/category-circles`, {});
-    if (!res.ok) return handleApiError(res, 'Failed to fetch category circles');
-    return res.json();
-  },
-
-  createCategoryCircle: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/category-circles`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create category circle');
-    return res.json();
-  },
-
-  updateCategoryCircle: async (id: string, formData: FormData) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/category-circles/${id}`,
-      {
-        method: 'PUT',
-        body: formData,
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update category circle');
-    return res.json();
-  },
-
-  deleteCategoryCircle: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/category-circles/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete category circle');
-    return res.json();
-  },
-
-  toggleCategoryCircle: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/category-circles/${id}/toggle`,
-      {
-        method: 'PATCH',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to toggle category circle');
-    return res.json();
-  },
-
-  getHomepageSocialPosts: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-social-posts`, {});
-    if (!res.ok) return handleApiError(res, 'Failed to fetch homepage social posts');
-    return res.json();
-  },
-
-  createHomepageSocialPost: async (formData: FormData) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/homepage-social-posts`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create homepage social post');
-    return res.json();
-  },
-
-  updateHomepageSocialPost: async (id: string, formData: FormData) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-social-posts/${id}`,
-      { method: 'PUT', body: formData }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update homepage social post');
-    return res.json();
-  },
-
-  toggleHomepageSocialPost: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-social-posts/${id}/toggle`,
-      { method: 'PATCH' }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to toggle homepage social post');
-    return res.json();
-  },
-
-  deleteHomepageSocialPost: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/homepage-social-posts/${id}`,
-      { method: 'DELETE' }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete homepage social post');
-    return res.json();
-  },
+  ...adminContentMediaApi,
 
   // Product search used by category and collection assignment pickers.
   searchFeaturedProductCandidates: async (query: string) => {
