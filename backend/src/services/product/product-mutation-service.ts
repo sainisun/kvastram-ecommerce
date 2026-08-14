@@ -52,6 +52,7 @@ import {
   buildProductImageInputs,
   compactUndefined,
 } from '../../domain/products/product-write-input-policy';
+import { productCatalogReferenceRepository } from '../../repositories/product-catalog-reference-repository';
 
 export class ProductMutationService {
   /**
@@ -95,14 +96,8 @@ export class ProductMutationService {
       // 5. Create Images
       const createdImages = await this.assignImagesToProduct(tx, newProduct.id, images);
 
-      // 6. Assign Categories
-      await this.assignCategoriesToProduct(tx, newProduct.id, category_ids);
-
-      // 7. Assign Tags
-      await this.assignTagsToProduct(tx, newProduct.id, tag_ids);
-
-      // 8. Keep legacy collection_id and the collection_products junction in sync.
-      await this.assignCollectionToProduct(tx, newProduct.id, productData.collection_id);
+      // 6. Assign catalog references
+      await productCatalogReferenceRepository.assign(tx, newProduct.id, category_ids, tag_ids, productData.collection_id);
 
       // 9. Create SEO/discovery baseline so new products are never SEO-empty.
       await this.createSeoDiscoveryBaseline(tx, newProduct, newVariant, createdImages, data);
@@ -124,57 +119,8 @@ export class ProductMutationService {
     tagIds: string[] | undefined,
     collectionId?: string | null
   ) {
-    if (!categoryIds && !tagIds && !collectionId) return;
-
-    const errors: ValidationErrorDetails[] = [];
-
-    if (categoryIds && categoryIds.length > 0) {
-      const existingCats = await tx
-        .select({ id: categories.id })
-        .from(categories)
-        .where(inArray(categories.id, categoryIds));
-      const existingIds = new Set(existingCats.map((c: { id: any }) => c.id));
-      const missing = categoryIds.filter((id) => !existingIds.has(id));
-      if (missing.length > 0) {
-        errors.push({
-          field: 'category_ids',
-          message: `Categories not found: ${missing.join(', ')}`,
-        });
-      }
-    }
-
-    if (tagIds && tagIds.length > 0) {
-      const existingTags = await tx
-        .select({ id: tags.id })
-        .from(tags)
-        .where(inArray(tags.id, tagIds));
-      const existingIds = new Set(existingTags.map((t: { id: any }) => t.id));
-      const missing = tagIds.filter((id) => !existingIds.has(id));
-      if (missing.length > 0) {
-        errors.push({
-          field: 'tag_ids',
-          message: `Tags not found: ${missing.join(', ')}`,
-        });
-      }
-    }
-
-    if (collectionId) {
-      const existingCollections = await tx
-        .select({ id: product_collections.id })
-        .from(product_collections)
-        .where(eq(product_collections.id, collectionId));
-
-      if (existingCollections.length === 0) {
-        errors.push({
-          field: 'collection_id',
-          message: `Collection not found: ${collectionId}`,
-        });
-      }
-    }
-
-    if (errors.length > 0) {
-      throw new ValidationError('Invalid foreign key references', errors);
-    }
+    const errors = await productCatalogReferenceRepository.validate(tx, categoryIds, tagIds, collectionId);
+    if (errors.length > 0) throw new ValidationError('Invalid foreign key references', errors);
   }
 
   private async createBaseProduct(tx: any, productData: any) {
@@ -363,39 +309,6 @@ export class ProductMutationService {
     }
   }
 
-  private async assignCategoriesToProduct(tx: any, productId: string, categoryIds: string[] | undefined) {
-    if (!categoryIds || categoryIds.length === 0) return;
-    await tx.insert(product_categories).values(
-      categoryIds.map((catId) => ({
-        product_id: productId,
-        category_id: catId,
-      }))
-    );
-  }
-
-  private async assignTagsToProduct(tx: any, productId: string, tagIds: string[] | undefined) {
-    if (!tagIds || tagIds.length === 0) return;
-    await tx.insert(product_tags).values(
-      tagIds.map((tagId) => ({
-        product_id: productId,
-        tag_id: tagId,
-      }))
-    );
-  }
-
-  private async assignCollectionToProduct(tx: any, productId: string, collectionId: string | null | undefined) {
-    if (!collectionId) return;
-
-    await tx
-      .insert(collection_products)
-      .values({
-        product_id: productId,
-        collection_id: collectionId,
-        position: 0,
-      })
-      .onConflictDoNothing();
-  }
-
   /**
    * Update a product's base details.
    */
@@ -425,16 +338,16 @@ export class ProductMutationService {
 
       // 5. Handle Categories
       if (data.category_ids) {
-        await this.syncProductCategories(tx, id, data.category_ids);
+        await productCatalogReferenceRepository.replaceCategories(tx, id, data.category_ids);
       }
 
       // 6. Handle Tags
       if (data.tag_ids) {
-        await this.syncProductTags(tx, id, data.tag_ids);
+        await productCatalogReferenceRepository.replaceTags(tx, id, data.tag_ids);
       }
 
       if (data.collection_id !== undefined) {
-        await this.syncProductCollection(tx, id, data.collection_id);
+        await productCatalogReferenceRepository.replaceCollection(tx, id, data.collection_id);
       }
 
       return updatedProduct;
@@ -650,44 +563,6 @@ export class ProductMutationService {
           )
           .onConflictDoNothing();
       }
-    }
-  }
-
-  private async syncProductCategories(tx: any, productId: string, categoryIds: string[]) {
-    await tx
-      .delete(product_categories)
-      .where(eq(product_categories.product_id, productId));
-
-    if (categoryIds.length > 0) {
-      await tx.insert(product_categories).values(
-        categoryIds.map((catId) => ({
-          product_id: productId,
-          category_id: catId,
-        }))
-      );
-    }
-  }
-
-  private async syncProductTags(tx: any, productId: string, tagIds: string[]) {
-    await tx.delete(product_tags).where(eq(product_tags.product_id, productId));
-
-    if (tagIds.length > 0) {
-      await tx.insert(product_tags).values(
-        tagIds.map((tagId) => ({
-          product_id: productId,
-          tag_id: tagId,
-        }))
-      );
-    }
-  }
-
-  private async syncProductCollection(tx: any, productId: string, collectionId: string | null | undefined) {
-    await tx
-      .delete(collection_products)
-      .where(eq(collection_products.product_id, productId));
-
-    if (collectionId) {
-      await this.assignCollectionToProduct(tx, productId, collectionId);
     }
   }
 
