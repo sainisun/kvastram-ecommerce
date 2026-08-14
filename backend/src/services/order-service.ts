@@ -41,6 +41,7 @@ import type {
 } from '../utils/order-workflow';
 import type { CarrierProvider } from '../services/carrier-service';
 import { purchaseCarrierLabelCommand } from '../application/orders/fulfillment-commands';
+import { calculateOrderStatsOverview } from '../domain/orders/order-reporting-policy';
 import {
   assertOrderStatusTransition,
   canTransitionOrderStatus,
@@ -1545,31 +1546,7 @@ class OrderService {
       })
       .from(orders);
 
-    const countByStatus: Record<string, number> = {};
-    let totalRevenueNum = 0;
-
-    for (const row of orderRows) {
-      const workflowStatus = deriveWorkflowStatus(row);
-      countByStatus[workflowStatus] = (countByStatus[workflowStatus] || 0) + 1;
-
-      if (workflowStatus === 'delivered') {
-        totalRevenueNum += Number(row.total || 0);
-      }
-    }
-
-    const totalOrdersNum = orderRows.length;
-
-    return {
-      total_orders: totalOrdersNum,
-      total_revenue: totalRevenueNum,
-      pending_orders: countByStatus['pending'] || 0,
-      processing_orders: countByStatus['processing'] || 0,
-      shipped_orders: countByStatus['shipped'] || 0,
-      delivered_orders: countByStatus['delivered'] || 0,
-      cancelled_orders: countByStatus['cancelled'] || 0,
-      refunded_orders: countByStatus['refunded'] || 0,
-      avg_order_value: totalOrdersNum > 0 ? Math.round(totalRevenueNum / totalOrdersNum) : 0,
-    };
+    return calculateOrderStatsOverview(orderRows, deriveWorkflowStatus);
   }
 
   async getFulfillmentMetrics() {
