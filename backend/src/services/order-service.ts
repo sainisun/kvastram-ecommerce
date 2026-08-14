@@ -45,6 +45,7 @@ import { calculateOrderStatsOverview } from '../domain/orders/order-reporting-po
 import { calculateFulfillmentMetrics } from '../domain/orders/fulfillment-metrics-policy';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
+import { orderDetailQueryService } from './order-detail-query-service';
 import {
   assertOrderStatusTransition,
   canTransitionOrderStatus,
@@ -368,63 +369,9 @@ class OrderService {
   }
 
   async getOrder(id: string) {
-    const [order] = await db
-      .select({
-        id: orders.id,
-        order_number: orders.display_id,
-        status: orders.status,
-        payment_status: orders.payment_status,
-        fulfillment_status: orders.fulfillment_status,
-        email: orders.email,
-        subtotal: orders.subtotal,
-        tax_total: orders.tax_total,
-        shipping_total: orders.shipping_total,
-        total: orders.total,
-        currency_code: orders.currency_code,
-        customer_id: orders.customer_id,
-        created_at: orders.created_at,
-        updated_at: orders.updated_at,
-        tracking_number: orders.tracking_number,
-        shipping_carrier: orders.shipping_carrier,
-        tracking_link: orders.tracking_link,
-        metadata: orders.metadata,
-        customer_first_name: customers.first_name,
-        customer_last_name: customers.last_name,
-        customer_email: customers.email,
-        customer_phone: customers.phone,
-        shipping_address: shippingAddr,
-        billing_address: billingAddr,
-      })
-      .from(orders)
-      .leftJoin(customers, eq(orders.customer_id, customers.id))
-      .leftJoin(shippingAddr, eq(orders.shipping_address_id, shippingAddr.id))
-      .leftJoin(billingAddr, eq(orders.billing_address_id, billingAddr.id))
-      .where(eq(orders.id, id));
-
-    if (!order) return null;
-
-    const items = await db
-      .select({
-        id: line_items.id,
-        quantity: line_items.quantity,
-        unit_price: line_items.unit_price,
-        total: line_items.total_price,
-        variant_id: line_items.variant_id,
-        product_title: products.title,
-        product_thumbnail: products.thumbnail,
-        variant_title: product_variants.title,
-        title: line_items.title,
-        thumbnail: line_items.thumbnail,
-      })
-      .from(line_items)
-      .leftJoin(
-        product_variants,
-        eq(line_items.variant_id, product_variants.id)
-      )
-      .leftJoin(products, eq(product_variants.product_id, products.id))
-      .where(eq(line_items.order_id, id));
-
-    return { order: applyWorkflowSummary(order), items };
+    const detail = await orderDetailQueryService.getOrderDetail(id);
+    if (!detail) return null;
+    return { order: applyWorkflowSummary(detail.order), items: detail.items };
   }
 
   async updateStatus(id: string, newStatus: string) {
