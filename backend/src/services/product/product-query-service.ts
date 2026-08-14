@@ -34,6 +34,10 @@ import { selectProductSearchResults } from '../../domain/products/product-search
 import { enrichProductDetails } from '../../domain/products/product-enrichment-policy';
 import { assembleProductListDetails } from '../../domain/products/product-list-assembly-policy';
 import { groupProductVariantDetails } from '../../domain/products/product-variant-detail-policy';
+import {
+  rankSemanticRelatedProductIds,
+  selectRankedSemanticCandidates,
+} from '../../domain/products/product-semantic-related-policy';
 import { embedText, toVectorLiteral } from '../../jobs/generateEmbeddings';
 import type { ProductFilter, ProductSearch } from './product-validator';
 
@@ -417,15 +421,7 @@ export class ProductQueryService {
             .groupBy(product_attribute_values.product_id)
         : [];
 
-      const scores = new Map<string, number>();
-      for (const row of [...matchedByValue, ...matchedByRaw]) {
-        scores.set(row.product_id, (scores.get(row.product_id) || 0) + Number(row.matches || 0));
-      }
-
-      const candidateIds = Array.from(scores.entries())
-        .sort((left, right) => right[1] - left[1])
-        .map(([productId]) => productId)
-        .slice(0, 8);
+      const candidateIds = rankSemanticRelatedProductIds(matchedByValue, matchedByRaw);
 
       if (candidateIds.length === 0) {
         relatedByProduct.set(product.id, []);
@@ -443,10 +439,7 @@ export class ProductQueryService {
         },
       });
 
-      const orderedCandidates = candidateIds
-        .map((candidateId) => candidates.find((candidate) => candidate.id === candidateId))
-        .filter((candidate): candidate is (typeof candidates)[number] => Boolean(candidate))
-        .slice(0, 4);
+      const orderedCandidates = selectRankedSemanticCandidates(candidateIds, candidates);
       relatedByProduct.set(product.id, await this.enrichProducts(orderedCandidates, false));
     }
 
