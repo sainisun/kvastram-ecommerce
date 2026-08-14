@@ -57,6 +57,7 @@ import { productPricingRepository } from '../../repositories/product-pricing-rep
 import { productMediaRepository } from '../../repositories/product-media-repository';
 import { productOptionRepository } from '../../repositories/product-option-repository';
 import { productVariantRepository } from '../../repositories/product-variant-repository';
+import { productBaseRepository } from '../../repositories/product-base-repository';
 
 export class ProductMutationService {
   /**
@@ -399,31 +400,19 @@ export class ProductMutationService {
 
   private async updateBaseProductDetails(tx: any, id: string, data: UpdateProductInput) {
     const {
+      category_ids,
+      tag_ids,
+      collection_id,
       options,
       prices,
       images,
-      category_ids,
-      tag_ids,
       inventory_quantity,
       sku,
       ...productFields
     } = data;
-
-    const updateData = compactUndefined({
-      ...productFields,
-      updated_at: new Date(),
-    });
-
-    const result = await tx
-      .update(products)
-      .set(updateData as typeof products.$inferInsert)
-      .where(eq(products.id, id))
-      .returning();
-
-    if (result.length === 0) {
-      throw new Error(`Product with id ${id} not found`);
-    }
-    return result[0];
+    const updatedProduct = await productBaseRepository.update(tx, id, productFields);
+    if (!updatedProduct) throw new Error(`Product with id ${id} not found`);
+    return updatedProduct;
   }
 
   /** Send back-in-stock emails to all pending subscribers for a product */
