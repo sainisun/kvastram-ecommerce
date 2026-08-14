@@ -43,6 +43,7 @@ import type { CarrierProvider } from '../services/carrier-service';
 import { purchaseCarrierLabelCommand } from '../application/orders/fulfillment-commands';
 import { calculateOrderStatsOverview } from '../domain/orders/order-reporting-policy';
 import { calculateFulfillmentMetrics } from '../domain/orders/fulfillment-metrics-policy';
+import { buildCarrierLabelContext } from '../domain/orders/carrier-context-policy';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
 import { orderDetailQueryService } from './order-detail-query-service';
@@ -107,67 +108,6 @@ function applyWorkflowSummary<T extends Record<string, any>>(order: T) {
     raw_status: order.status,
     status: workflow.status,
     workflow,
-  };
-}
-
-function buildCarrierContext(
-  order: Record<string, any>,
-  items: Record<string, any>[],
-  packageId?: string | null
-) {
-  const packages = order.workflow?.packages || [];
-  const explicitlySelectedPackage = packageId
-    ? packages.find((pkg: WorkflowPackage) => pkg.id === packageId) || null
-    : null;
-  const primaryPackage = order.workflow?.primary_package || packages[0] || null;
-  const selectedPackage = packageId ? explicitlySelectedPackage : primaryPackage;
-  const workflowLabel = order.workflow?.label || {};
-  const useWorkflowLabelFallback =
-    !packageId ||
-    (!!selectedPackage &&
-      (selectedPackage.id === primaryPackage?.id ||
-        selectedPackage.sequence === primaryPackage?.sequence));
-
-  return {
-    order: {
-      ...order,
-      shipping_address: {
-        ...order.shipping_address,
-        phone:
-          order.shipping_address?.phone ||
-          order.customer_phone ||
-          order.customer?.phone ||
-          null,
-      },
-      workflow: {
-        ...order.workflow,
-        label: {
-          ...workflowLabel,
-          package_weight_grams:
-            selectedPackage?.package_weight_grams ??
-            (useWorkflowLabelFallback ? workflowLabel.package_weight_grams : null) ??
-            null,
-          package_length_cm:
-            selectedPackage?.package_length_cm ??
-            (useWorkflowLabelFallback ? workflowLabel.package_length_cm : null) ??
-            null,
-          package_width_cm:
-            selectedPackage?.package_width_cm ??
-            (useWorkflowLabelFallback ? workflowLabel.package_width_cm : null) ??
-            null,
-          package_height_cm:
-            selectedPackage?.package_height_cm ??
-            (useWorkflowLabelFallback ? workflowLabel.package_height_cm : null) ??
-            null,
-          carrier_service:
-            selectedPackage?.carrier_service ??
-            (useWorkflowLabelFallback ? workflowLabel.carrier_service : null) ??
-            null,
-        },
-      },
-    },
-    items,
-    package: selectedPackage as WorkflowPackage | null,
   };
 }
 
@@ -1161,7 +1101,7 @@ class OrderService {
     const data = await this.getOrder(id);
     if (!data) return null;
 
-    const context = buildCarrierContext(data.order, data.items || [], options.package_id);
+    const context = buildCarrierLabelContext(data.order, data.items || [], options.package_id);
     return carrierService.getReadiness(context.order, {
       provider: options.provider,
     });
@@ -1174,7 +1114,7 @@ class OrderService {
     const data = await this.getOrder(id);
     if (!data) return null;
 
-    const context = buildCarrierContext(data.order, data.items || [], options.package_id);
+    const context = buildCarrierLabelContext(data.order, data.items || [], options.package_id);
     return carrierService.getRates(context.order, {
       provider: options.provider,
     });
@@ -1191,7 +1131,7 @@ class OrderService {
     const data = await this.getOrder(id);
     if (!data) return null;
 
-    const context = buildCarrierContext(data.order, data.items || [], options.package_id);
+    const context = buildCarrierLabelContext(data.order, data.items || [], options.package_id);
     return purchaseCarrierLabelCommand(
       {
         context: {
