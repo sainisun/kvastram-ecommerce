@@ -56,6 +56,7 @@ import { productCatalogReferenceRepository } from '../../repositories/product-ca
 import { productPricingRepository } from '../../repositories/product-pricing-repository';
 import { productMediaRepository } from '../../repositories/product-media-repository';
 import { productOptionRepository } from '../../repositories/product-option-repository';
+import { productVariantRepository } from '../../repositories/product-variant-repository';
 
 export class ProductMutationService {
   /**
@@ -283,7 +284,7 @@ export class ProductMutationService {
       const updatedProduct = await this.updateBaseProductDetails(tx, id, data);
 
       // 2. Update default variant if exists
-      const defaultVariantId = await this.updateDefaultVariant(tx, id, data);
+      const defaultVariantId = await productVariantRepository.updateDefault(tx, id, data);
 
       // 3. Sync prices for the default variant when pricing is provided
       if (defaultVariantId && data.prices) {
@@ -423,36 +424,6 @@ export class ProductMutationService {
       throw new Error(`Product with id ${id} not found`);
     }
     return result[0];
-  }
-
-  private async updateDefaultVariant(tx: any, productId: string, data: UpdateProductInput) {
-    const variants = await tx
-      .select()
-      .from(product_variants)
-      .where(eq(product_variants.product_id, productId));
-
-    if (variants.length === 0) {
-      return null;
-    }
-
-    const updateData = compactUndefined({
-      hs_code: data.hs_code,
-      origin_country: data.origin_country,
-      material: data.material,
-      weight: data.weight,
-      length: data.length,
-      height: data.height,
-      width: data.width,
-      inventory_quantity: data.inventory_quantity,
-      updated_at: new Date(),
-    });
-
-    await tx
-      .update(product_variants)
-      .set(updateData)
-      .where(eq(product_variants.id, variants[0].id));
-
-    return variants[0].id;
   }
 
   /** Send back-in-stock emails to all pending subscribers for a product */
