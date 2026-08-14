@@ -47,12 +47,11 @@ import {
   inferProductSearchIntents,
   inferProductSemanticEntities,
 } from '../../domain/products/product-discovery-policy';
-
-function compactUndefined<T extends Record<string, unknown>>(value: T): Partial<T> {
-  return Object.fromEntries(
-    Object.entries(value).filter(([, entry]) => entry !== undefined)
-  ) as Partial<T>;
-}
+import {
+  buildDefaultVariantInput,
+  buildProductImageInputs,
+  compactUndefined,
+} from '../../domain/products/product-write-input-policy';
 
 export class ProductMutationService {
   /**
@@ -189,20 +188,7 @@ export class ProductMutationService {
   private async createDefaultVariantForProduct(tx: any, productId: string, data: CreateProductInput) {
     const result = await tx
       .insert(product_variants)
-      .values({
-        product_id: productId,
-        title: 'Default Variant',
-        sku: data.sku || `${data.handle}-default`,
-        inventory_quantity: data.inventory_quantity || 0,
-        manage_inventory: true,
-        hs_code: data.hs_code,
-        origin_country: data.origin_country,
-        material: data.material,
-        weight: data.weight,
-        length: data.length,
-        height: data.height,
-        width: data.width,
-      })
+      .values(buildDefaultVariantInput(productId, data))
       .returning();
     return result[0];
   }
@@ -244,22 +230,10 @@ export class ProductMutationService {
   }
 
   private async assignImagesToProduct(tx: any, productId: string, images: any[] | undefined) {
-    if (!images || images.length === 0) return [];
-    const imageValues = images
-      .filter((img) => img.url)
-      .map((img) => ({
-        product_id: productId,
-        url: img.url,
-        alt_text: img.alt_text,
-        position: img.position ?? 0,
-        is_thumbnail: img.is_thumbnail ?? false,
-        metadata: img.metadata ?? null,
-      }));
-
+    const imageValues = buildProductImageInputs(productId, images);
     if (imageValues.length > 0) {
       return await tx.insert(product_images).values(imageValues).returning();
     }
-
     return [];
   }
 
