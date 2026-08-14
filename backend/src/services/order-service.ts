@@ -45,6 +45,7 @@ import { calculateOrderStatsOverview } from '../domain/orders/order-reporting-po
 import { calculateFulfillmentMetrics } from '../domain/orders/fulfillment-metrics-policy';
 import { buildCarrierLabelContext } from '../domain/orders/carrier-context-policy';
 import { appendOrderCommunicationEvent } from '../domain/orders/order-communication-event-policy';
+import { updateOrderStatus as updateOrderStatusCommand } from '../application/orders/order-status-update-command';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
 import { orderDetailQueryService } from './order-detail-query-service';
@@ -281,55 +282,41 @@ class OrderService {
   }
 
   async updateStatus(id: string, newStatus: string) {
-    const [existingOrder] = await db
-      .select({
-        email: orders.email,
-        order_number: orders.display_id,
-        total: orders.total,
-        currency_code: orders.currency_code,
-        status: orders.status,
-        payment_status: orders.payment_status,
-        fulfillment_status: orders.fulfillment_status,
-        tracking_number: orders.tracking_number,
-        metadata: orders.metadata,
-      })
-      .from(orders)
-      .where(eq(orders.id, id));
-    if (!existingOrder) throw new Error('Order not found');
-
-    const currentStatus = deriveWorkflowStatus(existingOrder);
-
-    assertOrderStatusTransition(currentStatus, newStatus);
-
-    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, {
-      workflow_status: newStatus as OrderStatus,
-    });
-    const { fulfillmentStatus: nextFulfillmentStatus, paymentStatus: nextPaymentStatus } =
-      deriveOrderStatusMutation(
-        newStatus,
-        existingOrder.fulfillment_status ?? '',
-        existingOrder.payment_status ?? ''
-      );
-
-    const [updated] = await db
-      .update(orders)
-      .set({
-        status: newStatus as any,
-        fulfillment_status: nextFulfillmentStatus as any,
-        payment_status: nextPaymentStatus as any,
-        metadata: nextMetadata,
-        updated_at: new Date(),
-      })
-      .where(eq(orders.id, id))
-      .returning();
-
-    sendStatusNotification({
-      email: existingOrder.email,
-      order_number: existingOrder.order_number,
-      total: existingOrder.total,
-      currency_code: existingOrder.currency_code,
-      status: newStatus,
-      tracking_number: existingOrder.tracking_number,
+    const updated = await updateOrderStatusCommand(id, newStatus, {
+      loadOrder: async (orderId) => {
+        const [existingOrder] = await db
+          .select({
+            email: orders.email,
+            order_number: orders.display_id,
+            total: orders.total,
+            currency_code: orders.currency_code,
+            status: orders.status,
+            payment_status: orders.payment_status,
+            fulfillment_status: orders.fulfillment_status,
+            tracking_number: orders.tracking_number,
+            metadata: orders.metadata,
+          })
+          .from(orders)
+          .where(eq(orders.id, orderId));
+        return existingOrder || null;
+      },
+      getCurrentStatus: deriveWorkflowStatus,
+      mergeWorkflowMetadata,
+      persistOrder: async (orderId, input) => {
+        const [persisted] = await db
+          .update(orders)
+          .set({
+            status: input.status as any,
+            fulfillment_status: input.fulfillment_status as any,
+            payment_status: input.payment_status as any,
+            metadata: input.metadata as any,
+            updated_at: input.updated_at,
+          })
+          .where(eq(orders.id, orderId))
+          .returning();
+        return persisted;
+      },
+      notify: sendStatusNotification,
     });
 
     return applyWorkflowSummary(updated as Record<string, any>);

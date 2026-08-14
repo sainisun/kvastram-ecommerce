@@ -177,8 +177,10 @@ function validateRf005Artifacts() {
 
   const orderService = join(backendRoot, 'services', 'order-service.ts');
   const serviceSource = readFileSync(orderService, 'utf8');
-  if (!serviceSource.includes('assertOrderStatusTransition(')) {
-    findings.push('[rf-005] order service does not delegate single-order validation to the transition policy');
+  const statusUpdateCommand = join(backendRoot, 'application', 'orders', 'order-status-update-command.ts');
+  const commandSource = existsSync(statusUpdateCommand) ? readFileSync(statusUpdateCommand, 'utf8') : '';
+  if (!serviceSource.includes('updateOrderStatusCommand(') || !commandSource.includes('assertOrderStatusTransition(')) {
+    findings.push('[rf-005] order status update does not delegate single-order validation to the transition policy');
   }
   if (!serviceSource.includes('canTransitionOrderStatus(')) {
     findings.push('[rf-005] order service does not delegate bulk validation to the transition policy');
