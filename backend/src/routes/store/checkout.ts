@@ -34,6 +34,7 @@ import {
 import { buildInventoryReservationMetadata } from '../../utils/inventory-reservation';
 import { getDefaultCheckoutShippingOptions } from '../../domain/checkout/checkout-pricing-policy';
 import { validateCheckoutDiscountCommand } from '../../application/checkout/discount-validation-command';
+import { DrizzleCheckoutDiscountRepository } from '../../repositories/checkout-discount-repository';
 
 const FALLBACK_RATES: Record<string, number> = {
   INR: 1, USD: 0.012, EUR: 0.011, GBP: 0.0095, JPY: 1.79,
@@ -43,6 +44,7 @@ const FALLBACK_RATES: Record<string, number> = {
 };
 
 const checkoutRouter = new Hono();
+const checkoutDiscountRepository = new DrizzleCheckoutDiscountRepository();
 
 // --- SCHEMAS ---
 
@@ -371,11 +373,14 @@ checkoutRouter.post(
     try {
       const { code, cart_total } = c.req.valid('json');
 
-      const { discount, discountAmount } = await validateCheckoutDiscountCommand({
-        code,
-        cartTotal: cart_total,
-        customerId: null, // validate-coupon doesn't require customer check
-      });
+      const { discount, discountAmount } = await validateCheckoutDiscountCommand(
+        {
+          code,
+          cartTotal: cart_total,
+          customerId: null, // validate-coupon doesn't require customer check
+        },
+        checkoutDiscountRepository
+      );
 
       return c.json({
         valid: true,
@@ -603,11 +608,14 @@ checkoutRouter.post(
 
       if (body.discount_code) {
         try {
-          const result = await validateCheckoutDiscountCommand({
-            code: body.discount_code,
-            cartTotal: subtotal,
-            customerId: null, // Per-customer check done inside transaction
-          });
+          const result = await validateCheckoutDiscountCommand(
+            {
+              code: body.discount_code,
+              cartTotal: subtotal,
+              customerId: null, // Per-customer check done inside transaction
+            },
+            checkoutDiscountRepository
+          );
           discount = result.discount;
           discountTotal = result.discountAmount;
           finalDiscountId = discount.id;

@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  type CheckoutDiscountRecord,
-  type CheckoutDiscountRepository,
-  validateCheckoutDiscountCommand,
-} from '../src/application/checkout/discount-validation-command';
+import { validateCheckoutDiscountCommand } from '../src/application/checkout/discount-validation-command';
+import type {
+  CheckoutDiscountRecord,
+  CheckoutDiscountRepository,
+} from '../src/application/checkout/discount-validation-contracts';
 
 const baseDiscount: CheckoutDiscountRecord = {
   id: 'discount-1',
