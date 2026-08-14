@@ -10,6 +10,7 @@ import { adminWholesaleOrdersApi } from './api-wholesale-orders';
 import { adminWholesaleTiersApi } from './api-wholesale-tiers';
 import { adminSettingsApi } from './api-settings';
 import { adminMarketingEngagementApi } from './api-marketing-engagement';
+import { adminRegionsApi } from './api-regions';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -31,6 +32,7 @@ export const api = {
   ...adminWholesaleTiersApi,
   ...adminSettingsApi,
   ...adminMarketingEngagementApi,
+  ...adminRegionsApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -42,46 +44,7 @@ export const api = {
     return res.blob();
   },
 
-  // Region endpoints
-  getRegions: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/regions`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch regions');
-    return res.json();
-  },
-
-  createRegion: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/regions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create region');
-    return res.json();
-  },
-
-  deleteRegion: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/regions/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to delete region');
-    return res.json();
-  },
-
-  updateRegion: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/regions/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update region');
-    return res.json();
-  },
+  ...adminRegionsApi,
 
   // Variant endpoints
   getVariants: async (productId: string) => {
