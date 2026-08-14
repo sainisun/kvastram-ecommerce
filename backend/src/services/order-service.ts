@@ -44,6 +44,7 @@ import { purchaseCarrierLabelCommand } from '../application/orders/fulfillment-c
 import { calculateOrderStatsOverview } from '../domain/orders/order-reporting-policy';
 import { calculateFulfillmentMetrics } from '../domain/orders/fulfillment-metrics-policy';
 import { buildCarrierLabelContext } from '../domain/orders/carrier-context-policy';
+import { appendOrderCommunicationEvent } from '../domain/orders/order-communication-event-policy';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
 import { orderDetailQueryService } from './order-detail-query-service';
@@ -169,41 +170,6 @@ function sendStatusNotification(data: {
     .catch((err) =>
       console.error('[OrderService] Failed to load email service:', err)
     );
-}
-
-function appendCommunicationEvent(
-  metadata: Record<string, unknown> | null | undefined,
-  event: {
-    template: string;
-    subject: string;
-    message: string;
-    channel?: string;
-    status?: string;
-    sent_at?: string;
-  }
-) {
-  const baseMetadata =
-    metadata && typeof metadata === 'object' && !Array.isArray(metadata)
-      ? metadata
-      : {};
-  const existingEvents = Array.isArray(baseMetadata.communication_events)
-    ? baseMetadata.communication_events
-    : [];
-
-  return {
-    ...baseMetadata,
-    communication_events: [
-      ...existingEvents,
-      {
-        template: event.template,
-        subject: event.subject,
-        message: event.message,
-        sent_at: event.sent_at || new Date().toISOString(),
-        channel: event.channel || 'email',
-        status: event.status || 'queued',
-      },
-    ],
-  };
 }
 
 // --- SERVICE CLASS ---
@@ -593,7 +559,7 @@ class OrderService {
         : 'Tracking details have been added to your order and your shipment is on its way.';
     const nextMetadata = mergeWorkflowMetadata(
       data.notify_buyer !== false
-        ? appendCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
+        ? appendOrderCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
             template: 'shipped',
             subject: autoNotificationSubject,
             message: autoNotificationMessage,
@@ -704,7 +670,7 @@ class OrderService {
         : 'A new package has been added to your order with updated shipping details.';
     const nextMetadata = mergeWorkflowMetadata(
       data.notify_buyer !== false
-        ? appendCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
+        ? appendOrderCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
             template: 'shipped',
             subject: addPackageSubject,
             message: addPackageMessage,
@@ -861,7 +827,7 @@ class OrderService {
     const nextMetadata = mergeWorkflowMetadata(
       Object.prototype.hasOwnProperty.call(data, 'notify_buyer') &&
         data.notify_buyer !== false
-        ? appendCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
+        ? appendOrderCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
             template: updateStatus === 'delivered' ? 'order_update' : 'shipped',
             subject: updateSubject,
             message: updateMessage,
