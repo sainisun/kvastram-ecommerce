@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { product_variants } from '../db/schema';
-import { compactUndefined } from '../domain/products/product-write-input-policy';
+import { buildDefaultVariantInput, compactUndefined } from '../domain/products/product-write-input-policy';
 
 export type DefaultVariantUpdateInput = {
   hs_code?: string | null;
@@ -28,6 +28,14 @@ export function buildDefaultVariantUpdateInput(data: DefaultVariantUpdateInput, 
 }
 
 export class ProductVariantRepository {
+  async createDefault(tx: any, productId: string, data: Record<string, unknown>) {
+    const result = await tx
+      .insert(product_variants)
+      .values(buildDefaultVariantInput(productId, data as any))
+      .returning();
+    return result[0];
+  }
+
   async updateDefault(tx: any, productId: string, data: DefaultVariantUpdateInput) {
     const variants = await tx.select().from(product_variants).where(eq(product_variants.product_id, productId));
     if (!variants.length) return null;

@@ -7,6 +7,14 @@ export function buildProductBaseUpdateInput(productFields: Record<string, unknow
 }
 
 export class ProductBaseRepository {
+  async create(tx: any, productData: Record<string, unknown>) {
+    const result = await tx
+      .insert(products)
+      .values(productData as typeof products.$inferInsert)
+      .returning();
+    return result[0];
+  }
+
   async update(tx: any, productId: string, productFields: Record<string, unknown>) {
     const result = await tx
       .update(products)

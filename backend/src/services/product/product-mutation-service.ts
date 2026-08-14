@@ -88,10 +88,10 @@ export class ProductMutationService {
       await this.validateForeignKeys(tx, category_ids, tag_ids, productData.collection_id);
 
       // 1. Create Product
-      const newProduct = await this.createBaseProduct(tx, productData);
+      const newProduct = await productBaseRepository.create(tx, productData);
 
       // 2. Create Default Variant
-      const newVariant = await this.createDefaultVariantForProduct(tx, newProduct.id, data);
+      const newVariant = await productVariantRepository.createDefault(tx, newProduct.id, data);
 
       // 3. Create Prices (Money Amounts)
       await productPricingRepository.assign(tx, newVariant.id, prices);
@@ -127,22 +127,6 @@ export class ProductMutationService {
   ) {
     const errors = await productCatalogReferenceRepository.validate(tx, categoryIds, tagIds, collectionId);
     if (errors.length > 0) throw new ValidationError('Invalid foreign key references', errors);
-  }
-
-  private async createBaseProduct(tx: any, productData: any) {
-    const result = await tx
-      .insert(products)
-      .values(productData as typeof products.$inferInsert)
-      .returning();
-    return result[0];
-  }
-
-  private async createDefaultVariantForProduct(tx: any, productId: string, data: CreateProductInput) {
-    const result = await tx
-      .insert(product_variants)
-      .values(buildDefaultVariantInput(productId, data))
-      .returning();
-    return result[0];
   }
 
   private async createSeoDiscoveryBaseline(
