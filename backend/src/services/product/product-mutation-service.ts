@@ -3,13 +3,8 @@
  * Handles all write operations for products
  */
 
-import { createHash } from 'crypto';
 import { db } from '../../db/client';
-import {
-  products,
-  product_variants,
-  product_images,
-} from '../../db/schema';
+import { product_images } from '../../db/schema';
 import { emailService } from '../email-service';
 import { syncSingleProductToMeilisearch, deleteProduct } from '../search-service';
 import { synchronizeProductSearch } from '../../application/products/product-search-synchronization-command';
@@ -18,22 +13,8 @@ import type {
   UpdateProductInput,
 } from './product-validator';
 import { ValidationError } from '../../middleware/error-handler';
-import type { ValidationErrorDetails } from '../../middleware/error-handler';
 import { getNewProductPublishReadinessIssues } from './product-readiness';
-import {
-  buildProductDiscoveryDocument,
-  buildProductMetaDescription,
-  buildProductSeoTitle,
-  inferProductAttributeSlugs,
-  inferProductSearchIntents,
-  inferProductSemanticEntities,
-} from '../../domain/products/product-discovery-policy';
-import {
-  buildDefaultVariantInput,
-  buildProductImageInputs,
-  buildProductBaseUpdateInput,
-  compactUndefined,
-} from '../../domain/products/product-write-input-policy';
+import { buildProductBaseUpdateInput } from '../../domain/products/product-write-input-policy';
 import { productCatalogReferenceRepository } from '../../repositories/product-catalog-reference-repository';
 import { productPricingRepository } from '../../repositories/product-pricing-repository';
 import { productMediaRepository } from '../../repositories/product-media-repository';
@@ -45,6 +26,7 @@ import { productDeletionRepository } from '../../repositories/product-deletion-r
 import { productPublishReadinessRepository } from '../../repositories/product-publish-readiness-repository';
 import { backInStockSubscriptionRepository } from '../../repositories/back-in-stock-subscription-repository';
 import { notifyBackInStockSubscribers } from '../../application/products/back-in-stock-notification-command';
+import { createProductCommand } from '../../application/products/product-creation-command';
 import { getProductPublishReadinessIssues } from '../../application/products/product-publish-readiness-command';
 
 export class ProductMutationService {
@@ -60,42 +42,26 @@ export class ProductMutationService {
     }
 
     const result = await db.transaction(async (tx) => {
-      const {
-        prices,
-        options,
-        images,
-        category_ids,
-        tag_ids,
-        inventory_quantity,
-        sku,
-        ...productData
-      } = data;
-
-      // Validate foreign keys exist before proceeding
-      await this.validateForeignKeys(tx, category_ids, tag_ids, productData.collection_id);
-
-      // 1. Create Product
-      const newProduct = await productBaseRepository.create(tx, productData);
-
-      // 2. Create Default Variant
-      const newVariant = await productVariantRepository.createDefault(tx, newProduct.id, data);
-
-      // 3. Create Prices (Money Amounts)
-      await productPricingRepository.assign(tx, newVariant.id, prices);
-
-      // 4. Create Options
-      await productOptionRepository.assign(tx, newProduct.id, options);
-
-      // 5. Create Images
-      const createdImages = await productMediaRepository.assign(tx, newProduct.id, images);
-
-      // 6. Assign catalog references
-      await productCatalogReferenceRepository.assign(tx, newProduct.id, category_ids, tag_ids, productData.collection_id);
-
-      // 9. Create SEO/discovery baseline so new products are never SEO-empty.
-      await this.createSeoDiscoveryBaseline(tx, newProduct, newVariant, createdImages, data);
-
-      return { ...newProduct, default_variant_id: newVariant.id };
+      const outcome = await createProductCommand(data, {
+        validateReferences: (categoryIds, tagIds, collectionId) => productCatalogReferenceRepository.validate(tx, categoryIds, tagIds, collectionId),
+        createBase: (productData) => productBaseRepository.create(tx, productData),
+        createDefaultVariant: (productId, input) => productVariantRepository.createDefault(tx, productId, input),
+        assignPrices: (variantId, prices) => productPricingRepository.assign(tx, variantId, prices as CreateProductInput['prices']),
+        assignOptions: (productId, options) => productOptionRepository.assign(tx, productId, options as CreateProductInput['options']),
+        assignImages: (productId, images) => productMediaRepository.assign(tx, productId, images as CreateProductInput['images']),
+        assignReferences: (productId, categoryIds, tagIds, collectionId) => productCatalogReferenceRepository.assign(tx, productId, categoryIds, tagIds, collectionId),
+        persistDiscoveryBaseline: (product, variant, images, input) => productDiscoveryBaselineRepository.persist(
+          tx,
+          product,
+          variant,
+          images as Array<typeof product_images.$inferSelect>,
+          input,
+        ),
+      });
+      if (outcome.kind === 'invalid_catalog_references') {
+        throw new ValidationError('Invalid foreign key references', outcome.errors);
+      }
+      return outcome.product;
     });
 
     // Sync to Meilisearch in background (non-blocking)
@@ -115,16 +81,6 @@ export class ProductMutationService {
   ) {
     const errors = await productCatalogReferenceRepository.validate(tx, categoryIds, tagIds, collectionId);
     if (errors.length > 0) throw new ValidationError('Invalid foreign key references', errors);
-  }
-
-  private async createSeoDiscoveryBaseline(
-    tx: any,
-    product: typeof products.$inferSelect,
-    variant: typeof product_variants.$inferSelect,
-    images: Array<typeof product_images.$inferSelect>,
-    data: CreateProductInput
-  ) {
-    await productDiscoveryBaselineRepository.persist(tx, product, variant, images, data);
   }
 
   /**
