@@ -1,6 +1,7 @@
 import { adminAuthApi } from './api-auth';
 import { adminProductsApi } from './api-products';
 import { adminCustomersApi } from './api-customers';
+import { adminOrdersApi } from './api-orders';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -10,12 +11,10 @@ import {
 export type { ApiError, AuthResponse, User } from './api-client-core';
 
 export const api = {
-  ...adminAuthApi,
-
+    ...adminAuthApi,
   ...adminProductsApi,
-
   ...adminCustomersApi,
-
+  ...adminOrdersApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -132,103 +131,8 @@ export const api = {
     if (!res.ok) return handleApiError(res, 'Failed to delete variant');
     return res.json();
   },
-  getOrders: async (
-    limit = 20,
-    offset = 0,
-    search?: string,
-    status?: string,
-    queue?: 'all' | 'open' | 'completed' | 'issues',
-    workflowFilter?:
-      | 'all'
-      | 'new'
-      | 'processing'
-      | 'due_today'
-      | 'ready_to_ship'
-      | 'missing_tracking',
-    sortBy?: 'newest' | 'oldest' | 'ship_by' | 'destination'
-  ) => {
-    const page = Math.floor(offset / limit) + 1;
-    let url = `${API_BASE_URL}/orders?limit=${limit}&page=${page}`;
-    if (search) url += `&search=${encodeURIComponent(search)}`;
-    if (status && status !== 'all') url += `&status=${status}`;
-    if (queue && queue !== 'all') url += `&queue=${queue}`;
-    if (workflowFilter && workflowFilter !== 'all') {
-      url += `&workflow_filter=${workflowFilter}`;
-    }
-    if (sortBy) url += `&sort_by=${sortBy}`;
+  ...adminOrdersApi,
 
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch orders');
-    const response = await res.json();
-    return {
-      orders: response.data || [],
-      pagination: response.pagination,
-    };
-  },
-  getOrder: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch order details');
-    const response = await res.json();
-    return response.data;
-  },
-
-  completeOrder: async (
-    id: string,
-    data: {
-      ship_date?: string | null;
-      shipping_carrier?: string | null;
-      shipping_service?: string | null;
-      tracking_number?: string | null;
-      tracking_link?: string | null;
-      no_tracking?: boolean;
-      no_tracking_reason?: string | null;
-      customer_note?: string | null;
-      internal_note?: string | null;
-      notify_buyer?: boolean;
-      send_admin_copy?: boolean;
-    }
-  ) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/${id}/complete-order`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to complete order');
-    return res.json();
-  },
-
-  updateOrderStatus: async (id: string, status: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/orders/${id}/status`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ status }),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to update status');
-    return res.json();
-  },
-
-  getOrderStats: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/stats/overview`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to fetch order stats');
-    const response = await res.json();
-    return response.data;
-  },
   uploadImage: async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
