@@ -12,6 +12,7 @@ import { adminSettingsApi } from './api-settings';
 import { adminMarketingEngagementApi } from './api-marketing-engagement';
 import { adminRegionsApi } from './api-regions';
 import { adminProductVariantsApi } from './api-product-variants';
+import { adminAnalyticsApi } from './api-analytics';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -35,6 +36,7 @@ export const api = {
   ...adminMarketingEngagementApi,
   ...adminRegionsApi,
   ...adminProductVariantsApi,
+  ...adminAnalyticsApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -152,35 +154,7 @@ export const api = {
 
   ...adminCatalogApi,
 
-  getAnalyticsOverview: async () => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/analytics/overview`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) throw new Error('Failed to fetch analytics overview');
-    return res.json();
-  },
-
-  getSalesTrend: async (days = 30) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/analytics/sales-trend?days=${days}`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch sales trend');
-    return res.json();
-  },
-
-  getOrdersByStatus: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/analytics/orders-by-status`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) throw new Error('Failed to fetch orders by status');
-    return res.json();
-  },
+  ...adminAnalyticsApi,
 
   getTiers: async () => {
     const res = await fetchWithTimeout(
