@@ -46,6 +46,7 @@ import { calculateFulfillmentMetrics } from '../domain/orders/fulfillment-metric
 import { buildCarrierLabelContext } from '../domain/orders/carrier-context-policy';
 import { appendOrderCommunicationEvent } from '../domain/orders/order-communication-event-policy';
 import { updateOrderStatus as updateOrderStatusCommand } from '../application/orders/order-status-update-command';
+import { bulkUpdateOrderStatus as bulkUpdateOrderStatusCommand } from '../application/orders/bulk-order-status-update-command';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
 import { orderDetailQueryService } from './order-detail-query-service';
@@ -323,72 +324,38 @@ class OrderService {
   }
 
   async bulkUpdateStatus(orderIds: string[], newStatus: string) {
-    // Fetch current statuses
-    const targets = await db
-      .select({
-        id: orders.id,
-        email: orders.email,
-        order_number: orders.display_id,
-        total: orders.total,
-        currency_code: orders.currency_code,
-        status: orders.status,
-        payment_status: orders.payment_status,
-        fulfillment_status: orders.fulfillment_status,
-        tracking_number: orders.tracking_number,
-        metadata: orders.metadata,
-      })
-      .from(orders)
-      .where(inArray(orders.id, orderIds));
-
-    if (targets.length === 0) throw new Error('No valid orders found');
-
-    const invalidIds: string[] = [];
-    for (const order of targets) {
-      const currentStatus = deriveWorkflowStatus(order);
-      if (!canTransitionOrderStatus(currentStatus, newStatus)) {
-        invalidIds.push(order.id);
-      }
-    }
-
-    if (invalidIds.length > 0) {
-      throw new Error(
-        `Cannot update ${invalidIds.length} orders. Invalid status transition.`
-      );
-    }
-
-    for (const order of targets) {
-      const nextMetadata = mergeWorkflowMetadata(order.metadata, {
-        workflow_status: newStatus as OrderStatus,
-      });
-      const { fulfillmentStatus: nextFulfillmentStatus, paymentStatus: nextPaymentStatus } =
-        deriveOrderStatusMutation(
-          newStatus as OrderStatus,
-          order.fulfillment_status ?? '',
-          order.payment_status ?? ''
-        );
-
-      await db
-        .update(orders)
-        .set({
-          status: newStatus as any,
-          fulfillment_status: nextFulfillmentStatus as any,
-          payment_status: nextPaymentStatus as any,
-          metadata: nextMetadata,
-          updated_at: new Date(),
+    return bulkUpdateOrderStatusCommand(orderIds, newStatus, {
+      loadOrders: async (ids) => db
+        .select({
+          id: orders.id,
+          email: orders.email,
+          order_number: orders.display_id,
+          total: orders.total,
+          currency_code: orders.currency_code,
+          status: orders.status,
+          payment_status: orders.payment_status,
+          fulfillment_status: orders.fulfillment_status,
+          tracking_number: orders.tracking_number,
+          metadata: orders.metadata,
         })
-        .where(eq(orders.id, order.id));
-
-      sendStatusNotification({
-        email: order.email,
-        order_number: order.order_number,
-        total: order.total,
-        currency_code: order.currency_code,
-        status: newStatus,
-        tracking_number: order.tracking_number,
-      });
-    }
-
-    return targets.length;
+        .from(orders)
+        .where(inArray(orders.id, ids)),
+      getCurrentStatus: deriveWorkflowStatus,
+      mergeWorkflowMetadata,
+      persistOrder: async (orderId, input) => {
+        await db
+          .update(orders)
+          .set({
+            status: input.status as any,
+            fulfillment_status: input.fulfillment_status as any,
+            payment_status: input.payment_status as any,
+            metadata: input.metadata as any,
+            updated_at: input.updated_at,
+          })
+          .where(eq(orders.id, orderId));
+      },
+      notify: sendStatusNotification,
+    });
   }
 
   async addTracking(

@@ -182,8 +182,10 @@ function validateRf005Artifacts() {
   if (!serviceSource.includes('updateOrderStatusCommand(') || !commandSource.includes('assertOrderStatusTransition(')) {
     findings.push('[rf-005] order status update does not delegate single-order validation to the transition policy');
   }
-  if (!serviceSource.includes('canTransitionOrderStatus(')) {
-    findings.push('[rf-005] order service does not delegate bulk validation to the transition policy');
+  const bulkStatusUpdateCommand = join(backendRoot, 'application', 'orders', 'bulk-order-status-update-command.ts');
+  const bulkCommandSource = existsSync(bulkStatusUpdateCommand) ? readFileSync(bulkStatusUpdateCommand, 'utf8') : '';
+  if (!serviceSource.includes('bulkUpdateOrderStatusCommand(') || !bulkCommandSource.includes('canTransitionOrderStatus(')) {
+    findings.push('[rf-005] bulk status update does not delegate validation to the transition policy');
   }
   if (serviceSource.includes('const VALID_TRANSITIONS')) {
     findings.push('[rf-005] order service retains a duplicated transition graph');
