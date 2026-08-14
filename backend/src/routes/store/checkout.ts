@@ -32,6 +32,10 @@ import {
   generateCheckoutPaymentToken,
 } from '../../utils/payment-ownership';
 import { buildInventoryReservationMetadata } from '../../utils/inventory-reservation';
+import {
+  calculateCheckoutDiscountAmount,
+  getDefaultCheckoutShippingOptions,
+} from '../../domain/checkout/checkout-pricing-policy';
 
 const FALLBACK_RATES: Record<string, number> = {
   INR: 1, USD: 0.012, EUR: 0.011, GBP: 0.0095, JPY: 1.79,
@@ -193,55 +197,11 @@ const validateDiscount = async (
     );
   }
 
-  // Calculate discount amount
-  let discountAmount = 0;
-  if (discount.type === 'percentage') {
-    discountAmount = Math.round((cartTotal * discount.value) / 100);
-  } else if (discount.type === 'fixed_amount') {
-    discountAmount = discount.value;
-  } else if (discount.type === 'free_shipping') {
-    discountAmount = 0;
-  }
-
-  // Cap at cart total
-  if (discountAmount > cartTotal) discountAmount = cartTotal;
-
-  return { discount, discountAmount };
-};
-
-function getDefaultShippingOptions(input: {
-  countryCode: string;
-  currencyCode: string;
-  domesticRate: number;
-  intlRate: number;
-  freeThreshold: number;
-}) {
-  const isDomestic = input.countryCode === 'IN';
-  const baseRate = isDomestic ? input.domesticRate : input.intlRate;
-
   return {
-    options: [
-      {
-        id: isDomestic ? 'domestic-standard' : 'international-standard',
-        name: isDomestic ? 'Standard Shipping' : 'Standard International Shipping',
-        description: isDomestic ? 'Final ETA confirmed at checkout' : 'Tracked delivery with final ETA at checkout',
-        price: baseRate,
-        estimated_days: isDomestic ? '3-7' : '7-14',
-        currency_code: input.currencyCode,
-      },
-      {
-        id: isDomestic ? 'domestic-priority' : 'international-priority',
-        name: isDomestic ? 'Priority Shipping' : 'Priority International Shipping',
-        description: isDomestic ? 'Faster dispatch when available' : 'Faster international processing when available',
-        price: Math.round(baseRate * 1.45),
-        estimated_days: isDomestic ? '2-5' : '5-10',
-        currency_code: input.currencyCode,
-      },
-    ],
-    free_shipping_threshold: input.freeThreshold,
-    currency_code: input.currencyCode,
+    discount,
+    discountAmount: calculateCheckoutDiscountAmount(cartTotal, discount),
   };
-}
+};
 
 async function getAuthenticatedCustomerId(c: any) {
   const token = getCookie(c, 'auth_token');
@@ -268,7 +228,7 @@ async function resolveShippingOption(input: {
   freeThreshold: number;
   shippingAddress: z.infer<typeof PlaceOrderSchema>['shipping_address'];
 }) {
-  const fallback = getDefaultShippingOptions(input);
+  const fallback = getDefaultCheckoutShippingOptions(input);
   let options = fallback.options;
 
   if (input.countryCode === 'IN' && input.postalCode) {
@@ -370,7 +330,7 @@ checkoutRouter.get(
         );
       }
 
-      const fallback = getDefaultShippingOptions({
+      const fallback = getDefaultCheckoutShippingOptions({
         countryCode,
         currencyCode: region?.currency_code?.toUpperCase() || 'INR',
         domesticRate,
