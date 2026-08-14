@@ -31,6 +31,7 @@ import { eq, desc, asc, sql, or, and, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { escapeLikeWildcards } from '../../utils/validation';
 import { selectProductSearchResults } from '../../domain/products/product-search-result-policy';
+import { enrichProductDetails } from '../../domain/products/product-enrichment-policy';
 import { embedText, toVectorLiteral } from '../../jobs/generateEmbeddings';
 import type { ProductFilter, ProductSearch } from './product-validator';
 
@@ -421,30 +422,16 @@ export class ProductQueryService {
       ? await this.fetchSemanticRelatedProducts(productsList, attrsByProduct)
       : new Map<string, unknown[]>();
 
-    return productsList.map((product) => ({
-      ...product,
-      collection_id: product.collection_id || collectionByProduct.get(product.id) || null,
-      seo: seoByProduct.get(product.id) || null,
-      discovery: discoveryByProduct.get(product.id) || null,
-      attributes: attrsByProduct.get(product.id) || [],
-      media_seo: product.images?.map((image) => mediaByImage.get(image.id)).filter(Boolean) || [],
-      artisan: artisanByProduct.get(product.id) || null,
-      semantic_related_products: relatedByProduct.get(product.id) || [],
-      images: product.images?.map((image) => {
-        const mediaSeo = mediaByImage.get(image.id);
-        return mediaSeo
-          ? {
-              ...image,
-              alt_text: mediaSeo.alt_text || image.alt_text,
-              media_seo: mediaSeo,
-            }
-          : image;
-      }),
-      variants: product.variants?.map((variant) => ({
-        ...variant,
-        merchant: merchantByVariant.get(variant.id) || null,
-      })),
-    })) as T[];
+    return enrichProductDetails(productsList, {
+      seoByProduct,
+      discoveryByProduct,
+      attributesByProduct: attrsByProduct,
+      merchantByVariant,
+      mediaByImage,
+      artisanByProduct,
+      collectionByProduct,
+      relatedByProduct,
+    });
   }
 
   private async fetchSemanticRelatedProducts<T extends { id: string }>(
