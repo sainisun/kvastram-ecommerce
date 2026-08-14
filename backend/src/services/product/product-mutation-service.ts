@@ -59,6 +59,8 @@ import { productOptionRepository } from '../../repositories/product-option-repos
 import { productVariantRepository } from '../../repositories/product-variant-repository';
 import { productBaseRepository } from '../../repositories/product-base-repository';
 import { productDiscoveryBaselineRepository } from '../../repositories/product-discovery-baseline-repository';
+import { backInStockSubscriptionRepository } from '../../repositories/back-in-stock-subscription-repository';
+import { notifyBackInStockSubscribers } from '../../application/products/back-in-stock-notification-command';
 
 export class ProductMutationService {
   /**
@@ -186,7 +188,12 @@ export class ProductMutationService {
     // Auto-notify back-in-stock subscribers if inventory went above 0
     // Run async (non-blocking) — product update should not fail if emails fail
     if (data.inventory_quantity && data.inventory_quantity > 0) {
-      this.notifyBackInStockSubscribers(id).catch((err) =>
+      notifyBackInStockSubscribers(id, {
+        loadSubscribers: (productId) => backInStockSubscriptionRepository.loadSubscribers(productId),
+        loadProduct: (productId) => backInStockSubscriptionRepository.loadProduct(productId),
+        markNotified: (subscriptionId, notifiedAt) => backInStockSubscriptionRepository.markNotified(subscriptionId, notifiedAt),
+        sendEmail: (input) => emailService.sendBackInStockNotification(input),
+      }).catch((err) =>
         console.error('[BackInStock] Auto-notify failed:', err.message)
       );
     }
@@ -283,60 +290,6 @@ export class ProductMutationService {
     if (!updatedProduct) throw new Error(`Product with id ${id} not found`);
     return updatedProduct;
   }
-
-  /** Send back-in-stock emails to all pending subscribers for a product */
-  private async notifyBackInStockSubscribers(productId: string) {
-    // Find all unnotified subscribers for this product
-    const subscribers = await db
-      .select({
-        id: back_in_stock_subscriptions.id,
-        email: back_in_stock_subscriptions.email,
-      })
-      .from(back_in_stock_subscriptions)
-      .where(
-        and(
-          eq(back_in_stock_subscriptions.product_id, productId),
-          eq(back_in_stock_subscriptions.notified, false)
-        )
-      );
-
-    if (subscribers.length === 0) return;
-
-    // Get product info for email
-    const [product] = await db
-      .select({ title: products.title, handle: products.handle })
-      .from(products)
-      .where(eq(products.id, productId))
-      .limit(1);
-
-    if (!product) return;
-
-    const productUrl = `/products/${product.handle}`;
-
-    console.log(`[BackInStock] Notifying ${subscribers.length} subscriber(s) for "${product.title}"`);
-
-    // Send emails and mark as notified
-    for (const subscriber of subscribers) {
-      try {
-        await emailService.sendBackInStockNotification({
-          email: subscriber.email,
-          product_title: product.title || 'Product',
-          product_url: productUrl,
-        });
-
-        // Mark as notified
-        await db
-          .update(back_in_stock_subscriptions)
-          .set({ notified: true, notified_at: new Date() })
-          .where(eq(back_in_stock_subscriptions.id, subscriber.id));
-      } catch (err: any) {
-        console.error(`[BackInStock] Failed to notify ${subscriber.email}:`, err.message);
-      }
-    }
-
-    console.log(`[BackInStock] Done notifying subscribers for "${product.title}"`);
-  }
-
 
   /**
    * Delete a product and all its related data.
