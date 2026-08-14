@@ -51,6 +51,7 @@ import { updateOrderTracking as updateOrderTrackingCommand } from '../applicatio
 import { completeOrder as completeOrderCommand } from '../application/orders/order-completion-command';
 import { addOrderPackage as addOrderPackageCommand } from '../application/orders/order-add-package-command';
 import { updateOrderPackage as updateOrderPackageCommand } from '../application/orders/order-package-update-command';
+import { updateOrderWorkflow as updateOrderWorkflowCommand } from '../application/orders/order-workflow-update-command';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
 import { orderDetailQueryService } from './order-detail-query-service';
@@ -634,30 +635,34 @@ class OrderService {
       internal_note?: string | null;
     }
   ) {
-    const [existingOrder] = await db
-      .select({
-        id: orders.id,
-        metadata: orders.metadata,
-        status: orders.status,
-        payment_status: orders.payment_status,
-        fulfillment_status: orders.fulfillment_status,
-        tracking_number: orders.tracking_number,
-      })
-      .from(orders)
-      .where(eq(orders.id, id));
-
-    if (!existingOrder) throw new Error('Order not found');
-
-    const nextMetadata = mergeWorkflowMetadata(existingOrder.metadata, data);
-
-    const [updated] = await db
-      .update(orders)
-      .set({
-        metadata: nextMetadata,
-        updated_at: new Date(),
-      })
-      .where(eq(orders.id, id))
-      .returning();
+    const updated = await updateOrderWorkflowCommand(id, data, {
+      loadOrder: async (orderId) => {
+        const [existingOrder] = await db
+          .select({
+            id: orders.id,
+            metadata: orders.metadata,
+            status: orders.status,
+            payment_status: orders.payment_status,
+            fulfillment_status: orders.fulfillment_status,
+            tracking_number: orders.tracking_number,
+          })
+          .from(orders)
+          .where(eq(orders.id, orderId));
+        return existingOrder || null;
+      },
+      mergeWorkflowMetadata,
+      persistOrder: async (orderId, input) => {
+        const [persisted] = await db
+          .update(orders)
+          .set({
+            metadata: input.metadata as any,
+            updated_at: input.updated_at,
+          })
+          .where(eq(orders.id, orderId))
+          .returning();
+        return persisted;
+      },
+    });
 
     return applyWorkflowSummary(updated as Record<string, any>);
   }
