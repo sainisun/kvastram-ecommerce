@@ -33,6 +33,7 @@ import { escapeLikeWildcards } from '../../utils/validation';
 import { selectProductSearchResults } from '../../domain/products/product-search-result-policy';
 import { enrichProductDetails } from '../../domain/products/product-enrichment-policy';
 import { assembleProductListDetails } from '../../domain/products/product-list-assembly-policy';
+import { groupProductVariantDetails } from '../../domain/products/product-variant-detail-policy';
 import { embedText, toVectorLiteral } from '../../jobs/generateEmbeddings';
 import type { ProductFilter, ProductSearch } from './product-validator';
 
@@ -247,40 +248,14 @@ export class ProductQueryService {
       },
     });
 
-    // Group variants by product_id
-    const variantsByProduct: Record<
-      string,
-      Array<{
-        id: string;
-        title: string;
-        sku: string | null;
-        inventory_quantity: number;
-        prices: Array<{
-          id: string;
-          amount: number;
-          currency_code: string;
-        }>;
-      }>
-    > = {};
-
-    variants.forEach((variant) => {
-      if (!variantsByProduct[variant.product_id]) {
-        variantsByProduct[variant.product_id] = [];
-      }
-      variantsByProduct[variant.product_id].push({
-        id: variant.id,
-        title: variant.title,
-        sku: variant.sku,
-        inventory_quantity: variant.inventory_quantity ?? 0,
-        prices: variant.prices as Array<{
-          id: string;
-          amount: number;
-          currency_code: string;
-        }>,
-      });
-    });
-
-    return variantsByProduct;
+    return groupProductVariantDetails(variants as Array<{
+      id: string;
+      product_id: string;
+      title: string;
+      sku: string | null;
+      inventory_quantity: number | null;
+      prices: Array<{ id: string; amount: number; currency_code: string }>;
+    }>);
   }
 
   /**
