@@ -1,203 +1,41 @@
+import { adminAnalyticsApi } from './api-analytics';
 import { adminAuthApi } from './api-auth';
-import { adminProductsApi } from './api-products';
-import { adminCustomersApi } from './api-customers';
-import { adminOrdersApi } from './api-orders';
-import { adminContentMediaApi } from './api-content-media';
 import { adminCatalogApi } from './api-catalog';
-import { adminWholesaleInquiriesApi } from './api-wholesale-inquiries';
+import { adminContentMediaApi } from './api-content-media';
+import { adminCustomersApi } from './api-customers';
+import { adminMarketingEngagementApi } from './api-marketing-engagement';
+import { adminOrdersApi } from './api-orders';
+import { adminProductVariantsApi } from './api-product-variants';
+import { adminProductsApi } from './api-products';
+import { adminRegionsApi } from './api-regions';
+import { adminSettingsApi } from './api-settings';
+import { adminUtilitiesApi } from './api-utilities';
 import { adminWholesaleCustomersApi } from './api-wholesale-customers';
+import { adminWholesaleInquiriesApi } from './api-wholesale-inquiries';
 import { adminWholesaleOrdersApi } from './api-wholesale-orders';
 import { adminWholesaleTiersApi } from './api-wholesale-tiers';
-import { adminSettingsApi } from './api-settings';
-import { adminMarketingEngagementApi } from './api-marketing-engagement';
-import { adminRegionsApi } from './api-regions';
-import { adminProductVariantsApi } from './api-product-variants';
-import { adminAnalyticsApi } from './api-analytics';
-import {
-  API_BASE_URL,
-  fetchWithTimeout,
-  handleApiError,
-} from './api-client-core';
 
 export type { ApiError, AuthResponse, User } from './api-client-core';
 
+/**
+ * Stable compatibility facade for the modular administrative API client.
+ * Domain modules own endpoint behavior; consumers continue to import `api`.
+ */
 export const api = {
-    ...adminAuthApi,
+  ...adminAuthApi,
   ...adminProductsApi,
+  ...adminProductVariantsApi,
   ...adminCustomersApi,
   ...adminOrdersApi,
-  ...adminContentMediaApi,
   ...adminCatalogApi,
+  ...adminRegionsApi,
+  ...adminContentMediaApi,
+  ...adminMarketingEngagementApi,
+  ...adminSettingsApi,
+  ...adminAnalyticsApi,
   ...adminWholesaleInquiriesApi,
   ...adminWholesaleCustomersApi,
   ...adminWholesaleOrdersApi,
   ...adminWholesaleTiersApi,
-  ...adminSettingsApi,
-  ...adminMarketingEngagementApi,
-  ...adminRegionsApi,
-  ...adminProductVariantsApi,
-  ...adminAnalyticsApi,
-  downloadInvoice: async (orderId: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/orders/${orderId}/invoice`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to download invoice');
-    return res.blob();
-  },
-
-  ...adminRegionsApi,
-
-  ...adminProductVariantsApi,
-
-  ...adminOrdersApi,
-
-  uploadImage: async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const res = await fetchWithTimeout(`${API_BASE_URL}/upload`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to upload image');
-    return res.json();
-  },
-
-  uploadMedia: async (
-    file: File,
-    onProgress?: (progress: number) => void
-  ): Promise<{
-    url: string;
-    publicId?: string;
-    filename: string;
-    originalName: string;
-    size: number;
-    type: string;
-  }> => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', `${API_BASE_URL}/upload`);
-      xhr.withCredentials = true;
-
-      xhr.upload.onprogress = (event) => {
-        if (!event.lengthComputable || !onProgress) return;
-        onProgress(Math.round((event.loaded / event.total) * 100));
-      };
-
-      xhr.onload = () => {
-        try {
-          const json = JSON.parse(xhr.responseText || '{}');
-          if (xhr.status >= 200 && xhr.status < 300) {
-            onProgress?.(100);
-            resolve(json);
-            return;
-          }
-
-          reject(new Error(json.error || json.message || 'Failed to upload file'));
-        } catch {
-          reject(new Error('Failed to upload file'));
-        }
-      };
-
-      xhr.onerror = () => reject(new Error('Failed to upload file'));
-      xhr.ontimeout = () => reject(new Error('Upload timed out'));
-      xhr.timeout = 120000;
-      xhr.send(formData);
-    });
-  },
-
-  ...adminSettingsApi,
-
-  ...adminMarketingEngagementApi,
-
-  // Generic POST helper for admin
-  post: async (path: string, data?: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data || {}),
-    });
-    if (!res.ok) return handleApiError(res, `POST ${path} failed`);
-    return res.json();
-  },
-  delete: async (path: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) return handleApiError(res, `DELETE ${path} failed`);
-    return res.json();
-  },
-
-  get: async (path: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}${path}`, {});
-    if (!res.ok) return handleApiError(res, `GET ${path} failed`);
-    return res.json();
-  },
-
-  ...adminAuthApi,
-
-  ...adminWholesaleInquiriesApi,
-
-  ...adminWholesaleCustomersApi,
-
-  ...adminWholesaleOrdersApi,
-
-  ...adminWholesaleTiersApi,
-
-  ...adminContentMediaApi,
-
-  ...adminCatalogApi,
-
-  ...adminAnalyticsApi,
-
-  getTiers: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers`,
-      {}
-    );
-    if (!res.ok) throw new Error('Failed to fetch tiers');
-    return res.json();
-  },
-
-  createTier: async (data: unknown) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to create tier');
-    return res.json();
-  },
-
-  updateTier: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/${id}`,
-      {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update tier');
-    return res.json();
-  },
-
-  deleteTier: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/${id}`,
-      { method: 'DELETE' }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete tier');
-    return res.json();
-  },
-
+  ...adminUtilitiesApi,
 };
