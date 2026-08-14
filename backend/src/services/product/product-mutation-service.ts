@@ -55,6 +55,7 @@ import {
 import { productCatalogReferenceRepository } from '../../repositories/product-catalog-reference-repository';
 import { productPricingRepository } from '../../repositories/product-pricing-repository';
 import { productMediaRepository } from '../../repositories/product-media-repository';
+import { productOptionRepository } from '../../repositories/product-option-repository';
 
 export class ProductMutationService {
   /**
@@ -93,7 +94,7 @@ export class ProductMutationService {
       await productPricingRepository.assign(tx, newVariant.id, prices);
 
       // 4. Create Options
-      await this.assignOptionsToProduct(tx, newProduct.id, options);
+      await productOptionRepository.assign(tx, newProduct.id, options);
 
       // 5. Create Images
       const createdImages = await productMediaRepository.assign(tx, newProduct.id, images);
@@ -139,17 +140,6 @@ export class ProductMutationService {
       .values(buildDefaultVariantInput(productId, data))
       .returning();
     return result[0];
-  }
-
-  private async assignOptionsToProduct(tx: any, productId: string, options: any[] | undefined) {
-    if (!options || options.length === 0) return;
-    for (const opt of options) {
-      await tx.insert(product_options).values({
-        product_id: productId,
-        title: opt.title,
-        metadata: null,
-      });
-    }
   }
 
   private async createSeoDiscoveryBaseline(
