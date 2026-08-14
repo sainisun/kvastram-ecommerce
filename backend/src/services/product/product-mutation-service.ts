@@ -27,6 +27,7 @@ import { productPublishReadinessRepository } from '../../repositories/product-pu
 import { backInStockSubscriptionRepository } from '../../repositories/back-in-stock-subscription-repository';
 import { notifyBackInStockSubscribers } from '../../application/products/back-in-stock-notification-command';
 import { createProductCommand } from '../../application/products/product-creation-command';
+import { updateProductCommand } from '../../application/products/product-update-command';
 import { getProductPublishReadinessIssues } from '../../application/products/product-publish-readiness-command';
 
 export class ProductMutationService {
@@ -98,40 +99,23 @@ export class ProductMutationService {
     }
 
     const result = await db.transaction(async (tx) => {
-      await this.validateForeignKeys(tx, data.category_ids, data.tag_ids, data.collection_id);
-
-      // 1. Update Product Base
-      const updatedProduct = await productBaseRepository.update(tx, id, buildProductBaseUpdateInput(data));
-      if (!updatedProduct) throw new Error(`Product with id ${id} not found`);
-
-      // 2. Update default variant if exists
-      const defaultVariantId = await productVariantRepository.updateDefault(tx, id, data);
-
-      // 3. Sync prices for the default variant when pricing is provided
-      if (defaultVariantId && data.prices) {
-        await productPricingRepository.replace(tx, defaultVariantId, data.prices);
+      const outcome = await updateProductCommand(data, {
+        validateReferences: (categoryIds, tagIds, collectionId) => productCatalogReferenceRepository.validate(tx, categoryIds, tagIds, collectionId),
+        updateBase: (input) => productBaseRepository.update(tx, id, buildProductBaseUpdateInput(input)),
+        updateDefaultVariant: (input) => productVariantRepository.updateDefault(tx, id, input),
+        replacePrices: (variantId, prices) => productPricingRepository.replace(tx, variantId, prices as NonNullable<UpdateProductInput['prices']>),
+        replaceImages: (images) => productMediaRepository.replace(tx, id, images as NonNullable<UpdateProductInput['images']>),
+        replaceCategories: (categoryIds) => productCatalogReferenceRepository.replaceCategories(tx, id, categoryIds),
+        replaceTags: (tagIds) => productCatalogReferenceRepository.replaceTags(tx, id, tagIds),
+        replaceCollection: (collectionId) => productCatalogReferenceRepository.replaceCollection(tx, id, collectionId),
+      });
+      if (outcome.kind === 'invalid_catalog_references') {
+        throw new ValidationError('Invalid foreign key references', outcome.errors);
       }
-
-      // 4. Handle images if provided
-      if (data.images) {
-        await productMediaRepository.replace(tx, id, data.images);
+      if (outcome.kind === 'product_not_found') {
+        throw new Error(`Product with id ${id} not found`);
       }
-
-      // 5. Handle Categories
-      if (data.category_ids) {
-        await productCatalogReferenceRepository.replaceCategories(tx, id, data.category_ids);
-      }
-
-      // 6. Handle Tags
-      if (data.tag_ids) {
-        await productCatalogReferenceRepository.replaceTags(tx, id, data.tag_ids);
-      }
-
-      if (data.collection_id !== undefined) {
-        await productCatalogReferenceRepository.replaceCollection(tx, id, data.collection_id);
-      }
-
-      return updatedProduct;
+      return outcome.product;
     });
 
     // Auto-notify back-in-stock subscribers if inventory went above 0
