@@ -48,6 +48,7 @@ import { appendOrderCommunicationEvent } from '../domain/orders/order-communicat
 import { updateOrderStatus as updateOrderStatusCommand } from '../application/orders/order-status-update-command';
 import { bulkUpdateOrderStatus as bulkUpdateOrderStatusCommand } from '../application/orders/bulk-order-status-update-command';
 import { updateOrderTracking as updateOrderTrackingCommand } from '../application/orders/order-tracking-update-command';
+import { completeOrder as completeOrderCommand } from '../application/orders/order-completion-command';
 import { orderReportingService } from './order-reporting-service';
 import { selectListedOrders } from '../domain/orders/order-listing-policy';
 import { orderDetailQueryService } from './order-detail-query-service';
@@ -433,102 +434,43 @@ class OrderService {
       send_admin_copy?: boolean;
     }
   ) {
-    const [existingOrder] = await db
-      .select({
-        id: orders.id,
-        email: orders.email,
-        order_number: orders.display_id,
-        metadata: orders.metadata,
-        total: orders.total,
-        currency_code: orders.currency_code,
-      })
-      .from(orders)
-      .where(eq(orders.id, id));
-
-    if (!existingOrder) throw new Error('Order not found');
-
-    if (data.no_tracking !== true && !data.tracking_number?.trim()) {
-      throw new Error('Tracking number is required unless no-tracking is selected');
-    }
-
-    const shipDate = data.ship_date ? new Date(data.ship_date) : new Date();
-    const shippedAt = Number.isNaN(shipDate.getTime())
-      ? new Date().toISOString()
-      : shipDate.toISOString();
-    const nextPackages = upsertWorkflowPackage(
-      getWorkflowPackages(existingOrder),
-      {
-        package_id: 'pkg_1',
-        ship_date: shippedAt,
-        carrier: data.shipping_carrier ?? null,
-        service: data.shipping_service ?? null,
-        tracking_number:
-          data.no_tracking === true ? null : data.tracking_number?.trim() || null,
-        tracking_url:
-          data.no_tracking === true ? null : data.tracking_link ?? null,
-        no_tracking: data.no_tracking === true,
-        no_tracking_reason:
-          data.no_tracking === true ? data.no_tracking_reason ?? null : null,
-        notify_buyer: data.notify_buyer !== false,
-        notification_sent: data.notify_buyer !== false,
-        notification_sent_at:
-          data.notify_buyer !== false ? new Date().toISOString() : null,
-      }
-    );
-    const autoNotificationSubject = `Your Odhvica order #${
-      existingOrder.order_number ?? id.slice(0, 8)
-    } has shipped`;
-    const autoNotificationMessage =
-      data.no_tracking === true
-        ? 'Your order is on its way. This shipment does not include a tracking number.'
-        : 'Tracking details have been added to your order and your shipment is on its way.';
-    const nextMetadata = mergeWorkflowMetadata(
-      data.notify_buyer !== false
-        ? appendOrderCommunicationEvent(toMetadataRecord(existingOrder.metadata), {
-            template: 'shipped',
-            subject: autoNotificationSubject,
-            message: autoNotificationMessage,
-            status: 'queued',
+    const updated = await completeOrderCommand(id, data, {
+      loadOrder: async (orderId) => {
+        const [existingOrder] = await db
+          .select({
+            id: orders.id,
+            email: orders.email,
+            order_number: orders.display_id,
+            metadata: orders.metadata,
+            total: orders.total,
+            currency_code: orders.currency_code,
           })
-        : existingOrder.metadata,
-      {
-      workflow_status: 'shipped',
-      shipped_at: shippedAt,
-      customer_note: data.customer_note,
-      internal_note: data.internal_note,
-      packages: nextPackages,
-      }
-    );
-    const trackingFields = deriveLegacyTrackingFields(nextPackages);
-    const addedPackage = nextPackages[nextPackages.length - 1] || null;
-
-    const [updated] = await db
-      .update(orders)
-      .set({
-        tracking_number: trackingFields.tracking_number,
-        shipping_carrier: trackingFields.shipping_carrier,
-        tracking_link: trackingFields.tracking_link,
-        status: 'shipped',
-        fulfillment_status: 'shipped',
-        metadata: nextMetadata,
-        updated_at: new Date(),
-      })
-      .where(eq(orders.id, id))
-      .returning();
-
-    if (existingOrder.email && data.notify_buyer !== false) {
-      sendStatusNotification({
-        email: existingOrder.email,
-        order_number: existingOrder.order_number ?? id.slice(0, 8),
-        total: existingOrder.total,
-        currency_code: existingOrder.currency_code,
-        status: 'shipped',
-        tracking_number: trackingFields.tracking_number,
-        shipping_carrier: trackingFields.shipping_carrier,
-        tracking_link: trackingFields.tracking_link,
-        send_admin_copy: (data as { send_admin_copy?: boolean }).send_admin_copy === true,
-      });
-    }
+          .from(orders)
+          .where(eq(orders.id, orderId));
+        return existingOrder || null;
+      },
+      getWorkflowPackages,
+      upsertWorkflowPackage: (packages, input) => upsertWorkflowPackage(packages, input as any),
+      mergeWorkflowMetadata: (metadata, update) => mergeWorkflowMetadata(metadata, update as WorkflowMetadata),
+      deriveLegacyTrackingFields,
+      persistOrder: async (orderId, input) => {
+        const [persisted] = await db
+          .update(orders)
+          .set({
+            tracking_number: input.tracking_number,
+            shipping_carrier: input.shipping_carrier,
+            tracking_link: input.tracking_link,
+            status: input.status,
+            fulfillment_status: input.fulfillment_status,
+            metadata: input.metadata as any,
+            updated_at: input.updated_at,
+          })
+          .where(eq(orders.id, orderId))
+          .returning();
+        return persisted;
+      },
+      notify: sendStatusNotification,
+    });
 
     return applyWorkflowSummary(updated as Record<string, any>);
   }
