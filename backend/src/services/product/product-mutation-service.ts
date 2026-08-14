@@ -32,6 +32,7 @@ import {
 import { eq, inArray, and } from 'drizzle-orm';
 import { emailService } from '../email-service';
 import { syncSingleProductToMeilisearch, deleteProduct } from '../search-service';
+import { synchronizeProductSearch } from '../../application/products/product-search-synchronization-command';
 import type {
   CreateProductInput,
   UpdateProductInput,
@@ -114,9 +115,10 @@ export class ProductMutationService {
     });
 
     // Sync to Meilisearch in background (non-blocking)
-    syncSingleProductToMeilisearch(result.id).catch((err) =>
-      console.error('[SearchService] Sync after product create failed:', err.message)
-    );
+    void synchronizeProductSearch(result.id, 'created', {
+      syncProduct: syncSingleProductToMeilisearch,
+      deleteProduct,
+    });
 
     return result;
   }
@@ -199,9 +201,10 @@ export class ProductMutationService {
     }
 
     // Sync to Meilisearch in background (non-blocking)
-    syncSingleProductToMeilisearch(id).catch((err) =>
-      console.error('[SearchService] Sync after product update failed:', err.message)
-    );
+    void synchronizeProductSearch(id, 'updated', {
+      syncProduct: syncSingleProductToMeilisearch,
+      deleteProduct,
+    });
 
     return result;
   }
@@ -347,9 +350,10 @@ export class ProductMutationService {
     });
 
     // Delete from Meilisearch in background (non-blocking)
-    deleteProduct(id).catch((err) =>
-      console.error('[SearchService] Deletion from Meilisearch failed:', err.message)
-    );
+    void synchronizeProductSearch(id, 'deleted', {
+      syncProduct: syncSingleProductToMeilisearch,
+      deleteProduct,
+    });
 
     return result;
   }
