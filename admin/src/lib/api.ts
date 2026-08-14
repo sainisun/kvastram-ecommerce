@@ -4,6 +4,7 @@ import { adminCustomersApi } from './api-customers';
 import { adminOrdersApi } from './api-orders';
 import { adminContentMediaApi } from './api-content-media';
 import { adminCatalogApi } from './api-catalog';
+import { adminWholesaleInquiriesApi } from './api-wholesale-inquiries';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -19,6 +20,7 @@ export const api = {
   ...adminOrdersApi,
   ...adminContentMediaApi,
   ...adminCatalogApi,
+  ...adminWholesaleInquiriesApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -353,66 +355,7 @@ export const api = {
 
   ...adminAuthApi,
 
-  // Wholesale endpoints
-  getWholesaleInquiries: async (
-    status?: string,
-    search?: string,
-    page = 1,
-    limit = 20
-  ) => {
-    let url = `${API_BASE_URL}/wholesale?page=${page}&limit=${limit}`;
-    if (status && status !== 'all') url += `&status=${status}`;
-    if (search) url += `&search=${encodeURIComponent(search)}`;
-
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok)
-      return handleApiError(res, 'Failed to fetch wholesale inquiries');
-    return res.json();
-  },
-
-  getWholesaleInquiry: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/wholesale/${id}`, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok)
-      return handleApiError(res, 'Failed to fetch wholesale inquiry');
-    return res.json();
-  },
-
-  updateWholesaleInquiry: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/wholesale/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok)
-      return handleApiError(res, 'Failed to update wholesale inquiry');
-    return res.json();
-  },
-
-  deleteWholesaleInquiry: async (id: string) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/wholesale/${id}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok)
-      return handleApiError(res, 'Failed to delete wholesale inquiry');
-    return res.json();
-  },
-
-  getWholesaleStats: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/wholesale/stats/overview`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale stats');
-    return res.json();
-  },
+  ...adminWholesaleInquiriesApi,
 
   // Wholesale Customers endpoints
   getWholesaleCustomers: async (
