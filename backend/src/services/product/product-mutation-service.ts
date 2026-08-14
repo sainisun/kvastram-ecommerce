@@ -74,16 +74,6 @@ export class ProductMutationService {
     return result;
   }
 
-  private async validateForeignKeys(
-    tx: any,
-    categoryIds: string[] | undefined,
-    tagIds: string[] | undefined,
-    collectionId?: string | null
-  ) {
-    const errors = await productCatalogReferenceRepository.validate(tx, categoryIds, tagIds, collectionId);
-    if (errors.length > 0) throw new ValidationError('Invalid foreign key references', errors);
-  }
-
   /**
    * Update a product's base details.
    */
