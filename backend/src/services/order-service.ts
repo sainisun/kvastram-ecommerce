@@ -30,6 +30,9 @@ import {
   getWorkflowMetadata,
   getWorkflowPackages,
   mergeWorkflowMetadata,
+  deriveLegacyTrackingFields,
+  selectPrimaryWorkflowPackage as getPrimaryPackage,
+  upsertWorkflowPackage,
 } from '../utils/order-workflow';
 import type {
   LabelStatus,
@@ -80,32 +83,6 @@ function sanitizeOrderSearchInput(input: string, maxLen = 100): string {
     .substring(0, maxLen);
 }
 
-function sortPackages(packages: WorkflowPackage[]) {
-  return [...packages].sort((left, right) => left.sequence - right.sequence);
-}
-
-function getPrimaryPackage(packages: WorkflowPackage[]) {
-  if (!packages.length) return null;
-
-  return (
-    [...packages]
-      .filter(
-        (pkg) => !!pkg.ship_date || !!pkg.tracking_number || pkg.no_tracking === true
-      )
-      .sort((left, right) => right.sequence - left.sequence)[0] || packages[0]
-  );
-}
-
-function deriveLegacyTrackingFields(packages: WorkflowPackage[]) {
-  const primaryPackage = getPrimaryPackage(packages);
-
-  return {
-    tracking_number: primaryPackage?.tracking_number || null,
-    shipping_carrier: primaryPackage?.carrier || null,
-    tracking_link: primaryPackage?.tracking_url || null,
-  };
-}
-
 function toTimestamp(value: string | number | Date | null | undefined) {
   if (!value) return 0;
   return new Date(value).getTime();
@@ -115,183 +92,6 @@ function toMetadataRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : null;
-}
-
-function normalizePackageSequence(packages: WorkflowPackage[]) {
-  return packages.map((pkg, index) => ({
-    ...pkg,
-    sequence: index + 1,
-    id: pkg.id || `pkg_${index + 1}`,
-  }));
-}
-
-type PackageUpsertInput = {
-  package_id?: string;
-  ship_date?: string | null;
-  carrier?: string | null;
-  service?: string | null;
-  label_provider?: string | null;
-  tracking_number?: string | null;
-  tracking_url?: string | null;
-  label_url?: string | null;
-  label_file_name?: string | null;
-  label_state?: LabelStatus;
-  label_cost?: number | null;
-  label_currency?: string | null;
-  package_weight_grams?: number | null;
-  package_length_cm?: number | null;
-  package_width_cm?: number | null;
-  package_height_cm?: number | null;
-  carrier_service?: string | null;
-  provider_order_id?: string | null;
-  provider_shipment_id?: string | null;
-  provider_courier_id?: string | null;
-  pickup_reference?: string | null;
-  no_tracking?: boolean;
-  no_tracking_reason?: string | null;
-  notify_buyer?: boolean;
-  notification_sent?: boolean;
-  notification_sent_at?: string | null;
-  delivered_at?: string | null;
-};
-
-function upsertWorkflowPackage(
-  packages: WorkflowPackage[],
-  input: PackageUpsertInput
-) {
-  const nextPackages = sortPackages(packages);
-  const now = new Date().toISOString();
-  const targetIndex =
-    input.package_id
-      ? nextPackages.findIndex((pkg) => pkg.id === input.package_id)
-      : nextPackages.length > 0
-        ? 0
-        : -1;
-
-  const existing =
-    targetIndex >= 0 ? nextPackages[targetIndex] : null;
-  const sequence =
-    existing?.sequence || nextPackages.length + 1;
-  const packageId = input.package_id || existing?.id || `pkg_${sequence}`;
-
-  const nextPackage: WorkflowPackage = {
-    id: packageId,
-    sequence,
-    ship_date:
-      Object.prototype.hasOwnProperty.call(input, 'ship_date')
-        ? input.ship_date ?? null
-        : existing?.ship_date ?? null,
-    carrier:
-      Object.prototype.hasOwnProperty.call(input, 'carrier')
-        ? input.carrier ?? null
-        : existing?.carrier ?? null,
-    service:
-      Object.prototype.hasOwnProperty.call(input, 'service')
-        ? input.service ?? null
-        : existing?.service ?? null,
-    label_provider:
-      Object.prototype.hasOwnProperty.call(input, 'label_provider')
-        ? input.label_provider ?? null
-        : existing?.label_provider ?? null,
-    tracking_number:
-      Object.prototype.hasOwnProperty.call(input, 'tracking_number')
-        ? input.tracking_number ?? null
-        : existing?.tracking_number ?? null,
-    tracking_url:
-      Object.prototype.hasOwnProperty.call(input, 'tracking_url')
-        ? input.tracking_url ?? null
-        : existing?.tracking_url ?? null,
-    label_url:
-      Object.prototype.hasOwnProperty.call(input, 'label_url')
-        ? input.label_url ?? null
-        : existing?.label_url ?? null,
-    label_file_name:
-      Object.prototype.hasOwnProperty.call(input, 'label_file_name')
-        ? input.label_file_name ?? null
-        : existing?.label_file_name ?? null,
-    label_state:
-      Object.prototype.hasOwnProperty.call(input, 'label_state')
-        ? input.label_state
-        : existing?.label_state || 'draft',
-    label_cost:
-      Object.prototype.hasOwnProperty.call(input, 'label_cost')
-        ? input.label_cost ?? null
-        : existing?.label_cost ?? null,
-    label_currency:
-      Object.prototype.hasOwnProperty.call(input, 'label_currency')
-        ? input.label_currency ?? null
-        : existing?.label_currency ?? null,
-    package_weight_grams:
-      Object.prototype.hasOwnProperty.call(input, 'package_weight_grams')
-        ? input.package_weight_grams ?? null
-        : existing?.package_weight_grams ?? null,
-    package_length_cm:
-      Object.prototype.hasOwnProperty.call(input, 'package_length_cm')
-        ? input.package_length_cm ?? null
-        : existing?.package_length_cm ?? null,
-    package_width_cm:
-      Object.prototype.hasOwnProperty.call(input, 'package_width_cm')
-        ? input.package_width_cm ?? null
-        : existing?.package_width_cm ?? null,
-    package_height_cm:
-      Object.prototype.hasOwnProperty.call(input, 'package_height_cm')
-        ? input.package_height_cm ?? null
-        : existing?.package_height_cm ?? null,
-    carrier_service:
-      Object.prototype.hasOwnProperty.call(input, 'carrier_service')
-        ? input.carrier_service ?? null
-        : existing?.carrier_service ?? null,
-    provider_order_id:
-      Object.prototype.hasOwnProperty.call(input, 'provider_order_id')
-        ? input.provider_order_id ?? null
-        : existing?.provider_order_id ?? null,
-    provider_shipment_id:
-      Object.prototype.hasOwnProperty.call(input, 'provider_shipment_id')
-        ? input.provider_shipment_id ?? null
-        : existing?.provider_shipment_id ?? null,
-    provider_courier_id:
-      Object.prototype.hasOwnProperty.call(input, 'provider_courier_id')
-        ? input.provider_courier_id ?? null
-        : existing?.provider_courier_id ?? null,
-    pickup_reference:
-      Object.prototype.hasOwnProperty.call(input, 'pickup_reference')
-        ? input.pickup_reference ?? null
-        : existing?.pickup_reference ?? null,
-    no_tracking:
-      Object.prototype.hasOwnProperty.call(input, 'no_tracking')
-        ? input.no_tracking === true
-        : existing?.no_tracking === true,
-    no_tracking_reason:
-      Object.prototype.hasOwnProperty.call(input, 'no_tracking_reason')
-        ? input.no_tracking_reason ?? null
-        : existing?.no_tracking_reason ?? null,
-    notify_buyer:
-      Object.prototype.hasOwnProperty.call(input, 'notify_buyer')
-        ? input.notify_buyer
-        : existing?.notify_buyer,
-    notification_sent:
-      Object.prototype.hasOwnProperty.call(input, 'notification_sent')
-        ? input.notification_sent === true
-        : existing?.notification_sent === true,
-    notification_sent_at:
-      Object.prototype.hasOwnProperty.call(input, 'notification_sent_at')
-        ? input.notification_sent_at ?? null
-        : existing?.notification_sent_at ?? null,
-    delivered_at:
-      Object.prototype.hasOwnProperty.call(input, 'delivered_at')
-        ? input.delivered_at ?? null
-        : existing?.delivered_at ?? null,
-    created_at: existing?.created_at || now,
-    updated_at: now,
-  };
-
-  if (targetIndex >= 0) {
-    nextPackages[targetIndex] = nextPackage;
-  } else {
-    nextPackages.push(nextPackage);
-  }
-
-  return normalizePackageSequence(nextPackages);
 }
 
 function applyWorkflowSummary<T extends Record<string, any>>(order: T) {

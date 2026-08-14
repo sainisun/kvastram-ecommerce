@@ -787,3 +787,166 @@ export function buildWorkflowSummary(order: OrderLike) {
     timeline: buildWorkflowTimeline(order),
   };
 }
+
+export type PackageUpsertInput = {
+  package_id?: string;
+  ship_date?: string | null;
+  carrier?: string | null;
+  service?: string | null;
+  label_provider?: string | null;
+  tracking_number?: string | null;
+  tracking_url?: string | null;
+  label_url?: string | null;
+  label_file_name?: string | null;
+  label_state?: LabelStatus;
+  label_cost?: number | null;
+  label_currency?: string | null;
+  package_weight_grams?: number | null;
+  package_length_cm?: number | null;
+  package_width_cm?: number | null;
+  package_height_cm?: number | null;
+  carrier_service?: string | null;
+  provider_order_id?: string | null;
+  provider_shipment_id?: string | null;
+  provider_courier_id?: string | null;
+  pickup_reference?: string | null;
+  no_tracking?: boolean;
+  no_tracking_reason?: string | null;
+  notify_buyer?: boolean;
+  notification_sent?: boolean;
+  notification_sent_at?: string | null;
+  delivered_at?: string | null;
+};
+
+export function sortWorkflowPackages(packages: WorkflowPackage[]) {
+  return [...packages].sort((left, right) => left.sequence - right.sequence);
+}
+
+export function selectPrimaryWorkflowPackage(packages: WorkflowPackage[]) {
+  if (!packages.length) return null;
+
+  return (
+    [...packages]
+      .filter(
+        (pkg) => !!pkg.ship_date || !!pkg.tracking_number || pkg.no_tracking === true
+      )
+      .sort((left, right) => right.sequence - left.sequence)[0] || packages[0]
+  );
+}
+
+export function deriveLegacyTrackingFields(packages: WorkflowPackage[]) {
+  const primaryPackage = selectPrimaryWorkflowPackage(packages);
+
+  return {
+    tracking_number: primaryPackage?.tracking_number || null,
+    shipping_carrier: primaryPackage?.carrier || null,
+    tracking_link: primaryPackage?.tracking_url || null,
+  };
+}
+
+export function normalizeWorkflowPackageSequence(packages: WorkflowPackage[]) {
+  return packages.map((pkg, index) => ({
+    ...pkg,
+    sequence: index + 1,
+    id: pkg.id || `pkg_${index + 1}`,
+  }));
+}
+
+export function upsertWorkflowPackage(
+  packages: WorkflowPackage[],
+  input: PackageUpsertInput
+) {
+  const nextPackages = sortWorkflowPackages(packages);
+  const now = new Date().toISOString();
+  const targetIndex =
+    input.package_id
+      ? nextPackages.findIndex((pkg) => pkg.id === input.package_id)
+      : nextPackages.length > 0
+        ? 0
+        : -1;
+
+  const existing = targetIndex >= 0 ? nextPackages[targetIndex] : null;
+  const sequence = existing?.sequence || nextPackages.length + 1;
+  const packageId = input.package_id || existing?.id || `pkg_${sequence}`;
+  const hasUpdate = (key: keyof PackageUpsertInput) =>
+    Object.prototype.hasOwnProperty.call(input, key);
+
+  const nextPackage: WorkflowPackage = {
+    id: packageId,
+    sequence,
+    ship_date: hasUpdate('ship_date') ? input.ship_date ?? null : existing?.ship_date ?? null,
+    carrier: hasUpdate('carrier') ? input.carrier ?? null : existing?.carrier ?? null,
+    service: hasUpdate('service') ? input.service ?? null : existing?.service ?? null,
+    label_provider: hasUpdate('label_provider')
+      ? input.label_provider ?? null
+      : existing?.label_provider ?? null,
+    tracking_number: hasUpdate('tracking_number')
+      ? input.tracking_number ?? null
+      : existing?.tracking_number ?? null,
+    tracking_url: hasUpdate('tracking_url')
+      ? input.tracking_url ?? null
+      : existing?.tracking_url ?? null,
+    label_url: hasUpdate('label_url') ? input.label_url ?? null : existing?.label_url ?? null,
+    label_file_name: hasUpdate('label_file_name')
+      ? input.label_file_name ?? null
+      : existing?.label_file_name ?? null,
+    label_state: hasUpdate('label_state') ? input.label_state : existing?.label_state || 'draft',
+    label_cost: hasUpdate('label_cost') ? input.label_cost ?? null : existing?.label_cost ?? null,
+    label_currency: hasUpdate('label_currency')
+      ? input.label_currency ?? null
+      : existing?.label_currency ?? null,
+    package_weight_grams: hasUpdate('package_weight_grams')
+      ? input.package_weight_grams ?? null
+      : existing?.package_weight_grams ?? null,
+    package_length_cm: hasUpdate('package_length_cm')
+      ? input.package_length_cm ?? null
+      : existing?.package_length_cm ?? null,
+    package_width_cm: hasUpdate('package_width_cm')
+      ? input.package_width_cm ?? null
+      : existing?.package_width_cm ?? null,
+    package_height_cm: hasUpdate('package_height_cm')
+      ? input.package_height_cm ?? null
+      : existing?.package_height_cm ?? null,
+    carrier_service: hasUpdate('carrier_service')
+      ? input.carrier_service ?? null
+      : existing?.carrier_service ?? null,
+    provider_order_id: hasUpdate('provider_order_id')
+      ? input.provider_order_id ?? null
+      : existing?.provider_order_id ?? null,
+    provider_shipment_id: hasUpdate('provider_shipment_id')
+      ? input.provider_shipment_id ?? null
+      : existing?.provider_shipment_id ?? null,
+    provider_courier_id: hasUpdate('provider_courier_id')
+      ? input.provider_courier_id ?? null
+      : existing?.provider_courier_id ?? null,
+    pickup_reference: hasUpdate('pickup_reference')
+      ? input.pickup_reference ?? null
+      : existing?.pickup_reference ?? null,
+    no_tracking: hasUpdate('no_tracking')
+      ? input.no_tracking === true
+      : existing?.no_tracking === true,
+    no_tracking_reason: hasUpdate('no_tracking_reason')
+      ? input.no_tracking_reason ?? null
+      : existing?.no_tracking_reason ?? null,
+    notify_buyer: hasUpdate('notify_buyer') ? input.notify_buyer : existing?.notify_buyer,
+    notification_sent: hasUpdate('notification_sent')
+      ? input.notification_sent === true
+      : existing?.notification_sent === true,
+    notification_sent_at: hasUpdate('notification_sent_at')
+      ? input.notification_sent_at ?? null
+      : existing?.notification_sent_at ?? null,
+    delivered_at: hasUpdate('delivered_at')
+      ? input.delivered_at ?? null
+      : existing?.delivered_at ?? null,
+    created_at: existing?.created_at || now,
+    updated_at: now,
+  };
+
+  if (targetIndex >= 0) {
+    nextPackages[targetIndex] = nextPackage;
+  } else {
+    nextPackages.push(nextPackage);
+  }
+
+  return normalizeWorkflowPackageSequence(nextPackages);
+}

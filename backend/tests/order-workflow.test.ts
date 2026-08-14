@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildWorkflowSummary,
+  deriveLegacyTrackingFields,
   mergeWorkflowMetadata,
+  selectPrimaryWorkflowPackage,
+  upsertWorkflowPackage,
 } from '../src/utils/order-workflow';
 
 describe('order workflow metadata', () => {
@@ -273,5 +276,83 @@ describe('order workflow metadata', () => {
     expect(summary.has_tracking).toBe(false);
     expect(summary.primary_package?.no_tracking).toBe(true);
     expect(summary.overdue_tracking).toBe(false);
+  });
+
+  it('upserts a workflow package while preserving omitted package fields', () => {
+    const updated = upsertWorkflowPackage(
+      [
+        {
+          id: 'pkg_existing',
+          sequence: 3,
+          carrier: 'Shiprocket',
+          tracking_number: 'AWB-1001',
+          package_weight_grams: 500,
+          label_state: 'created',
+          created_at: '2026-05-01T10:00:00.000Z',
+        },
+      ],
+      {
+        package_id: 'pkg_existing',
+        tracking_number: 'AWB-1002',
+        label_url: 'https://cdn.example.com/label-1002.pdf',
+      }
+    );
+
+    expect(updated).toHaveLength(1);
+    expect(updated[0]).toMatchObject({
+      id: 'pkg_existing',
+      sequence: 1,
+      carrier: 'Shiprocket',
+      tracking_number: 'AWB-1002',
+      package_weight_grams: 500,
+      label_state: 'created',
+      label_url: 'https://cdn.example.com/label-1002.pdf',
+      created_at: '2026-05-01T10:00:00.000Z',
+    });
+    expect(updated[0].updated_at).toBeTruthy();
+  });
+
+  it('creates sequenced workflow packages and derives legacy tracking fields from the primary package', () => {
+    const packages = upsertWorkflowPackage([], {
+      carrier: 'Delhivery',
+      tracking_number: 'AWB-2001',
+      tracking_url: 'https://tracking.example.com/AWB-2001',
+    });
+
+    expect(packages[0]).toMatchObject({
+      id: 'pkg_1',
+      sequence: 1,
+      label_state: 'draft',
+      carrier: 'Delhivery',
+    });
+
+    const primary = selectPrimaryWorkflowPackage([
+      { id: 'pkg_1', sequence: 1, carrier: 'Delhivery' },
+      {
+        id: 'pkg_2',
+        sequence: 2,
+        carrier: 'Shiprocket',
+        tracking_number: 'AWB-2002',
+        tracking_url: 'https://tracking.example.com/AWB-2002',
+      },
+    ]);
+
+    expect(primary?.id).toBe('pkg_2');
+    expect(
+      deriveLegacyTrackingFields([
+        { id: 'pkg_1', sequence: 1, carrier: 'Delhivery' },
+        {
+          id: 'pkg_2',
+          sequence: 2,
+          carrier: 'Shiprocket',
+          tracking_number: 'AWB-2002',
+          tracking_url: 'https://tracking.example.com/AWB-2002',
+        },
+      ])
+    ).toEqual({
+      tracking_number: 'AWB-2002',
+      shipping_carrier: 'Shiprocket',
+      tracking_link: 'https://tracking.example.com/AWB-2002',
+    });
   });
 });
