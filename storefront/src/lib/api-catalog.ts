@@ -149,4 +149,66 @@ export const catalogApi = {
       return null;
     }
   },
+
+  async getRegions() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/regions`);
+      if (!res.ok) throw new Error('Failed to fetch regions');
+      return res.json();
+    } catch {
+      return { regions: [] };
+    }
+  },
+
+  async getCategories() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/categories/tree`, {
+        next: { revalidate: 3600 },
+      });
+      if (!res.ok) return { categories: [] };
+      return res.json();
+    } catch {
+      return { categories: [] };
+    }
+  },
+
+  async getCategoriesTree() {
+    return catalogApi.getCategories();
+  },
+
+  async getCollections() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/collections`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { collections: [] };
+      return res.json();
+    } catch {
+      return { collections: [] };
+    }
+  },
+
+  async getCollection(handle: string) {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/collections/${encodeURIComponent(handle)}`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) return { collection: null };
+      return res.json();
+    } catch {
+      return { collection: null };
+    }
+  },
+
+  async getTags() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/tags`, {
+        next: { revalidate: 3600 },
+      });
+      if (!res.ok) return { tags: [] };
+      return res.json();
+    } catch {
+      return { tags: [] };
+    }
+  },
 };

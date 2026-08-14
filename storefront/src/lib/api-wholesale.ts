@@ -7,6 +7,18 @@ export interface WholesaleOrderData {
 }
 
 export const wholesaleApi = {
+  async getWholesaleTiers() {
+    try {
+      const res = await fetchWithTrace(`${API_URL}/settings/wholesale-tiers`, {
+        next: { revalidate: 3600 },
+      });
+      if (!res.ok) return { tiers: [] };
+      return res.json();
+    } catch {
+      return { tiers: [] };
+    }
+  },
+
   async getWholesalePricing() {
     try {
       const res = await fetchWithTrace(`${API_URL}/store/wholesale/prices`, {

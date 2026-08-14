@@ -6,6 +6,12 @@ describe('wholesaleApi', () => {
     vi.restoreAllMocks();
   });
 
+  it('returns the public wholesale tier fallback when configuration is unavailable', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 503 })));
+
+    await expect(wholesaleApi.getWholesaleTiers()).resolves.toEqual({ tiers: [] });
+  });
+
   it('returns the access fallback when wholesale pricing is unavailable', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 401 })));
 
