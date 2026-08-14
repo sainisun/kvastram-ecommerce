@@ -54,6 +54,7 @@ import {
 } from '../../domain/products/product-write-input-policy';
 import { productCatalogReferenceRepository } from '../../repositories/product-catalog-reference-repository';
 import { productPricingRepository } from '../../repositories/product-pricing-repository';
+import { productMediaRepository } from '../../repositories/product-media-repository';
 
 export class ProductMutationService {
   /**
@@ -95,7 +96,7 @@ export class ProductMutationService {
       await this.assignOptionsToProduct(tx, newProduct.id, options);
 
       // 5. Create Images
-      const createdImages = await this.assignImagesToProduct(tx, newProduct.id, images);
+      const createdImages = await productMediaRepository.assign(tx, newProduct.id, images);
 
       // 6. Assign catalog references
       await productCatalogReferenceRepository.assign(tx, newProduct.id, category_ids, tag_ids, productData.collection_id);
@@ -149,14 +150,6 @@ export class ProductMutationService {
         metadata: null,
       });
     }
-  }
-
-  private async assignImagesToProduct(tx: any, productId: string, images: any[] | undefined) {
-    const imageValues = buildProductImageInputs(productId, images);
-    if (imageValues.length > 0) {
-      return await tx.insert(product_images).values(imageValues).returning();
-    }
-    return [];
   }
 
   private async createSeoDiscoveryBaseline(
@@ -309,7 +302,7 @@ export class ProductMutationService {
 
       // 4. Handle images if provided
       if (data.images) {
-        await this.syncProductImages(tx, id, data.images);
+        await productMediaRepository.replace(tx, id, data.images);
       }
 
       // 5. Handle Categories
@@ -470,58 +463,6 @@ export class ProductMutationService {
       .where(eq(product_variants.id, variants[0].id));
 
     return variants[0].id;
-  }
-
-  private async syncProductImages(tx: any, productId: string, images: any[]) {
-    const existingImages = await tx
-      .select({ id: product_images.id })
-      .from(product_images)
-      .where(eq(product_images.product_id, productId));
-    const existingImageIds = existingImages.map((image: { id: string }) => image.id);
-
-    if (existingImageIds.length > 0) {
-      await tx
-        .delete(product_media_seo)
-        .where(inArray(product_media_seo.image_id, existingImageIds));
-    }
-
-    await tx
-      .delete(product_images)
-      .where(eq(product_images.product_id, productId));
-
-    if (images.length > 0) {
-      const imageValues = images
-        .filter((img) => img.url)
-        .map((img) => ({
-          product_id: productId,
-          url: img.url,
-          alt_text: img.alt_text,
-          position: img.position ?? 0,
-          is_thumbnail: img.is_thumbnail ?? false,
-          metadata: img.metadata ?? null,
-        }));
-
-      if (imageValues.length > 0) {
-        const newImages = await tx.insert(product_images).values(imageValues).returning();
-        
-        const [product] = await tx.select({ title: products.title, handle: products.handle }).from(products).where(eq(products.id, productId)).limit(1);
-        await tx
-          .insert(product_media_seo)
-          .values(
-            newImages.map((image: any, index: number) => ({
-              image_id: image.id,
-              alt_text: image.alt_text || `${product?.title || 'product'} ${index === 0 ? 'product image' : `view ${index + 1}`}`,
-              cloudinary_public_id: image.metadata?.cloudinary_public_id || null,
-              image_role: index === 0 ? 'primary' : 'gallery',
-              view_type: index === 0 ? 'front' : null,
-              color: null,
-              seo_filename: product?.handle || 'product',
-              metadata: { source: 'auto_sync_images' },
-            }))
-          )
-          .onConflictDoNothing();
-      }
-    }
   }
 
   /** Send back-in-stock emails to all pending subscribers for a product */
