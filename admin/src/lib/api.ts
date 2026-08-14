@@ -7,6 +7,7 @@ import { adminCatalogApi } from './api-catalog';
 import { adminWholesaleInquiriesApi } from './api-wholesale-inquiries';
 import { adminWholesaleCustomersApi } from './api-wholesale-customers';
 import { adminWholesaleOrdersApi } from './api-wholesale-orders';
+import { adminWholesaleTiersApi } from './api-wholesale-tiers';
 import {
   API_BASE_URL,
   fetchWithTimeout,
@@ -25,6 +26,7 @@ export const api = {
   ...adminWholesaleInquiriesApi,
   ...adminWholesaleCustomersApi,
   ...adminWholesaleOrdersApi,
+  ...adminWholesaleTiersApi,
   downloadInvoice: async (orderId: string) => {
     const res = await fetchWithTimeout(
       `${API_BASE_URL}/orders/${orderId}/invoice`,
@@ -365,78 +367,7 @@ export const api = {
 
   ...adminWholesaleOrdersApi,
 
-  // Tier Management endpoints
-  getWholesaleTiers: async (active?: boolean) => {
-    let url = `${API_BASE_URL}/admin/tiers`;
-    if (active !== undefined) url += `?active=${active}`;
-
-    const res = await fetchWithTimeout(url, {
-      // No Authorization header needed - cookie is sent automatically
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale tiers');
-    return res.json();
-  },
-
-  getWholesaleTier: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/${id}`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to fetch wholesale tier');
-    return res.json();
-  },
-
-  createWholesaleTier: async (data: unknown) => {
-    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tiers`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) return handleApiError(res, 'Failed to create wholesale tier');
-    return res.json();
-  },
-
-  updateWholesaleTier: async (id: string, data: unknown) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/${id}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to update wholesale tier');
-    return res.json();
-  },
-
-  deleteWholesaleTier: async (id: string) => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/${id}`,
-      {
-        method: 'DELETE',
-      }
-    );
-    if (!res.ok) return handleApiError(res, 'Failed to delete wholesale tier');
-    return res.json();
-  },
-
-  getWholesaleTierStats: async () => {
-    const res = await fetchWithTimeout(
-      `${API_BASE_URL}/admin/tiers/stats/overview`,
-      {
-        // No Authorization header needed - cookie is sent automatically
-      }
-    );
-    if (!res.ok)
-      return handleApiError(res, 'Failed to fetch wholesale tier stats');
-    return res.json();
-  },
+  ...adminWholesaleTiersApi,
 
   ...adminContentMediaApi,
 
