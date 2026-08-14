@@ -32,10 +32,8 @@ import {
   generateCheckoutPaymentToken,
 } from '../../utils/payment-ownership';
 import { buildInventoryReservationMetadata } from '../../utils/inventory-reservation';
-import {
-  calculateCheckoutDiscountAmount,
-  getDefaultCheckoutShippingOptions,
-} from '../../domain/checkout/checkout-pricing-policy';
+import { getDefaultCheckoutShippingOptions } from '../../domain/checkout/checkout-pricing-policy';
+import { validateCheckoutDiscountCommand } from '../../application/checkout/discount-validation-command';
 
 const FALLBACK_RATES: Record<string, number> = {
   INR: 1, USD: 0.012, EUR: 0.011, GBP: 0.0095, JPY: 1.79,
@@ -128,79 +126,6 @@ const sanitizeCheckoutBody = (data: z.infer<typeof PlaceOrderSchema>): any => {
     safe.billing_address =
       '[REDACTED]' as unknown as typeof safe.billing_address;
   return safe;
-};
-
-const validateDiscount = async (
-  code: string,
-  cartTotal: number,
-  customerId: string | null
-) => {
-  const now = new Date();
-
-  // Find discount
-  const [discount] = await db
-    .select()
-    .from(discounts)
-    .where(eq(discounts.code, code.toUpperCase()))
-    .limit(1);
-
-  if (!discount) {
-    throw new Error('Invalid discount code');
-  }
-
-  if (!discount.is_active) {
-    throw new Error('Discount code is inactive');
-  }
-
-  // Check dates
-  if (discount.starts_at && discount.starts_at > now) {
-    throw new Error('Discount code is not active yet');
-  }
-  if (discount.ends_at && discount.ends_at < now) {
-    throw new Error('Discount code has expired');
-  }
-
-  // Check usage limits (total)
-  if (
-    discount.usage_limit !== null &&
-    (discount.usage_count || 0) >= discount.usage_limit
-  ) {
-    throw new Error('Discount usage limit reached');
-  }
-
-  // 🔒 FIX-006: Check per-customer usage limit
-  // Only check if customer is logged in (has customerId)
-  if (customerId) {
-    const [existingUsage] = await db
-      .select({ discount_id: discount_usage.discount_id })
-      .from(discount_usage)
-      .where(
-        and(
-          eq(discount_usage.discount_id, discount.id),
-          eq(discount_usage.customer_id, customerId)
-        )
-      )
-      .limit(1);
-
-    if (existingUsage) {
-      throw new Error('You have already used this discount code');
-    }
-  }
-
-  // Check min purchase
-  if (
-    discount.min_purchase_amount &&
-    cartTotal < discount.min_purchase_amount
-  ) {
-    throw new Error(
-      `Minimum purchase of ${(discount.min_purchase_amount / 100).toFixed(2)} required`
-    );
-  }
-
-  return {
-    discount,
-    discountAmount: calculateCheckoutDiscountAmount(cartTotal, discount),
-  };
 };
 
 async function getAuthenticatedCustomerId(c: any) {
@@ -446,11 +371,11 @@ checkoutRouter.post(
     try {
       const { code, cart_total } = c.req.valid('json');
 
-      const { discount, discountAmount } = await validateDiscount(
+      const { discount, discountAmount } = await validateCheckoutDiscountCommand({
         code,
-        cart_total,
-        null // validate-coupon doesn't require customer check
-      );
+        cartTotal: cart_total,
+        customerId: null, // validate-coupon doesn't require customer check
+      });
 
       return c.json({
         valid: true,
@@ -678,11 +603,11 @@ checkoutRouter.post(
 
       if (body.discount_code) {
         try {
-          const result = await validateDiscount(
-            body.discount_code,
-            subtotal,
-            null // Per-customer check done inside transaction
-          );
+          const result = await validateCheckoutDiscountCommand({
+            code: body.discount_code,
+            cartTotal: subtotal,
+            customerId: null, // Per-customer check done inside transaction
+          });
           discount = result.discount;
           discountTotal = result.discountAmount;
           finalDiscountId = discount.id;
