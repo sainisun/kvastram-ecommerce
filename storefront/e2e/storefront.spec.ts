@@ -165,7 +165,7 @@ test.describe('Storefront visual contract', () => {
     });
     expect(typography.body).toMatch(/Cardo/i);
     expect(typography.heading).toMatch(/Amiri/i);
-    expect(typography.heroColor).toBe('rgb(255, 255, 255)');
+    expect(typography.heroColor).toBe('rgb(255, 253, 249)');
   });
 
   test('products, cart, and login routes remain usable', async ({ page }) => {

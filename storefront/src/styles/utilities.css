@@ -241,38 +241,3 @@
   overflow: hidden;
 }
 
-.kv-chip {
-  flex: 0 0 auto;
-  border: 1px solid var(--ds-border-subtle);
-  background: var(--ds-surface-paper);
-  border-radius: var(--ds-radius-pill);
-  padding: var(--ds-space-xs) var(--ds-space-sm);
-  font-weight: var(--ds-type-strong-weight);
-  font-size: var(--ds-text-body-sm);
-  cursor: pointer;
-}
-
-.kv-chip.active {
-  background: var(--ds-accent-primary);
-  color: var(--ds-text-inverse);
-  border-color: var(--ds-accent-primary);
-}
-
-
-
-.kv-section-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ds-space-2xs);
-  font-family: var(--ds-font-ui);
-  font-size: var(--ds-text-body-sm);
-  font-weight: var(--ds-type-label-weight);
-  letter-spacing: var(--ds-type-label-tracking);
-  color: var(--ds-text-primary);
-  text-decoration: none;
-  transition: color var(--ds-transition-fast);
-}
-.kv-section-link:hover {
-  color: var(--ds-accent-primary);
-}
-

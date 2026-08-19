@@ -64,7 +64,7 @@ export function HeroSection({
 
   return (
     <section
-      className="relative min-h-[100svh] overflow-hidden bg-primary md:min-h-[85vh] lg:min-h-[90vh]"
+      className="relative isolate min-h-[78svh] overflow-hidden bg-primary md:min-h-[78vh] lg:min-h-[84vh]"
       aria-label="Featured campaigns"
       data-home-section="2-hero"
       onFocusCapture={() => autoplay.stop()}
@@ -87,12 +87,12 @@ export function HeroSection({
                   className="object-cover"
                 />
               </div>
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(var(--ds-black-rgb),0.72)_0%,rgba(var(--ds-black-rgb),0.32)_46%,rgba(var(--ds-black-rgb),0.08)_72%),linear-gradient(180deg,rgba(var(--ds-black-rgb),0.02)_0%,rgba(var(--ds-black-rgb),0.08)_52%,rgba(var(--ds-black-rgb),0.32)_100%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(var(--ds-ink-rgb),0.82)_0%,rgba(var(--ds-ink-rgb),0.38)_44%,rgba(var(--ds-ink-rgb),0.06)_74%),linear-gradient(180deg,rgba(var(--ds-ink-rgb),0.04)_0%,rgba(var(--ds-ink-rgb),0.12)_54%,rgba(var(--ds-ink-rgb),0.42)_100%)]" />
               <HomepageContainer className="relative z-10 flex h-full min-h-[inherit] flex-col items-start justify-end gap-5 pb-[clamp(80px,12vw,140px)] text-inverse">
                 <p className="font-label text-body-xs uppercase tracking-[0.22em] text-[rgba(var(--ds-white-rgb),0.84)]">
                   Odhvica editorial campaign
                 </p>
-                <p className="m-0 max-w-[11ch] font-display text-[clamp(3rem,6vw,5.6rem)] leading-[0.94] font-normal text-inverse text-balance">
+                <p className="m-0 max-w-[12ch] font-display text-[clamp(3rem,6vw,5.6rem)] leading-[0.9] font-normal tracking-[-0.035em] text-inverse text-balance">
                   {slide.title}
                 </p>
                 <div className="flex flex-col items-start gap-4 mt-2">
@@ -136,7 +136,7 @@ export function HeroSection({
               type="button"
               variant="ghost"
               size="md"
-              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md"
+              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.42)] bg-[rgba(var(--ds-ink-rgb),0.46)] text-inverse backdrop-blur-md hover:bg-[rgba(var(--ds-ink-rgb),0.68)]"
               onClick={() => emblaApi?.scrollPrev()}
               aria-label="Previous hero slide"
             >
@@ -146,7 +146,7 @@ export function HeroSection({
               type="button"
               variant="ghost"
               size="md"
-              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md"
+              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.42)] bg-[rgba(var(--ds-ink-rgb),0.46)] text-inverse backdrop-blur-md hover:bg-[rgba(var(--ds-ink-rgb),0.68)]"
               onClick={() => emblaApi?.scrollNext()}
               aria-label="Next hero slide"
             >
@@ -170,7 +170,7 @@ export function HeroSection({
               type="button"
               variant="ghost"
               size="sm"
-              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.48)] bg-[rgba(var(--ds-ink-rgb),0.4)] text-inverse backdrop-blur-md"
+              className="pointer-events-auto border-[rgba(var(--ds-white-rgb),0.42)] bg-[rgba(var(--ds-ink-rgb),0.46)] text-inverse backdrop-blur-md hover:bg-[rgba(var(--ds-ink-rgb),0.68)]"
               onClick={toggleAutoplay}
               aria-label={paused ? 'Play hero slideshow' : 'Pause hero slideshow'}
             >

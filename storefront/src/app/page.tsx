@@ -12,6 +12,7 @@ import { BestSellers } from '@/components/home/BestSellers';
 import { NewArrivals } from '@/components/home/NewArrivals';
 import { WatchBuyPreview } from '@/components/home/WatchBuyPreview';
 import { CraftJourneySection } from '@/components/home/CraftJourneySection';
+import { HomepageFallback } from '@/components/home/HomepageFallback';
 import { Heading } from '@/design-system';
 import type { HomepagePayload } from '@/types/homepage';
 
@@ -49,6 +50,7 @@ const EMPTY_HOMEPAGE: HomepagePayload = {
 export default async function Home() {
   let homepage = EMPTY_HOMEPAGE;
   let testimonialsResponse = { testimonials: [] };
+  let homepageLoaded = false;
 
   try {
     const [hp, test] = await Promise.all([
@@ -56,7 +58,8 @@ export default async function Home() {
       api.getTestimonials()
     ]);
     homepage = hp;
-    testimonialsResponse = test;
+      testimonialsResponse = test;
+      homepageLoaded = true;
   } catch (error) {
     console.error('[Homepage] unable to load aggregate payload:', error);
   }
@@ -71,29 +74,39 @@ export default async function Home() {
       />
       <Heading role="page" className="sr-only">Odhvica storefront</Heading>
       
-      {/* S1. Circle Category Strip */}
-      <CircularCategories circles={homepage.category_circles} />
+      {homepageLoaded ? (
+        <>
+          {/* S1. Circle Category Strip */}
+          <CircularCategories circles={homepage.category_circles} />
+        </>
+      ) : (
+        <HomepageFallback />
+      )}
       
-      {/* S2. Hero Section */}
-      <HeroSection
-        banners={homepage.hero}
-        testimonial={testimonialsResponse.testimonials?.[0]}
-      />
-      
-      {/* S3. Trust Bar */}
-      <HomeTrustBar />
+      {homepageLoaded ? (
+        <>
+          {/* S2. Hero Section */}
+          <HeroSection
+            banners={homepage.hero}
+            testimonial={testimonialsResponse.testimonials?.[0]}
+          />
 
-      {/* S4. Best Sellers */}
-      <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
+          {/* S3. Trust Bar */}
+          <HomeTrustBar />
 
-      {/* S5. New Arrivals */}
-      <NewArrivals products={homepage.new_arrivals} />
+          {/* S4. Best Sellers */}
+          <BestSellers products={homepage.best_sellers} state={homepage.status.bestSellers.status} />
 
-      {/* S6. Watch & Buy */}
-      <WatchBuyPreview reels={homepage.watch_shop} />
+          {/* S5. New Arrivals */}
+          <NewArrivals products={homepage.new_arrivals} />
 
-      {/* S7. Our Craft Journey */}
-      <CraftJourneySection story={homepage.brand_story} />
+          {/* S6. Watch & Buy */}
+          <WatchBuyPreview reels={homepage.watch_shop} />
+
+          {/* S7. Our Craft Journey */}
+          <CraftJourneySection story={homepage.brand_story} />
+        </>
+      ) : null}
     </div>
   );
 }

@@ -11,7 +11,7 @@ const extraFiles = [
   path.join(workspaceRoot, 'docs/design-system/storefront-design-system-v1.md'),
   path.join(workspaceRoot, 'docs/project_features_guide.md'),
   path.join(storefrontRoot, 'AGENTS.md'),
-  path.join(storefrontRoot, 'KVASTRAM_HEADER_DESIGN_SYSTEM.md'),
+  path.join(storefrontRoot, 'PREMIUM_DESIGN_SYSTEM_PLAN.md'),
 ];
 const baseline = JSON.parse(
   readFileSync(path.join(storefrontRoot, 'scripts/design-system-baseline.json'), 'utf8')
@@ -73,15 +73,15 @@ const allowedInlineStylePatterns = [
 const requiredRuntimeTokenValues = new Map([
   ['--ds-font-display', "var(--font-amiri), var(--font-cardo), serif"],
   ['--ds-font-body', 'var(--font-cardo), serif'],
-  ['--ds-accent-primary', '#000000'],
-  ['--ds-accent-hover', '#1A1A1A'],
-  ['--ds-surface-page', '#FFFFFF'],
-  ['--ds-surface-paper', '#FFFFFF'],
-  ['--ds-surface-soft', '#F7F7F7'],
-  ['--ds-border-subtle', '#E5E5E5'],
-  ['--ds-text-primary', '#000000'],
-  ['--ds-text-secondary', '#333333'],
-  ['--ds-text-muted', '#666666'],
+  ['--ds-accent-primary', '#C4603A'],
+  ['--ds-accent-hover', '#8F3D1F'],
+  ['--ds-surface-page', '#F7F2EB'],
+  ['--ds-surface-paper', '#FFFDF9'],
+  ['--ds-surface-soft', '#F1E9DF'],
+  ['--ds-border-subtle', '#DED3C7'],
+  ['--ds-text-primary', '#1C1410'],
+  ['--ds-text-secondary', '#5C5047'],
+  ['--ds-text-muted', '#7C6F64'],
   ['--ds-home-gutter-mobile', '1.25rem'],
   ['--ds-home-gutter-tablet', '2rem'],
   ['--ds-home-gutter-desktop', '3rem'],

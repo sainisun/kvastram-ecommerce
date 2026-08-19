@@ -93,8 +93,8 @@ export function ProductCard({
     null;
 
   return (
-    <article className="product-card relative bg-transparent overflow-hidden group">
-      <div className="relative aspect-[4/5] grid place-items-center font-body text-body-md leading-normal bg-surface-soft overflow-hidden group-hover:saturate-[1.06] focus-within:saturate-[1.06]">
+    <article className="product-card group relative overflow-hidden bg-transparent">
+      <div className="relative aspect-[4/5] grid place-items-center overflow-hidden bg-surface-warm font-body text-body-md leading-normal transition-[filter] duration-[var(--ds-transition-normal)] group-hover:saturate-[1.06] focus-within:saturate-[1.06]">
         <Link
           href={href}
           className="relative block h-full w-full"
@@ -106,7 +106,7 @@ export function ProductCard({
               alt={buildProductImageAlt(product, 0)}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
-              className="object-cover motion-safe:transition-transform duration-[2000ms] ease-out group-hover:scale-[1.05]"
+              className="object-cover motion-safe:transition-transform duration-700 ease-out group-hover:scale-[1.045]"
             />
           ) : (
             <div className="product-no-image flex h-full w-full items-center justify-center bg-surface-soft">
@@ -152,13 +152,13 @@ export function ProductCard({
         handle={product.handle || product.id}
         variantId={firstVariant?.id}
         size="sm"
-        className="absolute right-[var(--ds-space-xs)] top-[var(--ds-space-xs)] z-10 border-0 shadow-[0_2px_8px_rgba(var(--ds-black-rgb),.12)]"
+        className="absolute right-[var(--ds-space-xs)] top-[var(--ds-space-xs)] z-10 border-0 bg-[rgba(var(--ds-surface-paper-rgb),0.88)] shadow-[0_2px_8px_rgba(var(--ds-ink-rgb),0.12)] backdrop-blur-md"
       />
 
-      <div className="p-[var(--ds-space-xs)]">
-        <p className="text-muted font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-product-meta-tracking)] uppercase italic font-light">{categoryLabel || product.collection?.title || product.subtitle || 'Odhvica'}</p>
+      <div className="px-0 pb-[var(--ds-space-md)] pt-[var(--ds-space-sm)]">
+        <p className="text-muted font-label text-body-xs font-[var(--ds-type-label-weight)] tracking-[var(--ds-type-product-meta-tracking)] uppercase">{categoryLabel || product.collection?.title || product.subtitle || 'Odhvica'}</p>
         <Link href={href}>
-          <h3 className="mt-[3px] mx-0 mb-[var(--ds-space-xs)] font-[var(--ds-type-product-title-font)] text-type-product-title-size font-[var(--ds-type-product-title-weight)] leading-snug tracking-normal text-primary max-w-[var(--ds-caption-width)] min-h-[2.5em] overflow-hidden line-clamp-2" title={displayTitle}>
+          <h3 className="mx-0 mb-[var(--ds-space-sm)] mt-[var(--ds-space-xs)] max-w-[var(--ds-caption-width)] min-h-[2.5em] overflow-hidden font-[var(--ds-type-product-title-font)] text-type-product-title-size font-[var(--ds-type-product-title-weight)] leading-snug tracking-normal text-primary line-clamp-2" title={displayTitle}>
             {displayTitle}
           </h3>
         </Link>
