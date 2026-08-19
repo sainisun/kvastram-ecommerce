@@ -129,7 +129,6 @@ export default function ProductsPage() {
   const [isBulkActionRunning, setIsBulkActionRunning] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [inlineEditId, setInlineEditId] = useState<string | null>(null);
-  const [inlinePrice, setInlinePrice] = useState<string>('');
   const [inlineStock, setInlineStock] = useState<string>('');
   const [expandedVariantId, setExpandedVariantId] = useState<string | null>(null);
   const [variantsCache, setVariantsCache] = useState<Record<string, ProductVariantSummary[]>>({});
@@ -331,7 +330,7 @@ export default function ProductsPage() {
       });
       setInlineEditId(null);
       await Promise.all([fetchProducts(), fetchStats()]);
-    } catch (e) {
+    } catch {
       alert('Failed to save inline edit');
     }
   };
