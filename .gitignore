@@ -94,3 +94,14 @@ docs/content-reverify*/
 
 # SEO plan extracts
 docs/odhvica-seo-fix-plan-extract/
+
+# Local refactoring reports and generated review artifacts
+.rf018-handoff.md
+BACKEND_PERFORMANCE_AND_SECURITY_COMPLIANCE_REPORT.md
+KVASTRAM_IN_DEPTH_REFACTORING_PLAN.md
+KVASTRAM_REFACTORING_EXECUTION_PLAN.md
+REFACTORING_ENGINEERING_DECK_CONTENT.md
+performance_artifacts/
+remediation_artifacts/
+security_artifacts/
+refactoring-presentation/
