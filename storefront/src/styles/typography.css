@@ -1073,8 +1073,7 @@ b,
 .product-name,
 .collection-card-product-title,
 .search-product-title,
-.cart-product-title,
-.mini-cart-product-title {
+.cart-product-title {
   font-family: var(--ds-type-product-title-font);
   font-size: var(--ds-type-product-title-size);
   font-weight: var(--ds-type-product-title-weight);
