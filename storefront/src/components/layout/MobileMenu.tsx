@@ -34,8 +34,8 @@ export default function MobileMenu({
   const pathname = usePathname();
 
   return (
-    <Drawer isOpen={isOpen} onClose={onClose} side="left" title="Menu" showHeader={true} bodyClassName="p-0">
-      <nav className="flex flex-col py-[var(--ds-space-xs)]">
+    <Drawer isOpen={isOpen} onClose={onClose} side="left" title="Menu" showHeader={true} className="mobile-menu-drawer" bodyClassName="mobile-menu-body p-0">
+      <nav className="mobile-menu-nav flex flex-col py-[var(--ds-space-xs)]" aria-label="Mobile navigation">
         <div className="border-b border-border-subtle px-5 py-4">
           <RegionSelector onRegionChange={onClose} />
         </div>
@@ -48,7 +48,7 @@ export default function MobileMenu({
               key={item.label}
               href={item.href}
               onClick={onClose}
-              className={`flex items-center justify-between border-b border-border-subtle px-5 py-4 transition-colors ${
+              className={`mobile-menu-link flex min-h-[var(--ds-control-md)] items-center justify-between border-b border-border-subtle px-5 py-4 transition-colors ${
                 isActive ? 'text-accent bg-surface-subtle' : 'text-primary'
               }`}
             >
@@ -60,7 +60,7 @@ export default function MobileMenu({
           );
         })}
         
-        <div className="mt-[var(--ds-space-md)] px-[var(--ds-space-md)]">
+        <div className="mobile-menu-support mt-[var(--ds-space-md)] px-[var(--ds-space-md)]">
           <Link
             href="/contact"
             onClick={onClose}

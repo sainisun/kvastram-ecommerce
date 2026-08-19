@@ -135,10 +135,10 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-paper">
-      <section className="kv-page-gutter bg-surface-soft px-6 py-14 md:px-12 md:py-20 lg:px-20">
+    <div className="public-tracking-page min-h-screen bg-surface-paper">
+      <section className="public-tracking-hero kv-page-gutter bg-surface-soft px-6 py-14 md:px-12 md:py-20 lg:px-20">
         <div className="mx-auto max-w-narrow">
-          <Card className="p-6 shadow-[0_20px_60px_rgba(var(--ds-black-rgb),0.05)] md:p-10">
+          <Card className="public-tracking-search p-6 shadow-[0_20px_60px_rgba(var(--ds-black-rgb),0.05)] md:p-10">
             <div className="text-body-xs font-semibold  tracking-token-wider text-muted">
               Order tracking
             </div>
@@ -215,7 +215,7 @@ export default function TrackOrderPage() {
           </div>
         )}
 
-        <div className="mt-8 overflow-x-auto">
+        <div className="public-tracking-timeline mt-8 overflow-x-auto">
           <div className="grid w-full min-w-0 grid-cols-5 gap-2">
             {getStatusSteps(order).map((step, index) => (
               <div key={step.key} className={`text-center text-body-xs ${step.completed || step.current ? 'text-primary' : 'text-muted'}`}>
@@ -237,9 +237,9 @@ export default function TrackOrderPage() {
         </div>
 
         {order ? (
-          <div className="mt-8 space-y-6">
+          <div className="public-tracking-result mt-8 space-y-6">
             {/* Order Info */}
-            <Card className="bg-parchment p-6">
+            <Card className="tracking-order-summary bg-parchment p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <p className="text-body-xs font-bold  tracking-token-wider text-muted">
@@ -389,7 +389,7 @@ export default function TrackOrderPage() {
               </div>
             </Card>
 
-            <Card className="bg-parchment p-5">
+            <Card className="tracking-help-card bg-parchment p-5">
               <h3 className="mb-4 font-display text-display-sm text-primary">
                 More help for this order
               </h3>
@@ -420,13 +420,13 @@ export default function TrackOrderPage() {
           </div>
         ) : (
           <div className="mt-6 grid gap-3">
-            <Card className="bg-parchment p-5">
+            <Card className="tracking-help-card bg-parchment p-5">
               <strong className="text-primary">Out for Delivery</strong>
               <p className="mt-1 text-body-sm leading-token-relaxed text-secondary">
                 Your live package status will appear here after a successful lookup.
               </p>
             </Card>
-            <Card className="bg-parchment p-5">
+            <Card className="tracking-help-card bg-parchment p-5">
               <strong className="text-primary">Arrived at Jaipur Hub</strong>
               <p className="mt-1 text-body-sm leading-token-relaxed text-secondary">
                 Prototype-style milestone cards stay visible as a helpful empty state.

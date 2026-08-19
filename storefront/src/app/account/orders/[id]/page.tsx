@@ -359,7 +359,7 @@ export default function OrderDetailsPage() {
     order.status === 'delivered' || order.raw_status === 'completed';
 
   return (
-    <div className="min-h-screen bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
+    <div className="order-detail-page min-h-screen bg-parchment py-token-xl md:py-token-2xl lg:py-token-3xl">
       <div className="mx-auto max-w-4xl px-home-mobile md:px-home-tablet lg:px-home-desktop">
         <Link
           href="/account"
@@ -368,8 +368,8 @@ export default function OrderDetailsPage() {
           <ArrowLeft size={16} /> Back to Orders
         </Link>
 
-        <Card className="overflow-hidden shadow-sm">
-          <div className="p-6 md:p-8 border-b border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <Card className="order-detail-card overflow-hidden shadow-sm">
+          <div className="order-detail-header flex flex-col justify-between gap-4 border-b border-border-subtle p-6 md:flex-row md:items-center md:p-8">
             <div>
               <Heading role="page" className="account-detail-title mb-1">
                 Order #{order.display_id}
@@ -389,7 +389,7 @@ export default function OrderDetailsPage() {
             </Badge>
           </div>
 
-          <div className="bg-parchment p-6 border-b border-border-subtle">
+          <div className="order-detail-timeline border-b border-border-subtle bg-parchment p-6">
             <div className="account-progress-labels flex items-center justify-between">
               {workflowTimeline.map((step, index) => (
                 <span
@@ -409,7 +409,7 @@ export default function OrderDetailsPage() {
           </div>
 
           <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--ds-border-subtle)]">
-            <div className="md:col-span-2 p-6 md:p-8">
+            <div className="order-detail-items p-6 md:col-span-2 md:p-8">
               <p className="account-kicker mb-6 flex items-center gap-2">
                 <Package size={16} /> Items ({(order.items || []).length})
               </p>
@@ -490,7 +490,7 @@ export default function OrderDetailsPage() {
               </div>
             </div>
 
-            <div className="p-6 md:p-8 bg-parchment/50 space-y-8">
+            <div className="order-detail-aside space-y-8 bg-parchment/50 p-6 md:p-8">
               <div>
                 <p className="account-form-label mb-3 flex items-center gap-2">
                   <Package size={16} /> Shipping Address
@@ -555,7 +555,7 @@ export default function OrderDetailsPage() {
                     {(order.workflow?.packages || []).map((pkg) => (
                       <div
                         key={pkg.id}
-                        className="rounded border border-border-subtle px-4 py-3 text-body-sm text-secondary"
+                        className="order-package-card rounded border border-border-subtle px-4 py-3 text-body-sm text-secondary"
                       >
                         <p className="account-mono-caption">
                           Package #{pkg.sequence}
@@ -580,7 +580,7 @@ export default function OrderDetailsPage() {
                 </div>
               )}
 
-              <div className="pt-8 border-t border-border-subtle space-y-3">
+              <div className="order-detail-actions space-y-3 border-t border-border-subtle pt-8">
                 {reorderError && (
                   <StatusBanner tone="danger" className="account-alert">
                     {reorderError}

@@ -179,6 +179,118 @@
   }
 }
 
+.mobile-menu-drawer {
+  background: var(--ds-surface-paper);
+}
+
+.mobile-menu-nav {
+  background: var(--ds-surface-paper);
+}
+
+.mobile-menu-link {
+  letter-spacing: var(--ds-type-button-tracking);
+}
+
+.mobile-menu-link[aria-current='page'],
+.mobile-menu-link:hover {
+  background: var(--ds-surface-parchment);
+  color: var(--ds-accent-primary);
+}
+
+.mobile-menu-support {
+  border-top: 1px solid var(--ds-border-subtle);
+  padding-top: var(--ds-space-sm);
+}
+
+.mobile-bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -12px 28px rgb(var(--ds-black-rgb) / 0.06);
+}
+
+.mobile-bottom-nav-link {
+  color: var(--ds-text-muted);
+}
+
+.mobile-bottom-nav-link:hover,
+.mobile-bottom-nav-link:focus-visible {
+  color: var(--ds-accent-primary);
+}
+
+.mobile-bottom-nav-link[aria-current='page'] {
+  color: var(--ds-accent-primary);
+}
+
+.mobile-bottom-nav-indicator {
+  box-shadow: 0 0 0 3px rgb(var(--ds-accent-rgb) / 0.12);
+}
+
+.order-detail-page,
+.public-tracking-page {
+  color: var(--ds-text-primary);
+}
+
+.order-detail-card {
+  background: var(--ds-surface-paper);
+  box-shadow: 0 20px 60px rgb(var(--ds-black-rgb) / 0.06);
+}
+
+.order-detail-header,
+.order-detail-timeline {
+  background: var(--ds-surface-parchment);
+}
+
+.order-detail-timeline > div {
+  max-width: 52rem;
+}
+
+.order-detail-timeline .account-progress-labels {
+  gap: var(--ds-space-xs);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.order-detail-timeline .account-progress-labels::-webkit-scrollbar {
+  display: none;
+}
+
+.order-detail-items {
+  background: var(--ds-surface-paper);
+}
+
+.order-detail-aside {
+  background: var(--ds-surface-parchment);
+}
+
+.order-package-card {
+  background: var(--ds-surface-paper);
+  border-radius: var(--ds-radius-sm);
+}
+
+.order-detail-actions > a,
+.order-detail-actions > button {
+  min-height: var(--ds-control-md);
+}
+
+.public-tracking-hero {
+  background: var(--ds-surface-parchment);
+}
+
+.public-tracking-search,
+.tracking-order-summary,
+.tracking-help-card {
+  border-color: var(--ds-border-subtle);
+  border-radius: var(--ds-radius-md);
+  box-shadow: 0 18px 48px rgb(var(--ds-black-rgb) / 0.05);
+}
+
+.public-tracking-timeline {
+  scrollbar-width: thin;
+}
+
+.public-tracking-result .tracking-help-card {
+  box-shadow: none;
+}
+
 .kv-option-row {
   display: flex;
   width: 100%;

@@ -83,7 +83,7 @@ export function BottomNav() {
 
       {/* Bottom Navigation Bar */}
       <nav
-        className={`fixed bottom-0 left-0 right-0 bg-surface-paper/95 backdrop-blur-md border-t border-border-subtle z-[45] pointer-events-auto transition-transform duration-300 md:hidden ${
+        className={`mobile-bottom-nav fixed bottom-0 left-0 right-0 z-[45] border-t border-border-subtle bg-surface-paper/95 backdrop-blur-md pointer-events-auto transition-transform duration-300 md:hidden ${
           isVisible ? 'translate-y-0' : 'translate-y-full'
         }`}
         aria-label="Bottom navigation"
@@ -97,7 +97,7 @@ export function BottomNav() {
               <a
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center py-[var(--ds-space-xs)] px-[var(--ds-space-xs)] min-w-[52px] transition-colors relative ${
+                className={`mobile-bottom-nav-link relative flex min-h-[var(--ds-control-md)] min-w-[52px] flex-col items-center justify-center px-[var(--ds-space-xs)] py-[var(--ds-space-xs)] transition-colors ${
                   isActive
                     ? 'text-primary'
                     : 'text-muted hover:text-secondary'
@@ -122,7 +122,7 @@ export function BottomNav() {
                 </span>
                 {/* Active indicator dot */}
                 {isActive && (
-                  <span className="absolute bottom-1 w-1 h-1 bg-primary rounded-full" />
+                  <span className="mobile-bottom-nav-indicator absolute bottom-1 h-1 w-1 rounded-full bg-primary" />
                 )}
               </a>
             );
