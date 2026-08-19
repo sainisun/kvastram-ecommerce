@@ -4,6 +4,18 @@ const publicAdminCopy =
   /publish|configure|add|upload|manage|create.+(?:in|from) (?:the )?admin/i;
 
 test.describe('Storefront visual contract', () => {
+  test('homepage sends baseline browser security headers', async ({ request }) => {
+    const response = await request.get('/');
+    expect(response.status()).toBe(200);
+    expect(response.headers()['x-frame-options']).toBe('DENY');
+    expect(response.headers()['x-content-type-options']).toBe('nosniff');
+    expect(response.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    expect(response.headers()['permissions-policy']).toBe('camera=(), microphone=(), geolocation=()');
+    expect(response.headers()['cross-origin-opener-policy']).toBe('same-origin-allow-popups');
+    expect(response.headers()['cross-origin-resource-policy']).toBe('same-site');
+    expect(response.headers()['x-permitted-cross-domain-policies']).toBe('none');
+  });
+
   test('homepage exposes the primary shopping experience', async ({ page }, testInfo) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 

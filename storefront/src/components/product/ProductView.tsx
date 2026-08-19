@@ -17,6 +17,7 @@ import {
   Truck,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import ProductGallery from '@/components/product/ProductGallery';
 import { Reviews } from '@/components/product/Reviews';
@@ -77,6 +78,7 @@ function getColorHex(colorName: string) {
 type AccordionKey = 'description' | 'care' | 'returns' | 'shipping';
 
 export default function ProductView({ product }: { product: Product }) {
+  const router = useRouter();
   const { currentRegion } = useShop();
   const { formatPrice } = useCurrency();
   const { addItem, totalItems } = useCart();
@@ -266,9 +268,7 @@ export default function ProductView({ product }: { product: Product }) {
 
   const handleBuyNow = () => {
     handleAddToCart();
-    if (typeof window !== 'undefined') {
-      window.location.href = '/checkout';
-    }
+    router.push('/checkout');
   };
 
   const accordionItems: Array<{
