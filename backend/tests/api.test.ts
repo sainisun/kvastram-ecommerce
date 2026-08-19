@@ -139,7 +139,15 @@ describeIntegration('Store API Endpoints', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ order_id: orderId }),
             });
-            expect(response.status).toBe(404);
+            const stripeConfigured = Boolean(
+                process.env.STRIPE_SECRET_KEY &&
+                !process.env.STRIPE_SECRET_KEY.includes('replace_before_launch')
+            );
+
+            // With Stripe configured, the route reaches order lookup and returns
+            // 404. Without Stripe, the optional payment provider guard correctly
+            // returns 503 before entering the provider-dependent path.
+            expect(response.status).toBe(stripeConfigured ? 404 : 503);
         });
 
         it('should require order_id for payment intent', async () => {
